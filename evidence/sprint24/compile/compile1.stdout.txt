@@ -1,0 +1,2 @@
+/mnt/data/kmg-s24-qualification/build/KingmakerGunslinger-0.0.24-compile-candidate.zip
+Compile candidate produced; Kingmaker runtime qualification is still required.

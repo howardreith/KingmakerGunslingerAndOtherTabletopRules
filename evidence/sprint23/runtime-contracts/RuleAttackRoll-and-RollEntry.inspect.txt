@@ -1,0 +1,770 @@
+===== TYPE Kingmaker.RuleSystem.Rules.RuleAttackRoll =====
+Assembly=Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Base=Kingmaker.RuleSystem.RulebookTargetEvent
+IsValueType=False; IsEnum=False; IsClass=True; IsSealed=False
+-- Fields --
+0x04004a67 public Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats WeaponStats
+0x04004a68 private System.Int32 <AttackBonusPenalty>k__BackingField
+0x04004a69 private Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon <RuleAttackWithWeapon>k__BackingField
+0x04004a6a private Kingmaker.RuleSystem.AttackType <AttackType>k__BackingField
+0x04004a6b private System.Int32 <CriticalConfirmationBonus>k__BackingField
+0x04004a6c private System.Boolean <AutoCriticalConfirmation>k__BackingField
+0x04004a6d private System.Boolean <AutoCriticalThreat>k__BackingField
+0x04004a6e private System.Boolean <AutoMiss>k__BackingField
+0x04004a6f private System.Boolean <DoNotProvokeAttacksOfOpportunity>k__BackingField
+0x04004a70 private System.Boolean <AutoHit>k__BackingField
+0x04004a71 private System.Boolean <IgnoreConcealment>k__BackingField
+0x04004a72 private Kingmaker.RuleSystem.Rules.AttackResult <Result>k__BackingField
+0x04004a73 private Kingmaker.RuleSystem.RulebookEvent+RollEntry <Roll>k__BackingField
+0x04004a74 private System.Int32 <AttackBonus>k__BackingField
+0x04004a75 private System.Int32 <HitMirrorImageIndex>k__BackingField
+0x04004a76 private System.Boolean <IsCriticalRoll>k__BackingField
+0x04004a77 private System.Boolean <IsCriticalConfirmed>k__BackingField
+0x04004a78 private Kingmaker.RuleSystem.RulebookEvent+RollEntry <CriticalConfirmationRoll>k__BackingField
+0x04004a79 private System.Int32 <TargetAC>k__BackingField
+0x04004a7a private System.Int32 <TargetCriticalAC>k__BackingField
+0x04004a7b private System.Boolean <IsTargetFlatFooted>k__BackingField
+0x04004a7c private System.Boolean <IsSneakAttack>k__BackingField
+0x04004a7d private System.Boolean <IsSneakAttackUsed>k__BackingField
+0x04004a7e private System.Int32 <PreciseStrike>k__BackingField
+0x04004a7f private System.Int32 <FortificationChance>k__BackingField
+0x04004a80 private System.Int32 <FortificationRoll>k__BackingField
+0x04004a81 private System.Boolean <FortificationNegatesSneakAttack>k__BackingField
+0x04004a82 private System.Boolean <FortificationNegatesCriticalHit>k__BackingField
+0x04004a83 private System.Int32 <MissChance>k__BackingField
+0x04004a84 private System.Int32 <MissChanceRoll>k__BackingField
+0x04004a85 private Kingmaker.RuleSystem.Rules.RuleConcealmentCheck <ConcealmentCheck>k__BackingField
+0x04004a86 private Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus <AttackBonusRule>k__BackingField
+0x04004a87 private Kingmaker.RuleSystem.Rules.RuleCalculateAC <ACRule>k__BackingField
+0x04004a88 private System.Boolean <SuspendCombatLog>k__BackingField
+0x04004a89 private System.Boolean <AddedToCombatLog>k__BackingField
+0x04004a8a private Kingmaker.UI.Log.LogItemData <ParryLogEntry>k__BackingField
+0x04004a8b private Kingmaker.UI.Log.LogItemData <AttackLogEntry>k__BackingField
+0x04004a8c private System.Boolean <ImmuneToCriticalHit>k__BackingField
+0x04004a8d private System.Boolean <ImmuneToSneakAttack>k__BackingField
+0x04004a8e private Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData <Parry>k__BackingField
+-- Properties --
+0x170012ac public System.Int32 AttackBonusPenalty get=0x0600711d set=0x0600711e
+0x170012ad public Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon RuleAttackWithWeapon get=0x0600711f set=0x06007120
+0x170012ae public Kingmaker.RuleSystem.AttackType AttackType get=0x06007121 set=0x06007122
+0x170012af public System.Int32 CriticalConfirmationBonus get=0x06007123 set=0x06007124
+0x170012b0 public System.Boolean AutoCriticalConfirmation get=0x06007125 set=0x06007126
+0x170012b1 public System.Boolean AutoCriticalThreat get=0x06007127 set=0x06007128
+0x170012b2 public System.Boolean AutoMiss get=0x06007129 set=0x0600712a
+0x170012b3 public System.Boolean DoNotProvokeAttacksOfOpportunity get=0x0600712b set=0x0600712c
+0x170012b4 public System.Boolean AutoHit get=0x0600712d set=0x0600712e
+0x170012b5 public System.Boolean IgnoreConcealment get=0x0600712f set=0x06007130
+0x170012b6 public Kingmaker.RuleSystem.Rules.AttackResult Result get=0x06007131 set=0x06007132
+0x170012b7 public Kingmaker.RuleSystem.RulebookEvent+RollEntry Roll get=0x06007133 set=0x06007134
+0x170012b8 public System.Int32 AttackBonus get=0x06007135 set=0x06007136
+0x170012b9 public System.Int32 HitMirrorImageIndex get=0x06007137 set=0x06007138
+0x170012ba public System.Boolean IsCriticalRoll get=0x06007139 set=0x0600713a
+0x170012bb public System.Boolean IsCriticalConfirmed get=0x0600713b set=0x0600713c
+0x170012bc public Kingmaker.RuleSystem.RulebookEvent+RollEntry CriticalConfirmationRoll get=0x0600713d set=0x0600713e
+0x170012bd public System.Int32 TargetAC get=0x0600713f set=0x06007140
+0x170012be public System.Int32 TargetCriticalAC get=0x06007141 set=0x06007142
+0x170012bf public System.Boolean IsTargetFlatFooted get=0x06007143 set=0x06007144
+0x170012c0 public System.Boolean IsSneakAttack get=0x06007145 set=0x06007146
+0x170012c1 public System.Boolean IsSneakAttackUsed get=0x06007147 set=0x06007148
+0x170012c2 public System.Int32 PreciseStrike get=0x06007149 set=0x0600714a
+0x170012c3 public System.Int32 FortificationChance get=0x0600714b set=0x0600714c
+0x170012c4 public System.Int32 FortificationRoll get=0x0600714d set=0x0600714e
+0x170012c5 public System.Boolean FortificationNegatesSneakAttack get=0x0600714f set=0x06007150
+0x170012c6 public System.Boolean FortificationNegatesCriticalHit get=0x06007151 set=0x06007152
+0x170012c7 public System.Int32 MissChance get=0x06007153 set=0x06007154
+0x170012c8 public System.Int32 MissChanceRoll get=0x06007155 set=0x06007156
+0x170012c9 public Kingmaker.RuleSystem.Rules.RuleConcealmentCheck ConcealmentCheck get=0x06007157 set=0x06007158
+0x170012ca public Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus AttackBonusRule get=0x06007159 set=0x0600715a
+0x170012cb public Kingmaker.RuleSystem.Rules.RuleCalculateAC ACRule get=0x0600715b set=0x0600715c
+0x170012cc public System.Boolean SuspendCombatLog get=0x0600715d set=0x0600715e
+0x170012cd public System.Boolean AddedToCombatLog get=0x0600715f set=0x06007160
+0x170012ce public Kingmaker.UI.Log.LogItemData ParryLogEntry get=0x06007161 set=0x06007162
+0x170012cf public Kingmaker.UI.Log.LogItemData AttackLogEntry get=0x06007163 set=0x06007164
+0x170012d0 public System.Boolean ImmuneToCriticalHit get=0x06007165 set=0x06007166
+0x170012d1 public System.Boolean ImmuneToSneakAttack get=0x06007167 set=0x06007168
+0x170012d2 public Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData Parry get=0x06007169 set=0x0600716a
+0x170012d3 public System.Boolean IsHit get=0x0600716b set=none
+0x170012d4 public System.Boolean TargetUseFortification get=0x0600716c set=none
+0x170012d5 public System.Boolean FortificationOvercomed get=0x0600716d set=none
+0x170012d6 public Kingmaker.Items.ItemEntityWeapon Weapon get=0x0600716e set=none
+-- Constructors --
+0x06007170 public ctor .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats weaponStats, System.Int32 attackBonusPenalty)
+    IL bytes=82; locals=0; maxStack=3
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: ldarg.2
+    IL_0003: call Kingmaker.RuleSystem.RulebookTargetEvent::.ctor
+    IL_0008: ldarg.3
+    IL_0009: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_000e: ldarg.1
+    IL_000f: beq.s IL_0020
+    IL_0011: ldstr "RuleCalculateWeaponStats has different initiator"
+    IL_0016: call System.Array::Empty
+    IL_001b: call UberDebug::LogError
+    IL_0020: ldarg.0
+    IL_0021: ldarg.3
+    IL_0022: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0027: ldarg.0
+    IL_0028: ldarg.s 4
+    IL_002a: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackBonusPenalty
+    IL_002f: ldarg.0
+    IL_0030: ldarg.0
+    IL_0031: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0036: ldfld Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats::Weapon
+    IL_003b: callvirt Kingmaker.Items.ItemEntity<Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>::get_Blueprint
+    IL_0040: callvirt Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon::get_AttackType
+    IL_0045: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackType
+    IL_004a: ldarg.0
+    IL_004b: ldc.i4.0
+    IL_004c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_CriticalConfirmationBonus
+    IL_0051: ret
+0x06007171 public ctor .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 attackBonusPenalty)
+    IL bytes=65; locals=0; maxStack=4
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: ldarg.2
+    IL_0003: call Kingmaker.RuleSystem.RulebookTargetEvent::.ctor
+    IL_0008: ldarg.0
+    IL_0009: ldarg.1
+    IL_000a: ldarg.3
+    IL_000b: ldnull
+    IL_000c: newobj Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats::.ctor
+    IL_0011: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0016: ldarg.0
+    IL_0017: ldarg.s 4
+    IL_0019: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackBonusPenalty
+    IL_001e: ldarg.0
+    IL_001f: ldarg.0
+    IL_0020: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0025: ldfld Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats::Weapon
+    IL_002a: callvirt Kingmaker.Items.ItemEntity<Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>::get_Blueprint
+    IL_002f: callvirt Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon::get_AttackType
+    IL_0034: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackType
+    IL_0039: ldarg.0
+    IL_003a: ldc.i4.0
+    IL_003b: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_CriticalConfirmationBonus
+    IL_0040: ret
+-- Methods --
+0x0600711d public System.Int32 get_AttackBonusPenalty()
+0x0600711e private System.Void set_AttackBonusPenalty(System.Int32 value)
+0x0600711f public Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon get_RuleAttackWithWeapon()
+0x06007120 public System.Void set_RuleAttackWithWeapon(Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon value)
+0x06007121 public Kingmaker.RuleSystem.AttackType get_AttackType()
+0x06007122 public System.Void set_AttackType(Kingmaker.RuleSystem.AttackType value)
+0x06007123 public System.Int32 get_CriticalConfirmationBonus()
+0x06007124 public System.Void set_CriticalConfirmationBonus(System.Int32 value)
+0x06007125 public System.Boolean get_AutoCriticalConfirmation()
+0x06007126 public System.Void set_AutoCriticalConfirmation(System.Boolean value)
+0x06007127 public System.Boolean get_AutoCriticalThreat()
+0x06007128 public System.Void set_AutoCriticalThreat(System.Boolean value)
+0x06007129 public System.Boolean get_AutoMiss()
+0x0600712a public System.Void set_AutoMiss(System.Boolean value)
+0x0600712b public System.Boolean get_DoNotProvokeAttacksOfOpportunity()
+0x0600712c public System.Void set_DoNotProvokeAttacksOfOpportunity(System.Boolean value)
+0x0600712d public System.Boolean get_AutoHit()
+0x0600712e public System.Void set_AutoHit(System.Boolean value)
+0x0600712f public System.Boolean get_IgnoreConcealment()
+0x06007130 public System.Void set_IgnoreConcealment(System.Boolean value)
+0x06007131 public Kingmaker.RuleSystem.Rules.AttackResult get_Result()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<Result>k__BackingField
+    IL_0006: ret
+0x06007132 private System.Void set_Result(Kingmaker.RuleSystem.Rules.AttackResult value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<Result>k__BackingField
+    IL_0007: ret
+0x06007133 public Kingmaker.RuleSystem.RulebookEvent+RollEntry get_Roll()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<Roll>k__BackingField
+    IL_0006: ret
+0x06007134 private System.Void set_Roll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<Roll>k__BackingField
+    IL_0007: ret
+0x06007135 public System.Int32 get_AttackBonus()
+0x06007136 private System.Void set_AttackBonus(System.Int32 value)
+0x06007137 public System.Int32 get_HitMirrorImageIndex()
+0x06007138 private System.Void set_HitMirrorImageIndex(System.Int32 value)
+0x06007139 public System.Boolean get_IsCriticalRoll()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<IsCriticalRoll>k__BackingField
+    IL_0006: ret
+0x0600713a private System.Void set_IsCriticalRoll(System.Boolean value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<IsCriticalRoll>k__BackingField
+    IL_0007: ret
+0x0600713b public System.Boolean get_IsCriticalConfirmed()
+0x0600713c private System.Void set_IsCriticalConfirmed(System.Boolean value)
+0x0600713d public Kingmaker.RuleSystem.RulebookEvent+RollEntry get_CriticalConfirmationRoll()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<CriticalConfirmationRoll>k__BackingField
+    IL_0006: ret
+0x0600713e private System.Void set_CriticalConfirmationRoll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<CriticalConfirmationRoll>k__BackingField
+    IL_0007: ret
+0x0600713f public System.Int32 get_TargetAC()
+0x06007140 private System.Void set_TargetAC(System.Int32 value)
+0x06007141 public System.Int32 get_TargetCriticalAC()
+0x06007142 private System.Void set_TargetCriticalAC(System.Int32 value)
+0x06007143 public System.Boolean get_IsTargetFlatFooted()
+0x06007144 private System.Void set_IsTargetFlatFooted(System.Boolean value)
+0x06007145 public System.Boolean get_IsSneakAttack()
+0x06007146 private System.Void set_IsSneakAttack(System.Boolean value)
+0x06007147 public System.Boolean get_IsSneakAttackUsed()
+0x06007148 private System.Void set_IsSneakAttackUsed(System.Boolean value)
+0x06007149 public System.Int32 get_PreciseStrike()
+0x0600714a public System.Void set_PreciseStrike(System.Int32 value)
+0x0600714b public System.Int32 get_FortificationChance()
+0x0600714c private System.Void set_FortificationChance(System.Int32 value)
+0x0600714d public System.Int32 get_FortificationRoll()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<FortificationRoll>k__BackingField
+    IL_0006: ret
+0x0600714e private System.Void set_FortificationRoll(System.Int32 value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<FortificationRoll>k__BackingField
+    IL_0007: ret
+0x0600714f public System.Boolean get_FortificationNegatesSneakAttack()
+0x06007150 private System.Void set_FortificationNegatesSneakAttack(System.Boolean value)
+0x06007151 public System.Boolean get_FortificationNegatesCriticalHit()
+0x06007152 private System.Void set_FortificationNegatesCriticalHit(System.Boolean value)
+0x06007153 public System.Int32 get_MissChance()
+0x06007154 private System.Void set_MissChance(System.Int32 value)
+0x06007155 public System.Int32 get_MissChanceRoll()
+    IL bytes=7; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<MissChanceRoll>k__BackingField
+    IL_0006: ret
+0x06007156 private System.Void set_MissChanceRoll(System.Int32 value)
+    IL bytes=8; locals=0; maxStack=8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::<MissChanceRoll>k__BackingField
+    IL_0007: ret
+0x06007157 public Kingmaker.RuleSystem.Rules.RuleConcealmentCheck get_ConcealmentCheck()
+0x06007158 private System.Void set_ConcealmentCheck(Kingmaker.RuleSystem.Rules.RuleConcealmentCheck value)
+0x06007159 public Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus get_AttackBonusRule()
+0x0600715a private System.Void set_AttackBonusRule(Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus value)
+0x0600715b public Kingmaker.RuleSystem.Rules.RuleCalculateAC get_ACRule()
+0x0600715c private System.Void set_ACRule(Kingmaker.RuleSystem.Rules.RuleCalculateAC value)
+0x0600715d public System.Boolean get_SuspendCombatLog()
+0x0600715e public System.Void set_SuspendCombatLog(System.Boolean value)
+0x0600715f public System.Boolean get_AddedToCombatLog()
+0x06007160 public System.Void set_AddedToCombatLog(System.Boolean value)
+0x06007161 public Kingmaker.UI.Log.LogItemData get_ParryLogEntry()
+0x06007162 public System.Void set_ParryLogEntry(Kingmaker.UI.Log.LogItemData value)
+0x06007163 public Kingmaker.UI.Log.LogItemData get_AttackLogEntry()
+0x06007164 public System.Void set_AttackLogEntry(Kingmaker.UI.Log.LogItemData value)
+0x06007165 public System.Boolean get_ImmuneToCriticalHit()
+0x06007166 public System.Void set_ImmuneToCriticalHit(System.Boolean value)
+0x06007167 public System.Boolean get_ImmuneToSneakAttack()
+0x06007168 public System.Void set_ImmuneToSneakAttack(System.Boolean value)
+0x06007169 public Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData get_Parry()
+0x0600716a private System.Void set_Parry(Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData value)
+0x0600716b public System.Boolean get_IsHit()
+0x0600716c public System.Boolean get_TargetUseFortification()
+0x0600716d public System.Boolean get_FortificationOvercomed()
+0x0600716e public Kingmaker.Items.ItemEntityWeapon get_Weapon()
+0x0600716f public System.Boolean IsSuccessRoll(System.Int32 d20)
+    IL bytes=43; locals=0; maxStack=8
+    IL_0000: ldarg.1
+    IL_0001: ldc.i4.1
+    IL_0002: ble.s IL_0029
+    IL_0004: ldarg.1
+    IL_0005: ldc.i4.s 20
+    IL_0007: beq.s IL_0027
+    IL_0009: ldarg.0
+    IL_000a: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Roll
+    IL_000f: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_0014: ldarg.0
+    IL_0015: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonus
+    IL_001a: add
+    IL_001b: ldarg.0
+    IL_001c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_TargetAC
+    IL_0021: clt
+    IL_0023: ldc.i4.0
+    IL_0024: ceq
+    IL_0026: ret
+    IL_0027: ldc.i4.1
+    IL_0028: ret
+    IL_0029: ldc.i4.0
+    IL_002a: ret
+0x06007172 public System.Void SetFake(Kingmaker.RuleSystem.Rules.AttackResult result)
+0x06007173 public virtual System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+    IL bytes=1255; locals=7; maxStack=5
+    IL_0000: ldarg.0
+    IL_0001: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0006: callvirt Kingmaker.RuleSystem.RulebookEvent::get_IsTriggererd
+    IL_000b: brtrue.s IL_0019
+    IL_000d: ldarg.0
+    IL_000e: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_0013: call Kingmaker.RuleSystem.Rulebook::Trigger
+    IL_0018: pop
+    IL_0019: ldarg.0
+    IL_001a: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_001f: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_Descriptor
+    IL_0024: ldfld Kingmaker.UnitLogic.UnitDescriptor::State
+    IL_0029: ldc.i4.s 25
+    IL_002b: callvirt Kingmaker.UnitLogic.UnitState::HasCondition
+    IL_0030: stloc.0
+    IL_0031: ldarg.0
+    IL_0032: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_0037: ldarg.0
+    IL_0038: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_003d: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::IsEnemy
+    IL_0042: brtrue.s IL_005c
+    IL_0044: ldarg.0
+    IL_0045: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_004a: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_Faction
+    IL_004f: ldfld Kingmaker.Blueprints.BlueprintFaction::Neutral
+    IL_0054: brtrue.s IL_005c
+    IL_0056: ldloc.0
+    IL_0057: ldc.i4.0
+    IL_0058: ceq
+    IL_005a: br.s IL_005d
+    IL_005c: ldc.i4.0
+    IL_005d: stloc.1
+    IL_005e: ldarg.0
+    IL_005f: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_0064: ldarg.0
+    IL_0065: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_006a: beq.s IL_007b
+    IL_006c: ldarg.0
+    IL_006d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackType
+    IL_0072: call Kingmaker.RuleSystem.AttackTypeExtension::IsTouch
+    IL_0077: ldloc.1
+    IL_0078: and
+    IL_0079: brfalse.s IL_0082
+    IL_007b: ldarg.0
+    IL_007c: ldc.i4.1
+    IL_007d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AutoHit
+    IL_0082: ldarg.0
+    IL_0083: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoHit
+    IL_0088: brfalse IL_013c
+    IL_008d: ldarg.0
+    IL_008e: ldc.i4.1
+    IL_008f: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_0094: ldarg.0
+    IL_0095: ldarg.0
+    IL_0096: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoCriticalThreat
+    IL_009b: brfalse.s IL_00a5
+    IL_009d: ldarg.0
+    IL_009e: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoCriticalConfirmation
+    IL_00a3: br.s IL_00a6
+    IL_00a5: ldc.i4.0
+    IL_00a6: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsCriticalConfirmed
+    IL_00ab: ldarg.0
+    IL_00ac: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsSneakAttack
+    IL_00b1: brtrue.s IL_00c7
+    IL_00b3: ldarg.0
+    IL_00b4: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalConfirmed
+    IL_00b9: brtrue.s IL_00c7
+    IL_00bb: ldarg.0
+    IL_00bc: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_PreciseStrike
+    IL_00c1: ldc.i4.0
+    IL_00c2: ble IL_046b
+    IL_00c7: ldarg.0
+    IL_00c8: ldarg.0
+    IL_00c9: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_00ce: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::Get
+    IL_00d3: dup
+    IL_00d4: brtrue.s IL_00da
+    IL_00d6: pop
+    IL_00d7: ldc.i4.0
+    IL_00d8: br.s IL_00df
+    IL_00da: call Kingmaker.UnitLogic.Parts.UnitPartFortification::get_Value
+    IL_00df: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationChance
+    IL_00e4: ldarg.0
+    IL_00e5: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_TargetUseFortification
+    IL_00ea: brfalse IL_046b
+    IL_00ef: ldarg.0
+    IL_00f0: call Kingmaker.RuleSystem.RulebookEvent+Dice::get_D100
+    IL_00f5: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_00fa: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationRoll
+    IL_00ff: ldarg.0
+    IL_0100: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_FortificationOvercomed
+    IL_0105: brtrue IL_046b
+    IL_010a: ldarg.0
+    IL_010b: ldarg.0
+    IL_010c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsSneakAttack
+    IL_0111: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationNegatesSneakAttack
+    IL_0116: ldarg.0
+    IL_0117: ldarg.0
+    IL_0118: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalConfirmed
+    IL_011d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationNegatesCriticalHit
+    IL_0122: ldarg.0
+    IL_0123: ldc.i4.0
+    IL_0124: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsSneakAttack
+    IL_0129: ldarg.0
+    IL_012a: ldc.i4.0
+    IL_012b: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsCriticalConfirmed
+    IL_0130: ldarg.0
+    IL_0131: ldc.i4.0
+    IL_0132: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_PreciseStrike
+    IL_0137: br IL_046b
+    IL_013c: ldarg.0
+    IL_013d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoMiss
+    IL_0142: brfalse.s IL_0150
+    IL_0144: ldarg.0
+    IL_0145: ldc.i4.3
+    IL_0146: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_014b: br IL_046b
+    IL_0150: ldarg.0
+    IL_0151: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::TryOvercomeTargetConcealmentAndMissChance
+    IL_0156: brfalse IL_0464
+    IL_015b: ldarg.0
+    IL_015c: ldarg.0
+    IL_015d: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_0162: ldarg.0
+    IL_0163: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_0168: ldarg.0
+    IL_0169: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackType
+    IL_016e: newobj Kingmaker.RuleSystem.Rules.RuleCalculateAC::.ctor
+    IL_0173: call Kingmaker.RuleSystem.Rulebook::Trigger
+    IL_0178: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_ACRule
+    IL_017d: ldarg.0
+    IL_017e: ldarg.0
+    IL_017f: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_ACRule
+    IL_0184: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateAC::get_IsTargetFlatFooted
+    IL_0189: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsTargetFlatFooted
+    IL_018e: ldarg.0
+    IL_018f: ldarg.0
+    IL_0190: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_ACRule
+    IL_0195: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateAC::get_TargetAC
+    IL_019a: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_TargetAC
+    IL_019f: ldarg.0
+    IL_01a0: ldarg.0
+    IL_01a1: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_01a6: ldarg.0
+    IL_01a7: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_01ac: ldarg.0
+    IL_01ad: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Weapon
+    IL_01b2: ldarg.0
+    IL_01b3: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonusPenalty
+    IL_01b8: newobj Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus::.ctor
+    IL_01bd: call Kingmaker.RuleSystem.Rulebook::Trigger
+    IL_01c2: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackBonusRule
+    IL_01c7: ldarg.0
+    IL_01c8: ldarg.0
+    IL_01c9: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonusRule
+    IL_01ce: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus::get_Result
+    IL_01d3: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_AttackBonus
+    IL_01d8: ldarg.0
+    IL_01d9: call Kingmaker.RuleSystem.RulebookEvent+Dice::get_D20
+    IL_01de: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Roll
+    IL_01e3: ldarg.0
+    IL_01e4: ldarg.0
+    IL_01e5: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Roll
+    IL_01ea: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_01ef: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::IsSuccessRoll
+    IL_01f4: stloc.2
+    IL_01f5: ldarg.0
+    IL_01f6: ldloc.2
+    IL_01f7: brtrue.s IL_0221
+    IL_01f9: ldarg.0
+    IL_01fa: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_01ff: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_Stats
+    IL_0204: ldfld Kingmaker.EntitySystem.Stats.CharacterStats::AC
+    IL_0209: ldarg.0
+    IL_020a: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsTargetFlatFooted
+    IL_020f: ldarg.0
+    IL_0210: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackType
+    IL_0215: call Kingmaker.RuleSystem.AttackTypeExtension::IsTouch
+    IL_021a: callvirt Kingmaker.EntitySystem.Stats.ModifiableValueArmorClass::SelectMissReason
+    IL_021f: br.s IL_0222
+    IL_0221: ldc.i4.1
+    IL_0222: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_0227: ldarg.0
+    IL_0228: ldarg.0
+    IL_0229: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsHit
+    IL_022e: brfalse.s IL_026c
+    IL_0230: ldarg.0
+    IL_0231: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_ImmuneToSneakAttack
+    IL_0236: brtrue.s IL_026c
+    IL_0238: ldarg.0
+    IL_0239: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsTargetFlatFooted
+    IL_023e: brtrue.s IL_0252
+    IL_0240: ldarg.0
+    IL_0241: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_0246: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_CombatState
+    IL_024b: callvirt Kingmaker.Controllers.Combat.UnitCombatState::get_IsFlanked
+    IL_0250: brfalse.s IL_026c
+    IL_0252: ldarg.0
+    IL_0253: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_0258: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_Stats
+    IL_025d: ldfld Kingmaker.EntitySystem.Stats.CharacterStats::SneakAttack
+    IL_0262: call Kingmaker.EntitySystem.Stats.ModifiableValue::op_Implicit
+    IL_0267: ldc.i4.0
+    IL_0268: cgt
+    IL_026a: br.s IL_026d
+    IL_026c: ldc.i4.0
+    IL_026d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsSneakAttack
+    IL_0272: call Kingmaker.Game::get_Instance
+    IL_0277: callvirt Kingmaker.Game::get_Player
+    IL_027c: ldfld Kingmaker.Player::Difficulty
+    IL_0281: callvirt Kingmaker.GameDifficulty::get_CritsOnParty
+    IL_0286: stloc.3
+    IL_0287: ldarg.0
+    IL_0288: ldloc.2
+    IL_0289: brfalse.s IL_02cd
+    IL_028b: ldarg.0
+    IL_028c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_ImmuneToCriticalHit
+    IL_0291: brtrue.s IL_02cd
+    IL_0293: ldarg.0
+    IL_0294: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Roll
+    IL_0299: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_029e: ldarg.0
+    IL_029f: ldfld Kingmaker.RuleSystem.Rules.RuleAttackRoll::WeaponStats
+    IL_02a4: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats::get_CriticalEdge
+    IL_02a9: bge.s IL_02b3
+    IL_02ab: ldarg.0
+    IL_02ac: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoCriticalThreat
+    IL_02b1: brfalse.s IL_02cd
+    IL_02b3: ldarg.0
+    IL_02b4: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_02b9: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_IsPlayerFaction
+    IL_02be: brfalse.s IL_02ca
+    IL_02c0: ldloc.3
+    IL_02c1: ldc.i4.1
+    IL_02c2: beq.s IL_02ca
+    IL_02c4: ldloc.3
+    IL_02c5: ldc.i4.2
+    IL_02c6: ceq
+    IL_02c8: br.s IL_02ce
+    IL_02ca: ldc.i4.1
+    IL_02cb: br.s IL_02ce
+    IL_02cd: ldc.i4.0
+    IL_02ce: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsCriticalRoll
+    IL_02d3: ldarg.0
+    IL_02d4: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalRoll
+    IL_02d9: brfalse IL_0361
+    IL_02de: ldarg.0
+    IL_02df: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_02e4: ldarg.0
+    IL_02e5: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_02ea: ldarg.0
+    IL_02eb: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackType
+    IL_02f0: newobj Kingmaker.RuleSystem.Rules.RuleCalculateAC::.ctor
+    IL_02f5: dup
+    IL_02f6: ldc.i4.1
+    IL_02f7: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateAC::set_IsCritical
+    IL_02fc: call Kingmaker.RuleSystem.Rulebook::Trigger
+    IL_0301: stloc.s 5
+    IL_0303: ldarg.0
+    IL_0304: ldloc.s 5
+    IL_0306: callvirt Kingmaker.RuleSystem.Rules.RuleCalculateAC::get_TargetAC
+    IL_030b: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_TargetCriticalAC
+    IL_0310: ldarg.0
+    IL_0311: ldarg.0
+    IL_0312: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoCriticalConfirmation
+    IL_0317: brtrue.s IL_0320
+    IL_0319: call Kingmaker.RuleSystem.RulebookEvent+Dice::get_D20
+    IL_031e: br.s IL_0327
+    IL_0320: ldc.i4.s 20
+    IL_0322: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_0327: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_CriticalConfirmationRoll
+    IL_032c: ldarg.0
+    IL_032d: ldarg.0
+    IL_032e: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoCriticalConfirmation
+    IL_0333: brtrue.s IL_035b
+    IL_0335: ldarg.0
+    IL_0336: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_CriticalConfirmationRoll
+    IL_033b: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_0340: ldarg.0
+    IL_0341: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonus
+    IL_0346: add
+    IL_0347: ldarg.0
+    IL_0348: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_CriticalConfirmationBonus
+    IL_034d: add
+    IL_034e: ldarg.0
+    IL_034f: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_TargetCriticalAC
+    IL_0354: clt
+    IL_0356: ldc.i4.0
+    IL_0357: ceq
+    IL_0359: br.s IL_035c
+    IL_035b: ldc.i4.1
+    IL_035c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsCriticalConfirmed
+    IL_0361: ldarg.0
+    IL_0362: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsSneakAttack
+    IL_0367: brtrue.s IL_037a
+    IL_0369: ldarg.0
+    IL_036a: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalConfirmed
+    IL_036f: brtrue.s IL_037a
+    IL_0371: ldarg.0
+    IL_0372: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_PreciseStrike
+    IL_0377: ldc.i4.0
+    IL_0378: ble.s IL_03e4
+    IL_037a: ldarg.0
+    IL_037b: ldarg.0
+    IL_037c: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_0381: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::Get
+    IL_0386: dup
+    IL_0387: brtrue.s IL_038d
+    IL_0389: pop
+    IL_038a: ldc.i4.0
+    IL_038b: br.s IL_0392
+    IL_038d: call Kingmaker.UnitLogic.Parts.UnitPartFortification::get_Value
+    IL_0392: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationChance
+    IL_0397: ldarg.0
+    IL_0398: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_TargetUseFortification
+    IL_039d: brfalse.s IL_03e4
+    IL_039f: ldarg.0
+    IL_03a0: call Kingmaker.RuleSystem.RulebookEvent+Dice::get_D100
+    IL_03a5: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_03aa: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationRoll
+    IL_03af: ldarg.0
+    IL_03b0: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_FortificationOvercomed
+    IL_03b5: brtrue.s IL_03e4
+    IL_03b7: ldarg.0
+    IL_03b8: ldarg.0
+    IL_03b9: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsSneakAttack
+    IL_03be: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationNegatesSneakAttack
+    IL_03c3: ldarg.0
+    IL_03c4: ldarg.0
+    IL_03c5: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalConfirmed
+    IL_03ca: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_FortificationNegatesCriticalHit
+    IL_03cf: ldarg.0
+    IL_03d0: ldc.i4.0
+    IL_03d1: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsSneakAttack
+    IL_03d6: ldarg.0
+    IL_03d7: ldc.i4.0
+    IL_03d8: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsCriticalConfirmed
+    IL_03dd: ldarg.0
+    IL_03de: ldc.i4.0
+    IL_03df: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_PreciseStrike
+    IL_03e4: ldarg.0
+    IL_03e5: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsCriticalConfirmed
+    IL_03ea: brfalse.s IL_03f3
+    IL_03ec: ldarg.0
+    IL_03ed: ldc.i4.2
+    IL_03ee: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_03f3: ldloc.2
+    IL_03f4: brtrue.s IL_0417
+    IL_03f6: ldarg.0
+    IL_03f7: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_TargetAC
+    IL_03fc: ldarg.0
+    IL_03fd: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Roll
+    IL_0402: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_0407: sub
+    IL_0408: ldarg.0
+    IL_0409: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonus
+    IL_040e: sub
+    IL_040f: ldc.i4.5
+    IL_0410: cgt
+    IL_0412: ldc.i4.0
+    IL_0413: ceq
+    IL_0415: br.s IL_0418
+    IL_0417: ldc.i4.0
+    IL_0418: stloc.s 4
+    IL_041a: ldloc.2
+    IL_041b: ldloc.s 4
+    IL_041d: or
+    IL_041e: brfalse.s IL_046b
+    IL_0420: ldarg.0
+    IL_0421: ldfld Kingmaker.RuleSystem.RulebookEvent::Initiator
+    IL_0426: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::get_Descriptor
+    IL_042b: callvirt Kingmaker.UnitLogic.UnitDescriptor::get_IsImmuneToVisualEffects
+    IL_0430: brtrue.s IL_046b
+    IL_0432: ldarg.0
+    IL_0433: ldfld Kingmaker.RuleSystem.RulebookTargetEvent::Target
+    IL_0438: callvirt Kingmaker.EntitySystem.Entities.UnitEntityData::Get
+    IL_043d: stloc.s 6
+    IL_043f: ldloc.s 6
+    IL_0441: brfalse.s IL_046b
+    IL_0443: ldarg.0
+    IL_0444: ldloc.s 6
+    IL_0446: ldloc.s 4
+    IL_0448: callvirt Kingmaker.UnitLogic.Parts.UnitPartMirrorImage::TryAbsorbHit
+    IL_044d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_HitMirrorImageIndex
+    IL_0452: ldarg.0
+    IL_0453: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_HitMirrorImageIndex
+    IL_0458: ldc.i4.0
+    IL_0459: ble.s IL_046b
+    IL_045b: ldarg.0
+    IL_045c: ldc.i4.7
+    IL_045d: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_0462: br.s IL_046b
+    IL_0464: ldarg.0
+    IL_0465: ldc.i4.8
+    IL_0466: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_046b: ldarg.0
+    IL_046c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsHit
+    IL_0471: brfalse.s IL_04c2
+    IL_0473: ldarg.0
+    IL_0474: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AutoHit
+    IL_0479: brtrue.s IL_04c2
+    IL_047b: ldarg.0
+    IL_047c: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Parry
+    IL_0481: brfalse.s IL_04c2
+    IL_0483: ldarg.0
+    IL_0484: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Parry
+    IL_0489: ldarg.1
+    IL_048a: callvirt Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData::Trigger
+    IL_048f: ldarg.0
+    IL_0490: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Parry
+    IL_0495: callvirt Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData::get_Roll
+    IL_049a: ldarg.0
+    IL_049b: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Parry
+    IL_04a0: callvirt Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData::get_AttackBonus
+    IL_04a5: add
+    IL_04a6: ldarg.0
+    IL_04a7: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_Roll
+    IL_04ac: call Kingmaker.RuleSystem.RulebookEvent+RollEntry::op_Implicit
+    IL_04b1: ldarg.0
+    IL_04b2: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_AttackBonus
+    IL_04b7: add
+    IL_04b8: ble.s IL_04c2
+    IL_04ba: ldarg.0
+    IL_04bb: ldc.i4.s 9
+    IL_04bd: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_Result
+    IL_04c2: ldarg.0
+    IL_04c3: ldarg.0
+    IL_04c4: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsSneakAttack
+    IL_04c9: ldarg.0
+    IL_04ca: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::get_IsHit
+    IL_04cf: and
+    IL_04d0: call Kingmaker.RuleSystem.Rules.RuleAttackRoll::set_IsSneakAttack
+    IL_04d5: ldarg.0
+    IL_04d6: ldftn Kingmaker.RuleSystem.Rules.RuleAttackRoll::<OnTrigger>b__170_0
+    IL_04dc: newobj System.Action<Kingmaker.PubSubSystem.IAttackHandler>::.ctor
+    IL_04e1: call Kingmaker.PubSubSystem.EventBus::RaiseEvent
+    IL_04e6: ret
+0x06007174 private System.Boolean TryOvercomeTargetConcealmentAndMissChance()
+0x06007175 public System.Void ConsumeMirrorImageIfNecessary()
+0x06007176 public System.Void SetAttackBonusPenalty(System.Int32 penalty)
+0x06007177 public System.Void TryParry(Kingmaker.EntitySystem.Entities.UnitEntityData unit, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 penalty)
+0x06007178 public System.Void IncreaseMissChance(System.Int32 value)
+0x06007179 public System.Void UseSneakAttack()
+0x0600717a private System.Void <OnTrigger>b__170_0(Kingmaker.PubSubSystem.IAttackHandler h)
+
+===== TYPE Kingmaker.RuleSystem.RulebookEvent+RollEntry =====
+Assembly=Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Base=System.ValueType
+IsValueType=True; IsEnum=False; IsClass=False; IsSealed=True
+-- Fields --
+0x0400887b public System.Int32 Value
+0x0400887c public System.Collections.Generic.List<System.Int32> RollHistory
+0x0400887d public System.String RerollSource
+-- Properties --
+-- Constructors --
+-- Methods --
+0x0600ba79 public static System.Int32 op_Implicit(Kingmaker.RuleSystem.RulebookEvent+RollEntry roll)
+0x0600ba7a public static Kingmaker.RuleSystem.RulebookEvent+RollEntry op_Implicit(System.Int32 roll)
+0x0600ba7b public virtual System.String ToString()
+

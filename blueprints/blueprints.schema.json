@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:kingmaker-gunslinger:blueprints-schema:v1",
+  "title": "Kingmaker Gunslinger blueprint identifier manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "namespace",
+    "policy",
+    "entries"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "namespace": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimeGenerationAllowed",
+        "format",
+        "retiredIdsRemainReserved"
+      ],
+      "properties": {
+        "runtimeGenerationAllowed": {
+          "const": false
+        },
+        "format": {
+          "type": "string"
+        },
+        "retiredIdsRemainReserved": {
+          "const": true
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "symbol",
+          "guid",
+          "plannedType",
+          "status",
+          "milestone",
+          "notes"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "pattern": "^KMG\\.[A-Za-z0-9_.]+$"
+          },
+          "guid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "plannedType": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "reserved",
+              "active",
+              "retired"
+            ]
+          },
+          "milestone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+Sprint 29 standalone UMM package validation passed.
+{"binaryCount": 1, "dllSha256": "7f252d8abc4a6eed61d69403296e1481f4e30a70ddb90456374538e18481c936", "entryCount": 8, "packageSha256": "8be74497785d1d5228e368a09818d251557cb207a755c8a57607b97b5c816660"}

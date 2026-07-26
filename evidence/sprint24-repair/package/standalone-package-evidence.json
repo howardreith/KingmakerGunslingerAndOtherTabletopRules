@@ -1,0 +1,21 @@
+{
+  "binaryCount": 1,
+  "entries": [
+    "KingmakerGunslinger/CHANGELOG.md",
+    "KingmakerGunslinger/Info.json",
+    "KingmakerGunslinger/KingmakerGunslinger.dll",
+    "KingmakerGunslinger/LICENSE",
+    "KingmakerGunslinger/README.md",
+    "KingmakerGunslinger/SMOKE-TEST-GUIDE.md",
+    "KingmakerGunslinger/blueprints/blueprints.json",
+    "KingmakerGunslinger/blueprints/blueprints.schema.json"
+  ],
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.24.1-broken-reload-repair-smoke-test.zip",
+  "modDllSha256": "674e732edd0a27727bb27eb950749b8f72428addd00e9c8996160decd88f11b4",
+  "privateReferencesRedistributed": false,
+  "schemaVersion": 1,
+  "sha256": "5f3a9caf325339132dc1d03482af0b48a2292fce9dfa6a3548f4c5d6b307fa7f",
+  "sizeBytes": 145282,
+  "zipCrcPassed": true
+}

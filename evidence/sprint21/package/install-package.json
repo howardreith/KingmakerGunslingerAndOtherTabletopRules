@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "fileName": "KingmakerGunslinger-0.0.21-reload-smoke-test.zip",
+  "sha256": "70d60a687866396ad417df52f4dd24dea54de97bbd379709e8c93eef55589072",
+  "dllSha256": "2cb422265c600f5f48f36660dcb2a7f7f71aabe4a10c83153ddea85a62a67b5b",
+  "entryCount": 8,
+  "entries": [
+    "KingmakerGunslinger/CHANGELOG.md",
+    "KingmakerGunslinger/Info.json",
+    "KingmakerGunslinger/KingmakerGunslinger.dll",
+    "KingmakerGunslinger/LICENSE",
+    "KingmakerGunslinger/README.md",
+    "KingmakerGunslinger/SMOKE-TEST-GUIDE.md",
+    "KingmakerGunslinger/blueprints/blueprints.json",
+    "KingmakerGunslinger/blueprints/blueprints.schema.json"
+  ],
+  "classification": "READY FOR KINGMAKER \u2014 full-round reload smoke test",
+  "containsOnlyProjectDll": true
+}

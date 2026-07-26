@@ -1,0 +1,6 @@
+Sprint 23 source invariant validation passed.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=147; tests=87.
+Declared dependency-free tests: 489 unique.
+Condition transitions: absent from Sprint 23 misfire runtime.
+Private runtime/compiler binaries in source tree: none.

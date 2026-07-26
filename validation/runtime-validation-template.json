@@ -1,0 +1,29 @@
+{
+  "milestone": "0.0.29-s29-complete-maintenance-loop",
+  "targetGame": "Pathfinder: Kingmaker 2.1.7b",
+  "standalonePackageSha256": "8be74497785d1d5228e368a09818d251557cb207a755c8a57607b97b5c816660",
+  "checks": {
+    "modLoadsWithoutErrors": false,
+    "versionShows0_0_29": false,
+    "threeAbilitiesGranted": false,
+    "fixtureReadyMatrixPasses": false,
+    "immediateLoopMatrixPasses": false,
+    "overhaulInterruptedConsumesNothing": false,
+    "overhaulConsumesOneKit": false,
+    "repairInterruptedConsumesNothing": false,
+    "repairConsumesOneKit": false,
+    "repairChangesBrokenToNormal": false,
+    "reloadConsumesOnePowderAndBall": false,
+    "sameItemIdentityPreserved": false,
+    "revisionAdvancesOncePerStage": false,
+    "secondMusketUnchanged": false,
+    "repairRejectionBoundariesPass": false,
+    "quicksavePreservesState": false,
+    "fullSaveExitRestartPreservesState": false,
+    "allRelevantFaultsZero": false,
+    "allDuplicateApplicationsUnchanged": false,
+    "tokenConflictsAndFaultsZero": false
+  },
+  "sprint30EntryApproved": false,
+  "notes": []
+}

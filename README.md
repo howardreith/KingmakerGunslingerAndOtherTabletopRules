@@ -1,0 +1,51 @@
+# Kingmaker Gunslinger
+
+Version `0.0.30-s30-generic-firearm-actions` reconstructs the missing editable Sprint 30 source for Pathfinder: Kingmaker 2.1.7b.
+
+## Current vertical slice
+
+The build provides Firearm Proficiency, an early Test Musket, stackable Black Powder Charges and Lead Balls, atomic component consumption, full-round reload, range-limited touch AC, exact item-owned firearm state, save/restart persistence, loaded-round enforcement, deterministic natural-d20 diagnostics, misfire condition transitions, a native five-foot second-misfire burst, and same-item recovery.
+
+The Test Musket has one round, a 40-foot range increment, natural 1–2 misfire, full-round reload requiring a free hand, and a 5-foot misfire burst. It still reuses Heavy Crossbow presentation and placeholder native-item artwork.
+
+A first misfire consumes the loaded round, forces a miss, and changes only the exact firearm from Normal to Broken. A second misfire from Broken changes the exact firearm to Wrecked and resolves a native Reflex DC 12 plus base weapon-damage burst against every unique qualified unit in five feet, with the exact wielder included once and last.
+
+## Complete maintenance loop
+
+Firearm Proficiency now grants three separate full-round abilities:
+
+```text
+Overhaul Test Musket: empty/Wrecked + one Repair Kit → empty/Broken
+Repair Test Musket:   empty/Broken + one Repair Kit → empty/Normal
+Reload Test Musket:   empty/Normal + powder + Lead Ball → loaded/Normal
+```
+
+Overhaul and Repair are distinct personal extraordinary actions. Each mutates only during completed delivery, consumes exactly one Firearm Repair Kit, preserves the same exact runtime item and item-owned state token, advances its state revision once, creates no ammunition, and leaves a second blueprint-identical Test Musket unchanged. Repair rejects Wrecked, Normal, or loaded Broken firearms without mutation.
+
+Reload remains a separate full-round operation and is the only maintenance-loop step that consumes Black Powder and a Lead Ball.
+
+## Accelerated qualification harness
+
+Sprint 29 adds a deterministic development fixture and PASS/FAIL matrix. It prepares one exact equipped Test Musket as empty/Wrecked, preserves or creates a second independent empty/Normal Test Musket, ensures two Repair Kits plus one powder-and-ball pair, captures process-local identities and counters, and validates each checkpoint:
+
+```text
+FixtureReady → OverhaulPassed → RepairPassed → MaintenanceLoopPassed
+```
+
+A one-command immediate diagnostic runs the entire transaction loop without action economy for fast regression checks. The action-bar abilities must still be tested separately for real full-round delivery and interruption behavior.
+
+The item-owned inert `BlueprintWeaponEnchantment` token remains the authoritative state carrier. The rejected `ItemEntityWeapon.UniqueId` vault is not used.
+
+## Installation
+
+Install only the standalone Unity Mod Manager ZIP. Do not install the source archive, complete milestone archive, private reference bundle, compiler package, or framework reference assemblies.
+
+This remains a disposable-save smoke-test candidate rather than a general gameplay release. Follow `SMOKE-TEST-GUIDE.md` exactly.
+
+## Direction after Sprint 29
+
+Sprint 30 now generalizes Reload, Overhaul, and Repair through one marker-first exact-equipped-firearm context and definition-driven policy. The existing Test Musket abilities remain compatibility adapters. The larger vertical-slice roadmap remains in `planning/ROADMAP-SPRINTS-29-38.md`.
+
+## Deliberate deferrals
+
+This version does not add generic multi-firearm maintenance, Quick Clear, grit, deeds, Gunslinger class progression, Rapid Reload, scatter triple damage, production firearm art/animation/audio, vendors, crafting, magical firearms, or firearm-using enemies.

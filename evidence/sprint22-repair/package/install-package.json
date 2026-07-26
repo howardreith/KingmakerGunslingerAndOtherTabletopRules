@@ -1,0 +1,78 @@
+{
+  "archiveValidation": {
+    "crcPassed": true,
+    "duplicateEntries": 0,
+    "expectedLayout": true,
+    "onlyProjectOwnedBinary": true,
+    "pathTraversalEntries": 0,
+    "symlinkEntries": 0
+  },
+  "binaryEntries": [
+    "KingmakerGunslinger/KingmakerGunslinger.dll"
+  ],
+  "blueprintManifestSha256": "af56f2a35bd05e055e8feee1e996d37abcb20b76efb90762784f31ccfe933337",
+  "classification": "READY FOR KINGMAKER SPRINT 22 REPAIR SMOKE TEST",
+  "entries": [
+    {
+      "path": "KingmakerGunslinger/CHANGELOG.md",
+      "sha256": "fd72640125431ac667ce86c029c274d6d74a8de32aca3a7b5e66cc0e55ff7044",
+      "sizeBytes": 30978
+    },
+    {
+      "path": "KingmakerGunslinger/Info.json",
+      "sha256": "185a18496fd30ff4d5cecda95a219d8f95e6d48f03a01aadca394a23633db004",
+      "sizeBytes": 268
+    },
+    {
+      "path": "KingmakerGunslinger/KingmakerGunslinger.dll",
+      "sha256": "36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463",
+      "sizeBytes": 339456
+    },
+    {
+      "path": "KingmakerGunslinger/LICENSE",
+      "sha256": "18bfbd53a938959e77483994b4445f10e17b0cf79eb3308b0c416c14b33903c2",
+      "sizeBytes": 1100
+    },
+    {
+      "path": "KingmakerGunslinger/README.md",
+      "sha256": "a64f3cdc72fc5ddaf77ac9886bfe6467f33a8cbbf417f820b3034600670f4e3c",
+      "sizeBytes": 1714
+    },
+    {
+      "path": "KingmakerGunslinger/SMOKE-TEST-GUIDE.md",
+      "sha256": "4f0bd4a62cb7c925405b805f95c633089decdd85bb8937b8ac4e501cc30ab66f",
+      "sizeBytes": 7123
+    },
+    {
+      "path": "KingmakerGunslinger/blueprints/blueprints.json",
+      "sha256": "af56f2a35bd05e055e8feee1e996d37abcb20b76efb90762784f31ccfe933337",
+      "sizeBytes": 4557
+    },
+    {
+      "path": "KingmakerGunslinger/blueprints/blueprints.schema.json",
+      "sha256": "60433421fc40be98373401ebd1103dff366fcc62609dc300bd0a79d033852374",
+      "sizeBytes": 1930
+    }
+  ],
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.22.1-attack-hook-repair-smoke-test.zip",
+  "modDllSha256": "36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463",
+  "modVersion": "0.0.22.1",
+  "redistributedPrivateDependencies": false,
+  "runtimeQualificationRequired": [
+    "quicksave preserves loaded token with zero reconciliation faults",
+    "complete save/desktop restart preserves loaded state",
+    "one loaded shot consumes exactly one round and re-enables reload",
+    "one empty shot is forced to miss without inventory-ammunition consumption",
+    "loaded Broken firearm fires once and remains Broken",
+    "Wrecked firearm is forced to miss",
+    "native Heavy Crossbow remains outside firearm enforcement",
+    "no bootstrap, Harmony, firearm-state, reconciliation, or attack-enforcement faults"
+  ],
+  "schemaVersion": 1,
+  "sha256": "83423ad78a5e62dd4e329c07c1f5ddb20b9bd49567690e5bab6f9495e7263541",
+  "sizeBytes": 136303,
+  "sprint23Status": "blocked-pending-all-runtime-criteria",
+  "targetGame": "Pathfinder: Kingmaker 2.1.7b",
+  "unityModManager": "0.32.4"
+}

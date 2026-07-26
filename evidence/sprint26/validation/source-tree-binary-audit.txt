@@ -1,0 +1,5 @@
+Sprint 26 source-tree binary audit
+
+Loose binary/symbol files observed: 0
+PASS: no loose DLL, EXE, PDB, or MDB files are present.
+PASS: private runtime/compiler/framework reference file names are absent.

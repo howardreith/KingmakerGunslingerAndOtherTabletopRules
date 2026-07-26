@@ -1,0 +1,5 @@
+FAIL ac.invalid-distance: System.InvalidOperationException: An invalid distance must retain ordinary AC.
+   at KingmakerGunslinger.DomainTests.Assertions.True(Boolean condition, String message) in <STAGED_SOURCE>/tests/KingmakerGunslinger.DomainTests/Assertions.cs:line 12
+   at KingmakerGunslinger.DomainTests.Assertions.False(Boolean condition, String message) in <STAGED_SOURCE>/tests/KingmakerGunslinger.DomainTests/Assertions.cs:line 18
+   at KingmakerGunslinger.DomainTests.Program.ArmorClassInvalidDistanceFailsClosed() in <STAGED_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 3899
+   at KingmakerGunslinger.DomainTests.Program.Main() in <STAGED_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 399

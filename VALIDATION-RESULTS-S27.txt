@@ -1,0 +1,45 @@
+Kingmaker Gunslinger Sprint 27 validation results
+Date: 2026-07-16
+Version: 0.0.27-s27-item-lifecycle-recovery-contract
+Status: READY FOR KINGMAKER — Sprint 27 item-lifecycle recovery-contract smoke test
+
+Source and contract validation
+- Sprint 27 source invariant validation: PASS
+- Exact item-lifecycle contract evidence: PASS
+- Sprint 26 runtime acceptance evidence and user confirmation: PASS
+- Item-owned state carrier retained: PASS
+- Rejected ItemEntityWeapon.UniqueId vault not revived: PASS
+- Private/compiler/framework binaries in source tree: none
+
+Exact-reference compilation
+- Configuration: Release
+- Target: .NET Framework 4.7 / C# 7.3 / AnyCPU
+- Compiler: Roslyn 3.11.0-4.21403.6 (ae1fff34)
+- Warnings as errors: PASS
+- Same output path runs: 2
+- DLL byte-identical: PASS
+- PDB byte-identical: PASS
+- DLL SHA-256: 815f5425c777f05ee397bcb79dfa04e43e3ff4f4688a114a35cfca56e824ee96
+- PDB SHA-256: 0912466136147d54f08d3c1178fd57408883e5e75736228b115928b03b68463b
+
+Dependency-free tests
+- Declared cases: 543
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: PASS
+- Output SHA-256: 530bad4a96f1fd6f75c038becb39e317c62b7e824242090164d04a4271629f3a
+
+Standalone UMM package
+- File: KingmakerGunslinger-0.0.27-item-lifecycle-recovery-contract-smoke-test.zip
+- Entries: 8
+- Binaries: 1 (KingmakerGunslinger.dll only)
+- Path/CRC/layout validation: PASS
+- Private-reference redistribution: none
+- ZIP SHA-256: 9e00375d5144e87ea30505efdb9c639faedeb2b9f7d6f479bdaf8de3d9644a21
+
+Runtime gate
+- Same-item Wrecked-to-Broken overhaul: pending in Kingmaker
+- Second blueprint-identical firearm isolation: pending in Kingmaker
+- Cleanup arm/cancel non-mutation: pending in Kingmaker
+- Save/exit/restart persistence: pending in Kingmaker
+- Sprint 28 entry: blocked until the exact 0.0.27 smoke guide passes

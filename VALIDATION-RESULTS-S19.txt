@@ -1,0 +1,23 @@
+Kingmaker Gunslinger — Sprint 19 validation results
+Version: 0.0.19-s19-proficiency-token-smoke
+
+Exact private-reference Release compile: PASS
+Compiler exit code: 0
+Compiler stderr: empty
+Main DLL SHA-256: a076ccd455d4fe9c1d8b3e903e48fa1507b082197dc8df5e38276cb7523edd29
+
+Dependency-free regression tests:
+- Declared/executed: 373
+- Runs: 3
+- Failures per run: 0
+- Repeated output SHA-256: 3c7deee3a1c5c4b9f0e1d8a22dbdae2bc5d4b9a165a9108430731aee431637d4
+- Repeated output byte-identical: yes
+
+Install ZIP integrity: PASS
+Install ZIP contains project DLL only; no Kingmaker, Unity, UMM, Harmony, or Newtonsoft assemblies are redistributed.
+
+Runtime qualification still required:
+- Typed selected-unit proficiency grant.
+- Test Musket equip restriction.
+- Item-owned token add/read/remove.
+- Save/load and complete process restart durability.

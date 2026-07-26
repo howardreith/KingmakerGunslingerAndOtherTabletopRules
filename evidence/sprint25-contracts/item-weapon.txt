@@ -1,0 +1,37 @@
+TYPE Kingmaker.Items.ItemEntityWeapon base=Kingmaker.Items.ItemEntity<Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>
+  CTOR public instance <ctor> .ctor(Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon bpItem)
+  CTOR protected instance <ctor> .ctor(Kingmaker.EntitySystem.Persistence.JsonUtility.JsonConstructorMark _)
+  METHOD protected instance System.Boolean CanBeEquippedInternal(Kingmaker.UnitLogic.UnitDescriptor owner)
+  METHOD public instance System.Void Dispose()
+  METHOD public instance Kingmaker.View.Animation.WeaponAnimationStyle GetAnimationStyle(System.Boolean forDollRoom)
+  METHOD public instance System.Void OnDidEquipped(Kingmaker.UnitLogic.UnitDescriptor wielder)
+  METHOD public instance System.Void OnWillUnequip()
+  METHOD public instance System.Void PostLoad()
+  METHOD public instance System.Void PreSave()
+  METHOD public instance System.Void TurnOff(System.Boolean force)
+  METHOD public instance System.Void TurnOn()
+  METHOD public instance Kingmaker.Utility.Feet get_AttackRange()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula get_Damage()
+  METHOD public instance System.Boolean get_ForceSecondary()
+  METHOD public instance System.Boolean get_HoldInTwoHands()
+  METHOD public instance System.Boolean get_IsLootable()
+  METHOD public instance System.Boolean get_IsSecondPartOfDoubleWeapon()
+  METHOD public instance System.Boolean get_IsSecondary()
+  METHOD public instance System.Boolean get_IsShield()
+  METHOD public instance Kingmaker.Enums.Size get_Size()
+  METHOD public instance System.Void set_ForceSecondary(System.Boolean value)
+  METHOD private instance System.Void set_IsSecondPartOfDoubleWeapon(System.Boolean value)
+  METHOD public instance System.Void set_IsShield(System.Boolean value)
+  PROP Kingmaker.Utility.Feet AttackRange [public get]
+  PROP Kingmaker.RuleSystem.DiceFormula Damage [public get]
+  PROP System.Boolean ForceSecondary [public get, public set]
+  PROP System.Boolean HoldInTwoHands [public get]
+  PROP System.Boolean IsLootable [public get]
+  PROP System.Boolean IsSecondPartOfDoubleWeapon [public get, private set]
+  PROP System.Boolean IsSecondary [public get]
+  PROP System.Boolean IsShield [public get, public set]
+  PROP Kingmaker.Enums.Size Size [public get]
+  FIELD private instance System.Boolean <ForceSecondary>k__BackingField
+  FIELD private instance System.Boolean <IsSecondPartOfDoubleWeapon>k__BackingField
+  FIELD private instance System.Boolean <IsShield>k__BackingField
+  FIELD public instance Kingmaker.Items.ItemEntityWeapon Second readonly

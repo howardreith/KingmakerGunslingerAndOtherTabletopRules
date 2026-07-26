@@ -1,0 +1,147 @@
+{
+  "assembly": {
+    "pathLabel": "private/Managed/Assembly-CSharp.dll",
+    "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+  },
+  "conclusions": [
+    "All three relevant rule events declare void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext), not a zero-argument OnTrigger.",
+    "The 0.0.22 zero-argument resolver therefore selected zero candidates and Harmony skipped attack enforcement, touch-AC integration, and combat tracing at those targets.",
+    "ItemEntity.ApplyEnchantments is the intended zero-argument base target, but it executes for non-weapon ItemEntity subclasses including shields.",
+    "The repair binds the exact one-argument rule-event contract and limits state-token inspection to ItemEntityWeapon instances.",
+    "No Sprint 23 misfire behavior is present in this repair."
+  ],
+  "itemApplyEnchantmentsContract": [
+    {
+      "declaringType": "Kingmaker.Items.ItemEntity",
+      "isPublic": false,
+      "isStatic": false,
+      "isVirtual": false,
+      "metadataToken": "0x06007b5a",
+      "name": "ApplyEnchantments",
+      "oldZeroArgumentMatcherWouldAccept": true,
+      "parameters": [],
+      "repairedExactMatcherWouldAccept": false,
+      "rva": "0x1fd9c4",
+      "signature": {
+        "explicitThis": false,
+        "generic": false,
+        "hasThis": true,
+        "parameterCount": 0,
+        "parameterTypes": [],
+        "rawHex": "200001",
+        "returnType": "System.Void"
+      }
+    }
+  ],
+  "observedRuntimeFailure": {
+    "attackEnforcementFired": 0,
+    "attackEnforcementObserved": 0,
+    "lastTokenFault": "MissingMemberException: Runtime item type 'Kingmaker.Items.ItemEntityShield' exposes no readable enumerable enchantment collection.",
+    "loadedRoundRemainedAfterAttack": true,
+    "reloadRemainedUnavailable": true,
+    "tokenReconciliationFaults": 10
+  },
+  "purpose": "Sprint 22 repair exact-runtime contract evidence",
+  "ruleEventContracts": {
+    "Kingmaker.RuleSystem.Rules.RuleAttackRoll": [
+      {
+        "declaringType": "Kingmaker.RuleSystem.Rules.RuleAttackRoll",
+        "isPublic": true,
+        "isStatic": false,
+        "isVirtual": true,
+        "metadataToken": "0x06007173",
+        "name": "OnTrigger",
+        "oldZeroArgumentMatcherWouldAccept": false,
+        "parameters": [
+          {
+            "name": "context",
+            "sequence": 1
+          }
+        ],
+        "repairedExactMatcherWouldAccept": true,
+        "rva": "0x1e051c",
+        "signature": {
+          "explicitThis": false,
+          "generic": false,
+          "hasThis": true,
+          "parameterCount": 1,
+          "parameterTypes": [
+            "Kingmaker.RuleSystem.RulebookEventContext"
+          ],
+          "rawHex": "20010112b4fc",
+          "returnType": "System.Void"
+        }
+      }
+    ],
+    "Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon": [
+      {
+        "declaringType": "Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon",
+        "isPublic": true,
+        "isStatic": false,
+        "isVirtual": true,
+        "metadataToken": "0x0600719d",
+        "name": "OnTrigger",
+        "oldZeroArgumentMatcherWouldAccept": false,
+        "parameters": [
+          {
+            "name": "context",
+            "sequence": 1
+          }
+        ],
+        "repairedExactMatcherWouldAccept": true,
+        "rva": "0x1e0c90",
+        "signature": {
+          "explicitThis": false,
+          "generic": false,
+          "hasThis": true,
+          "parameterCount": 1,
+          "parameterTypes": [
+            "Kingmaker.RuleSystem.RulebookEventContext"
+          ],
+          "rawHex": "20010112b4fc",
+          "returnType": "System.Void"
+        }
+      }
+    ],
+    "Kingmaker.RuleSystem.Rules.RuleCalculateAC": [
+      {
+        "declaringType": "Kingmaker.RuleSystem.Rules.RuleCalculateAC",
+        "isPublic": true,
+        "isStatic": false,
+        "isVirtual": true,
+        "metadataToken": "0x060071b8",
+        "name": "OnTrigger",
+        "oldZeroArgumentMatcherWouldAccept": false,
+        "parameters": [
+          {
+            "name": "context",
+            "sequence": 1
+          }
+        ],
+        "repairedExactMatcherWouldAccept": true,
+        "rva": "0x1e1174",
+        "signature": {
+          "explicitThis": false,
+          "generic": false,
+          "hasThis": true,
+          "parameterCount": 1,
+          "parameterTypes": [
+            "Kingmaker.RuleSystem.RulebookEventContext"
+          ],
+          "rawHex": "20010112b4fc",
+          "returnType": "System.Void"
+        }
+      }
+    ]
+  },
+  "schemaVersion": 1,
+  "source": {
+    "ruleEventPatchContractSha256": "352c4c241d6bcb203b6231ec677c5e0a9ff2f9d3177cf211ebc4775eba49d894",
+    "ruleEventPatchTargetSha256": "0ed7f2c70d5025da8d7e25d10bc46918076d3bb4afa49570b698ad437ab751ab",
+    "runtimeInspectionScriptSha256": "28a52e3533fc0251f1b31b268769749dce4047ae9a62174e74b6d4b304cc8ae1",
+    "tokenReconciliationPatchSha256": "5c83e90135f98959af9d8d97d2b140c143ba7dac4c90cc94cff04d93f71d8ade"
+  },
+  "tooling": {
+    "dnfileVersion": "0.18.0"
+  }
+}

@@ -1,0 +1,680 @@
+{
+  "assembly": {
+    "fileName": "Assembly-CSharp.dll",
+    "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+  },
+  "contracts": {
+    "itemEntity": [
+      {
+        "name": "get_Collection",
+        "parameters": [],
+        "rawSignature": "200012bea4",
+        "returnType": "Kingmaker.Items.ItemsCollection",
+        "rva": "0x001fd48d",
+        "static": false,
+        "token": "0x06007b22",
+        "visibility": "public"
+      },
+      {
+        "name": "set_Collection",
+        "parameters": [
+          "Kingmaker.Items.ItemsCollection"
+        ],
+        "rawSignature": "20010112bea4",
+        "returnType": "void",
+        "rva": "0x001fd495",
+        "static": false,
+        "token": "0x06007b23",
+        "visibility": "public"
+      },
+      {
+        "name": "get_HoldingSlot",
+        "parameters": [],
+        "rawSignature": "200012bec8",
+        "returnType": "Kingmaker.Items.Slots.ItemSlot",
+        "rva": "0x001fd4af",
+        "static": false,
+        "token": "0x06007b26",
+        "visibility": "public"
+      },
+      {
+        "name": "set_HoldingSlot",
+        "parameters": [
+          "Kingmaker.Items.Slots.ItemSlot"
+        ],
+        "rawSignature": "20010112bec8",
+        "returnType": "void",
+        "rva": "0x001fd4b7",
+        "static": false,
+        "token": "0x06007b27",
+        "visibility": "public"
+      },
+      {
+        "name": "Dispose",
+        "parameters": [],
+        "rawSignature": "200001",
+        "returnType": "void",
+        "rva": "0x001fe238",
+        "static": false,
+        "token": "0x06007b6c",
+        "visibility": "public"
+      }
+    ],
+    "itemRestoreValue": [
+      {
+        "name": "RunAction",
+        "parameters": [],
+        "rawSignature": "200001",
+        "returnType": "void",
+        "rva": "0x00241788",
+        "static": false,
+        "token": "0x06008e26",
+        "visibility": "public"
+      }
+    ],
+    "itemSlot": [
+      {
+        "name": "CanRemoveItem",
+        "parameters": [],
+        "rawSignature": "200002",
+        "returnType": "bool",
+        "rva": "0x00202b9c",
+        "static": false,
+        "token": "0x06007c7b",
+        "visibility": "public"
+      },
+      {
+        "name": "InsertItem",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity"
+        ],
+        "rawSignature": "20010112be88",
+        "returnType": "void",
+        "rva": "0x00202bd0",
+        "static": false,
+        "token": "0x06007c7c",
+        "visibility": "public"
+      },
+      {
+        "name": "RemoveItem",
+        "parameters": [
+          "bool"
+        ],
+        "rawSignature": "20010202",
+        "returnType": "bool",
+        "rva": "0x00202d87",
+        "static": false,
+        "token": "0x06007c7d",
+        "visibility": "public"
+      },
+      {
+        "name": "RemoveItem",
+        "parameters": [
+          "bool",
+          "bool"
+        ],
+        "rawSignature": "2002020202",
+        "returnType": "bool",
+        "rva": "0x00202d94",
+        "static": false,
+        "token": "0x06007c7e",
+        "visibility": "private"
+      }
+    ],
+    "itemSwitch": [
+      {
+        "name": "RunAction",
+        "parameters": [],
+        "rawSignature": "200001",
+        "returnType": "void",
+        "rva": "0x002419cc",
+        "static": false,
+        "token": "0x06008e30",
+        "visibility": "public"
+      }
+    ],
+    "itemsCollection": [
+      {
+        "name": "Insert",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity"
+        ],
+        "rawSignature": "20010112be88",
+        "returnType": "void",
+        "rva": "0x001ffd64",
+        "static": false,
+        "token": "0x06007bd3",
+        "visibility": "public"
+      },
+      {
+        "name": "Extract",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity"
+        ],
+        "rawSignature": "20010112be88",
+        "returnType": "void",
+        "rva": "0x001ffe28",
+        "static": false,
+        "token": "0x06007bd4",
+        "visibility": "public"
+      },
+      {
+        "name": "Add",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity",
+          "bool"
+        ],
+        "rawSignature": "200212be8812be8802",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x001ffe60",
+        "static": false,
+        "token": "0x06007bd5",
+        "visibility": "public"
+      },
+      {
+        "name": "Add",
+        "parameters": [
+          "Kingmaker.Blueprints.Items.BlueprintItem",
+          "int32"
+        ],
+        "rawSignature": "20020112c000588008",
+        "returnType": "void",
+        "rva": "0x00200008",
+        "static": false,
+        "token": "0x06007bd6",
+        "visibility": "public"
+      },
+      {
+        "name": "Add",
+        "parameters": [
+          "Kingmaker.Blueprints.Items.BlueprintItem"
+        ],
+        "rawSignature": "200112be8812c0005880",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x0020005c",
+        "static": false,
+        "token": "0x06007bd7",
+        "visibility": "public"
+      },
+      {
+        "name": "Add",
+        "parameters": [
+          "System.Collections.Generic.IEnumerable`1<Kingmaker.Blueprints.Items.BlueprintItem>"
+        ],
+        "rawSignature": "200101151281d50112c0005880",
+        "returnType": "void",
+        "rva": "0x0020006c",
+        "static": false,
+        "token": "0x06007bd8",
+        "visibility": "public"
+      },
+      {
+        "name": "Add",
+        "parameters": [
+          "System.Collections.Generic.IEnumerable`1<Kingmaker.Blueprints.Loot.LootEntry>"
+        ],
+        "rawSignature": "200101151281d50112c0005858",
+        "returnType": "void",
+        "rva": "0x002000bc",
+        "static": false,
+        "token": "0x06007bd9",
+        "visibility": "public"
+      },
+      {
+        "name": "Remove",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity",
+          "int32"
+        ],
+        "rawSignature": "200212be8812be8808",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x00200110",
+        "static": false,
+        "token": "0x06007bda",
+        "visibility": "public"
+      },
+      {
+        "name": "Remove",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity"
+        ],
+        "rawSignature": "200112be8812be88",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x00200151",
+        "static": false,
+        "token": "0x06007bdb",
+        "visibility": "public"
+      },
+      {
+        "name": "Remove",
+        "parameters": [
+          "Kingmaker.Blueprints.Items.BlueprintItem",
+          "int32"
+        ],
+        "rawSignature": "20020112c000588008",
+        "returnType": "void",
+        "rva": "0x00200160",
+        "static": false,
+        "token": "0x06007bdc",
+        "visibility": "public"
+      },
+      {
+        "name": "Remove",
+        "parameters": [
+          "Kingmaker.Blueprints.Items.BlueprintItem"
+        ],
+        "rawSignature": "20010112c0005880",
+        "returnType": "void",
+        "rva": "0x00200224",
+        "static": false,
+        "token": "0x06007bdd",
+        "visibility": "public"
+      },
+      {
+        "name": "Transfer",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity",
+          "int32",
+          "Kingmaker.Items.ItemsCollection"
+        ],
+        "rawSignature": "200312be8812be880812bea4",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x002002b4",
+        "static": false,
+        "token": "0x06007be0",
+        "visibility": "public"
+      },
+      {
+        "name": "Transfer",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity",
+          "int32",
+          "Kingmaker.Items.ItemsCollection",
+          "bool"
+        ],
+        "rawSignature": "200412be8812be880812bea402",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x002002cc",
+        "static": false,
+        "token": "0x06007be2",
+        "visibility": "private"
+      },
+      {
+        "name": "Transfer",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity",
+          "Kingmaker.Items.ItemsCollection"
+        ],
+        "rawSignature": "200212be8812be8812bea4",
+        "returnType": "Kingmaker.Items.ItemEntity",
+        "rva": "0x00200304",
+        "static": false,
+        "token": "0x06007be3",
+        "visibility": "public"
+      },
+      {
+        "name": "DropItem",
+        "parameters": [
+          "Kingmaker.Items.ItemEntity"
+        ],
+        "rawSignature": "20010212be88",
+        "returnType": "bool",
+        "rva": "0x00200884",
+        "static": false,
+        "token": "0x06007bed",
+        "visibility": "public"
+      }
+    ]
+  },
+  "findings": {
+    "disposeMeaning": "ItemEntity.Dispose() only disposes the item enchantment collection. It is not the collection/equipment removal API.",
+    "repairSearch": "No type or method name for Repair, MakeWhole, Make Whole, or Mending was present. ItemRestoreValue restores missing blueprint counts by adding new items and is not item-condition repair.",
+    "replacementIdentity": "ItemsCollection.Add(BlueprintItem) and ItemSwitch.RunAction create a new ItemEntity through ItemsEntityFactory.CreateEntity. Replacement does not preserve exact runtime item identity.",
+    "safeDetachmentContract": "Call ItemEntity.Collection.Remove(item). Remove delegates to count-aware removal, Extract clears Collection and equipped HoldingSlot through ItemSlot.RemoveItem(true), updates slot index, and raises collection removal bookkeeping.",
+    "sprint27Decision": "Retain the exact firearm as empty/Wrecked and qualify a same-item token transition to empty/Broken. Do not automatically remove or replace the item."
+  },
+  "il": {
+    "ItemEntity.Dispose()": [
+      "IL_0001: ldarg.0",
+      "IL_0002: ldfld          Kingmaker.Items.ItemEntity::m_Enchantments : Kingmaker.Blueprints.Items.Ecnchantments.ItemEnchantmentCollection",
+      "IL_0007: dup",
+      "IL_0008: brtrue.s       12",
+      "IL_000a: pop",
+      "IL_000b: ret",
+      "IL_000c: callvirt       Kingmaker.Blueprints.FactCollection::Disposevoid ()",
+      "IL_0011: ret"
+    ],
+    "ItemRestoreValue.RunAction()": [
+      "IL_000c: ldarg.0",
+      "IL_000d: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue::UnitToCompare : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_0012: callvirt       Kingmaker.ElementsSystem.Evaluator`1<Kingmaker.EntitySystem.Entities.UnitEntityData>::GetValue!0 ()",
+      "IL_0017: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()",
+      "IL_001c: ldarg.0",
+      "IL_001d: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue::Item : Kingmaker.Blueprints.Items.BlueprintItem",
+      "IL_0022: callvirt       Kingmaker.Items.ItemsCollection::FilterSystem.Collections.Generic.IEnumerable`1<Kingmaker.Items.ItemEntity> (Kingmaker.Blueprints.Items.BlueprintItem)",
+      "IL_0027: ldc.i4.0",
+      "IL_0028: ldsfld         <>c::<>9__5_0 : System.Func`3<int32, Kingmaker.Items.ItemEntity, int32>",
+      "IL_0047: call           System.Linq.Enumerable::Aggregate!!1 (System.Collections.Generic.IEnumerable`1<!!0>, !!1, System.Func`3<!!1, !!0, !!1>) <MethodSpec>",
+      "IL_004c: stloc.0",
+      "IL_004d: ldarg.0",
+      "IL_004e: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue::count : int32",
+      "IL_0053: ldloc.0",
+      "IL_0054: sub",
+      "IL_0055: stloc.1",
+      "IL_0056: ldarg.0",
+      "IL_0057: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue::UnitToRestore : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_005c: callvirt       Kingmaker.ElementsSystem.Evaluator`1<Kingmaker.EntitySystem.Entities.UnitEntityData>::GetValue!0 ()",
+      "IL_0061: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()",
+      "IL_0066: ldarg.0",
+      "IL_0067: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue::Item : Kingmaker.Blueprints.Items.BlueprintItem",
+      "IL_006c: ldloc.1",
+      "IL_006d: callvirt       Kingmaker.Items.ItemsCollection::Addvoid (Kingmaker.Blueprints.Items.BlueprintItem, int32)",
+      "IL_0072: ret"
+    ],
+    "ItemSlot.RemoveItem(bool)": [
+      "IL_0001: ldarg.0",
+      "IL_0002: ldc.i4.1",
+      "IL_0003: ldarg.1",
+      "IL_0004: call           Kingmaker.Items.Slots.ItemSlot::RemoveItembool (bool, bool)",
+      "IL_0009: ret"
+    ],
+    "ItemSlot.RemoveItem(bool,bool)": [
+      "IL_000c: newobj         <>c__DisplayClass29_0::.ctorvoid ()",
+      "IL_0011: stloc.0",
+      "IL_0012: ldloc.0",
+      "IL_0013: ldarg.0",
+      "IL_0014: stfld          <>c__DisplayClass29_0::<>4__this : Kingmaker.Items.Slots.ItemSlot",
+      "IL_0019: ldarg.0",
+      "IL_001a: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity",
+      "IL_001f: brfalse.s      53",
+      "IL_0021: ldarg.0",
+      "IL_0022: callvirt       Kingmaker.Items.Slots.ItemSlot::CanRemoveItembool ()",
+      "IL_0027: brtrue.s       55",
+      "IL_0029: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()",
+      "IL_002e: call           Kingmaker.Utility.CountableFlag::op_Implicitbool (Kingmaker.Utility.CountableFlag)",
+      "IL_0033: brtrue.s       55",
+      "IL_0035: ldc.i4.0",
+      "IL_0036: ret",
+      "IL_0037: ldloc.0",
+      "IL_0038: ldarg.0",
+      "IL_0039: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity",
+      "IL_003e: stfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity",
+      "IL_0043: ldarg.0",
+      "IL_0044: call           Kingmaker.Items.Slots.ItemSlot::get_Activebool ()",
+      "IL_0049: brfalse.s      86",
+      "IL_004b: ldarg.0",
+      "IL_004c: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity",
+      "IL_0051: callvirt       Kingmaker.Items.ItemEntity::OnWillUnequipvoid ()",
+      "IL_0056: ldarg.0",
+      "IL_0057: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity",
+      "IL_005c: ldnull",
+      "IL_005d: callvirt       Kingmaker.Items.ItemEntity::set_HoldingSlotvoid (Kingmaker.Items.Slots.ItemSlot)",
+      "IL_0062: ldarg.0",
+      "IL_0063: ldnull",
+      "IL_0064: stfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity",
+      "IL_0069: ldarg.0",
+      "IL_006a: ldfld          Kingmaker.Items.Slots.ItemSlot::Owner : Kingmaker.UnitLogic.UnitDescriptor",
+      "IL_006f: callvirt       Kingmaker.UnitLogic.UnitDescriptor::get_BodyKingmaker.Items.UnitBody ()",
+      "IL_0074: ldloc.0",
+      "IL_0075: ldfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity",
+      "IL_007a: callvirt       Kingmaker.Items.UnitBody::OnItemRemovedvoid (Kingmaker.Items.ItemEntity)",
+      "IL_007f: ldarg.1",
+      "IL_0080: brfalse.s      147",
+      "IL_0082: ldloc.0",
+      "IL_0083: ldftn          <>c__DisplayClass29_0::<RemoveItem>b__0void (Kingmaker.PubSubSystem.IUnitEquipmentHandler)",
+      "IL_0089: newobj         System.Action`1<Kingmaker.PubSubSystem.IUnitEquipmentHandler>::.ctorvoid (object, native int)",
+      "IL_008e: call           Kingmaker.PubSubSystem.EventBus::RaiseEventvoid (System.Action`1<!!0>) <MethodSpec>",
+      "IL_0093: ldarg.2",
+      "IL_0094: brfalse.s      162",
+      "IL_0096: ldloc.0",
+      "IL_0097: ldfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity",
+      "IL_009c: callvirt       Kingmaker.Items.ItemEntity::TryMergeInCollectionKingmaker.Items.ItemEntity ()",
+      "IL_00a1: pop",
+      "IL_00a2: ldc.i4.1",
+      "IL_00a3: ret"
+    ],
+    "ItemSwitch.RunAction()": [
+      "IL_000c: newobj         <>c__DisplayClass5_0::.ctorvoid ()",
+      "IL_0011: stloc.0",
+      "IL_0012: ldloc.0",
+      "IL_0013: ldarg.0",
+      "IL_0014: stfld          <>c__DisplayClass5_0::<>4__this : Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch",
+      "IL_0019: ldarg.0",
+      "IL_001a: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToReplace : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment",
+      "IL_001f: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)",
+      "IL_0024: brfalse.s      51",
+      "IL_0026: ldarg.0",
+      "IL_0027: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToGive : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment",
+      "IL_002c: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)",
+      "IL_0031: brtrue.s       96",
+      "IL_0033: ldarg.0",
+      "IL_0034: ldstr          \"ItemSwitch: items not set on \"",
+      "IL_0039: ldarg.0",
+      "IL_003a: call           System.String::Concatstring (object, object)",
+      "IL_003f: call           System.Array::Empty!!0[] () <MethodSpec>",
+      "IL_0044: call           UberDebug::LogErrorvoid (UnityEngine.Object, object, object[])",
+      "IL_0049: call           Kingmaker.QA.QAModeExceptionReporter::get_InstanceKingmaker.QA.QAModeExceptionReporter ()",
+      "IL_004e: ldstr          \"ItemSwitch: items not set on \"",
+      "IL_0053: ldarg.0",
+      "IL_0054: call           System.String::Concatstring (object, object)",
+      "IL_0059: ldnull",
+      "IL_005a: callvirt       Kingmaker.QA.QAModeExceptionReporter::MaybeShowErrorvoid (string, System.Exception)",
+      "IL_005f: ret",
+      "IL_0060: ldarg.0",
+      "IL_0061: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_0066: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)",
+      "IL_006b: brtrue.s       116",
+      "IL_006d: call           Kingmaker.Designers.GameHelper::GetPlayerCharacterKingmaker.EntitySystem.Entities.UnitEntityData ()",
+      "IL_0072: br.s           127",
+      "IL_0074: ldarg.0",
+      "IL_0075: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_007a: callvirt       Kingmaker.ElementsSystem.Evaluator`1<Kingmaker.EntitySystem.Entities.UnitEntityData>::GetValue!0 ()",
+      "IL_007f: stloc.1",
+      "IL_0080: ldloc.1",
+      "IL_0081: brtrue.s       186",
+      "IL_0083: ldarg.0",
+      "IL_0084: ldstr          \"ItemSwitch: Character not found: \"",
+      "IL_0089: ldarg.0",
+      "IL_008a: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_008f: call           System.String::Concatstring (object, object)",
+      "IL_0094: call           System.Array::Empty!!0[] () <MethodSpec>",
+      "IL_0099: call           UberDebug::LogErrorvoid (UnityEngine.Object, object, object[])",
+      "IL_009e: call           Kingmaker.QA.QAModeExceptionReporter::get_InstanceKingmaker.QA.QAModeExceptionReporter ()",
+      "IL_00a3: ldstr          \"ItemSwitch: Character not found: \"",
+      "IL_00a8: ldarg.0",
+      "IL_00a9: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator",
+      "IL_00ae: call           System.String::Concatstring (object, object)",
+      "IL_00b3: ldnull",
+      "IL_00b4: callvirt       Kingmaker.QA.QAModeExceptionReporter::MaybeShowErrorvoid (string, System.Exception)",
+      "IL_00b9: ret",
+      "IL_00ba: ldloc.1",
+      "IL_00bb: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_BodyKingmaker.Items.UnitBody ()",
+      "IL_00c0: callvirt       Kingmaker.Items.UnitBody::get_EquipmentSlotsSystem.Collections.Generic.IEnumerable`1<Kingmaker.Items.Slots.ItemSlot> ()",
+      "IL_00c5: ldloc.0",
+      "IL_00c6: ldftn          <>c__DisplayClass5_0::<RunAction>b__0bool (Kingmaker.Items.Slots.ItemSlot)",
+      "IL_00cc: newobj         System.Func`2<Kingmaker.Items.Slots.ItemSlot, bool>::.ctorvoid (object, native int)",
+      "IL_00d1: call           System.Linq.Enumerable::FirstOrDefault!!0 (System.Collections.Generic.IEnumerable`1<!!0>, System.Func`2<!!0, bool>) <MethodSpec>",
+      "IL_00d6: dup",
+      "IL_00d7: brtrue.s       221",
+      "IL_00d9: pop",
+      "IL_00da: ldnull",
+      "IL_00db: br.s           226",
+      "IL_00dd: call           Kingmaker.Items.Slots.ItemSlot::get_ItemKingmaker.Items.ItemEntity ()",
+      "IL_00e2: stloc.2",
+      "IL_00e3: ldarg.0",
+      "IL_00e4: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::FailIfNotFound : bool",
+      "IL_00e9: brfalse.s      239",
+      "IL_00eb: ldloc.2",
+      "IL_00ec: brtrue.s       239",
+      "IL_00ee: ret",
+      "IL_00ef: ldloc.0",
+      "IL_00f0: ldarg.0",
+      "IL_00f1: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToGive : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment",
+      "IL_00f6: call           Kingmaker.Items.ItemsEntityFactory::CreateEntityKingmaker.Items.ItemEntity (Kingmaker.Blueprints.Items.BlueprintItem)",
+      "IL_00fb: stfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity",
+      "IL_0100: ldloc.0",
+      "IL_0101: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity",
+      "IL_0106: callvirt       Kingmaker.Items.ItemEntity::Identifyvoid ()",
+      "IL_010b: call           Kingmaker.Designers.GameHelper::GetPlayerCharacterKingmaker.EntitySystem.Entities.UnitEntityData ()",
+      "IL_0110: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()",
+      "IL_0115: ldloc.0",
+      "IL_0116: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity",
+      "IL_011b: ldc.i4.0",
+      "IL_011c: callvirt       Kingmaker.Items.ItemsCollection::AddKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, bool)",
+      "IL_0121: pop",
+      "IL_0122: ldloc.2",
+      "IL_0123: brtrue.s       296",
+      "IL_0125: ldnull",
+      "IL_0126: br.s           302",
+      "IL_0128: ldloc.2",
+      "IL_0129: call           Kingmaker.Items.ItemEntity::get_HoldingSlotKingmaker.Items.Slots.ItemSlot ()",
+      "IL_012e: dup",
+      "IL_012f: brtrue.s       334",
+      "IL_0131: pop",
+      "IL_0132: ldloc.1",
+      "IL_0133: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_BodyKingmaker.Items.UnitBody ()",
+      "IL_0138: callvirt       Kingmaker.Items.UnitBody::get_EquipmentSlotsSystem.Collections.Generic.IEnumerable`1<Kingmaker.Items.Slots.ItemSlot> ()",
+      "IL_013d: ldloc.0",
+      "IL_013e: ldftn          <>c__DisplayClass5_0::<RunAction>b__1bool (Kingmaker.Items.Slots.ItemSlot)",
+      "IL_0144: newobj         System.Func`2<Kingmaker.Items.Slots.ItemSlot, bool>::.ctorvoid (object, native int)",
+      "IL_0149: call           System.Linq.Enumerable::FirstOrDefault!!0 (System.Collections.Generic.IEnumerable`1<!!0>, System.Func`2<!!0, bool>) <MethodSpec>",
+      "IL_014e: stloc.3",
+      "IL_014f: ldloc.3",
+      "IL_0150: brfalse.s      389",
+      "IL_0152: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()",
+      "IL_0157: callvirt       Kingmaker.Utility.CountableFlag::Retainvoid ()",
+      "IL_015c: ldloc.3",
+      "IL_015d: callvirt       Kingmaker.Items.Slots.ItemSlot::get_HasItembool ()",
+      "IL_0162: brfalse.s      364",
+      "IL_0164: ldloc.3",
+      "IL_0165: ldc.i4.1",
+      "IL_0166: callvirt       Kingmaker.Items.Slots.ItemSlot::RemoveItembool (bool)",
+      "IL_016b: pop",
+      "IL_016c: ldloc.3",
+      "IL_016d: ldloc.0",
+      "IL_016e: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity",
+      "IL_0173: callvirt       Kingmaker.Items.Slots.ItemSlot::InsertItemvoid (Kingmaker.Items.ItemEntity)",
+      "IL_0178: leave.s        415",
+      "IL_017a: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()",
+      "IL_017f: callvirt       Kingmaker.Utility.CountableFlag::Releasevoid ()",
+      "IL_0184: endfinally",
+      "IL_0185: ldstr          \"Cannot equip {0}: not slot available\"",
+      "IL_018a: ldloc.0",
+      "IL_018b: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity",
+      "IL_0190: call           System.String::Formatstring (string, object)",
+      "IL_0195: call           System.Array::Empty!!0[] () <MethodSpec>",
+      "IL_019a: call           UberDebug::LogErrorvoid (object, object[])",
+      "IL_019f: ldloc.2",
+      "IL_01a0: brfalse.s      439",
+      "IL_01a2: ldarg.0",
+      "IL_01a3: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::DestroyReplaced : bool",
+      "IL_01a8: brfalse.s      439",
+      "IL_01aa: ldloc.1",
+      "IL_01ab: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()",
+      "IL_01b0: ldloc.2",
+      "IL_01b1: callvirt       Kingmaker.Items.ItemsCollection::RemoveKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity)",
+      "IL_01b6: pop",
+      "IL_01b7: ret"
+    ],
+    "ItemsCollection.Add(BlueprintItem)": [
+      "IL_0001: ldarg.0",
+      "IL_0002: ldarg.1",
+      "IL_0003: call           Kingmaker.Items.ItemsEntityFactory::CreateEntityKingmaker.Items.ItemEntity (Kingmaker.Blueprints.Items.BlueprintItem)",
+      "IL_0008: ldc.i4.0",
+      "IL_0009: call           Kingmaker.Items.ItemsCollection::AddKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, bool)",
+      "IL_000e: ret"
+    ],
+    "ItemsCollection.Extract(ItemEntity)": [
+      "IL_0001: ldarg.0",
+      "IL_0002: ldfld          Kingmaker.Items.ItemsCollection::m_Items : System.Collections.Generic.List`1<Kingmaker.Items.ItemEntity>",
+      "IL_0007: ldarg.1",
+      "IL_0008: callvirt       System.Collections.Generic.List`1<Kingmaker.Items.ItemEntity>::Removebool (!0)",
+      "IL_000d: pop",
+      "IL_000e: ldarg.1",
+      "IL_000f: ldnull",
+      "IL_0010: callvirt       Kingmaker.Items.ItemEntity::set_Collectionvoid (Kingmaker.Items.ItemsCollection)",
+      "IL_0015: call           Kingmaker.Items.ItemsCollection::get_DoNotRemoveFromSlotbool ()",
+      "IL_001a: brtrue.s       47",
+      "IL_001c: ldarg.1",
+      "IL_001d: callvirt       Kingmaker.Items.ItemEntity::get_HoldingSlotKingmaker.Items.Slots.ItemSlot ()",
+      "IL_0022: dup",
+      "IL_0023: brtrue.s       40",
+      "IL_0025: pop",
+      "IL_0026: br.s           47",
+      "IL_0028: ldc.i4.1",
+      "IL_0029: callvirt       Kingmaker.Items.Slots.ItemSlot::RemoveItembool (bool)",
+      "IL_002e: pop",
+      "IL_002f: ldarg.1",
+      "IL_0030: ldc.i4.0",
+      "IL_0031: callvirt       Kingmaker.Items.ItemEntity::UpdateSlotIndexint32 (bool)",
+      "IL_0036: pop",
+      "IL_0037: ret"
+    ],
+    "ItemsCollection.Remove(ItemEntity)": [
+      "IL_0001: ldarg.0",
+      "IL_0002: ldarg.1",
+      "IL_0003: ldarg.1",
+      "IL_0004: callvirt       Kingmaker.Items.ItemEntity::get_Countint32 ()",
+      "IL_0009: call           Kingmaker.Items.ItemsCollection::RemoveKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, int32)",
+      "IL_000e: ret"
+    ],
+    "ItemsCollection.Remove(ItemEntity,int32)": [
+      "IL_000c: ldarg.1",
+      "IL_000d: callvirt       Kingmaker.Items.ItemEntity::get_IsStackablebool ()",
+      "IL_0012: brfalse.s      38",
+      "IL_0014: ldarg.1",
+      "IL_0015: callvirt       Kingmaker.Items.ItemEntity::get_Countint32 ()",
+      "IL_001a: ldarg.2",
+      "IL_001b: beq.s          38",
+      "IL_001d: ldarg.1",
+      "IL_001e: ldarg.2",
+      "IL_001f: callvirt       Kingmaker.Items.ItemEntity::SplitKingmaker.Items.ItemEntity (int32)",
+      "IL_0024: br.s           39",
+      "IL_0026: ldarg.1",
+      "IL_0027: stloc.0",
+      "IL_0028: ldloc.0",
+      "IL_0029: callvirt       Kingmaker.Items.ItemEntity::get_CollectionKingmaker.Items.ItemsCollection ()",
+      "IL_002e: brfalse.s      55",
+      "IL_0030: ldarg.0",
+      "IL_0031: ldloc.0",
+      "IL_0032: call           Kingmaker.Items.ItemsCollection::Extractvoid (Kingmaker.Items.ItemEntity)",
+      "IL_0037: ldarg.0",
+      "IL_0038: ldarg.1",
+      "IL_0039: ldarg.2",
+      "IL_003a: callvirt       Kingmaker.Items.ItemsCollection::OnItemsRemovedvoid (Kingmaker.Items.ItemEntity, int32)",
+      "IL_003f: ldloc.0",
+      "IL_0040: ret"
+    ]
+  },
+  "nameSearch": {
+    "ItemRestoreValue": {
+      "methodNames": [],
+      "typeNames": [
+        "Kingmaker.Designers.EventConditionActionSystem.Actions.ItemRestoreValue"
+      ]
+    },
+    "ItemSwitch": {
+      "methodNames": [],
+      "typeNames": [
+        "Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch"
+      ]
+    },
+    "Make Whole": {
+      "methodNames": [],
+      "typeNames": []
+    },
+    "MakeWhole": {
+      "methodNames": [],
+      "typeNames": []
+    },
+    "Mending": {
+      "methodNames": [],
+      "typeNames": []
+    },
+    "Repair": {
+      "methodNames": [],
+      "typeNames": []
+    }
+  },
+  "schemaVersion": 1
+}

@@ -1,0 +1,28 @@
+{
+  "binaries": [
+    "KingmakerGunslinger/KingmakerGunslinger.dll"
+  ],
+  "binaryCount": 1,
+  "crcValidationPassed": true,
+  "entries": [
+    "KingmakerGunslinger/CHANGELOG.md",
+    "KingmakerGunslinger/Info.json",
+    "KingmakerGunslinger/KingmakerGunslinger.dll",
+    "KingmakerGunslinger/LICENSE",
+    "KingmakerGunslinger/README.md",
+    "KingmakerGunslinger/SMOKE-TEST-GUIDE.md",
+    "KingmakerGunslinger/blueprints/blueprints.json",
+    "KingmakerGunslinger/blueprints/blueprints.schema.json"
+  ],
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.26-misfire-burst-smoke-test.zip",
+  "modDllSha256": "04cf26cbd1e2e70662b9fb169508730052f314b312b881366cde4e0f20124512",
+  "pathSafetyPassed": true,
+  "privateReferencesRedistributed": false,
+  "readyForKingmakerSmokeTest": true,
+  "runtimeAcceptancePassed": false,
+  "schemaVersion": 1,
+  "sha256": "3f8bcd2aa22554b87ba2537506a5ffa74b288b966a99873827c4aa0416132bf3",
+  "sizeBytes": 154918,
+  "strictAllowlistPassed": true
+}

@@ -1,0 +1,61 @@
+{
+  "milestone": "0.0.29-s29-complete-maintenance-loop",
+  "version": "0.0.29",
+  "requiredFiles": {
+    "Info.json": true,
+    "KingmakerGunslinger.csproj": true,
+    "BlueprintManifest": true,
+    "Readme": true,
+    "License": true,
+    "Changelog": true,
+    "BuildInfo": true,
+    "SourceArchive": "assembled and externally validated",
+    "SmokeTestGuide": true,
+    "BlueprintBootstrap": true,
+    "FirearmRepairKitBlueprints": true,
+    "OverhaulAbilityBlueprints": true,
+    "RepairAbilityBlueprints": true,
+    "OverhaulTransaction": true,
+    "RepairTransaction": true,
+    "MaintenanceQualificationHarness": true,
+    "Sprint29Report": true,
+    "Sprint30EntryCriteria": true,
+    "AcceleratedRoadmap": true
+  },
+  "compilerSettings": {
+    "TargetFramework": "net47",
+    "LangVersion": "7.3",
+    "PlatformTarget": "AnyCPU",
+    "TreatWarningsAsErrors": true,
+    "Nullable": false,
+    "ImplicitUsings": false
+  },
+  "blueprintManifest": {
+    "schemaVersion": 1,
+    "guidPattern": "32 lowercase hexadecimal characters",
+    "duplicateGuidCount": 0,
+    "duplicateSymbolCount": 0,
+    "entryCount": 15,
+    "activeEntryCount": 14,
+    "reservedEntryCount": 1,
+    "registrationCount": 14
+  },
+  "sprint29": {
+    "completeMaintenanceLoop": true,
+    "ordinaryRepairAbility": true,
+    "exactItemSameReferenceVerification": true,
+    "atomicStateAndInventoryRollback": true,
+    "deterministicQualificationHarness": true,
+    "immediateRegressionRunner": true,
+    "testCount": 599,
+    "testRuns": 3,
+    "testFailures": 0,
+    "deterministicCompile": true,
+    "standalonePackageEntries": 8,
+    "standaloneBinaryCount": 1,
+    "privateReferencesRedistributed": false,
+    "sprint28RuntimeAcceptancePassed": true,
+    "runtimeAcceptancePending": true,
+    "sprint30EntryApproved": false
+  }
+}

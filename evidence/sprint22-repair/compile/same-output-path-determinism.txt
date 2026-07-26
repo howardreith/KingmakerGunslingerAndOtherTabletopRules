@@ -1,0 +1,6 @@
+First same-output-path DLL SHA-256: 36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463
+Second same-output-path DLL SHA-256: 36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463
+DLL byte-identical: yes
+First same-output-path PDB SHA-256: b76d3cb21da6d21154d756a95266cadb6e9c06b2790576be0b53b10a62ff2ee7
+Second same-output-path PDB SHA-256: b76d3cb21da6d21154d756a95266cadb6e9c06b2790576be0b53b10a62ff2ee7
+PDB byte-identical: yes

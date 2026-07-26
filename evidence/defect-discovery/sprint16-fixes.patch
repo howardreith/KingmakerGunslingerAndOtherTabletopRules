@@ -1,0 +1,137 @@
+diff -ruN /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemId.cs /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemId.cs
+--- /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemId.cs	2026-07-13 00:00:00.000000000 +0000
++++ /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemId.cs	2026-07-13 20:00:03.410589000 +0000
+@@ -81,7 +81,7 @@
+ 
+         public bool Equals(FirearmItemId other)
+         {
+-            return other != null && _value.Equals(other._value);
++            return !ReferenceEquals(other, null) && _value.Equals(other._value);
+         }
+ 
+         public override bool Equals(object obj)
+@@ -96,7 +96,7 @@
+ 
+         public int CompareTo(FirearmItemId other)
+         {
+-            return other == null
++            return ReferenceEquals(other, null)
+                 ? 1
+                 : string.Compare(_canonical, other._canonical, StringComparison.Ordinal);
+         }
+@@ -113,7 +113,7 @@
+                 return true;
+             }
+ 
+-            return left != null && left.Equals(right);
++            return !ReferenceEquals(left, null) && left.Equals(right);
+         }
+ 
+         public static bool operator !=(FirearmItemId left, FirearmItemId right)
+diff -ruN /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemStateService.cs /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemStateService.cs
+--- /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemStateService.cs	2026-07-13 00:00:00.000000000 +0000
++++ /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Firearms/FirearmItemStateService.cs	2026-07-13 20:00:03.411306732 +0000
+@@ -58,7 +58,7 @@
+             if (!_repository.TryGet(firearm.ItemInstance, out repositorySnapshot))
+             {
+                 snapshot = null;
+-                rejectionReason = "The exact firearm item has neither a save-owned vault record nor process-local diagnostic metadata yet.";
++                rejectionReason = "The exact firearm item has no existing firearm-state entry.";
+                 return false;
+             }
+ 
+diff -ruN /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Rules/FirearmArmorClassService.cs /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Rules/FirearmArmorClassService.cs
+--- /mnt/data/kmg16orig/KingmakerGunslinger/src/KingmakerGunslinger/Rules/FirearmArmorClassService.cs	2026-07-13 00:00:00.000000000 +0000
++++ /mnt/data/kmg16src/KingmakerGunslinger/src/KingmakerGunslinger/Rules/FirearmArmorClassService.cs	2026-07-13 20:01:45.308716875 +0000
+@@ -42,14 +42,21 @@
+                 return Ordinary(request, 0, "advanced-firearm-not-implemented");
+             }
+ 
++            if (double.IsNaN(request.DistanceMeters) ||
++                double.IsInfinity(request.DistanceMeters) ||
++                request.DistanceMeters < 0d)
++            {
++                return Ordinary(request, 0, "invalid-range-input");
++            }
++
+             int rangeIncrement;
+             try
+             {
+                 double incrementMeters =
+                     request.Definition.RangeIncrementFeet * MetersPerFoot;
+-                double tolerantDistance = request.DistanceMeters > 0d
+-                    ? Math.Max(0d, request.DistanceMeters - RangeBoundaryToleranceMeters)
+-                    : 0d;
++                double tolerantDistance = Math.Max(
++                    0d,
++                    request.DistanceMeters - RangeBoundaryToleranceMeters);
+                 rangeIncrement = FirearmRangeMath.CalculateIncrement(
+                     tolerantDistance,
+                     incrementMeters);
+diff -ruN /mnt/data/kmg16orig/KingmakerGunslinger/tests/KingmakerGunslinger.DomainTests/Program.cs /mnt/data/kmg16src/KingmakerGunslinger/tests/KingmakerGunslinger.DomainTests/Program.cs
+--- /mnt/data/kmg16orig/KingmakerGunslinger/tests/KingmakerGunslinger.DomainTests/Program.cs	2026-07-13 00:00:00.000000000 +0000
++++ /mnt/data/kmg16src/KingmakerGunslinger/tests/KingmakerGunslinger.DomainTests/Program.cs	2026-07-13 20:06:42.636502949 +0000
+@@ -334,6 +334,8 @@
+             Case("ac.already-applied", ArmorClassAlreadyAppliedIsSkipped),
+             Case("ac.advanced-fails-closed", ArmorClassAdvancedFirearmFailsClosed),
+             Case("ac.invalid-distance", ArmorClassInvalidDistanceFailsClosed),
++            Case("ac.negative-distance", ArmorClassNegativeDistanceFailsClosed),
++            Case("ac.infinite-distance", ArmorClassInfiniteDistanceFailsClosed),
+             Case("ac.overflow", ArmorClassOverflowFailsClosed),
+             Case("ac-access.participants", ArmorClassAccessReadsParticipants),
+             Case("ac-access.distance", ArmorClassAccessReadsDistance),
+@@ -1886,7 +1888,7 @@
+             string reason;
+             Assertions.False(service.TryGetExisting(item, out snapshot, out reason), "Missing existing state unexpectedly resolved.");
+             Assertions.Equal(null, snapshot, "Missing existing snapshot must be null.");
+-            Assertions.True(reason.Contains("no process-local state entry"), "Missing-state reason mismatch.");
++            Assertions.True(reason.Contains("no existing firearm-state entry"), "Missing-state reason mismatch.");
+             Assertions.Equal(0L, repository.CreatedEntryCount, "TryGetExisting must not create.");
+         }
+ 
+@@ -2668,7 +2670,7 @@
+                 item,
+                 FirearmStateTokenCatalog.LoadedNormalTokenId,
+                 FirearmStateTokenCatalog.BrokenEmptyTokenId);
+-            Assertions.Throws<InvalidOperationException>(
++            Assertions.Throws<InvalidDataException>(
+                 () => repository.GetOrCreate(item),
+                 "Duplicate legacy tokens were accepted.");
+             Assertions.Equal(2, tokenStore.ReadTokenIds(item).Count, "Duplicate token evidence was changed.");
+@@ -3900,6 +3902,36 @@
+             Assertions.Equal("invalid-range-input", decision.Reason, "Invalid-distance reason mismatch.");
+         }
+ 
++        private static void ArmorClassNegativeDistanceFailsClosed()
++        {
++            FirearmArmorClassDecision decision = SelectArmorClass(
++                true,
++                1,
++                EarlyMusket(),
++                -0.01d,
++                20,
++                12,
++                20,
++                false);
++            Assertions.False(decision.UsesTouchArmorClass, "A negative distance must retain ordinary AC.");
++            Assertions.Equal("invalid-range-input", decision.Reason, "Negative-distance reason mismatch.");
++        }
++
++        private static void ArmorClassInfiniteDistanceFailsClosed()
++        {
++            FirearmArmorClassDecision decision = SelectArmorClass(
++                true,
++                1,
++                EarlyMusket(),
++                double.PositiveInfinity,
++                20,
++                12,
++                20,
++                false);
++            Assertions.False(decision.UsesTouchArmorClass, "An infinite distance must retain ordinary AC.");
++            Assertions.Equal("invalid-range-input", decision.Reason, "Infinite-distance reason mismatch.");
++        }
++
+         private static void ArmorClassOverflowFailsClosed()
+         {
+             FirearmArmorClassDecision decision = SelectArmorClass(

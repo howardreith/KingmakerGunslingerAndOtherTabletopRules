@@ -1,0 +1,9 @@
+intended_use,blueprint_name,asset_id,expected_kind,evidence_grade,notes
+musket weapon type clone,HeavyCrossbow,36d0551b8a28587438a47fcbbf53c083,BlueprintWeaponType,confirmed public Kingmaker candidate,Verify runtime type and referenced projectile/visuals locally
+musket item clone,StandardHeavyCrossbow,19a5092244dcf99478dcd73c974828b1,BlueprintItemWeapon,confirmed public Kingmaker candidate,"Clone, never mutate vanilla"
+compact fallback type,LightCrossbow,d525e7a6d8d5aa648a976ac41194b8d0,BlueprintWeaponType,confirmed public Kingmaker candidate,Two-handed vanilla behavior; not proof of pistol support
+compact fallback item,StandardLightCrossbow,511c97c1ea111444aa186b1a58496664,BlueprintItemWeapon,confirmed public Kingmaker candidate,Clone candidate
+engine adapter category,HandCrossbow,,WeaponCategory enum,strong Kingmaker inference,Confirm enum value and collision/use before adoption
+projectile lead,unknown,0f083f2598b3e6441992ebadbc0325aa,BlueprintProjectile,Wrath-derived / public lead,Do not use until local identity inspection
+early vendor,Oleg inventory,,vendor table,unresolved,Narrative candidate only; exact blueprint ID pending
+capital vendor,Hassuf or suitable capital merchant,,vendor table,unresolved,Narrative candidate only; exact blueprint ID pending

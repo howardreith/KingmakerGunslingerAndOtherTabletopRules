@@ -1,0 +1,28 @@
+Kingmaker Gunslinger Sprint 24 Broken-reload repair qualification results
+Version: 0.0.24.1-s24-broken-reload-repair
+
+PASS: supplied 0.0.24 runtime evidence preserved and classified as a bounded Sprint 24 failure.
+PASS: Normal -> Broken natural-roll misfire transition was observed in Kingmaker before repair.
+PASS: root cause isolated to stale Normal-only checks in reload availability, transaction rejection, and result validation.
+PASS: empty Broken firearms now load one round while preserving condition=Broken.
+PASS: loaded Broken firearms remain AlreadyLoaded; Wrecked firearms remain rejected before mutation.
+PASS: atomic inventory behavior still consumes exactly one Black Powder Charge and one Lead Ball only on a committed reload.
+PASS: exact-item state verification and rollback behavior retained.
+PASS: portable Sprint 24 repair source invariant validator.
+PASS: 12 stable blueprint IDs, 11 active and 1 reserved.
+PASS: no loose DLL, EXE, PDB, MDB, or private reference in the source tree.
+PASS: exact Kingmaker 2.1.7b private-reference Release compile.
+PASS: .NET Framework 4.7, C# 7.3, AnyCPU, deterministic, warnings as errors.
+PASS: two same-output-path compiles produced byte-identical DLL and PDB files.
+PASS: 503 dependency-free tests executed three times with zero failures.
+PASS: all three test outputs were byte-identical.
+PASS: strict standalone UMM ZIP contains 8 files and exactly one binary.
+PASS: standalone package CRC, safe-path, version, blueprint, DLL-hash, and private-reference checks.
+
+DLL SHA-256: 674e732edd0a27727bb27eb950749b8f72428addd00e9c8996160decd88f11b4
+PDB SHA-256: de034a38f6b3443f10e408ccf063d9ab7f6eec6806a316d1f1e99555eb623aa0
+Test output SHA-256: cf1f9b44687a228abf972eb6196e66fb1bee1343f75e62015faaabe0bebe3bc3
+Standalone ZIP SHA-256: 5f3a9caf325339132dc1d03482af0b48a2292fce9dfa6a3548f4c5d6b307fa7f
+
+Artifact classification: READY FOR KINGMAKER — Sprint 24 Broken-reload repair smoke test.
+Runtime acceptance: PENDING. Sprint 25 remains blocked until SMOKE-TEST-GUIDE-0.0.24.1.md passes for this exact package.

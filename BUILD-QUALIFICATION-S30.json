@@ -1,0 +1,22 @@
+{
+  "modVersion": "0.0.30",
+  "informationalVersion": "0.0.30-s30-generic-firearm-actions",
+  "milestone": "Sprint 30 generic definition-driven firearm actions",
+  "sprint29RuntimeDecision": "AcceptedByContractReuse",
+  "configuration": "Release",
+  "targetFramework": ".NET Framework 4.7",
+  "languageVersion": "7.3",
+  "warningsAsErrors": true,
+  "declaredTests": 611,
+  "testRuns": 3,
+  "testFailures": 0,
+  "repeatedTestOutputByteIdentical": true,
+  "exactReferenceCompileRuns": 2,
+  "sameOutputPathDllByteIdentical": true,
+  "sameOutputPathPdbByteIdentical": true,
+  "modDllSha256": "63779862c6e1cde2acb0199b96e10643f957a9d96a323ff4babbe4703398cd3c",
+  "modPdbSha256": "2ec629e4fac363e1306cff4ae0a0001583ebd50ed42aff11dc8aae48dde818ed",
+  "privateReferencesRedistributed": false,
+  "runtimeAcceptance": "Pending focused 0.0.30 Kingmaker gate",
+  "readyForKingmakerSmokeTest": true
+}

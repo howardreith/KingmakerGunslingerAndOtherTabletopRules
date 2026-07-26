@@ -1,0 +1,20 @@
+{
+  "compileExitCode": 0,
+  "compilerSha256": "f1b8f79f1761971b82a6d8a8f3fe82c45c6000b33a0a707fca532daebfca0740",
+  "declaredTests": 501,
+  "failures": 0,
+  "languageVersion": "7.3",
+  "referenceAssemblies": {
+    "System.Core.dll": "d2570c87ba2f6b7e9d577cf2f9c864bd523a34dcb13165122b2dc0eef8cf0278",
+    "System.dll": "e31e3988eaff4fdc9cb28ca6ba0980f7204c5be0cb79e2dc4e56682833fd55da",
+    "mscorlib.dll": "d33b4c6f04319d41348244f2506bb787abe7afa0e2ee464693082817d4124de1"
+  },
+  "repeatedOutputIdentical": true,
+  "runs": 3,
+  "schemaVersion": 1,
+  "sourceSetSha256": "ec2736605927d99ac7eaa3356d86de8b7c0f3951ed2f1a51c90958ad5056a15d",
+  "targetFrameworkReferenceSurface": ".NET Framework 4.7",
+  "testExecutableSha256": "78e0ad85a5a4482ca0f2ff1e6b460c48ce636ea89561ab856fdcea32fea35e91",
+  "testOutputSha256": "3d097f8716ea6c976d5c23e1ed7b0fb5ef47c47edc334c8c98e4228ffea1f079",
+  "warningsAsErrors": true
+}

@@ -1,0 +1,132 @@
+{
+  "$schema": "blueprints.schema.json",
+  "schemaVersion": 1,
+  "namespace": "KMG",
+  "policy": {
+    "runtimeGenerationAllowed": false,
+    "format": "lowercase 32-character hexadecimal",
+    "retiredIdsRemainReserved": true
+  },
+  "entries": [
+    {
+      "symbol": "KMG.Diagnostic.InitializedFeature",
+      "guid": "6294cc6964914ea7bf450d5ef82fadde",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 4",
+      "notes": "Invisible, component-free diagnostic feature proving manifest-backed blueprint registration."
+    },
+    {
+      "symbol": "KMG.Firearms.FirearmProficiency",
+      "guid": "5148f69223044799800b65732b6cabea",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 7",
+      "notes": "Hidden shared firearm-proficiency fact used by firearm equipment restrictions and future class progression."
+    },
+    {
+      "symbol": "KMG.Test.TestMusketWeaponType",
+      "guid": "6e499550b44c41b3a1ef0693904a46b8",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 6",
+      "notes": "Heavy Crossbow-derived Test Musket weapon type carrying exactly one FirearmDefinitionComponent."
+    },
+    {
+      "symbol": "KMG.Test.TestMusketItem",
+      "guid": "09641295ceea4c558400c43df2ddf1f9",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 6",
+      "notes": "Standard Heavy Crossbow-derived Test Musket item referencing the custom weapon type and requiring Firearm Proficiency; manual development insertion only."
+    },
+    {
+      "symbol": "KMG.Test.TouchAcEnchantment",
+      "guid": "6070ed43137d4b7a81d2c112e37b4c0f",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "reserved",
+      "milestone": "Sprint 9",
+      "notes": "Attaches the touch-AC rule adapter to test firearms."
+    },
+    {
+      "symbol": "KMG.Test.ReloadAbility",
+      "guid": "19e24b74331f437282077ce58e739d0f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 21",
+      "notes": "Active full-round personal extraordinary ability that atomically loads one equipped empty Test Musket with one Black Powder Charge and one Lead Ball."
+    },
+    {
+      "symbol": "KMG.Test.LoadedStateToken",
+      "guid": "c11a8965dbdd43f08080f4dc51a29113",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Sprint 12",
+      "notes": "Active item-owned no-op state token encoding a capacity-one Test Musket loaded with basic lead-ball ammunition in Normal condition. This is part of the current per-firearm state carrier."
+    },
+    {
+      "symbol": "KMG.Test.BlackPowderItem",
+      "guid": "ea966bf998a647cf97b0ed92f71c4b7d",
+      "plannedType": "BlueprintItem",
+      "status": "active",
+      "milestone": "Sprint 20",
+      "notes": "Stackable, inert Black Powder Charge inventory item cloned from native Diamond Dust for basic ammunition transactions."
+    },
+    {
+      "symbol": "KMG.Test.LeadBulletItem",
+      "guid": "55c29771445947d685dba9e1ead46a42",
+      "plannedType": "BlueprintItem",
+      "status": "active",
+      "milestone": "Sprint 20",
+      "notes": "Stackable, inert Lead Ball inventory item cloned from native Diamond Dust for basic ammunition transactions. The stable symbol retains its earlier LeadBullet wording."
+    },
+    {
+      "symbol": "KMG.Test.BrokenEmptyStateToken",
+      "guid": "5513972dd2624c9f86bc29c850dac736",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Sprint 12",
+      "notes": "Active item-owned no-op state token encoding an empty Broken Test Musket. This is part of the current per-firearm state carrier."
+    },
+    {
+      "symbol": "KMG.Test.BrokenLoadedStateToken",
+      "guid": "f5fa460f93214458b6f59db24b0dfd12",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Sprint 12",
+      "notes": "Active item-owned no-op state token encoding a Broken Test Musket loaded with basic lead-ball ammunition. This is part of the current per-firearm state carrier."
+    },
+    {
+      "symbol": "KMG.Test.WreckedStateToken",
+      "guid": "877f65ca3a404f2e98af528b7fb1a2fb",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Sprint 12",
+      "notes": "Active item-owned no-op state token encoding a Wrecked empty Test Musket. This is part of the current per-firearm state carrier."
+    },
+    {
+      "symbol": "KMG.Test.FirearmRepairKitItem",
+      "guid": "f2b564234b8a4b0d88a7a46128556bef",
+      "plannedType": "BlueprintItem",
+      "status": "active",
+      "milestone": "Sprint 28",
+      "notes": "Stackable inert Firearm Repair Kit consumed by the full-round exact-item Wrecked-to-Broken overhaul ability."
+    },
+    {
+      "symbol": "KMG.Test.OverhaulAbility",
+      "guid": "8a0ba821382640b58ec9ff168ed778a5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 28",
+      "notes": "Full-round personal extraordinary ability that consumes one Firearm Repair Kit and changes exactly one equipped empty Wrecked Test Musket to empty Broken without item replacement."
+    },
+    {
+      "symbol": "KMG.Test.RepairAbility",
+      "guid": "c914b3c0786463b7a1e17e47447ee5b1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 29",
+      "notes": "Full-round personal extraordinary ability that consumes one Firearm Repair Kit and changes exactly one equipped empty Broken Test Musket to empty Normal without loading or replacing the item."
+    }
+  ]
+}

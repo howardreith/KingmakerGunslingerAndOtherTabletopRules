@@ -1,0 +1,23 @@
+{
+  "assemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "compileExitCodes": [
+    0,
+    0
+  ],
+  "compilerSha256": "8e2e5dc38efc607b7e29eca4c51dd17b51d3e6688f6cb861f97b5d458c573f50",
+  "compilerVersion": "3.11.0-4.21403.6 (ae1fff34)",
+  "configuration": "Release",
+  "deterministicCompilerMode": true,
+  "dllByteIdentical": true,
+  "languageVersion": "7.3",
+  "modDllSha256": "7f252d8abc4a6eed61d69403296e1481f4e30a70ddb90456374538e18481c936",
+  "modPdbSha256": "d6cadb851f2ace372d2f8890c963d785c7fae345f3ebd425b53f60838dbda0b8",
+  "pdbByteIdentical": true,
+  "platformTarget": "AnyCPU",
+  "privateReferencesRedistributed": false,
+  "sameOutputPathCompileRuns": 2,
+  "schemaVersion": 1,
+  "sourceValidatorPassedBeforeCompile": true,
+  "targetFramework": ".NET Framework 4.7",
+  "warningsAsErrors": true
+}

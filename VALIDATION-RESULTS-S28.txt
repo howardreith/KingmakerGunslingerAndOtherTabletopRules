@@ -1,0 +1,31 @@
+Kingmaker Gunslinger Sprint 28 validation results
+Version: 0.0.28-s28-player-facing-overhaul
+
+PASS source invariants
+PASS 14 stable blueprint IDs: 13 active, 1 reserved
+PASS exact repair-kit and Overhaul ability IDs
+PASS exact-item Wrecked-only selection and ambiguity rejection
+PASS delivery-time full-round ability wiring
+PASS one-kit verified transaction and rollback policy
+PASS same-item identity/revision runtime-result policy
+PASS 569 declared dependency-free tests
+PASS exact net47/C# 7.3 test compile, warnings as errors
+PASS 569 tests x 3 runs; failures=0
+PASS repeated test output byte-identical
+PASS exact Kingmaker 2.1.7b private-reference Release compile x2
+PASS DLL byte-identical across same-output-path compiles
+PASS PDB byte-identical across same-output-path compiles
+PASS strict standalone eight-entry UMM package
+PASS exactly one packaged binary
+PASS private runtime/compiler/framework references not redistributed
+PASS Sprint 27 runtime evidence preserved
+PASS explicit 0.0.28 live test instructions
+PASS accelerated Sprint 29-38 roadmap and risk-based cadence recorded
+
+DLL SHA-256: 9b589fddfe931092d0aff298c1648a71df03e27d9aa24a8f79b24a4f2993bd0b
+PDB SHA-256: c9ac0ea9fb381af5b3acb8ae31afe8e5195141e40eeb0a456f8a09797bfca91c
+Repeated test output SHA-256: cb7a23830a7c7d2240020b72cc087adba7737298e708487835c424f94757501d
+Standalone UMM ZIP SHA-256: 8f1907c53085d4dc2592d21120d0a05eaef0745d295cf35fd65634098f2d5022
+
+Classification: READY FOR KINGMAKER — runtime acceptance pending.
+Sprint 29 remains blocked until the exact 0.0.28 live gate passes.

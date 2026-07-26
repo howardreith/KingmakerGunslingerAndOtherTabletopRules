@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
+  <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E5714D82-4EA9-4CC2-939E-F2E58AF521E5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KingmakerGunslinger</RootNamespace>
+    <AssemblyName>KingmakerGunslinger</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <KingmakerManagedDir Condition=" '$(KingmakerManagedDir)' == '' and '$(KingmakerInstallDir)' != '' ">$(KingmakerInstallDir)\Kingmaker_Data\Managed</KingmakerManagedDir>
+    <UnityModManagerDir Condition=" '$(UnityModManagerDir)' == '' and '$(KingmakerManagedDir)' != '' ">$(KingmakerManagedDir)\UnityModManager</UnityModManagerDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\artifacts\bin\Debug\KingmakerGunslinger\</OutputPath>
+    <IntermediateOutputPath>..\..\artifacts\obj\Debug\KingmakerGunslinger\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\artifacts\bin\Release\KingmakerGunslinger\</OutputPath>
+    <IntermediateOutputPath>..\..\artifacts\obj\Release\KingmakerGunslinger\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+
+    <Reference Include="0Harmony12">
+      <HintPath>$(UnityModManagerDir)\0Harmony12.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(KingmakerManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(KingmakerManagedDir)\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(KingmakerManagedDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityModManager">
+      <HintPath>$(UnityModManagerDir)\UnityModManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Actions\ExactEquippedFirearmContext.cs" />
+    <Compile Include="Actions\ExactEquippedFirearmResolver.cs" />
+    <Compile Include="Actions\FirearmActionDecision.cs" />
+    <Compile Include="Actions\FirearmActionKind.cs" />
+    <Compile Include="Actions\FirearmActionPolicy.cs" />
+    <Compile Include="Ammunition\BasicAmmunitionComponent.cs" />
+    <Compile Include="Ammunition\BasicAmmunitionInventorySnapshot.cs" />
+    <Compile Include="Ammunition\BasicAmmunitionTransactionException.cs" />
+    <Compile Include="Ammunition\BasicAmmunitionTransactionResult.cs" />
+    <Compile Include="Ammunition\BasicAmmunitionTransactionService.cs" />
+    <Compile Include="Ammunition\IBasicAmmunitionInventory.cs" />
+    <Compile Include="Ammunition\KingmakerBasicAmmunitionInventory.cs" />
+    <Compile Include="Blueprints\BasicAmmunitionBlueprints.cs" />
+    <Compile Include="Blueprints\BlueprintItemAccess.cs" />
+    <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
+    <Compile Include="Blueprints\BlueprintCloneService.cs" />
+    <Compile Include="Blueprints\BlueprintId.cs" />
+    <Compile Include="Blueprints\BlueprintLibraryLookup.cs" />
+    <Compile Include="Blueprints\BlueprintManifest.cs" />
+    <Compile Include="Blueprints\BlueprintRegistry.cs" />
+    <Compile Include="Blueprints\DiagnosticBlueprints.cs" />
+    <Compile Include="Blueprints\LocalizationService.cs" />
+    <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
+    <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmStateTokenBlueprints.cs" />
+    <Compile Include="Blueprints\TestMusketBlueprints.cs" />
+    <Compile Include="Blueprints\WeaponBlueprintAccess.cs" />
+    <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
+    <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
+    <Compile Include="Bootstrap\ModContext.cs" />
+    <Compile Include="Bootstrap\ModLogger.cs" />
+    <Compile Include="Development\DevelopmentControls.cs" />
+    <Compile Include="Development\ImmediateModeGui.cs" />
+    <Compile Include="Development\DevelopmentUi.cs" />
+    <Compile Include="Development\KingmakerDevelopmentBridge.cs" />
+    <Compile Include="Development\ReflectionAccess.cs" />
+    <Compile Include="Development\PersistenceEvidenceData.cs" />
+    <Compile Include="Development\PersistenceEvidenceRecorder.cs" />
+    <Compile Include="Development\PersistenceRuntimePreflightProbe.cs" />
+    <Compile Include="Diagnostics\CombatTraceCorrelator.cs" />
+    <Compile Include="Diagnostics\CombatTraceDecision.cs" />
+    <Compile Include="Diagnostics\CombatTraceFormatter.cs" />
+    <Compile Include="Diagnostics\CombatTraceObservation.cs" />
+    <Compile Include="Diagnostics\CombatTracePatches.cs" />
+    <Compile Include="Diagnostics\CombatTracePhase.cs" />
+    <Compile Include="Diagnostics\CombatTraceRecord.cs" />
+    <Compile Include="Diagnostics\CombatTraceRuntime.cs" />
+    <Compile Include="Diagnostics\CombatTraceSettings.cs" />
+    <Compile Include="Diagnostics\CombatTraceSnapshot.cs" />
+    <Compile Include="Diagnostics\CombatTraceStage.cs" />
+    <Compile Include="Diagnostics\FirearmMarkerLookup.cs" />
+    <Compile Include="Diagnostics\FirearmMarkerSnapshot.cs" />
+    <Compile Include="Diagnostics\FirearmRangeMath.cs" />
+    <Compile Include="Diagnostics\RuleEventPatchContract.cs" />
+    <Compile Include="Diagnostics\RuleEventPatchTarget.cs" />
+    <Compile Include="Diagnostics\RuleEventSnapshotReader.cs" />
+    <Compile Include="Firearms\AmmunitionId.cs" />
+    <Compile Include="Firearms\FirearmCondition.cs" />
+    <Compile Include="Firearms\FirearmDefinition.cs" />
+    <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
+    <Compile Include="Firearms\FirearmDefinitions.cs" />
+    <Compile Include="Firearms\FirearmDomainProbe.cs" />
+    <Compile Include="Firearms\FirearmProficiencyRestriction.cs" />
+    <Compile Include="Firearms\FirearmItemId.cs" />
+    <Compile Include="Firearms\IFirearmItemIdentityProvider.cs" />
+    <Compile Include="Firearms\IFirearmStateIdentityRecordStore.cs" />
+    <Compile Include="Firearms\IdentityBackedFirearmStateVaultStore.cs" />
+    <Compile Include="Firearms\FirearmStateIdentityMigrationSnapshot.cs" />
+    <Compile Include="Firearms\FirearmStateIdentityMigrationConflictException.cs" />
+    <Compile Include="Firearms\KingmakerFirearmItemIdentityProvider.cs" />
+    <Compile Include="Firearms\FirearmItemStateService.cs" />
+    <Compile Include="Firearms\FirearmItemStateSnapshot.cs" />
+    <Compile Include="Firearms\FirearmRuntimeState.cs" />
+    <Compile Include="Firearms\FirearmState.cs" />
+    <Compile Include="Firearms\FirearmStateRepositorySnapshot.cs" />
+    <Compile Include="Firearms\FirearmStateCodec.cs" />
+    <Compile Include="Firearms\FirearmStateData.cs" />
+    <Compile Include="Firearms\FirearmStateDataUtility.cs" />
+    <Compile Include="Firearms\FirearmStateMachine.cs" />
+    <Compile Include="Firearms\FirearmStateRules.cs" />
+    <Compile Include="Firearms\FirearmStateTransitionException.cs" />
+    <Compile Include="Firearms\FirearmStateTokenCatalog.cs" />
+    <Compile Include="Firearms\FirearmStateTokenComponent.cs" />
+    <Compile Include="Firearms\FirearmStateTokenDefinition.cs" />
+    <Compile Include="Firearms\IFirearmRuntimeItemResolver.cs" />
+    <Compile Include="Firearms\IFirearmStateTokenStore.cs" />
+    <Compile Include="Firearms\IFirearmStateVaultStore.cs" />
+    <Compile Include="Firearms\IFirearmStateRepository.cs" />
+    <Compile Include="Firearms\KingmakerFirearmRuntimeItemResolver.cs" />
+    <Compile Include="Firearms\KingmakerFirearmStateTokenStore.cs" />
+    <Compile Include="Firearms\KingmakerFirearmStateVaultPartProvider.cs" />
+    <Compile Include="Firearms\KingmakerFirearmStateVaultStore.cs" />
+    <Compile Include="Firearms\ReferenceIdentityComparer.cs" />
+    <Compile Include="Firearms\ResolvedFirearmItem.cs" />
+    <Compile Include="Firearms\WeakFirearmStateRepository.cs" />
+    <Compile Include="Firearms\TokenBackedFirearmStateRepository.cs" />
+    <Compile Include="Firearms\FirearmStateMigrationSnapshot.cs" />
+    <Compile Include="Firearms\MigratingFirearmStateRepository.cs" />
+    <Compile Include="Firearms\UnitPartFirearmStateVault.cs" />
+    <Compile Include="Firearms\VaultBackedFirearmStateRepository.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationAction.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationDecision.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationDiagnostics.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationPatch.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationRuntime.cs" />
+    <Compile Include="Firearms\FirearmStateTokenReconciliationService.cs" />
+    <Compile Include="Firing\FirearmDischargeResult.cs" />
+    <Compile Include="Firing\FirearmDischargeRuntime.cs" />
+    <Compile Include="Firing\FirearmDischargeRuntimeDiagnostics.cs" />
+    <Compile Include="Firing\FirearmDischargeService.cs" />
+    <Compile Include="Firing\FirearmDischargeStatus.cs" />
+    <Compile Include="Firing\ReferenceEventGate.cs" />
+    <Compile Include="Explosions\FirearmExplosionDecision.cs" />
+    <Compile Include="Explosions\FirearmExplosionDisposition.cs" />
+    <Compile Include="Explosions\FirearmExplosionRuntime.cs" />
+    <Compile Include="Explosions\FirearmExplosionRuntimeDiagnostics.cs" />
+    <Compile Include="Explosions\FirearmExplosionService.cs" />
+    <Compile Include="Explosions\FirearmExplosionTargetCandidate.cs" />
+    <Compile Include="Explosions\FirearmExplosionTargetPlan.cs" />
+    <Compile Include="Explosions\FirearmExplosionTargetPlanService.cs" />
+    <Compile Include="Explosions\FirearmExplosionTargetResult.cs" />
+    <Compile Include="Misfires\FirearmMisfireConditionDecision.cs" />
+    <Compile Include="Misfires\FirearmMisfireConditionService.cs" />
+    <Compile Include="Misfires\FirearmMisfireConditionTransition.cs" />
+    <Compile Include="Misfires\FirearmMisfireDecision.cs" />
+    <Compile Include="Misfires\FirearmMisfirePatchContract.cs" />
+    <Compile Include="Misfires\FirearmMisfirePatches.cs" />
+    <Compile Include="Misfires\FirearmMisfirePatchTarget.cs" />
+    <Compile Include="Misfires\FirearmMisfireRuntime.cs" />
+    <Compile Include="Misfires\FirearmMisfireRuntimeDiagnostics.cs" />
+    <Compile Include="Misfires\FirearmMisfireService.cs" />
+    <Compile Include="Misfires\ForcedNaturalRollQueue.cs" />
+    <Compile Include="Firearms\FirearmEra.cs" />
+    <Compile Include="Firearms\FirearmKind.cs" />
+    <Compile Include="Firearms\ReloadProfile.cs" />
+    <Compile Include="Reloading\FirearmItemReloadStateStore.cs" />
+    <Compile Include="Reloading\FirearmReloadResult.cs" />
+    <Compile Include="Reloading\FirearmReloadStatus.cs" />
+    <Compile Include="Reloading\FirearmReloadTransactionException.cs" />
+    <Compile Include="Reloading\FirearmReloadTransactionService.cs" />
+    <Compile Include="Reloading\IFirearmReloadStateStore.cs" />
+    <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
+    <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
+    <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
+    <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
+    <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />
+    <Compile Include="Recovery\FirearmOverhaulAvailability.cs" />
+    <Compile Include="Recovery\FirearmOverhaulResult.cs" />
+    <Compile Include="Recovery\FirearmOverhaulStatus.cs" />
+    <Compile Include="Recovery\FirearmOverhaulTransactionException.cs" />
+    <Compile Include="Recovery\FirearmOverhaulTransactionService.cs" />
+    <Compile Include="Recovery\IFirearmOverhaulStateStore.cs" />
+    <Compile Include="Recovery\IRepairKitInventory.cs" />
+    <Compile Include="Recovery\KingmakerRepairKitInventory.cs" />
+    <Compile Include="Recovery\OverhaulRuntimeDiagnostics.cs" />
+    <Compile Include="Recovery\OverhaulTestMusketAbilityLogic.cs" />
+    <Compile Include="Recovery\OverhaulTestMusketRuntime.cs" />
+    <Compile Include="Recovery\RepairKitInventorySnapshot.cs" />
+    <Compile Include="Recovery\FirearmOverhaulRuntimeResult.cs" />
+    <Compile Include="Persistence\PersistenceEvidenceEvaluation.cs" />
+    <Compile Include="Persistence\PersistenceEvidenceEvaluator.cs" />
+    <Compile Include="Persistence\PersistenceEvidenceObservation.cs" />
+    <Compile Include="Persistence\PersistenceEvidenceSeverity.cs" />
+    <Compile Include="Persistence\PersistenceEvidenceStatus.cs" />
+    <Compile Include="Persistence\PersistenceGateDecision.cs" />
+    <Compile Include="Persistence\PersistenceMatrixCatalog.cs" />
+    <Compile Include="Persistence\PersistenceMatrixStepDefinition.cs" />
+    <Compile Include="Persistence\PersistenceRuntimePreflightCheck.cs" />
+    <Compile Include="Persistence\PersistenceRuntimePreflightEvaluator.cs" />
+    <Compile Include="Persistence\PersistenceRuntimePreflightProbeData.cs" />
+    <Compile Include="Persistence\PersistenceRuntimePreflightReport.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
+    <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
+    <Compile Include="Recovery\FirearmItemRepairStateStore.cs" />
+    <Compile Include="Recovery\FirearmRepairAvailability.cs" />
+    <Compile Include="Recovery\FirearmRepairResult.cs" />
+    <Compile Include="Recovery\FirearmRepairRuntimeResult.cs" />
+    <Compile Include="Recovery\FirearmRepairStatus.cs" />
+    <Compile Include="Recovery\FirearmRepairTransactionException.cs" />
+    <Compile Include="Recovery\FirearmRepairTransactionService.cs" />
+    <Compile Include="Recovery\IFirearmRepairStateStore.cs" />
+    <Compile Include="Recovery\RepairRuntimeDiagnostics.cs" />
+    <Compile Include="Recovery\RepairTestMusketAbilityLogic.cs" />
+    <Compile Include="Recovery\RepairTestMusketRuntime.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationBaseline.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationObservation.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationReport.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationService.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationSession.cs" />
+    <Compile Include="Qualification\MaintenanceQualificationStage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\FirearmArmorClassDecision.cs" />
+    <Compile Include="Rules\FirearmArmorClassRequest.cs" />
+    <Compile Include="Rules\FirearmArmorClassRuntime.cs" />
+    <Compile Include="Rules\FirearmArmorClassService.cs" />
+    <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Info.json">
+      <Link>Info.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="..\..\blueprints\blueprints.json">
+      <Link>blueprints\blueprints.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\blueprints\blueprints.schema.json">
+      <Link>blueprints\blueprints.schema.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(KingmakerInstallDir)' != '' ">
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Assembly-CSharp.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Assembly-CSharp-firstpass.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Newtonsoft.Json.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AnimationModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
+    <RequiredKingmakerAssembly Include="$(UnityModManagerDir)\UnityModManager.dll" />
+    <RequiredKingmakerAssembly Include="$(UnityModManagerDir)\0Harmony12.dll" />
+  </ItemGroup>
+
+  <Target Name="ValidateKingmakerReferences" BeforeTargets="PrepareForBuild" Condition=" '$(DesignTimeBuild)' != 'true' ">
+    <Error Condition=" '$(KingmakerInstallDir)' == '' " Text="KingmakerInstallDir is not configured. Copy GamePath.props.example to GamePath.props, edit the path, or pass /p:KingmakerInstallDir=&quot;C:\Path\To\Pathfinder Kingmaker&quot;." />
+    <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('$(KingmakerInstallDir)') " Text="KingmakerInstallDir does not exist: $(KingmakerInstallDir)" />
+    <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('%(RequiredKingmakerAssembly.Identity)') " Text="Required Kingmaker/UMM assembly is missing: %(RequiredKingmakerAssembly.Identity)" />
+  </Target>
+
+  <Target Name="VerifyOwnedBuildOutput" AfterTargets="Build">
+    <ItemGroup>
+      <ForbiddenOutputAssembly Include="$(TargetDir)0Harmony12.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)Assembly-CSharp.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)Assembly-CSharp-firstpass.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)Newtonsoft.Json.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)UnityEngine.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)UnityEngine.*.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)UnityModManager.dll" />
+    </ItemGroup>
+    <Error Condition="Exists('%(ForbiddenOutputAssembly.Identity)')" Text="A non-project assembly was copied into the build output: %(ForbiddenOutputAssembly.Identity). All game/Unity/UMM references must remain Private=False." />
+  </Target>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

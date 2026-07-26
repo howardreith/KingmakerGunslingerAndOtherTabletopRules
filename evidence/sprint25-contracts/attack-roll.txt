@@ -1,0 +1,178 @@
+TYPE Kingmaker.RuleSystem.Rules.RuleAttackRoll base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats weaponStats, System.Int32 attackBonusPenalty)
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 attackBonusPenalty)
+  METHOD private instance System.Void <OnTrigger>b__170_0(Kingmaker.PubSubSystem.IAttackHandler h)
+  METHOD public instance System.Void ConsumeMirrorImageIfNecessary()
+  METHOD public instance System.Void IncreaseMissChance(System.Int32 value)
+  METHOD public instance System.Boolean IsSuccessRoll(System.Int32 d20)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance System.Void SetAttackBonusPenalty(System.Int32 penalty)
+  METHOD public instance System.Void SetFake(Kingmaker.RuleSystem.Rules.AttackResult result)
+  METHOD private instance System.Boolean TryOvercomeTargetConcealmentAndMissChance()
+  METHOD public instance System.Void TryParry(Kingmaker.EntitySystem.Entities.UnitEntityData unit, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 penalty)
+  METHOD public instance System.Void UseSneakAttack()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleCalculateAC get_ACRule()
+  METHOD public instance System.Boolean get_AddedToCombatLog()
+  METHOD public instance System.Int32 get_AttackBonus()
+  METHOD public instance System.Int32 get_AttackBonusPenalty()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus get_AttackBonusRule()
+  METHOD public instance Kingmaker.UI.Log.LogItemData get_AttackLogEntry()
+  METHOD public instance Kingmaker.RuleSystem.AttackType get_AttackType()
+  METHOD public instance System.Boolean get_AutoCriticalConfirmation()
+  METHOD public instance System.Boolean get_AutoCriticalThreat()
+  METHOD public instance System.Boolean get_AutoHit()
+  METHOD public instance System.Boolean get_AutoMiss()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleConcealmentCheck get_ConcealmentCheck()
+  METHOD public instance System.Int32 get_CriticalConfirmationBonus()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_CriticalConfirmationRoll()
+  METHOD public instance System.Boolean get_DoNotProvokeAttacksOfOpportunity()
+  METHOD public instance System.Int32 get_FortificationChance()
+  METHOD public instance System.Boolean get_FortificationNegatesCriticalHit()
+  METHOD public instance System.Boolean get_FortificationNegatesSneakAttack()
+  METHOD public instance System.Boolean get_FortificationOvercomed()
+  METHOD public instance System.Int32 get_FortificationRoll()
+  METHOD public instance System.Int32 get_HitMirrorImageIndex()
+  METHOD public instance System.Boolean get_IgnoreConcealment()
+  METHOD public instance System.Boolean get_ImmuneToCriticalHit()
+  METHOD public instance System.Boolean get_ImmuneToSneakAttack()
+  METHOD public instance System.Boolean get_IsCriticalConfirmed()
+  METHOD public instance System.Boolean get_IsCriticalRoll()
+  METHOD public instance System.Boolean get_IsHit()
+  METHOD public instance System.Boolean get_IsSneakAttack()
+  METHOD public instance System.Boolean get_IsSneakAttackUsed()
+  METHOD public instance System.Boolean get_IsTargetFlatFooted()
+  METHOD public instance System.Int32 get_MissChance()
+  METHOD public instance System.Int32 get_MissChanceRoll()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData get_Parry()
+  METHOD public instance Kingmaker.UI.Log.LogItemData get_ParryLogEntry()
+  METHOD public instance System.Int32 get_PreciseStrike()
+  METHOD public instance Kingmaker.RuleSystem.Rules.AttackResult get_Result()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_Roll()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon get_RuleAttackWithWeapon()
+  METHOD public instance System.Boolean get_SuspendCombatLog()
+  METHOD public instance System.Int32 get_TargetAC()
+  METHOD public instance System.Int32 get_TargetCriticalAC()
+  METHOD public instance System.Boolean get_TargetUseFortification()
+  METHOD public instance Kingmaker.Items.ItemEntityWeapon get_Weapon()
+  METHOD private instance System.Void set_ACRule(Kingmaker.RuleSystem.Rules.RuleCalculateAC value)
+  METHOD public instance System.Void set_AddedToCombatLog(System.Boolean value)
+  METHOD private instance System.Void set_AttackBonus(System.Int32 value)
+  METHOD private instance System.Void set_AttackBonusPenalty(System.Int32 value)
+  METHOD private instance System.Void set_AttackBonusRule(Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus value)
+  METHOD public instance System.Void set_AttackLogEntry(Kingmaker.UI.Log.LogItemData value)
+  METHOD public instance System.Void set_AttackType(Kingmaker.RuleSystem.AttackType value)
+  METHOD public instance System.Void set_AutoCriticalConfirmation(System.Boolean value)
+  METHOD public instance System.Void set_AutoCriticalThreat(System.Boolean value)
+  METHOD public instance System.Void set_AutoHit(System.Boolean value)
+  METHOD public instance System.Void set_AutoMiss(System.Boolean value)
+  METHOD private instance System.Void set_ConcealmentCheck(Kingmaker.RuleSystem.Rules.RuleConcealmentCheck value)
+  METHOD public instance System.Void set_CriticalConfirmationBonus(System.Int32 value)
+  METHOD private instance System.Void set_CriticalConfirmationRoll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_DoNotProvokeAttacksOfOpportunity(System.Boolean value)
+  METHOD private instance System.Void set_FortificationChance(System.Int32 value)
+  METHOD private instance System.Void set_FortificationNegatesCriticalHit(System.Boolean value)
+  METHOD private instance System.Void set_FortificationNegatesSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_FortificationRoll(System.Int32 value)
+  METHOD private instance System.Void set_HitMirrorImageIndex(System.Int32 value)
+  METHOD public instance System.Void set_IgnoreConcealment(System.Boolean value)
+  METHOD public instance System.Void set_ImmuneToCriticalHit(System.Boolean value)
+  METHOD public instance System.Void set_ImmuneToSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_IsCriticalConfirmed(System.Boolean value)
+  METHOD private instance System.Void set_IsCriticalRoll(System.Boolean value)
+  METHOD private instance System.Void set_IsSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_IsSneakAttackUsed(System.Boolean value)
+  METHOD private instance System.Void set_IsTargetFlatFooted(System.Boolean value)
+  METHOD private instance System.Void set_MissChance(System.Int32 value)
+  METHOD private instance System.Void set_MissChanceRoll(System.Int32 value)
+  METHOD private instance System.Void set_Parry(Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData value)
+  METHOD public instance System.Void set_ParryLogEntry(Kingmaker.UI.Log.LogItemData value)
+  METHOD public instance System.Void set_PreciseStrike(System.Int32 value)
+  METHOD private instance System.Void set_Result(Kingmaker.RuleSystem.Rules.AttackResult value)
+  METHOD private instance System.Void set_Roll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_RuleAttackWithWeapon(Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon value)
+  METHOD public instance System.Void set_SuspendCombatLog(System.Boolean value)
+  METHOD private instance System.Void set_TargetAC(System.Int32 value)
+  METHOD private instance System.Void set_TargetCriticalAC(System.Int32 value)
+  PROP Kingmaker.RuleSystem.Rules.RuleCalculateAC ACRule [public get, private set]
+  PROP System.Boolean AddedToCombatLog [public get, public set]
+  PROP System.Int32 AttackBonus [public get, private set]
+  PROP System.Int32 AttackBonusPenalty [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus AttackBonusRule [public get, private set]
+  PROP Kingmaker.UI.Log.LogItemData AttackLogEntry [public get, public set]
+  PROP Kingmaker.RuleSystem.AttackType AttackType [public get, public set]
+  PROP System.Boolean AutoCriticalConfirmation [public get, public set]
+  PROP System.Boolean AutoCriticalThreat [public get, public set]
+  PROP System.Boolean AutoHit [public get, public set]
+  PROP System.Boolean AutoMiss [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.RuleConcealmentCheck ConcealmentCheck [public get, private set]
+  PROP System.Int32 CriticalConfirmationBonus [public get, public set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry CriticalConfirmationRoll [public get, private set]
+  PROP System.Boolean DoNotProvokeAttacksOfOpportunity [public get, public set]
+  PROP System.Int32 FortificationChance [public get, private set]
+  PROP System.Boolean FortificationNegatesCriticalHit [public get, private set]
+  PROP System.Boolean FortificationNegatesSneakAttack [public get, private set]
+  PROP System.Boolean FortificationOvercomed [public get]
+  PROP System.Int32 FortificationRoll [public get, private set]
+  PROP System.Int32 HitMirrorImageIndex [public get, private set]
+  PROP System.Boolean IgnoreConcealment [public get, public set]
+  PROP System.Boolean ImmuneToCriticalHit [public get, public set]
+  PROP System.Boolean ImmuneToSneakAttack [public get, public set]
+  PROP System.Boolean IsCriticalConfirmed [public get, private set]
+  PROP System.Boolean IsCriticalRoll [public get, private set]
+  PROP System.Boolean IsHit [public get]
+  PROP System.Boolean IsSneakAttack [public get, private set]
+  PROP System.Boolean IsSneakAttackUsed [public get, private set]
+  PROP System.Boolean IsTargetFlatFooted [public get, private set]
+  PROP System.Int32 MissChance [public get, private set]
+  PROP System.Int32 MissChanceRoll [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData Parry [public get, private set]
+  PROP Kingmaker.UI.Log.LogItemData ParryLogEntry [public get, public set]
+  PROP System.Int32 PreciseStrike [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.AttackResult Result [public get, private set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry Roll [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon RuleAttackWithWeapon [public get, public set]
+  PROP System.Boolean SuspendCombatLog [public get, public set]
+  PROP System.Int32 TargetAC [public get, private set]
+  PROP System.Int32 TargetCriticalAC [public get, private set]
+  PROP System.Boolean TargetUseFortification [public get]
+  PROP Kingmaker.Items.ItemEntityWeapon Weapon [public get]
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleCalculateAC <ACRule>k__BackingField
+  FIELD private instance System.Boolean <AddedToCombatLog>k__BackingField
+  FIELD private instance System.Int32 <AttackBonus>k__BackingField
+  FIELD private instance System.Int32 <AttackBonusPenalty>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus <AttackBonusRule>k__BackingField
+  FIELD private instance Kingmaker.UI.Log.LogItemData <AttackLogEntry>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.AttackType <AttackType>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalConfirmation>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalThreat>k__BackingField
+  FIELD private instance System.Boolean <AutoHit>k__BackingField
+  FIELD private instance System.Boolean <AutoMiss>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleConcealmentCheck <ConcealmentCheck>k__BackingField
+  FIELD private instance System.Int32 <CriticalConfirmationBonus>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <CriticalConfirmationRoll>k__BackingField
+  FIELD private instance System.Boolean <DoNotProvokeAttacksOfOpportunity>k__BackingField
+  FIELD private instance System.Int32 <FortificationChance>k__BackingField
+  FIELD private instance System.Boolean <FortificationNegatesCriticalHit>k__BackingField
+  FIELD private instance System.Boolean <FortificationNegatesSneakAttack>k__BackingField
+  FIELD private instance System.Int32 <FortificationRoll>k__BackingField
+  FIELD private instance System.Int32 <HitMirrorImageIndex>k__BackingField
+  FIELD private instance System.Boolean <IgnoreConcealment>k__BackingField
+  FIELD private instance System.Boolean <ImmuneToCriticalHit>k__BackingField
+  FIELD private instance System.Boolean <ImmuneToSneakAttack>k__BackingField
+  FIELD private instance System.Boolean <IsCriticalConfirmed>k__BackingField
+  FIELD private instance System.Boolean <IsCriticalRoll>k__BackingField
+  FIELD private instance System.Boolean <IsSneakAttack>k__BackingField
+  FIELD private instance System.Boolean <IsSneakAttackUsed>k__BackingField
+  FIELD private instance System.Boolean <IsTargetFlatFooted>k__BackingField
+  FIELD private instance System.Int32 <MissChance>k__BackingField
+  FIELD private instance System.Int32 <MissChanceRoll>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData <Parry>k__BackingField
+  FIELD private instance Kingmaker.UI.Log.LogItemData <ParryLogEntry>k__BackingField
+  FIELD private instance System.Int32 <PreciseStrike>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.AttackResult <Result>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <Roll>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon <RuleAttackWithWeapon>k__BackingField
+  FIELD private instance System.Boolean <SuspendCombatLog>k__BackingField
+  FIELD private instance System.Int32 <TargetAC>k__BackingField
+  FIELD private instance System.Int32 <TargetCriticalAC>k__BackingField
+  FIELD public instance Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats WeaponStats readonly

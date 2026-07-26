@@ -1,0 +1,6 @@
+Sprint 26 source invariant validation passed with final evidence.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=159; tests=97.
+Declared dependency-free tests: 540 unique.
+Second misfire: native 5-foot LOS burst, one fresh Reflex/damage pair per unique qualified unit, exact wielder once and last.
+Private runtime/compiler/framework binaries in source tree: none.

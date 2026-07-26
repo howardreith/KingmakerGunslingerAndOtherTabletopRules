@@ -1,0 +1,187 @@
+{
+  "assembly": {
+    "assemblyIdentity": "Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "relativePath": "Managed/Assembly-CSharp.dll",
+    "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+  },
+  "contracts": [
+    {
+      "kind": "constructor",
+      "member": ".ctor",
+      "parameters": [
+        "Kingmaker.EntitySystem.Entities.UnitEntityData",
+        "Kingmaker.EntitySystem.Stats.SavingThrowType",
+        "System.Int32"
+      ],
+      "static": false,
+      "type": "Kingmaker.RuleSystem.Rules.RuleSavingThrow",
+      "visibility": "public"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "D20",
+      "propertyType": "Kingmaker.RuleSystem.RulebookEvent+RollEntry",
+      "setter": "private",
+      "type": "Kingmaker.RuleSystem.Rules.RuleSavingThrow"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "RollResult",
+      "propertyType": "System.Int32",
+      "type": "Kingmaker.RuleSystem.Rules.RuleSavingThrow"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "IsPassed",
+      "propertyType": "System.Boolean",
+      "type": "Kingmaker.RuleSystem.Rules.RuleSavingThrow"
+    },
+    {
+      "kind": "constructor",
+      "member": ".ctor",
+      "parameters": [
+        "Kingmaker.EntitySystem.Entities.UnitEntityData",
+        "Kingmaker.EntitySystem.Entities.UnitEntityData",
+        "Kingmaker.RuleSystem.Rules.Damage.DamageBundle"
+      ],
+      "static": false,
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage",
+      "visibility": "public"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "AttackRoll",
+      "propertyType": "Kingmaker.RuleSystem.Rules.RuleAttackRoll",
+      "setter": "public",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "DisablePrecisionDamage",
+      "propertyType": "System.Boolean",
+      "setter": "public",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "HalfBecauseSavingThrow",
+      "propertyType": "System.Boolean",
+      "setter": "public",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "DamageBeforeDifficulty",
+      "propertyType": "System.Int32",
+      "setter": "private",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "DamageWithoutReduction",
+      "propertyType": "System.Int32",
+      "setter": "private",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "Damage",
+      "propertyType": "System.Int32",
+      "setter": "private",
+      "type": "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage"
+    },
+    {
+      "kind": "method",
+      "member": "Trigger<TEvent>",
+      "parameters": [
+        "TEvent"
+      ],
+      "returnType": "TEvent",
+      "static": true,
+      "type": "Kingmaker.RuleSystem.Rulebook",
+      "visibility": "public"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "Damage",
+      "propertyType": "Kingmaker.RuleSystem.DiceFormula",
+      "type": "Kingmaker.Items.ItemEntityWeapon"
+    },
+    {
+      "kind": "inherited-property",
+      "member": "Wielder",
+      "type": "Kingmaker.Items.ItemEntityWeapon",
+      "usage": "weapon.Wielder.Unit resolves the current UnitEntityData and compiled against the exact private reference surface"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "Size",
+      "propertyType": "Kingmaker.Enums.Size",
+      "type": "Kingmaker.Items.ItemEntityWeapon"
+    },
+    {
+      "kind": "inherited-property",
+      "member": "Blueprint",
+      "propertyType": "Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon",
+      "type": "Kingmaker.Items.ItemEntityWeapon",
+      "usage": "weapon.Blueprint compiled against the exact private reference surface"
+    },
+    {
+      "getter": "public",
+      "kind": "property",
+      "member": "DamageType",
+      "propertyType": "Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription",
+      "type": "Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon"
+    },
+    {
+      "kind": "method",
+      "member": "CreateDamage",
+      "parameters": [
+        "Kingmaker.RuleSystem.DiceFormula",
+        "System.Int32"
+      ],
+      "returnType": "Kingmaker.RuleSystem.Rules.Damage.BaseDamage",
+      "static": false,
+      "type": "Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription",
+      "visibility": "public"
+    },
+    {
+      "kind": "constructor",
+      "member": ".ctor",
+      "parameters": [
+        "Kingmaker.Items.ItemEntityWeapon",
+        "Kingmaker.Enums.Size",
+        "Kingmaker.RuleSystem.Rules.Damage.BaseDamage"
+      ],
+      "static": false,
+      "type": "Kingmaker.RuleSystem.Rules.Damage.DamageBundle",
+      "visibility": "public"
+    }
+  ],
+  "gameVersion": "Pathfinder: Kingmaker 2.1.7b",
+  "implementationBoundary": {
+    "broadFallbackAdded": false,
+    "conditionTransitionCommittedBeforeDamage": true,
+    "damage": "weapon.Blueprint.DamageType.CreateDamage(weapon.Damage, 0); new DamageBundle(weapon, weapon.Size, baseDamage); new RuleDealDamage(exactWielder, exactWielder, bundle); HalfBecauseSavingThrow=save.IsPassed; DisablePrecisionDamage=true; AttackRoll=attackRoll; Rulebook.Trigger(damage)",
+    "globalPatchesAdded": false,
+    "nearbyUnitEnumerationAdded": false,
+    "save": "new RuleSavingThrow(exactWielder, SavingThrowType.Reflex, 12); Rulebook.Trigger(save)"
+  },
+  "inspectionNotes": {
+    "attackRollCorrelation": "RuleDealDamage.AttackRoll is set explicitly to the exact firearm RuleAttackRoll; precision damage is disabled.",
+    "halfBecauseSavingThrow": "Exact RuleCalculateDamage IL honors RuleDealDamage.HalfBecauseSavingThrow during native damage calculation.",
+    "ruleAttackWithWeaponCreateDamageRejectedForThisSlice": "Its exact IL constructs damage from the original attack RuleCalculateWeaponStats descriptions, which may contain attack- or target-specific additions. Sprint 25 instead constructs one base weapon damage entry from the exact runtime weapon dice and blueprint damage type."
+  },
+  "schemaVersion": 1
+}

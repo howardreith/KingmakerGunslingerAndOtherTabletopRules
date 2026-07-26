@@ -1,0 +1,6 @@
+IL_0001: ldarg.0
+IL_0002: ldarg.1
+IL_0003: call           Kingmaker.Items.ItemsEntityFactory::CreateEntityKingmaker.Items.ItemEntity (Kingmaker.Blueprints.Items.BlueprintItem)
+IL_0008: ldc.i4.0
+IL_0009: call           Kingmaker.Items.ItemsCollection::AddKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, bool)
+IL_000e: ret

@@ -1,0 +1,4 @@
+Sprint 24 standalone UMM package validation passed.
+Archive SHA-256: bc67df1ceda974dc44c8b8407798d919575facad1226d64ed969c698d96f8d4d
+DLL SHA-256: eeb238615d53a45e6f8d8f55797c5b47918319b96b543d81c0b6dbe9fd33f040
+Entries: 8; binaries: project-owned KingmakerGunslinger.dll only.

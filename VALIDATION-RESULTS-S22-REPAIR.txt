@@ -1,0 +1,74 @@
+Kingmaker Gunslinger — Sprint 22 repair validation results
+Version: 0.0.22.1-s22-attack-hook-repair
+
+0.0.22 runtime decision: FAIL — SPRINT 23 BLOCKED
+- Quicksave no longer removed the loaded-state token: pass for the supplied in-process observation.
+- Loaded attack consumed exactly one round: fail; the exact Test Musket remained at rounds=1.
+- Reload became available after firing: fail.
+- Firearm attack enforcement observed/fired counters advanced: fail; both remained zero.
+- Native token reconciliation remained fault-free: fail; faults=10, last on ItemEntityShield.
+- Complete save/desktop-restart/load durability: not established for 0.0.22.
+- Native Heavy Crossbow negative control: not established.
+
+Evidence-driven repair scope: PASS
+- Exact private Assembly-CSharp.dll inspection found one declared void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext) on RuleAttackRoll, RuleAttackWithWeapon, and RuleCalculateAC.
+- The rejected 0.0.22 zero-argument matcher would accept none of those methods.
+- The repair requires exactly one non-static, non-generic, void OnTrigger with exactly one parameter of the exact RulebookEventContext type.
+- ItemEntity.ApplyEnchantments() remains the exact native reconciliation target.
+- Only ItemEntityWeapon enters firearm-state token inspection; non-weapons receive empty invocation state.
+- The item-owned inert BlueprintWeaponEnchantment token carrier remains authoritative.
+- The runtime-rejected ItemEntityWeapon.UniqueId vault was not revived.
+- No natural-roll, force-next-roll, misfire, explosion, automatic reload, or Gunslinger-class behavior was added.
+
+Portable source validation: PASS
+- Stable blueprint IDs: 12
+- Active blueprints: 11
+- Reserved blueprints: 1
+- Main-project compile items: 139 unique
+- Test-project compile items: 83 unique
+- Declared dependency-free cases: 455 unique
+- Original Sprint 22 discharge/reconciliation cases: 27
+- Exact patch-target repair cases: 9
+- SMOKE-TEST-GUIDE.md is byte-identical to SMOKE-TEST-GUIDE-0.0.22.1.md
+- Four supplied runtime screenshots are preserved with verified SHA-256 hashes.
+- Source tree contains no loose private runtime/compiler references.
+- Source invariant validator: PASS
+
+Exact private-reference Release compile: PASS
+- Target: supplied Pathfinder: Kingmaker 2.1.7b / Unity Mod Manager 0.32.4 / Harmony 1.2.0.1 reference set
+- Private reference manifest: all 10 compiler inputs matched expected sizes and SHA-256 hashes
+- Target framework reference surface: .NET Framework 4.7
+- C# language version: 7.3
+- Configuration: Release / AnyCPU
+- Warnings as errors: enabled
+- Deterministic compiler mode: enabled
+- Same-output-path DLL comparison: byte-identical
+- Same-output-path PDB comparison: byte-identical
+- Compiler exit code: 0
+- Compiler stderr: empty
+- Main DLL SHA-256: 36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463
+- PDB SHA-256: b76d3cb21da6d21154d756a95266cadb6e9c06b2790576be0b53b10a62ff2ee7
+- Blueprint manifest SHA-256: af56f2a35bd05e055e8feee1e996d37abcb20b76efb90762784f31ccfe933337
+
+Dependency-free regression tests: PASS
+- Declared/executed: 455
+- Runs: 3
+- Failures: 0
+- Repeated stdout byte-identical: yes
+- Test executable SHA-256: c613af5456939c225952014acb5b3927ead3f199628f731eb8d360baf48ec042
+- Repeated output SHA-256: 5e004b6f22411a12e4d4706b4b7c21822e43ffbfb3a47b1d57310429339d9148
+
+Standalone UMM install-package validation: PASS
+- Archive: KingmakerGunslinger-0.0.22.1-attack-hook-repair-smoke-test.zip
+- Single KingmakerGunslinger root
+- Info.json version: 0.0.22.1
+- Archive entries: 8
+- Exactly one binary: project-owned KingmakerGunslinger.dll
+- DLL hash matches the exact-reference build
+- No Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft, or private-reference DLL redistributed
+- ZIP CRC, duplicate-entry, traversal, symlink, root-layout, blueprint-ledger, and binary-allowlist checks: passed
+- Install ZIP SHA-256: 83423ad78a5e62dd4e329c07c1f5ddb20b9bd49567690e5bab6f9495e7263541
+
+Artifact classification: READY FOR KINGMAKER — SPRINT 22 REPAIR SMOKE TEST
+Runtime acceptance: PENDING
+Sprint 23 entry: BLOCKED until every criterion in planning/SPRINT-23-ENTRY-CRITERIA.md passes in Kingmaker with zero KMG/Harmony faults.

@@ -1,0 +1,4 @@
+Sprint 22 repair UMM package validation passed.
+Archive SHA-256: 83423ad78a5e62dd4e329c07c1f5ddb20b9bd49567690e5bab6f9495e7263541
+DLL SHA-256: 36f46686856d2f0b04bf91ddd9665b47d9c6676de96af428bd0d697ec32fa463
+Entries: 8; binaries: project-owned KingmakerGunslinger.dll only.

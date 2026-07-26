@@ -1,0 +1,30 @@
+{
+  "assemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "compiler": {
+    "sha256": "f1b8f79f1761971b82a6d8a8f3fe82c45c6000b33a0a707fca532daebfca0740",
+    "version": "3.11.0-4.21403.6 (ae1fff34)"
+  },
+  "configuration": "Release",
+  "deterministicCompilerMode": true,
+  "dll": {
+    "byteIdentical": true,
+    "firstSha256": "04cf26cbd1e2e70662b9fb169508730052f314b312b881366cde4e0f20124512",
+    "firstSizeBytes": 394240,
+    "secondSha256": "04cf26cbd1e2e70662b9fb169508730052f314b312b881366cde4e0f20124512",
+    "secondSizeBytes": 394240
+  },
+  "languageVersion": "7.3",
+  "pdb": {
+    "byteIdentical": true,
+    "firstSha256": "bb6fa86cc1b17acd082695648f02000fdffdfc7c0dae9b28c3df43a60244944b",
+    "firstSizeBytes": 110128,
+    "secondSha256": "bb6fa86cc1b17acd082695648f02000fdffdfc7c0dae9b28c3df43a60244944b",
+    "secondSizeBytes": 110128
+  },
+  "platform": "AnyCPU",
+  "privateReferenceManifestSha256": "c012266487888df1025577402234841e365ace5d1dc18e61cc1fa89cfa9c5c04",
+  "sameOutputPathCompileRuns": 2,
+  "schemaVersion": 1,
+  "targetFramework": ".NET Framework 4.7",
+  "warningsAsErrors": true
+}

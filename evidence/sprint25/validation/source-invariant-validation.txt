@@ -1,0 +1,6 @@
+Sprint 25 source invariant validation passed with final evidence.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=155; tests=93.
+Declared dependency-free tests: 513 unique.
+Second misfire: exact item empty/Wrecked, Reflex DC 12, one native exact-wielder base weapon-damage event.
+Private runtime/compiler binaries in source tree: none.

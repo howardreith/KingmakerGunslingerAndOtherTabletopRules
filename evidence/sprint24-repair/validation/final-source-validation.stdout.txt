@@ -1,0 +1,6 @@
+Sprint 24 Broken-reload repair source invariant validation passed with final evidence.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=150; tests=90.
+Declared dependency-free tests: 503 unique.
+Reload states: empty Normal and empty Broken load; Wrecked rejects; condition preserved.
+Private runtime/compiler binaries in source tree: none.

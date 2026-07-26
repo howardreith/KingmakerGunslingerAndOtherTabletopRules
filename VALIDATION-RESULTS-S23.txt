@@ -1,0 +1,23 @@
+Kingmaker Gunslinger Sprint 23 qualification results
+Version: 0.0.23-s23-natural-roll-misfire
+
+PASS: accepted Sprint 22 runtime evidence preserved with checksums.
+PASS: exact RuleAttackRoll.set_Roll(RollEntry) and IsSuccessRoll(int) contract evidence preserved.
+PASS: portable source invariant validator.
+PASS: 12 stable blueprint IDs, 11 active and 1 reserved.
+PASS: no loose DLL, EXE, PDB, MDB, or private reference in the source tree.
+PASS: exact Kingmaker 2.1.7b private-reference Release compile.
+PASS: .NET Framework 4.7, C# 7.3, AnyCPU, deterministic, warnings as errors.
+PASS: two same-output-path compiles produced byte-identical DLL and PDB files.
+PASS: 489 dependency-free tests executed three times with zero failures.
+PASS: all three test outputs were byte-identical.
+PASS: strict standalone UMM ZIP contains 8 files and exactly one binary.
+PASS: standalone package CRC, safe-path, version, blueprint, DLL-hash, and private-reference checks.
+
+DLL SHA-256: 1d04c99705279524d4877888d3803fded1ab04ca988669b501c53db451e47a63
+PDB SHA-256: 684d9b4eeaa85303062fcc75f46b30ed9f482e818f1de8200debbf3ea488ab1e
+Test output SHA-256: 86c65e395cc29674a5776e6f6f2468aa31ff57808fc5836de8fe1f51574da5f6
+Standalone ZIP SHA-256: d09a3ced53c8f77c5b11dee9feb20b4e409a35d2dc67922ee81740d2d82c21b2
+
+Artifact classification: READY FOR KINGMAKER Sprint 23 natural-roll misfire smoke test.
+Runtime acceptance: PENDING. Sprint 24 remains blocked until SMOKE-TEST-GUIDE-0.0.23.md passes in full.

@@ -1,0 +1,63 @@
+Kingmaker Gunslinger — Sprint 22 validation results
+Version: 0.0.22-s22-loaded-round-enforcement
+
+Sprint 21 runtime evidence entering this milestone: PASS WITH ONE IDENTIFIED DEFECT
+- Full-round Reload Test Musket ability executed in Kingmaker
+- Kingmaker animation observed
+- Exact equipped Test Musket became loaded
+- Exactly one Black Powder Charge and one Lead Ball consumed
+- Reload ability unavailable while loaded
+- Defect reproduced: quicksave removed the loaded-state token
+
+Portable Sprint 22 source validation: PASS
+- Stable blueprint IDs: 12
+- Active blueprints: 11
+- Reserved blueprints: 1
+- Main-project compile items: 138 unique
+- Test-project compile items: 82 unique
+- Declared domain/integration-style cases: 446 unique
+- New Sprint 22 discharge/reconciliation cases: 27
+- Loaded-round enforcement precedes touch-AC attack-roll observation
+- Attack-time discharge contains no inventory-ammunition transaction
+- Native reconciliation patch targets the exact zero-argument ItemEntity.ApplyEnchantments method
+- Source tree contains no game, Unity, Unity Mod Manager, Harmony, or Newtonsoft binaries
+- Sprint 22 source invariant validator: PASS
+
+Exact private-reference Release compile: PASS
+- Target: user-supplied Pathfinder: Kingmaker 2.1.7b / UMM 0.32.4 reference set
+- Target framework reference surface: .NET Framework 4.7
+- C# language version: 7.3
+- Configuration: Release / AnyCPU
+- Deterministic compiler mode: enabled (the final package hash below is authoritative)
+- Warnings as errors: yes
+- Compiler exit code: 0
+- Compiler stderr: empty
+- Main DLL SHA-256: 25f8e1a25cf7871591f5dc3778b0732ebb5f03edec7b79c62775d05bf07b1660
+- Blueprint manifest SHA-256: af56f2a35bd05e055e8feee1e996d37abcb20b76efb90762784f31ccfe933337
+
+Dependency-free regression tests: PASS
+- Declared/executed: 446
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: yes
+- Test executable SHA-256: 736f2b37cbeb1629442228c7c3564d7f2c964eac36ee6d806d00b316f00b31eb
+- Repeated output SHA-256: 209f26caf959cc7a88015de5a98452a9d594a40962b982800b9a9e89cfdeb401
+
+UMM install package validation: PASS
+- Archive: KingmakerGunslinger-0.0.22-loaded-round-smoke-test.zip
+- Single KingmakerGunslinger root
+- Info.json version: 0.0.22
+- Archive entries: 8
+- Exactly one binary: project-owned KingmakerGunslinger.dll
+- No Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft, or private-reference DLL redistributed
+- ZIP CRC, duplicate-entry, traversal, symlink, root-layout, manifest, and DLL-hash checks: passed
+- Install ZIP SHA-256: 5a6fd105e78c0a8850b6988c4d1ee0edb7b4f6460d61a30a14db17d43d0447cd
+
+Runtime status: READY FOR KINGMAKER LOADED-ROUND / TOKEN-DURABILITY SMOKE TEST
+Runtime claims pending:
+- quicksave does not unload a loaded Test Musket
+- complete save/restart preserves loaded state with the Sprint 22 token context/repair path
+- one loaded ordinary attack consumes exactly one round
+- a second empty ordinary attack is forced to miss
+- firing leaves Black Powder Charge and Lead Ball inventory counts unchanged
+- native Heavy Crossbows remain unaffected

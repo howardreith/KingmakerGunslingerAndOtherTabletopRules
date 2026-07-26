@@ -1,0 +1,17 @@
+{
+  "binaryCount": 1,
+  "classification": "READY FOR KINGMAKER Sprint 23 smoke-test package; runtime acceptance pending",
+  "crcPassed": true,
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.23-natural-roll-misfire-smoke-test.zip",
+  "modDllSha256": "1d04c99705279524d4877888d3803fded1ab04ca988669b501c53db451e47a63",
+  "onlyBinary": "KingmakerGunslinger/KingmakerGunslinger.dll",
+  "privateReferencesRedistributed": false,
+  "runtimeAcceptancePassed": false,
+  "schemaVersion": 1,
+  "sha256": "d09a3ced53c8f77c5b11dee9feb20b4e409a35d2dc67922ee81740d2d82c21b2",
+  "sizeBytes": 142145,
+  "sprint24Blocked": true,
+  "strictAllowlistPassed": true,
+  "unsafePathCount": 0
+}

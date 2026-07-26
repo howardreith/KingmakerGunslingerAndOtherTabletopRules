@@ -1,0 +1,53 @@
+IL_000c: newobj         <>c__DisplayClass29_0::.ctorvoid ()
+IL_0011: stloc.0
+IL_0012: ldloc.0
+IL_0013: ldarg.0
+IL_0014: stfld          <>c__DisplayClass29_0::<>4__this : Kingmaker.Items.Slots.ItemSlot
+IL_0019: ldarg.0
+IL_001a: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity
+IL_001f: brfalse.s      53
+IL_0021: ldarg.0
+IL_0022: callvirt       Kingmaker.Items.Slots.ItemSlot::CanRemoveItembool ()
+IL_0027: brtrue.s       55
+IL_0029: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()
+IL_002e: call           Kingmaker.Utility.CountableFlag::op_Implicitbool (Kingmaker.Utility.CountableFlag)
+IL_0033: brtrue.s       55
+IL_0035: ldc.i4.0
+IL_0036: ret
+IL_0037: ldloc.0
+IL_0038: ldarg.0
+IL_0039: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity
+IL_003e: stfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity
+IL_0043: ldarg.0
+IL_0044: call           Kingmaker.Items.Slots.ItemSlot::get_Activebool ()
+IL_0049: brfalse.s      86
+IL_004b: ldarg.0
+IL_004c: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity
+IL_0051: callvirt       Kingmaker.Items.ItemEntity::OnWillUnequipvoid ()
+IL_0056: ldarg.0
+IL_0057: ldfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity
+IL_005c: ldnull
+IL_005d: callvirt       Kingmaker.Items.ItemEntity::set_HoldingSlotvoid (Kingmaker.Items.Slots.ItemSlot)
+IL_0062: ldarg.0
+IL_0063: ldnull
+IL_0064: stfld          Kingmaker.Items.Slots.ItemSlot::m_Item : Kingmaker.Items.ItemEntity
+IL_0069: ldarg.0
+IL_006a: ldfld          Kingmaker.Items.Slots.ItemSlot::Owner : Kingmaker.UnitLogic.UnitDescriptor
+IL_006f: callvirt       Kingmaker.UnitLogic.UnitDescriptor::get_BodyKingmaker.Items.UnitBody ()
+IL_0074: ldloc.0
+IL_0075: ldfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity
+IL_007a: callvirt       Kingmaker.Items.UnitBody::OnItemRemovedvoid (Kingmaker.Items.ItemEntity)
+IL_007f: ldarg.1
+IL_0080: brfalse.s      147
+IL_0082: ldloc.0
+IL_0083: ldftn          <>c__DisplayClass29_0::<RemoveItem>b__0void (Kingmaker.PubSubSystem.IUnitEquipmentHandler)
+IL_0089: newobj         System.Action`1<Kingmaker.PubSubSystem.IUnitEquipmentHandler>::.ctorvoid (object, native int)
+IL_008e: call           Kingmaker.PubSubSystem.EventBus::RaiseEventvoid (System.Action`1<!!0>) <MethodSpec>
+IL_0093: ldarg.2
+IL_0094: brfalse.s      162
+IL_0096: ldloc.0
+IL_0097: ldfld          <>c__DisplayClass29_0::item : Kingmaker.Items.ItemEntity
+IL_009c: callvirt       Kingmaker.Items.ItemEntity::TryMergeInCollectionKingmaker.Items.ItemEntity ()
+IL_00a1: pop
+IL_00a2: ldc.i4.1
+IL_00a3: ret

@@ -1,0 +1,6 @@
+IL_0001: ldarg.0
+IL_0002: ldarg.1
+IL_0003: ldarg.1
+IL_0004: callvirt       Kingmaker.Items.ItemEntity::get_Countint32 ()
+IL_0009: call           Kingmaker.Items.ItemsCollection::RemoveKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, int32)
+IL_000e: ret

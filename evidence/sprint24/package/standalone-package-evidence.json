@@ -1,0 +1,14 @@
+{
+  "binaryCount": 1,
+  "binaryEntries": [
+    "KingmakerGunslinger/KingmakerGunslinger.dll"
+  ],
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.24-misfire-condition-smoke-test.zip",
+  "modDllSha256": "eeb238615d53a45e6f8d8f55797c5b47918319b96b543d81c0b6dbe9fd33f040",
+  "privateReferencesRedistributed": false,
+  "schemaVersion": 1,
+  "sha256": "bc67df1ceda974dc44c8b8407798d919575facad1226d64ed969c698d96f8d4d",
+  "sizeBytes": 145713,
+  "validationPassed": true
+}

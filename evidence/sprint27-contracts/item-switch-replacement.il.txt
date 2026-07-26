@@ -1,0 +1,141 @@
+IL_000c: newobj         <>c__DisplayClass5_0::.ctorvoid ()
+IL_0011: stloc.0
+IL_0012: ldloc.0
+IL_0013: ldarg.0
+IL_0014: stfld          <>c__DisplayClass5_0::<>4__this : Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch
+IL_0019: ldarg.0
+IL_001a: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToReplace : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment
+IL_001f: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)
+IL_0024: brfalse.s      51
+IL_0026: ldarg.0
+IL_0027: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToGive : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment
+IL_002c: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)
+IL_0031: brtrue.s       96
+IL_0033: ldarg.0
+IL_0034: ldstr          "ItemSwitch: items not set on "
+IL_0039: ldarg.0
+IL_003a: call           System.String::Concatstring (object, object)
+IL_003f: call           System.Array::Empty!!0[] () <MethodSpec>
+IL_0044: call           UberDebug::LogErrorvoid (UnityEngine.Object, object, object[])
+IL_0049: call           Kingmaker.QA.QAModeExceptionReporter::get_InstanceKingmaker.QA.QAModeExceptionReporter ()
+IL_004e: ldstr          "ItemSwitch: items not set on "
+IL_0053: ldarg.0
+IL_0054: call           System.String::Concatstring (object, object)
+IL_0059: ldnull
+IL_005a: callvirt       Kingmaker.QA.QAModeExceptionReporter::MaybeShowErrorvoid (string, System.Exception)
+IL_005f: ret
+IL_0060: ldarg.0
+IL_0061: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator
+IL_0066: call           UnityEngine.Object::op_Implicitbool (UnityEngine.Object)
+IL_006b: brtrue.s       116
+IL_006d: call           Kingmaker.Designers.GameHelper::GetPlayerCharacterKingmaker.EntitySystem.Entities.UnitEntityData ()
+IL_0072: br.s           127
+IL_0074: ldarg.0
+IL_0075: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator
+IL_007a: callvirt       Kingmaker.ElementsSystem.Evaluator`1<Kingmaker.EntitySystem.Entities.UnitEntityData>::GetValue!0 ()
+IL_007f: stloc.1
+IL_0080: ldloc.1
+IL_0081: brtrue.s       186
+IL_0083: ldarg.0
+IL_0084: ldstr          "ItemSwitch: Character not found: "
+IL_0089: ldarg.0
+IL_008a: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator
+IL_008f: call           System.String::Concatstring (object, object)
+IL_0094: call           System.Array::Empty!!0[] () <MethodSpec>
+IL_0099: call           UberDebug::LogErrorvoid (UnityEngine.Object, object, object[])
+IL_009e: call           Kingmaker.QA.QAModeExceptionReporter::get_InstanceKingmaker.QA.QAModeExceptionReporter ()
+IL_00a3: ldstr          "ItemSwitch: Character not found: "
+IL_00a8: ldarg.0
+IL_00a9: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::EquipOn : Kingmaker.ElementsSystem.UnitEvaluator
+IL_00ae: call           System.String::Concatstring (object, object)
+IL_00b3: ldnull
+IL_00b4: callvirt       Kingmaker.QA.QAModeExceptionReporter::MaybeShowErrorvoid (string, System.Exception)
+IL_00b9: ret
+IL_00ba: ldloc.1
+IL_00bb: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_BodyKingmaker.Items.UnitBody ()
+IL_00c0: callvirt       Kingmaker.Items.UnitBody::get_EquipmentSlotsSystem.Collections.Generic.IEnumerable`1<Kingmaker.Items.Slots.ItemSlot> ()
+IL_00c5: ldloc.0
+IL_00c6: ldftn          <>c__DisplayClass5_0::<RunAction>b__0bool (Kingmaker.Items.Slots.ItemSlot)
+IL_00cc: newobj         System.Func`2<Kingmaker.Items.Slots.ItemSlot, bool>::.ctorvoid (object, native int)
+IL_00d1: call           System.Linq.Enumerable::FirstOrDefault!!0 (System.Collections.Generic.IEnumerable`1<!!0>, System.Func`2<!!0, bool>) <MethodSpec>
+IL_00d6: dup
+IL_00d7: brtrue.s       221
+IL_00d9: pop
+IL_00da: ldnull
+IL_00db: br.s           226
+IL_00dd: call           Kingmaker.Items.Slots.ItemSlot::get_ItemKingmaker.Items.ItemEntity ()
+IL_00e2: stloc.2
+IL_00e3: ldarg.0
+IL_00e4: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::FailIfNotFound : bool
+IL_00e9: brfalse.s      239
+IL_00eb: ldloc.2
+IL_00ec: brtrue.s       239
+IL_00ee: ret
+IL_00ef: ldloc.0
+IL_00f0: ldarg.0
+IL_00f1: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::ItemToGive : Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipment
+IL_00f6: call           Kingmaker.Items.ItemsEntityFactory::CreateEntityKingmaker.Items.ItemEntity (Kingmaker.Blueprints.Items.BlueprintItem)
+IL_00fb: stfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity
+IL_0100: ldloc.0
+IL_0101: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity
+IL_0106: callvirt       Kingmaker.Items.ItemEntity::Identifyvoid ()
+IL_010b: call           Kingmaker.Designers.GameHelper::GetPlayerCharacterKingmaker.EntitySystem.Entities.UnitEntityData ()
+IL_0110: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()
+IL_0115: ldloc.0
+IL_0116: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity
+IL_011b: ldc.i4.0
+IL_011c: callvirt       Kingmaker.Items.ItemsCollection::AddKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity, bool)
+IL_0121: pop
+IL_0122: ldloc.2
+IL_0123: brtrue.s       296
+IL_0125: ldnull
+IL_0126: br.s           302
+IL_0128: ldloc.2
+IL_0129: call           Kingmaker.Items.ItemEntity::get_HoldingSlotKingmaker.Items.Slots.ItemSlot ()
+IL_012e: dup
+IL_012f: brtrue.s       334
+IL_0131: pop
+IL_0132: ldloc.1
+IL_0133: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_BodyKingmaker.Items.UnitBody ()
+IL_0138: callvirt       Kingmaker.Items.UnitBody::get_EquipmentSlotsSystem.Collections.Generic.IEnumerable`1<Kingmaker.Items.Slots.ItemSlot> ()
+IL_013d: ldloc.0
+IL_013e: ldftn          <>c__DisplayClass5_0::<RunAction>b__1bool (Kingmaker.Items.Slots.ItemSlot)
+IL_0144: newobj         System.Func`2<Kingmaker.Items.Slots.ItemSlot, bool>::.ctorvoid (object, native int)
+IL_0149: call           System.Linq.Enumerable::FirstOrDefault!!0 (System.Collections.Generic.IEnumerable`1<!!0>, System.Func`2<!!0, bool>) <MethodSpec>
+IL_014e: stloc.3
+IL_014f: ldloc.3
+IL_0150: brfalse.s      389
+IL_0152: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()
+IL_0157: callvirt       Kingmaker.Utility.CountableFlag::Retainvoid ()
+IL_015c: ldloc.3
+IL_015d: callvirt       Kingmaker.Items.Slots.ItemSlot::get_HasItembool ()
+IL_0162: brfalse.s      364
+IL_0164: ldloc.3
+IL_0165: ldc.i4.1
+IL_0166: callvirt       Kingmaker.Items.Slots.ItemSlot::RemoveItembool (bool)
+IL_016b: pop
+IL_016c: ldloc.3
+IL_016d: ldloc.0
+IL_016e: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity
+IL_0173: callvirt       Kingmaker.Items.Slots.ItemSlot::InsertItemvoid (Kingmaker.Items.ItemEntity)
+IL_0178: leave.s        415
+IL_017a: call           Kingmaker.Items.Slots.ItemSlot::get_IgnoreLockKingmaker.Utility.CountableFlag ()
+IL_017f: callvirt       Kingmaker.Utility.CountableFlag::Releasevoid ()
+IL_0184: endfinally
+IL_0185: ldstr          "Cannot equip {0}: not slot available"
+IL_018a: ldloc.0
+IL_018b: ldfld          <>c__DisplayClass5_0::newitem : Kingmaker.Items.ItemEntity
+IL_0190: call           System.String::Formatstring (string, object)
+IL_0195: call           System.Array::Empty!!0[] () <MethodSpec>
+IL_019a: call           UberDebug::LogErrorvoid (object, object[])
+IL_019f: ldloc.2
+IL_01a0: brfalse.s      439
+IL_01a2: ldarg.0
+IL_01a3: ldfld          Kingmaker.Designers.EventConditionActionSystem.Actions.ItemSwitch::DestroyReplaced : bool
+IL_01a8: brfalse.s      439
+IL_01aa: ldloc.1
+IL_01ab: callvirt       Kingmaker.EntitySystem.Entities.UnitEntityData::get_InventoryKingmaker.Items.ItemsCollection ()
+IL_01b0: ldloc.2
+IL_01b1: callvirt       Kingmaker.Items.ItemsCollection::RemoveKingmaker.Items.ItemEntity (Kingmaker.Items.ItemEntity)
+IL_01b6: pop
+IL_01b7: ret

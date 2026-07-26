@@ -1,0 +1,56 @@
+Kingmaker Gunslinger Sprint 26 validation results
+=================================================
+
+Version: 0.0.26-s26-misfire-burst
+Status: READY FOR KINGMAKER — Sprint 26 native misfire-burst smoke test
+Runtime acceptance: pending
+Sprint 27 entry: blocked
+
+Source and contracts
+--------------------
+- Sprint 25 runtime entry evidence: PASS
+- Sprint 26 source invariant validation: PASS
+- Stable blueprint ledger: PASS (11 active, 1 reserved)
+- Exact Kingmaker 2.1.7b spatial contract evidence: PASS
+- Native query: GameHelper.GetTargetsAround(wielder.Position, 5 feet, LOS enabled, dead excluded)
+- Deterministic reference-identity target planning: PASS
+- Exact wielder included once and last: PASS
+- Per-attack and per-unit duplicate gates: PASS
+- Item-owned inert BlueprintWeaponEnchantment state carrier retained: PASS
+- ItemEntityWeapon.UniqueId vault revived: NO
+
+Exact-reference compilation
+---------------------------
+- Configuration: Release
+- Target: .NET Framework 4.7 / C# 7.3 / AnyCPU
+- Warnings as errors: PASS
+- Same-output-path runs: 2
+- DLL byte-identical: PASS
+- PDB byte-identical: PASS
+- KingmakerGunslinger.dll SHA-256: 04cf26cbd1e2e70662b9fb169508730052f314b312b881366cde4e0f20124512
+- KingmakerGunslinger.pdb SHA-256: bb6fa86cc1b17acd082695648f02000fdffdfc7c0dae9b28c3df43a60244944b
+
+Tests
+-----
+- Declared tests: 540
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: PASS
+- Repeated output SHA-256: 802b901e77a9dd3be20fb5cc969b8f563316584e8aa7510d84ab9a979b17378c
+
+Standalone UMM package
+----------------------
+- File: KingmakerGunslinger-0.0.26-misfire-burst-smoke-test.zip
+- SHA-256: 3f8bcd2aa22554b87ba2537506a5ffa74b288b966a99873827c4aa0416132bf3
+- Entries: 8
+- Binaries: exactly one project-owned KingmakerGunslinger.dll
+- Private references redistributed: NO
+- Path safety and CRC: PASS
+
+Runtime gate
+------------
+- First misfire performs no query or burst: pending live proof
+- Broken-to-Wrecked performs one definition-sized native LOS query: pending live proof
+- Every unique qualified unit receives one fresh Reflex DC 12 and damage pair: pending live proof
+- Exact wielder appears once and last; outside/blocked units are excluded: pending live proof
+- Wrecked, ordinary-roll, second-item, native-Heavy-Crossbow, and persistence isolation: pending live proof

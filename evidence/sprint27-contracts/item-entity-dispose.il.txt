@@ -1,0 +1,8 @@
+IL_0001: ldarg.0
+IL_0002: ldfld          Kingmaker.Items.ItemEntity::m_Enchantments : Kingmaker.Blueprints.Items.Ecnchantments.ItemEnchantmentCollection
+IL_0007: dup
+IL_0008: brtrue.s       12
+IL_000a: pop
+IL_000b: ret
+IL_000c: callvirt       Kingmaker.Blueprints.FactCollection::Disposevoid ()
+IL_0011: ret

@@ -1,0 +1,2 @@
+PASS: no loose .dll, .exe, .pdb, or .mdb files exist in the source tree.
+PASS: private Kingmaker, Unity, UMM, Harmony, Newtonsoft, compiler, and framework binaries are absent.

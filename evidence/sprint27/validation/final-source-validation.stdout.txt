@@ -1,0 +1,6 @@
+Sprint 27 source invariant validation passed with final evidence.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=159; tests=97.
+Declared dependency-free tests: 543 unique.
+Lifecycle decision: retain exact empty/Wrecked item and qualify same-item empty/Broken overhaul.
+Private runtime/compiler/framework binaries in source tree: none.

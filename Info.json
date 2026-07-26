@@ -1,0 +1,10 @@
+{
+  "Id": "KingmakerGunslinger",
+  "DisplayName": "Kingmaker Gunslinger",
+  "Author": "Howie",
+  "Version": "0.0.30",
+  "ManagerVersion": "0.32.4",
+  "Requirements": [],
+  "AssemblyName": "KingmakerGunslinger.dll",
+  "EntryMethod": "KingmakerGunslinger.Main.Load"
+}

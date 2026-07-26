@@ -1,0 +1,13 @@
+TYPE Kingmaker.RuleSystem.Rulebook base=System.Object
+  CTOR public instance <ctor> .ctor()
+  METHOD private instance System.Void AssignSource(Kingmaker.RuleSystem.RulebookEvent evt)
+  METHOD public static TEvent Trigger(TEvent evt)
+  METHOD public static TEvent Trigger(Kingmaker.RuleSystem.RulebookEventContext context, TEvent evt)
+  METHOD public instance TEvent TriggerEvent(TEvent evt)
+  METHOD public instance System.Void TriggerEventInRestoredContext(Kingmaker.RuleSystem.RulebookEventContext context, TEvent evt)
+  METHOD private instance System.Void TriggerEventInternal(T evt)
+  METHOD public instance Kingmaker.RuleSystem.RulebookEventContext get_Context()
+  METHOD public static Kingmaker.RuleSystem.RulebookEventContext get_CurrentContext()
+  PROP Kingmaker.RuleSystem.RulebookEventContext Context [public get]
+  PROP Kingmaker.RuleSystem.RulebookEventContext CurrentContext [public get]
+  FIELD private instance Kingmaker.RuleSystem.RulebookEventContext m_RuleContext

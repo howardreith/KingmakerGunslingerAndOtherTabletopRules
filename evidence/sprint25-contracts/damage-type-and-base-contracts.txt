@@ -1,0 +1,30 @@
+=== Kingmaker.RuleSystem.RulebookEvent
+CTOR <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator) public=False
+PROP System.Boolean IsTriggererd get=True set=none
+PROP Kingmaker.RuleSystem.RuleReason Reason get=True set=True
+FIELD Kingmaker.RuleSystem.RuleReason <Reason>k__BackingField public=False
+FIELD Kingmaker.EntitySystem.Entities.UnitEntityData Initiator public=True
+FIELD System.Collections.Generic.List`1<Kingmaker.EntitySystem.Stats.ModifiableValue+Modifier> m_TemporaryModifiers public=False
+FIELD System.Boolean m_Triggered public=False
+METHOD System.Void AddTemporaryModifier(Kingmaker.EntitySystem.Stats.ModifiableValue+Modifier modifier) public=True
+METHOD Kingmaker.EntitySystem.Entities.UnitEntityData GetRuleTarget() public=True
+METHOD System.Void OnDidTrigger() public=True
+METHOD System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context) public=True
+=== Kingmaker.RuleSystem.RulebookTargetEvent
+CTOR <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator,Kingmaker.EntitySystem.Entities.UnitEntityData target) public=False
+FIELD Kingmaker.EntitySystem.Entities.UnitEntityData Target public=True
+METHOD Kingmaker.EntitySystem.Entities.UnitEntityData GetRuleTarget() public=True
+=== Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription
+CTOR <ctor> .ctor() public=True
+PROP System.Boolean IsEnergy get=False set=none
+PROP System.Boolean IsPhysical get=False set=none
+FIELD Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription+CommomData Common public=True
+FIELD Kingmaker.Enums.Damage.DamageEnergyType Energy public=True
+FIELD Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription+PhysicalData Physical public=True
+FIELD Kingmaker.RuleSystem.Rules.Damage.DamageType Type public=True
+METHOD Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription Copy() public=True
+METHOD Kingmaker.RuleSystem.Rules.Damage.BaseDamage CreateDamage(Kingmaker.RuleSystem.DiceFormula dice,System.Int32 bonus) public=True
+METHOD Kingmaker.RuleSystem.Rules.Damage.DamageDescription GetDamageDescriptor(Kingmaker.RuleSystem.DiceFormula dice,System.Int32 bonus) public=True
+METHOD System.String ToString() public=True
+METHOD System.Void Validate(Kingmaker.Blueprints.Validation.ValidationContext context,System.String objectPath) public=True
+=== Kingmaker.RuleSystem.Rules.Damage.RuleCalculateWeaponStats

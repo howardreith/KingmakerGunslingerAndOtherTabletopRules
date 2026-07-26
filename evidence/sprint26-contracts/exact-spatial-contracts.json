@@ -1,0 +1,43 @@
+{
+  "assembly": "Managed/Assembly-CSharp.dll",
+  "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "distance": {
+    "declaringType": "Kingmaker.EntitySystem.Entities.UnitEntityData",
+    "positionProperty": "UnityEngine.Vector3 Position",
+    "signature": "System.Single DistanceTo(UnityEngine.Vector3 point)"
+  },
+  "feet": {
+    "constructor": "public Feet(System.Single value)",
+    "conversion": "feet * 0.3048f",
+    "declaringType": "Kingmaker.Utility.Feet",
+    "metersProperty": "System.Single Meters"
+  },
+  "privateReferenceRedistributionAllowed": false,
+  "schemaVersion": 1,
+  "selectedRuntimeCall": {
+    "checkLOS": true,
+    "exactWielder": "inserted explicitly once and resolved last",
+    "includeDead": false,
+    "origin": "exact current wielder.Position",
+    "radius": "exact firearm Definition.MisfireBurstRadiusFeet"
+  },
+  "spatialQuery": {
+    "binding": "public static",
+    "declaringType": "Kingmaker.Designers.GameHelper",
+    "signature": "System.Collections.Generic.IEnumerable<Kingmaker.EntitySystem.Entities.UnitEntityData> GetTargetsAround(UnityEngine.Vector3 point, Kingmaker.Utility.Feet radius, System.Boolean checkLOS, System.Boolean includeDead)",
+    "verifiedBehavior": [
+      "enumerates Game.Instance.State.Units",
+      "excludes dead units when includeDead is false",
+      "excludes untargetable units",
+      "uses UnitEntityData.DistanceTo(Vector3)",
+      "includes native unit View.Corpulence in the radius comparison",
+      "applies native line of sight when checkLOS is true"
+    ]
+  },
+  "target": "Pathfinder: Kingmaker 2.1.7b",
+  "unitEvidence": {
+    "displayNameProperty": "System.String CharacterName",
+    "hitPointsProperty": "System.Int32 HPLeft",
+    "stableIdentityProperty": "System.String UniqueId"
+  }
+}

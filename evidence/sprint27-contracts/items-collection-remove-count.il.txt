@@ -1,0 +1,25 @@
+IL_000c: ldarg.1
+IL_000d: callvirt       Kingmaker.Items.ItemEntity::get_IsStackablebool ()
+IL_0012: brfalse.s      38
+IL_0014: ldarg.1
+IL_0015: callvirt       Kingmaker.Items.ItemEntity::get_Countint32 ()
+IL_001a: ldarg.2
+IL_001b: beq.s          38
+IL_001d: ldarg.1
+IL_001e: ldarg.2
+IL_001f: callvirt       Kingmaker.Items.ItemEntity::SplitKingmaker.Items.ItemEntity (int32)
+IL_0024: br.s           39
+IL_0026: ldarg.1
+IL_0027: stloc.0
+IL_0028: ldloc.0
+IL_0029: callvirt       Kingmaker.Items.ItemEntity::get_CollectionKingmaker.Items.ItemsCollection ()
+IL_002e: brfalse.s      55
+IL_0030: ldarg.0
+IL_0031: ldloc.0
+IL_0032: call           Kingmaker.Items.ItemsCollection::Extractvoid (Kingmaker.Items.ItemEntity)
+IL_0037: ldarg.0
+IL_0038: ldarg.1
+IL_0039: ldarg.2
+IL_003a: callvirt       Kingmaker.Items.ItemsCollection::OnItemsRemovedvoid (Kingmaker.Items.ItemEntity, int32)
+IL_003f: ldloc.0
+IL_0040: ret

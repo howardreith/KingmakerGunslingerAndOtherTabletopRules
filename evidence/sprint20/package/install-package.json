@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "fileName": "KingmakerGunslinger-0.0.20-ammunition-smoke-test.zip",
+  "classification": "ready-for-kingmaker-basic-ammunition-smoke-test",
+  "sha256": "926ffbafcb363e911a05b79c655b6163bb5b845c61f70ce4a78e2481100730da",
+  "singleRoot": "KingmakerGunslinger",
+  "fileCount": 9,
+  "binaryCount": 1,
+  "onlyBinary": "KingmakerGunslinger/KingmakerGunslinger.dll",
+  "privateReferencesRedistributed": false,
+  "modDllSha256": "06f1c1da6e93ea59ef4a724672a9dfb7027dcf41187e5cc9b16aa3f116e48dc7"
+}

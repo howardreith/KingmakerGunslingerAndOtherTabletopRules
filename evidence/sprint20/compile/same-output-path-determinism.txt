@@ -1,0 +1,3 @@
+First same-output-path DLL SHA-256: 06f1c1da6e93ea59ef4a724672a9dfb7027dcf41187e5cc9b16aa3f116e48dc7
+Second same-output-path DLL SHA-256: 06f1c1da6e93ea59ef4a724672a9dfb7027dcf41187e5cc9b16aa3f116e48dc7
+Byte-identical: yes

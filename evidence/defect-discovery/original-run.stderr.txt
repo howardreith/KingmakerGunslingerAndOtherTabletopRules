@@ -1,0 +1,24 @@
+FAIL item-state.get-existing-missing-no-create: System.InvalidOperationException: Missing-state reason mismatch.
+   at KingmakerGunslinger.DomainTests.Assertions.True(Boolean condition, String message) in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Assertions.cs:line 12
+   at KingmakerGunslinger.DomainTests.Program.ItemStateGetExistingMissingDoesNotCreate() in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 1889
+   at KingmakerGunslinger.DomainTests.Program.Main() in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 399
+FAIL migration.duplicate-token: System.InvalidOperationException: Duplicate legacy tokens were accepted. Expected System.InvalidOperationException, but received System.IO.InvalidDataException.
+ ---> System.IO.InvalidDataException: Exactly zero or one firearm-state token is valid; observed 2.
+   at KingmakerGunslinger.Firearms.FirearmStateTokenCatalog.Decode(IEnumerable`1 tokenIds) in <SPRINT16_SOURCE>/src/KingmakerGunslinger/Firearms/FirearmStateTokenCatalog.cs:line 150
+   at KingmakerGunslinger.Firearms.MigratingFirearmStateRepository.EnsureMigrated(Object itemInstance) in <SPRINT16_SOURCE>/src/KingmakerGunslinger/Firearms/MigratingFirearmStateRepository.cs:line 166
+   at KingmakerGunslinger.Firearms.MigratingFirearmStateRepository.GetOrCreate(Object itemInstance) in <SPRINT16_SOURCE>/src/KingmakerGunslinger/Firearms/MigratingFirearmStateRepository.cs:line 82
+   at KingmakerGunslinger.DomainTests.Program.<>c__DisplayClass251_0.<MigrationDuplicateTokenPreservesEvidence>b__0() in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 2672
+   at KingmakerGunslinger.DomainTests.Assertions.Throws[TException](Action action, String message) in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Assertions.cs:line 45
+   --- End of inner exception stack trace ---
+   at KingmakerGunslinger.DomainTests.Assertions.Throws[TException](Action action, String message) in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Assertions.cs:line 53
+   at KingmakerGunslinger.DomainTests.Program.MigrationDuplicateTokenPreservesEvidence() in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 2671
+   at KingmakerGunslinger.DomainTests.Program.Main() in <SPRINT16_SOURCE>/tests/KingmakerGunslinger.DomainTests/Program.cs:line 399
+Stack overflow.
+Repeat 130885 times:
+--------------------------------
+   at KingmakerGunslinger.Firearms.FirearmItemId.op_Equality(KingmakerGunslinger.Firearms.FirearmItemId, KingmakerGunslinger.Firearms.FirearmItemId)
+   at KingmakerGunslinger.Firearms.FirearmItemId.op_Inequality(KingmakerGunslinger.Firearms.FirearmItemId, KingmakerGunslinger.Firearms.FirearmItemId)
+--------------------------------
+   at KingmakerGunslinger.Firearms.FirearmItemId.op_Equality(KingmakerGunslinger.Firearms.FirearmItemId, KingmakerGunslinger.Firearms.FirearmItemId)
+   at KingmakerGunslinger.DomainTests.Program.ItemIdentityValueEquality()
+   at KingmakerGunslinger.DomainTests.Program.Main()

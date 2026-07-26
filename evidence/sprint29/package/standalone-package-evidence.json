@@ -1,0 +1,18 @@
+{
+  "binaryCount": 1,
+  "binaryEntries": [
+    "KingmakerGunslinger/KingmakerGunslinger.dll"
+  ],
+  "crcValidationPassed": true,
+  "entryCount": 8,
+  "fileName": "KingmakerGunslinger-0.0.29-complete-maintenance-loop-smoke-test.zip",
+  "modDllSha256": "7f252d8abc4a6eed61d69403296e1481f4e30a70ddb90456374538e18481c936",
+  "pathSafetyPassed": true,
+  "privateReferencesRedistributed": false,
+  "schemaVersion": 1,
+  "sha256": "8be74497785d1d5228e368a09818d251557cb207a755c8a57607b97b5c816660",
+  "strictLayoutPassed": true,
+  "validationPassed": true,
+  "validator": "tools/validate_sprint29_package.py",
+  "version": "0.0.29"
+}

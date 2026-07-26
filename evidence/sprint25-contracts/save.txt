@@ -1,0 +1,45 @@
+TYPE Kingmaker.RuleSystem.Rules.RuleSavingThrow base=Kingmaker.RuleSystem.RulebookEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData unit, Kingmaker.EntitySystem.Stats.SavingThrowType saveType, System.Int32 difficultyClass)
+  METHOD private static Kingmaker.EntitySystem.Stats.StatType GetSave(Kingmaker.EntitySystem.Stats.SavingThrowType type)
+  METHOD public instance System.Boolean IsSuccessRoll(System.Int32 d20, System.Int32 successBonus)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance System.Boolean get_AutoPass()
+  METHOD public instance System.Int32 get_BaseRollResult()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_D20()
+  METHOD public instance System.Boolean get_Evasion()
+  METHOD public instance System.Boolean get_ImprovedEvasion()
+  METHOD public instance System.Boolean get_IsPassed()
+  METHOD public instance System.Boolean get_RequiresSuccessBonus()
+  METHOD public instance System.Int32 get_RollResult()
+  METHOD public instance System.Int32 get_StatValue()
+  METHOD public instance System.Int32 get_SuccessBonus()
+  METHOD public instance Kingmaker.Blueprints.Facts.Fact get_SuccessBonusSource()
+  METHOD public instance System.Void set_AutoPass(System.Boolean value)
+  METHOD public instance System.Void set_BaseRollResult(System.Int32 value)
+  METHOD private instance System.Void set_D20(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_Evasion(System.Boolean value)
+  METHOD public instance System.Void set_ImprovedEvasion(System.Boolean value)
+  METHOD private instance System.Void set_StatValue(System.Int32 value)
+  METHOD public instance System.Void set_SuccessBonus(System.Int32 value)
+  METHOD public instance System.Void set_SuccessBonusSource(Kingmaker.Blueprints.Facts.Fact value)
+  PROP System.Boolean AutoPass [public get, public set]
+  PROP System.Int32 BaseRollResult [public get, public set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry D20 [public get, private set]
+  PROP System.Boolean Evasion [public get, public set]
+  PROP System.Boolean ImprovedEvasion [public get, public set]
+  PROP System.Boolean IsPassed [public get]
+  PROP System.Boolean RequiresSuccessBonus [public get]
+  PROP System.Int32 RollResult [public get]
+  PROP System.Int32 StatValue [public get, private set]
+  PROP System.Int32 SuccessBonus [public get, public set]
+  PROP Kingmaker.Blueprints.Facts.Fact SuccessBonusSource [public get, public set]
+  FIELD private instance System.Boolean <AutoPass>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <D20>k__BackingField
+  FIELD private instance System.Boolean <Evasion>k__BackingField
+  FIELD private instance System.Boolean <ImprovedEvasion>k__BackingField
+  FIELD private instance System.Int32 <StatValue>k__BackingField
+  FIELD private instance System.Int32 <SuccessBonus>k__BackingField
+  FIELD private instance Kingmaker.Blueprints.Facts.Fact <SuccessBonusSource>k__BackingField
+  FIELD public instance System.Int32 DifficultyClass readonly
+  FIELD public instance Kingmaker.EntitySystem.Stats.StatType StatType readonly
+  FIELD public instance Kingmaker.EntitySystem.Stats.SavingThrowType Type readonly

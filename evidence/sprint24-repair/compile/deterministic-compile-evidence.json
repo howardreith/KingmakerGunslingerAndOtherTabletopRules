@@ -1,0 +1,39 @@
+{
+  "assemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "compileExitCodes": [
+    0,
+    0
+  ],
+  "compiler": {
+    "cscDllSha256": "f1b8f79f1761971b82a6d8a8f3fe82c45c6000b33a0a707fca532daebfca0740",
+    "cscExeSha256": "8e2e5dc38efc607b7e29eca4c51dd17b51d3e6688f6cb861f97b5d458c573f50",
+    "host": "Mono Mono JIT compiler version 6.12.0.199 (tarball Thu Apr  3 15:13:01 UTC 2025)",
+    "name": "Microsoft Visual C# Compiler",
+    "version": "3.11.0-4.21403.6 (ae1fff34)"
+  },
+  "configuration": "Release",
+  "deterministicCompilerMode": true,
+  "dll": {
+    "byteIdentical": true,
+    "fileName": "KingmakerGunslinger.dll",
+    "firstSha256": "674e732edd0a27727bb27eb950749b8f72428addd00e9c8996160decd88f11b4",
+    "secondSha256": "674e732edd0a27727bb27eb950749b8f72428addd00e9c8996160decd88f11b4",
+    "sizeBytes": 364032
+  },
+  "languageVersion": "7.3",
+  "pdb": {
+    "byteIdentical": true,
+    "fileName": "KingmakerGunslinger.pdb",
+    "firstSha256": "de034a38f6b3443f10e408ccf063d9ab7f6eec6806a316d1f1e99555eb623aa0",
+    "secondSha256": "de034a38f6b3443f10e408ccf063d9ab7f6eec6806a316d1f1e99555eb623aa0",
+    "sizeBytes": 103304
+  },
+  "platform": "AnyCPU",
+  "privateReferenceManifestSha256": "c012266487888df1025577402234841e365ace5d1dc18e61cc1fa89cfa9c5c04",
+  "privateReferenceManifestVerified": true,
+  "privateReferencesRedistributed": false,
+  "sameOutputPathCompileRuns": 2,
+  "schemaVersion": 1,
+  "targetFramework": ".NET Framework 4.7",
+  "warningsAsErrors": true
+}

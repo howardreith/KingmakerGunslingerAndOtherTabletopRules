@@ -1,0 +1,41 @@
+Kingmaker Gunslinger — Sprint 20 validation results
+Version: 0.0.20-s20-basic-ammunition
+
+Portable Sprint 20 source validation: PASS
+- Main-project compile items: 114 unique
+- Test-project compile items: 70 unique
+- Stable blueprint IDs: 12
+- Active blueprints: 10
+- Basic ammunition blueprint IDs activated: 2
+- Reload ability: remains reserved
+- Sprint 19 core item-token carrier files: byte-for-byte unchanged
+- Source tree: no proprietary or compiled binaries
+
+Exact private-reference Release compile: PASS
+- Target: user-supplied Kingmaker 2.1.7b / UMM 0.32.4 reference set
+- .NET Framework reference surface: 4.7
+- C# language version: 7.3
+- Warnings as errors: yes
+- Compiler exit code: 0
+- Compiler stderr: empty
+- Same-output-path repeat: byte-identical
+- Main DLL SHA-256: 06f1c1da6e93ea59ef4a724672a9dfb7027dcf41187e5cc9b16aa3f116e48dc7
+
+Dependency-free regression tests: PASS
+- Declared/executed: 398
+- New Sprint 20 ammunition cases: 25
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: yes
+- Repeated output SHA-256: 01312bfc211b444d6374ff8ec9d99da795bfbd74110ce8f7b2b8eed5958d3800
+
+UMM install package validation: PASS
+- Single KingmakerGunslinger root
+- Info.json version: 0.0.20
+- Exactly one binary: project-owned KingmakerGunslinger.dll
+- No Kingmaker, Unity, UMM, Harmony, Newtonsoft, or private reference DLL redistributed
+- ZIP CRC and path safety: passed
+- Install ZIP SHA-256: 926ffbafcb363e911a05b79c655b6163bb5b845c61f70ce4a78e2481100730da
+
+Runtime status: READY FOR KINGMAKER BASIC-AMMUNITION SMOKE TEST
+Runtime claims not yet made: item registration/localization/stacking, live atomic inventory behavior, ammunition save/restart persistence, and native Diamond Dust isolation remain to be observed in Kingmaker.

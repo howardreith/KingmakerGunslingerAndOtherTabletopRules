@@ -1,0 +1,35 @@
+Kingmaker Gunslinger Sprint 29 validation results
+Version: 0.0.29-s29-complete-maintenance-loop
+
+PASS source invariants
+PASS 15 stable blueprint IDs: 14 active, 1 reserved
+PASS exact Repair ability ID and fourteen-blueprint bootstrap count
+PASS Firearm Proficiency grants Reload, Overhaul, and Repair
+PASS player-facing full-round empty/Broken-to-empty/Normal Repair
+PASS exact one-kit consumption only on completed Repair delivery
+PASS Normal, Wrecked, loaded Broken, missing-kit, and ambiguous-target rejection boundaries
+PASS exact-item identity and one-revision runtime-result policy
+PASS cross-resource verification and independent rollback policy
+PASS deterministic two-item maintenance fixture and PASS/FAIL evaluator
+PASS one-command immediate transaction regression runner
+PASS 599 declared dependency-free tests
+PASS exact net47/C# 7.3 test compile, warnings as errors
+PASS 599 tests x 3 runs; failures=0
+PASS repeated test output byte-identical
+PASS exact Kingmaker 2.1.7b private-reference Release compile x2
+PASS DLL byte-identical across same-output-path compiles
+PASS PDB byte-identical across same-output-path compiles
+PASS strict standalone eight-entry UMM package
+PASS exactly one packaged binary
+PASS private runtime/compiler/framework references not redistributed
+PASS Sprint 28 runtime evidence preserved
+PASS explicit 0.0.29 live test instructions
+PASS Sprint 30 generic-action entry criteria recorded
+
+DLL SHA-256: 7f252d8abc4a6eed61d69403296e1481f4e30a70ddb90456374538e18481c936
+PDB SHA-256: d6cadb851f2ace372d2f8890c963d785c7fae345f3ebd425b53f60838dbda0b8
+Repeated test output SHA-256: 255b96cf6ad4dc9f8188cd3234344c722c57f18b0290d2e0c9edb5c25373a2e4
+Standalone UMM ZIP SHA-256: 8be74497785d1d5228e368a09818d251557cb207a755c8a57607b97b5c816660
+
+Classification: READY FOR KINGMAKER — runtime acceptance pending.
+Sprint 30 remains blocked until the exact 0.0.29 live gate passes.

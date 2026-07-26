@@ -1,0 +1,62 @@
+{
+  "assemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "capturedAtUtc": "2026-07-15T00:00:00Z",
+  "contracts": {
+    "mainRollSetter": {
+      "declaringType": "Kingmaker.RuleSystem.Rules.RuleAttackRoll",
+      "metadataToken": "0x06007134",
+      "role": "Receives the final main RollEntry immediately after RulebookEvent.Dice.D20 and before IsSuccessRoll.",
+      "signature": "private System.Void set_Roll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)"
+    },
+    "observedMainFlow": [
+      "RulebookEvent.Dice.get_D20()",
+      "RuleAttackRoll.set_Roll(RollEntry)",
+      "RuleAttackRoll.get_Roll()",
+      "RollEntry.op_Implicit(RollEntry)",
+      "RuleAttackRoll.IsSuccessRoll(int)"
+    ],
+    "rollEntry": {
+      "fields": [
+        {
+          "metadataToken": "0x0400887b",
+          "name": "Value",
+          "type": "System.Int32"
+        },
+        {
+          "metadataToken": "0x0400887c",
+          "name": "RollHistory",
+          "type": "System.Collections.Generic.List<System.Int32>"
+        },
+        {
+          "metadataToken": "0x0400887d",
+          "name": "RerollSource",
+          "type": "System.String"
+        }
+      ],
+      "isValueType": true,
+      "type": "Kingmaker.RuleSystem.RulebookEvent+RollEntry"
+    },
+    "ruleAttackRollOnTrigger": {
+      "declaringType": "Kingmaker.RuleSystem.Rules.RuleAttackRoll",
+      "metadataToken": "0x06007173",
+      "signature": "System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)"
+    },
+    "successEvaluator": {
+      "declaringType": "Kingmaker.RuleSystem.Rules.RuleAttackRoll",
+      "metadataToken": "0x0600716f",
+      "role": "Computes the ordinary final hit boolean from the main natural d20, attack bonus, and target AC.",
+      "signature": "public System.Boolean IsSuccessRoll(System.Int32 d20)"
+    }
+  },
+  "decision": {
+    "classificationHook": "Postfix exact public IsSuccessRoll(int), forcing only the boolean result false on natural d20 <= configured threshold.",
+    "conditionTransitions": "deferred",
+    "forceHook": "Prefix exact private set_Roll(RollEntry), modifying only RollEntry.Value for a registered exact-firearm attack.",
+    "nativeHeavyCrossbowIsolation": "Context is registered only after exact firearm marker validation and successful loaded-round discharge."
+  },
+  "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+  "inspectionTextSha256": "7f3113431691dd0ecb33e7ac9bc87ffafd172397f4984f925cc42d087c35addb",
+  "schemaVersion": 1,
+  "targetGame": "Pathfinder: Kingmaker 2.1.7b",
+  "unityModManagerSha256": "1387468bc3af41c50fe51859a3bb7af4922891aa8f13a6187e7a348ceaabfd88"
+}

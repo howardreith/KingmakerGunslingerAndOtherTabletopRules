@@ -1,0 +1,17 @@
+{
+  "capturedAtUtc": "2026-07-12T00:00:00.0000000Z",
+  "game": {
+    "installDirectory": "C:\\Games\\Pathfinder Kingmaker",
+    "storefront": "Steam",
+    "displayedVersion": "2.1.7b",
+    "executableFileVersion": null,
+    "unityModManagerVersion": "0.32.5"
+  },
+  "host": {
+    "operatingSystem": "Microsoft Windows 11",
+    "processArchitecture": "AMD64",
+    "powerShellVersion": "5.1"
+  },
+  "assemblies": [],
+  "enabledMods": []
+}

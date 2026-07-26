@@ -1,0 +1,6 @@
+Sprint 24 source invariant validation passed with final evidence.
+Blueprints: 12 stable / 11 active / 1 reserved.
+Compile items: main=150; tests=90.
+Declared dependency-free tests: 501 unique.
+Condition transitions: exact-item Normal->Broken and Broken->Wrecked only.
+Private runtime/compiler binaries in source tree: none.

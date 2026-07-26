@@ -1,0 +1,1055 @@
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.RuleSystem.Rules.Damage.DamageBundle damage)
+  METHOD private instance System.Void <OnTrigger>b__83_0(Kingmaker.PubSubSystem.IDamageHandler h)
+  METHOD public instance System.Void AddHitFx(UnityEngine.GameObject hit)
+  METHOD private instance System.Void ApplyDifficulty()
+  METHOD private instance System.Int32 ApplyDifficultyModifiers(System.Int32 damage)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackRoll get_AttackRoll()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage get_Calculate()
+  METHOD public instance System.Int32 get_Damage()
+  METHOD public instance System.Int32 get_DamageBeforeDifficulty()
+  METHOD public instance System.Int32 get_DamageWithoutReduction()
+  METHOD public instance System.Boolean get_DisablePrecisionDamage()
+  METHOD public instance System.Boolean get_DisableRegeneration()
+  METHOD public instance System.Collections.Generic.List<UnityEngine.GameObject> get_ExtraHitFx()
+  METHOD public instance System.Boolean get_HalfBecauseSavingThrow()
+  METHOD public instance System.Boolean get_IgnoreDamageReduction()
+  METHOD public instance System.Boolean get_IsDot()
+  METHOD public instance System.Boolean get_IsFake()
+  METHOD public instance System.Nullable<System.Int32> get_MinHPAfterDamage()
+  METHOD public instance System.Nullable<System.Single> get_Modifier()
+  METHOD public instance Kingmaker.Controllers.Projectiles.Projectile get_Projectile()
+  METHOD public instance System.Boolean get_ReducedBecauseOfShadowEvocation()
+  METHOD public instance System.Boolean get_ReducedBecauseOfShadowEvocationGreater()
+  METHOD public instance System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.DamageValue> get_ResultDamage()
+  METHOD public instance Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility get_SourceAbility()
+  METHOD public instance Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbilityAreaEffect get_SourceArea()
+  METHOD public instance System.Void set_AttackRoll(Kingmaker.RuleSystem.Rules.RuleAttackRoll value)
+  METHOD private instance System.Void set_Calculate(Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage value)
+  METHOD private instance System.Void set_Damage(System.Int32 value)
+  METHOD private instance System.Void set_DamageBeforeDifficulty(System.Int32 value)
+  METHOD private instance System.Void set_DamageWithoutReduction(System.Int32 value)
+  METHOD public instance System.Void set_DisablePrecisionDamage(System.Boolean value)
+  METHOD public instance System.Void set_DisableRegeneration(System.Boolean value)
+  METHOD private instance System.Void set_ExtraHitFx(System.Collections.Generic.List<UnityEngine.GameObject> value)
+  METHOD public instance System.Void set_HalfBecauseSavingThrow(System.Boolean value)
+  METHOD public instance System.Void set_IgnoreDamageReduction(System.Boolean value)
+  METHOD private instance System.Void set_IsDot(System.Boolean value)
+  METHOD public instance System.Void set_IsFake(System.Boolean value)
+  METHOD public instance System.Void set_MinHPAfterDamage(System.Nullable<System.Int32> value)
+  METHOD public instance System.Void set_Modifier(System.Nullable<System.Single> value)
+  METHOD public instance System.Void set_Projectile(Kingmaker.Controllers.Projectiles.Projectile value)
+  METHOD public instance System.Void set_ReducedBecauseOfShadowEvocation(System.Boolean value)
+  METHOD public instance System.Void set_ReducedBecauseOfShadowEvocationGreater(System.Boolean value)
+  METHOD private instance System.Void set_ResultDamage(System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.DamageValue> value)
+  METHOD public instance System.Void set_SourceAbility(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility value)
+  METHOD public instance System.Void set_SourceArea(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbilityAreaEffect value)
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackRoll AttackRoll [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage Calculate [public get, private set]
+  PROP System.Int32 Damage [public get, private set]
+  PROP System.Int32 DamageBeforeDifficulty [public get, private set]
+  PROP System.Int32 DamageWithoutReduction [public get, private set]
+  PROP System.Boolean DisablePrecisionDamage [public get, public set]
+  PROP System.Boolean DisableRegeneration [public get, public set]
+  PROP System.Collections.Generic.List<UnityEngine.GameObject> ExtraHitFx [public get, private set]
+  PROP System.Boolean HalfBecauseSavingThrow [public get, public set]
+  PROP System.Boolean IgnoreDamageReduction [public get, public set]
+  PROP System.Boolean IsDot [public get, private set]
+  PROP System.Boolean IsFake [public get, public set]
+  PROP System.Nullable<System.Int32> MinHPAfterDamage [public get, public set]
+  PROP System.Nullable<System.Single> Modifier [public get, public set]
+  PROP Kingmaker.Controllers.Projectiles.Projectile Projectile [public get, public set]
+  PROP System.Boolean ReducedBecauseOfShadowEvocation [public get, public set]
+  PROP System.Boolean ReducedBecauseOfShadowEvocationGreater [public get, public set]
+  PROP System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.DamageValue> ResultDamage [public get, private set]
+  PROP Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility SourceAbility [public get, public set]
+  PROP Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbilityAreaEffect SourceArea [public get, public set]
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackRoll <AttackRoll>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage <Calculate>k__BackingField
+  FIELD private instance System.Int32 <Damage>k__BackingField
+  FIELD private instance System.Int32 <DamageBeforeDifficulty>k__BackingField
+  FIELD private instance System.Int32 <DamageWithoutReduction>k__BackingField
+  FIELD private instance System.Boolean <DisablePrecisionDamage>k__BackingField
+  FIELD private instance System.Boolean <DisableRegeneration>k__BackingField
+  FIELD private instance System.Collections.Generic.List<UnityEngine.GameObject> <ExtraHitFx>k__BackingField
+  FIELD private instance System.Boolean <HalfBecauseSavingThrow>k__BackingField
+  FIELD private instance System.Boolean <IgnoreDamageReduction>k__BackingField
+  FIELD private instance System.Boolean <IsDot>k__BackingField
+  FIELD private instance System.Boolean <IsFake>k__BackingField
+  FIELD private instance System.Nullable<System.Int32> <MinHPAfterDamage>k__BackingField
+  FIELD private instance System.Nullable<System.Single> <Modifier>k__BackingField
+  FIELD private instance Kingmaker.Controllers.Projectiles.Projectile <Projectile>k__BackingField
+  FIELD private instance System.Boolean <ReducedBecauseOfShadowEvocation>k__BackingField
+  FIELD private instance System.Boolean <ReducedBecauseOfShadowEvocationGreater>k__BackingField
+  FIELD private instance System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.DamageValue> <ResultDamage>k__BackingField
+  FIELD private instance Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility <SourceAbility>k__BackingField
+  FIELD private instance Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbilityAreaEffect <SourceArea>k__BackingField
+  FIELD public instance Kingmaker.RuleSystem.Rules.Damage.DamageBundle DamageBundle readonly
+  FIELD public instance System.Single DifficultyModifier
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.DamageBundle
+TYPE Kingmaker.RuleSystem.Rules.Damage.DamageBundle base=System.Object
+  CTOR public instance <ctor> .ctor(Kingmaker.RuleSystem.Rules.Damage.BaseDamage[] damages)
+  CTOR public instance <ctor> .ctor(Kingmaker.Items.ItemEntityWeapon weapon, Kingmaker.Enums.Size weaponSize, Kingmaker.RuleSystem.Rules.Damage.BaseDamage damages)
+  METHOD public instance System.Void Add(Kingmaker.RuleSystem.Rules.Damage.BaseDamage damage)
+  METHOD public instance System.Void Clear()
+  METHOD public instance System.Collections.Generic.IEnumerator<Kingmaker.RuleSystem.Rules.Damage.BaseDamage> GetEnumerator()
+  METHOD public instance System.Void Remove(System.Predicate<Kingmaker.RuleSystem.Rules.Damage.BaseDamage> pred)
+  METHOD private instance System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.BaseDamage get_First()
+  METHOD public instance Kingmaker.Items.ItemEntityWeapon get_Weapon()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.BaseDamage get_WeaponDamage()
+  METHOD public instance System.Nullable<Kingmaker.Enums.Size> get_WeaponSize()
+  METHOD public instance System.Void set_Weapon(Kingmaker.Items.ItemEntityWeapon value)
+  METHOD private instance System.Void set_WeaponDamage(Kingmaker.RuleSystem.Rules.Damage.BaseDamage value)
+  METHOD private instance System.Void set_WeaponSize(System.Nullable<Kingmaker.Enums.Size> value)
+  PROP Kingmaker.RuleSystem.Rules.Damage.BaseDamage First [public get]
+  PROP Kingmaker.Items.ItemEntityWeapon Weapon [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.Damage.BaseDamage WeaponDamage [public get, private set]
+  PROP System.Nullable<Kingmaker.Enums.Size> WeaponSize [public get, private set]
+  FIELD private instance Kingmaker.Items.ItemEntityWeapon <Weapon>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.Damage.BaseDamage <WeaponDamage>k__BackingField
+  FIELD private instance System.Nullable<Kingmaker.Enums.Size> <WeaponSize>k__BackingField
+  FIELD private instance System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.BaseDamage> m_Chunks readonly
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.BaseDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.BaseDamage base=System.Object
+  CTOR protected instance <ctor> .ctor(Kingmaker.RuleSystem.DiceFormula dice)
+  METHOD private instance System.Boolean <get_Alignments>b__53_0(Kingmaker.Enums.Damage.DamageAlignment v)
+  METHOD public instance System.Void AddAlignment(Kingmaker.Enums.Damage.DamageAlignment alignment)
+  METHOD public instance System.Void AddBonus(System.Int32 bonusDamage)
+  METHOD public instance System.Void AddBonusTargetRelated(System.Int32 bonusDamage)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.BaseDamage Copy()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageDescription CreateDescription()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription CreateTypeDescription()
+  METHOD public instance System.Void ReplaceDice(Kingmaker.RuleSystem.DiceFormula dice)
+  METHOD public instance System.Void SetReduction(System.Int32 reduction)
+  METHOD public instance System.Void SetReductionPenalty(System.Int32 penalty)
+  METHOD public instance System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.DamageAlignment> get_Alignments()
+  METHOD public instance Kingmaker.Enums.Damage.DamageAlignment get_AlignmentsMask()
+  METHOD public instance System.Boolean get_AlreadyHalved()
+  METHOD public instance System.Int32 get_Bonus()
+  METHOD public instance System.Int32 get_BonusTargetRelated()
+  METHOD public instance System.Boolean get_CausedByCheckFail()
+  METHOD public instance System.Nullable<System.Int32> get_CriticalModifier()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula get_Dice()
+  METHOD public instance System.Single get_Durability()
+  METHOD public instance System.Single get_EmpowerBonus()
+  METHOD public instance System.Boolean get_Half()
+  METHOD public instance System.Boolean get_IgnoreReduction()
+  METHOD public instance System.Boolean get_Immune()
+  METHOD public instance System.Boolean get_Maximized()
+  METHOD public instance System.Nullable<System.Int32> get_PreRolledValue()
+  METHOD public instance System.Boolean get_Precision()
+  METHOD public instance Kingmaker.Enums.Damage.DamageRealityType get_Reality()
+  METHOD public instance System.Int32 get_Reduction()
+  METHOD public instance System.Int32 get_ReductionPenalty()
+  METHOD public instance System.Boolean get_Sneak()
+  METHOD public instance System.Int32 get_TotalBonus()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageType get_Type()
+  METHOD public instance System.Single get_Vulnerability()
+  METHOD public static Kingmaker.RuleSystem.Rules.Damage.DamageBundle op_Implicit(Kingmaker.RuleSystem.Rules.Damage.BaseDamage damage)
+  METHOD public instance System.Void set_AlreadyHalved(System.Boolean value)
+  METHOD private instance System.Void set_Bonus(System.Int32 value)
+  METHOD private instance System.Void set_BonusTargetRelated(System.Int32 value)
+  METHOD public instance System.Void set_CausedByCheckFail(System.Boolean value)
+  METHOD public instance System.Void set_CriticalModifier(System.Nullable<System.Int32> value)
+  METHOD private instance System.Void set_Dice(Kingmaker.RuleSystem.DiceFormula value)
+  METHOD public instance System.Void set_Durability(System.Single value)
+  METHOD public instance System.Void set_EmpowerBonus(System.Single value)
+  METHOD public instance System.Void set_Half(System.Boolean value)
+  METHOD public instance System.Void set_IgnoreReduction(System.Boolean value)
+  METHOD public instance System.Void set_Immune(System.Boolean value)
+  METHOD public instance System.Void set_Maximized(System.Boolean value)
+  METHOD public instance System.Void set_PreRolledValue(System.Nullable<System.Int32> value)
+  METHOD public instance System.Void set_Precision(System.Boolean value)
+  METHOD public instance System.Void set_Reality(Kingmaker.Enums.Damage.DamageRealityType value)
+  METHOD private instance System.Void set_Reduction(System.Int32 value)
+  METHOD private instance System.Void set_ReductionPenalty(System.Int32 value)
+  METHOD public instance System.Void set_Sneak(System.Boolean value)
+  METHOD public instance System.Void set_Vulnerability(System.Single value)
+  PROP System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.DamageAlignment> Alignments [public get]
+  PROP Kingmaker.Enums.Damage.DamageAlignment AlignmentsMask [public get]
+  PROP System.Boolean AlreadyHalved [public get, public set]
+  PROP System.Int32 Bonus [public get, private set]
+  PROP System.Int32 BonusTargetRelated [public get, private set]
+  PROP System.Boolean CausedByCheckFail [public get, public set]
+  PROP System.Nullable<System.Int32> CriticalModifier [public get, public set]
+  PROP Kingmaker.RuleSystem.DiceFormula Dice [public get, private set]
+  PROP System.Single Durability [public get, public set]
+  PROP System.Single EmpowerBonus [public get, public set]
+  PROP System.Boolean Half [public get, public set]
+  PROP System.Boolean IgnoreReduction [public get, public set]
+  PROP System.Boolean Immune [public get, public set]
+  PROP System.Boolean Maximized [public get, public set]
+  PROP System.Nullable<System.Int32> PreRolledValue [public get, public set]
+  PROP System.Boolean Precision [public get, public set]
+  PROP Kingmaker.Enums.Damage.DamageRealityType Reality [public get, public set]
+  PROP System.Int32 Reduction [public get, private set]
+  PROP System.Int32 ReductionPenalty [public get, private set]
+  PROP System.Boolean Sneak [public get, public set]
+  PROP System.Int32 TotalBonus [public get]
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageType Type [public get]
+  PROP System.Single Vulnerability [public get, public set]
+  FIELD private instance System.Boolean <AlreadyHalved>k__BackingField
+  FIELD private instance System.Int32 <Bonus>k__BackingField
+  FIELD private instance System.Int32 <BonusTargetRelated>k__BackingField
+  FIELD private instance System.Boolean <CausedByCheckFail>k__BackingField
+  FIELD private instance System.Nullable<System.Int32> <CriticalModifier>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.DiceFormula <Dice>k__BackingField
+  FIELD private instance System.Boolean <Half>k__BackingField
+  FIELD private instance System.Boolean <IgnoreReduction>k__BackingField
+  FIELD private instance System.Boolean <Immune>k__BackingField
+  FIELD private instance System.Boolean <Maximized>k__BackingField
+  FIELD private instance System.Nullable<System.Int32> <PreRolledValue>k__BackingField
+  FIELD private instance System.Boolean <Precision>k__BackingField
+  FIELD private instance Kingmaker.Enums.Damage.DamageRealityType <Reality>k__BackingField
+  FIELD private instance System.Int32 <Reduction>k__BackingField
+  FIELD private instance System.Int32 <ReductionPenalty>k__BackingField
+  FIELD private instance System.Boolean <Sneak>k__BackingField
+  FIELD private instance Kingmaker.Enums.Damage.DamageAlignment m_Alignments
+  FIELD private instance System.Single m_Durability
+  FIELD private instance System.Single m_EmpowerBonus
+  FIELD private instance System.Single m_Vulnerability
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.PhysicalDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.PhysicalDamage base=Kingmaker.RuleSystem.Rules.Damage.BaseDamage
+  CTOR public instance <ctor> .ctor(Kingmaker.RuleSystem.DiceFormula damage, System.Nullable<Kingmaker.Enums.Damage.PhysicalDamageForm> form)
+  METHOD private instance System.Boolean <get_Materials>b__18_0(Kingmaker.Enums.Damage.PhysicalDamageMaterial v)
+  METHOD public instance System.Void AddMaterial(Kingmaker.Enums.Damage.PhysicalDamageMaterial material)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription CreateTypeDescription()
+  METHOD public instance System.Int32 get_Enchantment()
+  METHOD public instance System.Int32 get_EnchantmentTotal()
+  METHOD public instance System.Nullable<Kingmaker.Enums.Damage.PhysicalDamageForm> get_Form()
+  METHOD public instance System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.PhysicalDamageForm> get_Forms()
+  METHOD public instance System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.PhysicalDamageMaterial> get_Materials()
+  METHOD public instance Kingmaker.Enums.Damage.PhysicalDamageMaterial get_MaterialsMask()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageType get_Type()
+  METHOD public instance System.Void set_Enchantment(System.Int32 value)
+  METHOD public instance System.Void set_EnchantmentTotal(System.Int32 value)
+  METHOD public instance System.Void set_Form(System.Nullable<Kingmaker.Enums.Damage.PhysicalDamageForm> value)
+  PROP System.Int32 Enchantment [public get, public set]
+  PROP System.Int32 EnchantmentTotal [public get, public set]
+  PROP System.Nullable<Kingmaker.Enums.Damage.PhysicalDamageForm> Form [public get, public set]
+  PROP System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.PhysicalDamageForm> Forms [public get]
+  PROP System.Collections.Generic.IEnumerable<Kingmaker.Enums.Damage.PhysicalDamageMaterial> Materials [public get]
+  PROP Kingmaker.Enums.Damage.PhysicalDamageMaterial MaterialsMask [public get]
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageType Type [public get]
+  FIELD private instance System.Int32 <Enchantment>k__BackingField
+  FIELD private instance System.Int32 <EnchantmentTotal>k__BackingField
+  FIELD private instance System.Nullable<Kingmaker.Enums.Damage.PhysicalDamageForm> <Form>k__BackingField
+  FIELD private instance Kingmaker.Enums.Damage.PhysicalDamageMaterial m_Materials
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.DirectDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.DirectDamage base=Kingmaker.RuleSystem.Rules.Damage.BaseDamage
+  CTOR public instance <ctor> .ctor(Kingmaker.RuleSystem.DiceFormula dice, System.Int32 bonus)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageType get_Type()
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageType Type [public get]
+================================================================================
+REQUEST Kingmaker.RuleSystem.DiceFormula
+TYPE Kingmaker.RuleSystem.DiceFormula base=System.ValueType
+  CTOR public instance <ctor> .ctor(System.Int32 rollsCount, Kingmaker.RuleSystem.DiceType diceType)
+  METHOD public instance System.Boolean Equals(Kingmaker.RuleSystem.DiceFormula other)
+  METHOD public instance System.Boolean Equals(System.Object obj)
+  METHOD public instance System.Int32 GetHashCode()
+  METHOD public instance System.Int32 MaxValue(System.Int32 bonus, System.Boolean halfDamage)
+  METHOD public instance System.Int32 MinValue(System.Int32 bonus, System.Boolean halfDamage)
+  METHOD public instance System.String ToNumString(System.Int32 bonus, System.Boolean halfDamage)
+  METHOD public instance System.String ToString()
+  METHOD public instance Kingmaker.RuleSystem.DiceType get_Dice()
+  METHOD public instance System.Int32 get_Rolls()
+  METHOD public static System.Boolean op_Equality(Kingmaker.RuleSystem.DiceFormula f1, Kingmaker.RuleSystem.DiceFormula f2)
+  METHOD public static System.Boolean op_Inequality(Kingmaker.RuleSystem.DiceFormula f1, Kingmaker.RuleSystem.DiceFormula f2)
+  PROP Kingmaker.RuleSystem.DiceType Dice [public get]
+  PROP System.Int32 Rolls [public get]
+  FIELD public static Kingmaker.RuleSystem.DiceFormula One readonly
+  FIELD public static Kingmaker.RuleSystem.DiceFormula Zero readonly
+  FIELD private instance Kingmaker.RuleSystem.DiceType m_Dice
+  FIELD private instance System.Int32 m_Rolls
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rulebook
+TYPE Kingmaker.RuleSystem.Rulebook base=System.Object
+  CTOR public instance <ctor> .ctor()
+  METHOD private instance System.Void AssignSource(Kingmaker.RuleSystem.RulebookEvent evt)
+  METHOD public static TEvent Trigger(TEvent evt)
+  METHOD public static TEvent Trigger(Kingmaker.RuleSystem.RulebookEventContext context, TEvent evt)
+  METHOD public instance TEvent TriggerEvent(TEvent evt)
+  METHOD public instance System.Void TriggerEventInRestoredContext(Kingmaker.RuleSystem.RulebookEventContext context, TEvent evt)
+  METHOD private instance System.Void TriggerEventInternal(T evt)
+  METHOD public instance Kingmaker.RuleSystem.RulebookEventContext get_Context()
+  METHOD public static Kingmaker.RuleSystem.RulebookEventContext get_CurrentContext()
+  PROP Kingmaker.RuleSystem.RulebookEventContext Context [public get]
+  PROP Kingmaker.RuleSystem.RulebookEventContext CurrentContext [public get]
+  FIELD private instance Kingmaker.RuleSystem.RulebookEventContext m_RuleContext
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.RuleSavingThrow
+TYPE Kingmaker.RuleSystem.Rules.RuleSavingThrow base=Kingmaker.RuleSystem.RulebookEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData unit, Kingmaker.EntitySystem.Stats.SavingThrowType saveType, System.Int32 difficultyClass)
+  METHOD private static Kingmaker.EntitySystem.Stats.StatType GetSave(Kingmaker.EntitySystem.Stats.SavingThrowType type)
+  METHOD public instance System.Boolean IsSuccessRoll(System.Int32 d20, System.Int32 successBonus)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance System.Boolean get_AutoPass()
+  METHOD public instance System.Int32 get_BaseRollResult()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_D20()
+  METHOD public instance System.Boolean get_Evasion()
+  METHOD public instance System.Boolean get_ImprovedEvasion()
+  METHOD public instance System.Boolean get_IsPassed()
+  METHOD public instance System.Boolean get_RequiresSuccessBonus()
+  METHOD public instance System.Int32 get_RollResult()
+  METHOD public instance System.Int32 get_StatValue()
+  METHOD public instance System.Int32 get_SuccessBonus()
+  METHOD public instance Kingmaker.Blueprints.Facts.Fact get_SuccessBonusSource()
+  METHOD public instance System.Void set_AutoPass(System.Boolean value)
+  METHOD public instance System.Void set_BaseRollResult(System.Int32 value)
+  METHOD private instance System.Void set_D20(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_Evasion(System.Boolean value)
+  METHOD public instance System.Void set_ImprovedEvasion(System.Boolean value)
+  METHOD private instance System.Void set_StatValue(System.Int32 value)
+  METHOD public instance System.Void set_SuccessBonus(System.Int32 value)
+  METHOD public instance System.Void set_SuccessBonusSource(Kingmaker.Blueprints.Facts.Fact value)
+  PROP System.Boolean AutoPass [public get, public set]
+  PROP System.Int32 BaseRollResult [public get, public set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry D20 [public get, private set]
+  PROP System.Boolean Evasion [public get, public set]
+  PROP System.Boolean ImprovedEvasion [public get, public set]
+  PROP System.Boolean IsPassed [public get]
+  PROP System.Boolean RequiresSuccessBonus [public get]
+  PROP System.Int32 RollResult [public get]
+  PROP System.Int32 StatValue [public get, private set]
+  PROP System.Int32 SuccessBonus [public get, public set]
+  PROP Kingmaker.Blueprints.Facts.Fact SuccessBonusSource [public get, public set]
+  FIELD private instance System.Boolean <AutoPass>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <D20>k__BackingField
+  FIELD private instance System.Boolean <Evasion>k__BackingField
+  FIELD private instance System.Boolean <ImprovedEvasion>k__BackingField
+  FIELD private instance System.Int32 <StatValue>k__BackingField
+  FIELD private instance System.Int32 <SuccessBonus>k__BackingField
+  FIELD private instance Kingmaker.Blueprints.Facts.Fact <SuccessBonusSource>k__BackingField
+  FIELD public instance System.Int32 DifficultyClass readonly
+  FIELD public instance Kingmaker.EntitySystem.Stats.StatType StatType readonly
+  FIELD public instance Kingmaker.EntitySystem.Stats.SavingThrowType Type readonly
+================================================================================
+REQUEST Kingmaker.EntitySystem.Entities.UnitEntityData
+TYPE Kingmaker.EntitySystem.Entities.UnitEntityData base=Kingmaker.EntitySystem.EntityDataBase
+  CTOR public instance <ctor> .ctor(Kingmaker.View.UnitEntityView view, Kingmaker.UnitLogic.UnitDescriptor descriptor)
+  CTOR public instance <ctor> .ctor(System.String uniqueId, System.Boolean isInGame, Kingmaker.Blueprints.BlueprintUnit blueprint)
+  CTOR protected instance <ctor> .ctor(Kingmaker.EntitySystem.Persistence.JsonUtility.JsonConstructorMark _)
+  METHOD private instance System.Void <ForceExitStealth>b__262_0(Kingmaker.PubSubSystem.IUnitStealthHandler h)
+  METHOD private instance System.Boolean <IsUnseen>b__293_0(Kingmaker.UnitLogic.Groups.UnitGroup group)
+  METHOD private instance System.Void <JoinCombat>b__237_0(Kingmaker.PubSubSystem.IUnitCombatHandler h)
+  METHOD private instance System.Void <LeaveCombat>b__238_0(Kingmaker.PubSubSystem.IUnitCombatHandler h)
+  METHOD private instance System.Void <OnViewAttached>b__244_1(Kingmaker.PubSubSystem.IUnitViewAttachedUIHandler h)
+  METHOD private instance System.Boolean <TurnOn>b__247_0(Kingmaker.UnitLogic.Abilities.Ability a)
+  METHOD public instance System.Void AddBuffDuration(Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff blueprint, System.Single duration)
+  METHOD private instance System.Single CalculateSpeedModifier()
+  METHOD public instance System.Boolean CanAttack(Kingmaker.EntitySystem.Entities.UnitEntityData unit)
+  METHOD public instance Kingmaker.View.UnitEntityView CreateView()
+  METHOD protected instance Kingmaker.View.EntityViewBase CreateViewForData()
+  METHOD public instance System.Void Dispose()
+  METHOD public instance System.Single DistanceTo(Kingmaker.EntitySystem.Entities.UnitEntityData other)
+  METHOD public instance System.Single DistanceTo(UnityEngine.Vector3 point)
+  METHOD internal instance System.Single DistanceTo(Kingmaker.EntitySystem.StaticEntityData data)
+  METHOD public instance System.Void DropLootToGround(System.Boolean dismember, System.Nullable<UnityEngine.Vector3> overridePos)
+  METHOD public instance TPart Ensure()
+  METHOD public instance System.Void ForceExitStealth()
+  METHOD public instance System.Void ForceLookAt(UnityEngine.Vector3 point)
+  METHOD public instance TPart Get()
+  METHOD public instance Kingmaker.UnitLogic.Buffs.Polymorph GetActivePolymorph()
+  METHOD public instance System.Collections.Generic.IEnumerable<Kingmaker.UnitLogic.Commands.Base.UnitCommand> GetAllCommands()
+  METHOD public instance Kingmaker.UnitLogic.Abilities.AbilityData GetAvailableAutoUseAbility()
+  METHOD public instance System.String GetDescription()
+  METHOD public instance Kingmaker.Items.ItemEntityWeapon GetFirstWeapon()
+  METHOD public instance System.Single GetLookAtAngle(UnityEngine.Vector3 point)
+  METHOD public instance Kingmaker.UI.ServiceWindow.LocalMap.LocalMap+MarkType GetMarkerType()
+  METHOD public instance UnityEngine.Vector3 GetPosition()
+  METHOD public instance System.String GetPrefabGuid()
+  METHOD private instance System.Single GetScaleMultiplyerBySize(Kingmaker.Blueprints.BlueprintUnit unit)
+  METHOD public instance System.Single GetTimeToNextTurn()
+  METHOD public instance System.Boolean HasControlLossEffects()
+  METHOD public instance System.Boolean HasFreeTouch()
+  METHOD public instance System.Boolean HasFullRoundAction()
+  METHOD public instance System.Boolean HasLOS(Kingmaker.EntitySystem.Entities.UnitEntityData other)
+  METHOD public instance System.Boolean HasLOS(UnityEngine.Vector3 point)
+  METHOD public instance System.Boolean HasLOS(UnityEngine.Vector3 point, UnityEngine.Vector3 overridePosition)
+  METHOD public instance System.Boolean HasLOS(UnityEngine.Transform transform)
+  METHOD private instance System.Boolean HasLOSBetweenPoints(UnityEngine.Vector3 p1, UnityEngine.Vector3 p2, UnityEngine.Transform t)
+  METHOD public instance System.Boolean HasMoveAction()
+  METHOD public instance System.Boolean HasOffensiveCommand(System.Predicate<Kingmaker.UnitLogic.Commands.Base.UnitCommand> pred)
+  METHOD public instance System.Boolean HasStandardAction()
+  METHOD public instance System.Boolean HasSurpriseCommand(System.Predicate<Kingmaker.UnitLogic.Commands.Base.UnitCommand> pred)
+  METHOD public instance System.Boolean HasSwiftAction()
+  METHOD public instance System.Boolean InRange(UnityEngine.Vector3 center, System.Single radius)
+  METHOD private instance System.Void Initialize(Kingmaker.UnitLogic.UnitDescriptor descriptor, System.Boolean initDescriptor)
+  METHOD public instance System.Boolean IsAbleToAct()
+  METHOD public instance System.Boolean IsActingSurpriseCommands()
+  METHOD public instance System.Boolean IsAlly(Kingmaker.EntitySystem.Entities.UnitEntityData unit)
+  METHOD public instance System.Boolean IsAutoUseAbility(Kingmaker.UnitLogic.Abilities.AbilityData ability)
+  METHOD public instance System.Boolean IsCurrentUnit()
+  METHOD public instance System.Boolean IsEnemy(Kingmaker.EntitySystem.Entities.UnitEntityData unit)
+  METHOD public instance System.Boolean IsMoveActionRestricted()
+  METHOD public instance System.Boolean IsStandardActionRestricted()
+  METHOD public instance System.Boolean IsSummoned()
+  METHOD public instance System.Boolean IsSummoned(Kingmaker.EntitySystem.Entities.UnitEntityData& caster)
+  METHOD public instance System.Boolean IsSurprising()
+  METHOD public instance System.Boolean IsUnseen()
+  METHOD public instance System.Boolean IsVisible()
+  METHOD public instance System.Void JoinCombat()
+  METHOD public instance System.Void LeaveCombat()
+  METHOD public instance System.Void LookAt(UnityEngine.Vector3 point)
+  METHOD protected instance System.Void OnIsInGameChanged()
+  METHOD public instance System.Void OnViewAttached()
+  METHOD public instance System.Void PostLoad()
+  METHOD public instance System.Void PreSave()
+  METHOD public instance System.Void PreloadBodyEquipment()
+  METHOD public instance System.Void PreloadClassEquipment()
+  METHOD public instance System.Void PrepareRespec()
+  METHOD public instance System.Boolean PreparedSpellCombat()
+  METHOD public instance System.Boolean PreparedSpellStrike()
+  METHOD public instance System.Void Remove()
+  METHOD public instance System.Void ReplaceCommands(Kingmaker.UnitLogic.Commands.UnitCommands newCmds)
+  METHOD public instance Kingmaker.UnitLogic.Interaction.IUnitInteraction SelectClickInteraction(Kingmaker.EntitySystem.Entities.UnitEntityData initiator)
+  METHOD public instance System.Void SetBuffDuration(Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff blueprint, System.Single duration)
+  METHOD public instance System.Void SetPositionWithoutWaking(UnityEngine.Vector3 pos)
+  METHOD public instance System.Void SpawnBuffsFxs()
+  METHOD public instance System.Single SqrDistanceTo(Kingmaker.EntitySystem.Entities.UnitEntityData other)
+  METHOD public instance System.Single SqrDistanceTo(UnityEngine.Vector3 point)
+  METHOD public instance System.String ToString()
+  METHOD public instance System.Void Translocate(UnityEngine.Vector3 position, System.Nullable<System.Single> orientation)
+  METHOD private instance System.Void TranslocatePetClose()
+  METHOD public instance System.Void TryCancelCommands()
+  METHOD public instance System.Void TurnOff(System.Boolean force)
+  METHOD public instance System.Void TurnOn()
+  METHOD public instance System.Void UpdateCooldowns(Kingmaker.UnitLogic.Commands.Base.UnitCommand command)
+  METHOD public instance System.Void UpdateGroup()
+  METHOD public instance System.Void UpdateSlowRotation(System.Single maxAngle)
+  METHOD public instance System.Boolean UsedOneMoveAction()
+  METHOD public instance System.Boolean UsedStandardAction()
+  METHOD public instance System.Boolean UsedTwoMoveAction()
+  METHOD public instance System.Void Wake(System.Single time)
+  METHOD public instance System.Boolean WillTakeTurn()
+  METHOD public instance Kingmaker.UnitLogic.Abilities.AbilityCollection get_Abilities()
+  METHOD public instance Kingmaker.UnitLogic.ActivatableAbilities.ActivatableAbilityCollection get_ActivatableAbilities()
+  METHOD public instance System.Boolean get_AiMovementForbidden()
+  METHOD public instance System.Boolean get_AreHandsBusyWithAnimation()
+  METHOD public instance Kingmaker.UnitLogic.UnitAttackFactions get_AttackFactions()
+  METHOD public instance Kingmaker.UnitLogic.Abilities.AbilityData get_AutoUseAbility()
+  METHOD public instance System.Single get_AwakeTimer()
+  METHOD public instance System.Single get_BaseSpeedMps()
+  METHOD public instance Kingmaker.Visual.HitSystem.BloodType get_BloodType()
+  METHOD public instance Kingmaker.Blueprints.BlueprintUnit get_Blueprint()
+  METHOD public instance Kingmaker.Blueprints.BlueprintUnit get_BlueprintForInspection()
+  METHOD public instance Kingmaker.Items.UnitBody get_Body()
+  METHOD public instance Kingmaker.UnitLogic.UnitBrain get_Brain()
+  METHOD public instance Kingmaker.UnitLogic.Buffs.BuffCollection get_Buffs()
+  METHOD public instance System.Int32 get_CachedPerceptionRoll()
+  METHOD public instance System.String get_CharacterName()
+  METHOD public instance System.Single get_CombatSpeedMps()
+  METHOD public instance Kingmaker.Controllers.Combat.UnitCombatState get_CombatState()
+  METHOD public instance Kingmaker.UnitLogic.Commands.UnitCommands get_Commands()
+  METHOD private instance System.Single get_ConsoleSpeedModifier()
+  METHOD public instance System.Single get_Corpulence()
+  METHOD public instance System.Single get_CurrentSpeedMps()
+  METHOD public instance System.Int32 get_Damage()
+  METHOD public instance System.Int32 get_DamageNonLethal()
+  METHOD public instance Kingmaker.UnitLogic.UnitDescriptor get_Descriptor()
+  METHOD public instance System.Single get_DesiredOrientation()
+  METHOD public instance Kingmaker.View.MapObjects.SriptZones.ScriptZone get_ExtendedVisionArea()
+  METHOD public instance UnityEngine.Vector3 get_EyePosition()
+  METHOD public instance Kingmaker.Blueprints.BlueprintFaction get_Faction()
+  METHOD public instance System.Single get_FlyHeight()
+  METHOD public instance Kingmaker.Blueprints.Gender get_Gender()
+  METHOD public instance System.Boolean get_GiveExperienceOnDeath()
+  METHOD public instance Kingmaker.UnitLogic.Groups.UnitGroup get_Group()
+  METHOD public instance System.String get_GroupId()
+  METHOD public instance System.Int32 get_HPLeft()
+  METHOD private instance System.Boolean get_HasLoot()
+  METHOD public instance System.Boolean get_HasMotionThisTick()
+  METHOD public instance Kingmaker.Items.ItemsCollection get_Inventory()
+  METHOD public instance System.Boolean get_IsAIEnabled()
+  METHOD public instance System.Boolean get_IsAwake()
+  METHOD public instance System.Boolean get_IsBrainActive()
+  METHOD public instance System.Boolean get_IsDeadAndHasLoot()
+  METHOD public instance System.Boolean get_IsDeathRevealed()
+  METHOD public instance System.Boolean get_IsDetached()
+  METHOD public instance System.Boolean get_IsDirectlyControllable()
+  METHOD public instance System.Boolean get_IsHiddenBecauseDead()
+  METHOD public instance System.Boolean get_IsInCombat()
+  METHOD public instance System.Boolean get_IsMainCharacter()
+  METHOD public instance System.Boolean get_IsPlayerFaction()
+  METHOD public instance System.Boolean get_IsPlayersEnemy()
+  METHOD public instance System.Boolean get_IsSleeping()
+  METHOD public instance System.Boolean get_IsTurnedOn()
+  METHOD public instance System.Boolean get_IsViewActive()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage get_LastHandledDamage()
+  METHOD public instance System.TimeSpan get_LastMoveTime()
+  METHOD public instance Kingmaker.EntitySystem.Entities.UnitLogicCollection get_Logic()
+  METHOD public instance System.Int32 get_MaxHP()
+  METHOD public instance Kingmaker.UnitLogic.UnitGroupMemory get_Memory()
+  METHOD public instance System.Single get_ModifiedSpeedMps()
+  METHOD public instance Kingmaker.Utility.Feet get_NonCombatBaseSpeedFeet()
+  METHOD public instance System.Single get_Orientation()
+  METHOD public instance UnityEngine.Vector3 get_OrientationDirection()
+  METHOD public instance Kingmaker.Blueprints.PortraitData get_Portrait()
+  METHOD public instance UnityEngine.Vector3 get_Position()
+  METHOD public instance UnityEngine.Vector3 get_PreviousPosition()
+  METHOD public instance Kingmaker.Visual.CharacterSystem.SavedRagdollState get_SavedRagdoll()
+  METHOD public instance System.Boolean get_SpeedIsAffected()
+  METHOD public instance Kingmaker.EntitySystem.Stats.CharacterStats get_Stats()
+  METHOD public instance System.Int32 get_TemporaryHP()
+  METHOD public instance System.Single get_TimeToNextRoundTick()
+  METHOD public instance Kingmaker.UI.UnitSettings.UnitUISettings get_UISettings()
+  METHOD public instance <type-error:FileNotFoundException> get_UpdateCommand(<params-error:FileNotFoundException>)
+  METHOD public instance Kingmaker.Items.ItemsCollection get_VendorInventory()
+  METHOD public instance Kingmaker.View.UnitEntityView get_View()
+  METHOD public instance System.Single get_VisionRangeMeters()
+  METHOD public instance System.Single get_VisionRangeMetersOverride()
+  METHOD public instance System.Void set_AutoUseAbility(Kingmaker.UnitLogic.Abilities.AbilityData value)
+  METHOD public instance System.Void set_AwakeTimer(System.Single value)
+  METHOD public instance System.Void set_CachedPerceptionRoll(System.Int32 value)
+  METHOD private instance System.Void set_CombatState(Kingmaker.Controllers.Combat.UnitCombatState value)
+  METHOD private instance System.Void set_Commands(Kingmaker.UnitLogic.Commands.UnitCommands value)
+  METHOD public instance System.Void set_Damage(System.Int32 value)
+  METHOD private instance System.Void set_Descriptor(Kingmaker.UnitLogic.UnitDescriptor value)
+  METHOD public instance System.Void set_DesiredOrientation(System.Single value)
+  METHOD public instance System.Void set_ExtendedVisionArea(Kingmaker.View.MapObjects.SriptZones.ScriptZone value)
+  METHOD public instance System.Void set_FlyHeight(System.Single value)
+  METHOD public instance System.Void set_GiveExperienceOnDeath(System.Boolean value)
+  METHOD public instance System.Void set_GroupId(System.String value)
+  METHOD public instance System.Void set_IsAIEnabled(System.Boolean value)
+  METHOD public instance System.Void set_IsBrainActive(System.Boolean value)
+  METHOD public instance System.Void set_IsDeathRevealed(System.Boolean value)
+  METHOD public instance System.Void set_IsDetached(System.Boolean value)
+  METHOD public instance System.Void set_IsHiddenBecauseDead(System.Boolean value)
+  METHOD public instance System.Void set_IsSleeping(System.Boolean value)
+  METHOD public instance System.Void set_LastHandledDamage(Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage value)
+  METHOD public instance System.Void set_LastMoveTime(System.TimeSpan value)
+  METHOD public instance System.Void set_Orientation(System.Single value)
+  METHOD public instance System.Void set_Position(UnityEngine.Vector3 value)
+  METHOD public instance System.Void set_PreviousPosition(UnityEngine.Vector3 value)
+  METHOD public instance System.Void set_TimeToNextRoundTick(System.Single value)
+  METHOD public instance System.Void set_VisionRangeMetersOverride(System.Single value)
+  PROP Kingmaker.UnitLogic.Abilities.AbilityCollection Abilities [public get]
+  PROP Kingmaker.UnitLogic.ActivatableAbilities.ActivatableAbilityCollection ActivatableAbilities [public get]
+  PROP System.Boolean AiMovementForbidden [public get]
+  PROP System.Boolean AreHandsBusyWithAnimation [public get]
+  PROP Kingmaker.UnitLogic.UnitAttackFactions AttackFactions [public get]
+  PROP Kingmaker.UnitLogic.Abilities.AbilityData AutoUseAbility [public get, public set]
+  PROP System.Single AwakeTimer [public get, public set]
+  PROP System.Single BaseSpeedMps [public get]
+  PROP Kingmaker.Visual.HitSystem.BloodType BloodType [public get]
+  PROP Kingmaker.Blueprints.BlueprintUnit Blueprint [public get]
+  PROP Kingmaker.Blueprints.BlueprintUnit BlueprintForInspection [public get]
+  PROP Kingmaker.Items.UnitBody Body [public get]
+  PROP Kingmaker.UnitLogic.UnitBrain Brain [public get]
+  PROP Kingmaker.UnitLogic.Buffs.BuffCollection Buffs [public get]
+  PROP System.Int32 CachedPerceptionRoll [public get, public set]
+  PROP System.String CharacterName [public get]
+  PROP System.Single CombatSpeedMps [public get]
+  PROP Kingmaker.Controllers.Combat.UnitCombatState CombatState [public get, private set]
+  PROP Kingmaker.UnitLogic.Commands.UnitCommands Commands [public get, private set]
+  PROP System.Single ConsoleSpeedModifier [private get]
+  PROP System.Single Corpulence [public get]
+  PROP System.Single CurrentSpeedMps [public get]
+  PROP System.Int32 Damage [public get, public set]
+  PROP System.Int32 DamageNonLethal [public get]
+  PROP Kingmaker.UnitLogic.UnitDescriptor Descriptor [public get, private set]
+  PROP System.Single DesiredOrientation [public get, public set]
+  PROP Kingmaker.View.MapObjects.SriptZones.ScriptZone ExtendedVisionArea [public get, public set]
+  PROP UnityEngine.Vector3 EyePosition [public get]
+  PROP Kingmaker.Blueprints.BlueprintFaction Faction [public get]
+  PROP System.Single FlyHeight [public get, public set]
+  PROP Kingmaker.Blueprints.Gender Gender [public get]
+  PROP System.Boolean GiveExperienceOnDeath [public get, public set]
+  PROP Kingmaker.UnitLogic.Groups.UnitGroup Group [public get]
+  PROP System.String GroupId [public get, public set]
+  PROP System.Int32 HPLeft [public get]
+  PROP System.Boolean HasLoot [private get]
+  PROP System.Boolean HasMotionThisTick [public get]
+  PROP Kingmaker.Items.ItemsCollection Inventory [public get]
+  PROP System.Boolean IsAIEnabled [public get, public set]
+  PROP System.Boolean IsAwake [public get]
+  PROP System.Boolean IsBrainActive [public get, public set]
+  PROP System.Boolean IsDeadAndHasLoot [public get]
+  PROP System.Boolean IsDeathRevealed [public get, public set]
+  PROP System.Boolean IsDetached [public get, public set]
+  PROP System.Boolean IsDirectlyControllable [public get]
+  PROP System.Boolean IsHiddenBecauseDead [public get, public set]
+  PROP System.Boolean IsInCombat [public get]
+  PROP System.Boolean IsMainCharacter [public get]
+  PROP System.Boolean IsPlayerFaction [public get]
+  PROP System.Boolean IsPlayersEnemy [public get]
+  PROP System.Boolean IsSleeping [public get, public set]
+  PROP System.Boolean IsTurnedOn [public get]
+  PROP System.Boolean IsViewActive [public get]
+  PROP Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage LastHandledDamage [public get, public set]
+  PROP System.TimeSpan LastMoveTime [public get, public set]
+  PROP Kingmaker.EntitySystem.Entities.UnitLogicCollection Logic [public get]
+  PROP System.Int32 MaxHP [public get]
+  PROP Kingmaker.UnitLogic.UnitGroupMemory Memory [public get]
+  PROP System.Single ModifiedSpeedMps [public get]
+  PROP Kingmaker.Utility.Feet NonCombatBaseSpeedFeet [public get]
+  PROP System.Single Orientation [public get, public set]
+  PROP UnityEngine.Vector3 OrientationDirection [public get]
+  PROP Kingmaker.Blueprints.PortraitData Portrait [public get]
+  PROP UnityEngine.Vector3 Position [public get, public set]
+  PROP UnityEngine.Vector3 PreviousPosition [public get, public set]
+  PROP Kingmaker.Visual.CharacterSystem.SavedRagdollState SavedRagdoll [public get]
+  PROP System.Boolean SpeedIsAffected [public get]
+  PROP Kingmaker.EntitySystem.Stats.CharacterStats Stats [public get]
+  PROP System.Int32 TemporaryHP [public get]
+  PROP System.Single TimeToNextRoundTick [public get, public set]
+  PROP Kingmaker.UI.UnitSettings.UnitUISettings UISettings [public get]
+  PROP <type-error:FileNotFoundException> UpdateCommand [public get]
+  PROP Kingmaker.Items.ItemsCollection VendorInventory [public get]
+  PROP Kingmaker.View.UnitEntityView View [public get]
+  PROP System.Single VisionRangeMeters [public get]
+  PROP System.Single VisionRangeMetersOverride [public get, public set]
+  FIELD private instance System.Single <AwakeTimer>k__BackingField
+  FIELD private instance System.Int32 <CachedPerceptionRoll>k__BackingField
+  FIELD private instance Kingmaker.Controllers.Combat.UnitCombatState <CombatState>k__BackingField
+  FIELD private instance Kingmaker.UnitLogic.Commands.UnitCommands <Commands>k__BackingField
+  FIELD private instance Kingmaker.UnitLogic.UnitDescriptor <Descriptor>k__BackingField
+  FIELD private instance System.Single <DesiredOrientation>k__BackingField
+  FIELD private instance Kingmaker.View.MapObjects.SriptZones.ScriptZone <ExtendedVisionArea>k__BackingField
+  FIELD private instance System.Single <FlyHeight>k__BackingField
+  FIELD private instance System.Boolean <GiveExperienceOnDeath>k__BackingField
+  FIELD private instance System.Boolean <IsBrainActive>k__BackingField
+  FIELD private instance System.Boolean <IsDetached>k__BackingField
+  FIELD private instance System.Boolean <IsHiddenBecauseDead>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage <LastHandledDamage>k__BackingField
+  FIELD private instance System.TimeSpan <LastMoveTime>k__BackingField
+  FIELD private instance UnityEngine.Vector3 <PreviousPosition>k__BackingField
+  FIELD private instance System.Single <TimeToNextRoundTick>k__BackingField
+  FIELD private instance <type-error:FileNotFoundException> <UpdateCommand>k__BackingField readonly
+  FIELD private instance System.Single <VisionRangeMetersOverride>k__BackingField
+  FIELD public instance Kingmaker.AreaLogic.Cutscenes.CutsceneControlledUnit CutceneControlledUnit
+  FIELD public instance System.Collections.Generic.List<Kingmaker.Visual.Critters.Familiar> Familiars readonly
+  FIELD public instance System.Boolean HoldState
+  FIELD public instance System.Boolean IsLink
+  FIELD public instance System.Boolean LootViewed
+  FIELD public instance Kingmaker.Utility.CountableFlag PreventDirectControl readonly
+  FIELD public instance Kingmaker.UnitLogic.UnitSightCache SightCache readonly
+  FIELD public instance System.Boolean Sleepless
+  FIELD public instance UnityEngine.Vector3 SpawnPosition
+  FIELD public instance Kingmaker.UnitLogic.UnitStealth Stealth readonly
+  FIELD private instance System.Boolean m_AiEnabled
+  FIELD private instance Kingmaker.UnitLogic.Abilities.AbilityData m_AutoUseAbility
+  FIELD private instance Kingmaker.UnitLogic.Groups.UnitGroup m_Group
+  FIELD private instance System.String m_GroupId
+  FIELD private instance System.Boolean m_IsDeathRevealed
+  FIELD private instance System.Boolean m_IsSleeping
+  FIELD private instance System.Single m_Orientation
+  FIELD private instance UnityEngine.Vector3 m_Position
+  FIELD private instance Kingmaker.Visual.CharacterSystem.SavedRagdollState m_SavedRagdoll
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.RuleCalculateDamage base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage dealDamage)
+  METHOD private instance Kingmaker.RuleSystem.Rules.Damage.DamageValue CountDamageValue(Kingmaker.RuleSystem.Rules.Damage.BaseDamage damage)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD private static System.Int32 Roll(Kingmaker.RuleSystem.DiceFormula damageFormula, System.Int32 criticalModifier, System.Boolean maximized)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageBundle get_DamageBundle()
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageBundle DamageBundle [public get]
+  FIELD public instance System.Collections.Generic.List<Kingmaker.RuleSystem.Rules.Damage.DamageValue> CalculatedDamage readonly
+  FIELD public instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage ParentRule readonly
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.Damage.RulePrepareDamage
+TYPE Kingmaker.RuleSystem.Rules.Damage.RulePrepareDamage base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage dealDamage)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageBundle get_DamageBundle()
+  METHOD public instance System.Boolean get_IsSurpriseSpell()
+  METHOD public instance System.Void set_IsSurpriseSpell(System.Boolean value)
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageBundle DamageBundle [public get]
+  PROP System.Boolean IsSurpriseSpell [public get, public set]
+  FIELD private instance System.Boolean <IsSurpriseSpell>k__BackingField
+  FIELD public instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage ParentRule readonly
+================================================================================
+REQUEST Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon
+TYPE Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon base=Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentHand
+  CTOR public instance <ctor> .ctor()
+  METHOD protected instance System.Collections.Generic.IEnumerable<Kingmaker.Blueprints.Items.Ecnchantments.BlueprintItemEnchantment> CollectEnchantments()
+  METHOD public instance System.String GetEnchantmentPrefixes()
+  METHOD public instance System.String GetEnchantmentSuffixes()
+  METHOD public instance System.Void OnEnable()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula ScaleDamage(Kingmaker.Enums.Size size)
+  METHOD public instance System.Void Validate(Kingmaker.Blueprints.Validation.ValidationContext context)
+  METHOD protected instance System.Boolean get_AllowMakeStackable()
+  METHOD public instance Kingmaker.EntitySystem.Stats.StatType get_AttackBonusStat()
+  METHOD public instance Kingmaker.Utility.Feet get_AttackRange()
+  METHOD public instance Kingmaker.RuleSystem.AttackType get_AttackType()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula get_BaseDamage()
+  METHOD public instance Kingmaker.Enums.WeaponCategory get_Category()
+  METHOD public instance Kingmaker.Enums.Damage.DamageCriticalModifierType get_CriticalModifier()
+  METHOD public instance System.Int32 get_CriticalRollEdge()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula get_Damage()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription get_DamageType()
+  METHOD protected instance System.String get_DefaultNonIdentifiedDescription()
+  METHOD protected instance System.String get_DefaultNonIdentifiedName()
+  METHOD public instance System.String get_Description()
+  METHOD public instance Kingmaker.Blueprints.Items.Weapons.WeaponFighterGroup get_FighterGroup()
+  METHOD public instance System.Boolean get_HasNoDamage()
+  METHOD public instance UnityEngine.Sprite get_Icon()
+  METHOD public instance System.Boolean get_IsDamageDiceOverridden()
+  METHOD public instance System.Boolean get_IsLight()
+  METHOD public instance System.Boolean get_IsMagic()
+  METHOD public instance System.Boolean get_IsMasterwork()
+  METHOD public instance System.Boolean get_IsMelee()
+  METHOD public instance System.Boolean get_IsMonk()
+  METHOD public instance System.Boolean get_IsNatural()
+  METHOD public instance System.Boolean get_IsOneHandedWhichCanBeUsedWithTwoHands()
+  METHOD public instance System.Boolean get_IsOnlyMasterwork()
+  METHOD public instance System.Boolean get_IsRanged()
+  METHOD public instance System.Boolean get_IsTwoHanded()
+  METHOD public instance System.Boolean get_IsUnarmed()
+  METHOD public instance Kingmaker.UI.Common.ItemsFilter+ItemType get_ItemType()
+  METHOD public instance System.String get_Name()
+  METHOD public instance Kingmaker.Enums.Size get_Size()
+  METHOD public instance System.String get_SubtypeDescription()
+  METHOD public instance System.String get_SubtypeName()
+  METHOD public instance Kingmaker.Blueprints.Items.Weapons.BlueprintWeaponType get_Type()
+  METHOD public instance System.Single get_Weight()
+  PROP System.Boolean AllowMakeStackable [protected get]
+  PROP Kingmaker.EntitySystem.Stats.StatType AttackBonusStat [public get]
+  PROP Kingmaker.Utility.Feet AttackRange [public get]
+  PROP Kingmaker.RuleSystem.AttackType AttackType [public get]
+  PROP Kingmaker.RuleSystem.DiceFormula BaseDamage [public get]
+  PROP Kingmaker.Enums.WeaponCategory Category [public get]
+  PROP Kingmaker.Enums.Damage.DamageCriticalModifierType CriticalModifier [public get]
+  PROP System.Int32 CriticalRollEdge [public get]
+  PROP Kingmaker.RuleSystem.DiceFormula Damage [public get]
+  PROP Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription DamageType [public get]
+  PROP System.String DefaultNonIdentifiedDescription [protected get]
+  PROP System.String DefaultNonIdentifiedName [protected get]
+  PROP System.String Description [public get]
+  PROP Kingmaker.Blueprints.Items.Weapons.WeaponFighterGroup FighterGroup [public get]
+  PROP System.Boolean HasNoDamage [public get]
+  PROP UnityEngine.Sprite Icon [public get]
+  PROP System.Boolean IsDamageDiceOverridden [public get]
+  PROP System.Boolean IsLight [public get]
+  PROP System.Boolean IsMagic [public get]
+  PROP System.Boolean IsMasterwork [public get]
+  PROP System.Boolean IsMelee [public get]
+  PROP System.Boolean IsMonk [public get]
+  PROP System.Boolean IsNatural [public get]
+  PROP System.Boolean IsOneHandedWhichCanBeUsedWithTwoHands [public get]
+  PROP System.Boolean IsOnlyMasterwork [public get]
+  PROP System.Boolean IsRanged [public get]
+  PROP System.Boolean IsTwoHanded [public get]
+  PROP System.Boolean IsUnarmed [public get]
+  PROP Kingmaker.UI.Common.ItemsFilter+ItemType ItemType [public get]
+  PROP System.String Name [public get]
+  PROP Kingmaker.Enums.Size Size [public get]
+  PROP System.String SubtypeDescription [public get]
+  PROP System.String SubtypeName [public get]
+  PROP Kingmaker.Blueprints.Items.Weapons.BlueprintWeaponType Type [public get]
+  PROP System.Single Weight [public get]
+  FIELD public instance System.Boolean Double
+  FIELD public instance Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon SecondWeapon
+  FIELD private instance Kingmaker.RuleSystem.DiceFormula m_DamageDice
+  FIELD private instance Kingmaker.RuleSystem.Rules.Damage.DamageTypeDescription m_DamageType
+  FIELD private instance Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment[] m_Enchantments
+  FIELD private instance System.Boolean m_OverrideDamageDice
+  FIELD private instance System.Boolean m_OverrideDamageType
+  FIELD private instance Kingmaker.Enums.Size m_Size
+  FIELD private instance Kingmaker.Blueprints.Items.Weapons.BlueprintWeaponType m_Type
+================================================================================
+REQUEST Kingmaker.Items.ItemEntityWeapon
+TYPE Kingmaker.Items.ItemEntityWeapon base=Kingmaker.Items.ItemEntity<Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>
+  CTOR public instance <ctor> .ctor(Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon bpItem)
+  CTOR protected instance <ctor> .ctor(Kingmaker.EntitySystem.Persistence.JsonUtility.JsonConstructorMark _)
+  METHOD protected instance System.Boolean CanBeEquippedInternal(Kingmaker.UnitLogic.UnitDescriptor owner)
+  METHOD public instance System.Void Dispose()
+  METHOD public instance Kingmaker.View.Animation.WeaponAnimationStyle GetAnimationStyle(System.Boolean forDollRoom)
+  METHOD public instance System.Void OnDidEquipped(Kingmaker.UnitLogic.UnitDescriptor wielder)
+  METHOD public instance System.Void OnWillUnequip()
+  METHOD public instance System.Void PostLoad()
+  METHOD public instance System.Void PreSave()
+  METHOD public instance System.Void TurnOff(System.Boolean force)
+  METHOD public instance System.Void TurnOn()
+  METHOD public instance Kingmaker.Utility.Feet get_AttackRange()
+  METHOD public instance Kingmaker.RuleSystem.DiceFormula get_Damage()
+  METHOD public instance System.Boolean get_ForceSecondary()
+  METHOD public instance System.Boolean get_HoldInTwoHands()
+  METHOD public instance System.Boolean get_IsLootable()
+  METHOD public instance System.Boolean get_IsSecondPartOfDoubleWeapon()
+  METHOD public instance System.Boolean get_IsSecondary()
+  METHOD public instance System.Boolean get_IsShield()
+  METHOD public instance Kingmaker.Enums.Size get_Size()
+  METHOD public instance System.Void set_ForceSecondary(System.Boolean value)
+  METHOD private instance System.Void set_IsSecondPartOfDoubleWeapon(System.Boolean value)
+  METHOD public instance System.Void set_IsShield(System.Boolean value)
+  PROP Kingmaker.Utility.Feet AttackRange [public get]
+  PROP Kingmaker.RuleSystem.DiceFormula Damage [public get]
+  PROP System.Boolean ForceSecondary [public get, public set]
+  PROP System.Boolean HoldInTwoHands [public get]
+  PROP System.Boolean IsLootable [public get]
+  PROP System.Boolean IsSecondPartOfDoubleWeapon [public get, private set]
+  PROP System.Boolean IsSecondary [public get]
+  PROP System.Boolean IsShield [public get, public set]
+  PROP Kingmaker.Enums.Size Size [public get]
+  FIELD private instance System.Boolean <ForceSecondary>k__BackingField
+  FIELD private instance System.Boolean <IsSecondPartOfDoubleWeapon>k__BackingField
+  FIELD private instance System.Boolean <IsShield>k__BackingField
+  FIELD public instance Kingmaker.Items.ItemEntityWeapon Second readonly
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.RuleAttackRoll
+TYPE Kingmaker.RuleSystem.Rules.RuleAttackRoll base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats weaponStats, System.Int32 attackBonusPenalty)
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData initiator, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 attackBonusPenalty)
+  METHOD private instance System.Void <OnTrigger>b__170_0(Kingmaker.PubSubSystem.IAttackHandler h)
+  METHOD public instance System.Void ConsumeMirrorImageIfNecessary()
+  METHOD public instance System.Void IncreaseMissChance(System.Int32 value)
+  METHOD public instance System.Boolean IsSuccessRoll(System.Int32 d20)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance System.Void SetAttackBonusPenalty(System.Int32 penalty)
+  METHOD public instance System.Void SetFake(Kingmaker.RuleSystem.Rules.AttackResult result)
+  METHOD private instance System.Boolean TryOvercomeTargetConcealmentAndMissChance()
+  METHOD public instance System.Void TryParry(Kingmaker.EntitySystem.Entities.UnitEntityData unit, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 penalty)
+  METHOD public instance System.Void UseSneakAttack()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleCalculateAC get_ACRule()
+  METHOD public instance System.Boolean get_AddedToCombatLog()
+  METHOD public instance System.Int32 get_AttackBonus()
+  METHOD public instance System.Int32 get_AttackBonusPenalty()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus get_AttackBonusRule()
+  METHOD public instance Kingmaker.UI.Log.LogItemData get_AttackLogEntry()
+  METHOD public instance Kingmaker.RuleSystem.AttackType get_AttackType()
+  METHOD public instance System.Boolean get_AutoCriticalConfirmation()
+  METHOD public instance System.Boolean get_AutoCriticalThreat()
+  METHOD public instance System.Boolean get_AutoHit()
+  METHOD public instance System.Boolean get_AutoMiss()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleConcealmentCheck get_ConcealmentCheck()
+  METHOD public instance System.Int32 get_CriticalConfirmationBonus()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_CriticalConfirmationRoll()
+  METHOD public instance System.Boolean get_DoNotProvokeAttacksOfOpportunity()
+  METHOD public instance System.Int32 get_FortificationChance()
+  METHOD public instance System.Boolean get_FortificationNegatesCriticalHit()
+  METHOD public instance System.Boolean get_FortificationNegatesSneakAttack()
+  METHOD public instance System.Boolean get_FortificationOvercomed()
+  METHOD public instance System.Int32 get_FortificationRoll()
+  METHOD public instance System.Int32 get_HitMirrorImageIndex()
+  METHOD public instance System.Boolean get_IgnoreConcealment()
+  METHOD public instance System.Boolean get_ImmuneToCriticalHit()
+  METHOD public instance System.Boolean get_ImmuneToSneakAttack()
+  METHOD public instance System.Boolean get_IsCriticalConfirmed()
+  METHOD public instance System.Boolean get_IsCriticalRoll()
+  METHOD public instance System.Boolean get_IsHit()
+  METHOD public instance System.Boolean get_IsSneakAttack()
+  METHOD public instance System.Boolean get_IsSneakAttackUsed()
+  METHOD public instance System.Boolean get_IsTargetFlatFooted()
+  METHOD public instance System.Int32 get_MissChance()
+  METHOD public instance System.Int32 get_MissChanceRoll()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData get_Parry()
+  METHOD public instance Kingmaker.UI.Log.LogItemData get_ParryLogEntry()
+  METHOD public instance System.Int32 get_PreciseStrike()
+  METHOD public instance Kingmaker.RuleSystem.Rules.AttackResult get_Result()
+  METHOD public instance Kingmaker.RuleSystem.RulebookEvent+RollEntry get_Roll()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon get_RuleAttackWithWeapon()
+  METHOD public instance System.Boolean get_SuspendCombatLog()
+  METHOD public instance System.Int32 get_TargetAC()
+  METHOD public instance System.Int32 get_TargetCriticalAC()
+  METHOD public instance System.Boolean get_TargetUseFortification()
+  METHOD public instance Kingmaker.Items.ItemEntityWeapon get_Weapon()
+  METHOD private instance System.Void set_ACRule(Kingmaker.RuleSystem.Rules.RuleCalculateAC value)
+  METHOD public instance System.Void set_AddedToCombatLog(System.Boolean value)
+  METHOD private instance System.Void set_AttackBonus(System.Int32 value)
+  METHOD private instance System.Void set_AttackBonusPenalty(System.Int32 value)
+  METHOD private instance System.Void set_AttackBonusRule(Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus value)
+  METHOD public instance System.Void set_AttackLogEntry(Kingmaker.UI.Log.LogItemData value)
+  METHOD public instance System.Void set_AttackType(Kingmaker.RuleSystem.AttackType value)
+  METHOD public instance System.Void set_AutoCriticalConfirmation(System.Boolean value)
+  METHOD public instance System.Void set_AutoCriticalThreat(System.Boolean value)
+  METHOD public instance System.Void set_AutoHit(System.Boolean value)
+  METHOD public instance System.Void set_AutoMiss(System.Boolean value)
+  METHOD private instance System.Void set_ConcealmentCheck(Kingmaker.RuleSystem.Rules.RuleConcealmentCheck value)
+  METHOD public instance System.Void set_CriticalConfirmationBonus(System.Int32 value)
+  METHOD private instance System.Void set_CriticalConfirmationRoll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_DoNotProvokeAttacksOfOpportunity(System.Boolean value)
+  METHOD private instance System.Void set_FortificationChance(System.Int32 value)
+  METHOD private instance System.Void set_FortificationNegatesCriticalHit(System.Boolean value)
+  METHOD private instance System.Void set_FortificationNegatesSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_FortificationRoll(System.Int32 value)
+  METHOD private instance System.Void set_HitMirrorImageIndex(System.Int32 value)
+  METHOD public instance System.Void set_IgnoreConcealment(System.Boolean value)
+  METHOD public instance System.Void set_ImmuneToCriticalHit(System.Boolean value)
+  METHOD public instance System.Void set_ImmuneToSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_IsCriticalConfirmed(System.Boolean value)
+  METHOD private instance System.Void set_IsCriticalRoll(System.Boolean value)
+  METHOD private instance System.Void set_IsSneakAttack(System.Boolean value)
+  METHOD private instance System.Void set_IsSneakAttackUsed(System.Boolean value)
+  METHOD private instance System.Void set_IsTargetFlatFooted(System.Boolean value)
+  METHOD private instance System.Void set_MissChance(System.Int32 value)
+  METHOD private instance System.Void set_MissChanceRoll(System.Int32 value)
+  METHOD private instance System.Void set_Parry(Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData value)
+  METHOD public instance System.Void set_ParryLogEntry(Kingmaker.UI.Log.LogItemData value)
+  METHOD public instance System.Void set_PreciseStrike(System.Int32 value)
+  METHOD private instance System.Void set_Result(Kingmaker.RuleSystem.Rules.AttackResult value)
+  METHOD private instance System.Void set_Roll(Kingmaker.RuleSystem.RulebookEvent+RollEntry value)
+  METHOD public instance System.Void set_RuleAttackWithWeapon(Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon value)
+  METHOD public instance System.Void set_SuspendCombatLog(System.Boolean value)
+  METHOD private instance System.Void set_TargetAC(System.Int32 value)
+  METHOD private instance System.Void set_TargetCriticalAC(System.Int32 value)
+  PROP Kingmaker.RuleSystem.Rules.RuleCalculateAC ACRule [public get, private set]
+  PROP System.Boolean AddedToCombatLog [public get, public set]
+  PROP System.Int32 AttackBonus [public get, private set]
+  PROP System.Int32 AttackBonusPenalty [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus AttackBonusRule [public get, private set]
+  PROP Kingmaker.UI.Log.LogItemData AttackLogEntry [public get, public set]
+  PROP Kingmaker.RuleSystem.AttackType AttackType [public get, public set]
+  PROP System.Boolean AutoCriticalConfirmation [public get, public set]
+  PROP System.Boolean AutoCriticalThreat [public get, public set]
+  PROP System.Boolean AutoHit [public get, public set]
+  PROP System.Boolean AutoMiss [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.RuleConcealmentCheck ConcealmentCheck [public get, private set]
+  PROP System.Int32 CriticalConfirmationBonus [public get, public set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry CriticalConfirmationRoll [public get, private set]
+  PROP System.Boolean DoNotProvokeAttacksOfOpportunity [public get, public set]
+  PROP System.Int32 FortificationChance [public get, private set]
+  PROP System.Boolean FortificationNegatesCriticalHit [public get, private set]
+  PROP System.Boolean FortificationNegatesSneakAttack [public get, private set]
+  PROP System.Boolean FortificationOvercomed [public get]
+  PROP System.Int32 FortificationRoll [public get, private set]
+  PROP System.Int32 HitMirrorImageIndex [public get, private set]
+  PROP System.Boolean IgnoreConcealment [public get, public set]
+  PROP System.Boolean ImmuneToCriticalHit [public get, public set]
+  PROP System.Boolean ImmuneToSneakAttack [public get, public set]
+  PROP System.Boolean IsCriticalConfirmed [public get, private set]
+  PROP System.Boolean IsCriticalRoll [public get, private set]
+  PROP System.Boolean IsHit [public get]
+  PROP System.Boolean IsSneakAttack [public get, private set]
+  PROP System.Boolean IsSneakAttackUsed [public get, private set]
+  PROP System.Boolean IsTargetFlatFooted [public get, private set]
+  PROP System.Int32 MissChance [public get, private set]
+  PROP System.Int32 MissChanceRoll [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData Parry [public get, private set]
+  PROP Kingmaker.UI.Log.LogItemData ParryLogEntry [public get, public set]
+  PROP System.Int32 PreciseStrike [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.AttackResult Result [public get, private set]
+  PROP Kingmaker.RuleSystem.RulebookEvent+RollEntry Roll [public get, private set]
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon RuleAttackWithWeapon [public get, public set]
+  PROP System.Boolean SuspendCombatLog [public get, public set]
+  PROP System.Int32 TargetAC [public get, private set]
+  PROP System.Int32 TargetCriticalAC [public get, private set]
+  PROP System.Boolean TargetUseFortification [public get]
+  PROP Kingmaker.Items.ItemEntityWeapon Weapon [public get]
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleCalculateAC <ACRule>k__BackingField
+  FIELD private instance System.Boolean <AddedToCombatLog>k__BackingField
+  FIELD private instance System.Int32 <AttackBonus>k__BackingField
+  FIELD private instance System.Int32 <AttackBonusPenalty>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus <AttackBonusRule>k__BackingField
+  FIELD private instance Kingmaker.UI.Log.LogItemData <AttackLogEntry>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.AttackType <AttackType>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalConfirmation>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalThreat>k__BackingField
+  FIELD private instance System.Boolean <AutoHit>k__BackingField
+  FIELD private instance System.Boolean <AutoMiss>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleConcealmentCheck <ConcealmentCheck>k__BackingField
+  FIELD private instance System.Int32 <CriticalConfirmationBonus>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <CriticalConfirmationRoll>k__BackingField
+  FIELD private instance System.Boolean <DoNotProvokeAttacksOfOpportunity>k__BackingField
+  FIELD private instance System.Int32 <FortificationChance>k__BackingField
+  FIELD private instance System.Boolean <FortificationNegatesCriticalHit>k__BackingField
+  FIELD private instance System.Boolean <FortificationNegatesSneakAttack>k__BackingField
+  FIELD private instance System.Int32 <FortificationRoll>k__BackingField
+  FIELD private instance System.Int32 <HitMirrorImageIndex>k__BackingField
+  FIELD private instance System.Boolean <IgnoreConcealment>k__BackingField
+  FIELD private instance System.Boolean <ImmuneToCriticalHit>k__BackingField
+  FIELD private instance System.Boolean <ImmuneToSneakAttack>k__BackingField
+  FIELD private instance System.Boolean <IsCriticalConfirmed>k__BackingField
+  FIELD private instance System.Boolean <IsCriticalRoll>k__BackingField
+  FIELD private instance System.Boolean <IsSneakAttack>k__BackingField
+  FIELD private instance System.Boolean <IsSneakAttackUsed>k__BackingField
+  FIELD private instance System.Boolean <IsTargetFlatFooted>k__BackingField
+  FIELD private instance System.Int32 <MissChance>k__BackingField
+  FIELD private instance System.Int32 <MissChanceRoll>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackRoll+ParryData <Parry>k__BackingField
+  FIELD private instance Kingmaker.UI.Log.LogItemData <ParryLogEntry>k__BackingField
+  FIELD private instance System.Int32 <PreciseStrike>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.AttackResult <Result>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.RulebookEvent+RollEntry <Roll>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon <RuleAttackWithWeapon>k__BackingField
+  FIELD private instance System.Boolean <SuspendCombatLog>k__BackingField
+  FIELD private instance System.Int32 <TargetAC>k__BackingField
+  FIELD private instance System.Int32 <TargetCriticalAC>k__BackingField
+  FIELD public instance Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats WeaponStats readonly
+================================================================================
+REQUEST Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon
+TYPE Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon base=Kingmaker.RuleSystem.RulebookTargetEvent
+  CTOR public instance <ctor> .ctor(Kingmaker.EntitySystem.Entities.UnitEntityData attacker, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon, System.Int32 attackBonusPenalty)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.DamageBundle CreateDamage(System.Boolean enablePrecisionAndCritical)
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage CreateRuleDealDamage(System.Boolean enablePrecisionAndCritical)
+  METHOD private instance System.Void LaunchProjectile(Kingmaker.Blueprints.BlueprintProjectile projectile, System.Boolean first)
+  METHOD private instance System.Void LaunchProjectiles(Kingmaker.Blueprints.BlueprintProjectile[] projectiles)
+  METHOD public instance System.Void OnTrigger(Kingmaker.RuleSystem.RulebookEventContext context)
+  METHOD public instance System.Int32 get_AttackNumber()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleAttackRoll get_AttackRoll()
+  METHOD public instance System.Int32 get_AttacksCount()
+  METHOD public instance System.Boolean get_AutoCriticalConfirmation()
+  METHOD public instance System.Boolean get_AutoCriticalThreat()
+  METHOD public instance System.Boolean get_AutoHit()
+  METHOD public instance System.Boolean get_IsAttackOfOpportunity()
+  METHOD public instance System.Boolean get_IsCharge()
+  METHOD public instance System.Boolean get_IsFirstAttack()
+  METHOD public instance System.Boolean get_IsFullAttack()
+  METHOD public instance System.Boolean get_IsRend()
+  METHOD public instance System.Boolean get_Maximized()
+  METHOD public instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage get_MeleeDamage()
+  METHOD public instance Kingmaker.EntitySystem.Entities.UnitEntityData get_NewTarget()
+  METHOD public instance Kingmaker.Controllers.Projectiles.Projectile get_Projectile()
+  METHOD public instance System.Boolean get_ReplaceTarget()
+  METHOD public instance Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats get_WeaponStats()
+  METHOD public instance System.Void set_AttackNumber(System.Int32 value)
+  METHOD private instance System.Void set_AttackRoll(Kingmaker.RuleSystem.Rules.RuleAttackRoll value)
+  METHOD public instance System.Void set_AttacksCount(System.Int32 value)
+  METHOD public instance System.Void set_AutoCriticalConfirmation(System.Boolean value)
+  METHOD public instance System.Void set_AutoCriticalThreat(System.Boolean value)
+  METHOD public instance System.Void set_AutoHit(System.Boolean value)
+  METHOD public instance System.Void set_IsAttackOfOpportunity(System.Boolean value)
+  METHOD public instance System.Void set_IsCharge(System.Boolean value)
+  METHOD public instance System.Void set_IsFirstAttack(System.Boolean value)
+  METHOD public instance System.Void set_IsFullAttack(System.Boolean value)
+  METHOD public instance System.Void set_IsRend(System.Boolean value)
+  METHOD public instance System.Void set_Maximized(System.Boolean value)
+  METHOD private instance System.Void set_MeleeDamage(Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage value)
+  METHOD public instance System.Void set_NewTarget(Kingmaker.EntitySystem.Entities.UnitEntityData value)
+  METHOD private instance System.Void set_Projectile(Kingmaker.Controllers.Projectiles.Projectile value)
+  METHOD public instance System.Void set_ReplaceTarget(System.Boolean value)
+  PROP System.Int32 AttackNumber [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.RuleAttackRoll AttackRoll [public get, private set]
+  PROP System.Int32 AttacksCount [public get, public set]
+  PROP System.Boolean AutoCriticalConfirmation [public get, public set]
+  PROP System.Boolean AutoCriticalThreat [public get, public set]
+  PROP System.Boolean AutoHit [public get, public set]
+  PROP System.Boolean IsAttackOfOpportunity [public get, public set]
+  PROP System.Boolean IsCharge [public get, public set]
+  PROP System.Boolean IsFirstAttack [public get, public set]
+  PROP System.Boolean IsFullAttack [public get, public set]
+  PROP System.Boolean IsRend [public get, public set]
+  PROP System.Boolean Maximized [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage MeleeDamage [public get, private set]
+  PROP Kingmaker.EntitySystem.Entities.UnitEntityData NewTarget [public get, public set]
+  PROP Kingmaker.Controllers.Projectiles.Projectile Projectile [public get, private set]
+  PROP System.Boolean ReplaceTarget [public get, public set]
+  PROP Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats WeaponStats [public get]
+  FIELD private instance System.Int32 <AttackNumber>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleAttackRoll <AttackRoll>k__BackingField
+  FIELD private instance System.Int32 <AttacksCount>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalConfirmation>k__BackingField
+  FIELD private instance System.Boolean <AutoCriticalThreat>k__BackingField
+  FIELD private instance System.Boolean <AutoHit>k__BackingField
+  FIELD private instance System.Boolean <IsAttackOfOpportunity>k__BackingField
+  FIELD private instance System.Boolean <IsCharge>k__BackingField
+  FIELD private instance System.Boolean <IsFirstAttack>k__BackingField
+  FIELD private instance System.Boolean <IsFullAttack>k__BackingField
+  FIELD private instance System.Boolean <IsRend>k__BackingField
+  FIELD private instance System.Boolean <Maximized>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage <MeleeDamage>k__BackingField
+  FIELD private instance Kingmaker.EntitySystem.Entities.UnitEntityData <NewTarget>k__BackingField
+  FIELD private instance Kingmaker.Controllers.Projectiles.Projectile <Projectile>k__BackingField
+  FIELD private instance System.Boolean <ReplaceTarget>k__BackingField
+  FIELD private instance Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats <WeaponStats>k__BackingField readonly
+  FIELD public instance System.Int32 AttackBonusPenalty readonly
+  FIELD public instance Kingmaker.Items.ItemEntityWeapon Weapon readonly

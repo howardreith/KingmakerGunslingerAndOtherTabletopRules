@@ -1,0 +1,27 @@
+Kingmaker Gunslinger Sprint 24 qualification results
+Version: 0.0.24-s24-misfire-condition-transitions
+
+PASS: Sprint 22 runtime acceptance evidence preserved.
+PASS: Sprint 23 core forced natural 1/2 misfire and ordinary natural 3/20 behavior preserved.
+CARRY-FORWARD: remaining Sprint 23 isolation and persistence controls were not retroactively claimed; the user approved testing them in the combined 0.0.24 gate.
+PASS: exact RuleAttackRoll.set_Roll(RollEntry) and IsSuccessRoll(int) contract evidence preserved.
+PASS: exact-item Normal -> Broken and Broken -> Wrecked condition transitions implemented only after a verified discharged misfire.
+PASS: per-RuleAttackRoll at-most-once mutation gate and exact runtime item/repository-state verification implemented.
+PASS: portable Sprint 24 source invariant validator.
+PASS: 12 stable blueprint IDs, 11 active and 1 reserved.
+PASS: no loose DLL, EXE, PDB, MDB, or private reference in the source tree.
+PASS: exact Kingmaker 2.1.7b private-reference Release compile.
+PASS: .NET Framework 4.7, C# 7.3, AnyCPU, deterministic, warnings as errors.
+PASS: two same-output-path compiles produced byte-identical DLL and PDB files.
+PASS: 501 dependency-free tests executed three times with zero failures.
+PASS: all three test outputs were byte-identical.
+PASS: strict standalone UMM ZIP contains 8 files and exactly one binary.
+PASS: standalone package CRC, safe-path, version, blueprint, DLL-hash, and private-reference checks.
+
+DLL SHA-256: eeb238615d53a45e6f8d8f55797c5b47918319b96b543d81c0b6dbe9fd33f040
+PDB SHA-256: 7d82bc41946d9e940433dd7510e8deb38424095954ece8540302868dcd3175cf
+Test output SHA-256: 3d097f8716ea6c976d5c23e1ed7b0fb5ef47c47edc334c8c98e4228ffea1f079
+Standalone ZIP SHA-256: bc67df1ceda974dc44c8b8407798d919575facad1226d64ed969c698d96f8d4d
+
+Artifact classification: READY FOR KINGMAKER Sprint 24 misfire-condition smoke test.
+Runtime acceptance: PENDING. Sprint 25 remains blocked until SMOKE-TEST-GUIDE-0.0.24.md passes in full.

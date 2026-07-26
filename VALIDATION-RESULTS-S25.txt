@@ -1,0 +1,51 @@
+Kingmaker Gunslinger Sprint 25 validation results
+=================================================
+
+Version: 0.0.25-s25-second-misfire-explosion
+Status: READY FOR KINGMAKER — Sprint 25 second-misfire explosion smoke test
+Runtime acceptance: pending
+Sprint 26 entry: blocked
+
+Source and contracts
+--------------------
+- Sprint 25 source invariant validation: PASS
+- Stable blueprint ledger: PASS (11 active, 1 reserved)
+- Exact Kingmaker 2.1.7b save/damage contract evidence: PASS
+- Item-owned inert BlueprintWeaponEnchantment state carrier retained: PASS
+- ItemEntityWeapon.UniqueId vault revived: NO
+- Nearby-unit enumeration added: NO
+
+Exact-reference compilation
+---------------------------
+- Configuration: Release
+- Target: .NET Framework 4.7 / C# 7.3 / AnyCPU
+- Warnings as errors: PASS
+- Same-output-path runs: 2
+- DLL byte-identical: PASS
+- PDB byte-identical: PASS
+- KingmakerGunslinger.dll SHA-256: 04bef18c866d6279de9cde96583b77b7655286d2c2bfafff0d1a91b096903c9e
+- KingmakerGunslinger.pdb SHA-256: e817ff2d260a0795d36ebddeb40413ae3b0c8b59ec8843a2cc157863fd1cd6b5
+
+Tests
+-----
+- Declared tests: 513
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: PASS
+- Repeated output SHA-256: 0c080a58d1162dd6ba73afcdeba6aad7a286b1ce5b877bdb8c09d46e66320478
+
+Standalone UMM package
+----------------------
+- File: KingmakerGunslinger-0.0.25-second-misfire-explosion-smoke-test.zip
+- SHA-256: 8afff4790f3af832993ae6901a3062f31791ea817188e7eca3673c4025f3fb21
+- Entries: 8
+- Binaries: exactly one project-owned KingmakerGunslinger.dll
+- Private references redistributed: NO
+- Path safety and CRC: PASS
+
+Runtime gate
+------------
+- First misfire remains non-explosive: pending live proof
+- Broken-to-Wrecked applies one exact-wielder Reflex DC 12 save and one native damage event: pending live proof
+- Passed Reflex save halves native damage: pending live proof
+- At-most-once, exact-item, native Heavy Crossbow, empty/Wrecked, and persistence isolation: pending live proof

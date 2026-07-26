@@ -1,0 +1,32 @@
+# Local machine configuration
+/GamePath.props
+/environment.json
+/runtime-contracts.json
+
+# Visual Studio / IDE
+/.vs/
+/.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build and package output
+/artifacts/
+/bin/
+/obj/
+**/bin/
+**/obj/
+*.dll
+*.pdb
+*.mdb
+*.cache
+
+# Test and tooling output
+/TestResults/
+*.trx
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

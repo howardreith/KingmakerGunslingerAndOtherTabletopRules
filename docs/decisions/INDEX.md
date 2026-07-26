@@ -1,0 +1,36 @@
+# Architecture decision index
+
+- ADR-0001 — Target runtime and toolchain.
+- ADR-0002 — Initialization and blueprint registration.
+- ADR-0003 — Stable blueprint identifiers.
+- ADR-0004 — Firearm identity and category adapter.
+- ADR-0005 — Weapon-based attack pipeline.
+- ADR-0006 — Per-item state repository.
+- ADR-0007 — Asset and animation strategy.
+- ADR-0008 — Dependency policy.
+- ADR-0009 — Blueprint manifest deployment.
+- ADR-0010 — MIT license for original project work.
+- [ADR-0011 — Collision-safe blueprint registration](ADR-0011-collision-safe-blueprint-registration.md)
+- [ADR-0012 — Immutable firearm definition and passive blueprint marker](ADR-0012-immutable-firearm-definition.md)
+- [ADR-0013 — Clone native weapon blueprints for the first firearm slice](ADR-0013-clone-native-weapon-blueprints.md)
+- [ADR-0014 — Use a dedicated feature and item-level equipment restriction for firearm proficiency](ADR-0014-item-level-firearm-proficiency-gate.md)
+- [ADR-0015 — Use disabled-by-default, marker-scoped, read-only firearm combat tracing](ADR-0015-read-only-firearm-combat-tracing.md)
+- [ADR-0016 — Apply a range-limited ordinary-to-touch AC delta for exact firearms](ADR-0016-range-limited-touch-ac-delta.md)
+- [ADR-0017 — Establish a pure immutable firearm state machine before item persistence](ADR-0017-pure-immutable-firearm-state-machine.md)
+- [ADR-0018 — Use a weak process-local repository for the first item-state binding](ADR-0018-weak-process-local-item-state.md)
+- [ADR-0019 — Use provisional item-enchantment state tokens as the Sprint 12 persistence carrier](ADR-0019-item-enchantment-state-tokens.md)
+- [ADR-0020 — Use a save-owned UnitPart vault as the Sprint 13 persistence candidate](ADR-0020-save-owned-unitpart-state-vault.md)
+- [ADR-0021 — Use Kingmaker's item identity as the Sprint 14 vault key](ADR-0021-engine-issued-item-identity-vault.md)
+- [ADR-0022: External persistence evidence recorder](ADR-0022-external-persistence-evidence-recorder.md)
+- [ADR-0023: Require runtime qualification before ammunition](ADR-0023-runtime-qualification-before-ammunition.md)
+- [ADR-0024: Execute the net47 harness and require exact private runtime references](ADR-0024-executed-evidence-and-private-reference-handoff.md)
+- [ADR-0026: Use a full-round delivery-time reload with a cross-resource transaction](ADR-0026-full-round-reload-cross-resource-transaction.md)
+- [ADR-0027: Enforce loaded rounds in RuleAttackRoll and guard native token reconciliation](ADR-0027-loaded-round-enforcement-and-native-token-reconciliation.md)
+- [ADR-0028: Bind exact rule-event callbacks and inspect reconciliation only on weapons](ADR-0028-exact-rule-event-contract-and-weapon-only-reconciliation.md)
+- [ADR-0029: Detect firearm misfires at exact main-roll assignment and success evaluation](ADR-0029-exact-natural-roll-misfire-hooks.md)
+- [ADR-0030: Apply misfire condition damage to the exact discharged item](ADR-0030-exact-item-misfire-condition-transitions.md)
+- [ADR-0032: Resolve the second-misfire consequence through one exact-wielder native save and damage event](ADR-0032-exact-wielder-second-misfire-damage.md)
+- [ADR-0033: use Kingmaker's native spatial query for the second-misfire burst](ADR-0033-native-spatial-second-misfire-burst.md)
+- [ADR-0034: retain Wrecked firearms and qualify a same-item overhaul transition](ADR-0034-retain-wrecked-and-qualify-same-item-overhaul.md)
+- [ADR-0035 — Full-round repair-kit delivery for same-item overhaul](ADR-0035-full-round-repair-kit-overhaul.md)
+- [ADR-0035: expose same-item Wrecked-to-Broken recovery as a delivery-time full-round ability](ADR-0035-full-round-repair-kit-overhaul.md)

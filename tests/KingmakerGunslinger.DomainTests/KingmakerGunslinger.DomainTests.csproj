@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FCE08A8B-6BA7-4F55-B8BD-854BED35546E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>KingmakerGunslinger.DomainTests</RootNamespace>
+    <AssemblyName>KingmakerGunslinger.DomainTests</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\artifacts\tests\Debug\KingmakerGunslinger.DomainTests\</OutputPath>
+    <IntermediateOutputPath>..\..\artifacts\obj\tests\Debug\KingmakerGunslinger.DomainTests\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\artifacts\tests\Release\KingmakerGunslinger.DomainTests\</OutputPath>
+    <IntermediateOutputPath>..\..\artifacts\obj\tests\Release\KingmakerGunslinger.DomainTests\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Assertions.cs" />
+    <Compile Include="Sprint30Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionDecision.cs">
+      <Link>Actions\FirearmActionDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionKind.cs">
+      <Link>Actions\FirearmActionKind.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionPolicy.cs">
+      <Link>Actions\FirearmActionPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicAmmunitionComponent.cs">
+      <Link>Ammunition\BasicAmmunitionComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicAmmunitionInventorySnapshot.cs">
+      <Link>Ammunition\BasicAmmunitionInventorySnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicAmmunitionTransactionException.cs">
+      <Link>Ammunition\BasicAmmunitionTransactionException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicAmmunitionTransactionResult.cs">
+      <Link>Ammunition\BasicAmmunitionTransactionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicAmmunitionTransactionService.cs">
+      <Link>Ammunition\BasicAmmunitionTransactionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\IBasicAmmunitionInventory.cs">
+      <Link>Ammunition\IBasicAmmunitionInventory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadResult.cs">
+      <Link>Reloading\FirearmReloadResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadStatus.cs">
+      <Link>Reloading\FirearmReloadStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadTransactionException.cs">
+      <Link>Reloading\FirearmReloadTransactionException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadTransactionService.cs">
+      <Link>Reloading\FirearmReloadTransactionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\IFirearmReloadStateStore.cs">
+      <Link>Reloading\IFirearmReloadStateStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulResult.cs">
+      <Link>Recovery\FirearmOverhaulResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulRuntimeResult.cs">
+      <Link>Recovery\FirearmOverhaulRuntimeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulStatus.cs">
+      <Link>Recovery\FirearmOverhaulStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulTransactionException.cs">
+      <Link>Recovery\FirearmOverhaulTransactionException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulTransactionService.cs">
+      <Link>Recovery\FirearmOverhaulTransactionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\IFirearmOverhaulStateStore.cs">
+      <Link>Recovery\IFirearmOverhaulStateStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\IRepairKitInventory.cs">
+      <Link>Recovery\IRepairKitInventory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\RepairKitInventorySnapshot.cs">
+      <Link>Recovery\RepairKitInventorySnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\FirearmDischargeResult.cs">
+      <Link>Firing\FirearmDischargeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\FirearmDischargeService.cs">
+      <Link>Firing\FirearmDischargeService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\FirearmDischargeStatus.cs">
+      <Link>Firing\FirearmDischargeStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\ReferenceEventGate.cs">
+      <Link>Firing\ReferenceEventGate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionDecision.cs">
+      <Link>Explosions\FirearmExplosionDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionDisposition.cs">
+      <Link>Explosions\FirearmExplosionDisposition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionService.cs">
+      <Link>Explosions\FirearmExplosionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionTargetCandidate.cs">
+      <Link>Explosions\FirearmExplosionTargetCandidate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionTargetPlan.cs">
+      <Link>Explosions\FirearmExplosionTargetPlan.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionTargetPlanService.cs">
+      <Link>Explosions\FirearmExplosionTargetPlanService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionTargetResult.cs">
+      <Link>Explosions\FirearmExplosionTargetResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireConditionDecision.cs">
+      <Link>Misfires\FirearmMisfireConditionDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireConditionService.cs">
+      <Link>Misfires\FirearmMisfireConditionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireConditionTransition.cs">
+      <Link>Misfires\FirearmMisfireConditionTransition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireDecision.cs">
+      <Link>Misfires\FirearmMisfireDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfirePatchContract.cs">
+      <Link>Misfires\FirearmMisfirePatchContract.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireService.cs">
+      <Link>Misfires\FirearmMisfireService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\ForcedNaturalRollQueue.cs">
+      <Link>Misfires\ForcedNaturalRollQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenReconciliationAction.cs">
+      <Link>Firearms\FirearmStateTokenReconciliationAction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenReconciliationDecision.cs">
+      <Link>Firearms\FirearmStateTokenReconciliationDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenReconciliationService.cs">
+      <Link>Firearms\FirearmStateTokenReconciliationService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmRepairResult.cs">
+      <Link>Recovery\FirearmRepairResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmRepairRuntimeResult.cs">
+      <Link>Recovery\FirearmRepairRuntimeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmRepairStatus.cs">
+      <Link>Recovery\FirearmRepairStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmRepairTransactionException.cs">
+      <Link>Recovery\FirearmRepairTransactionException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmRepairTransactionService.cs">
+      <Link>Recovery\FirearmRepairTransactionService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\IFirearmRepairStateStore.cs">
+      <Link>Recovery\IFirearmRepairStateStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationBaseline.cs">
+      <Link>Qualification\MaintenanceQualificationBaseline.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationObservation.cs">
+      <Link>Qualification\MaintenanceQualificationObservation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationReport.cs">
+      <Link>Qualification\MaintenanceQualificationReport.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationService.cs">
+      <Link>Qualification\MaintenanceQualificationService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationSession.cs">
+      <Link>Qualification\MaintenanceQualificationSession.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Qualification\MaintenanceQualificationStage.cs">
+      <Link>Qualification\MaintenanceQualificationStage.cs</Link>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Sprint29Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Development\ReflectionAccess.cs">
+      <Link>Development\ReflectionAccess.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceCorrelator.cs">
+      <Link>Diagnostics\CombatTraceCorrelator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceDecision.cs">
+      <Link>Diagnostics\CombatTraceDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceFormatter.cs">
+      <Link>Diagnostics\CombatTraceFormatter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceObservation.cs">
+      <Link>Diagnostics\CombatTraceObservation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTracePhase.cs">
+      <Link>Diagnostics\CombatTracePhase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceRecord.cs">
+      <Link>Diagnostics\CombatTraceRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceSnapshot.cs">
+      <Link>Diagnostics\CombatTraceSnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\CombatTraceStage.cs">
+      <Link>Diagnostics\CombatTraceStage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\FirearmRangeMath.cs">
+      <Link>Diagnostics\FirearmRangeMath.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\RuleEventPatchContract.cs">
+      <Link>Diagnostics\RuleEventPatchContract.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassDecision.cs">
+      <Link>Rules\FirearmArmorClassDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassRequest.cs">
+      <Link>Rules\FirearmArmorClassRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassService.cs">
+      <Link>Rules\FirearmArmorClassService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\KingmakerArmorClassAccess.cs">
+      <Link>Rules\KingmakerArmorClassAccess.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\AmmunitionId.cs">
+      <Link>Domain\AmmunitionId.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmCondition.cs">
+      <Link>Domain\FirearmCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmDefinition.cs">
+      <Link>Domain\FirearmDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmDefinitions.cs">
+      <Link>Domain\FirearmDefinitions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmEra.cs">
+      <Link>Domain\FirearmEra.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmKind.cs">
+      <Link>Domain\FirearmKind.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\ReloadProfile.cs">
+      <Link>Domain\ReloadProfile.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmItemId.cs">
+      <Link>Source\Firearms\FirearmItemId.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmItemIdentityProvider.cs">
+      <Link>Source\Firearms\IFirearmItemIdentityProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmStateIdentityRecordStore.cs">
+      <Link>Source\Firearms\IFirearmStateIdentityRecordStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IdentityBackedFirearmStateVaultStore.cs">
+      <Link>Source\Firearms\IdentityBackedFirearmStateVaultStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateIdentityMigrationSnapshot.cs">
+      <Link>Source\Firearms\FirearmStateIdentityMigrationSnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateIdentityMigrationConflictException.cs">
+      <Link>Source\Firearms\FirearmStateIdentityMigrationConflictException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmItemStateService.cs">
+      <Link>Domain\FirearmItemStateService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmItemStateSnapshot.cs">
+      <Link>Domain\FirearmItemStateSnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmState.cs">
+      <Link>Domain\FirearmState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateRepositorySnapshot.cs">
+      <Link>Domain\FirearmStateRepositorySnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateCodec.cs">
+      <Link>Domain\FirearmStateCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateData.cs">
+      <Link>Domain\FirearmStateData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateDataUtility.cs">
+      <Link>Domain\FirearmStateDataUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateMachine.cs">
+      <Link>Domain\FirearmStateMachine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateRules.cs">
+      <Link>Domain\FirearmStateRules.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTransitionException.cs">
+      <Link>Domain\FirearmStateTransitionException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenCatalog.cs">
+      <Link>Domain\FirearmStateTokenCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenDefinition.cs">
+      <Link>Domain\FirearmStateTokenDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmRuntimeItemResolver.cs">
+      <Link>Domain\IFirearmRuntimeItemResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmStateRepository.cs">
+      <Link>Domain\IFirearmStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmStateTokenStore.cs">
+      <Link>Domain\IFirearmStateTokenStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\IFirearmStateVaultStore.cs">
+      <Link>Domain\IFirearmStateVaultStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\ReferenceIdentityComparer.cs">
+      <Link>Domain\ReferenceIdentityComparer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\ResolvedFirearmItem.cs">
+      <Link>Domain\ResolvedFirearmItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\WeakFirearmStateRepository.cs">
+      <Link>Domain\WeakFirearmStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\TokenBackedFirearmStateRepository.cs">
+      <Link>Domain\TokenBackedFirearmStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateMigrationSnapshot.cs">
+      <Link>Domain\FirearmStateMigrationSnapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\MigratingFirearmStateRepository.cs">
+      <Link>Domain\MigratingFirearmStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\VaultBackedFirearmStateRepository.cs">
+      <Link>Domain\VaultBackedFirearmStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceEvidenceEvaluation.cs">
+      <Link>Persistence\PersistenceEvidenceEvaluation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceEvidenceEvaluator.cs">
+      <Link>Persistence\PersistenceEvidenceEvaluator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceEvidenceObservation.cs">
+      <Link>Persistence\PersistenceEvidenceObservation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceEvidenceSeverity.cs">
+      <Link>Persistence\PersistenceEvidenceSeverity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceEvidenceStatus.cs">
+      <Link>Persistence\PersistenceEvidenceStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceGateDecision.cs">
+      <Link>Persistence\PersistenceGateDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceMatrixCatalog.cs">
+      <Link>Persistence\PersistenceMatrixCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceMatrixStepDefinition.cs">
+      <Link>Persistence\PersistenceMatrixStepDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceRuntimePreflightCheck.cs">
+      <Link>Persistence\PersistenceRuntimePreflightCheck.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceRuntimePreflightEvaluator.cs">
+      <Link>Persistence\PersistenceRuntimePreflightEvaluator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceRuntimePreflightProbeData.cs">
+      <Link>Persistence\PersistenceRuntimePreflightProbeData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Persistence\PersistenceRuntimePreflightReport.cs">
+      <Link>Persistence\PersistenceRuntimePreflightReport.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

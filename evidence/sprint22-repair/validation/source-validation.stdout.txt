@@ -1,0 +1,5 @@
+Sprint 22 repair source invariant validation passed.
+Blueprints: 12 stable, 11 active, 1 reserved.
+Compile items: 139 main, 83 test.
+Tests: 455 declared, including 27 Sprint 22 and 9 patch-target repair cases.
+Repair invariants: exact RulebookEventContext hooks and weapon-only token inspection.

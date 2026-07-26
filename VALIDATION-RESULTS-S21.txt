@@ -1,0 +1,45 @@
+Kingmaker Gunslinger — Sprint 21 validation results
+Version: 0.0.21-s21-reload-ability
+
+Portable Sprint 21 source validation: PASS
+- Stable blueprint IDs: 12
+- Active blueprints: 11
+- Reserved blueprints: 1
+- Reload Test Musket blueprint: active with stable GUID 19e24b74331f437282077ce58e739d0f
+- Main-project compile items: 126 unique
+- Test-project compile items: 75 unique
+- Declared domain/integration-style cases: 419 unique
+- New Sprint 21 reload cases: 21
+- Source tree contains no game, Unity, Unity Mod Manager, Harmony, or Newtonsoft binaries
+- Sprint 21 invariant validator: PASS
+
+Exact private-reference Release compile: PASS
+- Target: user-supplied Pathfinder: Kingmaker 2.1.7b / UMM 0.32.4 reference set
+- Target framework reference surface: .NET Framework 4.7
+- C# language version: 7.3
+- Configuration: Release / AnyCPU
+- Warnings as errors: yes
+- Compiler exit code: 0
+- Compiler stderr: empty
+- Main DLL SHA-256: 2cb422265c600f5f48f36660dcb2a7f7f71aabe4a10c83153ddea85a62a67b5b
+- Blueprint manifest SHA-256: f3ea82bf37f770a3c049e0da597ff63d5510dd9622ca2fdb5f55efeee0add2a9
+
+Dependency-free regression tests: PASS
+- Declared/executed: 419
+- Runs: 3
+- Failures: 0
+- Repeated output byte-identical: yes
+- Test executable SHA-256: d1f40d1a61685140a9febf2cbbb1b49fa4449ae82d4f8a5ac8cc7496175a3a95
+- Repeated output SHA-256: bbf143dc2a9512ceb66e6cd75d9583b6ee2ad6694b593e4f8dc3f822f7ca5b55
+
+UMM install package validation: PASS
+- Single KingmakerGunslinger root
+- Info.json version: 0.0.21
+- Archive entries: 8
+- Exactly one binary: project-owned KingmakerGunslinger.dll
+- No Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft, or private-reference DLL redistributed
+- ZIP CRC, duplicate-entry, traversal, and root-layout checks: passed
+- Install ZIP SHA-256: 70d60a687866396ad417df52f4dd24dea54de97bbd379709e8c93eef55589072
+
+Runtime status: READY FOR KINGMAKER FULL-ROUND-RELOAD SMOKE TEST
+Runtime claims pending: action visibility/restoration, full-round scheduling, delivery-time mutation, cancellation safety, rejection behavior, and loaded-state/ammunition persistence through save and complete process restart.

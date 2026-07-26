@@ -1,0 +1,24 @@
+IL_0001: ldarg.0
+IL_0002: ldfld          Kingmaker.Items.ItemsCollection::m_Items : System.Collections.Generic.List`1<Kingmaker.Items.ItemEntity>
+IL_0007: ldarg.1
+IL_0008: callvirt       System.Collections.Generic.List`1<Kingmaker.Items.ItemEntity>::Removebool (!0)
+IL_000d: pop
+IL_000e: ldarg.1
+IL_000f: ldnull
+IL_0010: callvirt       Kingmaker.Items.ItemEntity::set_Collectionvoid (Kingmaker.Items.ItemsCollection)
+IL_0015: call           Kingmaker.Items.ItemsCollection::get_DoNotRemoveFromSlotbool ()
+IL_001a: brtrue.s       47
+IL_001c: ldarg.1
+IL_001d: callvirt       Kingmaker.Items.ItemEntity::get_HoldingSlotKingmaker.Items.Slots.ItemSlot ()
+IL_0022: dup
+IL_0023: brtrue.s       40
+IL_0025: pop
+IL_0026: br.s           47
+IL_0028: ldc.i4.1
+IL_0029: callvirt       Kingmaker.Items.Slots.ItemSlot::RemoveItembool (bool)
+IL_002e: pop
+IL_002f: ldarg.1
+IL_0030: ldc.i4.0
+IL_0031: callvirt       Kingmaker.Items.ItemEntity::UpdateSlotIndexint32 (bool)
+IL_0036: pop
+IL_0037: ret
