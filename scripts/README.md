@@ -12,4 +12,16 @@ The PowerShell scripts target a local Windows installation of Pathfinder: Kingma
 
 The cross-platform evidence tools in `tools/` provide the equivalent exact-reference compile, 599-test three-run execution, Sprint 29 source validation, and standalone-package validation used for the current artifacts.
 
+## Local runtime harness
+
+`Build-Local.ps1` is the non-deploying Sprint 30 build entry point. It uses the
+version-aware validator, complete domain suite, preserved qualified references,
+existing package staging/validation, and deterministic ZIP writer. The
+Backup/Deploy/Restore scripts are exact-directory constrained and support
+`-WhatIf`. Launching and all live writes require a separate explicit task.
+
+The harness does not need `.worktreeinclude`: it derives the isolated reference
+location from the lab workspace and never copies ignored machine configuration
+into a worktree.
+
 Do not bypass a failed report. Exact compilation and tests establish candidate quality; `SMOKE-TEST-GUIDE-0.0.29.md` establishes the complete action-bar maintenance loop, interruption safety, exact resource deltas, and persistence. Sprint 30 remains blocked until the 0.0.29 runtime gate passes.
