@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -53,12 +54,19 @@ def compile_items(root: Path, relative: str) -> list[Path]:
     return result
 
 
-def validate(final: bool) -> None:
-    root = Path(__file__).resolve().parents[1]
+def validate(
+    final: bool,
+    root: Path | None = None,
+    version: str = VERSION,
+    informational_version: str = INFORMATIONAL_VERSION,
+    test_count: int = TEST_COUNT,
+    require_current_guide_match: bool = True,
+) -> None:
+    root = (root or Path(__file__).resolve().parents[1]).resolve()
 
     info = json.loads(read(root, "Info.json"))
-    if info.get("Version") != VERSION:
-        fail("Info.json does not declare version 0.0.29.")
+    if info.get("Version") != version:
+        fail(f"Info.json does not declare version {version}.")
     if info.get("ManagerVersion") != "0.32.4":
         fail("Info.json changed the UMM target unexpectedly.")
 
@@ -66,8 +74,8 @@ def validate(final: bool) -> None:
     require_tokens(
         props,
         [
-            "<KmgVersion>0.0.29</KmgVersion>",
-            "<KmgInformationalVersion>0.0.29-s29-complete-maintenance-loop</KmgInformationalVersion>",
+            f"<KmgVersion>{version}</KmgVersion>",
+            f"<KmgInformationalVersion>{informational_version}</KmgInformationalVersion>",
             "<LangVersion>7.3</LangVersion>",
             "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>",
             "<Deterministic>true</Deterministic>",
@@ -79,9 +87,9 @@ def validate(final: bool) -> None:
     require_tokens(
         assembly,
         [
-            '[assembly: AssemblyVersion("0.0.29")]',
-            '[assembly: AssemblyFileVersion("0.0.29")]',
-            f'[assembly: AssemblyInformationalVersion("{INFORMATIONAL_VERSION}")]',
+            f'[assembly: AssemblyVersion("{version}")]',
+            f'[assembly: AssemblyFileVersion("{version}")]',
+            f'[assembly: AssemblyInformationalVersion("{informational_version}")]',
         ],
         "AssemblyInfo",
     )
@@ -260,8 +268,8 @@ def validate(final: bool) -> None:
 
     program = read(root, "tests/KingmakerGunslinger.DomainTests/Program.cs")
     case_count = len(re.findall(r'Case\("[^"]+",\s*[A-Za-z0-9_]+\)', program))
-    if case_count != TEST_COUNT:
-        fail(f"Expected {TEST_COUNT} declared tests, observed {case_count}.")
+    if case_count != test_count:
+        fail(f"Expected {test_count} declared tests, observed {case_count}.")
     require_tokens(
         program,
         [
@@ -292,7 +300,7 @@ def validate(final: bool) -> None:
     )
 
     guide = read(root, "SMOKE-TEST-GUIDE-0.0.29.md")
-    if guide != read(root, "SMOKE-TEST-GUIDE.md"):
+    if require_current_guide_match and guide != read(root, "SMOKE-TEST-GUIDE.md"):
         fail("SMOKE-TEST-GUIDE.md must be byte-identical to the 0.0.29 guide.")
     require_tokens(
         guide,
@@ -319,9 +327,22 @@ def validate(final: bool) -> None:
         "planning/ACCELERATION-PLAN.md",
         "planning/ROADMAP-SPRINTS-29-38.md",
         "evidence/sprint28-runtime-acceptance/final-2026-07-17/ASSESSMENT.md",
-        "evidence/sprint28-runtime-acceptance/final-2026-07-17/SHA256SUMS.txt",
+        "validation/sprint28-runtime-acceptance.sha256",
     ]:
         read(root, required)
+
+    evidence_root = root / "evidence/sprint28-runtime-acceptance/final-2026-07-17"
+    checksum_lines = read(root, "validation/sprint28-runtime-acceptance.sha256").splitlines()
+    if len(checksum_lines) != 6:
+        fail("Sprint 28 acceptance checksum fixture must contain exactly six files.")
+    for line in checksum_lines:
+        expected_hash, name = line.split("  ", 1)
+        evidence_path = evidence_root / name
+        if not evidence_path.is_file():
+            fail(f"Sprint 28 acceptance evidence is missing: {name}")
+        actual_hash = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+        if actual_hash != expected_hash:
+            fail(f"Sprint 28 acceptance evidence hash mismatch: {name}")
 
     architecture = read(root, "docs/ARCHITECTURE.md")
     require_tokens(
@@ -377,7 +398,7 @@ def validate(final: bool) -> None:
         if compile_report.get("warningsAsErrors") is not True or compile_report.get("sameOutputPathCompileRuns") != 2:
             fail("Final compile evidence does not satisfy the qualification contract.")
         if (
-            test_report.get("declaredTests") != TEST_COUNT
+            test_report.get("declaredTests") != test_count
             or test_report.get("runs") != 3
             or test_report.get("failures") != 0
             or test_report.get("repeatedOutputIdentical") is not True
@@ -389,10 +410,10 @@ def validate(final: bool) -> None:
             or package_report.get("privateReferencesRedistributed") is not False
         ):
             fail("Final standalone package evidence is incomplete.")
-        if build_qualification.get("modVersion") != VERSION or build_qualification.get("informationalVersion") != INFORMATIONAL_VERSION:
+        if build_qualification.get("modVersion") != version or build_qualification.get("informationalVersion") != informational_version:
             fail("BUILD-QUALIFICATION.json still describes another sprint.")
         if (
-            build_qualification.get("declaredTests") != TEST_COUNT
+            build_qualification.get("declaredTests") != test_count
             or build_qualification.get("testRuns") != 3
             or build_qualification.get("testFailures") != 0
         ):

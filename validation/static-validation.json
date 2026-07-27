@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.29-s29-complete-maintenance-loop",
-  "version": "0.0.29",
+  "milestone": "0.0.30-s30-generic-firearm-actions",
+  "version": "0.0.30",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 599,
+    "testCount": 611,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,
@@ -56,6 +56,6 @@
     "privateReferencesRedistributed": false,
     "sprint28RuntimeAcceptancePassed": true,
     "runtimeAcceptancePending": true,
-    "sprint30EntryApproved": false
+    "sprint30EntryApproved": true
   }
 }
