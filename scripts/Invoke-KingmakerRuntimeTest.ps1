@@ -44,7 +44,6 @@ if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
     throw "Build-Local did not produce the expected package: $package"
 }
 
-& (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') -WhatIf
 & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -WhatIf
 if (-not $PSCmdlet.ShouldProcess(
     $KingmakerPath,
@@ -53,7 +52,6 @@ if (-not $PSCmdlet.ShouldProcess(
     return
 }
 
-& (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') -Confirm:$false
 & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -Confirm:$false
 
 $evidence = Join-Path $script:KmgRuntimeEvidenceRoot (

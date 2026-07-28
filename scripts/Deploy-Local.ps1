@@ -29,7 +29,6 @@ if (-not $live.Equals($expectedLive, [StringComparison]::OrdinalIgnoreCase)) {
 Write-Host "Validated Build-Local package: $($manifest.packagePath)"
 Write-Host "Target directory: $live"
 if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.version)")) {
-    & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') -LiveModDirectory $live -BackupRoot $BackupRoot -WhatIf
     Write-Host 'Dry run only; package and target were validated and no deployment manifest was written.'
     return
 }

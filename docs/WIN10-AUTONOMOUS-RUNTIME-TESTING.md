@@ -129,6 +129,12 @@ been established for programmatically loading the exact
 `KMG_AUTOMATION_WORKING` save. The immutable `KMG_AUTOMATION_BASELINE` must
 never be loaded for mutation, overwritten, renamed, or deleted.
 
+Reflection-only inspection of the installed Kingmaker assembly found candidate
+load methods, but their save-list, load-mode, write/migration, completion, and
+failure semantics could not be established safely. See
+`docs/SAVE-BACKED-RUNTIME-AUTOMATION-BLOCKER.md` for the exact metadata and
+blocker. No save-backed substitute is implemented.
+
 A valid assertion is a direct observation made in the real Kingmaker process
 against the executing production assembly and, where applicable, the actual
 production adapter/service. Synthetic doubles may supply isolated state only
