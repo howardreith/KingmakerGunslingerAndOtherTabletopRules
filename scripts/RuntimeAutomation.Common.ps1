@@ -151,13 +151,21 @@ function Wait-KmgSteamProcess {
 
 function Select-KmgNewKingmakerProcess {
     param(
-        [Parameter(Mandatory = $true)][object[]]$Processes,
-        [Parameter(Mandatory = $true)][int[]]$ExistingProcessIds,
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$Processes,
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$ExistingProcesses,
         [Parameter(Mandatory = $true)][DateTime]$RequestedAtUtc
     )
+    $existingIdentities = @($ExistingProcesses | ForEach-Object {
+        '{0}:{1}' -f $_.Id, $_.StartTime.ToUniversalTime().Ticks
+    })
     $matches = @($Processes | Where-Object {
+        $identity = '{0}:{1}' -f $_.Id, $_.StartTime.ToUniversalTime().Ticks
         $_.ProcessName -eq 'Kingmaker' -and
-        $_.Id -notin $ExistingProcessIds -and
+        $identity -notin $existingIdentities -and
         $_.StartTime.ToUniversalTime() -ge $RequestedAtUtc.AddSeconds(-2)
     } | Sort-Object StartTime, Id)
     if ($matches.Count -gt 1) {
@@ -172,12 +180,21 @@ function Start-KmgSteamKingmaker {
         [Parameter(Mandatory = $true)][string]$SteamPath,
         [Parameter(Mandatory = $true)][int]$AppId,
         [string]$RequestPath,
+        [AllowEmptyCollection()]
+        [Diagnostics.Process[]]$PreLaunchProcesses = @(),
         [ValidateRange(1, 300)][int]$SteamStartupTimeoutSeconds = 60,
         [ValidateRange(1, 300)][int]$GameStartupTimeoutSeconds = 60
     )
     Assert-KmgSteamAppId -AppId $AppId
     Assert-KmgUnelevated
     Assert-KmgNotRunning
+    $PreLaunchProcesses = @($PreLaunchProcesses)
+    $preExistingKingmaker = @($PreLaunchProcesses | Where-Object {
+        $_.ProcessName -eq 'Kingmaker'
+    })
+    if ($preExistingKingmaker.Count -ne 0) {
+        throw "Kingmaker was already running before Steam launch: PID=$($preExistingKingmaker.Id -join ', ')."
+    }
     $currentOwner = [Security.Principal.WindowsIdentity]::GetCurrent().Name
     $steam = Wait-KmgSteamProcess -SteamPath $SteamPath -TimeoutSeconds $SteamStartupTimeoutSeconds
     if ($steam.Path -and
@@ -187,7 +204,6 @@ function Start-KmgSteamKingmaker {
         throw 'The available Steam process does not use the approved Steam executable.'
     }
     Assert-KmgProcessOwner -ProcessId $steam.Id -ExpectedOwner $currentOwner -Label 'Steam'
-    $existing = @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue | ForEach-Object Id)
     $arguments = @(Get-KmgSteamLaunchArguments -AppId $AppId -RequestPath $RequestPath)
     $requestedAt = [DateTime]::UtcNow
     [void](Start-Process -FilePath $SteamPath -ArgumentList $arguments -PassThru)
@@ -195,7 +211,7 @@ function Start-KmgSteamKingmaker {
     do {
         $game = Select-KmgNewKingmakerProcess `
             -Processes @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) `
-            -ExistingProcessIds $existing -RequestedAtUtc $requestedAt
+            -ExistingProcesses $PreLaunchProcesses -RequestedAtUtc $requestedAt
         if ($game) {
             Assert-KmgProcessOwner -ProcessId $game.Id -ExpectedOwner $currentOwner -Label 'Kingmaker'
             return [ordered]@{
@@ -215,4 +231,15 @@ function Start-KmgSteamKingmaker {
         Start-Sleep -Milliseconds 250
     } while ([DateTime]::UtcNow -lt $deadline)
     throw "Kingmaker did not start through Steam App ID $AppId within $GameStartupTimeoutSeconds seconds; direct-executable fallback is disabled."
+}
+
+function Write-KmgOrchestrationEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
+        [Parameter(Mandatory = $true)][Collections.IDictionary]$Record
+    )
+    $path = Join-Path $EvidenceDirectory 'orchestration.json'
+    Write-KmgUtf8NoBom -Path $path `
+        -Content (($Record | ConvertTo-Json -Depth 6) + [Environment]::NewLine)
+    return $path
 }
