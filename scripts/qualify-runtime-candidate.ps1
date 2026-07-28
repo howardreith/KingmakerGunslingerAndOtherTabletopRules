@@ -94,8 +94,8 @@ for ($run = 1; $run -le 3; $run++) {
     $runText = ($runOutput -join [Environment]::NewLine) + [Environment]::NewLine
     $runPath = Join-Path $testsDirectory ("run{0}.stdout.txt" -f $run)
     [IO.File]::WriteAllText($runPath, $runText, (New-Object Text.UTF8Encoding($false)))
-    if (-not $runText.TrimEnd().EndsWith('Completed 599 tests; failures=0.')) {
-        throw "Domain test run $run did not report the expected 599-case zero-failure summary."
+    if (-not $runText.TrimEnd().EndsWith('Completed 611 tests; failures=0.')) {
+        throw "Domain test run $run did not report the expected 611-case zero-failure summary."
     }
     $testOutputHashes += Get-KmgSha256 -Path $runPath
 }
@@ -105,13 +105,10 @@ if (@($testOutputHashes | Select-Object -Unique).Count -ne 1) {
 
 Write-Host 'Step 6/8: compiling twice at the same Release output path and comparing DLL and PDB bytes.'
 $buildArguments = @{
-    Configuration = 'Release'
     KingmakerInstallDir = $KingmakerInstallDir
     MSBuildPath = $MSBuildPath
-    Clean = $true
-    SkipDomainTests = $true
 }
-& (Join-Path $PSScriptRoot 'build.ps1') @buildArguments
+& (Join-Path $PSScriptRoot 'Build-Local.ps1') @buildArguments
 $modDllPath = Join-Path $repositoryRoot 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
 $modPdbPath = Join-Path $repositoryRoot 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.pdb'
 if (-not (Test-Path -LiteralPath $modDllPath -PathType Leaf)) {
@@ -125,7 +122,7 @@ $firstPdbHash = Get-KmgSha256 -Path $modPdbPath
 Set-Content -LiteralPath (Join-Path $compileDirectory 'first-dll.sha256') -Value "$firstDllHash  KingmakerGunslinger.dll" -Encoding ASCII
 Set-Content -LiteralPath (Join-Path $compileDirectory 'first-pdb.sha256') -Value "$firstPdbHash  KingmakerGunslinger.pdb" -Encoding ASCII
 
-& (Join-Path $PSScriptRoot 'build.ps1') @buildArguments
+& (Join-Path $PSScriptRoot 'Build-Local.ps1') @buildArguments
 if (-not (Test-Path -LiteralPath $modDllPath -PathType Leaf)) {
     throw "The second Release build did not produce the mod DLL: $modDllPath"
 }
@@ -177,7 +174,7 @@ $qualification = [ordered]@{
         uniqueIdVaultRequired = $false
     }
     domainTests = [ordered]@{
-        declaredAndExecuted = 599
+        declaredAndExecuted = 611
         runs = 3
         failures = 0
         repeatedOutputIdentical = $true
@@ -213,7 +210,7 @@ $markdown = @"
 
 > **READY FOR KINGMAKER — INSTALL ``$candidateName`` THROUGH UNITY MOD MANAGER**
 
-This standalone package passed source validation, the current installed-runtime contract inspection, 599 tests three times with zero failures and byte-identical output, two same-output-path deterministic Release compiles with byte-identical DLL and PDB output, build-output validation, and strict eight-file UMM-package validation.
+This standalone package passed source validation, the current installed-runtime contract inspection, 611 tests three times with zero failures and byte-identical output, two same-output-path deterministic Release compiles with byte-identical DLL and PDB output, build-output validation, and strict eight-file UMM-package validation.
 
 It is not yet runtime-accepted. Use only a disposable campaign and follow ``SMOKE-TEST-GUIDE-0.0.29.md``. Sprint 30 remains blocked until the complete live gate passes with no KMG or Harmony fault.
 

@@ -8,6 +8,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+. (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
@@ -22,6 +23,9 @@ if (-not $ReferenceBundleDir) {
 if (-not (Test-Path -LiteralPath $ReferenceBundleDir -PathType Container)) {
     throw "Qualified private reference bundle is missing: $ReferenceBundleDir"
 }
+[void](Assert-KmgReferenceBundleMatchesInstall `
+    -ReferenceBundleDir $ReferenceBundleDir `
+    -KingmakerInstallDir $KingmakerInstallDir)
 
 $python = (Get-Command python -ErrorAction Stop).Source
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source

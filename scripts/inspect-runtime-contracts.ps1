@@ -10,6 +10,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeContractInspection.Common.ps1')
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 if (-not $OutputPath) {
     $OutputPath = Join-Path $repositoryRoot 'runtime-contracts.json'
@@ -162,12 +163,28 @@ function Find-KmgFieldOrProperty {
         [Reflection.BindingFlags]$BindingFlags
     )
 
-    $field = $Type.GetField($Name, $BindingFlags)
-    if ($field) {
-        return $field
-    }
+    $declaredFlags = $BindingFlags -bor [Reflection.BindingFlags]::DeclaredOnly
+    $current = $Type
+    while ($current) {
+        $field = $current.GetField($Name, $declaredFlags)
+        if ($field) {
+            return $field
+        }
 
-    return $Type.GetProperty($Name, $BindingFlags)
+        $properties = @(
+            $current.GetProperties($declaredFlags) |
+                Where-Object { $_.Name -eq $Name } |
+                Sort-Object MetadataToken
+        )
+        if ($properties.Count -gt 1) {
+            throw "Required member lookup is ambiguous on type '$($current.FullName)': $Name"
+        }
+        if ($properties.Count -eq 1) {
+            return $properties[0]
+        }
+        $current = $current.BaseType
+    }
+    return $null
 }
 
 function Get-KmgWritableWeaponTypeMembers {
@@ -306,7 +323,10 @@ try {
     $unitEntityDataType = $gameAssembly.GetType('Kingmaker.EntitySystem.Entities.UnitEntityData', $false, $false)
     $itemEntityType = $gameAssembly.GetType('Kingmaker.Items.ItemEntity', $false, $false)
     $itemEntityWeaponType = $gameAssembly.GetType('Kingmaker.Items.ItemEntityWeapon', $false, $false)
-    $itemEnchantmentType = $gameAssembly.GetType('Kingmaker.Items.ItemEnchantment', $false, $false)
+    $itemEnchantmentType = $gameAssembly.GetType(
+        'Kingmaker.Blueprints.Items.Ecnchantments.ItemEnchantment',
+        $false,
+        $false)
     $itemApplyEnchantmentsMethods = if ($itemEntityType) {
         @(
             $itemEntityType.GetMethods($bindingFlags) |
@@ -361,11 +381,27 @@ try {
                 $_.GetParameters()[0].ParameterType.FullName -eq $unitDescriptorType.FullName
             }
     )
-    $getFeatureMethods = @(
-        $unitDescriptorType.GetMethods($bindingFlags) |
+    $unitDescriptorProgressionMember = Find-KmgFieldOrProperty `
+        -Type $unitDescriptorType -Name 'Progression' -BindingFlags $bindingFlags
+    $progressionType = Get-KmgMemberValueType -Member $unitDescriptorProgressionMember
+    $progressionFeaturesMember = if ($progressionType) {
+        Find-KmgFieldOrProperty -Type $progressionType -Name 'Features' `
+            -BindingFlags $bindingFlags
+    }
+    else { $null }
+    $featureCollectionType = Get-KmgMemberValueType -Member $progressionFeaturesMember
+    $getRankNamedMethods = if ($featureCollectionType) {
+        @(Select-KmgNamedMethodCandidates `
+            -Methods @($featureCollectionType.GetMethods($bindingFlags)) `
+            -Names @('GetRank'))
+    }
+    else { @() }
+    $getRankMethods = @(
+        $getRankNamedMethods |
             Where-Object {
-                $_.Name -eq 'GetFeature' -and
+                $_.Name -eq 'GetRank' -and
                 -not $_.IsStatic -and
+                $_.ReturnType.FullName -eq 'System.Int32' -and
                 $_.GetParameters().Count -eq 1 -and
                 $_.GetParameters()[0].ParameterType.FullName -eq $blueprintFeatureType.FullName
             }
@@ -409,14 +445,22 @@ try {
             )
         }
     }
-    $featureGrantMethods = @(
-        $unitDescriptorType.GetMethods($bindingFlags) |
+    $addFeatureNamedMethods = if ($featureCollectionType) {
+        @(Select-KmgNamedMethodCandidates `
+            -Methods @($featureCollectionType.GetMethods($bindingFlags)) `
+            -Names @('AddFeature'))
+    }
+    else { @() }
+    $addFeatureMethods = @(
+        $addFeatureNamedMethods |
             Where-Object {
-                @('AddFact', 'AddFeature') -contains $_.Name -and
+                $_.Name -eq 'AddFeature' -and
                 -not $_.IsStatic -and
                 -not $_.IsGenericMethodDefinition -and
-                $_.GetParameters().Count -ge 1 -and
-                $_.GetParameters()[0].ParameterType.IsAssignableFrom($blueprintFeatureType)
+                $_.GetParameters().Count -eq 2 -and
+                $_.GetParameters()[0].ParameterType.FullName -eq $blueprintFeatureType.FullName -and
+                $_.GetParameters()[1].ParameterType.FullName -eq 'Kingmaker.UnitLogic.Mechanics.MechanicsContext' -and
+                $_.ReturnType.FullName -eq 'Kingmaker.UnitLogic.Feature'
             }
     )
 
@@ -450,6 +494,7 @@ try {
 
     $unitPartExtensionGetMethods = @()
     $unitPartExtensionEnsureMethods = @()
+    $unitPartUnrelatedMethodsExcludedBeforeParameterInspection = 0
     if ($unitEntityDataType) {
         foreach ($candidateType in Get-KmgLoadableTypes -Assembly $gameAssembly) {
             if (-not $candidateType.IsAbstract -or -not $candidateType.IsSealed) {
@@ -460,13 +505,19 @@ try {
                 [Reflection.BindingFlags]::NonPublic -bor
                 [Reflection.BindingFlags]::Static -bor
                 [Reflection.BindingFlags]::DeclaredOnly
-            foreach ($method in $candidateType.GetMethods($declaredStaticFlags)) {
+            $declaredStaticMethods = @($candidateType.GetMethods($declaredStaticFlags))
+            $namedCandidates = @(Select-KmgNamedMethodCandidates `
+                -Methods $declaredStaticMethods -Names @('Get', 'Ensure'))
+            $unitPartUnrelatedMethodsExcludedBeforeParameterInspection +=
+                $declaredStaticMethods.Count - $namedCandidates.Count
+            foreach ($method in $namedCandidates) {
                 if (-not $method.IsGenericMethodDefinition -or
                     $method.GetGenericArguments().Count -ne 1) {
                     continue
                 }
 
-                $parameters = $method.GetParameters()
+                $parameters = @(Get-KmgRequiredMethodParameters -Method $method `
+                    -ContractName 'UnitEntityData UnitPart Get/Ensure extension')
                 if ($parameters.Count -lt 1) {
                     continue
                 }
@@ -818,7 +869,9 @@ try {
         -not $equipmentRestrictionType.IsSealed -and
         $equipmentRestrictionType.IsSubclassOf($blueprintComponentType) -and
         $canBeEquippedMethods.Count -ge 1 -and
-        $getFeatureMethods.Count -ge 1
+        $unitDescriptorProgressionMember -ne $null -and
+        $progressionFeaturesMember -ne $null -and
+        @($getRankMethods).Count -eq 1
     )
     $developmentUiContractPassed = (
         $onGuiMember -ne $null -and
@@ -827,11 +880,11 @@ try {
     )
     $developmentBridgeContractPassed = (
         $playerType -ne $null -and
-        $mainCharacterMembers.Count -ge 1 -and
+        @($mainCharacterMembers).Count -ge 1 -and
         $inventoryMembers.Count -ge 1 -and
         $inventoryAddMethods.Count -ge 1 -and
         $inventoryRemoveMethods.Count -ge 1 -and
-        $featureGrantMethods.Count -ge 1
+        @($addFeatureMethods).Count -eq 1
     )
     $runtimeItemStateContractPassed = (
         $itemEntityWeaponType -ne $null -and
@@ -852,20 +905,20 @@ try {
         $itemEntityType -ne $null -and
         $itemEntityWeaponType -ne $null -and
         $itemEntityType.IsAssignableFrom($itemEntityWeaponType) -and
-        $itemApplyEnchantmentsMethods.Count -eq 1 -and
+        @($itemApplyEnchantmentsMethods).Count -eq 1 -and
         $itemEnchantmentType -ne $null -and
-        $itemEnchantmentCollectionMembers.Count -ge 1 -and
-        $itemEnchantmentBlueprintMembers.Count -ge 1 -and
-        $compatibleAddEnchantmentMethods.Count -ge 1 -and
-        $compatibleRemoveEnchantmentMethods.Count -ge 1
+        @($itemEnchantmentCollectionMembers).Count -ge 1 -and
+        @($itemEnchantmentBlueprintMembers).Count -ge 1 -and
+        @($compatibleAddEnchantmentMethods).Count -ge 1 -and
+        @($compatibleRemoveEnchantmentMethods).Count -ge 1
     )
     $unitPartGetContractPassed = (
-        $unitPartInstanceGetMethods.Count -ge 1 -or
-        $unitPartExtensionGetMethods.Count -ge 1
+        @($unitPartInstanceGetMethods).Count -ge 1 -or
+        @($unitPartExtensionGetMethods).Count -ge 1
     )
     $unitPartEnsureContractPassed = (
-        $unitPartInstanceEnsureMethods.Count -ge 1 -or
-        $unitPartExtensionEnsureMethods.Count -ge 1
+        @($unitPartInstanceEnsureMethods).Count -ge 1 -or
+        @($unitPartExtensionEnsureMethods).Count -ge 1
     )
     $unitPartVaultContractPassed = (
         $unitPartType -ne $null -and
@@ -882,17 +935,17 @@ try {
         $ruleAttackWithWeaponType -ne $null -and
         $ruleAttackRollType -ne $null -and
         $ruleCalculateAcType -ne $null -and
-        $ruleAttackWithWeaponOnTriggerMethods.Count -eq 1 -and
-        $ruleAttackRollOnTriggerMethods.Count -eq 1 -and
-        $ruleCalculateAcOnTriggerMethods.Count -eq 1
+        @($ruleAttackWithWeaponOnTriggerMethods).Count -eq 1 -and
+        @($ruleAttackRollOnTriggerMethods).Count -eq 1 -and
+        @($ruleCalculateAcOnTriggerMethods).Count -eq 1
     )
     $combatTraceDataContractPassed = (
-        ($weaponAttackMembers | Where-Object { @('Weapon', 'm_Weapon') -contains $_.Name }).Count -ge 1 -and
-        ($attackRollMembers | Where-Object { @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon') -contains $_.Name }).Count -ge 1 -and
-        ($attackRollMembers | Where-Object { @('D20', 'RollResult', 'NaturalRoll', 'Result', 'AttackRoll') -contains $_.Name }).Count -ge 1 -and
-        ($calculateAcMembers | Where-Object { $_.Name -eq 'TargetAC' }).Count -ge 1 -and
+        @($weaponAttackMembers | Where-Object { @('Weapon', 'm_Weapon') -contains $_.Name }).Count -ge 1 -and
+        @($attackRollMembers | Where-Object { @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon') -contains $_.Name }).Count -ge 1 -and
+        @($attackRollMembers | Where-Object { @('D20', 'RollResult', 'NaturalRoll', 'Result', 'AttackRoll') -contains $_.Name }).Count -ge 1 -and
+        @($calculateAcMembers | Where-Object { $_.Name -eq 'TargetAC' }).Count -ge 1 -and
         $unitEntityDataType -ne $null -and
-        $distanceToMethods.Count -ge 1
+        @($distanceToMethods).Count -ge 1
     )
     $combatTraceContractPassed = $combatTracePatchContractPassed -and $combatTraceDataContractPassed
     $compatibleRollHistoryFields = @(
@@ -912,31 +965,31 @@ try {
         $ruleAttackRollType -ne $null -and
         $rulebookRollEntryType -ne $null -and
         $rulebookRollEntryType.IsValueType -and
-        $ruleAttackRollMainRollSetterMethods.Count -eq 1 -and
-        $ruleAttackRollSuccessMethods.Count -eq 1 -and
-        ($rulebookRollEntryFields | Where-Object { $_.Name -eq 'Value' -and $_.FieldType.FullName -eq 'System.Int32' }).Count -eq 1 -and
-        $compatibleRollHistoryFields.Count -eq 1
+        @($ruleAttackRollMainRollSetterMethods).Count -eq 1 -and
+        @($ruleAttackRollSuccessMethods).Count -eq 1 -and
+        @($rulebookRollEntryFields | Where-Object { $_.Name -eq 'Value' -and $_.FieldType.FullName -eq 'System.Int32' }).Count -eq 1 -and
+        @($compatibleRollHistoryFields).Count -eq 1
     )
     $firearmArmorClassContractPassed = (
         $rulebookEventContextType -ne $null -and
         $ruleAttackRollType -ne $null -and
         $ruleCalculateAcType -ne $null -and
-        $ruleAttackRollOnTriggerMethods.Count -eq 1 -and
-        $ruleCalculateAcOnTriggerMethods.Count -eq 1 -and
-        ($attackRollMembers | Where-Object { @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon') -contains $_.Name }).Count -ge 1 -and
-        $calculateAcInitiatorMembers.Count -ge 1 -and
-        $calculateAcTargetMembers.Count -ge 1 -and
-        $writableTargetAcMembers.Count -eq 1 -and
+        @($ruleAttackRollOnTriggerMethods).Count -eq 1 -and
+        @($ruleCalculateAcOnTriggerMethods).Count -eq 1 -and
+        @($attackRollMembers | Where-Object { @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon') -contains $_.Name }).Count -ge 1 -and
+        @($calculateAcInitiatorMembers).Count -ge 1 -and
+        @($calculateAcTargetMembers).Count -ge 1 -and
+        @($writableTargetAcMembers).Count -eq 1 -and
         $unitStatsType -ne $null -and
         $armorClassType -ne $null -and
-        ($ordinaryAcMembers | Where-Object { (Get-KmgMemberValueType -Member $_).FullName -eq 'System.Int32' }).Count -ge 1 -and
-        ($touchAcMembers | Where-Object { (Get-KmgMemberValueType -Member $_).FullName -eq 'System.Int32' }).Count -ge 1 -and
-        $distanceToMethods.Count -ge 1
+        @($ordinaryAcMembers | Where-Object { (Get-KmgMemberValueType -Member $_).FullName -eq 'System.Int32' }).Count -ge 1 -and
+        @($touchAcMembers | Where-Object { (Get-KmgMemberValueType -Member $_).FullName -eq 'System.Int32' }).Count -ge 1 -and
+        @($distanceToMethods).Count -ge 1
     )
     $contractPassed = (
-        $zeroArgumentLoadDictionaryMethods.Count -eq 1 -and
-        $compatibleCreateMethods.Count -ge 1 -and
-        $compatiblePatchAllMethods.Count -ge 1 -and
+        @($zeroArgumentLoadDictionaryMethods).Count -eq 1 -and
+        @($compatibleCreateMethods).Count -ge 1 -and
+        @($compatiblePatchAllMethods).Count -ge 1 -and
         $modEntryType -ne $null -and
         $modLoggerType -ne $null -and
         $assetGuidContractPassed -and
@@ -960,6 +1013,12 @@ try {
         sprint = 23
         milestone = '0.0.29-s29-complete-maintenance-loop'
         contractPassed = $contractPassed
+        inspection = [ordered]@{
+            policy = 'stable-name-before-required-parameter-metadata'
+            unrelatedStaticMethodsExcludedBeforeParameterInspection =
+                $unitPartUnrelatedMethodsExcludedBeforeParameterInspection
+            toleratedLoaderFailures = @()
+        }
         assemblies = @(
             [ordered]@{
                 relativePath = 'Assembly-CSharp.dll'
@@ -1008,7 +1067,11 @@ try {
             equipmentRestrictionIsSealed = $equipmentRestrictionType.IsSealed
             canBeEquippedByMethods = @($canBeEquippedMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
             unitDescriptorType = $unitDescriptorType.FullName
-            getFeatureMethods = @($getFeatureMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
+            unitDescriptorProgressionMember = Convert-KmgMemberDescription -Member $unitDescriptorProgressionMember
+            progressionFeaturesMember = Convert-KmgMemberDescription -Member $progressionFeaturesMember
+            featureCollectionType = if ($featureCollectionType) { $featureCollectionType.FullName } else { $null }
+            getRankMethods = @($getRankMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
+            getRankNamedCandidates = @($getRankNamedMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
             gameType = $gameType.FullName
             gameInstanceMember = if ($gameInstanceMember) { Convert-KmgMemberDescription -Member $gameInstanceMember } else { $null }
             gamePlayerMember = if ($gamePlayerMember) { Convert-KmgMemberDescription -Member $gamePlayerMember } else { $null }
@@ -1018,7 +1081,12 @@ try {
             inventoryTypes = @($inventoryTypes | ForEach-Object { $_.FullName })
             inventoryAddMethods = @($inventoryAddMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
             inventoryRemoveMethods = @($inventoryRemoveMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
-            featureGrantMethods = @($featureGrantMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
+            addFeatureMethods = @($addFeatureMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
+            addFeatureNamedCandidates = @($addFeatureNamedMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
+            disputedGateProvenance = [ordered]@{
+                obsoleteUnitDescriptorGetFeature = 'replaced by reachable UnitDescriptor.Progression.Features.GetRank production call'
+                obsoleteUnitDescriptorAddFactOrAddFeature = 'replaced by reachable UnitDescriptor.Progression.Features.AddFeature production call'
+            }
             firearmProficiencyContractPassed = $firearmProficiencyContractPassed
             developmentBridgeContractPassed = $developmentBridgeContractPassed
             runtimeItemState = [ordered]@{
