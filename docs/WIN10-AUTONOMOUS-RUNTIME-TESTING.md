@@ -16,6 +16,14 @@ not inside patch installation or blueprint loading.
 
 ## Explicit activation and normal-game isolation
 
+Every real runtime scenario must be requested through
+`C:\Program Files (x86)\Steam\steam.exe -applaunch 640820`. The runtime
+orchestrator validates that exact App ID, refuses administrator elevation,
+requires Steam and Kingmaker to run as the current Windows user, and never
+falls back to launching `Kingmaker.exe` directly. If Steam is absent it starts
+the client normally and waits only for its process; credential, recovery,
+update, purchase, and cloud-conflict UI remain human stop conditions.
+
 The only activation syntax is:
 
 ```text
@@ -38,6 +46,19 @@ install the update callback and cannot request game exit. Rejections are
 reported only to the existing structured mod log, with a reason code and safe
 request-path basename; command-line values and request parameters are not
 logged.
+
+The resulting argument order is:
+
+```text
+steam.exe -applaunch 640820 -kmgRuntimeTestRequest "<absolute-request-json-path>"
+```
+
+The request path must remain strictly beneath the fixed evidence root and be
+safely quoted. Evidence records only this allowlisted structure, the approved
+request path, Steam executable and App ID, Steam PID, Kingmaker PID and start
+time, and whether the result's run ID proved guarded-request acceptance. It
+does not record Steam account data, credentials, or unrelated command-line
+arguments.
 
 ## Request schema
 
@@ -134,6 +155,11 @@ load methods, but their save-list, load-mode, write/migration, completion, and
 failure semantics could not be established safely. See
 `docs/SAVE-BACKED-RUNTIME-AUTOMATION-BLOCKER.md` for the exact metadata and
 blocker. No save-backed substitute is implemented.
+
+A direct `Kingmaker.exe` launch can omit the Steam-owned initialization needed
+for DLC entitlement. It is not a valid save-backed qualification environment.
+`DLC Required` appearing across known-good saves is therefore a
+launch-environment failure, not evidence that any save should be changed.
 
 A valid assertion is a direct observation made in the real Kingmaker process
 against the executing production assembly and, where applicable, the actual

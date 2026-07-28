@@ -14,7 +14,12 @@ param(
     [hashtable]$Parameters = @{},
     [switch]$AllowDirtyGit,
     [switch]$AllowForceTerminate,
-    [string]$KingmakerPath = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Kingmaker.exe'
+    [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
+    [ValidateRange(1, 300)]
+    [int]$SteamStartupTimeoutSeconds = 60,
+    [ValidateRange(1, 300)]
+    [int]$GameStartupTimeoutSeconds = 60,
+    [int]$SteamAppId = 640820
 )
 
 Set-StrictMode -Version Latest
@@ -28,9 +33,9 @@ if (-not $AllowDirtyGit -and $git.Status.Count -ne 0) {
     throw 'Runtime execution requires a clean Git state. Use -AllowDirtyGit only for an explicitly permitted source state.'
 }
 Assert-KmgNotRunning
-if (-not (Test-Path -LiteralPath $KingmakerPath -PathType Leaf)) {
-    throw "Kingmaker executable is missing: $KingmakerPath"
-}
+Assert-KmgSteamAppId -AppId $SteamAppId
+Assert-KmgUnelevated
+$SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
 & {
     # The orchestrator's -WhatIf controls deployment and launch. Build-Local is
@@ -46,11 +51,16 @@ if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
 
 & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -WhatIf
 if (-not $PSCmdlet.ShouldProcess(
-    $KingmakerPath,
+    "Steam App ID $SteamAppId",
     "deploy the validated package and launch scenario '$Scenario'")) {
     Write-Host 'Source-only/WhatIf validation passed. No deployment or process launch occurred.'
     return
 }
+
+$currentOwner = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+$steamPreflight = Wait-KmgSteamProcess -SteamPath $SteamPath `
+    -TimeoutSeconds $SteamStartupTimeoutSeconds
+Assert-KmgProcessOwner -ProcessId $steamPreflight.Id -ExpectedOwner $currentOwner -Label 'Steam'
 
 & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -Confirm:$false
 
@@ -64,14 +74,20 @@ $requestPath = Join-Path $evidence 'runtime-request.json'
 Write-KmgUtf8NoBom -Path $requestPath `
     -Content (($request | ConvertTo-Json -Depth 8) + [Environment]::NewLine)
 
-$process = Start-Process -FilePath $KingmakerPath -ArgumentList @(
-    '-kmgRuntimeTestRequest', "`"$requestPath`""
-) -PassThru
+$launch = Start-KmgSteamKingmaker -SteamPath $SteamPath -AppId $SteamAppId `
+    -RequestPath $requestPath -SteamStartupTimeoutSeconds $SteamStartupTimeoutSeconds `
+    -GameStartupTimeoutSeconds $GameStartupTimeoutSeconds
+$process = $launch.kingmakerProcess
 [ordered]@{
-    schemaVersion = 1
-    processId = $process.Id
-    startedAtUtc = [DateTime]::UtcNow.ToString('o')
+    schemaVersion = 2
+    steamExecutable = $launch.steamExecutable
+    steamAppId = $launch.steamAppId
+    sanitizedLaunchArguments = $launch.sanitizedLaunchArguments
+    steamProcessId = $launch.steamProcessId
+    kingmakerProcessId = $launch.kingmakerProcessId
+    kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
     requestPath = $requestPath
+    guardedRequestAccepted = $false
 } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidence 'orchestration.json') -Encoding UTF8
 
 $resultPath = Join-Path $evidence 'runtime-result.json'
@@ -92,6 +108,10 @@ while (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
 }
 
 $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+$orchestrationPath = Join-Path $evidence 'orchestration.json'
+$orchestration = Get-Content -LiteralPath $orchestrationPath -Raw | ConvertFrom-Json
+$orchestration.guardedRequestAccepted = ($result.runId -eq $request.runId)
+$orchestration | ConvertTo-Json | Set-Content -LiteralPath $orchestrationPath -Encoding UTF8
 & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
     -EvidenceDirectory $evidence -PackagePath $package
 Write-Host "Runtime result: $resultPath"

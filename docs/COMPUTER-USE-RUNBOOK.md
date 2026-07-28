@@ -7,7 +7,8 @@
 
 Only after an explicitly authorized deployment:
 
-1. Launch Steam and Kingmaker through the normal supported local mechanism.
+1. Launch Kingmaker through Steam App ID 640820. Never launch
+   `Kingmaker.exe` directly for qualification.
 2. Handle only routine, previously known launch behavior.
 3. Reach the main menu.
 4. Open the Unity Mod Manager overlay.
@@ -28,3 +29,8 @@ Unexpected dialogs also require stopping. Routine UI interaction is limited to
 two attempts per intended control. There is no GUI automation, credential
 entry, broad image search, save modification, forced process termination, or
 fallback to another campaign.
+
+Direct executable launch is not a valid save-backed qualification environment
+because Steam DLC entitlement detection may be unavailable. If known-good
+saves all display `DLC Required`, treat the launch environment as failed and
+stop. Do not repair, overwrite, or otherwise modify the saves.
