@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private readonly ModContext _context;
         private readonly Stopwatch _elapsed;
+        private readonly int _gameThreadManagedId;
         private readonly List<MethodBase> _patched = new List<MethodBase>();
         private readonly List<SaveLoadObservationEvent> _events =
             new List<SaveLoadObservationEvent>();
@@ -43,6 +44,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _descriptorType;
         private string _saveManagerType;
         private string _lastFingerprint;
+        private string _initialGameState;
+        private string _loadStartUtc;
+        private string _loadCompletionUtc;
         private int _stableSamples;
         private bool _completionCallback;
         private bool _completionCallbackRegistered;
@@ -51,11 +55,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _identityAmbiguous;
         private bool _removed;
         private bool _sealed;
+        private bool _wrongThreadObserved;
 
         internal ManualSaveLoadObservation(ModContext context, Stopwatch elapsed)
         {
             _context = context;
             _elapsed = elapsed;
+            _gameThreadManagedId = Thread.CurrentThread.ManagedThreadId;
         }
 
         internal bool IdentityRejected { get { return _identityRejected; } }
@@ -108,11 +114,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             AddEvent("observer-installed", null, null, "patchCount=" + _patched.Count);
             if (_patched.Count == 0)
                 throw new MissingMethodException("No allowlisted save lifecycle methods were found.");
+            _initialGameState = ReadFingerprint(Kingmaker.Game.Instance);
         }
 
         internal void PollLoadedState()
         {
-            if (_sealed || _acceptedName != WorkingSave) return;
+            if (_sealed) return;
+            if (Thread.CurrentThread.ManagedThreadId != _gameThreadManagedId)
+            {
+                _wrongThreadObserved = true;
+                _identityAmbiguous = true;
+                return;
+            }
             object game = Kingmaker.Game.Instance;
             if (game == null) return;
             if (!_completionCallbackRegistered)
@@ -135,6 +148,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AddEvent("completion-callback-registered", callbackMethod, null,
                     "read-only callback registration");
             }
+            if (_acceptedName != WorkingSave) return;
             if (!_completionCallback) return;
             string fingerprint = ReadFingerprint(game);
             if (string.IsNullOrWhiteSpace(fingerprint)) return;
@@ -173,6 +187,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 StableFingerprint = _stableSamples >= 2 ? _lastFingerprint : string.Empty,
                 SaveWritingApiObserved = _writeObserved,
                 ObservationPatchesRemoved = _removed,
+                LoadStartUtc = _loadStartUtc ?? string.Empty,
+                LoadCompletionUtc = _loadCompletionUtc ?? string.Empty,
+                InitialGameState = _initialGameState ?? string.Empty,
+                StableGameState = _stableSamples >= 2 ? _lastFingerprint : string.Empty,
+                GameThreadManagedId = _gameThreadManagedId,
+                AllCallbacksOnGameThread = !_wrongThreadObserved,
                 Events = new List<SaveLoadObservationEvent>(_events)
             };
         }
@@ -193,6 +213,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Observe(MethodBase method, object[] arguments, string phase)
         {
+            if (Thread.CurrentThread.ManagedThreadId != _gameThreadManagedId)
+            {
+                _wrongThreadObserved = true;
+                _identityAmbiguous = true;
+            }
             string declaring = method.DeclaringType == null
                 ? string.Empty : method.DeclaringType.FullName;
             if (declaring.EndsWith(".SaveManager", StringComparison.Ordinal))
@@ -216,7 +241,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _descriptorType = descriptor.GetType().FullName;
                 if (phase == "method-enter" && method.Name != "AddCallbackAfterLoad")
+                {
+                    if (_loadStartUtc == null)
+                        _loadStartUtc = DateTime.UtcNow.ToString("o");
                     AcceptIdentity(displayName, gameName, gameId, fileLeaf);
+                }
             }
             AddEvent(phase, method, arguments,
                 (write ? "forbidden-save-write-observed;" : string.Empty) +
@@ -246,6 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_sealed) return;
             _completionCallback = true;
+            _loadCompletionUtc = DateTime.UtcNow.ToString("o");
             AddEvent("load-completion-callback", null, null,
                 "SaveManager after-load callback invoked");
         }

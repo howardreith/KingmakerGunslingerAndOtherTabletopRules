@@ -79,7 +79,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("stableFingerprint", Order = 6)] public string StableFingerprint { get; set; }
         [JsonProperty("saveWritingApiObserved", Order = 7)] public bool SaveWritingApiObserved { get; set; }
         [JsonProperty("observationPatchesRemoved", Order = 8)] public bool ObservationPatchesRemoved { get; set; }
-        [JsonProperty("events", Order = 9)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("loadStartUtc", Order = 9)] public string LoadStartUtc { get; set; }
+        [JsonProperty("loadCompletionUtc", Order = 10)] public string LoadCompletionUtc { get; set; }
+        [JsonProperty("initialGameState", Order = 11)] public string InitialGameState { get; set; }
+        [JsonProperty("stableGameState", Order = 12)] public string StableGameState { get; set; }
+        [JsonProperty("gameThreadManagedId", Order = 13)] public int GameThreadManagedId { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 14)] public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("events", Order = 15)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
     internal static class RuntimeTestResultWriter

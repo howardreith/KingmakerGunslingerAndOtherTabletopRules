@@ -37,6 +37,20 @@ $checks = [ordered]@{
         'Unpatch(method, HarmonyPatchType.All, _context.ModId)')
     'completion-required' = $observer.Contains(
         '_completionCallback && _stableSamples >= 2')
+    'load-start-recorded' = $observer.Contains(
+        '_loadStartUtc = DateTime.UtcNow.ToString("o")')
+    'completion-event-recorded' = $observer.Contains(
+        '_loadCompletionUtc = DateTime.UtcNow.ToString("o")') -and
+        $observer.Contains('"load-completion-callback"')
+    'game-thread-enforced' = $observer.Contains(
+        'Thread.CurrentThread.ManagedThreadId != _gameThreadManagedId') -and
+        $runner.Contains('Assertion("game-thread-only"')
+    'scene-area-fingerprint' = $observer.Contains(
+        'ReadProperty(game, "CurrentlyLoadedArea")') -and
+        $observer.Contains('ReadProperty(game, "CurrentScene")')
+    'stable-player-party-fingerprint' = $observer.Contains(
+        'ReadProperty(player, "Party")') -and
+        $observer.Contains('ReadProperty(player, "MainCharacter")')
     'timeout-status' = $runner.Contains('CreateResult("TIMEOUT"')
     'accepted-result-sealed' = $observer.Contains('if (_sealed) return') -and
         $observer.Contains('if (_acceptedName != null')
@@ -46,6 +60,9 @@ $checks = [ordered]@{
         'if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)')
     'atomic-result' = $result.Contains('stream.Flush(true)') -and
         $result.Contains('File.Move(temporary, path)')
+    'structured-timestamps' = $result.Contains(
+        'JsonProperty("loadStartUtc"') -and
+        $result.Contains('JsonProperty("loadCompletionUtc"')
     'no-raw-object-dumps' = -not $observer.Contains('.ToString()')
 }
 

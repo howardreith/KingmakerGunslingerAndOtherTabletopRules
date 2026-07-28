@@ -155,7 +155,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("observation-disabled", "all patches removed",
                     evidence.ObservationPatchesRemoved ? "removed" : "active",
                     evidence.ObservationPatchesRemoved,
-                    "Harmony owner-scoped unpatch")
+                    "Harmony owner-scoped unpatch"),
+                Assertion("game-thread-only", "all observation callbacks on Unity update thread",
+                    evidence.AllCallbacksOnGameThread ? "confirmed" : "contradicted",
+                    evidence.AllCallbacksOnGameThread,
+                    "managed thread identity captured for every event")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
             result.SaveLoadObservation = evidence;

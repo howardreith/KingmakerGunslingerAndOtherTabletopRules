@@ -104,6 +104,9 @@ Assert-True ($common.Contains('Assert-KmgUnelevated')) 'elevation-rejected'
 Assert-True ($common.Contains('Assert-KmgProcessOwner')) 'same-user-verified'
 Assert-True ($common.Contains('sanitizedLaunchArguments')) 'sanitized-arguments-recorded'
 Assert-True ($common.Contains('Start-Process -FilePath $SteamPath')) 'steam-executable-used'
+Assert-True ($common.Contains('$stream.Flush($true)') -and
+    $common.Contains('[IO.File]::Move($temporary, $Path)')) `
+    'orchestration-and-request-writes-are-atomic'
 Assert-True (-not $common.Contains('Start-Process -FilePath $KingmakerPath')) `
     'common-has-no-direct-game-launch'
 Assert-True ($common.Contains("throw `"Kingmaker was already running before Steam launch")) `
@@ -141,4 +144,4 @@ finally {
 if ($failures.Count -ne 0) {
     throw "Steam launch source tests failed: $($failures -join ', ')"
 }
-Write-Host 'Steam launch source tests passed: 35'
+Write-Host 'Steam launch source tests passed: 36'

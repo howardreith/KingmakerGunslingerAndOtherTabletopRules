@@ -26,7 +26,8 @@ From a clean, qualified feature branch, run:
 
 The orchestrator builds and validates, reaches live deployment only through
 `Deploy-Local.ps1` (which owns exactly one backup), writes the guarded request,
-and starts Kingmaker without GUI automation. When it prints
+and starts Kingmaker only through Steam App ID 640820 without GUI automation.
+There is no direct-`Kingmaker.exe` fallback. When it prints
 `MANUALLY LOAD KMG_AUTOMATION_WORKING NOW`, use Kingmaker's normal UI to click
 Load Game, select the save whose displayed name is exactly
 `KMG_AUTOMATION_WORKING`, and click the normal Load control once. Do not select
@@ -43,6 +44,9 @@ fields. File identifiers are reduced to a leaf name. The probe also records:
 - registration and invocation of a read-only after-load callback;
 - area/scene availability and two identical game-thread samples of a compact
   party/player fingerprint;
+- the pre-load and stable post-load area/scene/player state, load-start and
+  callback-completion timestamps, and whether every callback ran on the Unity
+  update thread;
 - any call to an allowlisted set of save-writing method names;
 - exceptions, timeout, patch removal, and atomic result paths.
 
@@ -54,8 +58,9 @@ return values, or game behavior. They are removed when the scenario ends.
 ## Outcomes
 
 - `PASS`: the working name is positive, the after-load callback fires, loaded
-  state is stable, the requested mod version matches, no writing API is
-  observed, patches are removed, and the result is atomically flushed.
+state is stable, the requested mod version matches, no writing API is
+observed, every callback remains on the game thread, patches are removed, and
+the result is atomically flushed.
 - `FAIL`: baseline or another save is identified, prerequisites contradict the
   request, or a forbidden save-writing method is observed.
 - `AMBIGUOUS`: identity, completion, or observed API meaning cannot be proved.
@@ -75,3 +80,10 @@ code writes, or that an exact programmatic load is safe. A later human-reviewed
 task may use the structured call order and completion evidence to select (or
 reject) an exact-save API; it must not infer safety from a build or a single
 successful run.
+
+The current safe reflection surface proves party count and main-character,
+area, scene, and player game-ID presence. It does not safely establish a
+stable character display-name or inventory/equipment enumeration contract.
+Accordingly, the probe does not dump party, inventory, or equipment objects
+and cannot by itself prove that every Sprint 30 fixture item is present. That
+remains a stated uncertainty for the supervised evidence review.
