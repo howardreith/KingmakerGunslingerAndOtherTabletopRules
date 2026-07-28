@@ -41,6 +41,12 @@ mouse coordinates, and visual UI navigation are not valid sources of
 mechanical runtime correctness. Screenshots may be retained only as optional
 supporting evidence.
 
+Every real Kingmaker runtime launch must go through Steam App ID 640820 so
+Steam DLC entitlement detection is preserved. Direct `Kingmaker.exe` launch
+is not a valid save-backed qualification environment. If known-good saves all
+show `DLC Required`, stop and report a launch-environment failure; do not
+modify the saves.
+
 Use only named disposable test saves.
 
 Never overwrite:

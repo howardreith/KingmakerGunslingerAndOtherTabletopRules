@@ -20,8 +20,17 @@ Deployment and the first invocation remain explicitly supervised.
    `scripts\Restore-Live-Mod.ps1 -BackupDirectory <directory> -WhatIf`, then
    omit `-WhatIf` only with explicit restore authority.
 
-`Launch-Kingmaker.ps1` uses Steam's normal `-applaunch 640820` mechanism,
-records launch time and Steam PID, and performs no GUI automation.
+`Launch-Kingmaker.ps1` and every real guarded runtime run use Steam's normal
+`steam.exe -applaunch 640820` mechanism. App ID 640820 is fixed and validated.
+The guarded request flag and its safely quoted evidence-root path follow the
+App ID. Automation records the Steam PID, then independently identifies and
+records the newly started Kingmaker PID and start time; `steam.exe` is never
+treated as the game process.
+
+Launching `Kingmaker.exe` directly is not a valid save-backed qualification
+environment because it can prevent Steam DLC entitlement detection. If all
+known-good saves display `DLC Required`, stop and classify that as a
+launch-environment failure. Do not modify the saves.
 `Wait-For-KingmakerExit.ps1` observes one identified Kingmaker process and
 never terminates it.
 
