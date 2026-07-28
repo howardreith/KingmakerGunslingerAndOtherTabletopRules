@@ -290,6 +290,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
+    <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
   </ItemGroup>
 
   <ItemGroup>

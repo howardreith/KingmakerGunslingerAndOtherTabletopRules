@@ -49,8 +49,14 @@ Assert-True (-not $deployment.Substring(
 Assert-True ($orchestrator.Contains(
     "& (Join-Path `$PSScriptRoot 'Deploy-Local.ps1') -PackagePath `$package -Confirm:`$false")) `
     'real-orchestration-cannot-bypass-deployment-boundary'
+Assert-True ($orchestrator.Contains('[switch]$ManualInteractionRequired')) `
+    'manual-interaction-switch-required'
+Assert-True ($orchestrator.Contains(
+    'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW')) 'manual-instruction-prominent'
+Assert-True (-not ($orchestrator -match
+    '(SendKeys|mouse_event|keybd_event|WScript\.Shell)')) 'orchestrator-sends-no-input'
 
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 9'
+Write-Host 'Runtime deployment safety tests passed: 12'

@@ -51,6 +51,10 @@ Use this working save for automated testing:
 
 - KMG_AUTOMATION_WORKING
 
+The supervised, read-only `observe-manual-save-load` procedure is documented in
+`docs/SAVE-LOAD-OBSERVATION.md`. It never authorizes automated save selection or
+save loading; a human must initiate the working-save load through the normal UI.
+
 Stop rather than guessing when:
 
 - The wrong mod version is loaded.

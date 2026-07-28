@@ -15,6 +15,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly Stopwatch _elapsed;
         private readonly DateTime _startedUtc;
         private bool _completed;
+        private ManualSaveLoadObservation _saveLoadObservation;
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
@@ -85,12 +86,81 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             try
             {
-                Complete(RunModLoadSmoke());
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
+                {
+                    Complete(RunModLoadSmoke());
+                    return;
+                }
+                RunManualSaveLoadObservation();
             }
             catch (Exception exception)
             {
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
+        }
+
+        private void RunManualSaveLoadObservation()
+        {
+            if (_saveLoadObservation == null)
+            {
+                _saveLoadObservation = new ManualSaveLoadObservation(_context, _elapsed);
+                _saveLoadObservation.Install();
+                return;
+            }
+            _saveLoadObservation.PollLoadedState();
+            if (_saveLoadObservation.WriteObserved)
+            {
+                CompleteManualObservation(RuntimeTestStatuses.Fail,
+                    "A forbidden save-writing API was observed.");
+                return;
+            }
+            if (_saveLoadObservation.IdentityRejected)
+            {
+                CompleteManualObservation(RuntimeTestStatuses.Fail,
+                    "The manually loaded save was not the allowlisted working save.");
+                return;
+            }
+            if (_saveLoadObservation.IdentityAmbiguous)
+            {
+                CompleteManualObservation(RuntimeTestStatuses.Ambiguous,
+                    "The manually loaded save identity or callback contract was ambiguous.");
+                return;
+            }
+            if (_saveLoadObservation.IsReadyToComplete)
+                CompleteManualObservation(RuntimeTestStatuses.Pass, string.Empty);
+        }
+
+        private void CompleteManualObservation(string status, string warning)
+        {
+            SaveLoadObservationEvidence evidence = _saveLoadObservation.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("loaded-save-identity", ManualSaveLoadObservation.WorkingSave,
+                    evidence.AcceptedSaveName,
+                    evidence.AcceptedSaveName == ManualSaveLoadObservation.WorkingSave,
+                    "allowlisted SaveInfo.Name/GameName/GameId/file leaf"),
+                Assertion("load-completion", "after-load callback and stable loaded state",
+                    "callback=" + evidence.CompletionCallbackObserved +
+                        "; stable=" + evidence.GameLoadedStateObserved,
+                    evidence.CompletionCallbackObserved &&
+                        evidence.GameLoadedStateObserved,
+                    "SaveManager callback plus two identical game-thread samples"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version"),
+                Assertion("no-save-writing-api", "none", evidence.SaveWritingApiObserved
+                    ? "observed" : "none", !evidence.SaveWritingApiObserved,
+                    "request-scoped SaveManager observation"),
+                Assertion("observation-disabled", "all patches removed",
+                    evidence.ObservationPatchesRemoved ? "removed" : "active",
+                    evidence.ObservationPatchesRemoved,
+                    "Harmony owner-scoped unpatch")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.SaveLoadObservation = evidence;
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private RuntimeTestResult RunModLoadSmoke()
@@ -130,6 +200,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            if (_saveLoadObservation != null && result.SaveLoadObservation == null)
+                result.SaveLoadObservation = _saveLoadObservation.Stop();
             _completed = true;
             _context.ModEntry.OnUpdate -= OnUpdate;
             _elapsed.Stop();

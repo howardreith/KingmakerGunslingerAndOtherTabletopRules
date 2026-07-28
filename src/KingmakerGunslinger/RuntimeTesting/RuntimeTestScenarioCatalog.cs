@@ -6,9 +6,14 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveManualSaveLoad = "observe-manual-save-load";
 
         private static readonly HashSet<string> Allowed =
-            new HashSet<string>(StringComparer.Ordinal) { ModLoadSmoke };
+            new HashSet<string>(StringComparer.Ordinal)
+            {
+                ModLoadSmoke,
+                ObserveManualSaveLoad
+            };
 
         internal static bool IsAllowed(string scenario)
         {

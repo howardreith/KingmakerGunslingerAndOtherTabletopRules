@@ -28,16 +28,16 @@ $checks = [ordered]@{
     'timeout-to-timeout' = $runner.Contains('CreateResult("TIMEOUT"')
     'exit-is-request-guarded' = $runner.Contains('if (_request.ExitAfterCompletion)') -and
         $runner.Contains('Application.Quit()')
-    'production-allowlist-singleton' = $catalog.Contains(
-        'new HashSet<string>(StringComparer.Ordinal) { ModLoadSmoke }')
+    'production-allowlist-includes-observer' = $catalog.Contains(
+        'ObserveManualSaveLoad')
     'real-runtime-identity' = $runner.Contains('Assembly.GetExecutingAssembly()') -and
         $runner.Contains('Process.GetCurrentProcess().Id')
     'main-thread-update-callback' = $runner.Contains('OnUpdate += runner.OnUpdate')
     'bootstrap-attachment-after-loaded' = $main.IndexOf(
         '_state = LoaderState.Loaded;', [StringComparison]::Ordinal) -lt
         $main.IndexOf('RuntimeTestRunner.TryAttach(context);', [StringComparison]::Ordinal)
-    'non-save-scenario-no-save-api' = -not $runner.Contains('Save') -and
-        -not $catalog.Contains('working-save-smoke')
+    'non-save-scenario-isolated' = $runner.Contains(
+        'if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }

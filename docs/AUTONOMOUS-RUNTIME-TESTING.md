@@ -53,6 +53,10 @@ cloud-save conflict resolution, update/install approval, selecting the verified
 working save, judging visual/combat-log presentation, and authorizing actual
 deployment or restore. Computer Use may follow the documented runbook only.
 
+The `observe-manual-save-load` scenario is deliberately supervised rather than
+autonomous. Follow `SAVE-LOAD-OBSERVATION.md`; the human selects
+`KMG_AUTOMATION_WORKING`, and the orchestrator sends no keyboard or mouse input.
+
 ## Emergency recovery
 
 Exit Kingmaker normally. Do not retry mutation or delete files. Record the

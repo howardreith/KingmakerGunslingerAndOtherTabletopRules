@@ -1,7 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('mod-load-smoke')]
+    [ValidateSet('mod-load-smoke', 'observe-manual-save-load')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -14,6 +14,7 @@ param(
     [hashtable]$Parameters = @{},
     [switch]$AllowDirtyGit,
     [switch]$AllowForceTerminate,
+    [switch]$ManualInteractionRequired,
     [string]$KingmakerPath = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Kingmaker.exe'
 )
 
@@ -21,6 +22,13 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
+
+if ($Scenario -eq 'observe-manual-save-load' -and -not $ManualInteractionRequired) {
+    throw 'observe-manual-save-load requires -ManualInteractionRequired.'
+}
+if ($Scenario -ne 'observe-manual-save-load' -and $ManualInteractionRequired) {
+    throw '-ManualInteractionRequired is valid only for observe-manual-save-load.'
+}
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -67,6 +75,15 @@ Write-KmgUtf8NoBom -Path $requestPath `
 $process = Start-Process -FilePath $KingmakerPath -ArgumentList @(
     '-kmgRuntimeTestRequest', "`"$requestPath`""
 ) -PassThru
+if ($ManualInteractionRequired) {
+    Write-Host ''
+    Write-Host '============================================================' -ForegroundColor Yellow
+    Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
+    Write-Host 'DO NOT LOAD OR OVERWRITE KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+    Write-Host 'No keyboard or mouse input will be sent by this script.' -ForegroundColor Yellow
+    Write-Host '============================================================' -ForegroundColor Yellow
+    Write-Host ''
+}
 [ordered]@{
     schemaVersion = 1
     processId = $process.Id

@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
-$script:KmgRuntimeScenarios = @('mod-load-smoke')
+$script:KmgRuntimeScenarios = @('mod-load-smoke', 'observe-manual-save-load')
 
 function Assert-KmgRuntimeEvidenceDirectory {
     param([Parameter(Mandatory = $true)][string]$Path)

@@ -50,6 +50,36 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("evidenceFiles", Order = 16)] public List<string> EvidenceFiles { get; set; }
         [JsonProperty("automaticExitRequested", Order = 17)] public bool AutomaticExitRequested { get; set; }
         [JsonProperty("automaticExitInitiated", Order = 18)] public bool AutomaticExitInitiated { get; set; }
+        [JsonProperty("saveLoadObservation", Order = 19, NullValueHandling = NullValueHandling.Ignore)]
+        public SaveLoadObservationEvidence SaveLoadObservation { get; set; }
+    }
+
+    internal sealed class SaveLoadObservationEvent
+    {
+        [JsonProperty("sequence", Order = 1)] public int Sequence { get; set; }
+        [JsonProperty("elapsedMilliseconds", Order = 2)] public long ElapsedMilliseconds { get; set; }
+        [JsonProperty("utc", Order = 3)] public string Utc { get; set; }
+        [JsonProperty("kind", Order = 4)] public string Kind { get; set; }
+        [JsonProperty("declaringType", Order = 5)] public string DeclaringType { get; set; }
+        [JsonProperty("methodSignature", Order = 6)] public string MethodSignature { get; set; }
+        [JsonProperty("argumentTypes", Order = 7)] public List<string> ArgumentTypes { get; set; }
+        [JsonProperty("managedThreadId", Order = 8)] public int ManagedThreadId { get; set; }
+        [JsonProperty("displayName", Order = 9)] public string DisplayName { get; set; }
+        [JsonProperty("safeSaveIdentifier", Order = 10)] public string SafeSaveIdentifier { get; set; }
+        [JsonProperty("detail", Order = 11)] public string Detail { get; set; }
+    }
+
+    internal sealed class SaveLoadObservationEvidence
+    {
+        [JsonProperty("saveManagerType", Order = 1)] public string SaveManagerType { get; set; }
+        [JsonProperty("saveDescriptorType", Order = 2)] public string SaveDescriptorType { get; set; }
+        [JsonProperty("acceptedSaveName", Order = 3)] public string AcceptedSaveName { get; set; }
+        [JsonProperty("completionCallbackObserved", Order = 4)] public bool CompletionCallbackObserved { get; set; }
+        [JsonProperty("gameLoadedStateObserved", Order = 5)] public bool GameLoadedStateObserved { get; set; }
+        [JsonProperty("stableFingerprint", Order = 6)] public string StableFingerprint { get; set; }
+        [JsonProperty("saveWritingApiObserved", Order = 7)] public bool SaveWritingApiObserved { get; set; }
+        [JsonProperty("observationPatchesRemoved", Order = 8)] public bool ObservationPatchesRemoved { get; set; }
+        [JsonProperty("events", Order = 9)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
     internal static class RuntimeTestResultWriter
