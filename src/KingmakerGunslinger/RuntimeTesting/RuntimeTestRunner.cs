@@ -1,0 +1,226 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using KingmakerGunslinger.Bootstrap;
+using UnityEngine;
+using UnityModManagerNet;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed class RuntimeTestRunner
+    {
+        private readonly RuntimeTestRequest _request;
+        private readonly ModContext _context;
+        private readonly Stopwatch _elapsed;
+        private readonly DateTime _startedUtc;
+        private bool _completed;
+
+        private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
+        {
+            _request = request;
+            _context = context;
+            _startedUtc = DateTime.UtcNow;
+            _elapsed = Stopwatch.StartNew();
+        }
+
+        internal static void TryAttach(ModContext context)
+        {
+            string loadedVersion = context.ModEntry.Info.Version;
+            RuntimeTestRequestDecision decision = RuntimeTestRequestParser.TryActivate(
+                Environment.GetCommandLineArgs(),
+                loadedVersion);
+            if (!decision.Accepted)
+            {
+                if (decision.ReasonCode != "flag-absent")
+                    context.Logger.Warning(
+                        "runtime-test",
+                        "request.rejected",
+                        "reason=" + decision.ReasonCode +
+                        "; requestFile=" + decision.SafeRequestName);
+                return;
+            }
+
+            string marker = System.IO.Path.Combine(
+                RuntimeTestRequest.EvidenceRoot,
+                ".kmg-run-" + decision.Request.RunId);
+            try
+            {
+                using (new System.IO.FileStream(
+                    marker,
+                    System.IO.FileMode.CreateNew,
+                    System.IO.FileAccess.Write,
+                    System.IO.FileShare.None))
+                {
+                }
+            }
+            catch (Exception exception)
+            {
+                context.Logger.Failure(
+                    "runtime-test",
+                    "request.claim-failed",
+                    "The validated run ID could not be claimed.",
+                    exception);
+                return;
+            }
+
+            var runner = new RuntimeTestRunner(decision.Request, context);
+            context.ModEntry.OnUpdate += runner.OnUpdate;
+            context.Logger.Info(
+                "runtime-test",
+                "request.accepted",
+                "runId=" + decision.Request.RunId +
+                "; scenario=" + decision.Request.Scenario);
+        }
+
+        private void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
+        {
+            if (_completed) return;
+            if (_elapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+            {
+                Complete(CreateResult("TIMEOUT", null, null));
+                return;
+            }
+            if (!_context.IsReady) return;
+
+            try
+            {
+                Complete(RunModLoadSmoke());
+            }
+            catch (Exception exception)
+            {
+                Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
+            }
+        }
+
+        private RuntimeTestResult RunModLoadSmoke()
+        {
+            Assembly assembly = _context.Assembly;
+            string expectedVersion = _request.ExpectedModVersion;
+            string observedVersion = _context.ModEntry.Info.Version;
+            string runtimeIdentity = assembly.FullName +
+                "; pid=" + Process.GetCurrentProcess().Id;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion(
+                    "loaded-mod-version",
+                    expectedVersion,
+                    observedVersion,
+                    string.Equals(expectedVersion, observedVersion, StringComparison.Ordinal),
+                    "Unity Mod Manager ModEntry.Info.Version"),
+                Assertion(
+                    "runtime-identity",
+                    "executing KingmakerGunslinger assembly in current process",
+                    runtimeIdentity,
+                    assembly == Assembly.GetExecutingAssembly() &&
+                        assembly.GetName().Name == "KingmakerGunslinger",
+                    "ModContext.Assembly and Process.GetCurrentProcess().Id"),
+                Assertion(
+                    "core-initialization",
+                    "published context with Harmony patches installed",
+                    _context.IsReady ? "ready" : "not-ready",
+                    _context.IsReady,
+                    "ModContext.IsReady")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            RuntimeTestResult result = CreateResult(pass ? "PASS" : "FAIL", assertions, null);
+            result.RuntimeIdentity = runtimeIdentity;
+            return result;
+        }
+
+        private void Complete(RuntimeTestResult result)
+        {
+            _completed = true;
+            _context.ModEntry.OnUpdate -= OnUpdate;
+            _elapsed.Stop();
+            result.EndUtc = DateTime.UtcNow.ToString("o");
+            result.DurationMilliseconds = _elapsed.ElapsedMilliseconds;
+            result.AutomaticExitRequested = _request.ExitAfterCompletion;
+            result.AutomaticExitInitiated = _request.ExitAfterCompletion;
+            try
+            {
+                RuntimeTestResultWriter.Write(result, _request.EvidenceDirectory);
+            }
+            catch (Exception exception)
+            {
+                _context.Logger.Failure(
+                    "runtime-test",
+                    "result.write-failed",
+                    "Runtime evidence could not be committed; automatic exit was suppressed.",
+                    exception);
+                return;
+            }
+            _context.Logger.Info(
+                "runtime-test",
+                "scenario.complete",
+                "runId=" + _request.RunId + "; status=" + result.Status);
+            if (_request.ExitAfterCompletion)
+                Application.Quit();
+        }
+
+        private RuntimeTestResult CreateResult(
+            string status,
+            List<RuntimeTestAssertion> assertions,
+            string exceptionSummary)
+        {
+            return new RuntimeTestResult
+            {
+                SchemaVersion = 1,
+                RunId = _request.RunId,
+                Scenario = _request.Scenario,
+                Status = status,
+                LoadedModVersion = _context.ModEntry.Info.Version,
+                RuntimeIdentity = _context.Assembly.FullName,
+                GitCommit = ReadAssemblyMetadata(_context.Assembly, "GitCommit"),
+                GameVersion = Application.version ?? string.Empty,
+                StartUtc = _startedUtc.ToString("o"),
+                EndUtc = string.Empty,
+                DurationMilliseconds = 0,
+                Assertions = assertions ?? new List<RuntimeTestAssertion>(),
+                Diagnostics = new List<string>
+                {
+                    "mainThreadManagedId=" +
+                    System.Threading.Thread.CurrentThread.ManagedThreadId
+                },
+                Warnings = new List<string>(),
+                ExceptionSummary = exceptionSummary ?? string.Empty,
+                EvidenceFiles = new List<string>(),
+                AutomaticExitRequested = _request.ExitAfterCompletion,
+                AutomaticExitInitiated = false
+            };
+        }
+
+        private static RuntimeTestAssertion Assertion(
+            string name,
+            string expected,
+            string observed,
+            bool passed,
+            string evidence)
+        {
+            return new RuntimeTestAssertion
+            {
+                Name = name,
+                Expected = expected,
+                Observed = observed,
+                Status = passed ? "PASS" : "FAIL",
+                Evidence = evidence
+            };
+        }
+
+        private static string ExceptionSummary(Exception exception)
+        {
+            return exception.GetType().FullName + ": " + exception.Message;
+        }
+
+        private static string ReadAssemblyMetadata(Assembly assembly, string key)
+        {
+            foreach (AssemblyMetadataAttribute attribute in assembly.GetCustomAttributes(
+                typeof(AssemblyMetadataAttribute), false))
+            {
+                if (string.Equals(attribute.Key, key, StringComparison.Ordinal))
+                    return attribute.Value ?? string.Empty;
+            }
+            return string.Empty;
+        }
+    }
+}

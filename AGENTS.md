@@ -34,6 +34,13 @@ For every source change:
 
 ## Runtime testing
 
+On Windows 10, autonomous runs must use the guarded
+`-kmgRuntimeTestRequest` mechanism documented in
+`docs/WIN10-AUTONOMOUS-RUNTIME-TESTING.md`. Computer Use, screenshots, OCR,
+mouse coordinates, and visual UI navigation are not valid sources of
+mechanical runtime correctness. Screenshots may be retained only as optional
+supporting evidence.
+
 Use only named disposable test saves.
 
 Never overwrite:

@@ -1,0 +1,117 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal static class RuntimeTestStatuses
+    {
+        internal const string Pass = "PASS";
+        internal const string Fail = "FAIL";
+        internal const string Ambiguous = "AMBIGUOUS";
+        internal const string Error = "ERROR";
+        internal const string Timeout = "TIMEOUT";
+
+        internal static bool IsValid(string status)
+        {
+            return status == Pass || status == Fail || status == Ambiguous ||
+                status == Error || status == Timeout;
+        }
+    }
+
+    internal sealed class RuntimeTestAssertion
+    {
+        [JsonProperty("name", Order = 1)] public string Name { get; set; }
+        [JsonProperty("expected", Order = 2)] public string Expected { get; set; }
+        [JsonProperty("observed", Order = 3)] public string Observed { get; set; }
+        [JsonProperty("status", Order = 4)] public string Status { get; set; }
+        [JsonProperty("evidence", Order = 5)] public string Evidence { get; set; }
+    }
+
+    internal sealed class RuntimeTestResult
+    {
+        [JsonProperty("schemaVersion", Order = 1)] public int SchemaVersion { get; set; }
+        [JsonProperty("runId", Order = 2)] public string RunId { get; set; }
+        [JsonProperty("scenario", Order = 3)] public string Scenario { get; set; }
+        [JsonProperty("status", Order = 4)] public string Status { get; set; }
+        [JsonProperty("loadedModVersion", Order = 5)] public string LoadedModVersion { get; set; }
+        [JsonProperty("runtimeIdentity", Order = 6)] public string RuntimeIdentity { get; set; }
+        [JsonProperty("gitCommit", Order = 7)] public string GitCommit { get; set; }
+        [JsonProperty("gameVersion", Order = 8)] public string GameVersion { get; set; }
+        [JsonProperty("startUtc", Order = 9)] public string StartUtc { get; set; }
+        [JsonProperty("endUtc", Order = 10)] public string EndUtc { get; set; }
+        [JsonProperty("durationMilliseconds", Order = 11)] public long DurationMilliseconds { get; set; }
+        [JsonProperty("assertions", Order = 12)] public List<RuntimeTestAssertion> Assertions { get; set; }
+        [JsonProperty("diagnostics", Order = 13)] public List<string> Diagnostics { get; set; }
+        [JsonProperty("warnings", Order = 14)] public List<string> Warnings { get; set; }
+        [JsonProperty("exceptionSummary", Order = 15)] public string ExceptionSummary { get; set; }
+        [JsonProperty("evidenceFiles", Order = 16)] public List<string> EvidenceFiles { get; set; }
+        [JsonProperty("automaticExitRequested", Order = 17)] public bool AutomaticExitRequested { get; set; }
+        [JsonProperty("automaticExitInitiated", Order = 18)] public bool AutomaticExitInitiated { get; set; }
+    }
+
+    internal static class RuntimeTestResultWriter
+    {
+        internal static void Write(RuntimeTestResult result, string evidenceDirectory)
+        {
+            if (result == null) throw new ArgumentNullException("result");
+            if (!RuntimeTestStatuses.IsValid(result.Status))
+                throw new InvalidOperationException("Unknown runtime-test status.");
+            string summaryPath = Path.Combine(evidenceDirectory, "runtime-summary.txt");
+            string resultPath = Path.Combine(evidenceDirectory, "runtime-result.json");
+            WriteAtomic(summaryPath, BuildSummary(result));
+            result.EvidenceFiles = new List<string> { summaryPath, resultPath };
+            WriteAtomic(resultPath, JsonConvert.SerializeObject(result, Formatting.Indented) + Environment.NewLine);
+        }
+
+        internal static void WriteAtomic(string path, string content)
+        {
+            string directory = Path.GetDirectoryName(path);
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+                throw new DirectoryNotFoundException(directory);
+            string temporary = Path.Combine(
+                directory,
+                "." + Path.GetFileName(path) + "." + Guid.NewGuid().ToString("N") + ".tmp");
+            byte[] bytes = new UTF8Encoding(false).GetBytes(content ?? string.Empty);
+            try
+            {
+                using (var stream = new FileStream(
+                    temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                {
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Flush(true);
+                }
+                if (File.Exists(path))
+                    File.Replace(temporary, path, null);
+                else
+                    File.Move(temporary, path);
+            }
+            finally
+            {
+                if (File.Exists(temporary)) File.Delete(temporary);
+            }
+        }
+
+        private static string BuildSummary(RuntimeTestResult result)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("Kingmaker Gunslinger runtime test");
+            builder.AppendLine("Run ID: " + result.RunId);
+            builder.AppendLine("Scenario: " + result.Scenario);
+            builder.AppendLine("Status: " + result.Status);
+            builder.AppendLine("Loaded mod: " + result.LoadedModVersion);
+            builder.AppendLine("Runtime: " + result.RuntimeIdentity);
+            builder.AppendLine("Started UTC: " + result.StartUtc);
+            builder.AppendLine("Ended UTC: " + result.EndUtc);
+            builder.AppendLine("Duration ms: " + result.DurationMilliseconds);
+            foreach (RuntimeTestAssertion assertion in result.Assertions)
+                builder.AppendLine(assertion.Status + " " + assertion.Name +
+                    " expected=" + assertion.Expected + " observed=" + assertion.Observed);
+            if (!string.IsNullOrWhiteSpace(result.ExceptionSummary))
+                builder.AppendLine("Exception: " + result.ExceptionSummary);
+            return builder.ToString();
+        }
+    }
+}

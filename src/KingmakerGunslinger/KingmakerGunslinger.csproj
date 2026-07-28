@@ -286,6 +286,10 @@
     <Compile Include="Rules\FirearmArmorClassRuntime.cs" />
     <Compile Include="Rules\FirearmArmorClassService.cs" />
     <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
   </ItemGroup>
 
   <ItemGroup>

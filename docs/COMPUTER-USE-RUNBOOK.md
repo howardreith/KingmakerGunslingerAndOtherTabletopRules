@@ -1,5 +1,10 @@
 # Computer Use runbook
 
+> Windows 10 restriction: do not use this runbook to qualify autonomous
+> runtime assertions. Use the guarded request/result protocol documented in
+> `WIN10-AUTONOMOUS-RUNTIME-TESTING.md`. Computer Use may not infer state from
+> an unavailable Kingmaker capture surface.
+
 Only after an explicitly authorized deployment:
 
 1. Launch Steam and Kingmaker through the normal supported local mechanism.

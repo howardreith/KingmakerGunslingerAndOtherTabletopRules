@@ -1,8 +1,9 @@
 # Autonomous local runtime testing
 
-This workflow builds and records a candidate deterministically, but live game
-interaction remains a controlled human/Computer Use activity. Always use a
-disposable campaign and never overwrite the named baseline save.
+On Windows 10, use the guarded request/result workflow in
+`WIN10-AUTONOMOUS-RUNTIME-TESTING.md`. Computer Use is not a correctness
+mechanism because Kingmaker cannot be captured reliably on this platform.
+Deployment and the first invocation remain explicitly supervised.
 
 ## Build, backup, deploy, and restore
 

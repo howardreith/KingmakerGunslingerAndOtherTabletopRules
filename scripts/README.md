@@ -24,4 +24,12 @@ The harness does not need `.worktreeinclude`: it derives the isolated reference
 location from the lab workspace and never copies ignored machine configuration
 into a worktree.
 
+`Invoke-KingmakerRuntimeTest.ps1` is the guarded Windows 10 orchestration entry
+point. Its only current scenario is `mod-load-smoke`; use `-WhatIf` for
+source-only qualification. `Test-RuntimeRequest.ps1`,
+`Test-RuntimeResult.ps1`, and `Test-RuntimeRunner.ps1` validate the guarded
+protocol without launching Kingmaker. `Capture-WindowEvidence.ps1` optionally
+captures one explicit process-owned window with GDI and returns warning-only
+failure; it is never a correctness source.
+
 Do not bypass a failed report. Exact compilation and tests establish candidate quality; `SMOKE-TEST-GUIDE-0.0.29.md` establishes the complete action-bar maintenance loop, interruption safety, exact resource deltas, and persistence. Sprint 30 remains blocked until the 0.0.29 runtime gate passes.

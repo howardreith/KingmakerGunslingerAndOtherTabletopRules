@@ -1,0 +1,282 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed class RuntimeTestRequest
+    {
+        internal const int CurrentSchemaVersion = 1;
+        internal const string CommandLineFlag = "-kmgRuntimeTestRequest";
+        internal const string EvidenceRoot = @"C:\Dev\KingmakerGunslingerLab\runtime-evidence";
+
+        [JsonProperty("schemaVersion", Required = Required.Always)]
+        public int SchemaVersion { get; set; }
+        [JsonProperty("enabled", Required = Required.Always)]
+        public bool Enabled { get; set; }
+        [JsonProperty("runId", Required = Required.Always)]
+        public string RunId { get; set; }
+        [JsonProperty("scenario", Required = Required.Always)]
+        public string Scenario { get; set; }
+        [JsonProperty("expectedModVersion", Required = Required.Always)]
+        public string ExpectedModVersion { get; set; }
+        [JsonProperty("evidenceDirectory", Required = Required.Always)]
+        public string EvidenceDirectory { get; set; }
+        [JsonProperty("timeoutSeconds", Required = Required.Always)]
+        public int TimeoutSeconds { get; set; }
+        [JsonProperty("exitAfterCompletion", Required = Required.Always)]
+        public bool ExitAfterCompletion { get; set; }
+        [JsonProperty("parameters", Required = Required.Always)]
+        public JObject Parameters { get; set; }
+    }
+
+    internal sealed class RuntimeTestRequestDecision
+    {
+        internal RuntimeTestRequestDecision(
+            bool accepted,
+            string reasonCode,
+            string safeRequestName,
+            RuntimeTestRequest request)
+        {
+            Accepted = accepted;
+            ReasonCode = reasonCode ?? string.Empty;
+            SafeRequestName = safeRequestName ?? string.Empty;
+            Request = request;
+        }
+
+        internal bool Accepted { get; private set; }
+        internal string ReasonCode { get; private set; }
+        internal string SafeRequestName { get; private set; }
+        internal RuntimeTestRequest Request { get; private set; }
+    }
+
+    internal static class RuntimeTestRequestParser
+    {
+        private static readonly string[] AllowedMembers =
+        {
+            "schemaVersion", "enabled", "runId", "scenario",
+            "expectedModVersion", "evidenceDirectory", "timeoutSeconds",
+            "exitAfterCompletion", "parameters"
+        };
+
+        internal static RuntimeTestRequestDecision TryActivate(
+            string[] arguments,
+            string loadedModVersion)
+        {
+            string requestPath;
+            string commandReason;
+            if (!TryGetRequestPath(arguments, out requestPath, out commandReason))
+            {
+                return Reject(commandReason, null);
+            }
+
+            string safeName = SafeFileName(requestPath);
+            try
+            {
+                if (!Path.IsPathRooted(requestPath))
+                {
+                    return Reject("request-path-not-absolute", requestPath);
+                }
+                if (!File.Exists(requestPath))
+                {
+                    return Reject("request-file-missing", requestPath);
+                }
+
+                string json = File.ReadAllText(requestPath);
+                EnsureNoDuplicateProperties(json);
+                JObject document = JObject.Parse(json);
+                RejectUnknownMembers(document);
+                var serializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Error
+                });
+                RuntimeTestRequest request = document.ToObject<RuntimeTestRequest>(serializer);
+                string validation = Validate(request, loadedModVersion);
+                if (validation != null)
+                {
+                    return new RuntimeTestRequestDecision(false, validation, safeName, null);
+                }
+                return new RuntimeTestRequestDecision(true, "accepted", safeName, request);
+            }
+            catch (JsonException)
+            {
+                return new RuntimeTestRequestDecision(false, "invalid-json", safeName, null);
+            }
+            catch (IOException)
+            {
+                return new RuntimeTestRequestDecision(false, "request-read-failed", safeName, null);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return new RuntimeTestRequestDecision(false, "request-read-failed", safeName, null);
+            }
+            catch (ArgumentException)
+            {
+                return new RuntimeTestRequestDecision(false, "request-invalid", safeName, null);
+            }
+            catch (Exception)
+            {
+                return new RuntimeTestRequestDecision(false, "request-invalid", safeName, null);
+            }
+        }
+
+        internal static bool TryGetRequestPath(
+            string[] arguments,
+            out string requestPath,
+            out string reason)
+        {
+            requestPath = null;
+            reason = "flag-absent";
+            if (arguments == null)
+            {
+                return false;
+            }
+
+            int match = -1;
+            for (int index = 0; index < arguments.Length; index++)
+            {
+                if (!string.Equals(
+                    arguments[index],
+                    RuntimeTestRequest.CommandLineFlag,
+                    StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                if (match >= 0)
+                {
+                    reason = "duplicate-flag";
+                    return false;
+                }
+                match = index;
+            }
+            if (match < 0)
+            {
+                return false;
+            }
+            if (match + 1 >= arguments.Length ||
+                string.IsNullOrWhiteSpace(arguments[match + 1]))
+            {
+                reason = "request-path-missing";
+                return false;
+            }
+            requestPath = arguments[match + 1];
+            reason = null;
+            return true;
+        }
+
+        private static string Validate(RuntimeTestRequest request, string loadedVersion)
+        {
+            if (request == null || request.SchemaVersion != RuntimeTestRequest.CurrentSchemaVersion)
+                return "schema-version-invalid";
+            if (!request.Enabled) return "request-disabled";
+            if (!IsValidRunId(request.RunId)) return "run-id-invalid";
+            if (!RuntimeTestScenarioCatalog.IsAllowed(request.Scenario))
+                return "scenario-not-allowed";
+            if (string.IsNullOrWhiteSpace(loadedVersion) ||
+                !string.Equals(request.ExpectedModVersion, loadedVersion, StringComparison.Ordinal))
+                return "mod-version-mismatch";
+            if (request.TimeoutSeconds < 5 || request.TimeoutSeconds > 1800)
+                return "timeout-invalid";
+            if (request.Parameters == null || request.Parameters.Count != 0)
+                return "parameters-not-allowed";
+
+            string evidence;
+            try
+            {
+                evidence = Path.GetFullPath(request.EvidenceDirectory).TrimEnd('\\');
+            }
+            catch
+            {
+                return "evidence-path-invalid";
+            }
+            string root = Path.GetFullPath(RuntimeTestRequest.EvidenceRoot).TrimEnd('\\');
+            if (!evidence.StartsWith(root + "\\", StringComparison.OrdinalIgnoreCase))
+                return "evidence-path-outside-root";
+            if (!Directory.Exists(evidence))
+                return "evidence-directory-missing";
+            if (ContainsReparsePoint(evidence, root))
+                return "evidence-path-reparse-point";
+            if (File.Exists(Path.Combine(evidence, "runtime-result.json")) ||
+                File.Exists(Path.Combine(root, ".kmg-run-" + request.RunId)))
+                return "run-id-duplicate";
+
+            request.EvidenceDirectory = evidence;
+            return null;
+        }
+
+        private static bool ContainsReparsePoint(string path, string root)
+        {
+            var current = new DirectoryInfo(path);
+            while (current != null)
+            {
+                if ((current.Attributes & FileAttributes.ReparsePoint) != 0)
+                    return true;
+                if (current.FullName.TrimEnd('\\').Equals(
+                    root, StringComparison.OrdinalIgnoreCase))
+                    return false;
+                current = current.Parent;
+            }
+            return true;
+        }
+
+        private static bool IsValidRunId(string runId)
+        {
+            if (string.IsNullOrWhiteSpace(runId) || runId.Length > 100)
+                return false;
+            foreach (char character in runId)
+            {
+                bool valid = character >= 'a' && character <= 'z' ||
+                    character >= 'A' && character <= 'Z' ||
+                    character >= '0' && character <= '9' ||
+                    character == '.' || character == '_' || character == '-';
+                if (!valid) return false;
+            }
+            return true;
+        }
+
+        private static void RejectUnknownMembers(JObject document)
+        {
+            var allowed = new HashSet<string>(AllowedMembers, StringComparer.Ordinal);
+            foreach (JProperty property in document.Properties())
+            {
+                if (!allowed.Contains(property.Name))
+                    throw new JsonSerializationException("Unknown request member.");
+            }
+        }
+
+        private static void EnsureNoDuplicateProperties(string json)
+        {
+            using (var text = new StringReader(json))
+            using (var reader = new JsonTextReader(text))
+            {
+                var scopes = new Stack<HashSet<string>>();
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.StartObject)
+                        scopes.Push(new HashSet<string>(StringComparer.Ordinal));
+                    else if (reader.TokenType == JsonToken.EndObject)
+                        scopes.Pop();
+                    else if (reader.TokenType == JsonToken.PropertyName)
+                    {
+                        if (scopes.Count == 0 || !scopes.Peek().Add((string)reader.Value))
+                            throw new JsonReaderException("Duplicate JSON property.");
+                    }
+                }
+            }
+        }
+
+        private static RuntimeTestRequestDecision Reject(string reason, string path)
+        {
+            return new RuntimeTestRequestDecision(false, reason, SafeFileName(path), null);
+        }
+
+        private static string SafeFileName(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            try { return Path.GetFileName(path); }
+            catch { return string.Empty; }
+        }
+    }
+}
