@@ -21,19 +21,31 @@ From a clean, qualified feature branch, run:
   -Scenario observe-manual-save-load `
   -ExpectedVersion 0.0.30 `
   -TimeoutSeconds 300 `
+  -ObserverStartupTimeoutSeconds 180 `
   -ManualInteractionRequired
 ```
 
 The orchestrator builds and validates, reaches live deployment only through
 `Deploy-Local.ps1` (which owns exactly one backup), writes the guarded request,
 and starts Kingmaker only through Steam App ID 640820 without GUI automation.
-There is no direct-`Kingmaker.exe` fallback. When it prints
+There is no direct-`Kingmaker.exe` fallback. The orchestrator first waits for
+`runtime-ready.json`. That atomic marker is written by the in-game main-thread
+callback only after request/version validation, scenario activation, hook
+installation, and successful registration of the after-load callback. It binds
+schema version, run ID, scenario, loaded mod version, runtime identity, UTC
+readiness time, exact installed hook identifiers, and process ID. A mismatched
+or older marker is rejected. Only then, when the script prints
 `MANUALLY LOAD KMG_AUTOMATION_WORKING NOW`, use Kingmaker's normal UI to click
 Load Game, select the save whose displayed name is exactly
 `KMG_AUTOMATION_WORKING`, and click the normal Load control once. Do not select
 the baseline, save the game, quicksave, or interact with save management.
 
 ## Observed evidence
+
+The 180-second startup timeout covers request acceptance and observer readiness.
+The 300-second manual-interaction timeout starts only after the ready marker is
+validated; Steam startup and navigation before readiness do not consume it.
+Readiness failure is reported with the `observer-readiness` stage.
 
 Request-scoped Harmony prefixes and postfixes record entry/exit ordering,
 monotonic elapsed time, UTC time, managed thread, exact method signature,
@@ -50,6 +62,13 @@ fields. File identifiers are reduced to a leaf name. The probe also records:
 - any call to an allowlisted set of save-writing method names;
 - exceptions, timeout, patch removal, and atomic result paths.
 
+`runtime-events.json` is atomically replaced after each narrowly scoped event.
+Every entry contains the run ID, global sequence, UTC and monotonic timestamps,
+managed thread, relevant type/member and argument types, minimized identifiers
+and detail, and an exception field. Thus a timeout retains the last confirmed
+stage. `runtime-ready.json`, the event trace, summaries, and the final result all
+use flush-to-disk atomic writes.
+
 It does not record raw save contents, object dumps, unrelated command-line
 arguments, Steam data, unrelated files, or personal data. Observation patches
 do not accept `ref`, `out`, or result parameters and cannot change arguments,
@@ -64,7 +83,8 @@ the result is atomically flushed.
 - `FAIL`: baseline or another save is identified, prerequisites contradict the
   request, or a forbidden save-writing method is observed.
 - `AMBIGUOUS`: identity, completion, or observed API meaning cannot be proved.
-- `TIMEOUT`: no valid manual load completes before the configured deadline.
+- `TIMEOUT`: observer readiness or a valid manual load does not complete before
+  its separately configured deadline; diagnostics name the timeout stage.
 
 Non-PASS outcomes make the orchestrator return nonzero. If
 `exitAfterCompletion` is true, clean game exit is requested only after the

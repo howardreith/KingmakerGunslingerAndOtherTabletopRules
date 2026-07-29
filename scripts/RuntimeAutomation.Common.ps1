@@ -20,6 +20,7 @@ function New-KmgRuntimeRequest {
         [Parameter(Mandatory = $true)][string]$Scenario,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
+        [int]$StartupTimeoutSeconds = 180,
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
         [hashtable]$Parameters = @{}
@@ -32,6 +33,9 @@ function New-KmgRuntimeRequest {
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
+    }
+    if ($StartupTimeoutSeconds -lt 5 -or $StartupTimeoutSeconds -gt 600) {
+        throw 'StartupTimeoutSeconds must be from 5 through 600.'
     }
     if ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
@@ -47,6 +51,7 @@ function New-KmgRuntimeRequest {
         expectedModVersion = $ExpectedVersion
         evidenceDirectory = $evidence
         timeoutSeconds = $TimeoutSeconds
+        startupTimeoutSeconds = $StartupTimeoutSeconds
         exitAfterCompletion = $ExitAfterCompletion
         parameters = [ordered]@{}
     }
@@ -157,6 +162,31 @@ function Write-KmgUtf8NoBom {
             Remove-Item -LiteralPath $temporary -Force
         }
     }
+}
+
+function Test-KmgRuntimeReadyMarker {
+    param(
+        [Parameter(Mandatory = $true)][object]$Marker,
+        [Parameter(Mandatory = $true)][string]$RunId,
+        [Parameter(Mandatory = $true)][string]$Scenario,
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [Parameter(Mandatory = $true)][int]$ProcessId,
+        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc
+    )
+    try {
+        $readyUtc = [DateTime]::Parse(
+            $Marker.readinessTimestampUtc,
+            [Globalization.CultureInfo]::InvariantCulture,
+            [Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
+        return $Marker.schemaVersion -eq 1 -and
+            $Marker.runId -ceq $RunId -and
+            $Marker.scenario -ceq $Scenario -and
+            $Marker.loadedModVersion -ceq $ExpectedVersion -and
+            $Marker.processId -eq $ProcessId -and
+            $readyUtc -ge $RequestWrittenUtc.ToUniversalTime() -and
+            @($Marker.installedObservationHookIdentifiers).Count -gt 0
+    }
+    catch { return $false }
 }
 
 function Initialize-KmgRuntimeTestEvidence {

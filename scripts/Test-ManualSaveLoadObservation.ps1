@@ -12,6 +12,21 @@ $runner = Get-Content -LiteralPath (Join-Path $runtime 'RuntimeTestRunner.cs') -
 $catalog = Get-Content -LiteralPath (
     Join-Path $runtime 'RuntimeTestScenarioCatalog.cs') -Raw
 $result = Get-Content -LiteralPath (Join-Path $runtime 'RuntimeTestResult.cs') -Raw
+$orchestrator = Get-Content -LiteralPath (
+    Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') -Raw
+$common = Get-Content -LiteralPath (
+    Join-Path $root 'scripts\RuntimeAutomation.Common.ps1') -Raw
+. (Join-Path $root 'scripts\RuntimeAutomation.Common.ps1')
+$fixture = Get-Content -LiteralPath (
+    Join-Path $root 'tests\fixtures\save-load-observation-timeout.json') -Raw |
+    ConvertFrom-Json
+$now = [DateTime]::UtcNow
+$marker = [pscustomobject]@{
+    schemaVersion = 1; runId = 'current-run'; scenario = 'observe-manual-save-load'
+    loadedModVersion = '0.0.30'; processId = 42
+    readinessTimestampUtc = $now.ToString('o')
+    installedObservationHookIdentifiers = @('Kingmaker.Game.LoadGame(...)')
+}
 
 $checks = [ordered]@{
     'guarded-allowlist-only' = $catalog.Contains('ObserveManualSaveLoad') -and
@@ -46,11 +61,11 @@ $checks = [ordered]@{
         'Thread.CurrentThread.ManagedThreadId != _gameThreadManagedId') -and
         $runner.Contains('Assertion("game-thread-only"')
     'scene-area-fingerprint' = $observer.Contains(
-        'ReadProperty(game, "CurrentlyLoadedArea")') -and
-        $observer.Contains('ReadProperty(game, "CurrentScene")')
+        'ReadMember(game, "CurrentlyLoadedArea")') -and
+        $observer.Contains('ReadMember(game, "CurrentScene")')
     'stable-player-party-fingerprint' = $observer.Contains(
-        'ReadProperty(player, "Party")') -and
-        $observer.Contains('ReadProperty(player, "MainCharacter")')
+        'ReadMember(player, "Party")') -and
+        $observer.Contains('ReadMember(player, "MainCharacter")')
     'timeout-status' = $runner.Contains('CreateResult("TIMEOUT"')
     'accepted-result-sealed' = $observer.Contains('if (_sealed) return') -and
         $observer.Contains('if (_acceptedName != null')
@@ -64,6 +79,49 @@ $checks = [ordered]@{
         'JsonProperty("loadStartUtc"') -and
         $result.Contains('JsonProperty("loadCompletionUtc"')
     'no-raw-object-dumps' = -not $observer.Contains('.ToString()')
+    'banner-after-ready-wait' = $orchestrator.IndexOf(
+        'Test-KmgRuntimeReadyMarker', [StringComparison]::Ordinal) -lt
+        $orchestrator.IndexOf(
+        'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW', [StringComparison]::Ordinal)
+    'manual-timeout-after-readiness' = $orchestrator.IndexOf(
+        '$deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)',
+        [StringComparison]::Ordinal) -gt $orchestrator.IndexOf(
+        'Test-KmgRuntimeReadyMarker', [StringComparison]::Ordinal)
+    'valid-ready-marker-accepted' = Test-KmgRuntimeReadyMarker -Marker $marker `
+        -RunId 'current-run' -Scenario 'observe-manual-save-load' `
+        -ExpectedVersion '0.0.30' -ProcessId 42 -RequestWrittenUtc $now.AddSeconds(-1)
+    'stale-ready-marker-rejected' = -not (Test-KmgRuntimeReadyMarker -Marker $marker `
+        -RunId 'current-run' -Scenario 'observe-manual-save-load' `
+        -ExpectedVersion '0.0.30' -ProcessId 42 -RequestWrittenUtc $now.AddSeconds(1))
+    'mismatched-run-rejected' = -not (Test-KmgRuntimeReadyMarker -Marker $marker `
+        -RunId 'different-run' -Scenario 'observe-manual-save-load' `
+        -ExpectedVersion '0.0.30' -ProcessId 42 -RequestWrittenUtc $now.AddSeconds(-1))
+    'readiness-stage-specific' = $runner.Contains(
+        'timeoutStage=observer-readiness') -and $orchestrator.Contains(
+        'stage=observer-readiness')
+    'failed-run-fixture-reproduced' = $fixture.classification -eq 'E' -and
+        $fixture.observerInstalled -and $fixture.loadStartObserved -and
+        $fixture.acceptedSaveName -eq 'KMG_AUTOMATION_WORKING' -and
+        -not $fixture.completionCallbackRegistered -and
+        -not $fixture.completionCallbackObserved
+    'field-backed-save-manager-repaired' = $observer.Contains(
+        'ReadMember(game, "SaveManager")') -and $observer.Contains(
+        'GetField(')
+    'incremental-events-atomic' = $result.Contains(
+        '"runtime-events.json"') -and $result.Contains(
+        'RuntimeTestResultWriter.WriteAtomic(')
+    'runtime-exceptions-are-error' = $runner.Contains(
+        '_trace.Record("runtime-exception"') -and $runner.Contains(
+        'CreateResult("ERROR"')
+    'ready-marker-is-atomic' = $result.Contains(
+        '"runtime-ready.json"') -and $result.Contains(
+        'WriteReady(RuntimeReadyMarker marker)')
+    'run-id-on-every-event' = $result.Contains(
+        'value.RunId = _runId')
+    'non-observation-no-hooks' = $runner.IndexOf(
+        'if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)',
+        [StringComparison]::Ordinal) -lt $runner.IndexOf(
+        'RunManualSaveLoadObservation();', [StringComparison]::Ordinal)
 }
 
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } |

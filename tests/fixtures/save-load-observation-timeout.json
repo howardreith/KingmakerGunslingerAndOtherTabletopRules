@@ -1,0 +1,13 @@
+{
+  "classification": "E",
+  "runId": "20260729T0124129232960Z-f60e797d2a344af693d9d9dec278b139",
+  "status": "TIMEOUT",
+  "observerInstalled": true,
+  "completionCallbackRegistered": false,
+  "loadStartObserved": true,
+  "acceptedSaveName": "KMG_AUTOMATION_WORKING",
+  "completionCallbackObserved": false,
+  "gameLoadedStateObserved": false,
+  "lastEventBeforeRemoval": "Kingmaker.EntitySystem.Persistence.SaveManager.LoadRoutine",
+  "defect": "Game.SaveManager was read only as a property; the runtime member can be a public field, so the completion callback was never registered."
+}

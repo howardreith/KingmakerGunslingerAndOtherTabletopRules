@@ -14,6 +14,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly ModContext _context;
         private readonly Stopwatch _elapsed;
         private readonly DateTime _startedUtc;
+        private readonly RuntimeObservationTraceWriter _trace;
+        private Stopwatch _manualElapsed;
         private bool _completed;
         private ManualSaveLoadObservation _saveLoadObservation;
 
@@ -23,6 +25,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             _context = context;
             _startedUtc = DateTime.UtcNow;
             _elapsed = Stopwatch.StartNew();
+            _trace = new RuntimeObservationTraceWriter(
+                request.RunId, request.EvidenceDirectory, _elapsed);
+            _trace.Record("request-accepted",
+                "scenario=" + request.Scenario + "; loadedVersion=" +
+                context.ModEntry.Info.Version);
         }
 
         internal static void TryAttach(ModContext context)
@@ -77,9 +84,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
         {
             if (_completed) return;
-            if (_elapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+            if (_manualElapsed == null &&
+                _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
             {
-                Complete(CreateResult("TIMEOUT", null, null));
+                _trace.Record("startup-timeout",
+                    "stage=observer-readiness; observer was not ready");
+                RuntimeTestResult startupTimeout = CreateResult("TIMEOUT", null, null);
+                startupTimeout.Diagnostics.Add("timeoutStage=observer-readiness");
+                Complete(startupTimeout);
+                return;
+            }
+            if (_manualElapsed != null &&
+                _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+            {
+                _trace.Record("manual-interaction-timeout",
+                    "stage=manual-save-load-observation");
+                RuntimeTestResult interactionTimeout = CreateResult("TIMEOUT", null, null);
+                interactionTimeout.Diagnostics.Add("timeoutStage=manual-save-load-observation");
+                Complete(interactionTimeout);
                 return;
             }
             if (!_context.IsReady) return;
@@ -95,6 +117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
+                _trace.Record("runtime-exception", "stage=runtime-update", exception);
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
         }
@@ -103,11 +126,35 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_saveLoadObservation == null)
             {
-                _saveLoadObservation = new ManualSaveLoadObservation(_context, _elapsed);
+                _trace.Record("scenario-activated", "observe-manual-save-load");
+                _saveLoadObservation = new ManualSaveLoadObservation(
+                    _context, _elapsed, _request.RunId, _trace.Record);
                 _saveLoadObservation.Install();
                 return;
             }
             _saveLoadObservation.PollLoadedState();
+            if (_saveLoadObservation.ObservationException != null)
+                throw new InvalidOperationException(
+                    "Incremental observation evidence could not be flushed.",
+                    _saveLoadObservation.ObservationException);
+            if (_manualElapsed == null && _saveLoadObservation.ObserverReady)
+            {
+                _trace.Record("observer-ready",
+                    "main-thread callback active; completion callback registered");
+                _trace.WriteReady(new RuntimeReadyMarker
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = _context.Assembly.FullName,
+                    ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
+                    InstalledObservationHookIdentifiers =
+                        _saveLoadObservation.InstalledHookIdentifiers,
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+                _manualElapsed = Stopwatch.StartNew();
+            }
             if (_saveLoadObservation.WriteObserved)
             {
                 CompleteManualObservation(RuntimeTestStatuses.Fail,
@@ -215,7 +262,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.AutomaticExitInitiated = _request.ExitAfterCompletion;
             try
             {
+                _trace.Record("result-flush-started", "status=" + result.Status);
                 RuntimeTestResultWriter.Write(result, _request.EvidenceDirectory);
+                _trace.Record("result-flushed", "status=" + result.Status);
             }
             catch (Exception exception)
             {

@@ -26,6 +26,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         public string EvidenceDirectory { get; set; }
         [JsonProperty("timeoutSeconds", Required = Required.Always)]
         public int TimeoutSeconds { get; set; }
+        [JsonProperty("startupTimeoutSeconds", Required = Required.Always)]
+        public int StartupTimeoutSeconds { get; set; }
         [JsonProperty("exitAfterCompletion", Required = Required.Always)]
         public bool ExitAfterCompletion { get; set; }
         [JsonProperty("parameters", Required = Required.Always)]
@@ -58,7 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             "schemaVersion", "enabled", "runId", "scenario",
             "expectedModVersion", "evidenceDirectory", "timeoutSeconds",
-            "exitAfterCompletion", "parameters"
+            "startupTimeoutSeconds", "exitAfterCompletion", "parameters"
         };
 
         internal static RuntimeTestRequestDecision TryActivate(
@@ -179,6 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "mod-version-mismatch";
             if (request.TimeoutSeconds < 5 || request.TimeoutSeconds > 1800)
                 return "timeout-invalid";
+            if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
+                return "startup-timeout-invalid";
             if (request.Parameters == null || request.Parameters.Count != 0)
                 return "parameters-not-allowed";
 

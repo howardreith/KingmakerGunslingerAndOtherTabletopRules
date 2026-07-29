@@ -9,6 +9,8 @@ param(
 
     [ValidateRange(5, 1800)]
     [int]$TimeoutSeconds = 120,
+    [ValidateRange(5, 600)]
+    [int]$ObserverStartupTimeoutSeconds = 180,
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
@@ -78,7 +80,8 @@ $evidence = Join-Path $script:KmgRuntimeEvidenceRoot (
 New-Item -ItemType Directory -Path $evidence | Out-Null
 $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
     -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion $ExitAfterCompletion `
-    -EvidenceDirectory $evidence -Parameters $Parameters
+    -EvidenceDirectory $evidence -Parameters $Parameters `
+    -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
@@ -109,6 +112,44 @@ try {
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
     if ($ManualInteractionRequired) {
+        $readyPath = Join-Path $evidence 'runtime-ready.json'
+        $readyDeadline = [DateTime]::UtcNow.AddSeconds($ObserverStartupTimeoutSeconds + 15)
+        $ready = $null
+        while (-not $ready) {
+            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
+                $startupResult = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+                throw "Observer failed before readiness. stage=observer-readiness; status=$($startupResult.status); diagnostics=$($startupResult.diagnostics -join ';')"
+            }
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw "Kingmaker exited before observer readiness. stage=observer-readiness; PID=$($process.Id)"
+            }
+            if ([DateTime]::UtcNow -ge $readyDeadline) {
+                throw "Observer readiness timed out. stage=observer-readiness; timeoutSeconds=$ObserverStartupTimeoutSeconds"
+            }
+            if (Test-Path -LiteralPath $readyPath -PathType Leaf) {
+                try {
+                    $candidate = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
+                    $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+                    if (Test-KmgRuntimeReadyMarker -Marker $candidate `
+                        -RunId $request.runId -Scenario $Scenario `
+                        -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
+                        -RequestWrittenUtc $requestWrittenUtc) {
+                        $ready = $candidate
+                    }
+                    else {
+                        throw 'Ready marker identity, freshness, version, process, or hooks did not match this run.'
+                    }
+                }
+                catch {
+                    throw "Invalid observer ready marker. stage=observer-readiness; $($_.Exception.Message)"
+                }
+            }
+            if (-not $ready) { Start-Sleep -Milliseconds 250 }
+        }
+        $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
+        $orchestration.manualInteractionTimeoutBeganAtUtc = [DateTime]::UtcNow.ToString('o')
+        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
         Write-Host ''
         Write-Host '============================================================' -ForegroundColor Yellow
         Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow

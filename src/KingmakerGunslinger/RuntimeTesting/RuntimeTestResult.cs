@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -56,17 +58,96 @@ namespace KingmakerGunslinger.RuntimeTesting
 
     internal sealed class SaveLoadObservationEvent
     {
-        [JsonProperty("sequence", Order = 1)] public int Sequence { get; set; }
-        [JsonProperty("elapsedMilliseconds", Order = 2)] public long ElapsedMilliseconds { get; set; }
-        [JsonProperty("utc", Order = 3)] public string Utc { get; set; }
-        [JsonProperty("kind", Order = 4)] public string Kind { get; set; }
+        [JsonProperty("runId", Order = 1)] public string RunId { get; set; }
+        [JsonProperty("sequence", Order = 2)] public int Sequence { get; set; }
+        [JsonProperty("elapsedMilliseconds", Order = 3)] public long ElapsedMilliseconds { get; set; }
+        [JsonProperty("utc", Order = 4)] public string Utc { get; set; }
+        [JsonProperty("eventName", Order = 5)] public string Kind { get; set; }
         [JsonProperty("declaringType", Order = 5)] public string DeclaringType { get; set; }
         [JsonProperty("methodSignature", Order = 6)] public string MethodSignature { get; set; }
         [JsonProperty("argumentTypes", Order = 7)] public List<string> ArgumentTypes { get; set; }
         [JsonProperty("managedThreadId", Order = 8)] public int ManagedThreadId { get; set; }
         [JsonProperty("displayName", Order = 9)] public string DisplayName { get; set; }
         [JsonProperty("safeSaveIdentifier", Order = 10)] public string SafeSaveIdentifier { get; set; }
-        [JsonProperty("detail", Order = 11)] public string Detail { get; set; }
+        [JsonProperty("detail", Order = 12)] public string Detail { get; set; }
+        [JsonProperty("exception", Order = 13)] public string Exception { get; set; }
+    }
+
+    internal sealed class RuntimeReadyMarker
+    {
+        [JsonProperty("schemaVersion", Order = 1)] public int SchemaVersion { get; set; }
+        [JsonProperty("runId", Order = 2)] public string RunId { get; set; }
+        [JsonProperty("scenario", Order = 3)] public string Scenario { get; set; }
+        [JsonProperty("loadedModVersion", Order = 4)] public string LoadedModVersion { get; set; }
+        [JsonProperty("runtimeIdentity", Order = 5)] public string RuntimeIdentity { get; set; }
+        [JsonProperty("readinessTimestampUtc", Order = 6)] public string ReadinessTimestampUtc { get; set; }
+        [JsonProperty("installedObservationHookIdentifiers", Order = 7)]
+        public List<string> InstalledObservationHookIdentifiers { get; set; }
+        [JsonProperty("processId", Order = 8)] public int ProcessId { get; set; }
+    }
+
+    internal sealed class RuntimeObservationTraceWriter
+    {
+        private readonly string _runId;
+        private readonly string _directory;
+        private readonly Stopwatch _elapsed;
+        private readonly List<SaveLoadObservationEvent> _events =
+            new List<SaveLoadObservationEvent>();
+
+        internal RuntimeObservationTraceWriter(string runId, string directory, Stopwatch elapsed)
+        {
+            _runId = runId;
+            _directory = directory;
+            _elapsed = elapsed;
+        }
+
+        internal void Record(SaveLoadObservationEvent value)
+        {
+            value.RunId = _runId;
+            value.Sequence = _events.Count + 1;
+            if (string.IsNullOrWhiteSpace(value.Utc))
+                value.Utc = DateTime.UtcNow.ToString("o");
+            value.ElapsedMilliseconds = _elapsed.ElapsedMilliseconds;
+            value.Exception = value.Exception ?? string.Empty;
+            _events.Add(value);
+            Flush();
+        }
+
+        internal void Record(string eventName, string detail, Exception exception = null)
+        {
+            Record(new SaveLoadObservationEvent
+            {
+                Kind = eventName,
+                ManagedThreadId = Thread.CurrentThread.ManagedThreadId,
+                DeclaringType = string.Empty,
+                MethodSignature = string.Empty,
+                ArgumentTypes = new List<string>(),
+                DisplayName = string.Empty,
+                SafeSaveIdentifier = string.Empty,
+                Detail = detail ?? string.Empty,
+                Exception = exception == null ? string.Empty :
+                    exception.GetType().FullName + ": " + exception.Message
+            });
+        }
+
+        internal void WriteReady(RuntimeReadyMarker marker)
+        {
+            RuntimeTestResultWriter.WriteAtomic(
+                Path.Combine(_directory, "runtime-ready.json"),
+                JsonConvert.SerializeObject(marker, Formatting.Indented) + Environment.NewLine);
+        }
+
+        private void Flush()
+        {
+            RuntimeTestResultWriter.WriteAtomic(
+                Path.Combine(_directory, "runtime-events.json"),
+                JsonConvert.SerializeObject(new
+                {
+                    schemaVersion = 1,
+                    runId = _runId,
+                    events = _events
+                }, Formatting.Indented) + Environment.NewLine);
+        }
     }
 
     internal sealed class SaveLoadObservationEvidence
@@ -97,8 +178,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Unknown runtime-test status.");
             string summaryPath = Path.Combine(evidenceDirectory, "runtime-summary.txt");
             string resultPath = Path.Combine(evidenceDirectory, "runtime-result.json");
+            string readyPath = Path.Combine(evidenceDirectory, "runtime-ready.json");
+            string eventsPath = Path.Combine(evidenceDirectory, "runtime-events.json");
             WriteAtomic(summaryPath, BuildSummary(result));
             result.EvidenceFiles = new List<string> { summaryPath, resultPath };
+            if (File.Exists(readyPath)) result.EvidenceFiles.Add(readyPath);
+            if (File.Exists(eventsPath)) result.EvidenceFiles.Add(eventsPath);
             WriteAtomic(resultPath, JsonConvert.SerializeObject(result, Formatting.Indented) + Environment.NewLine);
         }
 

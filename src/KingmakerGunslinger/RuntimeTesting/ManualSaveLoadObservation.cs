@@ -37,6 +37,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly ModContext _context;
         private readonly Stopwatch _elapsed;
         private readonly int _gameThreadManagedId;
+        private readonly string _runId;
+        private readonly Action<SaveLoadObservationEvent> _eventSink;
         private readonly List<MethodBase> _patched = new List<MethodBase>();
         private readonly List<SaveLoadObservationEvent> _events =
             new List<SaveLoadObservationEvent>();
@@ -56,11 +58,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _removed;
         private bool _sealed;
         private bool _wrongThreadObserved;
+        private Exception _observationException;
 
-        internal ManualSaveLoadObservation(ModContext context, Stopwatch elapsed)
+        internal ManualSaveLoadObservation(
+            ModContext context,
+            Stopwatch elapsed,
+            string runId,
+            Action<SaveLoadObservationEvent> eventSink)
         {
             _context = context;
             _elapsed = elapsed;
+            _runId = runId;
+            _eventSink = eventSink;
             _gameThreadManagedId = Thread.CurrentThread.ManagedThreadId;
         }
 
@@ -68,6 +77,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool IdentityAmbiguous { get { return _identityAmbiguous; } }
         internal bool WriteObserved { get { return _writeObserved; } }
         internal bool CompletionObserved { get { return _completionCallback; } }
+        internal Exception ObservationException { get { return _observationException; } }
+        internal bool ObserverReady { get { return _completionCallbackRegistered && _patched.Count > 0; } }
+        internal List<string> InstalledHookIdentifiers
+        {
+            get { return _patched.Select(FormatSignature).OrderBy(value => value).ToList(); }
+        }
         internal bool IsReadyToComplete
         {
             get
@@ -111,9 +126,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _patched.Add(method);
                 }
             }
-            AddEvent("observer-installed", null, null, "patchCount=" + _patched.Count);
             if (_patched.Count == 0)
                 throw new MissingMethodException("No allowlisted save lifecycle methods were found.");
+            AddEvent("hooks-installed", null, null, "patchCount=" + _patched.Count);
             _initialGameState = ReadFingerprint(Kingmaker.Game.Instance);
         }
 
@@ -130,7 +145,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (game == null) return;
             if (!_completionCallbackRegistered)
             {
-                object manager = ReadProperty(game, "SaveManager");
+                object manager = ReadMember(game, "SaveManager");
                 if (manager == null) return;
                 MethodInfo callbackMethod = manager.GetType().GetMethod(
                     "AddCallbackAfterLoad",
@@ -288,8 +303,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string displayName = "",
             string safeId = "")
         {
-            _events.Add(new SaveLoadObservationEvent
+            var observationEvent = new SaveLoadObservationEvent
             {
+                RunId = _runId,
                 Sequence = _events.Count + 1,
                 ElapsedMilliseconds = _elapsed.ElapsedMilliseconds,
                 Utc = DateTime.UtcNow.ToString("o"),
@@ -304,8 +320,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ManagedThreadId = Thread.CurrentThread.ManagedThreadId,
                 DisplayName = displayName ?? string.Empty,
                 SafeSaveIdentifier = safeId ?? string.Empty,
-                Detail = detail ?? string.Empty
-            });
+                Detail = detail ?? string.Empty,
+                Exception = string.Empty
+            };
+            _events.Add(observationEvent);
+            if (_eventSink != null)
+            {
+                try { _eventSink(observationEvent); }
+                catch (Exception exception) { _observationException = exception; }
+            }
         }
 
         private static object FindSaveDescriptor(object[] arguments)
@@ -319,13 +342,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string ReadFingerprint(object game)
         {
-            object player = ReadProperty(game, "Player");
-            object area = ReadProperty(game, "CurrentlyLoadedArea");
-            object scene = ReadProperty(game, "CurrentScene");
+            object player = ReadMember(game, "Player");
+            object area = ReadMember(game, "CurrentlyLoadedArea");
+            object scene = ReadMember(game, "CurrentScene");
             if (player == null || area == null || scene == null) return string.Empty;
-            object party = ReadProperty(player, "Party");
-            object main = ReadProperty(player, "MainCharacter");
-            string gameId = Convert.ToString(ReadProperty(player, "GameId")) ?? string.Empty;
+            object party = ReadMember(player, "Party");
+            object main = ReadMember(player, "MainCharacter");
+            string gameId = Convert.ToString(ReadMember(player, "GameId")) ?? string.Empty;
             int partyCount = ReadCount(party);
             string mainType = main == null ? string.Empty : main.GetType().FullName;
             return "areaType=" + area.GetType().FullName +
@@ -337,7 +360,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static int ReadCount(object value)
         {
-            object count = ReadProperty(value, "Count");
+            object count = ReadMember(value, "Count");
             int parsed;
             return int.TryParse(Convert.ToString(count), out parsed) ? parsed : -1;
         }
@@ -349,6 +372,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 name, BindingFlags.Instance | BindingFlags.Public);
             return property == null || property.GetIndexParameters().Length != 0
                 ? null : property.GetValue(value, null);
+        }
+
+        private static object ReadMember(object value, string name)
+        {
+            object propertyValue = ReadProperty(value, name);
+            if (propertyValue != null) return propertyValue;
+            if (value == null) return null;
+            FieldInfo field = value.GetType().GetField(
+                name, BindingFlags.Instance | BindingFlags.Public);
+            return field == null ? null : field.GetValue(value);
         }
 
         private static string ReadSafeString(object value, string name)
