@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using Harmony12;
 using KingmakerGunslinger.Bootstrap;
@@ -11,8 +15,9 @@ using KingmakerGunslinger.Bootstrap;
 namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
-    /// Observes, but never invokes, the narrow managed path which supplies the
-    /// complete SaveInfo list to the normal Load Game display model.
+    /// Observes provenance for the exact collection consumed by the normal Load
+    /// Game UI. The observer patches existing execution only; it never invokes a
+    /// provider, getter, callback, coroutine, save load, or save mutation.
     /// </summary>
     internal sealed class SaveCatalogProviderObservation
     {
@@ -20,6 +25,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             { "SaveManager", "SaveLoad", "ListOfSaves", "MainMenu" };
         private static readonly string[] RelevantMemberFragments =
             { "Save", "List", "Catalog", "Load", "Owner", "Controller", "Model", "View" };
+        private static readonly string[] TransformFragments =
+            { "Filter", "Sort", "Search", "Visible", "Display", "Group" };
         private static readonly string[] WritePrefixes =
             { "Save", "AutoSave", "QuickSave", "DeleteSave", "RemoveSave",
               "RenameSave", "MigrateSave", "Overwrite" };
@@ -37,10 +44,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             new List<CatalogProviderCandidateEvidence>();
         private readonly List<CatalogOwnerMemberEvidence> _members =
             new List<CatalogOwnerMemberEvidence>();
-        private readonly Dictionary<object, MethodBase> _returnedCollections =
-            new Dictionary<object, MethodBase>(ReferenceEqualityComparer.Instance);
-        private readonly Dictionary<object, MethodBase> _argumentCollections =
-            new Dictionary<object, MethodBase>(ReferenceEqualityComparer.Instance);
+        private readonly Dictionary<object, MethodBase> _returned =
+            new Dictionary<object, MethodBase>(ReferenceComparer.Instance);
+        private readonly Dictionary<object, MethodBase> _received =
+            new Dictionary<object, MethodBase>(ReferenceComparer.Instance);
+        private readonly List<string> _fingerprints = new List<string>();
+        private readonly List<string> _missing = new List<string>();
         private bool _initializeHookInstalled;
         private bool _candidateHookInstalled;
         private bool _sentinelHookInstalled;
@@ -56,6 +65,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _receiverType = "";
         private string _immediateCaller = "";
         private string _sourceKind = "";
+        private string _collectionIdentity = "";
+        private string _receiverIdentity = "";
+        private string _classification = "unobserved";
         private int _descriptorCount;
         private List<string> _callerChain = new List<string>();
         private Exception _exception;
@@ -70,11 +82,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gameThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
-        internal bool Ready
-        {
-            get { return _initializeHookInstalled && _candidateHookInstalled &&
-                _sentinelHookInstalled; }
-        }
+        internal bool Ready { get { return _initializeHookInstalled &&
+            _candidateHookInstalled && _sentinelHookInstalled; } }
         internal bool CatalogCaptured { get { return _captured; } }
         internal bool SourceProven { get { return _sourceProven; } }
         internal bool WriteObserved { get { return _writeObserved; } }
@@ -90,30 +99,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_active != null)
                 throw new InvalidOperationException("Catalog provider observer active.");
             _active = this;
-            MethodInfo initializePrefix = typeof(SaveCatalogProviderObservation).GetMethod(
-                "InitializePrefix", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo candidatePrefix = typeof(SaveCatalogProviderObservation).GetMethod(
-                "CandidatePrefix", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo resultPostfix = typeof(SaveCatalogProviderObservation).GetMethod(
-                "ResultPostfix", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo initializePrefix = PatchMethod("InitializePrefix");
+            MethodInfo candidatePrefix = PatchMethod("CandidatePrefix");
+            MethodInfo resultPostfix = PatchMethod("ResultPostfix");
             Assembly assembly = typeof(Kingmaker.Game).Assembly;
-            foreach (Type type in assembly.GetTypes().Where(IsRelevantType)
+            MethodInfo caller = FindOneArgumentInitialize(assembly);
+            HashSet<MethodBase> directDependencies = ReadDirectDependencies(caller);
+            HashSet<Type> dependencyTypes = new HashSet<Type>(directDependencies
+                .Where(x => x.DeclaringType != null).Select(x => x.DeclaringType));
+
+            foreach (Type type in assembly.GetTypes().Where(x =>
+                IsRelevantType(x) || dependencyTypes.Contains(x))
                 .OrderBy(x => x.FullName, StringComparer.Ordinal))
             {
-                foreach (MethodInfo method in type.GetMethods(
-                    BindingFlags.Instance | BindingFlags.Static |
-                    BindingFlags.Public | BindingFlags.NonPublic)
+                foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance |
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                     .OrderBy(FormatSignature, StringComparer.Ordinal))
                 {
-                    if (IsInitialize(method))
+                    if (IsConsumer(method))
                     {
                         Patch(method, initializePrefix, null);
                         _initializeHookInstalled = true;
                     }
-                    else if (IsCandidate(method))
+                    else if (IsCandidate(method, directDependencies))
                     {
                         Patch(method, candidatePrefix,
-                            IsSaveInfoCollection(method.ReturnType) ? resultPostfix : null);
+                            IsCompatibleCollection(method.ReturnType)
+                                ? resultPostfix : null);
                         _candidateHookInstalled = true;
                     }
                     else if (IsMutationSentinel(method) || IsLoadSentinel(method))
@@ -123,7 +135,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
             }
-            Add("hooks-installed", null, null, "patchCount=" + _patched.Count);
+            Add("hooks-installed", null, null,
+                "patchCount=" + _patched.Count + ";directCallerDependencies=" +
+                directDependencies.Count);
         }
 
         internal SaveCatalogProviderObservationEvidence Stop()
@@ -160,8 +174,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SaveLoadObserved = _loadObserved,
                 SaveWritingObserved = _writeObserved,
                 HooksRemoved = _removed,
-                Events = new List<SaveLoadObservationEvent>(_events)
+                Events = new List<SaveLoadObservationEvent>(_events),
+                CollectionObjectIdentity = _collectionIdentity,
+                ReceiverObjectIdentity = _receiverIdentity,
+                SafeEntryFingerprints = new List<string>(_fingerprints),
+                CatalogClassification = _classification,
+                RemainingEvidenceMissing = new List<string>(_missing)
             };
+        }
+
+        private MethodInfo PatchMethod(string name)
+        {
+            return typeof(SaveCatalogProviderObservation).GetMethod(
+                name, BindingFlags.Static | BindingFlags.NonPublic);
         }
 
         private void Patch(MethodInfo method, MethodInfo prefix, MethodInfo postfix)
@@ -176,59 +201,66 @@ namespace KingmakerGunslinger.RuntimeTesting
             MethodBase __originalMethod, object __instance, object[] __args)
         {
             if (_active != null)
-                _active.CaptureInitialize(__originalMethod, __instance, __args);
+                _active.CaptureConsumer(__originalMethod, __instance, __args);
         }
 
-        private static void CandidatePrefix(MethodBase __originalMethod, object[] __args)
+        private static void CandidatePrefix(
+            MethodBase __originalMethod, object __instance, object[] __args)
         {
-            if (_active != null) _active.ObserveCandidate(__originalMethod, __args);
+            if (_active != null)
+                _active.ObserveEntry(__originalMethod, __instance, __args);
         }
 
-        private static void ResultPostfix(MethodBase __originalMethod, object __result)
+        private static void ResultPostfix(
+            MethodBase __originalMethod, object __instance, object __result)
         {
-            if (_active != null) _active.ObserveResult(__originalMethod, __result);
+            if (_active != null)
+                _active.ObserveReturn(__originalMethod, __instance, __result);
         }
 
-        private void ObserveCandidate(MethodBase method, object[] args)
+        private void ObserveEntry(MethodBase method, object receiver, object[] args)
         {
             CheckThread();
             if (IsMutationSentinel(method)) _writeObserved = true;
             if (IsLoadSentinel(method)) _loadObserved = true;
-            if (args != null)
+            foreach (object argument in args ?? new object[0])
             {
-                foreach (object argument in args)
-                {
-                    if (!IsSaveInfoCollection(argument == null ? null : argument.GetType()))
-                        continue;
-                    _argumentCollections[argument] = method;
-                    RememberCandidate(method, "callback-argument",
-                        "same collection object observed as method argument");
-                }
+                if (argument == null || !IsCompatibleCollection(argument.GetType()))
+                    continue;
+                _received[argument] = method;
+                RememberCandidate(method, receiver, "callback-or-state-machine-argument",
+                    "collection received; consumer identity not yet known", false);
+                Add("catalog-object-received", method, args,
+                    "identity=" + ObjectIdentity(argument));
             }
-            Add("candidate-enter", method, args, IsMutationSentinel(method)
-                ? "save-writing-api-observed" :
+            Add("candidate-provider-entered", method, args,
+                IsMutationSentinel(method) ? "save-writing-api-observed" :
                 IsLoadSentinel(method) ? "save-load-api-observed" : "");
         }
 
-        private void ObserveResult(MethodBase method, object result)
+        private void ObserveReturn(MethodBase method, object receiver, object result)
         {
             CheckThread();
-            if (result != null && IsSaveInfoCollection(result.GetType()))
-            {
-                _returnedCollections[result] = method;
-                Add("candidate-return", method, new[] { result },
-                    "SaveInfo collection return observed");
-            }
+            if (result == null || !IsCompatibleCollection(result.GetType())) return;
+            _returned[result] = method;
+            RememberCandidate(method, receiver, "method-return",
+                "collection returned; consumer identity not yet known", false);
+            Add("candidate-provider-returned", method, new[] { result },
+                "identity=" + ObjectIdentity(result));
+            Add("catalog-object-created-or-returned", method, new[] { result },
+                "creation cannot be distinguished from retrieval at a postfix");
         }
 
-        private void CaptureInitialize(MethodBase method, object instance, object[] args)
+        private void CaptureConsumer(MethodBase method, object receiver, object[] args)
         {
             CheckThread();
             object collection = args == null ? null : args.FirstOrDefault();
-            var enumerable = collection as IEnumerable;
+            IEnumerable enumerable = collection as IEnumerable;
             _initializeSignature = FormatSignature(method);
-            _receiverType = instance == null ? "" : instance.GetType().FullName;
+            _receiverType = receiver == null ? "" : receiver.GetType().FullName;
             _collectionType = collection == null ? "" : collection.GetType().FullName;
+            _collectionIdentity = ObjectIdentity(collection);
+            _receiverIdentity = ObjectIdentity(receiver);
             _descriptorCount = 0;
             if (enumerable != null)
             {
@@ -238,29 +270,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _descriptorCount++;
                     if (string.IsNullOrWhiteSpace(_descriptorType))
                         _descriptorType = descriptor.GetType().FullName;
+                    if (_fingerprints.Count < 8)
+                        _fingerprints.Add(SafeFingerprint(descriptor));
                 }
             }
             CaptureCallerChain();
-            CaptureOwnerMetadata(instance);
+            CaptureOwnerMetadata(receiver);
+            Add("load-game-action-observed", method, args,
+                "normal Load Game display-model consumer entered");
+
             MethodBase producer;
-            if (collection != null && _returnedCollections.TryGetValue(collection, out producer))
+            if (collection != null && _returned.TryGetValue(collection, out producer))
+                Correlate(producer, "method-return");
+            else if (collection != null && _received.TryGetValue(collection, out producer))
             {
-                RememberCandidate(producer, "method-return",
-                    "object-reference equals ListOfSaves.Initialize argument");
-                _sourceKind = "method-return";
-                _sourceProven = true;
+                Correlate(producer, "callback-or-state-machine-argument");
+                Add("catalog-object-assigned-or-propagated", producer, args,
+                    "same reference later passed to Initialize");
             }
-            else if (collection != null &&
-                _argumentCollections.TryGetValue(collection, out producer))
+            else
             {
-                RememberCandidate(producer, "callback-argument",
-                    "object-reference equals ListOfSaves.Initialize argument");
-                _sourceKind = "callback-argument";
-                _sourceProven = true;
+                _missing.Add("No observed return or callback argument shared reference " +
+                    "identity with the ListOfSaves.Initialize collection.");
+                _missing.Add("If the caller loaded a field directly, the field writer " +
+                    "must be observed in a further supervised pass.");
             }
             _captured = enumerable != null && _descriptorCount > 0;
-            Add("catalog-provider-captured", method, args,
-                "descriptorCount=" + _descriptorCount + ";sourceProven=" + _sourceProven);
+            Add("catalog-object-passed-to-initialize", method, args,
+                "identity=" + _collectionIdentity + ";receiver=" + _receiverIdentity +
+                ";descriptorCount=" + _descriptorCount);
+            Add("complete-versus-filtered-classified", method, args,
+                "classification=" + _classification);
+            Add(_sourceProven ? "provider-correlation-succeeded" :
+                "provider-correlation-failed", method, args,
+                _sourceProven ? "reference identity proven" :
+                string.Join(" ", _missing.ToArray()));
+        }
+
+        private void Correlate(MethodBase producer, string sourceKind)
+        {
+            bool transformed = TransformFragments.Any(producer.Name.Contains);
+            _sourceKind = sourceKind;
+            _classification = transformed ? "filtered-or-sorted-ui-collection" :
+                "complete-catalog-source-and-final-consumer-list";
+            _sourceProven = !transformed;
+            RememberCandidate(producer, null, sourceKind,
+                "object-reference equals ListOfSaves.Initialize argument", true);
+            if (transformed)
+                _missing.Add("The correlated producer is a filtering/sorting member, " +
+                    "so the upstream complete catalog remains unproven.");
         }
 
         private void CaptureCallerChain()
@@ -272,9 +330,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 MethodBase method = frame.GetMethod();
                 if (method == null || method.DeclaringType == null) continue;
                 string typeName = method.DeclaringType.FullName ?? "";
-                if (typeName.StartsWith("KingmakerGunslinger.", StringComparison.Ordinal) ||
-                    typeName.StartsWith("Harmony", StringComparison.Ordinal) ||
-                    typeName.StartsWith("System.", StringComparison.Ordinal)) continue;
                 if (!typeName.StartsWith("Kingmaker.", StringComparison.Ordinal)) continue;
                 string signature = typeName + "." + FormatSignature(method);
                 if (chain.Count == 0 || chain[chain.Count - 1] != signature)
@@ -292,12 +347,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => IsRelevantMember(x.Name, x.FieldType)))
-                AddMember(type, field.Name, field.FieldType, "field");
+                AddMember(type, field.Name, field.FieldType, "field-metadata-only");
             foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => x.GetIndexParameters().Length == 0 &&
                     IsRelevantMember(x.Name, x.PropertyType)))
-                AddMember(type, property.Name, property.PropertyType, "property-metadata-only");
+                AddMember(type, property.Name, property.PropertyType,
+                    "property-metadata-only");
         }
 
         private void AddMember(Type owner, string name, Type memberType, string kind)
@@ -311,21 +367,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             });
         }
 
-        private void RememberCandidate(MethodBase method, string sourceKind, string correlation)
+        private void RememberCandidate(MethodBase method, object receiver,
+            string sourceKind, string correlation, bool correlated)
         {
-            if (_candidates.Any(x => x.MethodSignature == FormatSignature(method) &&
+            CatalogProviderCandidateEvidence candidate = _candidates.FirstOrDefault(x =>
+                x.MethodSignature == FormatSignature(method) &&
                 x.DeclaringType == method.DeclaringType.FullName &&
-                x.SourceKind == sourceKind)) return;
+                x.SourceKind == sourceKind);
             string typeName = method.DeclaringType.FullName;
-            _candidates.Add(new CatalogProviderCandidateEvidence
+            bool ui = typeName.Contains(".UI.");
+            bool mutation = IsMutationSentinel(method);
+            if (candidate == null)
             {
-                DeclaringType = typeName,
-                MethodSignature = FormatSignature(method),
-                SourceKind = sourceKind,
-                Correlation = correlation,
-                CanInvokeWithoutUi = !typeName.Contains(".UI."),
-                AppearsReadOnly = !IsMutationSentinel(method)
-            });
+                candidate = new CatalogProviderCandidateEvidence
+                {
+                    DeclaringType = typeName,
+                    MethodSignature = FormatSignature(method),
+                    SourceKind = sourceKind,
+                    IsStatic = method.IsStatic,
+                    ReceiverType = receiver == null ? "" : receiver.GetType().FullName,
+                    RequiredArguments = method.GetParameters().Select(
+                        x => x.ParameterType.FullName).ToList(),
+                    ReturnType = method is MethodInfo
+                        ? ((MethodInfo)method).ReturnType.FullName : "System.Void",
+                    ManagedThreadId = Thread.CurrentThread.ManagedThreadId,
+                    RequiresLoadGameUi = ui,
+                    CanInvokeWithoutUi = !ui,
+                    AppearsReadOnly = !mutation,
+                    SideEffects = mutation ? "save mutation sentinel" : "none observed"
+                };
+                _candidates.Add(candidate);
+            }
+            candidate.Correlation = correlation;
+            candidate.CatalogRole = correlated
+                ? (_classification.StartsWith("complete", StringComparison.Ordinal)
+                    ? "complete-catalog-source" : "ui-transform")
+                : "unresolved";
+            candidate.ContractStable = correlated && !ui && !mutation;
+            candidate.ProofMissing = correlated ? "" :
+                "reference identity with consumer has not been observed";
         }
 
         private void CheckThread()
@@ -341,7 +421,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RunId = _runId, Sequence = _events.Count + 1,
                 ElapsedMilliseconds = _elapsed.ElapsedMilliseconds,
                 Utc = DateTime.UtcNow.ToString("o"), Kind = kind,
-                DeclaringType = method == null ? "" : method.DeclaringType.FullName,
+                DeclaringType = method == null || method.DeclaringType == null
+                    ? "" : method.DeclaringType.FullName,
                 MethodSignature = method == null ? "" : FormatSignature(method),
                 ArgumentTypes = args == null ? new List<string>() :
                     args.Select(x => x == null ? "null" : x.GetType().FullName).ToList(),
@@ -361,32 +442,111 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RelevantTypeFragments.Any(name.Contains);
         }
 
-        private static bool IsInitialize(MethodInfo method)
+        private static bool IsConsumer(MethodInfo method)
         {
             ParameterInfo[] parameters = method.GetParameters();
             return method.DeclaringType.FullName ==
                 "Kingmaker.UI.SaveLoadWindow.ListOfSaves" &&
                 method.Name == "Initialize" && parameters.Length == 2 &&
-                IsSaveInfoCollection(parameters[0].ParameterType) &&
+                IsCompatibleCollection(parameters[0].ParameterType) &&
                 parameters[1].ParameterType == typeof(bool);
         }
 
-        private static bool IsCandidate(MethodInfo method)
+        private static bool IsCandidate(
+            MethodInfo method, HashSet<MethodBase> directDependencies)
         {
-            if (IsInitialize(method) || IsMutationSentinel(method) ||
+            if (IsConsumer(method) || IsMutationSentinel(method) ||
                 IsLoadSentinel(method)) return false;
-            bool collectionSignature = IsSaveInfoCollection(method.ReturnType) ||
-                method.GetParameters().Any(x => IsSaveInfoCollection(x.ParameterType));
-            if (!collectionSignature) return false;
-            return RelevantMemberFragments.Any(method.Name.Contains);
+            bool signature = IsCompatibleCollection(method.ReturnType) ||
+                method.GetParameters().Any(
+                    x => IsCompatibleCollection(x.ParameterType));
+            if (!signature) return false;
+            return directDependencies.Contains(method) ||
+                (IsRelevantType(method.DeclaringType) &&
+                    RelevantMemberFragments.Any(method.Name.Contains)) ||
+                method.Name == "MoveNext" || method.Name == "Invoke";
         }
 
-        private static bool IsSaveInfoCollection(Type type)
+        private static bool IsCompatibleCollection(Type type)
         {
             if (type == null || type == typeof(string)) return false;
-            string name = type.FullName ?? "";
-            return name.Contains("System.Collections.Generic.List`1") &&
-                name.Contains("Kingmaker.EntitySystem.Persistence.SaveInfo");
+            if (type.IsArray) return IsSaveInfo(type.GetElementType());
+            if (type.IsGenericType && type.GetGenericArguments().Any(IsSaveInfo) &&
+                typeof(IEnumerable).IsAssignableFrom(type)) return true;
+            return type.GetInterfaces().Any(x => x.IsGenericType &&
+                x.GetGenericArguments().Any(IsSaveInfo) &&
+                typeof(IEnumerable).IsAssignableFrom(x));
+        }
+
+        private static bool IsSaveInfo(Type type)
+        {
+            return type != null && type.FullName ==
+                "Kingmaker.EntitySystem.Persistence.SaveInfo";
+        }
+
+        private static MethodInfo FindOneArgumentInitialize(Assembly assembly)
+        {
+            Type type = assembly.GetType("Kingmaker.UI.SaveLoadWindow.ListOfSaves", false);
+            return type == null ? null : type.GetMethods(BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault(x =>
+                    x.Name == "Initialize" && x.GetParameters().Length == 1 &&
+                    x.GetParameters()[0].ParameterType == typeof(bool));
+        }
+
+        private static HashSet<MethodBase> ReadDirectDependencies(MethodInfo method)
+        {
+            var result = new HashSet<MethodBase>();
+            MethodBody body = method == null ? null : method.GetMethodBody();
+            byte[] il = body == null ? null : body.GetILAsByteArray();
+            if (il == null) return result;
+            Dictionary<short, OpCode> opcodes = typeof(OpCodes).GetFields(
+                BindingFlags.Public | BindingFlags.Static)
+                .Where(x => x.FieldType == typeof(OpCode))
+                .Select(x => (OpCode)x.GetValue(null))
+                .ToDictionary(x => x.Value);
+            int index = 0;
+            while (index < il.Length)
+            {
+                short value = il[index++];
+                if (value == 0xfe && index < il.Length)
+                    value = (short)(0xfe00 | il[index++]);
+                OpCode opcode;
+                if (!opcodes.TryGetValue(value, out opcode)) break;
+                int operandSize = OperandSize(opcode.OperandType, il, index);
+                if ((opcode == OpCodes.Call || opcode == OpCodes.Callvirt) &&
+                    operandSize == 4 && index + 4 <= il.Length)
+                {
+                    try
+                    {
+                        MethodBase dependency = method.Module.ResolveMethod(
+                            BitConverter.ToInt32(il, index),
+                            method.DeclaringType.GetGenericArguments(), Type.EmptyTypes);
+                        if (dependency != null) result.Add(dependency);
+                    }
+                    catch (ArgumentException) { }
+                    catch (BadImageFormatException) { }
+                }
+                index += operandSize;
+            }
+            return result;
+        }
+
+        private static int OperandSize(OperandType type, byte[] il, int index)
+        {
+            switch (type)
+            {
+                case OperandType.InlineNone: return 0;
+                case OperandType.ShortInlineBrTarget:
+                case OperandType.ShortInlineI:
+                case OperandType.ShortInlineVar: return 1;
+                case OperandType.InlineVar: return 2;
+                case OperandType.InlineI8:
+                case OperandType.InlineR: return 8;
+                case OperandType.InlineSwitch:
+                    return index + 4 <= il.Length
+                        ? 4 + 4 * BitConverter.ToInt32(il, index) : 0;
+                default: return 4;
+            }
         }
 
         private static bool IsMutationSentinel(MethodBase method)
@@ -399,19 +559,34 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static bool IsLoadSentinel(MethodBase method)
         {
-            return (method.DeclaringType.FullName == "Kingmaker.MainMenu" ||
-                method.DeclaringType.FullName == "Kingmaker.Game") &&
+            return method.DeclaringType != null &&
+                (method.DeclaringType.FullName == "Kingmaker.MainMenu" ||
+                 method.DeclaringType.FullName == "Kingmaker.Game") &&
                 method.Name.StartsWith("LoadGame", StringComparison.Ordinal) &&
-                method.GetParameters().Any(x =>
-                    (x.ParameterType.FullName ?? "").Contains(
-                        "Kingmaker.EntitySystem.Persistence.SaveInfo"));
+                method.GetParameters().Any(x => IsSaveInfo(x.ParameterType));
         }
 
         private static bool IsRelevantMember(string name, Type type)
         {
             return RelevantMemberFragments.Any(name.Contains) ||
-                IsSaveInfoCollection(type) ||
+                IsCompatibleCollection(type) ||
                 RelevantTypeFragments.Any((type.FullName ?? "").Contains);
+        }
+
+        private static string ObjectIdentity(object value)
+        {
+            return value == null ? "" : value.GetType().FullName + "#" +
+                RuntimeHelpers.GetHashCode(value).ToString("x8");
+        }
+
+        private static string SafeFingerprint(object descriptor)
+        {
+            string value = descriptor.GetType().FullName + "|" +
+                RuntimeHelpers.GetHashCode(descriptor).ToString("x8");
+            using (SHA256 sha = SHA256.Create())
+                return BitConverter.ToString(sha.ComputeHash(
+                    Encoding.UTF8.GetBytes(value))).Replace("-", "")
+                    .Substring(0, 16).ToLowerInvariant();
         }
 
         private static string FormatSignature(MethodBase method)
@@ -421,17 +596,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (method is MethodInfo ? ":" + ((MethodInfo)method).ReturnType.FullName : "");
         }
 
-        private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
+        private sealed class ReferenceComparer : IEqualityComparer<object>
         {
-            internal static readonly ReferenceEqualityComparer Instance =
-                new ReferenceEqualityComparer();
+            internal static readonly ReferenceComparer Instance = new ReferenceComparer();
             public new bool Equals(object left, object right)
             {
                 return ReferenceEquals(left, right);
             }
             public int GetHashCode(object value)
             {
-                return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value);
+                return RuntimeHelpers.GetHashCode(value);
             }
         }
     }

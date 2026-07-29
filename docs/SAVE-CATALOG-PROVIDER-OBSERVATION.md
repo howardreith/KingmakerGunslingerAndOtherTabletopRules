@@ -35,25 +35,32 @@ soon as the displayed catalog and upstream correlation evidence are committed.
 ## Narrow instrumentation
 
 The probe observes the exact two-argument `ListOfSaves.Initialize` overload.
-Candidate hooks are restricted to types in the observed save manager, save/load
-UI, list model, and main-menu hierarchy, and then further restricted to methods
-whose return or parameter metadata contains `List<SaveInfo>`. Load and
-save-writing methods are sentinels only. Harmony prefixes and postfixes do not
+The second pass starts from the observed one-argument
+`ListOfSaves.Initialize(Boolean)` caller and reads only its direct managed call
+dependencies. It combines those exact dependencies with the already observed
+save-manager/save-load hierarchy, then retains only members whose return or
+argument metadata is a `SaveInfo` collection, including compatible generic
+collection interfaces. Load and save-writing methods are sentinels only.
+Harmony prefixes and postfixes do not
 replace arguments, results, control flow, or exceptions.
 
-Evidence records the exact receiver and collection types, descriptor type and
-count, a minimized managed Kingmaker caller chain, immediate caller, relevant
-receiver field/property metadata, candidate provider signatures,
-object-reference correlation, managed thread identity, and lifecycle state.
+Evidence records process-local receiver and collection identities, descriptor
+type and count, safe non-save-content entry fingerprints, a minimized managed
+Kingmaker caller chain, immediate caller, relevant receiver field/property
+metadata, candidate provider signatures, object-reference correlation, managed
+thread identity, UI/lifecycle requirements, observed side effects, and
+complete-versus-filtered classification.
 Property getters are not invoked. Descriptor contents and raw saves are not
 read.
 
 ## Results and evidence
 
-`PASS` requires a non-empty complete display-model list, a concrete provider
-source correlated to that exact list object, game-thread callbacks, and no load
-or write sentinel. `AMBIGUOUS` means the list arrived but its producer could not
-be proven. `FAIL` means loading or writing was observed. `TIMEOUT` identifies
+`PASS` requires a non-empty list and a non-transform provider return correlated
+by reference identity to that exact consumer object, game-thread callbacks, and
+no load or write sentinel. `AMBIGUOUS` means the list arrived but its producer
+could not be proven, multiple candidates remain, or only a filtered/sorted UI
+producer was correlated. Candidate records state the missing proof. `FAIL`
+means loading or writing was observed. `TIMEOUT` identifies
 `observer-readiness` or `catalog-provider-observation`; `ERROR` records an
 unexpected probe failure.
 

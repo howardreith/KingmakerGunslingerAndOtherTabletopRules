@@ -171,7 +171,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     schemaVersion = 1,
                     runId = _runId,
                     events = _events
-                }, Formatting.Indented) + Environment.NewLine);
+                }, Formatting.Indented, new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.None,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Error
+                }) + Environment.NewLine);
         }
     }
 
@@ -233,6 +237,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("correlation", Order = 4)] public string Correlation { get; set; }
         [JsonProperty("canInvokeWithoutUi", Order = 5)] public bool CanInvokeWithoutUi { get; set; }
         [JsonProperty("appearsReadOnly", Order = 6)] public bool AppearsReadOnly { get; set; }
+        [JsonProperty("isStatic", Order = 7)] public bool IsStatic { get; set; }
+        [JsonProperty("receiverType", Order = 8)] public string ReceiverType { get; set; }
+        [JsonProperty("requiredArguments", Order = 9)] public List<string> RequiredArguments { get; set; }
+        [JsonProperty("returnType", Order = 10)] public string ReturnType { get; set; }
+        [JsonProperty("managedThreadId", Order = 11)] public int ManagedThreadId { get; set; }
+        [JsonProperty("requiresLoadGameUi", Order = 12)] public bool RequiresLoadGameUi { get; set; }
+        [JsonProperty("catalogRole", Order = 13)] public string CatalogRole { get; set; }
+        [JsonProperty("sideEffects", Order = 14)] public string SideEffects { get; set; }
+        [JsonProperty("contractStable", Order = 15)] public bool ContractStable { get; set; }
+        [JsonProperty("proofMissing", Order = 16)] public string ProofMissing { get; set; }
     }
 
     internal sealed class CatalogOwnerMemberEvidence
@@ -266,6 +280,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("saveWritingObserved", Order = 17)] public bool SaveWritingObserved { get; set; }
         [JsonProperty("hooksRemoved", Order = 18)] public bool HooksRemoved { get; set; }
         [JsonProperty("events", Order = 19)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("collectionObjectIdentity", Order = 20)] public string CollectionObjectIdentity { get; set; }
+        [JsonProperty("receiverObjectIdentity", Order = 21)] public string ReceiverObjectIdentity { get; set; }
+        [JsonProperty("safeEntryFingerprints", Order = 22)] public List<string> SafeEntryFingerprints { get; set; }
+        [JsonProperty("catalogClassification", Order = 23)] public string CatalogClassification { get; set; }
+        [JsonProperty("remainingEvidenceMissing", Order = 24)] public List<string> RemainingEvidenceMissing { get; set; }
     }
 
     internal static class RuntimeTestResultWriter

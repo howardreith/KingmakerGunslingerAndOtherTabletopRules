@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "sourceRun": "20260729T0232329065844Z-938fc6c376d64c18822c70bf8ab97b45",
+  "status": "AMBIGUOUS",
+  "classification": ["C", "D"],
+  "lastPositiveStage": "catalog object passed to ListOfSaves.Initialize",
+  "initializeSignature": "Initialize(System.Collections.Generic.List`1[[Kingmaker.EntitySystem.Persistence.SaveInfo, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],System.Boolean):System.Void",
+  "immediateCaller": "Kingmaker.UI.SaveLoadWindow.ListOfSaves.Initialize(System.Boolean):System.Void",
+  "descriptorCount": 47,
+  "providerCandidates": [],
+  "sourceProven": false,
+  "reason": "The final List<SaveInfo> was observed, but no return or argument hook observed the same object. A direct field/property source and its writer were not proven."
+}
