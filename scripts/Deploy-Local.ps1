@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory = $true)][string]$PackagePath,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$BackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod',
-    [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
+    [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
+    [switch]$PassThru
 )
 
 Set-StrictMode -Version Latest
@@ -79,4 +80,8 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     backupDirectory = $backup.Destination
     files = $actualFiles
 } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $deploymentDirectory 'deployment.json') -Encoding UTF8
-Write-Host "Deployment verified; manifest: $(Join-Path $deploymentDirectory 'deployment.json')"
+$deploymentManifestPath = Join-Path $deploymentDirectory 'deployment.json'
+Write-Host "Deployment verified; manifest: $deploymentManifestPath"
+if ($PassThru) {
+    Write-Output $deploymentManifestPath
+}

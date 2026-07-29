@@ -54,16 +54,60 @@ function New-KmgRuntimeRequest {
 
 function Write-KmgUtf8NoBom {
     param(
-        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][AllowNull()][object]$Path,
         [Parameter(Mandatory = $true)][string]$Content
     )
-    $directory = Split-Path -Parent $Path
-    if (-not (Test-Path -LiteralPath $directory -PathType Container)) {
-        throw "Atomic-write directory is missing: $directory"
-    }
-    $temporary = Join-Path $directory (
-        ".$([IO.Path]::GetFileName($Path)).$([Guid]::NewGuid().ToString('N')).tmp")
+    $stage = 'validate-path'
+    $destination = $null
+    $temporary = $null
     try {
+        if ($Path -isnot [string]) {
+            throw 'Path must be exactly one scalar string.'
+        }
+        if ([string]::IsNullOrWhiteSpace($Path)) {
+            throw 'Path must not be null, empty, or whitespace.'
+        }
+        if ($Path.Length -ge 2 -and $Path[0] -eq '"' -and
+            $Path[$Path.Length - 1] -eq '"') {
+            throw 'Path must not contain literal surrounding quotes.'
+        }
+        if ($Path.IndexOfAny([IO.Path]::GetInvalidPathChars()) -ge 0) {
+            throw 'Path contains an invalid path character.'
+        }
+        if ($Path -match '^[A-Za-z][A-Za-z0-9+.-]*://' -or
+            $Path -match '^[A-Za-z]+::') {
+            throw 'Path must be a filesystem path, not a URI or provider path.'
+        }
+
+        $destination = [IO.Path]::GetFullPath($Path)
+        $fileName = [IO.Path]::GetFileName($destination)
+        if ([string]::IsNullOrWhiteSpace($fileName)) {
+            throw 'Path must include a filename.'
+        }
+        if ($fileName.IndexOfAny([IO.Path]::GetInvalidFileNameChars()) -ge 0) {
+            throw 'Filename contains an invalid character.'
+        }
+        if (Test-Path -LiteralPath $destination -PathType Container) {
+            throw 'Path resolves to a directory.'
+        }
+
+        $directory = [IO.Path]::GetDirectoryName($destination)
+        if ([string]::IsNullOrWhiteSpace($directory)) {
+            throw 'Path must have a valid parent directory.'
+        }
+        if (Test-Path -LiteralPath $directory) {
+            if (-not (Test-Path -LiteralPath $directory -PathType Container)) {
+                throw 'The destination parent exists but is not a directory.'
+            }
+        }
+        else {
+            $stage = 'create-parent'
+            [void][IO.Directory]::CreateDirectory($directory)
+        }
+
+        $temporary = Join-Path $directory (
+            ".$fileName.$([Guid]::NewGuid().ToString('N')).tmp")
+        $stage = 'write-temporary'
         $bytes = [Text.UTF8Encoding]::new($false).GetBytes($Content)
         $stream = [IO.File]::Open(
             $temporary,
@@ -77,17 +121,107 @@ function Write-KmgUtf8NoBom {
         finally {
             $stream.Dispose()
         }
-        if (Test-Path -LiteralPath $Path -PathType Leaf) {
-            [IO.File]::Replace($temporary, $Path, $null)
+
+        if (Test-Path -LiteralPath $destination) {
+            if (-not (Test-Path -LiteralPath $destination -PathType Leaf)) {
+                throw 'Destination is not a regular file.'
+            }
+            $stage = 'replace-destination'
+            # Windows PowerShell 5.1 coerces a direct $null argument to an
+            # empty string for File.Replace. NullString.Value preserves an
+            # actual null through PowerShell's .NET method binder.
+            [IO.File]::Replace(
+                $temporary,
+                $destination,
+                [Management.Automation.Language.NullString]::Value)
         }
         else {
-            [IO.File]::Move($temporary, $Path)
+            $stage = 'move-new-destination'
+            [IO.File]::Move($temporary, $destination)
         }
     }
+    catch {
+        $safeDestination = if ($destination) {
+            ($destination -replace '[\x00-\x1f\x7f]', '?')
+        }
+        elseif ($Path -is [string]) {
+            ($Path -replace '[\x00-\x1f\x7f]', '?')
+        }
+        else {
+            '<non-scalar>'
+        }
+        throw "Atomic write failed at stage '$stage' for destination '$safeDestination': $($_.Exception.Message)"
+    }
     finally {
-        if (Test-Path -LiteralPath $temporary -PathType Leaf) {
+        if ($temporary -and (Test-Path -LiteralPath $temporary -PathType Leaf)) {
             Remove-Item -LiteralPath $temporary -Force
         }
+    }
+}
+
+function Initialize-KmgRuntimeTestEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
+        [Parameter(Mandatory = $true)][Collections.IDictionary]$Request,
+        [Parameter(Mandatory = $true)][AllowNull()][object]$DeploymentManifestPath
+    )
+    $requestPath = Join-Path $EvidenceDirectory 'runtime-request.json'
+    $resultPath = Join-Path $EvidenceDirectory 'runtime-result.json'
+    $orchestration = [ordered]@{
+        schemaVersion = 3
+        runId = $Request.runId
+        status = 'PREPARING'
+        startedAtUtc = [DateTime]::UtcNow.ToString('o')
+        requestPath = $requestPath
+        resultPath = $resultPath
+        deploymentCompleted = $true
+        deploymentManifestPath = '<unavailable>'
+        launchBegan = $false
+        saveInteractionOccurred = $false
+        guardedRequestAccepted = $false
+        preLaunchKingmakerProcesses = @()
+    }
+    try {
+        if ($DeploymentManifestPath -isnot [string] -or
+            [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
+            throw 'Deployment manifest path must be exactly one scalar string.'
+        }
+        $deploymentPath = [IO.Path]::GetFullPath($DeploymentManifestPath)
+        if (-not (Test-Path -LiteralPath $deploymentPath -PathType Leaf)) {
+            throw 'The completed deployment manifest is missing.'
+        }
+        $orchestration.deploymentManifestPath = $deploymentPath
+        if (Test-Path -LiteralPath $resultPath) {
+            throw 'A runtime result already exists before request creation.'
+        }
+        Write-KmgUtf8NoBom -Path $requestPath `
+            -Content (($Request | ConvertTo-Json -Depth 8) + [Environment]::NewLine)
+        $orchestration.status = 'ACTIVE'
+        [void](Write-KmgOrchestrationEvidence `
+            -EvidenceDirectory $EvidenceDirectory -Record $orchestration)
+        return [ordered]@{
+            requestPath = $requestPath
+            resultPath = $resultPath
+            orchestration = $orchestration
+        }
+    }
+    catch {
+        $failure = $_
+        $orchestration.status = 'ERROR'
+        $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
+        $orchestration.failingOperation = 'pre-launch-request-and-evidence-write'
+        $orchestration.exception = [ordered]@{
+            type = $failure.Exception.GetType().FullName
+            message = $failure.Exception.Message
+        }
+        try {
+            [void](Write-KmgOrchestrationEvidence `
+                -EvidenceDirectory $EvidenceDirectory -Record $orchestration)
+        }
+        catch {
+            throw "Pre-launch request creation failed and ERROR evidence could not be written: $($failure.Exception.Message)"
+        }
+        throw $failure
     }
 }
 

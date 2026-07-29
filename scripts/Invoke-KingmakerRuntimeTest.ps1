@@ -70,7 +70,8 @@ $steamPreflight = Wait-KmgSteamProcess -SteamPath $SteamPath `
     -TimeoutSeconds $SteamStartupTimeoutSeconds
 Assert-KmgProcessOwner -ProcessId $steamPreflight.Id -ExpectedOwner $currentOwner -Label 'Steam'
 
-& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -Confirm:$false
+$deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
+    -PackagePath $package -Confirm:$false -PassThru
 
 $evidence = Join-Path $script:KmgRuntimeEvidenceRoot (
     [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' + $Scenario)
@@ -78,34 +79,27 @@ New-Item -ItemType Directory -Path $evidence | Out-Null
 $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
     -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion $ExitAfterCompletion `
     -EvidenceDirectory $evidence -Parameters $Parameters
-$requestPath = Join-Path $evidence 'runtime-request.json'
-Write-KmgUtf8NoBom -Path $requestPath `
-    -Content (($request | ConvertTo-Json -Depth 8) + [Environment]::NewLine)
+$initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
+    -Request $request -DeploymentManifestPath $deploymentManifestPath
+$requestPath = $initialized.requestPath
+$resultPath = $initialized.resultPath
+$orchestration = $initialized.orchestration
 
-$preLaunchProcesses = @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue)
-$orchestration = [ordered]@{
-    schemaVersion = 2
-    runId = $request.runId
-    status = 'ACTIVE'
-    startedAtUtc = [DateTime]::UtcNow.ToString('o')
-    requestPath = $requestPath
-    guardedRequestAccepted = $false
-    preLaunchKingmakerProcesses = @($preLaunchProcesses | Sort-Object StartTime, Id |
-        ForEach-Object {
+try {
+    $preLaunchProcesses = @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue)
+    $orchestration.preLaunchKingmakerProcesses = @(
+        $preLaunchProcesses | Sort-Object StartTime, Id | ForEach-Object {
             [ordered]@{
                 processId = $_.Id
                 startedAtUtc = $_.StartTime.ToUniversalTime().ToString('o')
             }
         })
-}
-[void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
-
-try {
     $launch = Start-KmgSteamKingmaker -SteamPath $SteamPath -AppId $SteamAppId `
         -RequestPath $requestPath -PreLaunchProcesses @($preLaunchProcesses) `
         -SteamStartupTimeoutSeconds $SteamStartupTimeoutSeconds `
         -GameStartupTimeoutSeconds $GameStartupTimeoutSeconds
     $process = $launch.kingmakerProcess
+    $orchestration.launchBegan = $true
     $orchestration.steamExecutable = $launch.steamExecutable
     $orchestration.steamAppId = $launch.steamAppId
     $orchestration.sanitizedLaunchArguments = $launch.sanitizedLaunchArguments
@@ -124,7 +118,6 @@ try {
         Write-Host ''
     }
 
-    $resultPath = Join-Path $evidence 'runtime-result.json'
     $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)
     while (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
         $process.Refresh()

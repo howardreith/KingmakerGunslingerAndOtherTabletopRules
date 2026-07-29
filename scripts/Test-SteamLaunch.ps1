@@ -94,6 +94,12 @@ Assert-True ($orchestrator.Contains('[void](Write-KmgOrchestrationEvidence')) `
     'orchestration-evidence-written-before-and-after-launch'
 Assert-True ($orchestrator.Contains('type = $_.Exception.GetType().FullName') -and
     $orchestrator.Contains('message = $_.Exception.Message')) 'exception-recorded-safely'
+$initializeIndex = $orchestrator.IndexOf(
+    'Initialize-KmgRuntimeTestEvidence', [StringComparison]::Ordinal)
+$launchIndex = $orchestrator.IndexOf(
+    'Start-KmgSteamKingmaker', [StringComparison]::Ordinal)
+Assert-True ($initializeIndex -ge 0 -and $initializeIndex -lt $launchIndex) `
+    'request-failure-prevents-launch'
 
 $common = Get-Content -LiteralPath (
     Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1') -Raw
@@ -105,7 +111,8 @@ Assert-True ($common.Contains('Assert-KmgProcessOwner')) 'same-user-verified'
 Assert-True ($common.Contains('sanitizedLaunchArguments')) 'sanitized-arguments-recorded'
 Assert-True ($common.Contains('Start-Process -FilePath $SteamPath')) 'steam-executable-used'
 Assert-True ($common.Contains('$stream.Flush($true)') -and
-    $common.Contains('[IO.File]::Move($temporary, $Path)')) `
+    $common.Contains('[IO.File]::Move($temporary, $destination)') -and
+    $common.Contains('[Management.Automation.Language.NullString]::Value')) `
     'orchestration-and-request-writes-are-atomic'
 Assert-True (-not $common.Contains('Start-Process -FilePath $KingmakerPath')) `
     'common-has-no-direct-game-launch'
@@ -134,6 +141,46 @@ try {
     Assert-True ($writtenError.status -eq 'ERROR') 'error-evidence-created'
     Assert-True ($writtenError.exception.message -eq 'synthetic launch failure') `
         'error-evidence-preserves-exception'
+
+    $requestDirectory = Join-Path $evidenceTestDirectory 'pre-launch'
+    New-Item -ItemType Directory -Path $requestDirectory | Out-Null
+    $request = [ordered]@{
+        runId = 'source-only-pre-launch'
+        scenario = 'observe-manual-save-load'
+    }
+    $deploymentManifest = Join-Path $evidenceTestDirectory 'deployment.json'
+    [IO.File]::WriteAllText($deploymentManifest, '{}')
+    $initialized = Initialize-KmgRuntimeTestEvidence `
+        -EvidenceDirectory $requestDirectory -Request $request `
+        -DeploymentManifestPath $deploymentManifest
+    Assert-True ($initialized.requestPath -is [string]) 'request-path-is-scalar'
+    Assert-True ($initialized.resultPath -is [string]) 'result-path-is-scalar'
+    Assert-True ((Join-Path $requestDirectory 'orchestration.json') -is [string]) `
+        'orchestration-path-is-scalar'
+    Assert-True ((Join-Path $requestDirectory 'runtime-summary.txt') -is [string]) `
+        'summary-path-is-scalar'
+    Assert-True ($initialized.orchestration.launchBegan -eq $false) `
+        'launch-not-begun-during-request-write'
+
+    $failureDirectory = Join-Path $evidenceTestDirectory 'pre-launch-failure'
+    New-Item -ItemType Directory -Path $failureDirectory | Out-Null
+    New-Item -ItemType Directory -Path (
+        Join-Path $failureDirectory 'runtime-request.json') | Out-Null
+    Assert-Throws {
+        Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $failureDirectory `
+            -Request $request -DeploymentManifestPath $deploymentManifest
+    } 'request-write-failure-reported'
+    $failureEvidence = Get-Content -LiteralPath (
+        Join-Path $failureDirectory 'orchestration.json') -Raw | ConvertFrom-Json
+    Assert-True ($failureEvidence.status -eq 'ERROR') `
+        'request-write-failure-is-error'
+    Assert-True ($failureEvidence.deploymentCompleted -and
+        -not $failureEvidence.launchBegan -and
+        -not $failureEvidence.saveInteractionOccurred) `
+        'pre-launch-failure-boundaries-recorded'
+    Assert-True (-not (Test-Path -LiteralPath (
+        Join-Path $failureDirectory 'runtime-result.json'))) `
+        'pre-launch-failure-creates-no-result'
 }
 finally {
     if (Test-Path -LiteralPath $evidenceTestDirectory) {
@@ -144,4 +191,4 @@ finally {
 if ($failures.Count -ne 0) {
     throw "Steam launch source tests failed: $($failures -join ', ')"
 }
-Write-Host 'Steam launch source tests passed: 36'
+Write-Host 'Steam launch source tests passed: 47'

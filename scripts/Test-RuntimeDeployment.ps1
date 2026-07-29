@@ -47,7 +47,8 @@ Assert-True (-not $deployment.Substring(
     $dryReturnIndex - $shouldProcessIndex).Contains('Backup-Live-Mod.ps1')) `
     'dry-run-does-not-call-backup'
 Assert-True ($orchestrator.Contains(
-    "& (Join-Path `$PSScriptRoot 'Deploy-Local.ps1') -PackagePath `$package -Confirm:`$false")) `
+    "`$deploymentManifestPath = & (Join-Path `$PSScriptRoot 'Deploy-Local.ps1')") -and
+    $orchestrator.Contains('-PackagePath $package -Confirm:$false -PassThru')) `
     'real-orchestration-cannot-bypass-deployment-boundary'
 Assert-True ($orchestrator.Contains('[switch]$ManualInteractionRequired')) `
     'manual-interaction-switch-required'
