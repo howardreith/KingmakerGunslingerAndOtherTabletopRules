@@ -294,6 +294,7 @@
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
     <Compile Include="RuntimeTesting\LoadGameButtonActionObservation.cs" />
+    <Compile Include="RuntimeTesting\WorkingSaveSmokeScenario.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,6 +6,11 @@ This document defines the guarded, source-controlled runtime-test channel for
 Kingmaker Gunslinger 0.0.30. It does not qualify any scenario in game. Source
 qualification and an actual Kingmaker run are separate gates.
 
+The autonomous save-backed route is `working-save-smoke`, documented in
+`WORKING-SAVE-SMOKE.md`. It uses the guarded request, Steam App ID 640820, the
+observed normal Unity Load Game action, and the exact captured catalog object.
+No human interaction is required after the command starts.
+
 The earliest safe activation point is the end of `Main.Load`, after the mod
 context is published, Harmony patches are installed, any pending blueprint
 dictionary observation is processed, bootstrap failure has been checked, and

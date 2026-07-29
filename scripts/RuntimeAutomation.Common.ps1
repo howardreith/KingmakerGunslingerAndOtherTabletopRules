@@ -6,7 +6,8 @@ $script:KmgRuntimeScenarios = @(
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
-    'observe-load-game-button-action')
+    'observe-load-game-button-action',
+    'working-save-smoke')
 $script:KmgSteamAppId = 640820
 $script:KmgSteamExecutable = 'C:\Program Files (x86)\Steam\steam.exe'
 
@@ -29,6 +30,12 @@ function New-KmgRuntimeRequest {
         [int]$CatalogTimeoutSeconds = 0,
         [int]$SelectionTimeoutSeconds = 0,
         [int]$CompletionTimeoutSeconds = 0,
+        [int]$MainMenuTimeoutSeconds = 0,
+        [int]$ActionResolutionTimeoutSeconds = 0,
+        [int]$ActionInvocationTimeoutSeconds = 0,
+        [int]$DescriptorResolutionTimeoutSeconds = 0,
+        [int]$LoadEntryTimeoutSeconds = 0,
+        [int]$FingerprintTimeoutSeconds = 0,
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
         [hashtable]$Parameters = @{}
@@ -45,14 +52,33 @@ function New-KmgRuntimeRequest {
     if ($StartupTimeoutSeconds -lt 5 -or $StartupTimeoutSeconds -gt 600) {
         throw 'StartupTimeoutSeconds must be from 5 through 600.'
     }
-    if ($Parameters.Count -ne 0) {
+    $isWorkingSmoke = $Scenario -eq 'working-save-smoke'
+    if ($isWorkingSmoke) {
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('saveName') -or
+            $Parameters.saveName -isnot [string] -or
+            $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+            throw 'working-save-smoke requires exactly saveName=KMG_AUTOMATION_WORKING.'
+        }
+        foreach ($stageTimeout in @($MainMenuTimeoutSeconds,
+            $ActionResolutionTimeoutSeconds, $ActionInvocationTimeoutSeconds,
+            $DescriptorResolutionTimeoutSeconds, $LoadEntryTimeoutSeconds,
+            $FingerprintTimeoutSeconds)) {
+            if ($stageTimeout -lt 5 -or $stageTimeout -gt 1800) {
+                throw 'Working-save-smoke stage timeouts must be from 5 through 1800.'
+            }
+        }
+    }
+    elseif ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
     $isCatalog = $Scenario -in @(
         'observe-save-catalog-and-selection',
         'observe-save-catalog-provider',
-        'observe-load-game-button-action')
-    $isSelectionCatalog = $Scenario -eq 'observe-save-catalog-and-selection'
+        'observe-load-game-button-action',
+        'working-save-smoke')
+    $isSelectionCatalog = $Scenario -in @(
+        'observe-save-catalog-and-selection', 'working-save-smoke')
     if ($isCatalog -and
         ($CatalogTimeoutSeconds -lt 5 -or $CatalogTimeoutSeconds -gt 1800)) {
         throw 'Catalog scenario timeout must be from 5 through 1800.'
@@ -85,7 +111,15 @@ function New-KmgRuntimeRequest {
         selectionTimeoutSeconds = $SelectionTimeoutSeconds
         completionTimeoutSeconds = $CompletionTimeoutSeconds
         exitAfterCompletion = $ExitAfterCompletion
-        parameters = [ordered]@{}
+        mainMenuTimeoutSeconds = $MainMenuTimeoutSeconds
+        actionResolutionTimeoutSeconds = $ActionResolutionTimeoutSeconds
+        actionInvocationTimeoutSeconds = $ActionInvocationTimeoutSeconds
+        descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
+        loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
+        fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
+        parameters = if ($isWorkingSmoke) {
+            [ordered]@{ saveName = [string]$Parameters.saveName }
+        } else { [ordered]@{} }
     }
 }
 

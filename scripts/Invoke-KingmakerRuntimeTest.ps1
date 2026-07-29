@@ -4,7 +4,8 @@ param(
     [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
         'observe-save-catalog-and-selection',
         'observe-save-catalog-provider',
-        'observe-load-game-button-action')]
+        'observe-load-game-button-action',
+        'working-save-smoke')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -17,9 +18,17 @@ param(
     [ValidateRange(5, 1800)][int]$CatalogTimeoutSeconds = 180,
     [ValidateRange(5, 1800)][int]$SelectionTimeoutSeconds = 300,
     [ValidateRange(5, 1800)][int]$CompletionTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)][int]$MainMenuTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)][int]$ActionResolutionTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)][int]$ActionInvocationTimeoutSeconds = 30,
+    [ValidateRange(5, 1800)][int]$DescriptorResolutionTimeoutSeconds = 30,
+    [ValidateRange(5, 1800)][int]$LoadEntryTimeoutSeconds = 30,
+    [ValidateRange(5, 1800)][int]$FingerprintTimeoutSeconds = 180,
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
+    [ValidateSet('KMG_AUTOMATION_WORKING')]
+    [string]$SaveName,
     [switch]$AllowDirtyGit,
     [switch]$AllowForceTerminate,
     [switch]$ManualInteractionRequired,
@@ -45,6 +54,18 @@ if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
 }
 if ($Scenario -notin $manualScenarios -and $ManualInteractionRequired) {
     throw '-ManualInteractionRequired is valid only for supervised observations.'
+}
+if ($Scenario -eq 'working-save-smoke') {
+    if ([string]::IsNullOrWhiteSpace($SaveName)) {
+        throw 'working-save-smoke requires explicit -SaveName KMG_AUTOMATION_WORKING.'
+    }
+    if ($Parameters.Count -ne 0) {
+        throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
+    }
+    $Parameters = @{ saveName = $SaveName }
+}
+elseif ($PSBoundParameters.ContainsKey('SaveName')) {
+    throw '-SaveName is valid only for working-save-smoke.'
 }
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
@@ -94,12 +115,26 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $(if ($Scenario -in @(
         'observe-save-catalog-and-selection', 'observe-save-catalog-provider',
-        'observe-load-game-button-action')) {
+        'observe-load-game-button-action', 'working-save-smoke')) {
         $CatalogTimeoutSeconds } else { 0 }) `
-    -SelectionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
+    -SelectionTimeoutSeconds $(if ($Scenario -in @(
+        'observe-save-catalog-and-selection', 'working-save-smoke')) {
         $SelectionTimeoutSeconds } else { 0 }) `
-    -CompletionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
-        $CompletionTimeoutSeconds } else { 0 })
+    -CompletionTimeoutSeconds $(if ($Scenario -in @(
+        'observe-save-catalog-and-selection', 'working-save-smoke')) {
+        $CompletionTimeoutSeconds } else { 0 }) `
+    -MainMenuTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $MainMenuTimeoutSeconds } else { 0 }) `
+    -ActionResolutionTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $ActionResolutionTimeoutSeconds } else { 0 }) `
+    -ActionInvocationTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $ActionInvocationTimeoutSeconds } else { 0 }) `
+    -DescriptorResolutionTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $DescriptorResolutionTimeoutSeconds } else { 0 }) `
+    -LoadEntryTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $LoadEntryTimeoutSeconds } else { 0 }) `
+    -FingerprintTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+        $FingerprintTimeoutSeconds } else { 0 })
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
@@ -129,7 +164,36 @@ try {
     $orchestration.kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
-    if ($Scenario -in @('observe-save-catalog-provider',
+    if ($Scenario -eq 'working-save-smoke') {
+        $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+        $readyPath = Join-Path $evidence 'runtime-ready.json'
+        $readyDeadline = [DateTime]::UtcNow.AddSeconds(
+            $ObserverStartupTimeoutSeconds + 15)
+        while (-not (Test-Path -LiteralPath $readyPath -PathType Leaf)) {
+            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
+                throw 'working-save-smoke ended before runtime readiness.'
+            }
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw 'Kingmaker exited before working-save-smoke readiness.'
+            }
+            if ([DateTime]::UtcNow -ge $readyDeadline) {
+                throw 'working-save-smoke readiness timed out. stage=runtime-readiness'
+            }
+            Start-Sleep -Milliseconds 250
+        }
+        $ready = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
+        if (-not (Test-KmgRuntimeReadyMarker -Marker $ready `
+            -RunId $request.runId -Scenario $Scenario `
+            -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
+            -RequestWrittenUtc $requestWrittenUtc)) {
+            throw 'working-save-smoke ready marker is stale or mismatched.'
+        }
+        $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
+        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+            -Record $orchestration)
+    }
+    elseif ($Scenario -in @('observe-save-catalog-provider',
         'observe-load-game-button-action')) {
         $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $readyPath = Join-Path $evidence 'runtime-ready.json'
@@ -267,7 +331,14 @@ try {
         Write-Host ''
     }
 
-    if ($Scenario -eq 'observe-save-catalog-and-selection') {
+    if ($Scenario -eq 'working-save-smoke') {
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            $MainMenuTimeoutSeconds + $ActionResolutionTimeoutSeconds +
+            $ActionInvocationTimeoutSeconds + $CatalogTimeoutSeconds +
+            $DescriptorResolutionTimeoutSeconds + $LoadEntryTimeoutSeconds +
+            $CompletionTimeoutSeconds + $FingerprintTimeoutSeconds + 30)
+    }
+    elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
     }

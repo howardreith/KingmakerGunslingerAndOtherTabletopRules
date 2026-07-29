@@ -5,6 +5,10 @@ On Windows 10, use the guarded request/result workflow in
 mechanism because Kingmaker cannot be captured reliably on this platform.
 Deployment and the first invocation remain explicitly supervised.
 
+The save-backed `working-save-smoke` scenario is specified in
+`WORKING-SAVE-SMOKE.md`. Its request must explicitly name
+`KMG_AUTOMATION_WORKING`; it never defaults to or selects another save.
+
 ## Build, backup, deploy, and restore
 
 1. Run `scripts\Build-Local.ps1`. It validates the repository, runs all domain

@@ -62,6 +62,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("loadGameButtonActionObservation", Order = 22,
             NullValueHandling = NullValueHandling.Ignore)]
         public LoadGameButtonActionEvidence LoadGameButtonActionObservation { get; set; }
+        [JsonProperty("workingSaveSmoke", Order = 23,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public WorkingSaveSmokeEvidence WorkingSaveSmoke { get; set; }
+    }
+
+    internal sealed class WorkingSaveSmokeEvidence
+    {
+        [JsonProperty("stage", Order = 1)] public string Stage { get; set; }
+        [JsonProperty("button", Order = 2)] public LoadGameButtonCandidateEvidence Button { get; set; }
+        [JsonProperty("buttonCandidateCount", Order = 3)] public int ButtonCandidateCount { get; set; }
+        [JsonProperty("buttonEventInvocationCount", Order = 4)] public int ButtonEventInvocationCount { get; set; }
+        [JsonProperty("handlerInvocationCount", Order = 5)] public int HandlerInvocationCount { get; set; }
+        [JsonProperty("catalogInitializeCount", Order = 6)] public int CatalogInitializeCount { get; set; }
+        [JsonProperty("catalogDescriptorCount", Order = 7)] public int CatalogDescriptorCount { get; set; }
+        [JsonProperty("catalogComplete", Order = 8)] public bool CatalogComplete { get; set; }
+        [JsonProperty("workingMatchCount", Order = 9)] public int WorkingMatchCount { get; set; }
+        [JsonProperty("baselineMatchCount", Order = 10)] public int BaselineMatchCount { get; set; }
+        [JsonProperty("resolvedDescriptor", Order = 11)] public SaveCatalogDescriptorEvidence ResolvedDescriptor { get; set; }
+        [JsonProperty("descriptorReferenceCorrelated", Order = 12)] public bool DescriptorReferenceCorrelated { get; set; }
+        [JsonProperty("loadEntryInvocationCount", Order = 13)] public int LoadEntryInvocationCount { get; set; }
+        [JsonProperty("completionCallbackObserved", Order = 14)] public bool CompletionCallbackObserved { get; set; }
+        [JsonProperty("stableFingerprint", Order = 15)] public string StableFingerprint { get; set; }
+        [JsonProperty("saveWritingApiObserved", Order = 16)] public bool SaveWritingApiObserved { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 17)] public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("hooksRemoved", Order = 18)] public bool HooksRemoved { get; set; }
+        [JsonProperty("events", Order = 19)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence

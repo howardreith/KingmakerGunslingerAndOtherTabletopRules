@@ -21,6 +21,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private SaveCatalogSelectionObservation _catalogObservation;
         private SaveCatalogProviderObservation _catalogProviderObservation;
         private LoadGameButtonActionObservation _buttonActionObservation;
+        private WorkingSaveSmokeScenario _workingSaveSmoke;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -105,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
+                _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                 _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
             {
                 _trace.Record("manual-interaction-timeout",
@@ -141,6 +143,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunLoadGameButtonActionObservation();
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke)
+                {
+                    RunWorkingSaveSmoke();
+                    return;
+                }
                 RunManualSaveLoadObservation();
             }
             catch (Exception exception)
@@ -148,6 +155,171 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _trace.Record("runtime-exception", "stage=runtime-update", exception);
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
+        }
+
+        private void RunWorkingSaveSmoke()
+        {
+            if (_workingSaveSmoke == null)
+            {
+                _trace.Record("scenario-activated",
+                    RuntimeTestScenarioCatalog.WorkingSaveSmoke);
+                _workingSaveSmoke = new WorkingSaveSmokeScenario(
+                    _context, _elapsed, _request.RunId, _trace.Record);
+                _workingSaveSmoke.Install();
+                _manualElapsed = Stopwatch.StartNew();
+                _trace.WriteReady(new RuntimeReadyMarker
+                {
+                    SchemaVersion = 1, RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = _context.Assembly.FullName,
+                    ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
+                    InstalledObservationHookIdentifiers =
+                        _workingSaveSmoke.HookIdentifiers,
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+                return;
+            }
+            if (_workingSaveSmoke.ScenarioException != null)
+                throw new InvalidOperationException(
+                    "Incremental working-save-smoke evidence could not be flushed.",
+                    _workingSaveSmoke.ScenarioException);
+            if (_workingSaveSmoke.WriteObserved)
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
+                    "unexpected-save-write",
+                    "A native save-writing or migration method was observed.");
+                return;
+            }
+            if (_workingSaveSmoke.ButtonCandidateCount > 1)
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                    "load-game-action-resolution",
+                    "Multiple exact Load Game action candidates were resolved.");
+                return;
+            }
+            if (_workingSaveSmoke.WorkingCount > 1)
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                    "descriptor-resolution",
+                    "Multiple exact working descriptors were captured.");
+                return;
+            }
+            _workingSaveSmoke.Poll();
+            if (_workingSaveSmoke.Stage == "descriptor-resolution" &&
+                _workingSaveSmoke.CatalogComplete)
+            {
+                if (_workingSaveSmoke.WorkingCount == 0)
+                {
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
+                        "descriptor-resolution",
+                        "No exact working descriptor was captured.");
+                    return;
+                }
+                if (_workingSaveSmoke.BaselineCount == 0)
+                {
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
+                        "descriptor-resolution",
+                        "The baseline descriptor could not be distinguished.");
+                    return;
+                }
+                if (_workingSaveSmoke.BaselineCount > 1)
+                {
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                        "descriptor-resolution",
+                        "Multiple exact baseline descriptors were captured.");
+                    return;
+                }
+            }
+            if (_workingSaveSmoke.Complete)
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
+                return;
+            }
+            int timeout = WorkingSaveStageTimeout(_workingSaveSmoke.Stage);
+            if (_workingSaveSmoke.StageElapsedMilliseconds >= timeout * 1000L)
+            {
+                string status = _workingSaveSmoke.Stage == "descriptor-resolution" &&
+                    _workingSaveSmoke.WorkingCount > 1
+                    ? RuntimeTestStatuses.Ambiguous : RuntimeTestStatuses.Timeout;
+                CompleteWorkingSaveSmoke(status, _workingSaveSmoke.Stage,
+                    "Stage-specific timeout expired.");
+            }
+        }
+
+        private int WorkingSaveStageTimeout(string stage)
+        {
+            if (stage == "main-menu-readiness") return _request.MainMenuTimeoutSeconds;
+            if (stage == "load-game-action-resolution")
+                return _request.ActionResolutionTimeoutSeconds;
+            if (stage == "action-invocation")
+                return _request.ActionInvocationTimeoutSeconds;
+            if (stage == "catalog-initialization")
+                return _request.CatalogTimeoutSeconds;
+            if (stage == "descriptor-resolution")
+                return _request.DescriptorResolutionTimeoutSeconds;
+            if (stage == "load-entry-invocation")
+                return _request.LoadEntryTimeoutSeconds;
+            if (stage == "load-completion")
+                return _request.CompletionTimeoutSeconds;
+            if (stage == "post-load-fingerprint")
+                return _request.FingerprintTimeoutSeconds;
+            return _request.TimeoutSeconds;
+        }
+
+        private void CompleteWorkingSaveSmoke(
+            string status, string stage, string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-ui-action", "one exact onClick invocation",
+                    "candidates=" + evidence.ButtonCandidateCount +
+                        ";onClick=" + evidence.ButtonEventInvocationCount +
+                        ";handler=" + evidence.HandlerInvocationCount,
+                    evidence.ButtonCandidateCount == 1 &&
+                        evidence.ButtonEventInvocationCount == 1 &&
+                        evidence.HandlerInvocationCount == 1,
+                    "observed button hierarchy, components, and listeners"),
+                Assertion("complete-catalog", "one Initialize with complete List<SaveInfo>",
+                    "initialize=" + evidence.CatalogInitializeCount +
+                        ";count=" + evidence.CatalogDescriptorCount +
+                        ";complete=" + evidence.CatalogComplete,
+                    evidence.CatalogInitializeCount == 1 && evidence.CatalogComplete,
+                    "exact ListOfSaves.Initialize argument"),
+                Assertion("unique-working-and-distinct-baseline", "working=1;baseline=1",
+                    "working=" + evidence.WorkingMatchCount +
+                        ";baseline=" + evidence.BaselineMatchCount,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1,
+                    "stable descriptor identity combinations"),
+                Assertion("descriptor-load-correlation", "same object reference",
+                    evidence.DescriptorReferenceCorrelated ? "correlated" : "not-correlated",
+                    evidence.DescriptorReferenceCorrelated &&
+                        evidence.LoadEntryInvocationCount == 1,
+                    "catalog entry to MainMenu.LoadGame argument"),
+                Assertion("load-completion-and-fingerprint",
+                    "after-load callback and stable expected fingerprint",
+                    "callback=" + evidence.CompletionCallbackObserved +
+                        ";fingerprint=" + evidence.StableFingerprint,
+                    evidence.CompletionCallbackObserved &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "SaveManager callback and two stable game-thread samples"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved,
+                    "request-scoped native save-write sentinels"),
+                Assertion("loaded-mod-version", "0.0.30",
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == "0.0.30",
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(stage))
+                result.Diagnostics.Add("timeoutStage=" + stage);
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void RunLoadGameButtonActionObservation()
@@ -618,6 +790,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.SaveLoadObservation = _saveLoadObservation.Stop();
             if (_catalogObservation != null && result.SaveCatalogObservation == null)
                 result.SaveCatalogObservation = _catalogObservation.Stop();
+            if (_workingSaveSmoke != null && result.WorkingSaveSmoke == null)
+                result.WorkingSaveSmoke = _workingSaveSmoke.Stop();
             _completed = true;
             _context.ModEntry.OnUpdate -= OnUpdate;
             _elapsed.Stop();

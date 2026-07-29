@@ -2,6 +2,10 @@
 
 The PowerShell scripts target a local Windows installation of Pathfinder: Kingmaker 2.1.7b.
 
+`Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke` requires
+`-SaveName KMG_AUTOMATION_WORKING`, rejects manual-interaction mode, and launches
+only through Steam App ID 640820. See `docs\WORKING-SAVE-SMOKE.md`.
+
 - `qualify-runtime-candidate.ps1` is the Windows source-to-candidate path. For 0.0.29 it requires 599 tests three times, two same-output-path Release compiles, and strict package validation.
 - `build.ps1` compiles the mod against the exact installed private Kingmaker, Unity, UMM, Harmony, and Newtonsoft references.
 - `package.ps1` produces the strict standalone eight-file UMM ZIP.

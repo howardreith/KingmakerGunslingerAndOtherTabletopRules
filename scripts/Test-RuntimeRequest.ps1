@@ -32,6 +32,12 @@ Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersio
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.30' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{ unexpected = $true } } 'unknown-parameter'
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.30' `
+    -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
+    -Parameters @{} } 'working-save-name-missing'
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.30' `
+    -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
+    -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'baseline-forbidden'
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 7'
+Write-Host 'Runtime request source tests passed: 9'

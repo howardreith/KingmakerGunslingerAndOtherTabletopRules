@@ -71,6 +71,11 @@ The supervised `observe-save-catalog-provider` procedure is documented in
 only after readiness; the probe never invokes a provider, selects or loads a
 save, sends input, or initiates save mutation.
 
+The autonomous `working-save-smoke` procedure is documented in
+`docs/WORKING-SAVE-SMOKE.md`. A guarded request must explicitly name
+`KMG_AUTOMATION_WORKING`; the scenario fails closed on ambiguous UI, catalog,
+descriptor, load-correlation, completion, fingerprint, or save-write evidence.
+
 Stop rather than guessing when:
 
 - The wrong mod version is loaded.

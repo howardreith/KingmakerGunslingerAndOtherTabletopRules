@@ -34,6 +34,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         public int SelectionTimeoutSeconds { get; set; }
         [JsonProperty("completionTimeoutSeconds", Required = Required.Default)]
         public int CompletionTimeoutSeconds { get; set; }
+        [JsonProperty("mainMenuTimeoutSeconds", Required = Required.Default)]
+        public int MainMenuTimeoutSeconds { get; set; }
+        [JsonProperty("actionResolutionTimeoutSeconds", Required = Required.Default)]
+        public int ActionResolutionTimeoutSeconds { get; set; }
+        [JsonProperty("actionInvocationTimeoutSeconds", Required = Required.Default)]
+        public int ActionInvocationTimeoutSeconds { get; set; }
+        [JsonProperty("descriptorResolutionTimeoutSeconds", Required = Required.Default)]
+        public int DescriptorResolutionTimeoutSeconds { get; set; }
+        [JsonProperty("loadEntryTimeoutSeconds", Required = Required.Default)]
+        public int LoadEntryTimeoutSeconds { get; set; }
+        [JsonProperty("fingerprintTimeoutSeconds", Required = Required.Default)]
+        public int FingerprintTimeoutSeconds { get; set; }
         [JsonProperty("exitAfterCompletion", Required = Required.Always)]
         public bool ExitAfterCompletion { get; set; }
         [JsonProperty("parameters", Required = Required.Always)]
@@ -68,7 +80,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "expectedModVersion", "evidenceDirectory", "timeoutSeconds",
             "startupTimeoutSeconds", "exitAfterCompletion", "parameters"
             , "catalogTimeoutSeconds", "selectionTimeoutSeconds",
-            "completionTimeoutSeconds"
+            "completionTimeoutSeconds", "mainMenuTimeoutSeconds",
+            "actionResolutionTimeoutSeconds", "actionInvocationTimeoutSeconds",
+            "descriptorResolutionTimeoutSeconds", "loadEntryTimeoutSeconds",
+            "fingerprintTimeoutSeconds"
         };
 
         internal static RuntimeTestRequestDecision TryActivate(
@@ -191,15 +206,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "timeout-invalid";
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
+            bool workingSmoke = request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveSmoke;
             bool catalogScenario = request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider ||
-                request.Scenario == RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction;
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction ||
+                workingSmoke;
             if (catalogScenario && (request.CatalogTimeoutSeconds < 5 ||
                 request.CatalogTimeoutSeconds > 1800))
                 return "catalog-timeout-invalid";
             bool selectionScenario = request.Scenario ==
-                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection;
+                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection ||
+                workingSmoke;
             if (selectionScenario && (request.SelectionTimeoutSeconds < 5 ||
                 request.SelectionTimeoutSeconds > 1800))
                 return "selection-timeout-invalid";
@@ -211,8 +230,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "scenario-timeouts-not-allowed";
             if (!catalogScenario && request.CatalogTimeoutSeconds != 0)
                 return "scenario-timeouts-not-allowed";
-            if (request.Parameters == null || request.Parameters.Count != 0)
-                return "parameters-not-allowed";
+            if (workingSmoke)
+            {
+                if (!ValidStageTimeout(request.MainMenuTimeoutSeconds) ||
+                    !ValidStageTimeout(request.ActionResolutionTimeoutSeconds) ||
+                    !ValidStageTimeout(request.ActionInvocationTimeoutSeconds) ||
+                    !ValidStageTimeout(request.DescriptorResolutionTimeoutSeconds) ||
+                    !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
+                    !ValidStageTimeout(request.FingerprintTimeoutSeconds))
+                    return "scenario-timeout-invalid";
+                if (request.Parameters == null || request.Parameters.Count != 1 ||
+                    request.Parameters.Property("saveName") == null ||
+                    request.Parameters["saveName"].Type != JTokenType.String)
+                    return "save-name-required";
+                string saveName = (string)request.Parameters["saveName"];
+                if (!string.Equals(saveName, ManualSaveLoadObservation.WorkingSave,
+                    StringComparison.Ordinal))
+                    return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
+                        StringComparison.Ordinal)
+                        ? "baseline-save-forbidden" : "save-name-not-allowed";
+            }
+            else
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 0)
+                    return "parameters-not-allowed";
+            }
 
             string evidence;
             try
@@ -236,6 +285,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             request.EvidenceDirectory = evidence;
             return null;
+        }
+
+        private static bool ValidStageTimeout(int seconds)
+        {
+            return seconds >= 5 && seconds <= 1800;
         }
 
         private static bool ContainsReparsePoint(string path, string root)
