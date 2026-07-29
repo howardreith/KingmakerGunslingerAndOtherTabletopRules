@@ -78,3 +78,17 @@ deployment manifest using the documented restore script. Never modify saves.
 These contracts are qualified only for the observed Kingmaker environment and
 mod 0.0.30. The first autonomous run remains supervised. Source-only success is
 not proof of in-game correctness.
+## Confirmation boundary
+
+The orchestrator owns one high-level confirmation boundary before its first
+persistent mutation. `-Confirm` requests that confirmation and
+`-Confirm:$false` suppresses it. After authorization, trusted build, staging,
+validation, deployment, evidence, and process-owner operations run with nested
+confirmation disabled for this command only. Direct calls to deployment and
+restoration scripts retain their own confirmations.
+
+PowerShell's **Yes to All** applies only to the command currently asking. It
+cannot authorize separate nested commands, which is why the orchestrator does
+not delegate confirmation to each internal operation. `-WhatIf` stops at the
+top-level boundary: it performs no build writes, backup, deployment, evidence
+creation, CIM operation, Steam launch, or Kingmaker launch.

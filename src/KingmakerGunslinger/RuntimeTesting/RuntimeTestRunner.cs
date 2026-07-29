@@ -26,6 +26,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
         private bool _catalogMarkerWritten;
+        private int _updateCallbackCount;
+        private bool _workingReadyWritten;
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
@@ -92,6 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
         {
             if (_completed) return;
+            _updateCallbackCount++;
             if (_manualElapsed == null &&
                 _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
             {
@@ -167,6 +170,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _context, _elapsed, _request.RunId, _trace.Record);
                 _workingSaveSmoke.Install();
                 _manualElapsed = Stopwatch.StartNew();
+                return;
+            }
+            _workingSaveSmoke.Poll();
+            if (!_workingReadyWritten && _workingSaveSmoke.MainMenuReady &&
+                _updateCallbackCount >= 2)
+            {
+                _trace.Record("runtime-ready",
+                    "runner active; update callbacks continuing; exact main-menu root active; UMM overlay is not used as readiness");
                 _trace.WriteReady(new RuntimeReadyMarker
                 {
                     SchemaVersion = 1, RunId = _request.RunId,
@@ -176,8 +187,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
                     InstalledObservationHookIdentifiers =
                         _workingSaveSmoke.HookIdentifiers,
-                    ProcessId = Process.GetCurrentProcess().Id
+                    ProcessId = Process.GetCurrentProcess().Id,
+                    RuntimeRunnerActive = true,
+                    UpdateCallbackCount = _updateCallbackCount,
+                    MainMenuLifecycleReady = true,
+                    UmmStartupState = "initialized; overlay nonblocking-or-absent"
                 });
+                _workingReadyWritten = true;
+                return;
+            }
+            if (!_workingReadyWritten)
+            {
+                int readinessTimeout = WorkingSaveStageTimeout(
+                    _workingSaveSmoke.Stage);
+                if (_workingSaveSmoke.StageElapsedMilliseconds >=
+                    readinessTimeout * 1000L)
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Timeout,
+                        _workingSaveSmoke.Stage,
+                        "Stage-specific startup timeout expired.");
                 return;
             }
             if (_workingSaveSmoke.ScenarioException != null)
@@ -205,7 +232,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Multiple exact working descriptors were captured.");
                 return;
             }
-            _workingSaveSmoke.Poll();
             if (_workingSaveSmoke.Stage == "descriptor-resolution" &&
                 _workingSaveSmoke.CatalogComplete)
             {

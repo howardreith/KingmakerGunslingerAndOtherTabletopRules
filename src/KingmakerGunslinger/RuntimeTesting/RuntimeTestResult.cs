@@ -157,6 +157,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("installedObservationHookIdentifiers", Order = 7)]
         public List<string> InstalledObservationHookIdentifiers { get; set; }
         [JsonProperty("processId", Order = 8)] public int ProcessId { get; set; }
+        [JsonProperty("runtimeRunnerActive", Order = 9)]
+        public bool RuntimeRunnerActive { get; set; }
+        [JsonProperty("updateCallbackCount", Order = 10)]
+        public int UpdateCallbackCount { get; set; }
+        [JsonProperty("mainMenuLifecycleReady", Order = 11)]
+        public bool MainMenuLifecycleReady { get; set; }
+        [JsonProperty("ummStartupState", Order = 12)]
+        public string UmmStartupState { get; set; }
     }
 
     internal sealed class RuntimeStageMarker

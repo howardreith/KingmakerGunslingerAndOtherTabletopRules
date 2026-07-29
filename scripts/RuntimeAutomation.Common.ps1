@@ -268,13 +268,19 @@ function Test-KmgRuntimeReadyMarker {
             $Marker.readinessTimestampUtc,
             [Globalization.CultureInfo]::InvariantCulture,
             [Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
-        return $Marker.schemaVersion -eq 1 -and
+        $coreReady = $Marker.schemaVersion -eq 1 -and
             $Marker.runId -ceq $RunId -and
             $Marker.scenario -ceq $Scenario -and
             $Marker.loadedModVersion -ceq $ExpectedVersion -and
             $Marker.processId -eq $ProcessId -and
             $readyUtc -ge $RequestWrittenUtc.ToUniversalTime() -and
             @($Marker.installedObservationHookIdentifiers).Count -gt 0
+        if (-not $coreReady) { return $false }
+        if ($Scenario -cne 'working-save-smoke') { return $true }
+        return $Marker.runtimeRunnerActive -eq $true -and
+            $Marker.updateCallbackCount -ge 2 -and
+            $Marker.mainMenuLifecycleReady -eq $true -and
+            $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent'
     }
     catch { return $false }
 }
@@ -375,13 +381,22 @@ function Assert-KmgUnelevated {
 
 function Get-KmgProcessOwner {
     param([Parameter(Mandatory = $true)][int]$ProcessId)
-    $instance = Get-CimInstance Win32_Process -Filter "ProcessId = $ProcessId"
-    if (-not $instance) { throw "Process disappeared before its owner could be verified: PID=$ProcessId" }
-    $owner = Invoke-CimMethod -InputObject $instance -MethodName GetOwner
-    if ($owner.ReturnValue -ne 0 -or [string]::IsNullOrWhiteSpace($owner.User)) {
+    $instances = @(Get-CimInstance Win32_Process -Filter "ProcessId = $ProcessId")
+    if ($instances.Count -ne 1) {
+        throw "Process disappeared or was ambiguous before its owner could be verified: PID=$ProcessId"
+    }
+    # Invoke-CimMethod writes its result to the success stream. Capture it
+    # completely so a CimMethodResult can never become part of a caller's
+    # launch-result pipeline.
+    $ownerResults = @(Invoke-CimMethod -InputObject $instances[0] -MethodName GetOwner)
+    if ($ownerResults.Count -ne 1) {
+        throw "Windows owner lookup returned $($ownerResults.Count) results for PID=$ProcessId."
+    }
+    $owner = $ownerResults[0]
+    if ($owner.ReturnValue -ne 0 -or [string]::IsNullOrWhiteSpace([string]$owner.User)) {
         throw "Unable to verify the Windows user for PID=$ProcessId."
     }
-    return "$($owner.Domain)\$($owner.User)"
+    return [string]::Concat([string]$owner.Domain, '\', [string]$owner.User)
 }
 
 function Assert-KmgProcessOwner {
@@ -394,6 +409,8 @@ function Assert-KmgProcessOwner {
     if (-not $actual.Equals($ExpectedOwner, [StringComparison]::OrdinalIgnoreCase)) {
         throw "$Label is running as a different Windows user."
     }
+    # Assertions are deliberately success-stream silent.
+    return
 }
 
 function Get-KmgSteamLaunchArguments {
@@ -499,7 +516,8 @@ function Start-KmgSteamKingmaker {
             -ExistingProcesses $PreLaunchProcesses -RequestedAtUtc $requestedAt
         if ($game) {
             Assert-KmgProcessOwner -ProcessId $game.Id -ExpectedOwner $currentOwner -Label 'Kingmaker'
-            return [ordered]@{
+            $launchResult = [pscustomobject][ordered]@{
+                PSTypeName = 'KingmakerGunslinger.RuntimeLaunchResult'
                 steamExecutable = (Resolve-Path -LiteralPath $SteamPath).Path
                 steamAppId = $AppId
                 sanitizedLaunchArguments = if ($RequestPath) {
@@ -512,10 +530,39 @@ function Start-KmgSteamKingmaker {
                 kingmakerProcessId = $game.Id
                 kingmakerStartedAtUtc = $game.StartTime.ToUniversalTime()
             }
+            Write-Output -NoEnumerate $launchResult
+            return
         }
         Start-Sleep -Milliseconds 250
     } while ([DateTime]::UtcNow -lt $deadline)
     throw "Kingmaker did not start through Steam App ID $AppId within $GameStartupTimeoutSeconds seconds; direct-executable fallback is disabled."
+}
+
+function Assert-KmgRuntimeLaunchResult {
+    param([Parameter(Mandatory = $true)][AllowNull()][object]$LaunchResult)
+    if ($null -eq $LaunchResult) {
+        throw 'Steam launch returned no launch result.'
+    }
+    if ($LaunchResult -is [array]) {
+        throw "Steam launch returned an array-valued result with $($LaunchResult.Count) entries."
+    }
+    if ($LaunchResult.PSObject.TypeNames -notcontains
+        'KingmakerGunslinger.RuntimeLaunchResult') {
+        throw 'Steam launch returned a malformed or untyped launch result.'
+    }
+    foreach ($property in @('steamExecutable', 'steamAppId', 'steamProcessId',
+        'kingmakerProcess', 'kingmakerProcessId', 'kingmakerStartedAtUtc')) {
+        if ($null -eq $LaunchResult.PSObject.Properties[$property] -or
+            $null -eq $LaunchResult.$property) {
+            throw "Steam launch result is missing required property '$property'."
+        }
+    }
+    if ($LaunchResult.steamAppId -ne $script:KmgSteamAppId -or
+        $LaunchResult.kingmakerProcess.ProcessName -ne 'Kingmaker' -or
+        $LaunchResult.kingmakerProcessId -ne $LaunchResult.kingmakerProcess.Id) {
+        throw 'Steam launch result does not identify the required Kingmaker process.'
+    }
+    return
 }
 
 function Write-KmgOrchestrationEvidence {

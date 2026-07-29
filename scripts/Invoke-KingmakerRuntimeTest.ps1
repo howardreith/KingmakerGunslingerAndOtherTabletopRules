@@ -78,25 +78,26 @@ Assert-KmgSteamAppId -AppId $SteamAppId
 Assert-KmgUnelevated
 $SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
-& {
-    # The orchestrator's -WhatIf controls deployment and launch. Build-Local is
-    # an ordinary source/artifact qualification and must not inherit that
-    # preference or its internal staging operations become inconsistent.
-    $WhatIfPreference = $false
-    & (Join-Path $PSScriptRoot 'Build-Local.ps1')
+if (-not $PSCmdlet.ShouldProcess(
+    "Steam App ID $SteamAppId",
+    "build, validate, deploy, and launch guarded scenario '$Scenario'")) {
+    Write-Host 'Source-only/WhatIf validation passed. No deployment or process launch occurred.'
+    return
 }
+
+# This is the single confirmation boundary. A caller's -Confirm preference is
+# intentionally contained after authorization so trusted nested cmdlets do not
+# fan out into separate prompts. Direct invocation of those scripts retains
+# their own ShouldProcess behavior.
+$ConfirmPreference = 'None'
+$WhatIfPreference = $false
+& (Join-Path $PSScriptRoot 'Build-Local.ps1')
 $package = Join-Path $root "artifacts\local-runtime\0.0.30\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
 if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
     throw "Build-Local did not produce the expected package: $package"
 }
-
-& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -WhatIf
-if (-not $PSCmdlet.ShouldProcess(
-    "Steam App ID $SteamAppId",
-    "deploy the validated package and launch scenario '$Scenario'")) {
-    Write-Host 'Source-only/WhatIf validation passed. No deployment or process launch occurred.'
-    return
-}
+& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package `
+    -WhatIf -Confirm:$false
 
 $currentOwner = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $steamPreflight = Wait-KmgSteamProcess -SteamPath $SteamPath `
@@ -140,6 +141,12 @@ $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
 $requestPath = $initialized.requestPath
 $resultPath = $initialized.resultPath
 $orchestration = $initialized.orchestration
+$orchestration.stage = 'request-written'
+[void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+    -Record $orchestration)
+Write-Host 'Stage: deployment-complete'
+Write-Host 'Stage: request-written'
+$terminalOutcomeRecorded = $false
 
 try {
     $preLaunchProcesses = @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue)
@@ -150,10 +157,20 @@ try {
                 startedAtUtc = $_.StartTime.ToUniversalTime().ToString('o')
             }
         })
-    $launch = Start-KmgSteamKingmaker -SteamPath $SteamPath -AppId $SteamAppId `
-        -RequestPath $requestPath -PreLaunchProcesses @($preLaunchProcesses) `
+    $orchestration.stage = 'steam-launch-requested'
+    [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+        -Record $orchestration)
+    Write-Host 'Stage: steam-launch-requested'
+    $launchOutput = @(Start-KmgSteamKingmaker -SteamPath $SteamPath `
+        -AppId $SteamAppId -RequestPath $requestPath `
+        -PreLaunchProcesses @($preLaunchProcesses) `
         -SteamStartupTimeoutSeconds $SteamStartupTimeoutSeconds `
-        -GameStartupTimeoutSeconds $GameStartupTimeoutSeconds
+        -GameStartupTimeoutSeconds $GameStartupTimeoutSeconds)
+    if ($launchOutput.Count -ne 1) {
+        throw "Steam launch must emit exactly one result; observed $($launchOutput.Count)."
+    }
+    $launch = $launchOutput[0]
+    Assert-KmgRuntimeLaunchResult -LaunchResult $launch
     $process = $launch.kingmakerProcess
     $orchestration.launchBegan = $true
     $orchestration.steamExecutable = $launch.steamExecutable
@@ -162,9 +179,16 @@ try {
     $orchestration.steamProcessId = $launch.steamProcessId
     $orchestration.kingmakerProcessId = $launch.kingmakerProcessId
     $orchestration.kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
+    $orchestration.stage = 'owner-context-verified'
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
+    Write-Host 'Stage: kingmaker-process-discovered'
+    Write-Host 'Stage: owner-context-verified'
 
     if ($Scenario -eq 'working-save-smoke') {
+        $orchestration.stage = 'waiting-for-runtime-readiness'
+        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+            -Record $orchestration)
+        Write-Host 'Stage: waiting-for-runtime-readiness'
         $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds(
@@ -190,8 +214,11 @@ try {
             throw 'working-save-smoke ready marker is stale or mismatched.'
         }
         $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
+        $orchestration.guardedRequestAccepted = $true
+        $orchestration.stage = 'runtime-ready'
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
+        Write-Host 'Stage: runtime-ready'
     }
     elseif ($Scenario -in @('observe-save-catalog-provider',
         'observe-load-game-button-action')) {
@@ -349,10 +376,18 @@ try {
     else {
         $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)
     }
+    $orchestration.stage = 'waiting-for-final-result'
+    [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+        -Record $orchestration)
+    Write-Host 'Stage: waiting-for-final-result'
     while (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
         $process.Refresh()
         if ($process.HasExited) {
-            throw "Kingmaker exited before committing a result. PID=$($process.Id); exitCode=$($process.ExitCode)"
+            $orchestration.stage = 'process-exited-early'
+            [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+                -Record $orchestration)
+            Write-Host 'Stage: process-exited-early'
+            throw "Kingmaker exited before committing a result. stage=waiting-for-final-result; PID=$($process.Id); exitCode=$($process.ExitCode)"
         }
         if ([DateTime]::UtcNow -ge $deadline) {
             if ($AllowForceTerminate) {
@@ -365,23 +400,47 @@ try {
     }
 
     $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    if ($result.runId -cne $request.runId -or
+        [string]::IsNullOrWhiteSpace([string]$result.status)) {
+        throw 'The final runtime result is missing required run identity or status.'
+    }
     $orchestration.guardedRequestAccepted = ($result.runId -eq $request.runId)
     $orchestration.status = $result.status
+    $orchestration.stage = 'final-result-received'
     $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
+    $terminalOutcomeRecorded = $true
     & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
         -EvidenceDirectory $evidence -PackagePath $package
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"
+    Write-Host 'Stage: final-result-received'
     if ($result.status -ne 'PASS') { exit 1 }
 }
 catch {
     $orchestration.status = 'ERROR'
+    $orchestration.stage = 'orchestration-error'
     $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     $orchestration.exception = [ordered]@{
         type = $_.Exception.GetType().FullName
         message = $_.Exception.Message
     }
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
+    $terminalOutcomeRecorded = $true
+    Write-Host 'Stage: orchestration-error'
     throw
+}
+finally {
+    if (-not $terminalOutcomeRecorded) {
+        $orchestration.status = 'ERROR'
+        $orchestration.stage = 'orchestration-error'
+        $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
+        $orchestration.exception = [ordered]@{
+            type = 'System.Management.Automation.PipelineStoppedException'
+            message = 'The orchestration pipeline ended without a final runtime result or explicit caught error.'
+        }
+        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+            -Record $orchestration)
+        Write-Host 'Stage: orchestration-error'
+    }
 }

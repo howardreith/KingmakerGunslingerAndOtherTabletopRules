@@ -131,6 +131,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal int BaselineCount { get { return _baselineCount; } }
         internal int ButtonCandidateCount { get { return _buttonCandidates; } }
         internal bool CatalogComplete { get { return _catalogComplete; } }
+        internal bool MainMenuReady
+        {
+            get
+            {
+                return _mainMenu != null &&
+                    _stage == "load-game-action-resolution";
+            }
+        }
         internal List<string> HookIdentifiers
         {
             get { return _patched.Select(FormatSignature).OrderBy(x => x).ToList(); }
@@ -188,14 +196,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_stage == "main-menu-readiness")
             {
                 ResolveMainMenu();
-                if (_mainMenu != null) Transition("load-game-action-resolution",
-                    "exact MainMenu receiver resolved");
+                if (_mainMenu != null)
+                {
+                    Transition("load-game-action-resolution",
+                        "exact active Kingmaker MainMenu receiver resolved; overlay was not treated as readiness");
+                    return;
+                }
             }
             if (_stage == "load-game-action-resolution")
             {
                 ResolveButton();
                 if (_buttonCandidates == 1 && _button != null)
+                {
                     Transition("action-invocation", "one exact button/action resolved");
+                    return;
+                }
             }
             if (_stage == "action-invocation")
             {
@@ -208,16 +223,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Normal Load Game action did not invoke exactly once.");
                 Transition("catalog-initialization",
                     "normal Unity event returned after one handler invocation");
+                return;
             }
             if (_stage == "catalog-initialization" && _catalogInvocations == 1)
+            {
                 Transition("descriptor-resolution", "exact catalog argument captured");
+                return;
+            }
             if (_stage == "descriptor-resolution")
             {
                 ResolveDescriptors();
                 if (_workingCount > 1) return;
                 if (_workingCount == 1 && _baselineCount == 1 && _catalogComplete)
+                {
                     Transition("load-entry-invocation",
                         "unique working descriptor and distinct baseline proven");
+                    return;
+                }
             }
             if (_stage == "load-entry-invocation")
             {
@@ -230,9 +252,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Load entry correlation or invocation count failed.");
                 Transition("load-completion", "exact MainMenu.LoadGame invoked once");
+                return;
             }
             if (_stage == "load-completion" && _completionCallback)
+            {
                 Transition("post-load-fingerprint", "after-load callback observed");
+                return;
+            }
             if (_stage == "post-load-fingerprint") PollFingerprint();
         }
 
