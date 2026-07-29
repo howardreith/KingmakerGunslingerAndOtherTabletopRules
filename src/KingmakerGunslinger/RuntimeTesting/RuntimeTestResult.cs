@@ -54,6 +54,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("automaticExitInitiated", Order = 18)] public bool AutomaticExitInitiated { get; set; }
         [JsonProperty("saveLoadObservation", Order = 19, NullValueHandling = NullValueHandling.Ignore)]
         public SaveLoadObservationEvidence SaveLoadObservation { get; set; }
+        [JsonProperty("saveCatalogObservation", Order = 20, NullValueHandling = NullValueHandling.Ignore)]
+        public SaveCatalogObservationEvidence SaveCatalogObservation { get; set; }
     }
 
     internal sealed class SaveLoadObservationEvent
@@ -84,6 +86,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("installedObservationHookIdentifiers", Order = 7)]
         public List<string> InstalledObservationHookIdentifiers { get; set; }
         [JsonProperty("processId", Order = 8)] public int ProcessId { get; set; }
+    }
+
+    internal sealed class RuntimeStageMarker
+    {
+        [JsonProperty("schemaVersion", Order = 1)] public int SchemaVersion { get; set; }
+        [JsonProperty("runId", Order = 2)] public string RunId { get; set; }
+        [JsonProperty("scenario", Order = 3)] public string Scenario { get; set; }
+        [JsonProperty("stage", Order = 4)] public string Stage { get; set; }
+        [JsonProperty("loadedModVersion", Order = 5)] public string LoadedModVersion { get; set; }
+        [JsonProperty("timestampUtc", Order = 6)] public string TimestampUtc { get; set; }
+        [JsonProperty("processId", Order = 7)] public int ProcessId { get; set; }
+        [JsonProperty("workingMatchCount", Order = 8)] public int WorkingMatchCount { get; set; }
+        [JsonProperty("baselineMatchCount", Order = 9)] public int BaselineMatchCount { get; set; }
     }
 
     internal sealed class RuntimeObservationTraceWriter
@@ -137,6 +152,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JsonConvert.SerializeObject(marker, Formatting.Indented) + Environment.NewLine);
         }
 
+        internal void WriteStage(string fileName, RuntimeStageMarker marker)
+        {
+            RuntimeTestResultWriter.WriteAtomic(
+                Path.Combine(_directory, fileName),
+                JsonConvert.SerializeObject(marker, Formatting.Indented) + Environment.NewLine);
+        }
+
         private void Flush()
         {
             RuntimeTestResultWriter.WriteAtomic(
@@ -169,6 +191,37 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("events", Order = 15)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
+    internal sealed class SaveCatalogDescriptorEvidence
+    {
+        [JsonProperty("classification", Order = 1)] public string Classification { get; set; }
+        [JsonProperty("displayName", Order = 2)] public string DisplayName { get; set; }
+        [JsonProperty("identityHash", Order = 3)] public string IdentityHash { get; set; }
+        [JsonProperty("safeFields", Order = 4)] public Dictionary<string, string> SafeFields { get; set; }
+    }
+
+    internal sealed class SaveCatalogObservationEvidence
+    {
+        [JsonProperty("catalogManagerType", Order = 1)] public string CatalogManagerType { get; set; }
+        [JsonProperty("collectionType", Order = 2)] public string CollectionType { get; set; }
+        [JsonProperty("descriptorType", Order = 3)] public string DescriptorType { get; set; }
+        [JsonProperty("descriptorCount", Order = 4)] public int DescriptorCount { get; set; }
+        [JsonProperty("workingMatchCount", Order = 5)] public int WorkingMatchCount { get; set; }
+        [JsonProperty("baselineMatchCount", Order = 6)] public int BaselineMatchCount { get; set; }
+        [JsonProperty("catalogComplete", Order = 7)] public bool CatalogComplete { get; set; }
+        [JsonProperty("selectedCorrelates", Order = 8)] public bool SelectedCorrelates { get; set; }
+        [JsonProperty("correlationMethod", Order = 9)] public string CorrelationMethod { get; set; }
+        [JsonProperty("selectedClassification", Order = 10)] public string SelectedClassification { get; set; }
+        [JsonProperty("completionObserved", Order = 11)] public bool CompletionObserved { get; set; }
+        [JsonProperty("stableFingerprint", Order = 12)] public string StableFingerprint { get; set; }
+        [JsonProperty("saveWritingApiObserved", Order = 13)] public bool SaveWritingApiObserved { get; set; }
+        [JsonProperty("hooksRemoved", Order = 14)] public bool HooksRemoved { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 15)] public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("descriptors", Order = 16)] public List<SaveCatalogDescriptorEvidence> Descriptors { get; set; }
+        [JsonProperty("events", Order = 17)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("probeInitiatedSaveWriting", Order = 18)]
+        public bool ProbeInitiatedSaveWriting { get; set; }
+    }
+
     internal static class RuntimeTestResultWriter
     {
         internal static void Write(RuntimeTestResult result, string evidenceDirectory)
@@ -180,10 +233,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string resultPath = Path.Combine(evidenceDirectory, "runtime-result.json");
             string readyPath = Path.Combine(evidenceDirectory, "runtime-ready.json");
             string eventsPath = Path.Combine(evidenceDirectory, "runtime-events.json");
+            string catalogReadyPath = Path.Combine(evidenceDirectory, "runtime-catalog-ready.json");
+            string catalogCapturedPath = Path.Combine(evidenceDirectory, "runtime-catalog-captured.json");
             WriteAtomic(summaryPath, BuildSummary(result));
             result.EvidenceFiles = new List<string> { summaryPath, resultPath };
             if (File.Exists(readyPath)) result.EvidenceFiles.Add(readyPath);
             if (File.Exists(eventsPath)) result.EvidenceFiles.Add(eventsPath);
+            if (File.Exists(catalogReadyPath)) result.EvidenceFiles.Add(catalogReadyPath);
+            if (File.Exists(catalogCapturedPath)) result.EvidenceFiles.Add(catalogCapturedPath);
             WriteAtomic(resultPath, JsonConvert.SerializeObject(result, Formatting.Indented) + Environment.NewLine);
         }
 

@@ -7,12 +7,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
+        internal const string ObserveSaveCatalogAndSelection =
+            "observe-save-catalog-and-selection";
 
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
-                ObserveManualSaveLoad
+                ObserveManualSaveLoad,
+                ObserveSaveCatalogAndSelection
             };
 
         internal static bool IsAllowed(string scenario)

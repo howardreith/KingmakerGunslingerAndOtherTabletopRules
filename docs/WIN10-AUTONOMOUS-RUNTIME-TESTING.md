@@ -188,3 +188,9 @@ status. It uses only Windows and .NET Framework components.
 On Windows 10, Computer Use is not a runtime-correctness mechanism for this
 project because Kingmaker's surface cannot be captured reliably. It must not be
 used to infer PASS or navigate an autonomous scenario.
+# Supervised save catalog
+
+Use `observe-save-catalog-and-selection` only with
+`-ManualInteractionRequired`. The orchestrator validates two atomic markers
+before printing each manual instruction and never sends keyboard or mouse input.
+See `SAVE-CATALOG-OBSERVATION.md`.

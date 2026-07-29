@@ -61,6 +61,11 @@ The supervised, read-only `observe-manual-save-load` procedure is documented in
 `docs/SAVE-LOAD-OBSERVATION.md`. It never authorizes automated save selection or
 save loading; a human must initiate the working-save load through the normal UI.
 
+The two-stage `observe-save-catalog-and-selection` procedure is documented in
+`docs/SAVE-CATALOG-OBSERVATION.md`. A human opens the Load Game screen only
+after Stage A and selects `KMG_AUTOMATION_WORKING` only after Stage B. The probe
+never initiates catalog refresh, selection, loading, input, or save mutation.
+
 Stop rather than guessing when:
 
 - The wrong mod version is loaded.

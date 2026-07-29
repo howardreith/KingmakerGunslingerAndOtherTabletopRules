@@ -1,7 +1,8 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('mod-load-smoke', 'observe-manual-save-load')]
+    [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
+        'observe-save-catalog-and-selection')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -11,6 +12,9 @@ param(
     [int]$TimeoutSeconds = 120,
     [ValidateRange(5, 600)]
     [int]$ObserverStartupTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)][int]$CatalogTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)][int]$SelectionTimeoutSeconds = 300,
+    [ValidateRange(5, 1800)][int]$CompletionTimeoutSeconds = 180,
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
@@ -30,11 +34,13 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
-if ($Scenario -eq 'observe-manual-save-load' -and -not $ManualInteractionRequired) {
-    throw 'observe-manual-save-load requires -ManualInteractionRequired.'
+$manualScenarios = @('observe-manual-save-load',
+    'observe-save-catalog-and-selection')
+if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
+    throw "$Scenario requires -ManualInteractionRequired."
 }
-if ($Scenario -ne 'observe-manual-save-load' -and $ManualInteractionRequired) {
-    throw '-ManualInteractionRequired is valid only for observe-manual-save-load.'
+if ($Scenario -notin $manualScenarios -and $ManualInteractionRequired) {
+    throw '-ManualInteractionRequired is valid only for supervised observations.'
 }
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
@@ -81,7 +87,13 @@ New-Item -ItemType Directory -Path $evidence | Out-Null
 $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
     -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion $ExitAfterCompletion `
     -EvidenceDirectory $evidence -Parameters $Parameters `
-    -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds
+    -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
+    -CatalogTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
+        $CatalogTimeoutSeconds } else { 0 }) `
+    -SelectionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
+        $SelectionTimeoutSeconds } else { 0 }) `
+    -CompletionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
+        $CompletionTimeoutSeconds } else { 0 })
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
@@ -111,7 +123,58 @@ try {
     $orchestration.kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
-    if ($ManualInteractionRequired) {
+    if ($Scenario -eq 'observe-save-catalog-and-selection') {
+        $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+        $stageAPath = Join-Path $evidence 'runtime-catalog-ready.json'
+        $stageADeadline = [DateTime]::UtcNow.AddSeconds(
+            $ObserverStartupTimeoutSeconds + 15)
+        while (-not (Test-Path -LiteralPath $stageAPath -PathType Leaf)) {
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw 'Kingmaker exited before Stage A. stage=catalog-observer-ready'
+            }
+            if ([DateTime]::UtcNow -ge $stageADeadline) {
+                throw 'Stage A timed out. stage=catalog-observer-ready'
+            }
+            Start-Sleep -Milliseconds 250
+        }
+        $stageA = Get-Content -LiteralPath $stageAPath -Raw | ConvertFrom-Json
+        if (-not (Test-KmgRuntimeStageMarker -Marker $stageA `
+            -RunId $request.runId -Scenario $Scenario `
+            -Stage 'catalog-observer-ready' -ExpectedVersion $ExpectedVersion `
+            -ProcessId $process.Id -RequestWrittenUtc $requestWrittenUtc)) {
+            throw 'Stage A marker is stale or mismatched.'
+        }
+        Write-Host 'OPEN THE LOAD GAME SCREEN NOW' -ForegroundColor Yellow
+        Write-Host 'DO NOT SELECT A SAVE YET' -ForegroundColor Red
+
+        $stageBPath = Join-Path $evidence 'runtime-catalog-captured.json'
+        $stageBDeadline = [DateTime]::UtcNow.AddSeconds($CatalogTimeoutSeconds + 15)
+        while (-not (Test-Path -LiteralPath $stageBPath -PathType Leaf)) {
+            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
+                throw 'Observation ended before Stage B. stage=catalog-capture'
+            }
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw 'Kingmaker exited before Stage B. stage=catalog-capture'
+            }
+            if ([DateTime]::UtcNow -ge $stageBDeadline) {
+                throw 'Stage B timed out. stage=catalog-capture'
+            }
+            Start-Sleep -Milliseconds 250
+        }
+        $stageB = Get-Content -LiteralPath $stageBPath -Raw | ConvertFrom-Json
+        if (-not (Test-KmgRuntimeStageMarker -Marker $stageB `
+            -RunId $request.runId -Scenario $Scenario -Stage 'catalog-captured' `
+            -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
+            -RequestWrittenUtc $requestWrittenUtc)) {
+            throw 'Stage B marker is stale or mismatched.'
+        }
+        Write-Host 'SAVE CATALOG CAPTURED' -ForegroundColor Green
+        Write-Host 'SELECT AND LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
+        Write-Host 'DO NOT SELECT KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+    }
+    elseif ($ManualInteractionRequired) {
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds($ObserverStartupTimeoutSeconds + 15)
         $ready = $null
@@ -159,7 +222,13 @@ try {
         Write-Host ''
     }
 
-    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)
+    if ($Scenario -eq 'observe-save-catalog-and-selection') {
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
+    }
+    else {
+        $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)
+    }
     while (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
         $process.Refresh()
         if ($process.HasExited) {

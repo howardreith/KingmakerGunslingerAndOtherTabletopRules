@@ -57,8 +57,11 @@ Assert-True ($orchestrator.Contains(
 Assert-True (-not ($orchestrator -match
     '(SendKeys|mouse_event|keybd_event|WScript\.Shell)')) 'orchestrator-sends-no-input'
 Assert-True ($orchestrator.Contains(
-    "'observe-manual-save-load' -and -not `$ManualInteractionRequired")) `
+    "`$Scenario -in `$manualScenarios -and -not `$ManualInteractionRequired")) `
     'manual-observation-requires-explicit-switch'
+Assert-True ($orchestrator.Contains(
+    "'observe-save-catalog-and-selection'")) `
+    'catalog-observation-requires-explicit-switch'
 Assert-True ($orchestrator.Contains('Start-KmgSteamKingmaker')) `
     'manual-observation-preserves-steam-launch'
 Assert-True (-not $orchestrator.Contains('Kingmaker.exe')) `
@@ -67,4 +70,4 @@ Assert-True (-not $orchestrator.Contains('Kingmaker.exe')) `
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 15'
+Write-Host 'Runtime deployment safety tests passed: 16'

@@ -28,6 +28,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         public int TimeoutSeconds { get; set; }
         [JsonProperty("startupTimeoutSeconds", Required = Required.Always)]
         public int StartupTimeoutSeconds { get; set; }
+        [JsonProperty("catalogTimeoutSeconds", Required = Required.Default)]
+        public int CatalogTimeoutSeconds { get; set; }
+        [JsonProperty("selectionTimeoutSeconds", Required = Required.Default)]
+        public int SelectionTimeoutSeconds { get; set; }
+        [JsonProperty("completionTimeoutSeconds", Required = Required.Default)]
+        public int CompletionTimeoutSeconds { get; set; }
         [JsonProperty("exitAfterCompletion", Required = Required.Always)]
         public bool ExitAfterCompletion { get; set; }
         [JsonProperty("parameters", Required = Required.Always)]
@@ -61,6 +67,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "schemaVersion", "enabled", "runId", "scenario",
             "expectedModVersion", "evidenceDirectory", "timeoutSeconds",
             "startupTimeoutSeconds", "exitAfterCompletion", "parameters"
+            , "catalogTimeoutSeconds", "selectionTimeoutSeconds",
+            "completionTimeoutSeconds"
         };
 
         internal static RuntimeTestRequestDecision TryActivate(
@@ -183,6 +191,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "timeout-invalid";
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
+            bool catalogScenario = request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection;
+            if (catalogScenario && (request.CatalogTimeoutSeconds < 5 ||
+                request.CatalogTimeoutSeconds > 1800))
+                return "catalog-timeout-invalid";
+            if (catalogScenario && (request.SelectionTimeoutSeconds < 5 ||
+                request.SelectionTimeoutSeconds > 1800))
+                return "selection-timeout-invalid";
+            if (catalogScenario && (request.CompletionTimeoutSeconds < 5 ||
+                request.CompletionTimeoutSeconds > 1800))
+                return "completion-timeout-invalid";
+            if (!catalogScenario && (request.CatalogTimeoutSeconds != 0 ||
+                request.SelectionTimeoutSeconds != 0 ||
+                request.CompletionTimeoutSeconds != 0))
+                return "scenario-timeouts-not-allowed";
             if (request.Parameters == null || request.Parameters.Count != 0)
                 return "parameters-not-allowed";
 

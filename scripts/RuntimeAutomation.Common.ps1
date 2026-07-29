@@ -1,7 +1,10 @@
 Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
-$script:KmgRuntimeScenarios = @('mod-load-smoke', 'observe-manual-save-load')
+$script:KmgRuntimeScenarios = @(
+    'mod-load-smoke',
+    'observe-manual-save-load',
+    'observe-save-catalog-and-selection')
 $script:KmgSteamAppId = 640820
 $script:KmgSteamExecutable = 'C:\Program Files (x86)\Steam\steam.exe'
 
@@ -21,6 +24,9 @@ function New-KmgRuntimeRequest {
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
         [int]$StartupTimeoutSeconds = 180,
+        [int]$CatalogTimeoutSeconds = 0,
+        [int]$SelectionTimeoutSeconds = 0,
+        [int]$CompletionTimeoutSeconds = 0,
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
         [hashtable]$Parameters = @{}
@@ -40,6 +46,16 @@ function New-KmgRuntimeRequest {
     if ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
+    $isCatalog = $Scenario -eq 'observe-save-catalog-and-selection'
+    foreach ($stageTimeout in @($CatalogTimeoutSeconds, $SelectionTimeoutSeconds,
+            $CompletionTimeoutSeconds)) {
+        if ($isCatalog -and ($stageTimeout -lt 5 -or $stageTimeout -gt 1800)) {
+            throw 'Catalog scenario stage timeouts must be from 5 through 1800.'
+        }
+        if (-not $isCatalog -and $stageTimeout -ne 0) {
+            throw 'Catalog stage timeouts are valid only for the catalog scenario.'
+        }
+    }
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
         [Guid]::NewGuid().ToString('N')
@@ -52,6 +68,9 @@ function New-KmgRuntimeRequest {
         evidenceDirectory = $evidence
         timeoutSeconds = $TimeoutSeconds
         startupTimeoutSeconds = $StartupTimeoutSeconds
+        catalogTimeoutSeconds = $CatalogTimeoutSeconds
+        selectionTimeoutSeconds = $SelectionTimeoutSeconds
+        completionTimeoutSeconds = $CompletionTimeoutSeconds
         exitAfterCompletion = $ExitAfterCompletion
         parameters = [ordered]@{}
     }
@@ -162,6 +181,30 @@ function Write-KmgUtf8NoBom {
             Remove-Item -LiteralPath $temporary -Force
         }
     }
+}
+
+function Test-KmgRuntimeStageMarker {
+    param(
+        [Parameter(Mandatory = $true)][object]$Marker,
+        [Parameter(Mandatory = $true)][string]$RunId,
+        [Parameter(Mandatory = $true)][string]$Scenario,
+        [Parameter(Mandatory = $true)][string]$Stage,
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [Parameter(Mandatory = $true)][int]$ProcessId,
+        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc
+    )
+    try {
+        $utc = [DateTime]::Parse($Marker.timestampUtc,
+            [Globalization.CultureInfo]::InvariantCulture,
+            [Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
+        return $Marker.schemaVersion -eq 1 -and
+            $Marker.runId -ceq $RunId -and $Marker.scenario -ceq $Scenario -and
+            $Marker.stage -ceq $Stage -and
+            $Marker.loadedModVersion -ceq $ExpectedVersion -and
+            $Marker.processId -eq $ProcessId -and
+            $utc -ge $RequestWrittenUtc.ToUniversalTime()
+    }
+    catch { return $false }
 }
 
 function Test-KmgRuntimeReadyMarker {

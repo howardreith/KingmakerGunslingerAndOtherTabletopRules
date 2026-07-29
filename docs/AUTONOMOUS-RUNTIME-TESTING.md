@@ -73,3 +73,9 @@ failure, identify the exact timestamped backup, preview
 `Restore-Live-Mod.ps1 -BackupDirectory <exact> -WhatIf`, then perform the
 restore only with explicit authority. Preserve the failed package, manifest,
 logs, and screenshots for diagnosis.
+# Save catalog observation
+
+The supervised `observe-save-catalog-and-selection` scenario is the only
+approved mechanism for discovering the runtime save-catalog contract. See
+`SAVE-CATALOG-OBSERVATION.md`. It is observational and does not authorize
+autonomous save loading.

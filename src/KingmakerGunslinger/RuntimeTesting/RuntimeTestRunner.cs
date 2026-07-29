@@ -18,6 +18,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Stopwatch _manualElapsed;
         private bool _completed;
         private ManualSaveLoadObservation _saveLoadObservation;
+        private SaveCatalogSelectionObservation _catalogObservation;
+        private Stopwatch _catalogElapsed;
+        private Stopwatch _selectionElapsed;
+        private Stopwatch _completionElapsed;
+        private bool _catalogMarkerWritten;
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
@@ -95,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return;
             }
             if (_manualElapsed != null &&
+                _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
                 _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
             {
                 _trace.Record("manual-interaction-timeout",
@@ -113,6 +119,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection)
+                {
+                    RunSaveCatalogObservation();
+                    return;
+                }
                 RunManualSaveLoadObservation();
             }
             catch (Exception exception)
@@ -120,6 +132,154 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _trace.Record("runtime-exception", "stage=runtime-update", exception);
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
+        }
+
+        private void RunSaveCatalogObservation()
+        {
+            if (_catalogObservation == null)
+            {
+                _trace.Record("scenario-activated",
+                    RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection);
+                _catalogObservation = new SaveCatalogSelectionObservation(
+                    _context, _elapsed, _request.RunId, _trace.Record);
+                _catalogObservation.Install();
+                return;
+            }
+            _catalogObservation.Poll();
+            if (_catalogObservation.ObservationException != null)
+                throw new InvalidOperationException("Catalog evidence flush failed.",
+                    _catalogObservation.ObservationException);
+            if (_manualElapsed == null && _catalogObservation.Ready)
+            {
+                WriteCatalogStage("runtime-catalog-ready.json", "catalog-observer-ready");
+                _manualElapsed = Stopwatch.StartNew();
+                _catalogElapsed = Stopwatch.StartNew();
+            }
+            if (_catalogElapsed != null && !_catalogObservation.CatalogCaptured &&
+                _catalogElapsed.Elapsed.TotalSeconds >= _request.CatalogTimeoutSeconds)
+            {
+                CompleteCatalog(RuntimeTestStatuses.Timeout, "catalog-capture",
+                    "The Load Game catalog was not captured.");
+                return;
+            }
+            if (_catalogObservation.CatalogCaptured && !_catalogMarkerWritten)
+            {
+                WriteCatalogStage("runtime-catalog-captured.json", "catalog-captured");
+                _catalogMarkerWritten = true;
+                _catalogElapsed.Stop();
+                _selectionElapsed = Stopwatch.StartNew();
+                if (!_catalogObservation.CatalogComplete)
+                {
+                    CompleteCatalog(RuntimeTestStatuses.Ambiguous, "catalog-completeness",
+                        "Catalog enumeration could not be proven complete.");
+                    return;
+                }
+                if (_catalogObservation.WorkingCount == 0)
+                {
+                    CompleteCatalog(RuntimeTestStatuses.Fail, "catalog-working-match",
+                        "No working-save descriptor exists.");
+                    return;
+                }
+                if (_catalogObservation.WorkingCount > 1)
+                {
+                    CompleteCatalog(RuntimeTestStatuses.Ambiguous, "catalog-working-match",
+                        "Multiple working-save descriptors exist.");
+                    return;
+                }
+            }
+            if (_selectionElapsed != null && !_catalogObservation.SelectionObserved &&
+                _selectionElapsed.Elapsed.TotalSeconds >= _request.SelectionTimeoutSeconds)
+            {
+                CompleteCatalog(RuntimeTestStatuses.Timeout, "save-selection",
+                    "No save selection was observed.");
+                return;
+            }
+            if (_catalogObservation.SelectionObserved && _completionElapsed == null)
+            {
+                _selectionElapsed.Stop();
+                _completionElapsed = Stopwatch.StartNew();
+                if (_catalogObservation.SelectedClassification == "baseline" ||
+                    _catalogObservation.SelectedClassification == "other")
+                {
+                    CompleteCatalog(RuntimeTestStatuses.Fail, "selected-descriptor",
+                        "The selected descriptor was not the working save.");
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(_catalogObservation.CorrelationMethod))
+                {
+                    CompleteCatalog(RuntimeTestStatuses.Ambiguous, "descriptor-correlation",
+                        "Selection could not be correlated to the unique catalog entry.");
+                    return;
+                }
+            }
+            if (_completionElapsed != null &&
+                !_catalogObservation.StableFingerprintAvailable &&
+                _completionElapsed.Elapsed.TotalSeconds >= _request.CompletionTimeoutSeconds)
+            {
+                string stage = _catalogObservation.CompletionObserved
+                    ? "post-load-fingerprint" : "load-completion";
+                CompleteCatalog(RuntimeTestStatuses.Timeout, stage,
+                    "Positive load completion and stable fingerprint were not both available.");
+                return;
+            }
+            if (_catalogObservation.WriteObserved)
+            {
+                CompleteCatalog(RuntimeTestStatuses.Fail, "save-write-observation",
+                    "A save-writing or migration API was observed.");
+                return;
+            }
+            if (_catalogObservation.StableFingerprintAvailable)
+                CompleteCatalog(RuntimeTestStatuses.Pass, "", "");
+        }
+
+        private void WriteCatalogStage(string fileName, string stage)
+        {
+            _trace.WriteStage(fileName, new RuntimeStageMarker
+            {
+                SchemaVersion = 1, RunId = _request.RunId,
+                Scenario = _request.Scenario, Stage = stage,
+                LoadedModVersion = _context.ModEntry.Info.Version,
+                TimestampUtc = DateTime.UtcNow.ToString("o"),
+                ProcessId = Process.GetCurrentProcess().Id,
+                WorkingMatchCount = _catalogObservation.WorkingCount,
+                BaselineMatchCount = _catalogObservation.BaselineCount
+            });
+            _trace.Record(stage, "atomic stage marker committed");
+        }
+
+        private void CompleteCatalog(string status, string stage, string warning)
+        {
+            SaveCatalogObservationEvidence evidence = _catalogObservation.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("unique-working-descriptor", "1",
+                    evidence.WorkingMatchCount.ToString(),
+                    evidence.WorkingMatchCount == 1, "captured SaveManager catalog"),
+                Assertion("selected-working-descriptor", "working",
+                    evidence.SelectedClassification,
+                    evidence.SelectedClassification == "working" &&
+                        evidence.SelectedCorrelates,
+                    "catalog-to-selection correlation"),
+                Assertion("load-completion", "callback and stable fingerprint",
+                    "callback=" + evidence.CompletionObserved +
+                        "; fingerprint=" + !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    evidence.CompletionObserved &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "after-load callback and two stable game-thread samples"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved, "request-scoped lifecycle hooks"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.SaveCatalogObservation = evidence;
+            if (!string.IsNullOrWhiteSpace(stage))
+                result.Diagnostics.Add("timeoutStage=" + stage);
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void RunManualSaveLoadObservation()
@@ -253,6 +413,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();
+            if (_catalogObservation != null && result.SaveCatalogObservation == null)
+                result.SaveCatalogObservation = _catalogObservation.Stop();
             _completed = true;
             _context.ModEntry.OnUpdate -= OnUpdate;
             _elapsed.Stop();
