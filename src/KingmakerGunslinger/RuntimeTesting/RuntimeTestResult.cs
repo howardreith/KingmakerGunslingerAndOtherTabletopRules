@@ -59,25 +59,48 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("saveCatalogProviderObservation", Order = 21,
             NullValueHandling = NullValueHandling.Ignore)]
         public SaveCatalogProviderObservationEvidence SaveCatalogProviderObservation { get; set; }
-        [JsonProperty("loadGameNavigationObservation", Order = 22,
+        [JsonProperty("loadGameButtonActionObservation", Order = 22,
             NullValueHandling = NullValueHandling.Ignore)]
-        public LoadGameNavigationEvidence LoadGameNavigationObservation { get; set; }
+        public LoadGameButtonActionEvidence LoadGameButtonActionObservation { get; set; }
     }
 
-    internal sealed class LoadGameNavigationEvidence
+    internal sealed class LoadGameButtonActionEvidence
     {
-        [JsonProperty("navigationProven", Order = 1)] public bool NavigationProven { get; set; }
-        [JsonProperty("declaringType", Order = 2)] public string DeclaringType { get; set; }
-        [JsonProperty("methodSignature", Order = 3)] public string MethodSignature { get; set; }
-        [JsonProperty("receiverType", Order = 4)] public string ReceiverType { get; set; }
-        [JsonProperty("argumentTypes", Order = 5)] public List<string> ArgumentTypes { get; set; }
-        [JsonProperty("managedThreadId", Order = 6)] public int ManagedThreadId { get; set; }
-        [JsonProperty("catalogInitializeSignature", Order = 7)] public string CatalogInitializeSignature { get; set; }
-        [JsonProperty("catalogObserved", Order = 8)] public bool CatalogObserved { get; set; }
-        [JsonProperty("allCallbacksOnGameThread", Order = 9)] public bool AllCallbacksOnGameThread { get; set; }
-        [JsonProperty("hooksRemoved", Order = 10)] public bool HooksRemoved { get; set; }
-        [JsonProperty("probeInvokedNavigation", Order = 11)] public bool ProbeInvokedNavigation { get; set; }
-        [JsonProperty("events", Order = 12)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("actionProven", Order = 1)] public bool ActionProven { get; set; }
+        [JsonProperty("handlerSignature", Order = 2)] public string HandlerSignature { get; set; }
+        [JsonProperty("handlerInvocationCount", Order = 3)] public int HandlerInvocationCount { get; set; }
+        [JsonProperty("candidates", Order = 4)] public List<LoadGameButtonCandidateEvidence> Candidates { get; set; }
+        [JsonProperty("catalogInitializeSignature", Order = 5)] public string CatalogInitializeSignature { get; set; }
+        [JsonProperty("catalogObservedAfterAction", Order = 6)] public bool CatalogObservedAfterAction { get; set; }
+        [JsonProperty("gameThreadManagedId", Order = 7)] public int GameThreadManagedId { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 8)] public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("hooksRemoved", Order = 9)] public bool HooksRemoved { get; set; }
+        [JsonProperty("probeInvokedAction", Order = 10)] public bool ProbeInvokedAction { get; set; }
+        [JsonProperty("events", Order = 11)] public List<SaveLoadObservationEvent> Events { get; set; }
+    }
+
+    internal sealed class LoadGameButtonCandidateEvidence
+    {
+        [JsonProperty("componentType", Order = 1)] public string ComponentType { get; set; }
+        [JsonProperty("gameObjectPath", Order = 2)] public string GameObjectPath { get; set; }
+        [JsonProperty("activeSelf", Order = 3)] public bool ActiveSelf { get; set; }
+        [JsonProperty("activeInHierarchy", Order = 4)] public bool ActiveInHierarchy { get; set; }
+        [JsonProperty("interactable", Order = 5)] public bool Interactable { get; set; }
+        [JsonProperty("siblingIndex", Order = 6)] public int SiblingIndex { get; set; }
+        [JsonProperty("siblingCount", Order = 7)] public int SiblingCount { get; set; }
+        [JsonProperty("ownerType", Order = 8)] public string OwnerType { get; set; }
+        [JsonProperty("mainMenuRootName", Order = 9)] public string MainMenuRootName { get; set; }
+        [JsonProperty("mainMenuRootPath", Order = 10)] public string MainMenuRootPath { get; set; }
+        [JsonProperty("componentIdentities", Order = 11)] public List<string> ComponentIdentities { get; set; }
+        [JsonProperty("safeLabelIdentities", Order = 12)] public List<string> SafeLabelIdentities { get; set; }
+        [JsonProperty("listeners", Order = 13)] public List<LoadGameListenerEvidence> Listeners { get; set; }
+    }
+
+    internal sealed class LoadGameListenerEvidence
+    {
+        [JsonProperty("kind", Order = 1)] public string Kind { get; set; }
+        [JsonProperty("targetType", Order = 2)] public string TargetType { get; set; }
+        [JsonProperty("methodName", Order = 3)] public string MethodName { get; set; }
     }
 
     internal sealed class SaveLoadObservationEvent

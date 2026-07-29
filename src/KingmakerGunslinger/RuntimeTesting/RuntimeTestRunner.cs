@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private ManualSaveLoadObservation _saveLoadObservation;
         private SaveCatalogSelectionObservation _catalogObservation;
         private SaveCatalogProviderObservation _catalogProviderObservation;
-        private LoadGameNavigationObservation _navigationObservation;
+        private LoadGameButtonActionObservation _buttonActionObservation;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_manualElapsed != null &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
-                _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameNavigation &&
+                _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                 _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
             {
                 _trace.Record("manual-interaction-timeout",
@@ -136,9 +136,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.ObserveLoadGameNavigation)
+                    RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction)
                 {
-                    RunLoadGameNavigationObservation();
+                    RunLoadGameButtonActionObservation();
                     return;
                 }
                 RunManualSaveLoadObservation();
@@ -150,25 +150,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private void RunLoadGameNavigationObservation()
+        private void RunLoadGameButtonActionObservation()
         {
-            if (_navigationObservation == null)
+            if (_buttonActionObservation == null)
             {
                 _trace.Record("scenario-activated",
-                    RuntimeTestScenarioCatalog.ObserveLoadGameNavigation);
-                _navigationObservation = new LoadGameNavigationObservation(
+                    RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction);
+                _buttonActionObservation = new LoadGameButtonActionObservation(
                     _context, _elapsed, _request.RunId, _trace.Record);
-                _navigationObservation.Install();
+                _buttonActionObservation.Install();
                 return;
             }
-            if (_navigationObservation.ObservationException != null)
+            if (_buttonActionObservation.ObservationException != null)
                 throw new InvalidOperationException(
-                    "Incremental navigation evidence could not be flushed.",
-                    _navigationObservation.ObservationException);
-            if (_manualElapsed == null && _navigationObservation.Ready)
+                    "Incremental button-action evidence could not be flushed.",
+                    _buttonActionObservation.ObservationException);
+            if (_manualElapsed == null && _buttonActionObservation.Ready)
             {
                 _trace.Record("observer-ready",
-                    "non-initiating Load Game navigation hooks active");
+                    "non-initiating exact Load Game action hooks active");
                 _trace.WriteReady(new RuntimeReadyMarker
                 {
                     SchemaVersion = 1, RunId = _request.RunId,
@@ -177,47 +177,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeIdentity = _context.Assembly.FullName,
                     ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
                     InstalledObservationHookIdentifiers =
-                        _navigationObservation.HookIdentifiers,
+                        _buttonActionObservation.HookIdentifiers,
                     ProcessId = Process.GetCurrentProcess().Id
                 });
                 _manualElapsed = Stopwatch.StartNew();
                 _catalogElapsed = Stopwatch.StartNew();
             }
-            if (_catalogElapsed != null && !_navigationObservation.CatalogObserved &&
+            if (_catalogElapsed != null && !_buttonActionObservation.CatalogObserved &&
                 _catalogElapsed.Elapsed.TotalSeconds >= _request.CatalogTimeoutSeconds)
             {
-                CompleteNavigation(RuntimeTestStatuses.Timeout,
-                    "Load Game navigation was not observed.", "load-game-navigation");
+                CompleteButtonAction(RuntimeTestStatuses.Timeout,
+                    "The exact Load Game action was not correlated with catalog initialization.",
+                    "load-game-button-action");
                 return;
             }
-            if (!_navigationObservation.CatalogObserved) return;
-            CompleteNavigation(_navigationObservation.NavigationProven
+            if (!_buttonActionObservation.CatalogObserved) return;
+            CompleteButtonAction(_buttonActionObservation.ActionProven
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Ambiguous,
-                _navigationObservation.NavigationProven ? "" :
-                    "The catalog boundary was observed without one active navigation caller.");
+                _buttonActionObservation.ActionProven ? "" :
+                    "Exactly one active, interactable Load Game button/event was not proven.");
         }
 
-        private void CompleteNavigation(string status, string warning,
+        private void CompleteButtonAction(string status, string warning,
             string timeoutStage = "")
         {
-            LoadGameNavigationEvidence evidence = _navigationObservation.Stop();
+            LoadGameButtonActionEvidence evidence = _buttonActionObservation.Stop();
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("navigation-method-proven", "exact active caller",
-                    evidence.MethodSignature, evidence.NavigationProven,
-                    evidence.DeclaringType),
-                Assertion("catalog-transition", "ListOfSaves.Initialize(List<SaveInfo>,Boolean)",
-                    evidence.CatalogInitializeSignature, evidence.CatalogObserved,
+                Assertion("exact-button-action-proven",
+                    "one active interactable button bound to OnButtonLoadGame",
+                    "candidates=" + evidence.Candidates.Count +
+                        ";invocations=" + evidence.HandlerInvocationCount,
+                    evidence.ActionProven, evidence.HandlerSignature),
+                Assertion("catalog-transition",
+                    "ListOfSaves.Initialize(List<SaveInfo>,Boolean) after action",
+                    evidence.CatalogInitializeSignature,
+                    evidence.CatalogObservedAfterAction,
                     "ordered in-process call observation"),
                 Assertion("game-thread-only", "all callbacks on game thread",
                     evidence.AllCallbacksOnGameThread ? "confirmed" : "contradicted",
                     evidence.AllCallbacksOnGameThread, "managed thread identity"),
                 Assertion("observer-non-initiating", "false",
-                    evidence.ProbeInvokedNavigation.ToString(),
-                    !evidence.ProbeInvokedNavigation, "Harmony observation only")
+                    evidence.ProbeInvokedAction.ToString(),
+                    !evidence.ProbeInvokedAction, "Harmony observation only")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
-            result.LoadGameNavigationObservation = evidence;
+            result.LoadGameButtonActionObservation = evidence;
             if (!string.IsNullOrWhiteSpace(timeoutStage))
                 result.Diagnostics.Add("timeoutStage=" + timeoutStage);
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);

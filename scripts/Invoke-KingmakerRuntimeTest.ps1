@@ -4,7 +4,7 @@ param(
     [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
         'observe-save-catalog-and-selection',
         'observe-save-catalog-provider',
-        'observe-load-game-navigation')]
+        'observe-load-game-button-action')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -39,7 +39,7 @@ $ErrorActionPreference = 'Stop'
 $manualScenarios = @('observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
-    'observe-load-game-navigation')
+    'observe-load-game-button-action')
 if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
     throw "$Scenario requires -ManualInteractionRequired."
 }
@@ -94,7 +94,7 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $(if ($Scenario -in @(
         'observe-save-catalog-and-selection', 'observe-save-catalog-provider',
-        'observe-load-game-navigation')) {
+        'observe-load-game-button-action')) {
         $CatalogTimeoutSeconds } else { 0 }) `
     -SelectionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
         $SelectionTimeoutSeconds } else { 0 }) `
@@ -130,7 +130,7 @@ try {
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
     if ($Scenario -in @('observe-save-catalog-provider',
-        'observe-load-game-navigation')) {
+        'observe-load-game-button-action')) {
         $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds(
@@ -272,7 +272,7 @@ try {
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
     }
     elseif ($Scenario -in @('observe-save-catalog-provider',
-        'observe-load-game-navigation')) {
+        'observe-load-game-button-action')) {
         $deadline = [DateTime]::UtcNow.AddSeconds($CatalogTimeoutSeconds + 15)
     }
     else {

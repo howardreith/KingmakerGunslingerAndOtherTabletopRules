@@ -6,7 +6,7 @@ $script:KmgRuntimeScenarios = @(
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
-    'observe-load-game-navigation')
+    'observe-load-game-button-action')
 $script:KmgSteamAppId = 640820
 $script:KmgSteamExecutable = 'C:\Program Files (x86)\Steam\steam.exe'
 
@@ -51,7 +51,7 @@ function New-KmgRuntimeRequest {
     $isCatalog = $Scenario -in @(
         'observe-save-catalog-and-selection',
         'observe-save-catalog-provider',
-        'observe-load-game-navigation')
+        'observe-load-game-button-action')
     $isSelectionCatalog = $Scenario -eq 'observe-save-catalog-and-selection'
     if ($isCatalog -and
         ($CatalogTimeoutSeconds -lt 5 -or $CatalogTimeoutSeconds -gt 1800)) {

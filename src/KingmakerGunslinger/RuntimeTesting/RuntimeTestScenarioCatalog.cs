@@ -11,8 +11,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-save-catalog-and-selection";
         internal const string ObserveSaveCatalogProvider =
             "observe-save-catalog-provider";
-        internal const string ObserveLoadGameNavigation =
-            "observe-load-game-navigation";
+        internal const string ObserveLoadGameButtonAction =
+            "observe-load-game-button-action";
 
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,
-                ObserveLoadGameNavigation
+                ObserveLoadGameButtonAction
             };
 
         internal static bool IsAllowed(string scenario)
