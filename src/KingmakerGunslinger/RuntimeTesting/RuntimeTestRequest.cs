@@ -193,7 +193,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "startup-timeout-invalid";
             bool catalogScenario = request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection ||
-                request.Scenario == RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider;
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveLoadGameNavigation;
             if (catalogScenario && (request.CatalogTimeoutSeconds < 5 ||
                 request.CatalogTimeoutSeconds > 1800))
                 return "catalog-timeout-invalid";

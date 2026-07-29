@@ -293,6 +293,7 @@
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
+    <Compile Include="RuntimeTesting\LoadGameNavigationObservation.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
         'observe-save-catalog-and-selection',
-        'observe-save-catalog-provider')]
+        'observe-save-catalog-provider',
+        'observe-load-game-navigation')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -37,7 +38,8 @@ $ErrorActionPreference = 'Stop'
 
 $manualScenarios = @('observe-manual-save-load',
     'observe-save-catalog-and-selection',
-    'observe-save-catalog-provider')
+    'observe-save-catalog-provider',
+    'observe-load-game-navigation')
 if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
     throw "$Scenario requires -ManualInteractionRequired."
 }
@@ -91,7 +93,8 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -EvidenceDirectory $evidence -Parameters $Parameters `
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'observe-save-catalog-provider')) {
+        'observe-save-catalog-and-selection', 'observe-save-catalog-provider',
+        'observe-load-game-navigation')) {
         $CatalogTimeoutSeconds } else { 0 }) `
     -SelectionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
         $SelectionTimeoutSeconds } else { 0 }) `
@@ -126,7 +129,8 @@ try {
     $orchestration.kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
-    if ($Scenario -eq 'observe-save-catalog-provider') {
+    if ($Scenario -in @('observe-save-catalog-provider',
+        'observe-load-game-navigation')) {
         $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds(
@@ -160,7 +164,7 @@ try {
         $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
-        $providerInstruction = 'OPEN ' + 'THE LOAD GAME SCREEN NOW'
+        $providerInstruction = 'CLICK ' + 'LOAD GAME ONCE NOW'
         Write-Host $providerInstruction -ForegroundColor Yellow
         Write-Host 'DO NOT SELECT OR LOAD A SAVE' -ForegroundColor Red
     }
@@ -267,7 +271,8 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
     }
-    elseif ($Scenario -eq 'observe-save-catalog-provider') {
+    elseif ($Scenario -in @('observe-save-catalog-provider',
+        'observe-load-game-navigation')) {
         $deadline = [DateTime]::UtcNow.AddSeconds($CatalogTimeoutSeconds + 15)
     }
     else {

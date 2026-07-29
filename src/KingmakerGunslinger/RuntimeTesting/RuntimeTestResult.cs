@@ -59,6 +59,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("saveCatalogProviderObservation", Order = 21,
             NullValueHandling = NullValueHandling.Ignore)]
         public SaveCatalogProviderObservationEvidence SaveCatalogProviderObservation { get; set; }
+        [JsonProperty("loadGameNavigationObservation", Order = 22,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public LoadGameNavigationEvidence LoadGameNavigationObservation { get; set; }
+    }
+
+    internal sealed class LoadGameNavigationEvidence
+    {
+        [JsonProperty("navigationProven", Order = 1)] public bool NavigationProven { get; set; }
+        [JsonProperty("declaringType", Order = 2)] public string DeclaringType { get; set; }
+        [JsonProperty("methodSignature", Order = 3)] public string MethodSignature { get; set; }
+        [JsonProperty("receiverType", Order = 4)] public string ReceiverType { get; set; }
+        [JsonProperty("argumentTypes", Order = 5)] public List<string> ArgumentTypes { get; set; }
+        [JsonProperty("managedThreadId", Order = 6)] public int ManagedThreadId { get; set; }
+        [JsonProperty("catalogInitializeSignature", Order = 7)] public string CatalogInitializeSignature { get; set; }
+        [JsonProperty("catalogObserved", Order = 8)] public bool CatalogObserved { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 9)] public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("hooksRemoved", Order = 10)] public bool HooksRemoved { get; set; }
+        [JsonProperty("probeInvokedNavigation", Order = 11)] public bool ProbeInvokedNavigation { get; set; }
+        [JsonProperty("events", Order = 12)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
     internal sealed class SaveLoadObservationEvent

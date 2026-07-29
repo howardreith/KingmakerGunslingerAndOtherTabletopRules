@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private ManualSaveLoadObservation _saveLoadObservation;
         private SaveCatalogSelectionObservation _catalogObservation;
         private SaveCatalogProviderObservation _catalogProviderObservation;
+        private LoadGameNavigationObservation _navigationObservation;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -103,6 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_manualElapsed != null &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
+                _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameNavigation &&
                 _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
             {
                 _trace.Record("manual-interaction-timeout",
@@ -133,6 +135,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSaveCatalogProviderObservation();
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveLoadGameNavigation)
+                {
+                    RunLoadGameNavigationObservation();
+                    return;
+                }
                 RunManualSaveLoadObservation();
             }
             catch (Exception exception)
@@ -140,6 +148,80 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _trace.Record("runtime-exception", "stage=runtime-update", exception);
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
+        }
+
+        private void RunLoadGameNavigationObservation()
+        {
+            if (_navigationObservation == null)
+            {
+                _trace.Record("scenario-activated",
+                    RuntimeTestScenarioCatalog.ObserveLoadGameNavigation);
+                _navigationObservation = new LoadGameNavigationObservation(
+                    _context, _elapsed, _request.RunId, _trace.Record);
+                _navigationObservation.Install();
+                return;
+            }
+            if (_navigationObservation.ObservationException != null)
+                throw new InvalidOperationException(
+                    "Incremental navigation evidence could not be flushed.",
+                    _navigationObservation.ObservationException);
+            if (_manualElapsed == null && _navigationObservation.Ready)
+            {
+                _trace.Record("observer-ready",
+                    "non-initiating Load Game navigation hooks active");
+                _trace.WriteReady(new RuntimeReadyMarker
+                {
+                    SchemaVersion = 1, RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = _context.Assembly.FullName,
+                    ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
+                    InstalledObservationHookIdentifiers =
+                        _navigationObservation.HookIdentifiers,
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+                _manualElapsed = Stopwatch.StartNew();
+                _catalogElapsed = Stopwatch.StartNew();
+            }
+            if (_catalogElapsed != null && !_navigationObservation.CatalogObserved &&
+                _catalogElapsed.Elapsed.TotalSeconds >= _request.CatalogTimeoutSeconds)
+            {
+                CompleteNavigation(RuntimeTestStatuses.Timeout,
+                    "Load Game navigation was not observed.", "load-game-navigation");
+                return;
+            }
+            if (!_navigationObservation.CatalogObserved) return;
+            CompleteNavigation(_navigationObservation.NavigationProven
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Ambiguous,
+                _navigationObservation.NavigationProven ? "" :
+                    "The catalog boundary was observed without one active navigation caller.");
+        }
+
+        private void CompleteNavigation(string status, string warning,
+            string timeoutStage = "")
+        {
+            LoadGameNavigationEvidence evidence = _navigationObservation.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("navigation-method-proven", "exact active caller",
+                    evidence.MethodSignature, evidence.NavigationProven,
+                    evidence.DeclaringType),
+                Assertion("catalog-transition", "ListOfSaves.Initialize(List<SaveInfo>,Boolean)",
+                    evidence.CatalogInitializeSignature, evidence.CatalogObserved,
+                    "ordered in-process call observation"),
+                Assertion("game-thread-only", "all callbacks on game thread",
+                    evidence.AllCallbacksOnGameThread ? "confirmed" : "contradicted",
+                    evidence.AllCallbacksOnGameThread, "managed thread identity"),
+                Assertion("observer-non-initiating", "false",
+                    evidence.ProbeInvokedNavigation.ToString(),
+                    !evidence.ProbeInvokedNavigation, "Harmony observation only")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.LoadGameNavigationObservation = evidence;
+            if (!string.IsNullOrWhiteSpace(timeoutStage))
+                result.Diagnostics.Add("timeoutStage=" + timeoutStage);
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void RunSaveCatalogProviderObservation()
