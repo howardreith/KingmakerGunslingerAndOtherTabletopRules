@@ -25,8 +25,11 @@ location from the lab workspace and never copies ignored machine configuration
 into a worktree.
 
 `Invoke-KingmakerRuntimeTest.ps1` is the guarded Windows 10 orchestration entry
-point. Its only current scenario is `mod-load-smoke`; use `-WhatIf` for
-source-only qualification. `Test-RuntimeRequest.ps1`,
+point. It includes guarded smoke tests and explicitly supervised observation
+scenarios; use `-WhatIf` for source-only qualification.
+`observe-save-catalog-provider` requires `-ManualInteractionRequired`, waits
+for hook readiness, and permits only the human opening the Load Game screen.
+`Test-RuntimeRequest.ps1`,
 `Test-RuntimeResult.ps1`, and `Test-RuntimeRunner.ps1` validate the guarded
 protocol without launching Kingmaker. `Capture-WindowEvidence.ps1` optionally
 captures one explicit process-owned window with GDI and returns warning-only

@@ -192,19 +192,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
             bool catalogScenario = request.Scenario ==
-                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection;
+                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider;
             if (catalogScenario && (request.CatalogTimeoutSeconds < 5 ||
                 request.CatalogTimeoutSeconds > 1800))
                 return "catalog-timeout-invalid";
-            if (catalogScenario && (request.SelectionTimeoutSeconds < 5 ||
+            bool selectionScenario = request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection;
+            if (selectionScenario && (request.SelectionTimeoutSeconds < 5 ||
                 request.SelectionTimeoutSeconds > 1800))
                 return "selection-timeout-invalid";
-            if (catalogScenario && (request.CompletionTimeoutSeconds < 5 ||
+            if (selectionScenario && (request.CompletionTimeoutSeconds < 5 ||
                 request.CompletionTimeoutSeconds > 1800))
                 return "completion-timeout-invalid";
-            if (!catalogScenario && (request.CatalogTimeoutSeconds != 0 ||
-                request.SelectionTimeoutSeconds != 0 ||
+            if (!selectionScenario && (request.SelectionTimeoutSeconds != 0 ||
                 request.CompletionTimeoutSeconds != 0))
+                return "scenario-timeouts-not-allowed";
+            if (!catalogScenario && request.CatalogTimeoutSeconds != 0)
                 return "scenario-timeouts-not-allowed";
             if (request.Parameters == null || request.Parameters.Count != 0)
                 return "parameters-not-allowed";

@@ -66,6 +66,11 @@ The two-stage `observe-save-catalog-and-selection` procedure is documented in
 after Stage A and selects `KMG_AUTOMATION_WORKING` only after Stage B. The probe
 never initiates catalog refresh, selection, loading, input, or save mutation.
 
+The supervised `observe-save-catalog-provider` procedure is documented in
+`docs/SAVE-CATALOG-PROVIDER-OBSERVATION.md`. A human opens the Load Game screen
+only after readiness; the probe never invokes a provider, selects or loads a
+save, sends input, or initiates save mutation.
+
 Stop rather than guessing when:
 
 - The wrong mod version is loaded.

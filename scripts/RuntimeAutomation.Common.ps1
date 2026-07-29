@@ -4,7 +4,8 @@ $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence
 $script:KmgRuntimeScenarios = @(
     'mod-load-smoke',
     'observe-manual-save-load',
-    'observe-save-catalog-and-selection')
+    'observe-save-catalog-and-selection',
+    'observe-save-catalog-provider')
 $script:KmgSteamAppId = 640820
 $script:KmgSteamExecutable = 'C:\Program Files (x86)\Steam\steam.exe'
 
@@ -46,15 +47,25 @@ function New-KmgRuntimeRequest {
     if ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
-    $isCatalog = $Scenario -eq 'observe-save-catalog-and-selection'
-    foreach ($stageTimeout in @($CatalogTimeoutSeconds, $SelectionTimeoutSeconds,
-            $CompletionTimeoutSeconds)) {
-        if ($isCatalog -and ($stageTimeout -lt 5 -or $stageTimeout -gt 1800)) {
-            throw 'Catalog scenario stage timeouts must be from 5 through 1800.'
-        }
-        if (-not $isCatalog -and $stageTimeout -ne 0) {
-            throw 'Catalog stage timeouts are valid only for the catalog scenario.'
-        }
+    $isCatalog = $Scenario -in @(
+        'observe-save-catalog-and-selection',
+        'observe-save-catalog-provider')
+    $isSelectionCatalog = $Scenario -eq 'observe-save-catalog-and-selection'
+    if ($isCatalog -and
+        ($CatalogTimeoutSeconds -lt 5 -or $CatalogTimeoutSeconds -gt 1800)) {
+        throw 'Catalog scenario timeout must be from 5 through 1800.'
+    }
+    if (-not $isCatalog -and $CatalogTimeoutSeconds -ne 0) {
+        throw 'Catalog timeout is valid only for a catalog scenario.'
+    }
+    if ($isSelectionCatalog -and
+        ($SelectionTimeoutSeconds -lt 5 -or $SelectionTimeoutSeconds -gt 1800 -or
+         $CompletionTimeoutSeconds -lt 5 -or $CompletionTimeoutSeconds -gt 1800)) {
+        throw 'Catalog selection stage timeouts must be from 5 through 1800.'
+    }
+    if (-not $isSelectionCatalog -and
+        ($SelectionTimeoutSeconds -ne 0 -or $CompletionTimeoutSeconds -ne 0)) {
+        throw 'Selection and completion timeouts are valid only for the selection scenario.'
     }
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +

@@ -194,3 +194,9 @@ Use `observe-save-catalog-and-selection` only with
 `-ManualInteractionRequired`. The orchestrator validates two atomic markers
 before printing each manual instruction and never sends keyboard or mouse input.
 See `SAVE-CATALOG-OBSERVATION.md`.
+
+Use `observe-save-catalog-provider` only with `-ManualInteractionRequired`.
+After validating the atomic in-game ready marker, the orchestrator instructs
+the human to open Load Game and explicitly forbids selection or loading. The
+probe never invokes a provider or sends input. See
+`SAVE-CATALOG-PROVIDER-OBSERVATION.md`.

@@ -66,6 +66,11 @@ The `observe-manual-save-load` scenario is deliberately supervised rather than
 autonomous. Follow `SAVE-LOAD-OBSERVATION.md`; the human selects
 `KMG_AUTOMATION_WORKING`, and the orchestrator sends no keyboard or mouse input.
 
+`observe-save-catalog-provider` is also supervised. Follow
+`SAVE-CATALOG-PROVIDER-OBSERVATION.md`; after readiness the human opens the
+normal Load Game screen once but never selects or loads a save. The probe
+observes the upstream `List<SaveInfo>` provider and never invokes it.
+
 ## Emergency recovery
 
 Exit Kingmaker normally. Do not retry mutation or delete files. Record the

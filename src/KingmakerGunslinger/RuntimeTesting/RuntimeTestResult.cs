@@ -56,6 +56,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         public SaveLoadObservationEvidence SaveLoadObservation { get; set; }
         [JsonProperty("saveCatalogObservation", Order = 20, NullValueHandling = NullValueHandling.Ignore)]
         public SaveCatalogObservationEvidence SaveCatalogObservation { get; set; }
+        [JsonProperty("saveCatalogProviderObservation", Order = 21,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public SaveCatalogProviderObservationEvidence SaveCatalogProviderObservation { get; set; }
     }
 
     internal sealed class SaveLoadObservationEvent
@@ -222,6 +225,49 @@ namespace KingmakerGunslinger.RuntimeTesting
         public bool ProbeInitiatedSaveWriting { get; set; }
     }
 
+    internal sealed class CatalogProviderCandidateEvidence
+    {
+        [JsonProperty("declaringType", Order = 1)] public string DeclaringType { get; set; }
+        [JsonProperty("methodSignature", Order = 2)] public string MethodSignature { get; set; }
+        [JsonProperty("sourceKind", Order = 3)] public string SourceKind { get; set; }
+        [JsonProperty("correlation", Order = 4)] public string Correlation { get; set; }
+        [JsonProperty("canInvokeWithoutUi", Order = 5)] public bool CanInvokeWithoutUi { get; set; }
+        [JsonProperty("appearsReadOnly", Order = 6)] public bool AppearsReadOnly { get; set; }
+    }
+
+    internal sealed class CatalogOwnerMemberEvidence
+    {
+        [JsonProperty("ownerType", Order = 1)] public string OwnerType { get; set; }
+        [JsonProperty("memberName", Order = 2)] public string MemberName { get; set; }
+        [JsonProperty("memberType", Order = 3)] public string MemberType { get; set; }
+        [JsonProperty("memberKind", Order = 4)] public string MemberKind { get; set; }
+    }
+
+    internal sealed class SaveCatalogProviderObservationEvidence
+    {
+        [JsonProperty("initializeSignature", Order = 1)] public string InitializeSignature { get; set; }
+        [JsonProperty("collectionType", Order = 2)] public string CollectionType { get; set; }
+        [JsonProperty("descriptorType", Order = 3)] public string DescriptorType { get; set; }
+        [JsonProperty("descriptorCount", Order = 4)] public int DescriptorCount { get; set; }
+        [JsonProperty("completeListObserved", Order = 5)] public bool CompleteListObserved { get; set; }
+        [JsonProperty("receiverRuntimeType", Order = 6)] public string ReceiverRuntimeType { get; set; }
+        [JsonProperty("immediateCaller", Order = 7)] public string ImmediateCaller { get; set; }
+        [JsonProperty("callerChain", Order = 8)] public List<string> CallerChain { get; set; }
+        [JsonProperty("ownerMembers", Order = 9)] public List<CatalogOwnerMemberEvidence> OwnerMembers { get; set; }
+        [JsonProperty("providerCandidates", Order = 10)]
+        public List<CatalogProviderCandidateEvidence> ProviderCandidates { get; set; }
+        [JsonProperty("sourceProven", Order = 11)] public bool SourceProven { get; set; }
+        [JsonProperty("sourceKind", Order = 12)] public string SourceKind { get; set; }
+        [JsonProperty("allCallbacksOnGameThread", Order = 13)]
+        public bool AllCallbacksOnGameThread { get; set; }
+        [JsonProperty("lifecycleState", Order = 14)] public string LifecycleState { get; set; }
+        [JsonProperty("providerInvokedByProbe", Order = 15)] public bool ProviderInvokedByProbe { get; set; }
+        [JsonProperty("saveLoadObserved", Order = 16)] public bool SaveLoadObserved { get; set; }
+        [JsonProperty("saveWritingObserved", Order = 17)] public bool SaveWritingObserved { get; set; }
+        [JsonProperty("hooksRemoved", Order = 18)] public bool HooksRemoved { get; set; }
+        [JsonProperty("events", Order = 19)] public List<SaveLoadObservationEvent> Events { get; set; }
+    }
+
     internal static class RuntimeTestResultWriter
     {
         internal static void Write(RuntimeTestResult result, string evidenceDirectory)
@@ -235,12 +281,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             string eventsPath = Path.Combine(evidenceDirectory, "runtime-events.json");
             string catalogReadyPath = Path.Combine(evidenceDirectory, "runtime-catalog-ready.json");
             string catalogCapturedPath = Path.Combine(evidenceDirectory, "runtime-catalog-captured.json");
+            string providerCapturedPath = Path.Combine(
+                evidenceDirectory, "runtime-catalog-provider-captured.json");
             WriteAtomic(summaryPath, BuildSummary(result));
             result.EvidenceFiles = new List<string> { summaryPath, resultPath };
             if (File.Exists(readyPath)) result.EvidenceFiles.Add(readyPath);
             if (File.Exists(eventsPath)) result.EvidenceFiles.Add(eventsPath);
             if (File.Exists(catalogReadyPath)) result.EvidenceFiles.Add(catalogReadyPath);
             if (File.Exists(catalogCapturedPath)) result.EvidenceFiles.Add(catalogCapturedPath);
+            if (File.Exists(providerCapturedPath)) result.EvidenceFiles.Add(providerCapturedPath);
             WriteAtomic(resultPath, JsonConvert.SerializeObject(result, Formatting.Indented) + Environment.NewLine);
         }
 

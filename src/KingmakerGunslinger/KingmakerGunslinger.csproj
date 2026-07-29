@@ -292,6 +292,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
+    <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
   </ItemGroup>
 
   <ItemGroup>

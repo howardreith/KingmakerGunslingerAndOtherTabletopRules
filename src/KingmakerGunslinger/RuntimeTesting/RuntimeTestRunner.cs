@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _completed;
         private ManualSaveLoadObservation _saveLoadObservation;
         private SaveCatalogSelectionObservation _catalogObservation;
+        private SaveCatalogProviderObservation _catalogProviderObservation;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -101,6 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_manualElapsed != null &&
                 _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
+                _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                 _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
             {
                 _trace.Record("manual-interaction-timeout",
@@ -125,6 +127,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSaveCatalogObservation();
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider)
+                {
+                    RunSaveCatalogProviderObservation();
+                    return;
+                }
                 RunManualSaveLoadObservation();
             }
             catch (Exception exception)
@@ -132,6 +140,114 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _trace.Record("runtime-exception", "stage=runtime-update", exception);
                 Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
             }
+        }
+
+        private void RunSaveCatalogProviderObservation()
+        {
+            if (_catalogProviderObservation == null)
+            {
+                _trace.Record("scenario-activated",
+                    RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider);
+                _catalogProviderObservation = new SaveCatalogProviderObservation(
+                    _context, _elapsed, _request.RunId, _trace.Record);
+                _catalogProviderObservation.Install();
+                return;
+            }
+            if (_catalogProviderObservation.ObservationException != null)
+                throw new InvalidOperationException(
+                    "Incremental provider evidence could not be flushed.",
+                    _catalogProviderObservation.ObservationException);
+            if (_manualElapsed == null && _catalogProviderObservation.Ready)
+            {
+                _trace.Record("observer-ready",
+                    "catalog provider hooks active on game thread");
+                _trace.WriteReady(new RuntimeReadyMarker
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = _context.Assembly.FullName,
+                    ReadinessTimestampUtc = DateTime.UtcNow.ToString("o"),
+                    InstalledObservationHookIdentifiers =
+                        _catalogProviderObservation.HookIdentifiers,
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+                _manualElapsed = Stopwatch.StartNew();
+                _catalogElapsed = Stopwatch.StartNew();
+            }
+            if (_catalogProviderObservation.WriteObserved ||
+                _catalogProviderObservation.LoadObserved)
+            {
+                CompleteCatalogProvider(RuntimeTestStatuses.Fail,
+                    "A save-load or save-writing API was observed.");
+                return;
+            }
+            if (_catalogElapsed != null &&
+                !_catalogProviderObservation.CatalogCaptured &&
+                _catalogElapsed.Elapsed.TotalSeconds >= _request.CatalogTimeoutSeconds)
+            {
+                CompleteCatalogProvider(RuntimeTestStatuses.Timeout,
+                    "The Load Game catalog provider was not observed.",
+                    "catalog-provider-observation");
+                return;
+            }
+            if (!_catalogProviderObservation.CatalogCaptured) return;
+            WriteProviderStage();
+            CompleteCatalogProvider(_catalogProviderObservation.SourceProven
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Ambiguous,
+                _catalogProviderObservation.SourceProven ? string.Empty :
+                    "The list was observed but its immediate producer was not proven.");
+        }
+
+        private void WriteProviderStage()
+        {
+            _trace.WriteStage("runtime-catalog-provider-captured.json",
+                new RuntimeStageMarker
+                {
+                    SchemaVersion = 1, RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Stage = "catalog-provider-captured",
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    TimestampUtc = DateTime.UtcNow.ToString("o"),
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+            _trace.Record("catalog-provider-captured",
+                "atomic provider marker committed");
+        }
+
+        private void CompleteCatalogProvider(
+            string status, string warning, string timeoutStage = "")
+        {
+            SaveCatalogProviderObservationEvidence evidence =
+                _catalogProviderObservation.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("complete-catalog-observed", "List<SaveInfo>",
+                    evidence.CollectionType, evidence.CompleteListObserved,
+                    evidence.InitializeSignature),
+                Assertion("catalog-source-proven", "concrete provider",
+                    evidence.SourceKind, evidence.SourceProven,
+                    evidence.ImmediateCaller),
+                Assertion("game-thread-only", "all callbacks on game thread",
+                    evidence.AllCallbacksOnGameThread ? "confirmed" : "contradicted",
+                    evidence.AllCallbacksOnGameThread, evidence.LifecycleState),
+                Assertion("no-save-load-or-write", "none",
+                    evidence.SaveLoadObserved || evidence.SaveWritingObserved
+                        ? "observed" : "none",
+                    !evidence.SaveLoadObserved && !evidence.SaveWritingObserved,
+                    "request-scoped sentinels"),
+                Assertion("observer-non-invoking", "false",
+                    evidence.ProviderInvokedByProbe.ToString(),
+                    !evidence.ProviderInvokedByProbe,
+                    "Harmony observation only")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.SaveCatalogProviderObservation = evidence;
+            if (!string.IsNullOrWhiteSpace(timeoutStage))
+                result.Diagnostics.Add("timeoutStage=" + timeoutStage);
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void RunSaveCatalogObservation()

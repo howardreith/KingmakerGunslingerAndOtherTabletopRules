@@ -2,7 +2,8 @@
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
-        'observe-save-catalog-and-selection')]
+        'observe-save-catalog-and-selection',
+        'observe-save-catalog-provider')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -35,7 +36,8 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
 $manualScenarios = @('observe-manual-save-load',
-    'observe-save-catalog-and-selection')
+    'observe-save-catalog-and-selection',
+    'observe-save-catalog-provider')
 if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
     throw "$Scenario requires -ManualInteractionRequired."
 }
@@ -88,7 +90,8 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion $ExitAfterCompletion `
     -EvidenceDirectory $evidence -Parameters $Parameters `
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
-    -CatalogTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
+    -CatalogTimeoutSeconds $(if ($Scenario -in @(
+        'observe-save-catalog-and-selection', 'observe-save-catalog-provider')) {
         $CatalogTimeoutSeconds } else { 0 }) `
     -SelectionTimeoutSeconds $(if ($Scenario -eq 'observe-save-catalog-and-selection') {
         $SelectionTimeoutSeconds } else { 0 }) `
@@ -123,7 +126,45 @@ try {
     $orchestration.kingmakerStartedAtUtc = $launch.kingmakerStartedAtUtc.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
 
-    if ($Scenario -eq 'observe-save-catalog-and-selection') {
+    if ($Scenario -eq 'observe-save-catalog-provider') {
+        $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+        $readyPath = Join-Path $evidence 'runtime-ready.json'
+        $readyDeadline = [DateTime]::UtcNow.AddSeconds(
+            $ObserverStartupTimeoutSeconds + 15)
+        $ready = $null
+        while (-not $ready) {
+            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
+                throw 'Provider observation ended before readiness. stage=observer-readiness'
+            }
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw 'Kingmaker exited before provider observer readiness.'
+            }
+            if ([DateTime]::UtcNow -ge $readyDeadline) {
+                throw 'Provider observer readiness timed out. stage=observer-readiness'
+            }
+            if (Test-Path -LiteralPath $readyPath -PathType Leaf) {
+                $candidate = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
+                if (Test-KmgRuntimeReadyMarker -Marker $candidate `
+                    -RunId $request.runId -Scenario $Scenario `
+                    -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
+                    -RequestWrittenUtc $requestWrittenUtc) {
+                    $ready = $candidate
+                }
+                else {
+                    throw 'Provider ready marker is stale or mismatched.'
+                }
+            }
+            if (-not $ready) { Start-Sleep -Milliseconds 250 }
+        }
+        $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
+        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+            -Record $orchestration)
+        $providerInstruction = 'OPEN ' + 'THE LOAD GAME SCREEN NOW'
+        Write-Host $providerInstruction -ForegroundColor Yellow
+        Write-Host 'DO NOT SELECT OR LOAD A SAVE' -ForegroundColor Red
+    }
+    elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $stageAPath = Join-Path $evidence 'runtime-catalog-ready.json'
         $stageADeadline = [DateTime]::UtcNow.AddSeconds(
@@ -225,6 +266,9 @@ try {
     if ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
+    }
+    elseif ($Scenario -eq 'observe-save-catalog-provider') {
+        $deadline = [DateTime]::UtcNow.AddSeconds($CatalogTimeoutSeconds + 15)
     }
     else {
         $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds + 15)
