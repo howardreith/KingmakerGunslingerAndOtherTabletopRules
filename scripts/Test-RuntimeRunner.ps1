@@ -24,7 +24,8 @@ $checks = [ordered]@{
     'reparse-point-rejected' = $request.Contains('"evidence-path-reparse-point"')
     'atomic-result-write' = $result.Contains('stream.Flush(true)') -and
         $result.Contains('File.Move(temporary, path)')
-    'exception-to-error' = $runner.Contains('CreateResult("ERROR"')
+    'exception-to-error' = $runner.Contains('RuntimeTestStatuses.Error') -and
+        $runner.Contains('CompleteStartupError(')
     'timeout-to-timeout' = $runner.Contains('CreateResult("TIMEOUT"')
     'exit-is-request-guarded' = $runner.Contains('if (_request.ExitAfterCompletion)') -and
         $runner.Contains('Application.Quit()')

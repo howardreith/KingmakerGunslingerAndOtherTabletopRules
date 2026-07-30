@@ -99,6 +99,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _wrongThread;
         private bool _removed;
         private bool _sealed;
+        private bool _buttonResolutionAttempted;
         private Exception _exception;
 
         internal WorkingSaveSmokeScenario(ModContext context, Stopwatch elapsed,
@@ -135,8 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             get
             {
-                return _mainMenu != null &&
-                    _stage == "load-game-action-resolution";
+                return _mainMenu != null && _button != null &&
+                    _buttonCandidates == 1 && _stage == "action-invocation";
             }
         }
         internal List<string> HookIdentifiers
@@ -148,44 +149,52 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_active != null)
                 throw new InvalidOperationException("A working-save smoke is active.");
-            Assembly assembly = typeof(Kingmaker.Game).Assembly;
-            Type owner = assembly.GetType(OwnerType, true);
-            _handler = owner.GetMethods(AllInstance).Single(method =>
-                method.Name == "OnButtonLoadGame" &&
-                method.GetParameters().Length == 0 &&
-                method.ReturnType == typeof(void));
-            Type list = assembly.GetType(CatalogType, true);
-            _initialize = list.GetMethods(AllInstance).Single(method =>
-                method.Name == "Initialize" &&
-                method.GetParameters().Length == 2 &&
-                IsSaveInfoList(method.GetParameters()[0].ParameterType) &&
-                method.GetParameters()[1].ParameterType == typeof(bool) &&
-                method.ReturnType == typeof(void));
-            Type menu = assembly.GetType(MainMenuType, true);
-            _loadEntry = menu.GetMethods(AllInstance).Single(method =>
-                method.Name == "LoadGame" &&
-                method.GetParameters().Length == 1 &&
-                method.GetParameters()[0].ParameterType.FullName == DescriptorType &&
-                method.ReturnType == typeof(void));
-            MethodInfo prefix = typeof(WorkingSaveSmokeScenario).GetMethod(
-                "Prefix", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo postfix = typeof(WorkingSaveSmokeScenario).GetMethod(
-                "Postfix", BindingFlags.Static | BindingFlags.NonPublic);
-            Patch(_handler, prefix, null);
-            Patch(_initialize, prefix, postfix);
-            Patch(_loadEntry, prefix, null);
-            foreach (MethodInfo method in assembly.GetType(
-                "Kingmaker.EntitySystem.Persistence.SaveManager", true)
-                .GetMethods(AllInstance))
+            try
             {
-                if (WritePrefixes.Any(prefixValue =>
-                    method.Name.StartsWith(prefixValue, StringComparison.Ordinal)) &&
-                    method.Name != "SaveList" && method.Name != "SaveInfo")
-                    Patch(method, prefix, null);
+                Assembly assembly = typeof(Kingmaker.Game).Assembly;
+                Type owner = assembly.GetType(OwnerType, true);
+                _handler = owner.GetMethods(AllInstance).Single(method =>
+                    method.Name == "OnButtonLoadGame" &&
+                    method.GetParameters().Length == 0 &&
+                    method.ReturnType == typeof(void));
+                Type list = assembly.GetType(CatalogType, true);
+                _initialize = list.GetMethods(AllInstance).Single(method =>
+                    method.Name == "Initialize" &&
+                    method.GetParameters().Length == 2 &&
+                    IsSaveInfoList(method.GetParameters()[0].ParameterType) &&
+                    method.GetParameters()[1].ParameterType == typeof(bool) &&
+                    method.ReturnType == typeof(void));
+                Type menu = assembly.GetType(MainMenuType, true);
+                _loadEntry = menu.GetMethods(AllInstance).Single(method =>
+                    method.Name == "LoadGame" &&
+                    method.GetParameters().Length == 1 &&
+                    method.GetParameters()[0].ParameterType.FullName == DescriptorType &&
+                    method.ReturnType == typeof(void));
+                MethodInfo prefix = typeof(WorkingSaveSmokeScenario).GetMethod(
+                    "Prefix", BindingFlags.Static | BindingFlags.NonPublic);
+                MethodInfo postfix = typeof(WorkingSaveSmokeScenario).GetMethod(
+                    "Postfix", BindingFlags.Static | BindingFlags.NonPublic);
+                Patch(_handler, prefix, null);
+                Patch(_initialize, prefix, postfix);
+                Patch(_loadEntry, prefix, null);
+                foreach (MethodInfo method in assembly.GetType(
+                    "Kingmaker.EntitySystem.Persistence.SaveManager", true)
+                    .GetMethods(AllInstance))
+                {
+                    if (WritePrefixes.Any(prefixValue =>
+                        method.Name.StartsWith(prefixValue, StringComparison.Ordinal)) &&
+                        method.Name != "SaveList" && method.Name != "SaveInfo")
+                        Patch(method, prefix, null);
+                }
+                _active = this;
+                Transition("main-menu-readiness",
+                    "contracts installed; no action invoked");
             }
-            _active = this;
-            Transition("main-menu-readiness",
-                "contracts installed; no action invoked");
+            catch
+            {
+                RemoveHooks();
+                throw;
+            }
         }
 
         internal void Poll()
@@ -205,6 +214,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "load-game-action-resolution")
             {
+                if (_buttonResolutionAttempted)
+                    throw new InvalidOperationException(
+                        "The exact Load Game action could not be proven at the main-menu lifecycle point.");
+                _buttonResolutionAttempted = true;
                 ResolveButton();
                 if (_buttonCandidates == 1 && _button != null)
                 {
@@ -265,11 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal WorkingSaveSmokeEvidence Stop()
         {
             _sealed = true;
-            foreach (MethodBase method in _patched)
-                _context.Harmony.Unpatch(method, HarmonyPatchType.All, _context.ModId);
-            _patched.Clear();
-            _removed = true;
-            if (ReferenceEquals(_active, this)) _active = null;
+            RemoveHooks();
             Add("scenario-hooks-removed", null, null,
                 "all scenario-specific hooks removed");
             return new WorkingSaveSmokeEvidence
@@ -442,15 +451,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] __args)
         {
             WorkingSaveSmokeScenario active = _active;
-            if (active != null) active.ObserveEnter(
-                __originalMethod, __instance, __args);
+            if (active == null) return;
+            try
+            {
+                active.ObserveEnter(__originalMethod, __instance, __args);
+            }
+            catch (Exception exception)
+            {
+                active.CaptureHookException("prefix", __originalMethod, exception);
+            }
         }
 
         private static void Postfix(MethodBase __originalMethod, object[] __args)
         {
             WorkingSaveSmokeScenario active = _active;
-            if (active != null && __originalMethod == active._initialize)
+            if (active == null || __originalMethod != active._initialize) return;
+            try
+            {
                 active.Add("catalog-initialize-exit", __originalMethod, __args, "");
+            }
+            catch (Exception exception)
+            {
+                active.CaptureHookException("postfix", __originalMethod, exception);
+            }
+        }
+
+        private void CaptureHookException(
+            string hook, MethodBase method, Exception exception)
+        {
+            if (_exception == null) _exception = exception;
+            try
+            {
+                Add("observation-hook-error", method, null,
+                    "hook=" + hook + "; original execution preserved; " +
+                    exception.GetType().FullName + ": " + exception.Message);
+            }
+            catch
+            {
+                // A diagnostic failure must never escape into the game handler.
+            }
         }
 
         private void ObserveEnter(MethodBase method, object receiver, object[] args)
@@ -517,6 +556,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 prefix == null ? null : new HarmonyMethod(prefix),
                 postfix == null ? null : new HarmonyMethod(postfix), null);
             _patched.Add(method);
+        }
+
+        private void RemoveHooks()
+        {
+            foreach (MethodBase method in _patched.ToArray())
+            {
+                try
+                {
+                    _context.Harmony.Unpatch(
+                        method, HarmonyPatchType.All, _context.ModId);
+                }
+                catch (Exception exception)
+                {
+                    if (_exception == null) _exception = exception;
+                }
+            }
+            _patched.Clear();
+            _removed = true;
+            if (ReferenceEquals(_active, this)) _active = null;
         }
 
         private void Add(string kind, MethodBase method, object[] args, string detail)

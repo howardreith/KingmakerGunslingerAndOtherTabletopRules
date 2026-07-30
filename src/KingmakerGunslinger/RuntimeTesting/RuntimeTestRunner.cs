@@ -28,6 +28,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _catalogMarkerWritten;
         private int _updateCallbackCount;
         private bool _workingReadyWritten;
+        private string _workingStartupStage = "request-accepted";
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
@@ -40,6 +41,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             _trace.Record("request-accepted",
                 "scenario=" + request.Scenario + "; loadedVersion=" +
                 context.ModEntry.Info.Version);
+            WriteLifecycleStage("request-argument-observed");
+            WriteLifecycleStage("request-file-opened");
+            WriteLifecycleStage("request-schema-valid");
+            WriteLifecycleStage("request-accepted");
+            WriteLifecycleStage("runner-created");
         }
 
         internal static void TryAttach(ModContext context)
@@ -94,35 +100,36 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
         {
             if (_completed) return;
-            _updateCallbackCount++;
-            if (_manualElapsed == null &&
-                _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
-            {
-                _trace.Record("startup-timeout",
-                    "stage=observer-readiness; observer was not ready");
-                RuntimeTestResult startupTimeout = CreateResult("TIMEOUT", null, null);
-                startupTimeout.Diagnostics.Add("timeoutStage=observer-readiness");
-                Complete(startupTimeout);
-                return;
-            }
-            if (_manualElapsed != null &&
-                _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
-                _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
-                _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
-                _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
-                _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
-            {
-                _trace.Record("manual-interaction-timeout",
-                    "stage=manual-save-load-observation");
-                RuntimeTestResult interactionTimeout = CreateResult("TIMEOUT", null, null);
-                interactionTimeout.Diagnostics.Add("timeoutStage=manual-save-load-observation");
-                Complete(interactionTimeout);
-                return;
-            }
-            if (!_context.IsReady) return;
-
             try
             {
+                _updateCallbackCount++;
+                if (_updateCallbackCount == 1)
+                    WriteLifecycleStage("runner-onupdate-entered");
+                if (_manualElapsed == null &&
+                    _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
+                {
+                    _trace.Record("startup-timeout",
+                        "stage=" + _workingStartupStage + "; observer was not ready");
+                    RuntimeTestResult startupTimeout = CreateResult("TIMEOUT", null, null);
+                    startupTimeout.Diagnostics.Add("timeoutStage=" + _workingStartupStage);
+                    Complete(startupTimeout);
+                    return;
+                }
+                if (_manualElapsed != null &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+                {
+                    _trace.Record("manual-interaction-timeout",
+                        "stage=manual-save-load-observation");
+                    RuntimeTestResult interactionTimeout = CreateResult("TIMEOUT", null, null);
+                    interactionTimeout.Diagnostics.Add("timeoutStage=manual-save-load-observation");
+                    Complete(interactionTimeout);
+                    return;
+                }
+                if (!_context.IsReady) return;
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());
@@ -155,8 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                _trace.Record("runtime-exception", "stage=runtime-update", exception);
-                Complete(CreateResult("ERROR", null, ExceptionSummary(exception)));
+                CompleteStartupError(_workingStartupStage, exception);
             }
         }
 
@@ -164,18 +170,42 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_workingSaveSmoke == null)
             {
+                _workingStartupStage = "scenario-selected";
+                WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("scenario-activated",
                     RuntimeTestScenarioCatalog.WorkingSaveSmoke);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record);
+                _workingStartupStage = "hooks-install-start";
+                WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
+                _workingStartupStage = "hooks-install-complete";
+                WriteLifecycleStage(_workingStartupStage);
                 _manualElapsed = Stopwatch.StartNew();
                 return;
             }
+            if (_workingSaveSmoke.ScenarioException != null)
+                throw new InvalidOperationException(
+                    "A request-scoped observation hook failed; original game behavior was preserved.",
+                    _workingSaveSmoke.ScenarioException);
+            if (_workingSaveSmoke.Stage == "main-menu-readiness" &&
+                _workingStartupStage != "main-menu-search-start")
+            {
+                _workingStartupStage = "main-menu-search-start";
+                WriteLifecycleStage(_workingStartupStage);
+            }
             _workingSaveSmoke.Poll();
+            if (_workingSaveSmoke.Stage == "load-game-action-resolution" &&
+                _workingStartupStage != "main-menu-ready")
+            {
+                _workingStartupStage = "main-menu-ready";
+                WriteLifecycleStage(_workingStartupStage);
+            }
             if (!_workingReadyWritten && _workingSaveSmoke.MainMenuReady &&
                 _updateCallbackCount >= 2)
             {
+                _workingStartupStage = "load-game-action-resolved";
+                WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("runtime-ready",
                     "runner active; update callbacks continuing; exact main-menu root active; UMM overlay is not used as readiness");
                 _trace.WriteReady(new RuntimeReadyMarker
@@ -193,6 +223,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MainMenuLifecycleReady = true,
                     UmmStartupState = "initialized; overlay nonblocking-or-absent"
                 });
+                _workingStartupStage = "working-save-ready";
+                WriteLifecycleStage(_workingStartupStage);
                 _workingReadyWritten = true;
                 return;
             }
@@ -207,10 +239,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Stage-specific startup timeout expired.");
                 return;
             }
-            if (_workingSaveSmoke.ScenarioException != null)
-                throw new InvalidOperationException(
-                    "Incremental working-save-smoke evidence could not be flushed.",
-                    _workingSaveSmoke.ScenarioException);
             if (_workingSaveSmoke.WriteObserved)
             {
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
@@ -291,6 +319,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (stage == "post-load-fingerprint")
                 return _request.FingerprintTimeoutSeconds;
             return _request.TimeoutSeconds;
+        }
+
+        private void WriteLifecycleStage(string stage)
+        {
+            _trace.WriteStage("runtime-stage-" + stage + ".json",
+                new RuntimeStageMarker
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Stage = stage,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    TimestampUtc = DateTime.UtcNow.ToString("o"),
+                    ProcessId = Process.GetCurrentProcess().Id
+                });
+            _trace.Record(stage, "atomic lifecycle stage marker committed");
+        }
+
+        private void CompleteStartupError(string stage, Exception exception)
+        {
+            _workingStartupStage = "startup-error";
+            try { WriteLifecycleStage(_workingStartupStage); }
+            catch (Exception markerException)
+            {
+                exception = new AggregateException(
+                    "Startup failed and the startup-error marker could not be committed.",
+                    exception, markerException);
+            }
+            _trace.Record("runtime-exception", "stage=" + stage, exception);
+            RuntimeTestResult result = CreateResult(
+                RuntimeTestStatuses.Error, null, ExceptionSummary(exception));
+            result.Diagnostics.Add("startupErrorStage=" + stage);
+            Complete(result);
         }
 
         private void CompleteWorkingSaveSmoke(

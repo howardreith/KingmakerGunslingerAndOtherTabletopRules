@@ -97,7 +97,7 @@ $checks = [ordered]@{
         -RunId 'different-run' -Scenario 'observe-manual-save-load' `
         -ExpectedVersion '0.0.30' -ProcessId 42 -RequestWrittenUtc $now.AddSeconds(-1))
     'readiness-stage-specific' = $runner.Contains(
-        'timeoutStage=observer-readiness') -and $orchestrator.Contains(
+        'timeoutStage=" + _workingStartupStage') -and $orchestrator.Contains(
         'stage=observer-readiness')
     'failed-run-fixture-reproduced' = $fixture.classification -eq 'E' -and
         $fixture.observerInstalled -and $fixture.loadStartObserved -and
@@ -112,7 +112,7 @@ $checks = [ordered]@{
         'RuntimeTestResultWriter.WriteAtomic(')
     'runtime-exceptions-are-error' = $runner.Contains(
         '_trace.Record("runtime-exception"') -and $runner.Contains(
-        'CreateResult("ERROR"')
+        'RuntimeTestStatuses.Error')
     'ready-marker-is-atomic' = $result.Contains(
         '"runtime-ready.json"') -and $result.Contains(
         'WriteReady(RuntimeReadyMarker marker)')
