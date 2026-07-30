@@ -307,7 +307,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void ResolveMainMenu()
         {
-            Type type = typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true);
+            // The earlier supervised observation proved the active
+            // MainMenuButtons receiver and exact hierarchy, not a separate
+            // Kingmaker.MainMenu component. Resolve that proven lifecycle
+            // receiver once; button/listener invariants remain a separate gate.
+            Type type = typeof(Kingmaker.Game).Assembly.GetType(OwnerType, true);
             UnityEngine.Object[] candidates = Resources.FindObjectsOfTypeAll(type);
             var exact = candidates.Where(value =>
             {

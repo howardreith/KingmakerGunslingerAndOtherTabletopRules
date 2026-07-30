@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 using UnityModManagerNet;
@@ -29,6 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _updateCallbackCount;
         private bool _workingReadyWritten;
         private string _workingStartupStage = "request-accepted";
+        private static string _earlyEvidenceDirectory;
+        private static RuntimeBuildIdentity _loadedBuildIdentity;
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
@@ -42,8 +46,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "scenario=" + request.Scenario + "; loadedVersion=" +
                 context.ModEntry.Info.Version);
             WriteLifecycleStage("request-argument-observed");
+            WriteLifecycleStage("request-argument-seen");
+            WriteLifecycleStage("request-path-normalized");
             WriteLifecycleStage("request-file-opened");
+            WriteLifecycleStage("request-json-parsed");
             WriteLifecycleStage("request-schema-valid");
+            WriteLifecycleStage("expected-version-valid");
+            WriteLifecycleStage("scenario-allowlisted");
+            WriteLifecycleStage("save-name-valid");
             WriteLifecycleStage("request-accepted");
             WriteLifecycleStage("runner-created");
         }
@@ -57,11 +67,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!decision.Accepted)
             {
                 if (decision.ReasonCode != "flag-absent")
+                {
                     context.Logger.Warning(
                         "runtime-test",
                         "request.rejected",
                         "reason=" + decision.ReasonCode +
                         "; requestFile=" + decision.SafeRequestName);
+                    WriteRejectedRequest(context, decision);
+                }
                 return;
             }
 
@@ -97,6 +110,93 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "; scenario=" + decision.Request.Scenario);
         }
 
+        internal static void RecordEarlyIdentity(ModContext context)
+        {
+            string requestPath;
+            string reason;
+            if (!RuntimeTestRequestParser.TryGetRequestPath(
+                Environment.GetCommandLineArgs(), out requestPath, out reason))
+                return;
+            try
+            {
+                string normalized = Path.GetFullPath(requestPath);
+                string directory = Path.GetDirectoryName(normalized);
+                string root = Path.GetFullPath(RuntimeTestRequest.EvidenceRoot)
+                    .TrimEnd('\\');
+                if (string.IsNullOrWhiteSpace(directory) ||
+                    !directory.StartsWith(root + "\\",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    !Directory.Exists(directory))
+                    return;
+                _earlyEvidenceDirectory = directory;
+                _loadedBuildIdentity = RuntimeBuildIdentity.Capture(
+                    context.Assembly, context.ModEntry.Info.Version);
+                RuntimeTestResultWriter.WriteAtomic(
+                    Path.Combine(directory, "runtime-loaded-build-identity.json"),
+                    JsonConvert.SerializeObject(_loadedBuildIdentity,
+                        Formatting.Indented) + Environment.NewLine);
+                WriteEarlyStage(context, "request-argument-seen");
+                WriteEarlyStage(context, "request-path-normalized");
+            }
+            catch (Exception exception)
+            {
+                context.Logger.Failure("runtime-test", "identity.write-failed",
+                    "Guarded loaded-build identity could not be committed.", exception);
+            }
+        }
+
+        private static void WriteEarlyStage(ModContext context, string stage)
+        {
+            if (string.IsNullOrWhiteSpace(_earlyEvidenceDirectory)) return;
+            RuntimeTestResultWriter.WriteAtomic(
+                Path.Combine(_earlyEvidenceDirectory,
+                    "runtime-stage-" + stage + ".json"),
+                JsonConvert.SerializeObject(new
+                {
+                    schemaVersion = 1,
+                    stage = stage,
+                    loadedBuildIdentity = _loadedBuildIdentity,
+                    processId = Process.GetCurrentProcess().Id,
+                    timestampUtc = DateTime.UtcNow.ToString("o")
+                }, Formatting.Indented) + Environment.NewLine);
+        }
+
+        private static void WriteRejectedRequest(
+            ModContext context, RuntimeTestRequestDecision decision)
+        {
+            if (string.IsNullOrWhiteSpace(_earlyEvidenceDirectory)) return;
+            var result = new RuntimeTestResult
+            {
+                SchemaVersion = 1,
+                RunId = string.Empty,
+                Scenario = decision.RequestedScenario,
+                Status = RuntimeTestStatuses.Error,
+                LoadedModVersion = context.ModEntry.Info.Version,
+                RuntimeIdentity = context.Assembly.FullName,
+                GitCommit = _loadedBuildIdentity == null ? string.Empty :
+                    _loadedBuildIdentity.GitCommit,
+                GameVersion = Application.version ?? string.Empty,
+                StartUtc = DateTime.UtcNow.ToString("o"),
+                EndUtc = DateTime.UtcNow.ToString("o"),
+                Assertions = new List<RuntimeTestAssertion>(),
+                Diagnostics = new List<string>
+                {
+                    "rejectionStage=" + decision.FailedStage,
+                    "sanitizedReason=" + decision.ReasonCode,
+                    "hookInstalled=false",
+                    "uiActionOccurred=false",
+                    "saveActionOccurred=false"
+                },
+                Warnings = new List<string>(),
+                ExceptionSummary = string.Empty,
+                EvidenceFiles = new List<string>(),
+                AutomaticExitRequested = false,
+                AutomaticExitInitiated = false
+            };
+            WriteEarlyStage(context, decision.FailedStage);
+            RuntimeTestResultWriter.Write(result, _earlyEvidenceDirectory);
+        }
+
         private void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
         {
             if (_completed) return;
@@ -104,7 +204,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _updateCallbackCount++;
                 if (_updateCallbackCount == 1)
+                {
+                    WriteLifecycleStage("onupdate-entered");
                     WriteLifecycleStage("runner-onupdate-entered");
+                }
                 if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {

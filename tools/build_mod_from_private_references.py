@@ -36,6 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--net47-ref-dir", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--configuration", choices=("Debug", "Release"), default="Release")
+    parser.add_argument("--git-commit", required=True)
     return parser.parse_args()
 
 
@@ -95,6 +96,16 @@ def main() -> int:
     shutil.rmtree(output, ignore_errors=True)
     bin_dir.mkdir(parents=True)
     package_root.mkdir(parents=True)
+    if not all(character in "0123456789abcdef" for character in args.git_commit.lower()) or \
+            len(args.git_commit) != 40:
+        raise ValueError("--git-commit must be one full hexadecimal commit.")
+    generated_identity = output / "GeneratedBuildIdentity.cs"
+    generated_identity.write_text(
+        "using System.Reflection;\n"
+        f'[assembly: AssemblyMetadata("GitCommit", "{args.git_commit.lower()}")]\n',
+        encoding="utf-8",
+        newline="\n",
+    )
 
     dll = bin_dir / info["AssemblyName"]
     optimize = args.configuration == "Release"
@@ -108,6 +119,7 @@ def main() -> int:
         f"/out:{dll}",
         *(f"/reference:{path}" for path in [*framework_refs, *private_refs]),
         *(str(path) for path in compile_files(project)),
+        str(generated_identity),
     ]
     env = os.environ.copy()
     env["DOTNET_ROOT"] = str(args.dotnet.parent)
@@ -140,6 +152,7 @@ def main() -> int:
         "modVersion": info["Version"],
         "compileExitCode": completed.returncode,
         "modDllSha256": sha256(dll),
+        "gitCommit": args.git_commit.lower(),
         "packageSha256": sha256(zip_path),
         "blueprintManifestSha256": sha256(root / "blueprints" / "blueprints.json"),
         "privateReferenceHashes": {path.relative_to(bundle).as_posix(): sha256(path) for path in private_refs},

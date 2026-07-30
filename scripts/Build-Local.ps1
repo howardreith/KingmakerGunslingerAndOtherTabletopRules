@@ -15,6 +15,7 @@ $info = Get-KmgModInfo -RepositoryRoot $root
 if ($info.Version -ne '0.0.30') { throw "Build-Local supports only qualified version 0.0.30, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
+$git = Get-KmgGitState -RepositoryRoot $root
 
 if (-not $ReferenceBundleDir) {
     $labRoot = [IO.Path]::GetFullPath((Join-Path $root '..\..'))
@@ -47,7 +48,7 @@ $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
-    --configuration Release
+    --configuration Release --git-commit $git.Commit
 if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit code $LASTEXITCODE." }
 
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
@@ -67,7 +68,6 @@ $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath
 
-$git = Get-KmgGitState -RepositoryRoot $root
 $dllPath = Join-Path $buildOutput 'KingmakerGunslinger.dll'
 $manifest = [ordered]@{
     schemaVersion = 1

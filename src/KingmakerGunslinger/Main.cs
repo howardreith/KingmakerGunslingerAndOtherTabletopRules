@@ -64,6 +64,9 @@ namespace KingmakerGunslinger
 
                 context = ModContext.Create(modEntry, assembly, logger);
                 ModContext.Publish(context);
+                // Commit guarded binary identity before patches, blueprint work,
+                // UI attachment, or runtime-request parsing.
+                RuntimeTestRunner.RecordEarlyIdentity(context);
                 context.InstallPatches();
 
                 // A LoadDictionary call observed during PatchAll is retained and processed

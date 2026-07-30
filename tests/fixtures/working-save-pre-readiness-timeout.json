@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "sourceEvidenceDirectory": "20260730T2143532679826Z-working-save-smoke",
+  "requestAccepted": true,
+  "runnerOnUpdateEntered": true,
+  "scenarioSelected": true,
+  "hooksInstalled": true,
+  "lastPresentStage": "main-menu-search-start",
+  "firstMissingStage": "main-menu-ready",
+  "buttonCandidateCount": 0,
+  "uiActionOccurred": false,
+  "saveActionOccurred": false,
+  "diagnosis": "readiness searched for Kingmaker.MainMenu instead of the previously proven active MainMenuButtons receiver"
+}

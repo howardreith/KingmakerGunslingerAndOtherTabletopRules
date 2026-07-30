@@ -58,18 +58,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool accepted,
             string reasonCode,
             string safeRequestName,
-            RuntimeTestRequest request)
+            RuntimeTestRequest request,
+            string failedStage = "",
+            string requestedScenario = "")
         {
             Accepted = accepted;
             ReasonCode = reasonCode ?? string.Empty;
             SafeRequestName = safeRequestName ?? string.Empty;
             Request = request;
+            FailedStage = failedStage ?? string.Empty;
+            RequestedScenario = requestedScenario ?? string.Empty;
         }
 
         internal bool Accepted { get; private set; }
         internal string ReasonCode { get; private set; }
         internal string SafeRequestName { get; private set; }
         internal RuntimeTestRequest Request { get; private set; }
+        internal string FailedStage { get; private set; }
+        internal string RequestedScenario { get; private set; }
     }
 
     internal static class RuntimeTestRequestParser
@@ -112,6 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string json = File.ReadAllText(requestPath);
                 EnsureNoDuplicateProperties(json);
                 JObject document = JObject.Parse(json);
+                string requestedScenario = document.Value<string>("scenario") ?? string.Empty;
                 RejectUnknownMembers(document);
                 var serializer = JsonSerializer.Create(new JsonSerializerSettings
                 {
@@ -121,9 +128,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string validation = Validate(request, loadedModVersion);
                 if (validation != null)
                 {
-                    return new RuntimeTestRequestDecision(false, validation, safeName, null);
+                    return new RuntimeTestRequestDecision(false, validation, safeName,
+                        null, FailedStage(validation), requestedScenario);
                 }
-                return new RuntimeTestRequestDecision(true, "accepted", safeName, request);
+                return new RuntimeTestRequestDecision(true, "accepted", safeName, request,
+                    string.Empty, requestedScenario);
             }
             catch (JsonException)
             {
@@ -355,7 +364,27 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static RuntimeTestRequestDecision Reject(string reason, string path)
         {
-            return new RuntimeTestRequestDecision(false, reason, SafeFileName(path), null);
+            return new RuntimeTestRequestDecision(false, reason, SafeFileName(path), null,
+                FailedStage(reason), string.Empty);
+        }
+
+        private static string FailedStage(string reason)
+        {
+            if (reason == "request-file-missing" || reason == "request-read-failed")
+                return "request-file-opened";
+            if (reason == "invalid-json" || reason == "request-invalid")
+                return "request-json-parsed";
+            if (reason == "schema-version-invalid")
+                return "request-schema-valid";
+            if (reason == "mod-version-mismatch")
+                return "expected-version-valid";
+            if (reason == "scenario-not-allowed")
+                return "scenario-allowlisted";
+            if (reason == "save-name-required" ||
+                reason == "save-name-not-allowed" ||
+                reason == "baseline-save-forbidden")
+                return "save-name-valid";
+            return "request-accepted";
         }
 
         private static string SafeFileName(string path)
