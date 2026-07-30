@@ -328,7 +328,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeRunnerActive = true,
                     UpdateCallbackCount = _updateCallbackCount,
                     MainMenuLifecycleReady = true,
-                    UmmStartupState = "initialized; overlay nonblocking-or-absent"
+                    UmmStartupState = "initialized; overlay nonblocking-or-absent",
+                    ReadinessStage = "load-game-action-resolved"
                 });
                 _workingStartupStage = "working-save-ready";
                 WriteLifecycleStage(_workingStartupStage);
@@ -1019,15 +1020,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.DurationMilliseconds = _elapsed.ElapsedMilliseconds;
             result.AutomaticExitRequested = _request.ExitAfterCompletion;
             result.AutomaticExitInitiated = _request.ExitAfterCompletion;
+            result.EvidenceDirectory = _request.EvidenceDirectory;
             try
             {
-                _trace.Record("result-flush-started", "status=" + result.Status);
+                // This record atomically commits and closes the immutable event
+                // trace before the summary and final result are published.
+                _trace.Record("final-result-created", "status=" + result.Status);
                 RuntimeTestResultWriter.Write(result, _request.EvidenceDirectory);
-                _trace.Record("result-flushed", "status=" + result.Status);
                 WriteLifecycleStage("final-result-flushed");
+                string flushedPath = Path.Combine(_request.EvidenceDirectory,
+                    "runtime-stage-final-result-flushed.json");
+                string flushedContent = File.ReadAllText(flushedPath);
+                if (flushedContent.IndexOf(_request.RunId,
+                    StringComparison.Ordinal) < 0)
+                    throw new IOException(
+                        "The final-result-flushed marker was not safely visible.");
             }
             catch (Exception exception)
             {
+                TryWriteEvidenceFailure(exception);
                 _context.Logger.Failure(
                     "runtime-test",
                     "result.write-failed",
@@ -1041,6 +1052,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "runId=" + _request.RunId + "; status=" + result.Status);
             if (_request.ExitAfterCompletion)
                 Application.Quit();
+        }
+
+        private void TryWriteEvidenceFailure(Exception exception)
+        {
+            try
+            {
+                RuntimeTestResult failure = CreateResult(
+                    RuntimeTestStatuses.Error, null,
+                    "Evidence write failure: " + ExceptionSummary(exception));
+                failure.EndUtc = DateTime.UtcNow.ToString("o");
+                failure.DurationMilliseconds = _elapsed.ElapsedMilliseconds;
+                failure.ErrorStage = "final-evidence-write";
+                failure.LastCompletedStage = "assertions-complete";
+                failure.ExceptionType = exception.GetType().FullName;
+                failure.ExceptionMessage = exception.Message;
+                failure.ExceptionStack = exception.ToString();
+                failure.ExceptionManagedThreadId =
+                    System.Threading.Thread.CurrentThread.ManagedThreadId;
+                failure.AutomaticExitRequested = _request.ExitAfterCompletion;
+                failure.AutomaticExitInitiated = false;
+                failure.EvidenceDirectory = _request.EvidenceDirectory;
+                RuntimeTestResultWriter.Write(failure, _request.EvidenceDirectory);
+                WriteLifecycleStage("final-evidence-error-flushed");
+            }
+            catch (Exception fallbackException)
+            {
+                _context.Logger.Failure(
+                    "runtime-test", "result.error-write-failed",
+                    "Structured ERROR evidence also could not be committed; the game remains running.",
+                    fallbackException);
+            }
         }
 
         private RuntimeTestResult CreateResult(
@@ -1071,7 +1113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExceptionSummary = exceptionSummary ?? string.Empty,
                 EvidenceFiles = new List<string>(),
                 AutomaticExitRequested = _request.ExitAfterCompletion,
-                AutomaticExitInitiated = false
+                AutomaticExitInitiated = false,
+                EvidenceDirectory = _request.EvidenceDirectory
             };
         }
 

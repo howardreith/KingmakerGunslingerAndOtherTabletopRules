@@ -77,6 +77,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("workingSaveSmoke", Order = 29,
             NullValueHandling = NullValueHandling.Ignore)]
         public WorkingSaveSmokeEvidence WorkingSaveSmoke { get; set; }
+        [JsonProperty("evidenceDirectory", Order = 30)]
+        public string EvidenceDirectory { get; set; }
     }
 
     internal sealed class WorkingSaveSmokeEvidence
@@ -177,6 +179,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         public bool MainMenuLifecycleReady { get; set; }
         [JsonProperty("ummStartupState", Order = 12)]
         public string UmmStartupState { get; set; }
+        [JsonProperty("readinessStage", Order = 13)]
+        public string ReadinessStage { get; set; }
     }
 
     internal sealed class RuntimeStageMarker

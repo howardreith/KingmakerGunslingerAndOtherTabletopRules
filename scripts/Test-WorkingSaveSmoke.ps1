@@ -79,7 +79,8 @@ Assert-Contains $orchestrator '[int]$SteamAppId = 640820' 'steam-app-id-mandator
 Assert-True (-not ($orchestrator -match 'Start-Process\s+.*Kingmaker\.exe')) 'no-direct-executable-launch'
 Assert-Contains $orchestrator "'Deploy-Local.ps1'" 'one-deployment-backup-path'
 Assert-Contains $orchestrator 'No deployment or process launch occurred.' 'whatif-no-mutation'
-Assert-Contains $runnerSource '_trace.Record("result-flushed"' 'atomic-result-evidence'
+Assert-Contains $runnerSource '_trace.Record("final-result-created"' 'atomic-result-evidence'
+Assert-Contains $runnerSource 'WriteLifecycleStage("final-result-flushed")' 'durable-result-flush-marker'
 Assert-Contains $runnerSource 'Application.Quit();' 'exit-after-flush'
 
 $fixtures = @(

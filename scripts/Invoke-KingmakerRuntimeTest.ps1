@@ -193,32 +193,58 @@ try {
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds(
             $ObserverStartupTimeoutSeconds + 15)
-        while (-not (Test-Path -LiteralPath $readyPath -PathType Leaf)) {
-            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
-                throw 'working-save-smoke ended before runtime readiness.'
+        $result = $null
+        $ready = $null
+        while (-not $ready -and $null -eq $result) {
+            $result = Get-KmgCurrentRuntimeResult -ResultPath $resultPath `
+                -EvidenceDirectory $evidence -RunId $request.runId `
+                -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
+                -RequestWrittenUtc $requestWrittenUtc
+            if ($null -ne $result) { break }
+            if (Test-Path -LiteralPath $readyPath -PathType Leaf) {
+                $candidate = Get-Content -LiteralPath $readyPath -Raw |
+                    ConvertFrom-Json
+                if (-not (Test-KmgRuntimeReadyMarker -Marker $candidate `
+                    -RunId $request.runId -Scenario $Scenario `
+                    -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
+                    -RequestWrittenUtc $requestWrittenUtc)) {
+                    throw 'working-save-smoke ready marker is stale or mismatched.'
+                }
+                $ready = $candidate
+                break
             }
+            # Incremental stage files are intentionally left intact and are
+            # collected even when readiness or the process exit is observed.
             $process.Refresh()
             if ($process.HasExited) {
-                throw 'Kingmaker exited before working-save-smoke readiness.'
+                $result = Wait-KmgRuntimeResultFlushGrace `
+                    -ResultPath $resultPath -EvidenceDirectory $evidence `
+                    -RunId $request.runId -Scenario $Scenario `
+                    -ExpectedVersion $ExpectedVersion `
+                    -RequestWrittenUtc $requestWrittenUtc
+                if ($null -eq $result) {
+                    throw 'Kingmaker exited before working-save-smoke readiness and no final result appeared during flush grace.'
+                }
+                break
             }
             if ([DateTime]::UtcNow -ge $readyDeadline) {
                 throw 'working-save-smoke readiness timed out. stage=runtime-readiness'
             }
             Start-Sleep -Milliseconds 250
         }
-        $ready = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
-        if (-not (Test-KmgRuntimeReadyMarker -Marker $ready `
-            -RunId $request.runId -Scenario $Scenario `
-            -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
-            -RequestWrittenUtc $requestWrittenUtc)) {
-            throw 'working-save-smoke ready marker is stale or mismatched.'
+        if ($ready) {
+            $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
+            $orchestration.guardedRequestAccepted = $true
+            $orchestration.stage = 'runtime-ready'
+            [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+                -Record $orchestration)
+            Write-Host 'Stage: runtime-ready'
         }
-        $orchestration.observerReadyAtUtc = $ready.readinessTimestampUtc
-        $orchestration.guardedRequestAccepted = $true
-        $orchestration.stage = 'runtime-ready'
-        [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
-            -Record $orchestration)
-        Write-Host 'Stage: runtime-ready'
+        elseif ($null -ne $result) {
+            $orchestration.readinessObservationMissed = $true
+            $orchestration.warnings = @(
+                'A valid final result advanced beyond orchestration readiness observation.')
+        }
     }
     elseif ($Scenario -in @('observe-save-catalog-provider',
         'observe-load-game-button-action')) {
@@ -380,14 +406,27 @@ try {
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
         -Record $orchestration)
     Write-Host 'Stage: waiting-for-final-result'
-    while (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
+    while ($null -eq $result) {
+        $result = Get-KmgCurrentRuntimeResult -ResultPath $resultPath `
+            -EvidenceDirectory $evidence -RunId $request.runId `
+            -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
+            -RequestWrittenUtc $requestWrittenUtc
+        if ($null -ne $result) { break }
         $process.Refresh()
         if ($process.HasExited) {
-            $orchestration.stage = 'process-exited-early'
-            [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
-                -Record $orchestration)
-            Write-Host 'Stage: process-exited-early'
-            throw "Kingmaker exited before committing a result. stage=waiting-for-final-result; PID=$($process.Id); exitCode=$($process.ExitCode)"
+            $result = Wait-KmgRuntimeResultFlushGrace `
+                -ResultPath $resultPath -EvidenceDirectory $evidence `
+                -RunId $request.runId -Scenario $Scenario `
+                -ExpectedVersion $ExpectedVersion `
+                -RequestWrittenUtc $requestWrittenUtc
+            if ($null -eq $result) {
+                $orchestration.stage = 'process-exited-early'
+                [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
+                    -Record $orchestration)
+                Write-Host 'Stage: process-exited-early'
+                throw "Kingmaker exited before committing a result after final rescan and bounded flush grace. stage=waiting-for-final-result; PID=$($process.Id); exitCode=$($process.ExitCode)"
+            }
+            break
         }
         if ([DateTime]::UtcNow -ge $deadline) {
             if ($AllowForceTerminate) {
@@ -399,11 +438,6 @@ try {
         Start-Sleep -Milliseconds 500
     }
 
-    $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
-    if ($result.runId -cne $request.runId -or
-        [string]::IsNullOrWhiteSpace([string]$result.status)) {
-        throw 'The final runtime result is missing required run identity or status.'
-    }
     $orchestration.guardedRequestAccepted = ($result.runId -eq $request.runId)
     $orchestration.status = $result.status
     $orchestration.stage = 'final-result-received'
@@ -412,6 +446,7 @@ try {
     $terminalOutcomeRecorded = $true
     & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
         -EvidenceDirectory $evidence -PackagePath $package
+    Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"
     Write-Host 'Stage: final-result-received'

@@ -77,6 +77,7 @@ $ready = [pscustomobject]@{
     updateCallbackCount = 2
     mainMenuLifecycleReady = $true
     ummStartupState = 'initialized; overlay nonblocking-or-absent'
+    readinessStage = 'load-game-action-resolved'
 }
 Assert-True (Test-KmgRuntimeReadyMarker -Marker $ready -RunId 'run' `
     -Scenario 'working-save-smoke' -ExpectedVersion '0.0.30' -ProcessId 77 `

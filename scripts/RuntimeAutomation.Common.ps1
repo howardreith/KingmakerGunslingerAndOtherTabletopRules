@@ -280,9 +280,80 @@ function Test-KmgRuntimeReadyMarker {
         return $Marker.runtimeRunnerActive -eq $true -and
             $Marker.updateCallbackCount -ge 2 -and
             $Marker.mainMenuLifecycleReady -eq $true -and
-            $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent'
+            $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent' -and
+            $Marker.readinessStage -ceq 'load-game-action-resolved'
     }
     catch { return $false }
+}
+
+function Get-KmgCurrentRuntimeResult {
+    param(
+        [Parameter(Mandatory = $true)][string]$ResultPath,
+        [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
+        [Parameter(Mandatory = $true)][string]$RunId,
+        [Parameter(Mandatory = $true)][string]$Scenario,
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc
+    )
+    if (-not (Test-Path -LiteralPath $ResultPath -PathType Leaf)) { return $null }
+    $item = Get-Item -LiteralPath $ResultPath
+    if ($item.LastWriteTimeUtc -lt $RequestWrittenUtc.ToUniversalTime()) {
+        throw 'The final runtime result is stale.'
+    }
+    try { $result = Get-Content -LiteralPath $ResultPath -Raw | ConvertFrom-Json }
+    catch { throw "The final runtime result schema is unreadable: $($_.Exception.Message)" }
+    $validStatuses = @('PASS', 'FAIL', 'AMBIGUOUS', 'ERROR', 'TIMEOUT')
+    if ($result.schemaVersion -ne 1 -or $result.runId -cne $RunId -or
+        $result.scenario -cne $Scenario -or
+        $result.loadedModVersion -cne $ExpectedVersion -or
+        $result.status -cnotin $validStatuses) {
+        throw 'The final runtime result schema, run identity, scenario, version, or status is invalid.'
+    }
+    $expectedDirectory = [IO.Path]::GetFullPath($EvidenceDirectory).TrimEnd(
+        [IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+    $actualPath = [IO.Path]::GetFullPath($ResultPath)
+    if (-not $actualPath.StartsWith($expectedDirectory,
+        [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'The final runtime result is outside the current evidence directory.'
+    }
+    if (-not ($result.PSObject.Properties.Name -contains 'evidenceDirectory') -or
+        [string]::IsNullOrWhiteSpace([string]$result.evidenceDirectory)) {
+        throw 'The final runtime result does not name its evidence directory.'
+    }
+    $namedDirectory = [IO.Path]::GetFullPath(
+        [string]$result.evidenceDirectory).TrimEnd(
+            [IO.Path]::DirectorySeparatorChar)
+    if (-not $namedDirectory.Equals(
+        $expectedDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar),
+        [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'The final runtime result names a different evidence directory.'
+    }
+    return $result
+}
+
+function Wait-KmgRuntimeResultFlushGrace {
+    param(
+        [Parameter(Mandatory = $true)][string]$ResultPath,
+        [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
+        [Parameter(Mandatory = $true)][string]$RunId,
+        [Parameter(Mandatory = $true)][string]$Scenario,
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc,
+        [ValidateRange(100, 5000)][int]$GraceMilliseconds = 1000,
+        [ValidateRange(10, 250)][int]$PollMilliseconds = 50
+    )
+    # The first read is the mandatory final rescan. Further reads are bounded
+    # solely to allow an already-committed atomic rename to become visible.
+    $deadline = [DateTime]::UtcNow.AddMilliseconds($GraceMilliseconds)
+    do {
+        $result = Get-KmgCurrentRuntimeResult -ResultPath $ResultPath `
+            -EvidenceDirectory $EvidenceDirectory -RunId $RunId `
+            -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
+            -RequestWrittenUtc $RequestWrittenUtc
+        if ($null -ne $result) { return $result }
+        if ([DateTime]::UtcNow -ge $deadline) { return $null }
+        Start-Sleep -Milliseconds $PollMilliseconds
+    } while ($true)
 }
 
 function Initialize-KmgRuntimeTestEvidence {
