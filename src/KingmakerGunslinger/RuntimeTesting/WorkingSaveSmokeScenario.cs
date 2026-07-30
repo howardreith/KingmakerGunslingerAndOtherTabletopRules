@@ -77,7 +77,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private long _stageStarted;
         private Button _button;
         private LoadGameButtonCandidateEvidence _buttonEvidence;
-        private object _mainMenu;
+        private object _mainMenuButtons;
+        private object _loadEntryReceiver;
         private object _catalogObject;
         private object _workingDescriptor;
         private SaveCatalogDescriptorEvidence _workingEvidence;
@@ -101,6 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _sealed;
         private bool _buttonResolutionAttempted;
         private Exception _exception;
+        private string _lastCompletedStage = "runtime-readiness";
 
         internal WorkingSaveSmokeScenario(ModContext context, Stopwatch elapsed,
             string runId, Action<SaveLoadObservationEvent> sink)
@@ -128,6 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal bool WriteObserved { get { return _writeObserved; } }
         internal Exception ScenarioException { get { return _exception; } }
+        internal string LastCompletedStage { get { return _lastCompletedStage; } }
         internal int WorkingCount { get { return _workingCount; } }
         internal int BaselineCount { get { return _baselineCount; } }
         internal int ButtonCandidateCount { get { return _buttonCandidates; } }
@@ -136,7 +139,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             get
             {
-                return _mainMenu != null && _button != null &&
+                return _mainMenuButtons != null && _loadEntryReceiver != null &&
+                    _button != null &&
                     _buttonCandidates == 1 && _stage == "action-invocation";
             }
         }
@@ -205,7 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_stage == "main-menu-readiness")
             {
                 ResolveMainMenu();
-                if (_mainMenu != null)
+                if (_mainMenuButtons != null && _loadEntryReceiver != null)
                 {
                     Transition("load-game-action-resolution",
                         "exact active Kingmaker MainMenu receiver resolved; overlay was not treated as readiness");
@@ -227,10 +231,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "action-invocation")
             {
+                Add("load-game-action-invoke-start", null, null, "");
                 _buttonInvocations++;
                 Add("button-onclick-invoke", null, null,
                     "route=UnityEngine.UI.Button.onClick.Invoke;count=1");
                 _button.onClick.Invoke();
+                Add("load-game-action-invoked", null, null, "count=1");
                 if (_buttonInvocations != 1 || _handlerInvocations != 1)
                     throw new InvalidOperationException(
                         "Normal Load Game action did not invoke exactly once.");
@@ -240,15 +246,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "catalog-initialization" && _catalogInvocations == 1)
             {
+                Add("catalog-complete", _initialize, null,
+                    "descriptorCount=" + ReadCount(_catalogObject));
                 Transition("descriptor-resolution", "exact catalog argument captured");
                 return;
             }
             if (_stage == "descriptor-resolution")
             {
+                Add("descriptor-resolution-start", null, null, "");
                 ResolveDescriptors();
                 if (_workingCount > 1) return;
                 if (_workingCount == 1 && _baselineCount == 1 && _catalogComplete)
                 {
+                    Add("working-descriptor-resolved", null, null,
+                        "immutable scalar descriptor evidence captured");
+                    Add("baseline-excluded", null, null,
+                        "working and baseline object references are distinct");
                     Transition("load-entry-invocation",
                         "unique working descriptor and distinct baseline proven");
                     return;
@@ -256,20 +269,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "load-entry-invocation")
             {
+                _descriptorCorrelated = ContainsReference(
+                    _catalogObject, _workingDescriptor);
+                RemoveUiHooks();
+                Add("ui-hooks-removed", null, null,
+                    "button and catalog hooks removed before load entry");
+                _button = null;
+                _mainMenuButtons = null;
+                _catalogObject = null;
                 _loadEntryInvocations++;
-                Add("load-entry-requested", _loadEntry,
+                Add("load-entry-start", _loadEntry,
                     new[] { _workingDescriptor },
                     "correlation=object-reference;count=1");
-                _loadEntry.Invoke(_mainMenu, new[] { _workingDescriptor });
+                _loadEntry.Invoke(_loadEntryReceiver, new[] { _workingDescriptor });
                 if (_loadEntryInvocations != 1 || !_descriptorCorrelated)
                     throw new InvalidOperationException(
                         "Load entry correlation or invocation count failed.");
+                Add("load-entry-complete", _loadEntry, null,
+                    "exact MainMenu.LoadGame returned");
                 Transition("load-completion", "exact MainMenu.LoadGame invoked once");
                 return;
             }
             if (_stage == "load-completion" && _completionCallback)
             {
                 Transition("post-load-fingerprint", "after-load callback observed");
+                Add("fingerprint-start", null, null,
+                    "post-load evidence reads persistent game state only");
                 return;
             }
             if (_stage == "post-load-fingerprint") PollFingerprint();
@@ -319,7 +344,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return component != null && component.gameObject.activeInHierarchy &&
                     Root(component.transform).gameObject.name == "!LIGHT_SETUP";
             }).Cast<object>().ToList();
-            if (exact.Count == 1) _mainMenu = exact[0];
+            if (exact.Count == 1)
+            {
+                _mainMenuButtons = exact[0];
+                _loadEntryReceiver = ResolveLoadEntryReceiver(
+                    typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
+                if (_loadEntryReceiver == null)
+                    throw new MissingMemberException(
+                        "The exact Kingmaker.MainMenu load-entry receiver could not be resolved.");
+            }
             else if (exact.Count > 1)
                 throw new AmbiguousMatchException("Multiple exact MainMenu receivers.");
         }
@@ -408,6 +441,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static object ResolveLoadEntryReceiver(Type expectedType)
+        {
+            var matches = new List<object>();
+            AddTypedMembers(null, expectedType, expectedType, matches);
+            AddTypedMembers(Kingmaker.Game.Instance,
+                Kingmaker.Game.Instance.GetType(), expectedType, matches);
+            matches = matches.Where(value => value != null).Aggregate(
+                new List<object>(), (unique, value) =>
+                {
+                    if (!unique.Any(item => ReferenceEquals(item, value)))
+                        unique.Add(value);
+                    return unique;
+                });
+            if (matches.Count > 1)
+                throw new AmbiguousMatchException(
+                    "Multiple exact Kingmaker.MainMenu load-entry receivers were resolved.");
+            return matches.Count == 1 ? matches[0] : null;
+        }
+
+        private static void AddTypedMembers(object receiver, Type declaringType,
+            Type expectedType, List<object> matches)
+        {
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+                (receiver == null ? BindingFlags.Static : BindingFlags.Instance);
+            foreach (FieldInfo field in declaringType.GetFields(flags))
+            {
+                if (!expectedType.IsAssignableFrom(field.FieldType)) continue;
+                try { matches.Add(field.GetValue(receiver)); } catch { }
+            }
+            foreach (PropertyInfo property in declaringType.GetProperties(flags))
+            {
+                if (!expectedType.IsAssignableFrom(property.PropertyType) ||
+                    property.GetIndexParameters().Length != 0 || !property.CanRead)
+                    continue;
+                try { matches.Add(property.GetValue(receiver, null)); } catch { }
+            }
+        }
+
         private static bool IsWorking(object value)
         {
             return value != null && value.GetType().FullName == DescriptorType &&
@@ -448,7 +519,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (value == _lastFingerprint) _stableSamples++;
             else { _lastFingerprint = value; _stableSamples = 1; }
             if (_stableSamples == 2)
+            {
                 Add("stable-post-load-fingerprint", null, null, value);
+                Add("fingerprint-complete", null, null, value);
+            }
         }
 
         private static void Prefix(MethodBase __originalMethod, object __instance,
@@ -508,6 +582,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             else if (method == _initialize)
             {
                 _catalogInvocations++;
+                Add("catalog-enter", method, args, "");
                 if (_buttonInvocations != 1 || _handlerInvocations != 1)
                     throw new InvalidOperationException(
                         "Catalog initialization was not ordered after one action.");
@@ -518,9 +593,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             else if (method == _loadEntry)
             {
                 object argument = args == null || args.Length == 0 ? null : args[0];
-                _descriptorCorrelated = ReferenceEquals(
-                    argument, _workingDescriptor) &&
-                    ContainsReference(_catalogObject, argument);
+                _descriptorCorrelated = _descriptorCorrelated &&
+                    ReferenceEquals(argument, _workingDescriptor);
                 Add("load-entry-enter", method, args,
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
             }
@@ -536,12 +610,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             RequireGameThread();
             _completionCallback = true;
-            Add("load-completion-callback", null, null,
+            Add("after-load-callback", null, null,
                 "SaveManager after-load callback invoked");
         }
 
         private void Transition(string stage, string detail)
         {
+            _lastCompletedStage = _stage;
             _stage = stage;
             _stageStarted = _elapsed.ElapsedMilliseconds;
             Add("stage-enter", null, null, "stage=" + stage + ";" + detail);
@@ -579,6 +654,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             _patched.Clear();
             _removed = true;
             if (ReferenceEquals(_active, this)) _active = null;
+        }
+
+        private void RemoveUiHooks()
+        {
+            foreach (MethodBase method in new MethodBase[] { _handler, _initialize })
+            {
+                if (method == null || !_patched.Contains(method)) continue;
+                _context.Harmony.Unpatch(method, HarmonyPatchType.All,
+                    _context.ModId);
+                _patched.Remove(method);
+            }
         }
 
         private void Add(string kind, MethodBase method, object[] args, string detail)

@@ -1,0 +1,15 @@
+{
+  "sourceEvidenceDirectory": "20260730T2315048663038Z-working-save-smoke",
+  "status": "ERROR",
+  "errorStage": "load-entry-invocation",
+  "lastCompletedStage": "descriptor-resolution",
+  "exceptionType": "System.Reflection.TargetException",
+  "exceptionMessage": "Object of type 'Kingmaker.UI.MainMenuUI.MainMenuButtons' doesn't match target type 'Kingmaker.MainMenu'",
+  "catalogDescriptorCount": 47,
+  "workingMatchCount": 1,
+  "baselineMatchCount": 1,
+  "mainMenuLoadGameEntered": false,
+  "loadRoutineEntered": false,
+  "afterLoadCallbackObserved": false,
+  "saveWritingApiObserved": false
+}

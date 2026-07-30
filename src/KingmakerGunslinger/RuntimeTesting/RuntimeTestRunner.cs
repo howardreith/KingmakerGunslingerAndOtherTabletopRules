@@ -265,7 +265,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                CompleteStartupError(_workingStartupStage, exception);
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _workingReadyWritten && _workingSaveSmoke != null)
+                    CompletePostReadinessError(exception);
+                else
+                    CompleteStartupError(_workingStartupStage, exception);
             }
         }
 
@@ -454,6 +458,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(
                 RuntimeTestStatuses.Error, null, ExceptionSummary(exception));
             result.Diagnostics.Add("startupErrorStage=" + stage);
+            Complete(result);
+        }
+
+        private void CompletePostReadinessError(Exception exception)
+        {
+            string stage = _workingSaveSmoke.Stage;
+            try { WriteLifecycleStage("post-readiness-error"); }
+            catch (Exception markerException)
+            {
+                exception = new AggregateException(
+                    "Post-readiness execution failed and its marker could not be committed.",
+                    exception, markerException);
+            }
+            _trace.Record("post-readiness-error",
+                "stage=" + stage + ";lastCompletedStage=" +
+                _workingSaveSmoke.LastCompletedStage, exception);
+            RuntimeTestResult result = CreateResult(
+                RuntimeTestStatuses.Error, null, ExceptionSummary(exception));
+            result.ErrorStage = stage;
+            result.LastCompletedStage = _workingSaveSmoke.LastCompletedStage;
+            result.ExceptionType = exception.GetType().FullName;
+            result.ExceptionMessage = exception.Message;
+            result.ExceptionStack = exception.ToString();
+            result.ExceptionManagedThreadId =
+                System.Threading.Thread.CurrentThread.ManagedThreadId;
+            result.WorkingSaveSmoke = _workingSaveSmoke.Stop();
             Complete(result);
         }
 
@@ -994,6 +1024,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _trace.Record("result-flush-started", "status=" + result.Status);
                 RuntimeTestResultWriter.Write(result, _request.EvidenceDirectory);
                 _trace.Record("result-flushed", "status=" + result.Status);
+                WriteLifecycleStage("final-result-flushed");
             }
             catch (Exception exception)
             {

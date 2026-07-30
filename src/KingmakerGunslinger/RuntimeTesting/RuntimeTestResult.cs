@@ -52,17 +52,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("evidenceFiles", Order = 16)] public List<string> EvidenceFiles { get; set; }
         [JsonProperty("automaticExitRequested", Order = 17)] public bool AutomaticExitRequested { get; set; }
         [JsonProperty("automaticExitInitiated", Order = 18)] public bool AutomaticExitInitiated { get; set; }
-        [JsonProperty("saveLoadObservation", Order = 19, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("errorStage", Order = 19, NullValueHandling = NullValueHandling.Ignore)]
+        public string ErrorStage { get; set; }
+        [JsonProperty("lastCompletedStage", Order = 20, NullValueHandling = NullValueHandling.Ignore)]
+        public string LastCompletedStage { get; set; }
+        [JsonProperty("exceptionType", Order = 21, NullValueHandling = NullValueHandling.Ignore)]
+        public string ExceptionType { get; set; }
+        [JsonProperty("exceptionMessage", Order = 22, NullValueHandling = NullValueHandling.Ignore)]
+        public string ExceptionMessage { get; set; }
+        [JsonProperty("exceptionStack", Order = 23, NullValueHandling = NullValueHandling.Ignore)]
+        public string ExceptionStack { get; set; }
+        [JsonProperty("exceptionManagedThreadId", Order = 24)]
+        public int ExceptionManagedThreadId { get; set; }
+        [JsonProperty("saveLoadObservation", Order = 25, NullValueHandling = NullValueHandling.Ignore)]
         public SaveLoadObservationEvidence SaveLoadObservation { get; set; }
-        [JsonProperty("saveCatalogObservation", Order = 20, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("saveCatalogObservation", Order = 26, NullValueHandling = NullValueHandling.Ignore)]
         public SaveCatalogObservationEvidence SaveCatalogObservation { get; set; }
-        [JsonProperty("saveCatalogProviderObservation", Order = 21,
+        [JsonProperty("saveCatalogProviderObservation", Order = 27,
             NullValueHandling = NullValueHandling.Ignore)]
         public SaveCatalogProviderObservationEvidence SaveCatalogProviderObservation { get; set; }
-        [JsonProperty("loadGameButtonActionObservation", Order = 22,
+        [JsonProperty("loadGameButtonActionObservation", Order = 28,
             NullValueHandling = NullValueHandling.Ignore)]
         public LoadGameButtonActionEvidence LoadGameButtonActionObservation { get; set; }
-        [JsonProperty("workingSaveSmoke", Order = 23,
+        [JsonProperty("workingSaveSmoke", Order = 29,
             NullValueHandling = NullValueHandling.Ignore)]
         public WorkingSaveSmokeEvidence WorkingSaveSmoke { get; set; }
     }
