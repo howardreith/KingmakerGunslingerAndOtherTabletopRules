@@ -303,6 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal WorkingSaveSmokeEvidence Stop()
         {
             _sealed = true;
+            bool hooksInstalled = _patched.Count != 0;
             RemoveHooks();
             Add("scenario-hooks-removed", null, null,
                 "all scenario-specific hooks removed");
@@ -326,6 +327,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SaveWritingApiObserved = _writeObserved,
                 AllCallbacksOnGameThread = !_wrongThread,
                 HooksRemoved = _removed,
+                HooksInstalled = hooksInstalled,
+                UiActionOccurred = _buttonInvocations != 0,
+                DescriptorResolved = _workingDescriptor != null,
+                LoadingBegan = _loadEntryInvocations != 0,
+                LoadingCompleted = _completionCallback,
                 Events = new List<SaveLoadObservationEvent>(_events)
             };
         }
@@ -348,6 +354,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _mainMenuButtons = exact[0];
                 _loadEntryReceiver = ResolveLoadEntryReceiver(
+                    _mainMenuButtons as Component,
                     typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
                 if (_loadEntryReceiver == null)
                     throw new MissingMemberException(
@@ -441,9 +448,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static object ResolveLoadEntryReceiver(Type expectedType)
+        private static object ResolveLoadEntryReceiver(
+            Component lifecycleReceiver, Type expectedType)
         {
             var matches = new List<object>();
+            if (lifecycleReceiver != null)
+            {
+                Transform root = Root(lifecycleReceiver.transform);
+                foreach (Component component in root.gameObject
+                    .GetComponentsInChildren(expectedType, true))
+                {
+                    if (component != null &&
+                        expectedType.IsAssignableFrom(component.GetType()))
+                        matches.Add(component);
+                }
+            }
             AddTypedMembers(null, expectedType, expectedType, matches);
             AddTypedMembers(Kingmaker.Game.Instance,
                 Kingmaker.Game.Instance.GetType(), expectedType, matches);

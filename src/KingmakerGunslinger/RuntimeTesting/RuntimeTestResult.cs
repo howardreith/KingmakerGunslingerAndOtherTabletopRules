@@ -101,7 +101,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("saveWritingApiObserved", Order = 16)] public bool SaveWritingApiObserved { get; set; }
         [JsonProperty("allCallbacksOnGameThread", Order = 17)] public bool AllCallbacksOnGameThread { get; set; }
         [JsonProperty("hooksRemoved", Order = 18)] public bool HooksRemoved { get; set; }
-        [JsonProperty("events", Order = 19)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("hooksInstalled", Order = 19)] public bool HooksInstalled { get; set; }
+        [JsonProperty("uiActionOccurred", Order = 20)] public bool UiActionOccurred { get; set; }
+        [JsonProperty("descriptorResolved", Order = 21)] public bool DescriptorResolved { get; set; }
+        [JsonProperty("loadingBegan", Order = 22)] public bool LoadingBegan { get; set; }
+        [JsonProperty("loadingCompleted", Order = 23)] public bool LoadingCompleted { get; set; }
+        [JsonProperty("events", Order = 24)] public List<SaveLoadObservationEvent> Events { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence

@@ -459,6 +459,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(
                 RuntimeTestStatuses.Error, null, ExceptionSummary(exception));
             result.Diagnostics.Add("startupErrorStage=" + stage);
+            result.ErrorStage = _workingSaveSmoke == null
+                ? stage : _workingSaveSmoke.Stage;
+            result.LastCompletedStage = _workingSaveSmoke == null
+                ? "" : _workingSaveSmoke.LastCompletedStage;
+            result.ExceptionType = exception.GetType().FullName;
+            result.ExceptionMessage = exception.Message;
+            result.ExceptionStack = SanitizeExceptionStack(exception);
+            result.ExceptionManagedThreadId =
+                System.Threading.Thread.CurrentThread.ManagedThreadId;
+            if (_workingSaveSmoke != null)
+                result.WorkingSaveSmoke = _workingSaveSmoke.Stop();
             Complete(result);
         }
 
@@ -481,11 +492,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.LastCompletedStage = _workingSaveSmoke.LastCompletedStage;
             result.ExceptionType = exception.GetType().FullName;
             result.ExceptionMessage = exception.Message;
-            result.ExceptionStack = exception.ToString();
+            result.ExceptionStack = SanitizeExceptionStack(exception);
             result.ExceptionManagedThreadId =
                 System.Threading.Thread.CurrentThread.ManagedThreadId;
             result.WorkingSaveSmoke = _workingSaveSmoke.Stop();
             Complete(result);
+        }
+
+        private string SanitizeExceptionStack(Exception exception)
+        {
+            string value = exception == null ? "" : exception.ToString();
+            if (_request != null &&
+                !string.IsNullOrWhiteSpace(_request.EvidenceDirectory))
+                value = value.Replace(
+                    _request.EvidenceDirectory, "<evidence-directory>");
+            string user = Environment.UserName;
+            if (!string.IsNullOrWhiteSpace(user))
+                value = value.Replace(user, "<user>");
+            return value;
         }
 
         private void CompleteWorkingSaveSmoke(
