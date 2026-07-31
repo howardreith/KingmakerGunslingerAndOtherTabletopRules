@@ -1,12 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('mod-load-smoke', 'observe-manual-save-load',
-        'observe-save-catalog-and-selection',
-        'observe-save-catalog-provider',
-        'observe-load-game-button-action',
-        'observe-working-save-entry-action',
-        'working-save-smoke')]
     [string]$Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -46,21 +40,10 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
-$manualScenarios = @('observe-manual-save-load',
-    'observe-save-catalog-and-selection',
-    'observe-save-catalog-provider',
-    'observe-load-game-button-action',
-    'observe-working-save-entry-action')
-if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
-    throw "$Scenario requires -ManualInteractionRequired."
-}
-if ($Scenario -notin $manualScenarios -and $ManualInteractionRequired) {
-    throw '-ManualInteractionRequired is valid only for supervised observations.'
-}
-if ($Scenario -in @('working-save-smoke',
-    'observe-working-save-entry-action')) {
+$scenarioMetadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
+if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
-        throw "$Scenario requires explicit -SaveName KMG_AUTOMATION_WORKING."
+        throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
     if ($Parameters.Count -ne 0) {
         throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
@@ -68,8 +51,51 @@ if ($Scenario -in @('working-save-smoke',
     $Parameters = @{ saveName = $SaveName }
 }
 elseif ($PSBoundParameters.ContainsKey('SaveName')) {
-    throw '-SaveName is valid only for working-save-smoke or observe-working-save-entry-action.'
+    throw "-SaveName is not valid for scenario '$Scenario'."
 }
+
+$requestCatalogTimeout = if ($scenarioMetadata.UsesCatalogTimeout) {
+    $CatalogTimeoutSeconds
+} else { 0 }
+$requestSelectionTimeout = if ($scenarioMetadata.UsesSelectionTimeouts) {
+    $SelectionTimeoutSeconds
+} else { 0 }
+$requestCompletionTimeout = if ($scenarioMetadata.UsesSelectionTimeouts) {
+    $CompletionTimeoutSeconds
+} else { 0 }
+$requestMainMenuTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $MainMenuTimeoutSeconds
+} else { 0 }
+$requestActionResolutionTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $ActionResolutionTimeoutSeconds
+} else { 0 }
+$requestActionInvocationTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $ActionInvocationTimeoutSeconds
+} else { 0 }
+$requestDescriptorResolutionTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $DescriptorResolutionTimeoutSeconds
+} else { 0 }
+$requestLoadEntryTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $LoadEntryTimeoutSeconds
+} else { 0 }
+$requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
+    $FingerprintTimeoutSeconds
+} else { 0 }
+
+[void](Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+    -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
+    -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
+    -CatalogTimeoutSeconds $requestCatalogTimeout `
+    -SelectionTimeoutSeconds $requestSelectionTimeout `
+    -CompletionTimeoutSeconds $requestCompletionTimeout `
+    -MainMenuTimeoutSeconds $requestMainMenuTimeout `
+    -ActionResolutionTimeoutSeconds $requestActionResolutionTimeout `
+    -ActionInvocationTimeoutSeconds $requestActionInvocationTimeout `
+    -DescriptorResolutionTimeoutSeconds $requestDescriptorResolutionTimeout `
+    -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
+    -FingerprintTimeoutSeconds $requestFingerprintTimeout `
+    -Parameters $Parameters -EnforceManualInteraction `
+    -ManualInteractionRequired:$ManualInteractionRequired)
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -102,11 +128,6 @@ if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
 & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package `
     -WhatIf -Confirm:$false
 
-$currentOwner = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-$steamPreflight = Wait-KmgSteamProcess -SteamPath $SteamPath `
-    -TimeoutSeconds $SteamStartupTimeoutSeconds
-Assert-KmgProcessOwner -ProcessId $steamPreflight.Id -ExpectedOwner $currentOwner -Label 'Steam'
-
 $deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
     -PackagePath $package -Confirm:$false -PassThru
 
@@ -117,37 +138,15 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion $ExitAfterCompletion `
     -EvidenceDirectory $evidence -Parameters $Parameters `
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
-    -CatalogTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'observe-save-catalog-provider',
-        'observe-load-game-button-action', 'working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $CatalogTimeoutSeconds } else { 0 }) `
-    -SelectionTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $SelectionTimeoutSeconds } else { 0 }) `
-    -CompletionTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $CompletionTimeoutSeconds } else { 0 }) `
-    -MainMenuTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $MainMenuTimeoutSeconds } else { 0 }) `
-    -ActionResolutionTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $ActionResolutionTimeoutSeconds } else { 0 }) `
-    -ActionInvocationTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $ActionInvocationTimeoutSeconds } else { 0 }) `
-    -DescriptorResolutionTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $DescriptorResolutionTimeoutSeconds } else { 0 }) `
-    -LoadEntryTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $LoadEntryTimeoutSeconds } else { 0 }) `
-    -FingerprintTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
-        'observe-working-save-entry-action')) {
-        $FingerprintTimeoutSeconds } else { 0 })
+    -CatalogTimeoutSeconds $requestCatalogTimeout `
+    -SelectionTimeoutSeconds $requestSelectionTimeout `
+    -CompletionTimeoutSeconds $requestCompletionTimeout `
+    -MainMenuTimeoutSeconds $requestMainMenuTimeout `
+    -ActionResolutionTimeoutSeconds $requestActionResolutionTimeout `
+    -ActionInvocationTimeoutSeconds $requestActionInvocationTimeout `
+    -DescriptorResolutionTimeoutSeconds $requestDescriptorResolutionTimeout `
+    -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
+    -FingerprintTimeoutSeconds $requestFingerprintTimeout
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath

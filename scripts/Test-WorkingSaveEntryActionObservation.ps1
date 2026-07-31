@@ -99,8 +99,9 @@ $checks = [ordered]@{
         $scenario.Contains('Unpatch(method, HarmonyPatchType.All,') -and
         $scenario.Contains('if (ReferenceEquals(_active, this)) _active = null')
     'manual-interaction-required' =
-        $orchestrator.Contains("'observe-working-save-entry-action'") -and
-        $orchestrator.Contains('requires -ManualInteractionRequired')
+        $common.Contains("'observe-working-save-entry-action' = [pscustomobject]@{") -and
+        $common.Contains('RequiresManualInteraction = $true') -and
+        $orchestrator.Contains('-EnforceManualInteraction')
 }
 
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } |

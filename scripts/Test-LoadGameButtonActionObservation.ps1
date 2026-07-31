@@ -23,9 +23,10 @@ $checks = [ordered]@{
     'guarded-allowlist' = $catalog.Contains('ObserveLoadGameButtonAction') -and
         $catalog.Contains('"observe-load-game-button-action"') -and
         $runner.Contains('RuntimeTestRequestParser.TryActivate')
-    'supervised-only' = $orchestrator.Contains(
-        "'observe-load-game-button-action'") -and
-        $orchestrator.Contains('requires -ManualInteractionRequired')
+    'supervised-only' = $common.Contains(
+        "'observe-load-game-button-action' = [pscustomobject]@{") -and
+        $common.Contains('RequiresManualInteraction = $true') -and
+        $orchestrator.Contains('-EnforceManualInteraction')
     'exact-handler' = $observer.Contains(
         '"Kingmaker.UI.MainMenuUI.MainMenuButtons"') -and
         $observer.Contains('"OnButtonLoadGame"') -and

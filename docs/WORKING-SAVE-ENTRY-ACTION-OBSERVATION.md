@@ -4,6 +4,22 @@
 runtime observation. It exists only to identify the normal in-process Load
 action bound to the unique `KMG_AUTOMATION_WORKING` catalog descriptor.
 
+## First invocation failure and preserved state
+
+The first real invocation on 2026-07-30 completed repository validation, all
+611 domain tests, the build, package validation, live-mod backup, and candidate
+deployment. It then failed before request creation or launch because
+`RuntimeAutomation.Common.ps1` did not include the scenario in its independent
+request-generation allowlist.
+
+Steam and Kingmaker did not launch. No save was loaded, accessed, or modified.
+The candidate mod remained installed. The previous installation is preserved
+at
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260731T0304420497972Z`,
+and the completed deployment manifest remains at
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260731T0304423257263Z\deployment.json`.
+Neither artifact is altered by this repair.
+
 The request must contain exactly:
 
 ```json

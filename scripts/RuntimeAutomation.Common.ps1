@@ -1,13 +1,51 @@
 Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
-$script:KmgRuntimeScenarios = @(
-    'mod-load-smoke',
-    'observe-manual-save-load',
-    'observe-save-catalog-and-selection',
-    'observe-save-catalog-provider',
-    'observe-load-game-button-action',
-    'working-save-smoke')
+$script:KmgRuntimeScenarioMetadata = [ordered]@{
+    'mod-load-smoke' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-manual-save-load' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $true; ReadinessBehavior = 'manual-save-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-save-catalog-and-selection' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $true; ReadinessBehavior = 'catalog-selection'
+        TimeoutCategory = 'catalog-selection'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $false
+    }
+    'observe-save-catalog-provider' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $true; ReadinessBehavior = 'catalog-provider'
+        TimeoutCategory = 'catalog'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-load-game-button-action' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $true; ReadinessBehavior = 'load-game-action'
+        TimeoutCategory = 'catalog'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'working-save-smoke' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-working-save-entry-action' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $true; ReadinessBehavior = 'human-working-save-entry-action'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+}
+$script:KmgRuntimeScenarios = @($script:KmgRuntimeScenarioMetadata.Keys)
 $script:KmgSteamAppId = 640820
 $script:KmgSteamExecutable = 'C:\Program Files (x86)\Steam\steam.exe'
 
@@ -19,6 +57,97 @@ function Assert-KmgRuntimeEvidenceDirectory {
         throw "Runtime evidence directory must be beneath $root"
     }
     return $full
+}
+
+function Get-KmgRuntimeScenarioMetadata {
+    param([Parameter(Mandatory = $true)][string]$Scenario)
+    if (-not $script:KmgRuntimeScenarioMetadata.Contains($Scenario)) {
+        throw "Scenario is not allowlisted: $Scenario"
+    }
+    return $script:KmgRuntimeScenarioMetadata[$Scenario]
+}
+
+function Assert-KmgRuntimeScenarioPreflight {
+    param(
+        [Parameter(Mandatory = $true)][string]$Scenario,
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
+        [int]$StartupTimeoutSeconds = 180,
+        [int]$CatalogTimeoutSeconds = 0,
+        [int]$SelectionTimeoutSeconds = 0,
+        [int]$CompletionTimeoutSeconds = 0,
+        [int]$MainMenuTimeoutSeconds = 0,
+        [int]$ActionResolutionTimeoutSeconds = 0,
+        [int]$ActionInvocationTimeoutSeconds = 0,
+        [int]$DescriptorResolutionTimeoutSeconds = 0,
+        [int]$LoadEntryTimeoutSeconds = 0,
+        [int]$FingerprintTimeoutSeconds = 0,
+        [hashtable]$Parameters = @{},
+        [switch]$EnforceManualInteraction,
+        [switch]$ManualInteractionRequired
+    )
+    $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
+    if ($ExpectedVersion -cne '0.0.30') {
+        throw 'ExpectedVersion must be exactly the qualified version 0.0.30.'
+    }
+    if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
+        throw 'TimeoutSeconds must be from 5 through 1800.'
+    }
+    if ($StartupTimeoutSeconds -lt 5 -or $StartupTimeoutSeconds -gt 600) {
+        throw 'StartupTimeoutSeconds must be from 5 through 600.'
+    }
+    if ($EnforceManualInteraction) {
+        if ($metadata.RequiresManualInteraction -and -not $ManualInteractionRequired) {
+            throw "$Scenario requires -ManualInteractionRequired."
+        }
+        if (-not $metadata.RequiresManualInteraction -and $ManualInteractionRequired) {
+            throw '-ManualInteractionRequired is valid only for supervised observations.'
+        }
+    }
+    if ($metadata.RequiresSaveName) {
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('saveName') -or
+            $Parameters.saveName -isnot [string] -or
+            $Parameters.saveName -cne $metadata.PermittedSaveName) {
+            throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
+        }
+    }
+    elseif ($Parameters.Count -ne 0) {
+        throw "Scenario '$Scenario' does not accept parameters."
+    }
+    if ($metadata.UsesCatalogTimeout -and
+        ($CatalogTimeoutSeconds -lt 5 -or $CatalogTimeoutSeconds -gt 1800)) {
+        throw 'Catalog scenario timeout must be from 5 through 1800.'
+    }
+    if (-not $metadata.UsesCatalogTimeout -and $CatalogTimeoutSeconds -ne 0) {
+        throw 'Catalog timeout is valid only for a catalog scenario.'
+    }
+    if ($metadata.UsesSelectionTimeouts -and
+        ($SelectionTimeoutSeconds -lt 5 -or $SelectionTimeoutSeconds -gt 1800 -or
+         $CompletionTimeoutSeconds -lt 5 -or $CompletionTimeoutSeconds -gt 1800)) {
+        throw 'Catalog selection stage timeouts must be from 5 through 1800.'
+    }
+    if (-not $metadata.UsesSelectionTimeouts -and
+        ($SelectionTimeoutSeconds -ne 0 -or $CompletionTimeoutSeconds -ne 0)) {
+        throw 'Selection and completion timeouts are valid only for the selection scenario.'
+    }
+    if ($metadata.UsesWorkingStageTimeouts) {
+        foreach ($stageTimeout in @($MainMenuTimeoutSeconds,
+            $ActionResolutionTimeoutSeconds, $ActionInvocationTimeoutSeconds,
+            $DescriptorResolutionTimeoutSeconds, $LoadEntryTimeoutSeconds,
+            $FingerprintTimeoutSeconds)) {
+            if ($stageTimeout -lt 5 -or $stageTimeout -gt 1800) {
+                throw 'Working-save stage timeouts must be from 5 through 1800.'
+            }
+        }
+    }
+    elseif (@(@($MainMenuTimeoutSeconds, $ActionResolutionTimeoutSeconds,
+        $ActionInvocationTimeoutSeconds, $DescriptorResolutionTimeoutSeconds,
+        $LoadEntryTimeoutSeconds, $FingerprintTimeoutSeconds) |
+        Where-Object { $_ -ne 0 }).Count -ne 0) {
+        throw 'Working-save stage timeouts are valid only for working-save scenarios.'
+    }
+    return $metadata
 }
 
 function New-KmgRuntimeRequest {
@@ -40,61 +169,19 @@ function New-KmgRuntimeRequest {
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
         [hashtable]$Parameters = @{}
     )
-    if ($Scenario -notin $script:KmgRuntimeScenarios) {
-        throw "Scenario is not allowlisted: $Scenario"
-    }
-    if ([string]::IsNullOrWhiteSpace($ExpectedVersion)) {
-        throw 'ExpectedVersion is required.'
-    }
-    if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
-        throw 'TimeoutSeconds must be from 5 through 1800.'
-    }
-    if ($StartupTimeoutSeconds -lt 5 -or $StartupTimeoutSeconds -gt 600) {
-        throw 'StartupTimeoutSeconds must be from 5 through 600.'
-    }
-    $isWorkingSmoke = $Scenario -eq 'working-save-smoke'
-    if ($isWorkingSmoke) {
-        if ($Parameters.Count -ne 1 -or
-            -not $Parameters.ContainsKey('saveName') -or
-            $Parameters.saveName -isnot [string] -or
-            $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
-            throw 'working-save-smoke requires exactly saveName=KMG_AUTOMATION_WORKING.'
-        }
-        foreach ($stageTimeout in @($MainMenuTimeoutSeconds,
-            $ActionResolutionTimeoutSeconds, $ActionInvocationTimeoutSeconds,
-            $DescriptorResolutionTimeoutSeconds, $LoadEntryTimeoutSeconds,
-            $FingerprintTimeoutSeconds)) {
-            if ($stageTimeout -lt 5 -or $stageTimeout -gt 1800) {
-                throw 'Working-save-smoke stage timeouts must be from 5 through 1800.'
-            }
-        }
-    }
-    elseif ($Parameters.Count -ne 0) {
-        throw "Scenario '$Scenario' does not accept parameters."
-    }
-    $isCatalog = $Scenario -in @(
-        'observe-save-catalog-and-selection',
-        'observe-save-catalog-provider',
-        'observe-load-game-button-action',
-        'working-save-smoke')
-    $isSelectionCatalog = $Scenario -in @(
-        'observe-save-catalog-and-selection', 'working-save-smoke')
-    if ($isCatalog -and
-        ($CatalogTimeoutSeconds -lt 5 -or $CatalogTimeoutSeconds -gt 1800)) {
-        throw 'Catalog scenario timeout must be from 5 through 1800.'
-    }
-    if (-not $isCatalog -and $CatalogTimeoutSeconds -ne 0) {
-        throw 'Catalog timeout is valid only for a catalog scenario.'
-    }
-    if ($isSelectionCatalog -and
-        ($SelectionTimeoutSeconds -lt 5 -or $SelectionTimeoutSeconds -gt 1800 -or
-         $CompletionTimeoutSeconds -lt 5 -or $CompletionTimeoutSeconds -gt 1800)) {
-        throw 'Catalog selection stage timeouts must be from 5 through 1800.'
-    }
-    if (-not $isSelectionCatalog -and
-        ($SelectionTimeoutSeconds -ne 0 -or $CompletionTimeoutSeconds -ne 0)) {
-        throw 'Selection and completion timeouts are valid only for the selection scenario.'
-    }
+    $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+        -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
+        -StartupTimeoutSeconds $StartupTimeoutSeconds `
+        -CatalogTimeoutSeconds $CatalogTimeoutSeconds `
+        -SelectionTimeoutSeconds $SelectionTimeoutSeconds `
+        -CompletionTimeoutSeconds $CompletionTimeoutSeconds `
+        -MainMenuTimeoutSeconds $MainMenuTimeoutSeconds `
+        -ActionResolutionTimeoutSeconds $ActionResolutionTimeoutSeconds `
+        -ActionInvocationTimeoutSeconds $ActionInvocationTimeoutSeconds `
+        -DescriptorResolutionTimeoutSeconds $DescriptorResolutionTimeoutSeconds `
+        -LoadEntryTimeoutSeconds $LoadEntryTimeoutSeconds `
+        -FingerprintTimeoutSeconds $FingerprintTimeoutSeconds `
+        -Parameters $Parameters
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
         [Guid]::NewGuid().ToString('N')
@@ -117,7 +204,7 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($isWorkingSmoke) {
+        parameters = if ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } else { [ordered]@{} }
     }
@@ -276,12 +363,19 @@ function Test-KmgRuntimeReadyMarker {
             $readyUtc -ge $RequestWrittenUtc.ToUniversalTime() -and
             @($Marker.installedObservationHookIdentifiers).Count -gt 0
         if (-not $coreReady) { return $false }
-        if ($Scenario -cne 'working-save-smoke') { return $true }
+        $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
+        if (-not $metadata.UsesWorkingStageTimeouts) { return $true }
+        $expectedStage = if ($metadata.ReadinessBehavior -ceq
+            'human-working-save-entry-action') {
+            'working-entry-action-ready'
+        } else {
+            'load-game-action-resolved'
+        }
         return $Marker.runtimeRunnerActive -eq $true -and
             $Marker.updateCallbackCount -ge 2 -and
             $Marker.mainMenuLifecycleReady -eq $true -and
             $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent' -and
-            $Marker.readinessStage -ceq 'load-game-action-resolved'
+            $Marker.readinessStage -ceq $expectedStage
     }
     catch { return $false }
 }

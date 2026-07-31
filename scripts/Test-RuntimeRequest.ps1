@@ -38,6 +38,25 @@ Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVe
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.30' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'baseline-forbidden'
+$entryRequest = New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
+    -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
+    -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
+    -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
+    -ActionResolutionTimeoutSeconds 30 -ActionInvocationTimeoutSeconds 30 `
+    -DescriptorResolutionTimeoutSeconds 30 -LoadEntryTimeoutSeconds 30 `
+    -FingerprintTimeoutSeconds 30
+if ($entryRequest.scenario -cne 'observe-working-save-entry-action' -or
+    $entryRequest.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+    $failures.Add('entry-request-valid')
+}
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
+    -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -EvidenceDirectory $synthetic -Parameters @{} } 'entry-save-name-missing'
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
+    -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -EvidenceDirectory $synthetic `
+    -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'entry-baseline-forbidden'
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 9'
+Write-Host 'Runtime request source tests passed: 12'

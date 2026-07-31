@@ -57,7 +57,7 @@ Assert-True ($orchestrator.Contains(
 Assert-True (-not ($orchestrator -match
     '(SendKeys|mouse_event|keybd_event|WScript\.Shell)')) 'orchestrator-sends-no-input'
 Assert-True ($orchestrator.Contains(
-    "`$Scenario -in `$manualScenarios -and -not `$ManualInteractionRequired")) `
+    '-EnforceManualInteraction')) `
     'manual-observation-requires-explicit-switch'
 Assert-True ($orchestrator.Contains(
     "'observe-save-catalog-and-selection'")) `
