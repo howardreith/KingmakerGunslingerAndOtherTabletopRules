@@ -223,6 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -256,7 +257,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunLoadGameButtonActionObservation();
                     return;
                 }
-                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke)
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction)
                 {
                     RunWorkingSaveSmoke();
                     return;
@@ -265,7 +268,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction) &&
                     _workingReadyWritten && _workingSaveSmoke != null)
                     CompletePostReadinessError(exception);
                 else
@@ -280,9 +285,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _workingStartupStage = "scenario-selected";
                 WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("scenario-activated",
-                    RuntimeTestScenarioCatalog.WorkingSaveSmoke);
+                    _request.Scenario);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
-                    _context, _elapsed, _request.RunId, _trace.Record);
+                    _context, _elapsed, _request.RunId, _trace.Record,
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
@@ -308,10 +315,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _workingStartupStage = "main-menu-ready";
                 WriteLifecycleStage(_workingStartupStage);
             }
-            if (!_workingReadyWritten && _workingSaveSmoke.MainMenuReady &&
+            bool supervisedEntry = _request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
+            bool requestedReadiness = supervisedEntry
+                ? _workingSaveSmoke.EntryActionReady
+                : _workingSaveSmoke.MainMenuReady;
+            if (!_workingReadyWritten && requestedReadiness &&
                 _updateCallbackCount >= 2)
             {
-                _workingStartupStage = "load-game-action-resolved";
+                _workingStartupStage = supervisedEntry
+                    ? "working-entry-action-ready"
+                    : "load-game-action-resolved";
                 WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("runtime-ready",
                     "runner active; update callbacks continuing; exact main-menu root active; UMM overlay is not used as readiness");
@@ -329,7 +343,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UpdateCallbackCount = _updateCallbackCount,
                     MainMenuLifecycleReady = true,
                     UmmStartupState = "initialized; overlay nonblocking-or-absent",
-                    ReadinessStage = "load-game-action-resolved"
+                    ReadinessStage = _workingStartupStage
                 });
                 _workingStartupStage = "working-save-ready";
                 WriteLifecycleStage(_workingStartupStage);
@@ -354,6 +368,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "A native save-writing or migration method was observed.");
                 return;
             }
+            if (supervisedEntry && (_workingSaveSmoke.BaselineLoadObserved ||
+                _workingSaveSmoke.OtherLoadObserved))
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
+                    "forbidden-save-selection",
+                    _workingSaveSmoke.BaselineLoadObserved
+                        ? "The baseline descriptor entered MainMenu.LoadGame."
+                        : "A descriptor other than the working save entered MainMenu.LoadGame.");
+                return;
+            }
             if (_workingSaveSmoke.ButtonCandidateCount > 1)
             {
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
@@ -366,6 +390,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
                     "descriptor-resolution",
                     "Multiple exact working descriptors were captured.");
+                return;
+            }
+            if (supervisedEntry &&
+                (_workingSaveSmoke.EntryCandidateCount > 1 ||
+                 _workingSaveSmoke.EntryActionCandidateCount > 1))
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                    "entry-action-resolution",
+                    "Multiple working entries or entry actions matched.");
                 return;
             }
             if (_workingSaveSmoke.Stage == "descriptor-resolution" &&
@@ -422,6 +455,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _request.DescriptorResolutionTimeoutSeconds;
             if (stage == "load-entry-invocation")
                 return _request.LoadEntryTimeoutSeconds;
+            if (stage == "entry-action-ready")
+                return _request.SelectionTimeoutSeconds;
             if (stage == "load-completion")
                 return _request.CompletionTimeoutSeconds;
             if (stage == "post-load-fingerprint")
@@ -560,7 +595,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
-            result.WorkingSaveSmoke = evidence;
+            bool supervisedEntry = _request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
+            if (supervisedEntry)
+            {
+                result.WorkingSaveEntryActionObservation = evidence;
+                assertions.Add(Assertion("unique-working-entry",
+                    "one object-reference-correlated UI entry",
+                    "entries=" + evidence.EntryCandidateCount,
+                    evidence.EntryCandidateCount == 1,
+                    "component field reference equals exact catalog SaveInfo"));
+                assertions.Add(Assertion("unique-working-entry-action",
+                    "one active interactable action within exact entry",
+                    "actions=" + evidence.EntryActionCandidateCount,
+                    evidence.EntryActionCandidateCount == 1,
+                    "entry-local UnityEvent runtime delegate captures descriptor owner"));
+                assertions.Add(Assertion("human-action-and-listener",
+                    "exact action once and exact listener once",
+                    "action=" + evidence.HumanActionInvocationCount +
+                        ";listener=" + evidence.ListenerInvocationCount,
+                    evidence.HumanActionInvocationCount == 1 &&
+                        evidence.ListenerInvocationCount == 1 &&
+                        !string.IsNullOrWhiteSpace(evidence.ListenerMethod),
+                    "passive Harmony entry and listener observation"));
+                assertions.Add(Assertion("probe-never-invoked-entry-action",
+                    "false", evidence.ProbeInvokedEntryAction.ToString(),
+                    !evidence.ProbeInvokedEntryAction,
+                    "observer contains no entry-action invocation"));
+            }
+            else result.WorkingSaveSmoke = evidence;
             if (!string.IsNullOrWhiteSpace(stage))
                 result.Diagnostics.Add("timeoutStage=" + stage);
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);

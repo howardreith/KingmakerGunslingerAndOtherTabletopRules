@@ -77,7 +77,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("workingSaveSmoke", Order = 29,
             NullValueHandling = NullValueHandling.Ignore)]
         public WorkingSaveSmokeEvidence WorkingSaveSmoke { get; set; }
-        [JsonProperty("evidenceDirectory", Order = 30)]
+        [JsonProperty("workingSaveEntryActionObservation", Order = 30,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public WorkingSaveSmokeEvidence WorkingSaveEntryActionObservation { get; set; }
+        [JsonProperty("evidenceDirectory", Order = 31)]
         public string EvidenceDirectory { get; set; }
     }
 
@@ -107,6 +110,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("loadingBegan", Order = 22)] public bool LoadingBegan { get; set; }
         [JsonProperty("loadingCompleted", Order = 23)] public bool LoadingCompleted { get; set; }
         [JsonProperty("events", Order = 24)] public List<SaveLoadObservationEvent> Events { get; set; }
+        [JsonProperty("entryCandidateCount", Order = 25)] public int EntryCandidateCount { get; set; }
+        [JsonProperty("entryActionCandidateCount", Order = 26)] public int EntryActionCandidateCount { get; set; }
+        [JsonProperty("entryAction", Order = 27)] public LoadGameButtonCandidateEvidence EntryAction { get; set; }
+        [JsonProperty("entryObjectIdentity", Order = 28)] public string EntryObjectIdentity { get; set; }
+        [JsonProperty("actionObjectIdentity", Order = 29)] public string ActionObjectIdentity { get; set; }
+        [JsonProperty("humanActionInvocationCount", Order = 30)] public int HumanActionInvocationCount { get; set; }
+        [JsonProperty("listenerInvocationCount", Order = 31)] public int ListenerInvocationCount { get; set; }
+        [JsonProperty("listenerTargetIdentity", Order = 32)] public string ListenerTargetIdentity { get; set; }
+        [JsonProperty("listenerMethod", Order = 33)] public string ListenerMethod { get; set; }
+        [JsonProperty("loadEntryReceiverIdentity", Order = 34)] public string LoadEntryReceiverIdentity { get; set; }
+        [JsonProperty("probeInvokedEntryAction", Order = 35)] public bool ProbeInvokedEntryAction { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence
@@ -146,6 +160,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("kind", Order = 1)] public string Kind { get; set; }
         [JsonProperty("targetType", Order = 2)] public string TargetType { get; set; }
         [JsonProperty("methodName", Order = 3)] public string MethodName { get; set; }
+        [JsonProperty("safeCapturedFields", Order = 4)]
+        public List<string> SafeCapturedFields { get; set; }
     }
 
     internal sealed class SaveLoadObservationEvent

@@ -101,17 +101,33 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _removed;
         private bool _sealed;
         private bool _buttonResolutionAttempted;
+        private readonly bool _observeEntryAction;
+        private Button _entryAction;
+        private UnityEvent _entryUnityEvent;
+        private Component _entryOwner;
+        private LoadGameButtonCandidateEvidence _entryEvidence;
+        private int _entryCandidates;
+        private int _entryActionCandidates;
+        private int _humanActionInvocations;
+        private int _listenerInvocations;
+        private object _listenerTarget;
+        private MethodInfo _listenerMethod;
+        private object _observedLoadReceiver;
+        private bool _baselineLoadObserved;
+        private bool _otherLoadObserved;
         private Exception _exception;
         private string _lastCompletedStage = "runtime-readiness";
 
         internal WorkingSaveSmokeScenario(ModContext context, Stopwatch elapsed,
-            string runId, Action<SaveLoadObservationEvent> sink)
+            string runId, Action<SaveLoadObservationEvent> sink,
+            bool observeEntryAction = false)
         {
             _context = context;
             _elapsed = elapsed;
             _runId = runId;
             _sink = sink;
             _gameThreadId = Thread.CurrentThread.ManagedThreadId;
+            _observeEntryAction = observeEntryAction;
             _stageStarted = elapsed.ElapsedMilliseconds;
         }
 
@@ -125,7 +141,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             get
             {
                 return _completionCallback && _stableSamples >= 2 &&
-                    _descriptorCorrelated && !_writeObserved && !_wrongThread;
+                    _descriptorCorrelated && !_writeObserved && !_wrongThread &&
+                    (!_observeEntryAction ||
+                     (_entryCandidates == 1 && _entryActionCandidates == 1 &&
+                      _humanActionInvocations == 1 &&
+                      _listenerInvocations == 1 &&
+                      _loadEntryInvocations == 1));
             }
         }
         internal bool WriteObserved { get { return _writeObserved; } }
@@ -134,6 +155,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal int WorkingCount { get { return _workingCount; } }
         internal int BaselineCount { get { return _baselineCount; } }
         internal int ButtonCandidateCount { get { return _buttonCandidates; } }
+        internal int EntryCandidateCount { get { return _entryCandidates; } }
+        internal int EntryActionCandidateCount { get { return _entryActionCandidates; } }
+        internal bool BaselineLoadObserved { get { return _baselineLoadObserved; } }
+        internal bool OtherLoadObserved { get { return _otherLoadObserved; } }
         internal bool CatalogComplete { get { return _catalogComplete; } }
         internal bool MainMenuReady
         {
@@ -141,6 +166,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return _mainMenuButtons != null && _button != null &&
                     _buttonCandidates == 1 && _stage == "action-invocation";
+            }
+        }
+        internal bool EntryActionReady
+        {
+            get
+            {
+                return _observeEntryAction && _stage == "entry-action-ready" &&
+                    _entryCandidates == 1 && _entryActionCandidates == 1 &&
+                    _entryAction != null;
             }
         }
         internal List<string> HookIdentifiers
@@ -268,6 +302,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "load-entry-invocation")
             {
+                if (_observeEntryAction)
+                {
+                    ResolveWorkingEntryAction();
+                    if (_entryCandidates == 1 && _entryActionCandidates == 1)
+                        Transition("entry-action-ready",
+                            "one object-reference-correlated working entry and Load action identified; probe did not invoke it");
+                    return;
+                }
                 _loadEntryReceiver = ResolveLoadEntryReceiver(
                     _mainMenuButtons as Component,
                     typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
@@ -293,6 +335,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add("load-entry-complete", _loadEntry, null,
                     "exact MainMenu.LoadGame returned");
                 Transition("load-completion", "exact MainMenu.LoadGame invoked once");
+                return;
+            }
+            if (_stage == "entry-action-ready" && _loadEntryInvocations == 1)
+            {
+                Transition("load-completion",
+                    "human invoked exact working-entry action once");
                 return;
             }
             if (_stage == "load-completion" && _completionCallback)
@@ -337,8 +385,156 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DescriptorResolved = _workingDescriptor != null,
                 LoadingBegan = _loadEntryInvocations != 0,
                 LoadingCompleted = _completionCallback,
-                Events = new List<SaveLoadObservationEvent>(_events)
+                Events = new List<SaveLoadObservationEvent>(_events),
+                EntryCandidateCount = _entryCandidates,
+                EntryActionCandidateCount = _entryActionCandidates,
+                EntryAction = _entryEvidence,
+                EntryObjectIdentity = ObjectIdentity(_entryOwner),
+                ActionObjectIdentity = ObjectIdentity(_entryUnityEvent),
+                HumanActionInvocationCount = _humanActionInvocations,
+                ListenerInvocationCount = _listenerInvocations,
+                ListenerTargetIdentity = ObjectIdentity(_listenerTarget),
+                ListenerMethod = FormatSignature(_listenerMethod),
+                LoadEntryReceiverIdentity = ObjectIdentity(_observedLoadReceiver),
+                ProbeInvokedEntryAction = false
             };
+        }
+
+        private void ResolveWorkingEntryAction()
+        {
+            var entries = new List<Component>();
+            foreach (Component component in Resources.FindObjectsOfTypeAll(
+                typeof(Component)).OfType<Component>())
+            {
+                if (component == null || !component.gameObject.activeInHierarchy)
+                    continue;
+                if (ObjectContainsReference(component, _workingDescriptor))
+                    entries.Add(component);
+            }
+            entries = UniqueComponents(entries);
+            _entryCandidates = entries.Count;
+            if (entries.Count != 1) return;
+            _entryOwner = entries[0];
+            var matches = new List<Button>();
+            foreach (Button button in EntryButtons(_entryOwner))
+            {
+                if (button == null || !button.gameObject.activeInHierarchy ||
+                    !button.interactable) continue;
+                List<Delegate> delegates = RuntimeDelegates(button.onClick);
+                if (!delegates.Any(value =>
+                    ReferenceEquals(value.Target, _entryOwner) ||
+                    ObjectContainsReference(value.Target, _workingDescriptor)))
+                    continue;
+                matches.Add(button);
+            }
+            matches = matches.Distinct().ToList();
+            _entryActionCandidates = matches.Count;
+            if (matches.Count != 1) return;
+            _entryAction = matches[0];
+            _entryUnityEvent = _entryAction.onClick;
+            List<Delegate> listeners = RuntimeDelegates(_entryUnityEvent).Where(
+                value => ReferenceEquals(value.Target, _entryOwner) ||
+                    ObjectContainsReference(value.Target, _workingDescriptor)).ToList();
+            if (listeners.Count != 1)
+            {
+                _entryActionCandidates = listeners.Count;
+                return;
+            }
+            _listenerTarget = listeners[0].Target;
+            _listenerMethod = listeners[0].Method;
+            _entryEvidence = ButtonEvidence(_entryAction, _entryOwner);
+            MethodInfo eventInvoke = typeof(UnityEvent).GetMethod("Invoke",
+                BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+            MethodInfo prefix = typeof(WorkingSaveSmokeScenario).GetMethod(
+                "Prefix", BindingFlags.Static | BindingFlags.NonPublic);
+            Patch(eventInvoke, prefix, null);
+            if (_listenerMethod != null && !_patched.Contains(_listenerMethod))
+                Patch(_listenerMethod, prefix, null);
+            Add("working-entry-action-ready", _listenerMethod, null,
+                "descriptorCorrelation=object-reference;entry=" +
+                ObjectIdentity(_entryOwner) + ";action=" +
+                ObjectIdentity(_entryUnityEvent));
+        }
+
+        private static LoadGameButtonCandidateEvidence ButtonEvidence(
+            Button button, Component owner)
+        {
+            return new LoadGameButtonCandidateEvidence
+            {
+                ComponentType = button.GetType().FullName,
+                GameObjectPath = HierarchyPath(button.transform),
+                ActiveSelf = button.gameObject.activeSelf,
+                ActiveInHierarchy = button.gameObject.activeInHierarchy,
+                Interactable = button.interactable,
+                SiblingIndex = button.transform.GetSiblingIndex(),
+                SiblingCount = button.transform.parent == null ? 0 :
+                    button.transform.parent.childCount,
+                OwnerType = owner.GetType().FullName,
+                MainMenuRootName = Root(button.transform).gameObject.name,
+                MainMenuRootPath = HierarchyPath(Root(button.transform)),
+                ComponentIdentities = button.gameObject.GetComponents<Component>()
+                    .Where(x => x != null).Select(x => x.GetType().FullName)
+                    .OrderBy(x => x).ToList(),
+                SafeLabelIdentities = SafeLabelIdentities(button.gameObject),
+                Listeners = ReadListeners(button.onClick)
+            };
+        }
+
+        private static IEnumerable<Button> EntryButtons(Component owner)
+        {
+            var result = new List<Button>();
+            Transform current = owner.transform;
+            for (int depth = 0; current != null && depth < 3;
+                depth++, current = current.parent)
+                result.AddRange(current.gameObject.GetComponentsInChildren<Button>(true));
+            return result.Distinct();
+        }
+
+        private static List<Component> UniqueComponents(List<Component> values)
+        {
+            var result = new List<Component>();
+            foreach (Component value in values)
+                if (!result.Any(item => ReferenceEquals(item, value)))
+                    result.Add(value);
+            return result;
+        }
+
+        private static bool ObjectContainsReference(object owner, object expected)
+        {
+            if (owner == null || expected == null) return false;
+            if (ReferenceEquals(owner, expected)) return true;
+            for (Type type = owner.GetType(); type != null; type = type.BaseType)
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsValueType ||
+                        field.FieldType == typeof(string)) continue;
+                    object value;
+                    try { value = field.GetValue(owner); } catch { continue; }
+                    if (ReferenceEquals(value, expected)) return true;
+                }
+            return false;
+        }
+
+        private static List<Delegate> RuntimeDelegates(UnityEvent action)
+        {
+            var result = new List<Delegate>();
+            object calls = ReadField(action, "m_Calls");
+            foreach (object invokable in EnumerateCalls(calls))
+            {
+                Delegate callback = FindDelegate(invokable);
+                if (callback == null) continue;
+                result.AddRange(callback.GetInvocationList());
+            }
+            return result;
+        }
+
+        private static string ObjectIdentity(object value)
+        {
+            if (value == null) return "";
+            return value.GetType().FullName + "#" +
+                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value);
         }
 
         private void ResolveMainMenu()
@@ -609,10 +805,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             else if (method == _loadEntry)
             {
                 object argument = args == null || args.Length == 0 ? null : args[0];
-                _descriptorCorrelated = _descriptorCorrelated &&
-                    ReferenceEquals(argument, _workingDescriptor);
+                _baselineLoadObserved = IsBaseline(argument);
+                _otherLoadObserved = !_baselineLoadObserved &&
+                    !ReferenceEquals(argument, _workingDescriptor);
+                _descriptorCorrelated = ReferenceEquals(argument, _workingDescriptor) &&
+                    ContainsReference(_catalogObject, _workingDescriptor);
+                _observedLoadReceiver = receiver;
+                if (_observeEntryAction) _loadEntryInvocations++;
                 Add("load-entry-enter", method, args,
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
+            }
+            else if (_observeEntryAction &&
+                method.DeclaringType == typeof(UnityEvent) &&
+                ReferenceEquals(receiver, _entryUnityEvent))
+            {
+                _humanActionInvocations++;
+                Add("working-entry-unityevent-enter", method, args,
+                    "count=" + _humanActionInvocations + ";action=" +
+                    ObjectIdentity(receiver));
+            }
+            else if (_observeEntryAction && method == _listenerMethod &&
+                (ReferenceEquals(receiver, _listenerTarget) ||
+                 (_listenerTarget == null && receiver == null)))
+            {
+                _listenerInvocations++;
+                Add("working-entry-listener-enter", method, args,
+                    "count=" + _listenerInvocations + ";target=" +
+                    ObjectIdentity(receiver));
             }
             else
             {
@@ -728,7 +947,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Kind = "runtime",
                         TargetType = item.Target == null ? "<static>" :
                             item.Target.GetType().FullName,
-                        MethodName = item.Method.Name
+                        MethodName = item.Method.Name,
+                        SafeCapturedFields = SafeCapturedFields(item.Target)
                     };
                     if (!result.Any(x => x.Kind == evidence.Kind &&
                         x.TargetType == evidence.TargetType &&
@@ -736,6 +956,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             return result;
+        }
+
+        private static List<string> SafeCapturedFields(object target)
+        {
+            var result = new List<string>();
+            for (Type type = target == null ? null : target.GetType();
+                type != null; type = type.BaseType)
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                    result.Add(type.FullName + "." + field.Name + ":" +
+                        field.FieldType.FullName);
+            return result.Distinct().OrderBy(x => x).ToList();
         }
 
         private static List<string> SafeLabelIdentities(GameObject gameObject)

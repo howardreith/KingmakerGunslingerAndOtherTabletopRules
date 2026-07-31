@@ -5,6 +5,7 @@ param(
         'observe-save-catalog-and-selection',
         'observe-save-catalog-provider',
         'observe-load-game-button-action',
+        'observe-working-save-entry-action',
         'working-save-smoke')]
     [string]$Scenario,
 
@@ -48,16 +49,18 @@ $ErrorActionPreference = 'Stop'
 $manualScenarios = @('observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
-    'observe-load-game-button-action')
+    'observe-load-game-button-action',
+    'observe-working-save-entry-action')
 if ($Scenario -in $manualScenarios -and -not $ManualInteractionRequired) {
     throw "$Scenario requires -ManualInteractionRequired."
 }
 if ($Scenario -notin $manualScenarios -and $ManualInteractionRequired) {
     throw '-ManualInteractionRequired is valid only for supervised observations.'
 }
-if ($Scenario -eq 'working-save-smoke') {
+if ($Scenario -in @('working-save-smoke',
+    'observe-working-save-entry-action')) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
-        throw 'working-save-smoke requires explicit -SaveName KMG_AUTOMATION_WORKING.'
+        throw "$Scenario requires explicit -SaveName KMG_AUTOMATION_WORKING."
     }
     if ($Parameters.Count -ne 0) {
         throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
@@ -65,7 +68,7 @@ if ($Scenario -eq 'working-save-smoke') {
     $Parameters = @{ saveName = $SaveName }
 }
 elseif ($PSBoundParameters.ContainsKey('SaveName')) {
-    throw '-SaveName is valid only for working-save-smoke.'
+    throw '-SaveName is valid only for working-save-smoke or observe-working-save-entry-action.'
 }
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
@@ -116,25 +119,34 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $(if ($Scenario -in @(
         'observe-save-catalog-and-selection', 'observe-save-catalog-provider',
-        'observe-load-game-button-action', 'working-save-smoke')) {
+        'observe-load-game-button-action', 'working-save-smoke',
+        'observe-working-save-entry-action')) {
         $CatalogTimeoutSeconds } else { 0 }) `
     -SelectionTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'working-save-smoke')) {
+        'observe-save-catalog-and-selection', 'working-save-smoke',
+        'observe-working-save-entry-action')) {
         $SelectionTimeoutSeconds } else { 0 }) `
     -CompletionTimeoutSeconds $(if ($Scenario -in @(
-        'observe-save-catalog-and-selection', 'working-save-smoke')) {
+        'observe-save-catalog-and-selection', 'working-save-smoke',
+        'observe-working-save-entry-action')) {
         $CompletionTimeoutSeconds } else { 0 }) `
-    -MainMenuTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -MainMenuTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $MainMenuTimeoutSeconds } else { 0 }) `
-    -ActionResolutionTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -ActionResolutionTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $ActionResolutionTimeoutSeconds } else { 0 }) `
-    -ActionInvocationTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -ActionInvocationTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $ActionInvocationTimeoutSeconds } else { 0 }) `
-    -DescriptorResolutionTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -DescriptorResolutionTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $DescriptorResolutionTimeoutSeconds } else { 0 }) `
-    -LoadEntryTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -LoadEntryTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $LoadEntryTimeoutSeconds } else { 0 }) `
-    -FingerprintTimeoutSeconds $(if ($Scenario -eq 'working-save-smoke') {
+    -FingerprintTimeoutSeconds $(if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $FingerprintTimeoutSeconds } else { 0 })
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
@@ -378,14 +390,21 @@ try {
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
         Write-Host ''
         Write-Host '============================================================' -ForegroundColor Yellow
-        Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
-        Write-Host 'DO NOT LOAD OR OVERWRITE KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+        if ($Scenario -eq 'observe-working-save-entry-action') {
+            Write-Host 'CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW' -ForegroundColor Yellow
+            Write-Host 'DO NOT CLICK KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+        }
+        else {
+            Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
+            Write-Host 'DO NOT LOAD OR OVERWRITE KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+        }
         Write-Host 'No keyboard or mouse input will be sent by this script.' -ForegroundColor Yellow
         Write-Host '============================================================' -ForegroundColor Yellow
         Write-Host ''
     }
 
-    if ($Scenario -eq 'working-save-smoke') {
+    if ($Scenario -in @('working-save-smoke',
+        'observe-working-save-entry-action')) {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $MainMenuTimeoutSeconds + $ActionResolutionTimeoutSeconds +
             $ActionInvocationTimeoutSeconds + $CatalogTimeoutSeconds +
