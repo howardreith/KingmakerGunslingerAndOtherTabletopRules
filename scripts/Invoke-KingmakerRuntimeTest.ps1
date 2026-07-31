@@ -184,16 +184,17 @@ try {
     Write-Host 'Stage: kingmaker-process-discovered'
     Write-Host 'Stage: owner-context-verified'
 
+    $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+    $result = $null
+
     if ($Scenario -eq 'working-save-smoke') {
         $orchestration.stage = 'waiting-for-runtime-readiness'
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
         Write-Host 'Stage: waiting-for-runtime-readiness'
-        $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
         $readyPath = Join-Path $evidence 'runtime-ready.json'
         $readyDeadline = [DateTime]::UtcNow.AddSeconds(
             $ObserverStartupTimeoutSeconds + 15)
-        $result = $null
         $ready = $null
         while (-not $ready -and $null -eq $result) {
             $result = Get-KmgCurrentRuntimeResult -ResultPath $resultPath `

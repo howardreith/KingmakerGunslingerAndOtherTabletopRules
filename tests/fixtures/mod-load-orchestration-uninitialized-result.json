@@ -1,0 +1,16 @@
+{
+  "sourceEvidenceDirectory": "20260731T0200460301346Z-mod-load-smoke",
+  "runtimeStatus": "PASS",
+  "runtimeStage": "final-result-flushed",
+  "runtimeGitCommit": "6217f7c4e13825735074a977b056fd1a16c0560e",
+  "automaticExitRequested": true,
+  "automaticExitInitiated": true,
+  "orchestrationStatus": "ERROR",
+  "orchestrationStage": "orchestration-error",
+  "lastCompletedOrchestrationStage": "waiting-for-final-result",
+  "exceptionType": "System.Management.Automation.RuntimeException",
+  "exceptionMessage": "The variable '$result' cannot be retrieved because it has not been set.",
+  "guardedRequestAcceptedBeforeFailure": false,
+  "saveInteractionOccurred": false,
+  "kingmakerExitedCleanlyAfterOrchestratorFailure": true
+}
