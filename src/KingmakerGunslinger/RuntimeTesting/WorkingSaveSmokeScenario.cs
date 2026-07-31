@@ -139,8 +139,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             get
             {
-                return _mainMenuButtons != null && _loadEntryReceiver != null &&
-                    _button != null &&
+                return _mainMenuButtons != null && _button != null &&
                     _buttonCandidates == 1 && _stage == "action-invocation";
             }
         }
@@ -209,10 +208,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_stage == "main-menu-readiness")
             {
                 ResolveMainMenu();
-                if (_mainMenuButtons != null && _loadEntryReceiver != null)
+                if (_mainMenuButtons != null)
                 {
                     Transition("load-game-action-resolution",
-                        "exact active Kingmaker MainMenu receiver resolved; overlay was not treated as readiness");
+                        "exact active MainMenuButtons lifecycle receiver resolved; overlay was not treated as readiness");
                     return;
                 }
             }
@@ -269,6 +268,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "load-entry-invocation")
             {
+                _loadEntryReceiver = ResolveLoadEntryReceiver(
+                    _mainMenuButtons as Component,
+                    typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
+                if (_loadEntryReceiver == null)
+                    throw new MissingMemberException(
+                        "The exact Kingmaker.MainMenu load-entry receiver could not be resolved after catalog initialization.");
                 _descriptorCorrelated = ContainsReference(
                     _catalogObject, _workingDescriptor);
                 RemoveUiHooks();
@@ -351,15 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Root(component.transform).gameObject.name == "!LIGHT_SETUP";
             }).Cast<object>().ToList();
             if (exact.Count == 1)
-            {
                 _mainMenuButtons = exact[0];
-                _loadEntryReceiver = ResolveLoadEntryReceiver(
-                    _mainMenuButtons as Component,
-                    typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
-                if (_loadEntryReceiver == null)
-                    throw new MissingMemberException(
-                        "The exact Kingmaker.MainMenu load-entry receiver could not be resolved.");
-            }
             else if (exact.Count > 1)
                 throw new AmbiguousMatchException("Multiple exact MainMenu receivers.");
         }

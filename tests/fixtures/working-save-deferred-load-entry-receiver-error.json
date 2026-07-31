@@ -1,0 +1,21 @@
+{
+  "sourceEvidenceDirectory": "20260731T0206058554696Z-working-save-smoke",
+  "runtimeStatus": "ERROR",
+  "orchestrationStatus": "ERROR",
+  "orchestrationStage": "final-result-received",
+  "errorStage": "main-menu-readiness",
+  "lastCompletedLifecycleStage": "hooks-install-complete",
+  "lastCompletedScenarioStage": "runtime-readiness",
+  "failingOperation": "ResolveLoadEntryReceiver",
+  "exceptionType": "System.MissingMemberException",
+  "exceptionMessage": "The exact Kingmaker.MainMenu load-entry receiver could not be resolved.",
+  "hooksInstalled": true,
+  "uiActionOccurred": false,
+  "descriptorResolved": false,
+  "loadingBegan": false,
+  "loadingCompleted": false,
+  "saveWritingApiObserved": false,
+  "hooksRemoved": true,
+  "priorActionObservationProvedMainMenuButtonsBeforeAction": true,
+  "priorActionObservationDidNotProveMainMenuLoadEntryReceiverBeforeAction": true
+}
