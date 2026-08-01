@@ -215,3 +215,25 @@
 - Next action: commit this source-qualified slice, inspect exact directional
   geometry and per-target native attack contracts, and keep Blunderbuss
   availability fail-closed.
+
+## 2026-08-01 Sprint 32 native cone and volley checkpoint
+
+- Exact target-plan commit `31678e2` passed guarded `mod-load-smoke`, run ID
+  `20260801T1349406203357Z-1f2d98755c364d8c812fb2a6cbb629cf`.
+- Read-only installed 2.1.7b reflection and narrow IL inspection established
+  the native 90-degree cone contract: LOS, eye position, target corpulence,
+  center range plus radius, and cone-edge intersection. The authoritative
+  numeric Blunderbuss distance remains absent and is still fail-closed.
+- Recorded ADR-0037 and added one-roll-per-exact-target volley aggregation,
+  `-2` penalty authority, target-specific critical counts, non-vacuous all-roll
+  misfire, and precision/Vital Strike exclusions. Non-scatter definitions,
+  missing rolls, duplicate rolls, and unplanned targets reject explicitly.
+- Added ten focused tests. Repository validation and clean Release domain suite
+  passed 644/644; exact private-reference compile and strict package validation
+  passed.
+- Candidate package SHA-256:
+  `a1110e94d47cef39a3dfed6f45d33858d9de9bc1757bd91e1a7b51e27d02dee3`.
+  Candidate DLL SHA-256:
+  `edf19afb4d93a571195b97fb28614529f20b8604c8f7c4a5b41f8c1ead6bc310`.
+- Next action: commit this slice and implement the one-discharge scatter action
+  transaction boundary while keeping runtime delivery unavailable.

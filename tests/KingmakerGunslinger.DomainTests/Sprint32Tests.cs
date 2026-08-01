@@ -1,4 +1,5 @@
 using System;
+using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Scatter;
 
 namespace KingmakerGunslinger.DomainTests
@@ -119,7 +120,148 @@ namespace KingmakerGunslinger.DomainTests
                 "Infinite distance was accepted.");
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => ScatterCandidate(new object(), "m", "Negative", -1f,
-                    ScatterGeometryDisposition.Inside), "Negative distance was accepted.");
+                ScatterGeometryDisposition.Inside), "Negative distance was accepted.");
+        }
+
+        private static void ScatterVolleyEmpty()
+        {
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(),
+                new ScatterTargetPlanService().Build(new object(), new ScatterTargetCandidate[0]),
+                new ScatterAttackRollObservation[0]);
+            Assertions.Equal(0, decision.TargetCount, "Empty volley target count mismatch.");
+            Assertions.False(decision.AllRollsMisfire, "An empty volley misfired vacuously.");
+        }
+
+        private static void ScatterVolleySeparateRolls()
+        {
+            object first = new object();
+            object second = new object();
+            ScatterTargetPlan plan = ScatterPlan(first, second);
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), plan, new[]
+                {
+                    ScatterRoll(first, "a", 10, true, false, false),
+                    ScatterRoll(second, "b", 12, false, false, false)
+                });
+            Assertions.Equal(2, decision.TargetCount, "Volley target count mismatch.");
+            Assertions.Equal(1, decision.HitCount, "Volley hit count mismatch.");
+            Assertions.Equal(-2, ScatterAttackVolleyDecision.AttackPenalty,
+                "Scatter attack penalty changed.");
+        }
+
+        private static void ScatterVolleyAllMisfire()
+        {
+            object first = new object();
+            object second = new object();
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(first, second), new[]
+                {
+                    ScatterRoll(first, "a", 1, false, false, false),
+                    ScatterRoll(second, "b", 2, false, false, false)
+                });
+            Assertions.True(decision.AllRollsMisfire, "All qualifying rolls did not misfire.");
+            Assertions.Equal(2, decision.MisfireRollCount, "Misfire count mismatch.");
+        }
+
+        private static void ScatterVolleySomeMisfire()
+        {
+            object first = new object();
+            object second = new object();
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(first, second), new[]
+                {
+                    ScatterRoll(first, "a", 1, false, false, false),
+                    ScatterRoll(second, "b", 3, true, false, false)
+                });
+            Assertions.False(decision.AllRollsMisfire,
+                "One misfire incorrectly misfired the complete volley.");
+        }
+
+        private static void ScatterVolleyCriticalCounts()
+        {
+            object first = new object();
+            object second = new object();
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(first, second), new[]
+                {
+                    ScatterRoll(first, "a", 20, true, true, true),
+                    ScatterRoll(second, "b", 20, true, true, false)
+                });
+            Assertions.Equal(2, decision.CriticalThreatCount, "Threat count mismatch.");
+            Assertions.Equal(1, decision.ConfirmedCriticalCount,
+                "Per-target confirmation count mismatch.");
+        }
+
+        private static void ScatterVolleyDamageExclusions()
+        {
+            ScatterAttackVolleyDecision decision = new ScatterAttackVolleyDecision(0, 0, 0, 0, 0);
+            Assertions.False(decision.AllowsPrecisionDamage,
+                "Scatter volley allowed precision damage.");
+            Assertions.False(decision.AllowsVitalStrikeDamage,
+                "Scatter volley allowed Vital Strike damage.");
+        }
+
+        private static void ScatterVolleyNonScatterRejected()
+        {
+            Assertions.Throws<ArgumentException>(
+                () => new ScatterAttackVolleyService().Evaluate(
+                    FirearmDefinitions.CreateEarlyMusket(),
+                    new ScatterTargetPlanService().Build(new object(), new ScatterTargetCandidate[0]),
+                    new ScatterAttackRollObservation[0]),
+                "A non-scatter firearm entered volley aggregation.");
+        }
+
+        private static void ScatterVolleyMissingRollRejected()
+        {
+            object target = new object();
+            Assertions.Throws<InvalidOperationException>(
+                () => new ScatterAttackVolleyService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(target),
+                    new ScatterAttackRollObservation[0]),
+                "A planned target without a roll was accepted.");
+        }
+
+        private static void ScatterVolleyDuplicateRollRejected()
+        {
+            object target = new object();
+            ScatterAttackRollObservation roll = ScatterRoll(
+                target, "a", 10, true, false, false);
+            Assertions.Throws<ArgumentException>(
+                () => new ScatterAttackVolleyService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(target),
+                    new[] { roll, roll }),
+                "A target received duplicate attack rolls.");
+        }
+
+        private static void ScatterVolleyUnplannedRollRejected()
+        {
+            object planned = new object();
+            Assertions.Throws<ArgumentException>(
+                () => new ScatterAttackVolleyService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), ScatterPlan(planned),
+                    new[] { ScatterRoll(new object(), "x", 10, true, false, false) }),
+                "An unplanned target received a scatter roll.");
+        }
+
+        private static ScatterTargetPlan ScatterPlan(params object[] targets)
+        {
+            var candidates = new ScatterTargetCandidate[targets.Length];
+            for (int index = 0; index < targets.Length; index++)
+            {
+                candidates[index] = ScatterCandidate(
+                    targets[index], ((char)('a' + index)).ToString(), "Target", index + 1,
+                    ScatterGeometryDisposition.Inside);
+            }
+            return new ScatterTargetPlanService().Build(new object(), candidates);
+        }
+
+        private static ScatterAttackRollObservation ScatterRoll(
+            object target, string identity, int naturalRoll, bool hit,
+            bool threat, bool confirmed)
+        {
+            return new ScatterAttackRollObservation(
+                target, identity, naturalRoll, hit, threat, confirmed);
         }
 
         private static ScatterTargetCandidate ScatterCandidate(

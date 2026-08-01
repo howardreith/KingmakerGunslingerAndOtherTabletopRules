@@ -11,7 +11,7 @@ import validate_sprint31
 
 VERSION = "0.0.32"
 INFORMATIONAL_VERSION = "0.0.32-s32-scatter-attacks"
-TEST_COUNT = 634
+TEST_COUNT = 644
 
 
 def read(root: Path, relative: str) -> str:
@@ -53,6 +53,18 @@ def validate(root: Path) -> None:
          'Case("scatter.plan-unknown-fails-closed"',
          'Case("scatter.candidate-invalid-distance"'],
         "Sprint 32 scatter target tests",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Scatter/ScatterAttackVolleyService.cs"),
+        ["ReferenceIdentityComparer.Instance", "IsScatter",
+         "IsMisfire(definition.MisfireValue)", "count != plan.TargetCount"],
+        "Sprint 32 scatter volley aggregation",
+    )
+    require_tokens(
+        read(root, "docs/decisions/ADR-0037-native-scatter-cone-and-volley.md"),
+        ["45-degree half-angle", "RuleAttackWithWeapon", "AttackBonusPenalty",
+         "remains unavailable"],
+        "Sprint 32 native cone decision",
     )
     print("Sprint 32 source invariant validation passed with inherited Sprint 31 checks.")
 

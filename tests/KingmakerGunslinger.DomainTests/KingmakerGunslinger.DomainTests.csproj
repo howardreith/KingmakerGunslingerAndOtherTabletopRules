@@ -145,6 +145,15 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterGeometryDisposition.cs">
       <Link>Scatter\ScatterGeometryDisposition.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterAttackRollObservation.cs">
+      <Link>Scatter\ScatterAttackRollObservation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterAttackVolleyDecision.cs">
+      <Link>Scatter\ScatterAttackVolleyDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterAttackVolleyService.cs">
+      <Link>Scatter\ScatterAttackVolleyService.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterTargetCandidate.cs">
       <Link>Scatter\ScatterTargetCandidate.cs</Link>
     </Compile>

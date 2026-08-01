@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `b1ebcaf` (Sprint 32 entry contract; target-plan source checkpoint pending commit).
+- Audited HEAD: `31678e2` (Sprint 32 target plan and exact `0.0.32` mod-load foundation).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
@@ -54,13 +54,15 @@ definition of done or a listed genuine human-input hard stop.
 ## Current source evidence
 
 - Sprint 32 exact-reference target planning is implemented with 10 focused
-  cases; complete domain suite is 634/634 PASS.
+  cases. Native cone/volley aggregation adds 10 more; complete domain suite is
+  644/644 PASS.
 - Package candidate SHA-256:
   `aedfef956e9b89812a2276eb4e69f1e606dae25742ebdba1b73fec1ec4085341`;
   DLL candidate SHA-256:
   `3207707a5771162f71e8ea32cc59aff50e9cbbb64d76b5799579ca0a44bf544a`.
 - This slice is source-qualified only. It does not establish cone length,
-  directional geometry, attack delivery, discharge, or runtime acceptance.
+  attack delivery, discharge, or feature runtime acceptance. Native 90-degree
+  directional geometry is contract-proven; numeric cone distance is not.
 
 ## Commands already run
 
@@ -85,11 +87,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified exact-reference target planner. Then inspect exact
-installed position/facing geometry and per-target native attack construction,
-modifier, roll, and damage contracts. The authorized local rules do not state
-a numeric Blunderbuss cone length, so keep the production Blunderbuss
-unavailable and do not invent one.
+Commit ADR-0037 and the source-qualified independent volley aggregator. Then
+implement a pure one-discharge scatter action transaction boundary with
+pre-delivery rollback and multi-target invariants. Keep the production
+Blunderbuss unavailable because the authorized local rules do not state its
+numeric cone distance.
 
 ## Safety boundaries
 

@@ -292,6 +292,9 @@
     <Compile Include="Rules\FirearmArmorClassService.cs" />
     <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
     <Compile Include="Scatter\ScatterGeometryDisposition.cs" />
+    <Compile Include="Scatter\ScatterAttackRollObservation.cs" />
+    <Compile Include="Scatter\ScatterAttackVolleyDecision.cs" />
+    <Compile Include="Scatter\ScatterAttackVolleyService.cs" />
     <Compile Include="Scatter\ScatterTargetCandidate.cs" />
     <Compile Include="Scatter\ScatterTargetPlan.cs" />
     <Compile Include="Scatter\ScatterTargetPlanService.cs" />
