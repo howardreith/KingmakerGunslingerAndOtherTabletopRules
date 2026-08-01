@@ -889,7 +889,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         WeaponBlueprintAccess.Resolve(),
                         WeaponTypeMechanicalAccess.Resolve());
                     catalogValidated = true;
-                    validation = "three distinct entries; six registered blueprints";
+                    validation = "five distinct entries; ten registered blueprints";
                 }
                 catch (Exception exception)
                 {
@@ -905,6 +905,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CountFirearmMarkers(catalog.Musket.WeaponType);
             int blunderbussMarkers = catalog == null ? -1 :
                 CountFirearmMarkers(catalog.Blunderbuss.WeaponType);
+            int rifleMarkers = catalog == null ? -1 :
+                CountFirearmMarkers(catalog.AdvancedRifle.WeaponType);
+            int revolverMarkers = catalog == null ? -1 :
+                CountFirearmMarkers(catalog.AdvancedRevolver.WeaponType);
             int blunderbussUnavailable = catalog == null ? -1 :
                 (catalog.Blunderbuss.Item.ComponentsArray ??
                     Array.Empty<BlueprintComponent>())
@@ -920,21 +924,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
                     "qualified receiver-bound working-save path"),
                 Assertion("production-catalog-runtime-contract",
-                    "three exact entries; count=6", validation,
-                    catalogValidated && catalog.Count == 6 &&
+                    "five exact entries; count=10", validation,
+                    catalogValidated && catalog.Count == 10 &&
                         catalog.Pistol.Spec.Equals(ProductionFirearmCatalog.CreatePistol()) &&
                         catalog.Musket.Spec.Equals(ProductionFirearmCatalog.CreateMusket()) &&
                         catalog.Blunderbuss.Spec.Equals(
-                            ProductionFirearmCatalog.CreateBlunderbuss()),
+                            ProductionFirearmCatalog.CreateBlunderbuss()) &&
+                        catalog.AdvancedRifle.Spec.Equals(
+                            ProductionFirearmCatalog.CreateAdvancedRifle()) &&
+                        catalog.AdvancedRevolver.Spec.Equals(
+                            ProductionFirearmCatalog.CreateAdvancedRevolver()),
                     "concrete registered runtime blueprints and exact mechanical access"),
                 Assertion("marker-and-native-source-isolation",
-                    "nativeHeavy=0;pistol=1;musket=1;blunderbuss=1",
+                    "nativeHeavy=0;pistol=1;musket=1;blunderbuss=1;rifle=1;revolver=1",
                     "nativeHeavy=" + nativeHeavyMarkers +
                         ";pistol=" + pistolMarkers + ";musket=" + musketMarkers +
-                        ";blunderbuss=" + blunderbussMarkers,
+                        ";blunderbuss=" + blunderbussMarkers +
+                        ";rifle=" + rifleMarkers + ";revolver=" + revolverMarkers,
                     nativeHeavyMarkers == 0 &&
                         pistolMarkers == 1 && musketMarkers == 1 &&
-                        blunderbussMarkers == 1,
+                        blunderbussMarkers == 1 && rifleMarkers == 1 && revolverMarkers == 1,
                     "concrete BlueprintWeaponType component arrays"),
                 Assertion("special-range-fails-closed", "unavailableRestrictions=1",
                     "unavailableRestrictions=" + blunderbussUnavailable,

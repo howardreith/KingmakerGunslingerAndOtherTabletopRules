@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **15 stable identifiers: 14 active and one reserved**. Sprint 29 activates one new identity without changing any prior GUID:
+The append-only ledger contains **25 stable identifiers: 24 active and one reserved**. Sprint 33 adds four production advanced-firearm identities without changing any prior GUID:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 
@@ -95,6 +95,10 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Test.FirearmRepairKitItem` | `f2b564234b8a4b0d88a7a46128556bef` | `BlueprintItem` | Active | Firearm Repair Kit |
 | `KMG.Test.OverhaulAbility` | `8a0ba821382640b58ec9ff168ed778a5` | `BlueprintAbility` | Active | Full-round same-item Overhaul |
 | `KMG.Test.RepairAbility` | `c914b3c0786463b7a1e17e47447ee5b1` | `BlueprintAbility` | Active | Full-round same-item ordinary Repair |
+| `KMG.Firearms.AdvancedRifleWeaponType` | `df5e6a66bc494514a740b674ef84c5ba` | `BlueprintWeaponType` | Active | Advanced Rifle type |
+| `KMG.Firearms.AdvancedRifleItem` | `a267e7bbc10e425f8adb87844d572b29` | `BlueprintItemWeapon` | Active | Advanced Rifle item |
+| `KMG.Firearms.AdvancedRevolverWeaponType` | `a7d3b805c579488eaf91e840896f5d80` | `BlueprintWeaponType` | Active | Six-chamber Advanced Revolver type |
+| `KMG.Firearms.AdvancedRevolverItem` | `8ed461fbcc154c51b07e5549211e9f5e` | `BlueprintItemWeapon` | Active | Advanced Revolver item |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

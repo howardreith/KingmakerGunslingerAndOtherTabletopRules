@@ -21,6 +21,10 @@ namespace KingmakerGunslinger.Blueprints
         internal const string MusketItemSymbol = "KMG.Firearms.EarlyMusketItem";
         internal const string BlunderbussWeaponTypeSymbol = "KMG.Firearms.EarlyBlunderbussWeaponType";
         internal const string BlunderbussItemSymbol = "KMG.Firearms.EarlyBlunderbussItem";
+        internal const string AdvancedRifleWeaponTypeSymbol = "KMG.Firearms.AdvancedRifleWeaponType";
+        internal const string AdvancedRifleItemSymbol = "KMG.Firearms.AdvancedRifleItem";
+        internal const string AdvancedRevolverWeaponTypeSymbol = "KMG.Firearms.AdvancedRevolverWeaponType";
+        internal const string AdvancedRevolverItemSymbol = "KMG.Firearms.AdvancedRevolverItem";
 
         internal const string NativeLightCrossbowWeaponTypeGuid =
             "d525e7a6d8d5aa648a976ac41194b8d0";
@@ -107,8 +111,19 @@ namespace KingmakerGunslinger.Blueprints
                 BlunderbussItemSymbol,
                 "KMG_EarlyBlunderbuss_WeaponType",
                 "KMG_EarlyBlunderbuss_Item");
+            ProductionFirearmBlueprintEntry rifle = RegisterOne(
+                registry, firearmProficiency, itemTypeAccess, mechanicalAccess, itemAccess,
+                heavyType, heavyItem, ProductionFirearmCatalog.CreateAdvancedRifle(),
+                AdvancedRifleWeaponTypeSymbol, AdvancedRifleItemSymbol,
+                "KMG_AdvancedRifle_WeaponType", "KMG_AdvancedRifle_Item");
+            ProductionFirearmBlueprintEntry revolver = RegisterOne(
+                registry, firearmProficiency, itemTypeAccess, mechanicalAccess, itemAccess,
+                lightType, lightItem, ProductionFirearmCatalog.CreateAdvancedRevolver(),
+                AdvancedRevolverWeaponTypeSymbol, AdvancedRevolverItemSymbol,
+                "KMG_AdvancedRevolver_WeaponType", "KMG_AdvancedRevolver_Item");
 
-            var result = new ProductionFirearmBlueprintCatalog(pistol, musket, blunderbuss);
+            var result = new ProductionFirearmBlueprintCatalog(
+                pistol, musket, blunderbuss, rifle, revolver);
             Validate(result, itemTypeAccess, mechanicalAccess);
             lightBefore.VerifyUnchanged(lightType, lightItem, itemTypeAccess);
             heavyBefore.VerifyUnchanged(heavyType, heavyItem, itemTypeAccess);
@@ -118,13 +133,17 @@ namespace KingmakerGunslinger.Blueprints
                 "production-catalog.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered production Pistol={0}/{1}, Musket={2}/{3}, and non-fireable special-range Blunderbuss={4}/{5}; native presentation sources remained unchanged.",
+                    "Registered production Pistol={0}/{1}, Musket={2}/{3}, non-fireable Blunderbuss={4}/{5}, Advanced Rifle={6}/{7}, and Advanced Revolver={8}/{9}; native presentation sources remained unchanged.",
                     registry.ResolveGuid(PistolWeaponTypeSymbol),
                     registry.ResolveGuid(PistolItemSymbol),
                     registry.ResolveGuid(MusketWeaponTypeSymbol),
                     registry.ResolveGuid(MusketItemSymbol),
                     registry.ResolveGuid(BlunderbussWeaponTypeSymbol),
-                    registry.ResolveGuid(BlunderbussItemSymbol)));
+                    registry.ResolveGuid(BlunderbussItemSymbol),
+                    registry.ResolveGuid(AdvancedRifleWeaponTypeSymbol),
+                    registry.ResolveGuid(AdvancedRifleItemSymbol),
+                    registry.ResolveGuid(AdvancedRevolverWeaponTypeSymbol),
+                    registry.ResolveGuid(AdvancedRevolverItemSymbol)));
             return result;
         }
 
@@ -137,12 +156,11 @@ namespace KingmakerGunslinger.Blueprints
             ValidateOne(catalog.Pistol, itemTypeAccess, mechanicalAccess);
             ValidateOne(catalog.Musket, itemTypeAccess, mechanicalAccess);
             ValidateOne(catalog.Blunderbuss, itemTypeAccess, mechanicalAccess);
-            if (ReferenceEquals(catalog.Pistol.WeaponType, catalog.Musket.WeaponType) ||
-                ReferenceEquals(catalog.Pistol.WeaponType, catalog.Blunderbuss.WeaponType) ||
-                ReferenceEquals(catalog.Musket.WeaponType, catalog.Blunderbuss.WeaponType) ||
-                ReferenceEquals(catalog.Pistol.Item, catalog.Musket.Item) ||
-                ReferenceEquals(catalog.Pistol.Item, catalog.Blunderbuss.Item) ||
-                ReferenceEquals(catalog.Musket.Item, catalog.Blunderbuss.Item))
+            ValidateOne(catalog.AdvancedRifle, itemTypeAccess, mechanicalAccess);
+            ValidateOne(catalog.AdvancedRevolver, itemTypeAccess, mechanicalAccess);
+            ProductionFirearmBlueprintEntry[] entries = catalog.Entries;
+            if (entries.Select(entry => entry.WeaponType).Distinct().Count() != entries.Length ||
+                entries.Select(entry => entry.Item).Distinct().Count() != entries.Length)
             {
                 throw new InvalidOperationException(
                     "Production firearm catalog entries must use distinct item and type instances.");
@@ -163,9 +181,10 @@ namespace KingmakerGunslinger.Blueprints
             string weaponTypeInternalName,
             string itemInternalName)
         {
-            string localizationStem = "KMG.Item.Early" + spec.DisplayName.Replace(" ", string.Empty);
+            string localizationStem = "KMG.Item." + spec.DisplayName.Replace(" ", string.Empty);
+            string eraName = spec.Definition.Era == FirearmEra.Advanced ? "advanced" : "early";
             string descriptionText = spec.IsPlayerFireable
-                ? "An early firearm using approved crossbow-compatible placeholder visuals. Its firearm marker, not the inherited presentation category, controls firearm rules."
+                ? "An " + eraName + " firearm using approved crossbow-compatible placeholder visuals. Its firearm marker, not the inherited presentation category, controls firearm rules."
                 : "An early scatter firearm using approved crossbow-compatible placeholder visuals. It cannot be equipped until special-range scatter execution is implemented.";
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
             var description = LocalizationService.Create(
@@ -414,17 +433,27 @@ namespace KingmakerGunslinger.Blueprints
         internal ProductionFirearmBlueprintCatalog(
             ProductionFirearmBlueprintEntry pistol,
             ProductionFirearmBlueprintEntry musket,
-            ProductionFirearmBlueprintEntry blunderbuss)
+            ProductionFirearmBlueprintEntry blunderbuss,
+            ProductionFirearmBlueprintEntry advancedRifle,
+            ProductionFirearmBlueprintEntry advancedRevolver)
         {
             Pistol = pistol ?? throw new ArgumentNullException("pistol");
             Musket = musket ?? throw new ArgumentNullException("musket");
             Blunderbuss = blunderbuss ?? throw new ArgumentNullException("blunderbuss");
+            AdvancedRifle = advancedRifle ?? throw new ArgumentNullException("advancedRifle");
+            AdvancedRevolver = advancedRevolver ?? throw new ArgumentNullException("advancedRevolver");
         }
 
         internal ProductionFirearmBlueprintEntry Pistol { get; private set; }
         internal ProductionFirearmBlueprintEntry Musket { get; private set; }
         internal ProductionFirearmBlueprintEntry Blunderbuss { get; private set; }
-        internal int Count { get { return 6; } }
+        internal ProductionFirearmBlueprintEntry AdvancedRifle { get; private set; }
+        internal ProductionFirearmBlueprintEntry AdvancedRevolver { get; private set; }
+        internal ProductionFirearmBlueprintEntry[] Entries
+        {
+            get { return new[] { Pistol, Musket, Blunderbuss, AdvancedRifle, AdvancedRevolver }; }
+        }
+        internal int Count { get { return 10; } }
     }
 
     internal sealed class ProductionFirearmBlueprintEntry

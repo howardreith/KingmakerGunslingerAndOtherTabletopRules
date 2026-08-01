@@ -175,6 +175,38 @@
       "status": "active",
       "milestone": "Sprint 31",
       "notes": "Production early Blunderbuss item gated by Firearm Proficiency and an additional fail-closed availability restriction until Sprint 32 scatter execution is qualified."
+    },
+    {
+      "symbol": "KMG.Firearms.AdvancedRifleWeaponType",
+      "guid": "df5e6a66bc494514a740b674ef84c5ba",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 33",
+      "notes": "Production Advanced Rifle type with explicit 1d10/x4/80-foot two-handed mechanics and one immutable firearm marker; Heavy Crossbow presentation adapter only."
+    },
+    {
+      "symbol": "KMG.Firearms.AdvancedRifleItem",
+      "guid": "a267e7bbc10e425f8adb87844d572b29",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 33",
+      "notes": "Production Advanced Rifle item wired to its custom type and gated by Firearm Proficiency."
+    },
+    {
+      "symbol": "KMG.Firearms.AdvancedRevolverWeaponType",
+      "guid": "a7d3b805c579488eaf91e840896f5d80",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 33",
+      "notes": "Production Advanced Revolver type with explicit 1d8/x4/20-foot one-handed mechanics, six chambers, and one immutable firearm marker; Light Crossbow presentation adapter only."
+    },
+    {
+      "symbol": "KMG.Firearms.AdvancedRevolverItem",
+      "guid": "8ed461fbcc154c51b07e5549211e9f5e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 33",
+      "notes": "Production Advanced Revolver item wired to its custom type and gated by Firearm Proficiency."
     }
   ]
 }

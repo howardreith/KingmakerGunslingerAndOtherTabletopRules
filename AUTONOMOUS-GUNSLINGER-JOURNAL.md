@@ -356,3 +356,24 @@
   `5408f50e47c189115c42d3067250ade2491b2030b8f8b90acb60c7b2a42c82ad`.
 - Next action: commit this persistence/isolation checkpoint, then build the
   production advanced blueprints and guarded Sprint 33 runtime scenario.
+
+## 2026-08-01 Sprint 33 advanced production blueprints
+
+- Appended four stable manifest identities and registered isolated production
+  Advanced Rifle and Advanced Revolver weapon-type/item pairs. Rifle uses the
+  Heavy Crossbow presentation source and Revolver the Light Crossbow source;
+  source blueprints remain reference-verified unchanged.
+- Each custom type carries one exact firearm marker, each item carries one
+  Firearm Proficiency restriction, and both are player-fireable. The complete
+  production catalog now contains five distinct firearm entries and ten custom
+  item/type blueprints; total active registration count is 24.
+- Extended the existing guarded production-catalog assertion to cover exact
+  advanced specs and marker/native-source isolation.
+- Repository validation and clean Release suite passed 685/685; exact compile
+  and strict package validation passed.
+- Candidate package SHA-256:
+  `30e5f6b53efcdef9068e2524945bad49b06a78e77ce745c9c29afc79bf0ad957`.
+  Candidate DLL SHA-256:
+  `5621847b5197518f97e97912eb680b6a024adfde20448ee40fd8c496fa9deae5`.
+- Next action: commit this source slice, pass guarded exact-assembly mod load,
+  then add the capacity-specific runtime acceptance scenario.

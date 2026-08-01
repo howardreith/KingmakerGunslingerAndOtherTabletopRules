@@ -24,7 +24,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path) -> None:
     root = root.resolve()
-    validate_sprint32.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT)
+    validate_sprint32.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 24, 25)
     require_tokens(read(root, "planning/SPRINT-33-ENTRY-CRITERIA.md"),
         ["Advanced firearms load all chambers", "partially loaded firearm",
          "exact pre-operation snapshots", "Two consecutive fresh-process PASS runs"],
@@ -52,6 +52,10 @@ def validate(root: Path) -> None:
         ["CapacityVaultSixRoundRestart", "CapacityVaultTwoItemIsolation",
          "CapacityRepeatedDischargeIsolated", "VaultBackedFirearmStateRepository"],
         "Sprint 33 durable capacity tests")
+    require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs"),
+        ["AdvancedRifleWeaponTypeSymbol", "AdvancedRevolverWeaponTypeSymbol",
+         "ProductionFirearmCatalog.CreateAdvancedRifle()", "Count { get { return 10; } }"],
+        "Sprint 33 advanced blueprints")
     print("Sprint 33 source invariant validation passed with inherited Sprint 32 checks.")
 
 def main() -> int:

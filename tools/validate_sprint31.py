@@ -38,6 +38,8 @@ def validate(
     version: str = VERSION,
     informational_version: str = INFORMATIONAL_VERSION,
     test_count: int = TEST_COUNT,
+    expected_active_blueprints: int = EXPECTED_ACTIVE_BLUEPRINTS,
+    expected_ledger_entries: int = EXPECTED_LEDGER_ENTRIES,
 ) -> None:
     root = root.resolve()
     validate_sprint30.validate(
@@ -45,9 +47,9 @@ def validate(
         version=version,
         informational_version=informational_version,
         test_count=test_count,
-        expected_active_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,
-        expected_ledger_entries=EXPECTED_LEDGER_ENTRIES,
-        expected_registered_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,
+        expected_active_blueprints=expected_active_blueprints,
+        expected_ledger_entries=expected_ledger_entries,
+        expected_registered_blueprints=expected_active_blueprints,
     )
     require_tokens(
         read(root, "planning/SPRINT-31-ENTRY-CRITERIA.md"),
@@ -115,7 +117,8 @@ def validate(
     )
     require_tokens(
         read(root, "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs"),
-        ["ExpectedRegisteredBlueprintCount = 20", "ProductionFirearmBlueprints.Register"],
+        ["ExpectedRegisteredBlueprintCount = " + str(expected_active_blueprints),
+         "ProductionFirearmBlueprints.Register"],
         "Sprint 31 blueprint bootstrap",
     )
     print("Sprint 31 source invariant validation passed with inherited Sprint 30 checks.")

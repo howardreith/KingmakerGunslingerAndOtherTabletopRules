@@ -81,6 +81,12 @@ definition of done or a listed genuine human-input hard stop.
   `ea88730ad1a2aa208de081fb4e8e68000dc53e26be17b24403eeda1cd3d4d26e`;
   DLL SHA-256 is
   `5408f50e47c189115c42d3067250ade2491b2030b8f8b90acb60c7b2a42c82ad`.
+- Four stable advanced blueprint IDs now produce exact Rifle/Revolver item/type
+  pairs and extend guarded catalog acceptance. Complete suite remains 685/685
+  PASS. Latest package SHA-256 is
+  `30e5f6b53efcdef9068e2524945bad49b06a78e77ce745c9c29afc79bf0ad957`;
+  DLL SHA-256 is
+  `5621847b5197518f97e97912eb680b6a024adfde20448ee40fd8c496fa9deae5`.
 
 ## Commands already run
 
@@ -105,9 +111,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified durable capacity isolation slice. Then add stable
-production Advanced Rifle/Revolver blueprints and a guarded Sprint 33 runtime
-scenario covering batch reload, repeated discharge, and exact item isolation.
+Commit the source-qualified advanced blueprint slice. Then pass guarded
+`mod-load-smoke` for the exact assembly and implement the Sprint 33 feature
+scenario for batch reload, repeated discharge, and exact item isolation.
 
 ## Safety boundaries
 

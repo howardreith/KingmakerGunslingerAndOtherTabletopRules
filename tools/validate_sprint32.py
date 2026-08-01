@@ -29,13 +29,17 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path, version: str = VERSION,
              informational_version: str = INFORMATIONAL_VERSION,
-             test_count: int = TEST_COUNT) -> None:
+             test_count: int = TEST_COUNT,
+             expected_active_blueprints: int = validate_sprint31.EXPECTED_ACTIVE_BLUEPRINTS,
+             expected_ledger_entries: int = validate_sprint31.EXPECTED_LEDGER_ENTRIES) -> None:
     root = root.resolve()
     validate_sprint31.validate(
         root,
         version=version,
         informational_version=informational_version,
         test_count=test_count,
+        expected_active_blueprints=expected_active_blueprints,
+        expected_ledger_entries=expected_ledger_entries,
     )
     require_tokens(
         read(root, "src/KingmakerGunslinger/Scatter/ScatterConeDistanceService.cs"),
