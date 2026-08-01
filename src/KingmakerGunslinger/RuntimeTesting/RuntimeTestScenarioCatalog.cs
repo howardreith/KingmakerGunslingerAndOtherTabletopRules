@@ -14,6 +14,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-descriptor-construction";
         internal const string DisposableGunslingerSelection =
             "disposable-gunslinger-selection";
+        internal const string DisposableGunslingerPreviewApplication =
+            "disposable-gunslinger-preview-application";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -42,6 +44,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveCharacterCreationContracts,
                 DisposableDescriptorConstruction,
                 DisposableGunslingerSelection,
+                DisposableGunslingerPreviewApplication,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

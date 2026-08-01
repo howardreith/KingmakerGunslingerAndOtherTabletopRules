@@ -684,3 +684,26 @@
   Neither run loaded or wrote a save.
 - Next action: checkpoint exact selection/cancel, then observe a safe native
   action-application or preview-result boundary before inventory grant.
+
+## 2026-08-01 Sprint 34 controller-owned preview mechanics
+
+- The controller automatically refreshes its owned preview when level-up
+  actions are added. An explicit second `ApplyLevelup(Preview)` correctly
+  exposed duplicate application (preview level two) and was removed rather
+  than normalized into acceptance.
+- The qualified path starts at Gunslinger level zero on distinct source and
+  preview descriptors. `SelectClass` advances only the preview to level one;
+  `ApplyClassMechanics` leaves it at one, the queue contains exactly two
+  actions, and the source remains level zero. Cancel and entity disposal leave
+  party/global-unit snapshots unchanged.
+- Five focused preview checks, repository validation, 691/691 tests, clean
+  exact-reference Release, and strict packaging passed. Candidate package/DLL
+  SHA-256 are
+  `d4979fefda3ba457565809c51aa559aaed3d54d041cc4beba767bfda32e4f30d` /
+  `9a8d8d8b8cdf085c6acbd07101678bb990541cd0e380024b9b8ada5f517244c7`.
+- Independent fresh-process PASS run IDs are
+  `20260801T1626016361171Z-cf3feca2f0f84ca8b058b0663604f4d2` and
+  `20260801T1627170968339Z-57f79cac173340bfb71c82dd45b8b296`.
+  Neither run loaded or wrote a save.
+- Next action: checkpoint preview mechanics, then observe exact preview facts
+  and stats before invoking starting inventory on the disposable preview.

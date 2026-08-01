@@ -118,11 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Checkpoint the qualified isolated Gunslinger selection/cancel boundary. Then
-investigate the exact safe controller action-application or preview-result
-contract; do not call `Commit` or `AddStartingInventory` until applied mechanics
-can be observed on a disposable receiver and rolled back with unchanged player
-and global-unit snapshots.
+Checkpoint the qualified controller-owned preview mechanics boundary. Then
+observe exact level-one preview facts and stats, followed by a separately
+guarded `AddStartingInventory` call on only that disposable preview. Do not call
+`Commit`; retain cancel/dispose and unchanged player/global-unit snapshots.
 
 ## Safety boundaries
 

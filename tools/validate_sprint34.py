@@ -60,6 +60,10 @@ def validate(root: Path) -> None:
         ["scenario-allowlisted", "exact-char-gen-mode", "select-and-apply",
          "cancel-rollback", "external-isolation"],
         "Sprint 34 disposable Gunslinger selection tests")
+    require_tokens(read(root, "scripts/Test-Sprint34DisposableGunslingerPreviewApplication.ps1"),
+        ["scenario-allowlisted", "preview-not-source", "native-preview-refresh",
+         "source-unchanged", "external-isolation"],
+        "Sprint 34 disposable Gunslinger preview application tests")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:

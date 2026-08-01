@@ -242,6 +242,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -282,6 +283,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerSelection)
                 {
                     Complete(RunDisposableGunslingerSelection());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication)
+                {
+                    Complete(RunDisposableGunslingerPreviewApplication());
                     return;
                 }
                 if (_request.Scenario ==
@@ -1844,6 +1851,115 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "native ChargenUnit preview owner; reference snapshots after entity disposal"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerPreviewApplication()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.UI.LevelUp.ChargenUnit chargen = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData sourceEntity = null;
+            Kingmaker.UnitLogic.UnitDescriptor sourceDescriptor = null;
+            Kingmaker.UnitLogic.UnitDescriptor preview = null;
+            object controller = null;
+            bool selected = false;
+            int sourceBefore = -1;
+            int previewBefore = -1;
+            int previewAfterSelection = -1;
+            int previewAfter = -1;
+            int sourceAfter = -1;
+            int queuedCount = -1;
+            bool cleaned = false;
+            try
+            {
+                if (source == null || gunslinger == null)
+                    throw new InvalidOperationException(
+                        "Exact source or production Gunslinger class is unavailable.");
+                chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                sourceEntity = chargen.Unit;
+                if (sourceEntity == null || sourceEntity.Descriptor == null ||
+                    sourceEntity.Descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Native ChargenUnit source descriptor/progression is unavailable.");
+                sourceDescriptor = sourceEntity.Descriptor;
+                sourceBefore = sourceDescriptor.Progression.GetClassLevel(gunslinger);
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { sourceDescriptor, false, null, null, charGen });
+                preview = ReadExactMember(controller, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                if (preview == null || ReferenceEquals(preview, sourceDescriptor))
+                    throw new InvalidOperationException(
+                        "Controller-owned preview descriptor is unavailable or aliases source.");
+                if (preview.Progression == null)
+                    throw new InvalidOperationException(
+                        "Controller-owned preview progression is unavailable.");
+                previewBefore = preview.Progression.GetClassLevel(gunslinger);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                if (selectClass == null)
+                    throw new InvalidOperationException("Exact SelectClass method is unavailable.");
+                selected = (bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false });
+                previewAfterSelection = preview.Progression.GetClassLevel(gunslinger);
+                MethodInfo applyClassMechanics = controllerType.GetMethod(
+                    "ApplyClassMechanics", BindingFlags.Public | BindingFlags.Instance);
+                if (applyClassMechanics == null)
+                    throw new InvalidOperationException(
+                        "Exact ApplyClassMechanics method is unavailable.");
+                applyClassMechanics.Invoke(controller, null);
+                queuedCount = SnapshotReferences(
+                    ReadExactMember(controller, "LevelUpActions")).Length;
+                previewAfter = preview.Progression.GetClassLevel(gunslinger);
+                sourceAfter = sourceDescriptor.Progression.GetClassLevel(gunslinger);
+            }
+            finally
+            {
+                if (controller != null)
+                    controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance).Invoke(controller, null);
+                if (sourceEntity != null) sourceEntity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (sourceEntity == null || !ContainsReference(party, sourceEntity)) &&
+                    (sourceEntity == null || !ContainsReference(allUnits, sourceEntity));
+            }
+            string observed = "selected=" + selected + ";sourceBefore=" + sourceBefore +
+                ";previewBefore=" + previewBefore +
+                ";previewAfterSelection=" + previewAfterSelection +
+                ";previewAfterMechanics=" + previewAfter +
+                ";sourceAfter=" + sourceAfter + ";queuedCount=" + queuedCount;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("preview-application", "level-one Gunslinger only on controller preview",
+                    observed, selected && sourceBefore == 0 && previewBefore == 0 &&
+                        previewAfterSelection == 1 && previewAfter == 1 &&
+                        sourceAfter == 0 && queuedCount == 2,
+                    "native controller preview refresh and exact GetClassLevel identities"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "Cancel plus source preview-entity disposal and reference snapshots"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
