@@ -862,3 +862,22 @@
   `386772a6ab12125a40d7647e1d1049ed64a5c2bead7f81ade123d17b735e2472`.
 - Next action: reuse the isolated level-one seed to qualify Fighter 1 ->
   Gunslinger 1 multiclass preview, then inspect respec mode contracts.
+
+## 2026-08-01 Sprint 34 multiclass preview
+
+- Added save-free `disposable-gunslinger-multiclass-preview` using the exact
+  native Fighter blueprint as a disposable level-one seed, then exact
+  `LevelUp` mode with Gunslinger selection.
+- Six focused checks, repository validation, 691/691 tests, exact Release
+  compilation, output validation, and strict packaging passed on `c1eb9b7`.
+  Mod-load PASS evidence is `20260801T1748568385594Z-mod-load-smoke`.
+- Independent PASS run IDs are
+  `20260801T1750132878481Z-0665958b379b4f8ca6067083a9ee9708` and
+  `20260801T1751280423920Z-703b0d97c03843a28fedffe8c4392214`.
+  Both proved source Fighter 1/Gunslinger 0, preview Fighter 1/Gunslinger 1,
+  two exact queued actions, controller cancellation, and external isolation.
+- Package/DLL SHA-256 are
+  `14e5a1746638f1f1d48c4a9ccd79c92cd6307e1d2e96680355a7f8f873e9eedf` /
+  `66265d13b598477701674ec05cf50dec009bf2809bca0a3cbd63533ec9cffd86`.
+- Next action: inspect exact respec build modes and reset contracts, then add a
+  save-free reversible respec preview if the native boundary supports one.

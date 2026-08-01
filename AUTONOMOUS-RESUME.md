@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `84bb692` (disposable same-class level-up preview).
+- Audited HEAD: `c1eb9b7` (disposable Fighter-to-Gunslinger multiclass preview).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 34 Gunslinger class chassis.
@@ -17,6 +17,15 @@ definition of done or a listed genuine human-input hard stop.
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Exact multiclass preview commit `c1eb9b7` passed mod-load at
+  `20260801T1748568385594Z-mod-load-smoke`, then two save-free PASS runs:
+  `20260801T1750132878481Z-0665958b379b4f8ca6067083a9ee9708` and
+  `20260801T1751280423920Z-703b0d97c03843a28fedffe8c4392214`.
+  Both proved source Fighter 1/Gunslinger 0 and preview Fighter 1/Gunslinger 1,
+  with two actions and exact cleanup. Package/DLL SHA-256 are
+  `14e5a1746638f1f1d48c4a9ccd79c92cd6307e1d2e96680355a7f8f873e9eedf` /
+  `66265d13b598477701674ec05cf50dec009bf2809bca0a3cbd63533ec9cffd86`.
 
 - Exact Sprint 34 level-up preview commit `84bb692` passed mod-load at
   `20260801T1741332784385Z-mod-load-smoke`, then two independent save-free
@@ -139,9 +148,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Same-class level-up preview is runtime-qualified. Reuse the disposable exact
-level-one seed to qualify a native Fighter 1 -> Gunslinger 1 multiclass preview,
-then inspect and qualify respec mode. Full first-level `Commit` remains deferred
+Same-class and Fighter-to-Gunslinger multiclass previews are runtime-qualified.
+Inspect exact respec build modes and reset contracts, then add a save-free
+reversible respec preview if supported. Full first-level `Commit` remains deferred
 until its global rest/entity/remote-companion/view mutations have a complete
 rollback proof; do not invoke it speculatively.
 
