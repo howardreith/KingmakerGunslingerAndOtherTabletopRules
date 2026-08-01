@@ -367,6 +367,14 @@
       "status": "active",
       "milestone": "Sprint 37",
       "notes": "Level-eighteen cumulative fifth and final point of light/no-armor dodge AC from Nimble."
+    },
+    {
+      "symbol": "KMG.Deeds.GunslingerInitiativeFeature",
+      "guid": "4d8d7a84f2524a38bfe4ad12d0da3de1",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 38",
+      "notes": "Level-three grit-gated +2 native initiative-check feature; initiative-time Quick Draw clause remains separately under contract review."
     }
   ]
 }

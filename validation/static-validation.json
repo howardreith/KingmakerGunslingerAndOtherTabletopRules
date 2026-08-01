@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.37-s37-class-integration",
-  "version": "0.0.37",
+  "milestone": "0.0.38-s38-gunslinger-initiative",
+  "version": "0.0.38",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 737,
+    "testCount": 740,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

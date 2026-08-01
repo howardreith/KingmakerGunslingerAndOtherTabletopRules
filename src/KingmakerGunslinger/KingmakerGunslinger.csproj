@@ -125,6 +125,9 @@
     <Compile Include="Classes\NimbleArmor.cs" />
     <Compile Include="Classes\NimbleArmorClassBonus.cs" />
     <Compile Include="Classes\NimbleService.cs" />
+    <Compile Include="Classes\GunslingerInitiativeBonus.cs" />
+    <Compile Include="Classes\GunslingerInitiativeRuntime.cs" />
+    <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
@@ -159,6 +162,7 @@
     <Compile Include="Blueprints\GunslingerDodgeBlueprints.cs" />
     <Compile Include="Blueprints\QuickClearBlueprints.cs" />
     <Compile Include="Blueprints\NimbleBlueprints.cs" />
+    <Compile Include="Blueprints\GunslingerInitiativeBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />

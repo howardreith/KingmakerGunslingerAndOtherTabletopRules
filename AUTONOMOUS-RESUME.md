@@ -8,12 +8,13 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `b82768b` (runtime-qualified Nimble source checkpoint).
+- Audited HEAD: `9cad0e9` (runtime-qualified Nimble documentation checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 37 Nimble is runtime-qualified; Gunslinger
-  Initiative is the next incomplete fidelity row under audit.
-- Version: `0.0.37`.
+- Current checkpoint: Sprint 38 Gunslinger Initiative +2 is source-qualified
+  and awaits an exact source commit plus guarded runtime qualification. The
+  conditional Quick Draw clause remains separately under contract review.
+- Version: `0.0.38`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -332,10 +333,13 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the Nimble source checkpoint, then exact mod load and run two independent
-`disposable-gunslinger-nimble` fresh-process scenarios. Preserve the Dodge
-movement alternative as a documented pending adaptation until deterministic
-destination selection is safe. Broad
+Commit the Sprint 38 Gunslinger Initiative source checkpoint, then require exact
+`0.0.38` mod load and run two independent
+`disposable-gunslinger-initiative` fresh-process scenarios. After recording
+qualification, continue the exact native contract audit for the Initiative
+Quick Draw clause or select Pistol-Whip if that clause requires a distinct
+evidence checkpoint. Preserve the Dodge movement alternative as a documented
+pending adaptation until deterministic destination selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

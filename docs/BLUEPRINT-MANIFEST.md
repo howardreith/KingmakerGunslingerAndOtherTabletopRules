@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **45 stable identifiers: 44 active and one reserved**. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+The append-only ledger contains **46 stable identifiers: 45 active and one reserved**. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 

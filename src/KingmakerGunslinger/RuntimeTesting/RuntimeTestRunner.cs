@@ -33,6 +33,8 @@ using Kingmaker.UnitLogic;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 using Kingmaker.Blueprints.Items.Armors;
+using Kingmaker.PubSubSystem;
+using KingmakerGunslinger.Classes;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -268,6 +270,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDodge &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerNimble &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerInitiative &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -379,6 +382,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableGunslingerNimble)
                 {
                     Complete(RunDisposableGunslingerNimble());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerInitiative)
+                {
+                    Complete(RunDisposableGunslingerInitiative());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3361,6 +3370,116 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mediumWith == mediumWithout, "exact native medium armor slot"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "armor/facts removed and detached unit disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerInitiative()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            int initialGrit = -1, afterPositiveGrit = -1,
+                withBefore = -1, withAfter = -1,
+                withDuplicate = -1, emptyGrit = -1, emptyBefore = -1,
+                emptyAfter = -1;
+            bool cleaned = false; string stage = "construct-disposable";
+            GunslingerInitiativeRuntimeDiagnostics.Reset();
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.Wisdom.BaseValue = 14;
+                unit.Descriptor.AddFact(gunslinger.Grit.Feature);
+                unit.Descriptor.AddFact(gunslinger.Initiative);
+                initialGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                stage = "positive-grit-roll";
+                var withGrit = new RuleInitiativeRoll(unit);
+                Rulebook.Trigger(withGrit);
+                withBefore = withGrit.Modifier;
+                EventBus.RaiseEvent<IUnitInitiativeHandler>(handler =>
+                    handler.HandleUnitRollsInitiative(withGrit));
+                withAfter = withGrit.Modifier;
+                EventBus.RaiseEvent<IUnitInitiativeHandler>(handler =>
+                    handler.HandleUnitRollsInitiative(withGrit));
+                withDuplicate = withGrit.Modifier;
+                afterPositiveGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                stage = "zero-grit-roll";
+                unit.Descriptor.Resources.Spend(gunslinger.Grit.Resource, initialGrit);
+                emptyGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                var withoutGrit = new RuleInitiativeRoll(unit);
+                Rulebook.Trigger(withoutGrit);
+                emptyBefore = withoutGrit.Modifier;
+                EventBus.RaiseEvent<IUnitInitiativeHandler>(handler =>
+                    handler.HandleUnitRollsInitiative(withoutGrit));
+                emptyAfter = withoutGrit.Modifier;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Gunslinger Initiative failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (unit.Descriptor.HasFact(gunslinger.Initiative))
+                        unit.Descriptor.RemoveFact(gunslinger.Initiative);
+                    if (unit.Descriptor.HasFact(gunslinger.Grit.Feature))
+                        unit.Descriptor.RemoveFact(gunslinger.Grit.Feature);
+                    unit.Dispose();
+                }
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit));
+            }
+            string observed = "initialGrit=" + initialGrit + ";afterPositiveGrit=" +
+                afterPositiveGrit + ";withBefore=" +
+                withBefore + ";withAfter=" + withAfter + ";withDuplicate=" +
+                withDuplicate + ";emptyGrit=" + emptyGrit + ";emptyBefore=" +
+                emptyBefore + ";emptyAfter=" + emptyAfter + ";applied=" +
+                GunslingerInitiativeRuntimeDiagnostics.Applied + ";rejected=" +
+                GunslingerInitiativeRuntimeDiagnostics.Rejected + ";duplicates=" +
+                GunslingerInitiativeRuntimeDiagnostics.Duplicates + ";faults=" +
+                GunslingerInitiativeRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("initiative-positive-grit", "+2 native modifier; no spend",
+                    observed, initialGrit == 2 && afterPositiveGrit == 2 &&
+                    withAfter == withBefore + 2,
+                    "exact RuleInitiativeRoll handler boundary"),
+                Assertion("initiative-duplicate-stability", "same modifier after replay",
+                    observed, withDuplicate == withAfter,
+                    "weak rule-identity duplicate guard"),
+                Assertion("initiative-zero-grit", "+0 native modifier",
+                    observed, emptyGrit == 0 && emptyAfter == emptyBefore,
+                    "native Gunslinger grit resource gate"),
+                Assertion("initiative-diagnostics",
+                    "applied=1;rejected=1;duplicates=1;faults=0", observed,
+                    GunslingerInitiativeRuntimeDiagnostics.Applied == 1 &&
+                    GunslingerInitiativeRuntimeDiagnostics.Rejected == 1 &&
+                    GunslingerInitiativeRuntimeDiagnostics.Duplicates == 1 &&
+                    GunslingerInitiativeRuntimeDiagnostics.Faults == 0,
+                    "production initiative diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "facts removed and detached unit disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

@@ -75,6 +75,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearStatus.cs"><Link>Deeds\QuickClearStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleArmor.cs"><Link>Classes\NimbleArmor.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleService.cs"><Link>Classes\NimbleService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerInitiativeService.cs"><Link>Classes\GunslingerInitiativeService.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

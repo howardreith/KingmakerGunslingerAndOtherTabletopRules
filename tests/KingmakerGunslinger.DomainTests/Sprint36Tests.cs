@@ -7,6 +7,29 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static partial class Program
     {
+        private static void GunslingerInitiativePositiveGrit()
+        {
+            var service = new GunslingerInitiativeService();
+            Assertions.Equal(2, service.CalculateBonus(1),
+                "One grit did not grant +2 initiative.");
+            Assertions.Equal(2, service.CalculateBonus(20),
+                "Additional grit changed the fixed initiative bonus.");
+        }
+
+        private static void GunslingerInitiativeZeroGrit()
+        {
+            Assertions.Equal(0,
+                new GunslingerInitiativeService().CalculateBonus(0),
+                "Zero grit granted initiative.");
+        }
+
+        private static void GunslingerInitiativeInvalidInput()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new GunslingerInitiativeService().CalculateBonus(-1),
+                "Negative grit was accepted for initiative.");
+        }
+
         private static void DeadeyeSecondIncrementCostsOne()
         {
             DeadeyeDecision result = Deadeye((20d * 0.3048d) + 0.001d, 1);

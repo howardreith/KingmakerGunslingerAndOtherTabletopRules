@@ -22,10 +22,15 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
     if missing:
         raise RuntimeError(f"{label} is missing required token(s): {missing}")
 
-def validate(root: Path) -> None:
+def validate(root: Path, version: str = VERSION,
+             informational_version: str = INFORMATIONAL_VERSION,
+             test_count: int = TEST_COUNT,
+             active_manifest_count: int = 44,
+             total_manifest_count: int = 45) -> None:
     root = root.resolve()
-    validate_sprint36.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 44, 45)
+    validate_sprint36.validate(root, version, informational_version,
+                               test_count, active_manifest_count,
+                               total_manifest_count)
     require_tokens(read(root, "planning/SPRINT-37-ENTRY-CRITERIA.md"),
         ["Nimble", "levels 2, 6, 10, 14, and 18",
          "light or no armor", "checkpoint, not a stopping condition"],

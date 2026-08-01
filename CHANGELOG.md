@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.38 — Sprint 38 Gunslinger Initiative (in progress)
+
+- Added the level-three grit-gated +2 native initiative-check slice through
+  Kingmaker's exact post-roll `IUnitInitiativeHandler` boundary.
+- Added rule-object duplicate protection and a guarded detached runtime
+  scenario; the conditional Quick Draw clause remains under exact contract
+  review rather than guessing inventory or hand state.
+- Advanced build, package, runtime-request, and repository validation guards to
+  version 0.0.38 while preserving inherited Sprint 37 evidence.
+
 ## 0.0.37 — Sprint 37 class integration (in progress)
 
 - Began the next progression slice with exact cumulative Nimble ranks at levels

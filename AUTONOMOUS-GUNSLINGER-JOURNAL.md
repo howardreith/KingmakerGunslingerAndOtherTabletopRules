@@ -1342,3 +1342,31 @@
   `dafbb6bd85f01df1497815d21e3ed97c81ee95cce2797c63b7252798a026272a`.
 - Nimble is runtime-qualified. Continue immediately to Gunslinger Initiative;
   Sprint 37 is not a stopping condition.
+
+## 2026-08-01 Sprint 38 Gunslinger Initiative source qualification
+
+- Advanced the active version to `0.0.38-s38-gunslinger-initiative` after the
+  runtime-qualified Sprint 37 Nimble checkpoint.
+- Exact installed metadata proves `RuleInitiativeRoll.OnTrigger` snapshots the
+  native Initiative stat and the combat preparation controller subsequently
+  raises `IUnitInitiativeHandler` before consuming the result. The level-three
+  unit-owned feature uses that boundary to add exactly +2 only while its native
+  Gunslinger grit resource is positive, without spending grit.
+- The adapter changes only the exact private modifier backing field, filters by
+  exact owning-unit reference, and uses weak rule identity to reject duplicate
+  delivery. It does not override or force the d20 and introduces no global
+  Harmony patch.
+- The tabletop Quick Draw clause remains explicitly incomplete because exact
+  native contracts have not yet jointly proven feat identity, free and
+  unrestrained hands, visible firearm selection, and action-free weapon-set
+  mutation. This checkpoint does not guess or silently claim that behavior.
+- Added one stable level-three blueprint, three policy cases, and the save-free
+  guarded `disposable-gunslinger-initiative` scenario. Sprint 38/inherited
+  validation, 740/740 tests, 18 request checks, 40 preflight checks, 16
+  validation-dispatch checks, exact-reference clean Release build, strict
+  package validation, and scenario WhatIf pass.
+- Candidate package/DLL SHA-256 are
+  `1d47befc5495b9d70bda1cf13757813bec9737e528052e20cb8f57bdf799a329` /
+  `ce8c55a16c347c873d7265675ae1e6d5c3b59bee6338074a53075ca31ece46f8`.
+- Next action: commit the reconstructable source checkpoint, require exact mod
+  load, and run two independent fresh-process Initiative PASS runs.
