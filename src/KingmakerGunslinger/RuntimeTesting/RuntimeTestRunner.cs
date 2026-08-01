@@ -2647,6 +2647,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool bodyReplaced = false;
             bool selected = false;
             bool cleaned = false;
+            string stage = "construct-disposable";
             try
             {
                 var chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
@@ -2674,6 +2675,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new MissingMethodException(
                         "An exact native respec controller method is unavailable.");
 
+                stage = "seed-fighter";
                 object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "CharGen", false);
                 seedController = start.Invoke(null,
@@ -2688,10 +2690,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 seedController = null;
                 fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
 
+                stage = "prepare-respec";
                 object bodyBefore = descriptor.Body;
                 entity.PrepareRespec();
                 bodyReplaced = descriptor.Body != null &&
                     !ReferenceEquals(bodyBefore, descriptor.Body);
+                stage = "start-respec-controller";
                 object respec = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "Respec", false);
                 respecController = start.Invoke(null,
@@ -2703,8 +2707,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(preview, descriptor))
                     throw new InvalidOperationException(
                         "Exact isolated Respec preview is unavailable.");
+                stage = "read-respec-preview";
                 previewFighterBefore = preview.Progression.GetClassLevel(fighter);
                 previewGunslingerBefore = preview.Progression.GetClassLevel(gunslinger);
+                stage = "select-gunslinger";
                 selected = (bool)selectClass.Invoke(respecController,
                     new object[] { gunslinger, false });
                 mechanics.Invoke(respecController, null);
@@ -2713,6 +2719,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 previewGunslingerAfter = preview.Progression.GetClassLevel(gunslinger);
                 sourceFighterAfter = descriptor.Progression.GetClassLevel(fighter);
                 sourceGunslingerAfter = descriptor.Progression.GetClassLevel(gunslinger);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable respec preview failed at stage " + stage + ".", exception);
             }
             finally
             {
