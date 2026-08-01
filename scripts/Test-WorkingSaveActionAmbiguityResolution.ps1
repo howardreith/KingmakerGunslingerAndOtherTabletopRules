@@ -49,7 +49,9 @@ $checks = [ordered]@{
         $runner.IndexOf('Application.Quit();')
     'no-deliberate-save-write' = -not ($scenario -match
         '\.(AutoSave|QuickSave|DeleteSave|RenameSave|MigrateSave|Overwrite)\s*\(')
-    'observers-remain-non-initiating' = $scenario.Contains('ProbeInvokedEntryAction = false') -and
+    'observers-remain-non-initiating' = $scenario.Contains(
+        'ProbeInvokedEntryAction = _autonomousReceiverBoundAction') -and
+        $runner.Contains('receiverBoundObservation') -and
         $runner.Contains('observer invokes neither selection nor loading')
     'steam-app-id' = $common.Contains('$script:KmgSteamAppId = 640820')
     'single-deployment-backup' = ([regex]::Matches($orchestrator,

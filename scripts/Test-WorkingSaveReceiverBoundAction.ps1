@@ -36,7 +36,8 @@ Assert-True ($scenario.Contains('ExactPatchableMethod(slot,') -and
     $scenario.Contains('"OnButtonSaveLoad", Type.EmptyTypes, typeof(void)') -and
     $scenario.Contains('"HandleHardcodeMainMenuSaveLoad",') -and
     $scenario.Contains('RequirePatchableContract(_loadEntry')) 'only-three-exact-action-contracts'
-Assert-True ($scenario.Contains('if (_observeReceiverBoundAction)') -and
+Assert-True ($scenario.Contains(
+    'if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)') -and
     $scenario.Contains('InstallExactSaveWriteSentinels(assembly, prefix)') -and
     $scenario.Contains('BindingFlags.DeclaredOnly')) 'no-keyword-or-broad-patch-sweep'
 Assert-True ($scenario.Contains('method.GetMethodBody() == null') -and
@@ -51,9 +52,12 @@ Assert-True ($runner.IndexOf('_trace.WriteReady(new RuntimeReadyMarker',
     [StringComparison]::Ordinal) -lt $orchestrator.IndexOf(
     'CLICK THE NORMAL LOAD ACTION FOR KMG_AUTOMATION_WORKING ONCE',
     [StringComparison]::Ordinal)) 'readiness-precedes-human-banner'
-Assert-True ($scenario.Contains('ProbeInvokedEntryAction = false') -and
-    -not $scenario.Contains('_slotAction.Invoke(') -and
-    -not $scenario.Contains('_windowHandler.Invoke(')) 'probe-never-initiates-slot-or-window-action'
+Assert-True ($scenario.Contains(
+    'ProbeInvokedEntryAction = _autonomousReceiverBoundAction') -and
+    $scenario.Contains('if (_stage == "receiver-bound-action-invocation")') -and
+    $scenario.Contains('_slotAction.Invoke(_receiverBoundSlot, null)') -and
+    -not $scenario.Contains('_windowHandler.Invoke(')) `
+    'observer-remains-non-initiating-and-autonomous-uses-slot-only'
 Assert-True ($scenario.Contains('ReferenceEquals(receiver, _receiverBoundSlot)')) 'slot-receiver-reference-mandatory'
 Assert-True ($scenario.Contains('ReferenceEquals(receiver, _receiverBoundWindow)')) 'window-receiver-reference-mandatory'
 Assert-True ($scenario.Contains('ReferenceEquals(argument, _workingDescriptor)') -and

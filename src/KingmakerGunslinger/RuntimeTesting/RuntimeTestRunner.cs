@@ -392,7 +392,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_workingSaveSmoke.ReceiverBoundScopeResolutionFailed)
                 {
-                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                    bool multipleReceivers =
+                        _workingSaveSmoke.EntryCandidateCount > 1 ||
+                        _workingSaveSmoke.EntryActionCandidateCount > 1;
+                    CompleteWorkingSaveSmoke(multipleReceivers
+                            ? RuntimeTestStatuses.Ambiguous
+                            : RuntimeTestStatuses.Fail,
                         "receiver-bound-readiness",
                         "The exact working SaveSlot or owning SaveLoadWindow had zero or multiple matches.");
                     return;
@@ -413,7 +418,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "A native save-writing or migration method was observed.");
                 return;
             }
-            if (supervisedEntry && (_workingSaveSmoke.BaselineLoadObserved ||
+            if ((supervisedEntry || _workingSaveSmoke.AutonomousReceiverBoundAction) &&
+                (_workingSaveSmoke.BaselineLoadObserved ||
                 _workingSaveSmoke.OtherLoadObserved))
             {
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail,
@@ -437,7 +443,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Multiple exact working descriptors were captured.");
                 return;
             }
-            if (supervisedEntry &&
+            if ((supervisedEntry || _workingSaveSmoke.AutonomousReceiverBoundAction) &&
                 !_workingSaveSmoke.SelectionLoadObservation &&
                 (_workingSaveSmoke.EntryCandidateCount > 1 ||
                  _workingSaveSmoke.EntryActionCandidateCount > 1))
@@ -521,6 +527,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _request.DescriptorResolutionTimeoutSeconds;
             if (stage == "working-entry-click")
                 return _request.SelectionTimeoutSeconds;
+            if (stage == "receiver-bound-action-invocation")
+                return _request.ActionInvocationTimeoutSeconds;
             if (stage == "slot-action-invocation" ||
                 stage == "window-handler-invocation")
                 return _request.LoadEntryTimeoutSeconds;
@@ -670,7 +678,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
             bool receiverBoundObservation = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
-            if (receiverBoundObservation)
+            bool receiverBoundPath = receiverBoundObservation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke;
+            if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
                 assertions.Add(Assertion("unique-working-slot",
@@ -703,10 +713,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.LoadEntrySequence < evidence.CompletionSequence &&
                         evidence.CompletionSequence < evidence.FingerprintSequence,
                     "monotonic request-scoped event sequence"));
-                assertions.Add(Assertion("probe-non-initiating",
-                    "false", evidence.ProbeInvokedEntryAction.ToString(),
-                    !evidence.ProbeInvokedEntryAction,
-                    "observer invokes neither selection nor loading"));
+                assertions.Add(Assertion(receiverBoundObservation
+                        ? "probe-non-initiating" : "autonomous-action-invoked",
+                    receiverBoundObservation ? "false" : "true",
+                    evidence.ProbeInvokedEntryAction.ToString(),
+                    receiverBoundObservation
+                        ? !evidence.ProbeInvokedEntryAction
+                        : evidence.ProbeInvokedEntryAction,
+                    receiverBoundObservation
+                        ? "observer invokes neither selection nor loading"
+                        : "guarded autonomous scenario invokes the exact receiver-bound action"));
             }
             else if (selectionLoadObservation)
             {

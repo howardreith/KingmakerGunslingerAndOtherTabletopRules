@@ -111,6 +111,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly bool _observeEntryAction;
         private readonly bool _observeSelectionLoadAction;
         private readonly bool _observeReceiverBoundAction;
+        private readonly bool _autonomousReceiverBoundAction;
         private Button _entryAction;
         private UnityEvent _entryUnityEvent;
         private Component _entryOwner;
@@ -172,6 +173,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _observeEntryAction = observeEntryAction;
             _observeSelectionLoadAction = observeSelectionLoadAction;
             _observeReceiverBoundAction = observeReceiverBoundAction;
+            _autonomousReceiverBoundAction = !observeEntryAction &&
+                !observeSelectionLoadAction && !observeReceiverBoundAction;
             _stageStarted = elapsed.ElapsedMilliseconds;
         }
 
@@ -186,7 +189,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return _completionCallback && _stableSamples >= 2 &&
                     _descriptorCorrelated && !_writeObserved && !_wrongThread &&
-                    (!_observeEntryAction ||
+                    (_autonomousReceiverBoundAction
+                         ? (_entryCandidates == 1 &&
+                            _slotActionInvocations == 1 &&
+                            _windowHandlerInvocations == 1 &&
+                            _loadEntryInvocations == 1 &&
+                            _slotReceiverCorrelated &&
+                            _windowReceiverCorrelated &&
+                            _windowArgumentCorrelated &&
+                            StrictReceiverBoundOrder())
+                         : !_observeEntryAction ||
                      (_observeReceiverBoundAction
                          ? (_entryCandidates == 1 &&
                             _slotActionInvocations == 1 &&
@@ -220,6 +232,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool WriteObserved { get { return _writeObserved; } }
         internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
         internal bool ReceiverBoundObservation { get { return _observeReceiverBoundAction; } }
+        internal bool AutonomousReceiverBoundAction
+        {
+            get { return _autonomousReceiverBoundAction; }
+        }
         internal Exception ScenarioException { get { return _exception; } }
         internal string LastCompletedStage { get { return _lastCompletedStage; } }
         internal string ObserverArmingSubstage { get { return _observerArmingSubstage; } }
@@ -263,8 +279,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             get
             {
-                return _observeReceiverBoundAction &&
-                    _stage == "working-entry-click" &&
+                return (_observeReceiverBoundAction ||
+                    _autonomousReceiverBoundAction) &&
+                    (_stage == "working-entry-click" ||
+                     _stage == "receiver-bound-action-invocation") &&
                     (_entryCandidates != 1 || _entryActionCandidates != 1 ||
                      _receiverBoundSlot == null || _receiverBoundWindow == null);
             }
@@ -308,7 +326,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     method.GetParameters().Length == 1 &&
                     method.GetParameters()[0].ParameterType.FullName == DescriptorType &&
                     method.ReturnType == typeof(void));
-                if (_observeReceiverBoundAction)
+                if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)
                 {
                     Type slot = assembly.GetType(SaveSlotType, true);
                     Type window = assembly.GetType(SaveLoadWindowType, true);
@@ -328,12 +346,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Patch(_handler, prefix, null);
                 Patch(_initialize, prefix, postfix);
                 Patch(_loadEntry, prefix, null);
-                if (_observeReceiverBoundAction)
+                if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)
                 {
                     Patch(_slotAction, prefix, null);
                     Patch(_windowHandler, prefix, null);
                 }
-                if (_observeReceiverBoundAction)
+                if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)
                     InstallExactSaveWriteSentinels(assembly, prefix);
                 else
                     InstallLegacySaveWriteSentinels(assembly, prefix);
@@ -409,7 +427,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "immutable scalar descriptor evidence captured");
                     Add("baseline-excluded", null, null,
                         "working and baseline object references are distinct");
-                    Transition(_observeEntryAction
+                    Transition((_observeEntryAction || _autonomousReceiverBoundAction)
                             ? "working-entry-readiness" : "load-entry-invocation",
                         "unique working descriptor and distinct baseline proven");
                     return;
@@ -417,18 +435,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "working-entry-readiness")
             {
-                if (_observeReceiverBoundAction)
+                if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)
                     ResolveWorkingReceiverBoundScope();
                 else if (_observeSelectionLoadAction)
                     ResolveWorkingSelectionLoadActions();
                 else ResolveWorkingEntryAction();
-                if ((_observeReceiverBoundAction &&
+                if (((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
                      _receiverScopeResolutionAttempted) ||
                     (_entryCandidates <= 1 &&
                     (_observeSelectionLoadAction || _observeReceiverBoundAction ||
+                     _autonomousReceiverBoundAction ||
                      _entryActionCandidates <= 1)))
-                    Transition("working-entry-click",
-                        "pre-click descriptor identity proven and exact LoadGame observation armed; entry action correlation may complete after the human click");
+                    Transition(_autonomousReceiverBoundAction
+                            ? "receiver-bound-action-invocation"
+                            : "working-entry-click",
+                        _autonomousReceiverBoundAction
+                            ? "exact receiver-bound action contract proven for autonomous invocation"
+                            : "pre-click descriptor identity proven and exact LoadGame observation armed; entry action correlation may complete after the human click");
+                return;
+            }
+            if (_stage == "receiver-bound-action-invocation")
+            {
+                RequireGameThread();
+                Add("autonomous-receiver-bound-action-invoke-start", _slotAction,
+                    null, "receiver=" + ObjectIdentity(_receiverBoundSlot) +
+                    ";descriptor=" + ObjectIdentity(_workingDescriptor));
+                _slotAction.Invoke(_receiverBoundSlot, null);
+                Add("autonomous-receiver-bound-action-invoke-return", _slotAction,
+                    null, "exact normal receiver-bound action invoked once");
+                if (_slotActionInvocations != 1 || !_slotReceiverCorrelated)
+                    throw new InvalidOperationException(
+                        "Autonomous receiver-bound action did not enter exactly once on the exact working slot.");
                 return;
             }
             if (_stage == "load-entry-invocation")
@@ -519,7 +556,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ListenerTargetIdentity = ObjectIdentity(_listenerTarget),
                 ListenerMethod = FormatSignature(_listenerMethod),
                 LoadEntryReceiverIdentity = ObjectIdentity(_observedLoadReceiver),
-                ProbeInvokedEntryAction = false
+                ProbeInvokedEntryAction = _autonomousReceiverBoundAction &&
+                    _slotActionInvocations != 0
                 , OwnerObjectIdentity = _ownerObjectIdentity
                 , ListObjectIdentity = _listObjectIdentity
                 , ScopedActionCandidates = new List<string>(_scopedActionCandidates)
@@ -1311,7 +1349,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void ObserveEnter(MethodBase method, object receiver, object[] args)
         {
             RequireGameThread();
-            if (_observeReceiverBoundAction && method == _slotAction)
+            if ((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
+                method == _slotAction)
             {
                 _slotActionInvocations++;
                 bool exact = ReferenceEquals(receiver, _receiverBoundSlot);
@@ -1320,11 +1359,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add("receiver-bound-slot-action-enter", method, args,
                     "count=" + _slotActionInvocations + ";receiver=" +
                     ObjectIdentity(receiver) + ";exactWorkingSlot=" + exact);
-                if (_stage == "working-entry-click")
+                if (_stage == "working-entry-click" ||
+                    _stage == "receiver-bound-action-invocation")
                     Transition("slot-action-invocation",
-                        "human normal action entered exact SaveSlot boundary");
+                        _autonomousReceiverBoundAction
+                            ? "autonomous exact normal action entered SaveSlot boundary"
+                            : "human normal action entered exact SaveSlot boundary");
             }
-            else if (_observeReceiverBoundAction && method == _windowHandler)
+            else if ((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
+                method == _windowHandler)
             {
                 _windowHandlerInvocations++;
                 object argument = args == null || args.Length != 1 ? null : args[0];
@@ -1374,8 +1417,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _descriptorCorrelated = ReferenceEquals(argument, _workingDescriptor) &&
                     ContainsReference(_catalogObject, _workingDescriptor);
                 _observedLoadReceiver = receiver;
-                if (_observeEntryAction) _loadEntryInvocations++;
-                if (_observeReceiverBoundAction)
+                if (_observeEntryAction || _autonomousReceiverBoundAction)
+                    _loadEntryInvocations++;
+                if (_observeReceiverBoundAction || _autonomousReceiverBoundAction)
                     _loadEntrySequence = _events.Count + 1;
                 if (_observeSelectionLoadAction)
                 {
@@ -1384,7 +1428,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 Add("load-entry-enter", method, args,
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
-                if (_observeEntryAction && _descriptorCorrelated &&
+                if ((_observeEntryAction || _autonomousReceiverBoundAction) &&
+                    _descriptorCorrelated &&
                     (_stage == "working-entry-click" ||
                      _stage == "window-handler-invocation" ||
                      _stage == "load-entry-invocation"))

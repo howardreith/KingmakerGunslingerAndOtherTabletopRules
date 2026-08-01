@@ -32,7 +32,9 @@ $checks = [ordered]@{
     'click-clock-after-stage-b' = $orchestrator.IndexOf(
         '$orchestration.manualInteractionTimeoutBeganAtUtc') -gt
         $orchestrator.IndexOf('Test-KmgRuntimeReadyMarker')
-    'probe-does-not-initiate-entry-load' = $scenario.Contains('ProbeInvokedEntryAction = false')
+    'probe-does-not-initiate-entry-load' = $scenario.Contains(
+        'ProbeInvokedEntryAction = _autonomousReceiverBoundAction') -and
+        $runner.Contains('receiverBoundObservation')
     'unique-working-required' = $runner.Contains('_workingSaveSmoke.WorkingCount == 0') -and
         $runner.Contains('_workingSaveSmoke.WorkingCount > 1')
     'baseline-distinct-required' = $runner.Contains('_workingSaveSmoke.BaselineCount == 0') -and

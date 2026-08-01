@@ -63,8 +63,9 @@ $checks = [ordered]@{
         $orchestrator.Contains('CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW')
     'pre-click-readiness-not-load-invocation' =
         $scenario.Contains('_stage == "working-entry-readiness"') -and
-        $scenario.Contains('Transition("working-entry-click"') -and
-        $scenario.IndexOf('Transition("working-entry-click"') -lt
+        $scenario.Contains('? "receiver-bound-action-invocation"') -and
+        $scenario.Contains(': "working-entry-click"') -and
+        $scenario.IndexOf(': "working-entry-click"') -lt
             $scenario.IndexOf('if (_stage == "working-entry-click" && _loadEntryInvocations == 1)')
     'readiness-allows-post-click-action-proof' =
         $scenario.Contains('_observeSelectionLoadAction || _entryActionCandidates <= 1') -and

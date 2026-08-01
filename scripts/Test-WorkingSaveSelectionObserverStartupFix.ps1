@@ -47,7 +47,9 @@ $checks = [ordered]@{
     'readiness-before-action' = $scenario.IndexOf('working-selection-load-observer-ready') -lt
         $scenario.IndexOf('CaptureLoadCallerChain()')
     'load-completion-not-visual' = $scenario.Contains('_completionCallback && _stableSamples >= 2')
-    'observer-noninitiating' = $scenario.Contains('ProbeInvokedEntryAction = false')
+    'observer-noninitiating' = $scenario.Contains(
+        'ProbeInvokedEntryAction = _autonomousReceiverBoundAction') -and
+        $runner.Contains('receiverBoundObservation')
 }
 
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
