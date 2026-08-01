@@ -40,6 +40,9 @@ $checks = [ordered]@{
         $runner.Contains('UnitDescriptor.Body.set=') -and
         $runner.Contains('UnitDescriptor.Dispose=') -and
         $runner.Contains('UnitEntityData.Dispose=') -and
+        $runner.Contains('LevelUpController.StartWithoutStatic=') -and
+        $runner.Contains('LevelUpController.ctor=') -and
+        $runner.Contains('LevelUpController.RequestPreview=') -and
         $runner.Contains('no respec or cleanup method invoked')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')
 }

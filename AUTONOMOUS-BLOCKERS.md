@@ -32,6 +32,13 @@ currently established.
   `UnitBody.Dispose`. Restoring the retained original disposable body before
   entity disposal is therefore the next evidence-supported architecture; this
   is not a blind third variation.
+- Restored-body commit `4fdbfea` passed mod load at
+  `20260801T1821061256490Z-mod-load-smoke`. Its reduced initiating run
+  `20260801T1822203121648Z-disposable-gunslinger-respec-preview` preserved the
+  real first failure as `start-respec-controller`; cleanup no longer masks it.
+  Investigation has changed back to metadata-only inspection of controller
+  start, construction, and preview call graphs before any further initiating
+  attempt.
 
 ## Active gates (not hard stops)
 

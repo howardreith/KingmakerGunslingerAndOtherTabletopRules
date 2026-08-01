@@ -1981,6 +1981,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BindingFlags.NonPublic | BindingFlags.Instance)) +
                 " | UnitEntityData.Dispose=" + DescribeCalledMethods(
                     entityType.GetMethod("Dispose", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | LevelUpController.StartWithoutStatic=" +
+                    DescribeCalledMethods(startWithoutStatic) +
+                " | LevelUpController.ctor=" + DescribeCalledMethods(
+                    controllerType.GetConstructors(BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SingleOrDefault(value => value.GetParameters().Length == 4)) +
+                " | LevelUpController.RequestPreview=" + DescribeCalledMethods(
+                    controllerType.GetMethod("RequestPreview", BindingFlags.Public |
                         BindingFlags.NonPublic | BindingFlags.Instance));
             string observed = string.Join(" | ", records.ToArray());
             BlueprintRoot root = BlueprintRoot.Instance;
@@ -2009,6 +2018,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         callGraph.Contains("UnitDescriptor.Body.set=") &&
                         callGraph.Contains("UnitDescriptor.Dispose=") &&
                         callGraph.Contains("UnitEntityData.Dispose=") &&
+                        callGraph.Contains("LevelUpController.StartWithoutStatic=") &&
+                        callGraph.Contains("LevelUpController.ctor=") &&
+                        callGraph.Contains("LevelUpController.RequestPreview=") &&
                         !callGraph.Contains("PrepareRespec=<unavailable>"),
                     "metadata-only MethodBody IL; no respec or cleanup method invoked"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
@@ -2851,7 +2863,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";enumValues=" + enumValues;
         }
 
-        private static string DescribeCalledMethods(MethodInfo method)
+        private static string DescribeCalledMethods(MethodBase method)
         {
             if (method == null || method.GetMethodBody() == null) return "<unavailable>";
             byte[] il = method.GetMethodBody().GetILAsByteArray();

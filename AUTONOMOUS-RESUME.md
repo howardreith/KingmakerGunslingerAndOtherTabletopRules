@@ -155,7 +155,11 @@ see `AUTONOMOUS-BLOCKERS.md`. Commit `07dd111` and metadata PASS run
 `20260801T1817013647054Z-observe-character-creation-contracts` prove the cleanup
 failure: respec clears `Body`, but descriptor disposal calls `Body.Dispose`.
 Restore the retained original disposable body before entity disposal, then
-source-qualify and retry the reduced scenario. Resume from clean commit `07dd111`.
+source-qualify and retry the reduced scenario. Commit `4fdbfea` passed mod load
+at `20260801T1821061256490Z-mod-load-smoke`; run
+`20260801T1822203121648Z-disposable-gunslinger-respec-preview` now identifies
+`start-respec-controller` as the first failure. Inspect its exact constructor
+and preview call graphs without invocation before another attempt.
 Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.
