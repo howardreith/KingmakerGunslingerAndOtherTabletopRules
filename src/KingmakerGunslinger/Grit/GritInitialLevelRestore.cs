@@ -14,14 +14,17 @@ namespace KingmakerGunslinger.Grit
     {
         public BlueprintAbilityResource Resource;
         public BlueprintCharacterClass CharacterClass;
+        public BlueprintFeature InitializedMarker;
 
         public void HandleUnitReapplyFeaturesOnLevelUp()
         {
             if (Owner == null || Resource == null || CharacterClass == null ||
+                InitializedMarker == null || Owner.HasFact(InitializedMarker) ||
                 Owner.Progression == null ||
                 Owner.Progression.GetClassLevel(CharacterClass) != 1)
                 return;
             Owner.Resources.Restore(Resource);
+            Owner.AddFact(InitializedMarker);
         }
     }
 }

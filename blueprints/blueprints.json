@@ -247,6 +247,14 @@
       "status": "active",
       "milestone": "Sprint 35",
       "notes": "Level-one Gunslinger feature that owns, initially restores, and does not level-up-refill the per-unit grit resource."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerGritInitialized",
+      "guid": "6ba61f657e08496aae8603c8ed10b8bc",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 35",
+      "notes": "Hidden persistent per-unit marker preventing the post-level initial grit reconciliation from refilling on later multiclass levels."
     }
   ]
 }

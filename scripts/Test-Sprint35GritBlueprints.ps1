@@ -24,6 +24,9 @@ $checks = [ordered]@{
     'first-class-level-reconcile' = $initial.Contains('IUnitReapplyFeaturesOnLevelUpHandler') -and
         $initial.Contains('GetClassLevel(CharacterClass) != 1') -and
         $initial.Contains('Owner.Resources.Restore(Resource)')
+    'one-time-persistent-marker' = $initial.Contains('Owner.HasFact(InitializedMarker)') -and
+        $initial.Contains('Owner.AddFact(InitializedMarker)') -and
+        $blueprints.Contains('InitializedMarkerSymbol')
     'unit-scoped-reapply' = $initial.Contains('IUnitSubscriber') -and
         $initial.Contains('HandleUnitReapplyFeaturesOnLevelUp()')
     'level-one-grant' = $class.Contains('new List<BlueprintFeatureBase> { proficiencies, grit }')
@@ -31,7 +34,7 @@ $checks = [ordered]@{
         $_.symbol -in @('KMG.Classes.GunslingerGritResource',
             'KMG.Classes.GunslingerGritFeature') -and $_.status -eq 'active'
     }).Count -eq 2
-    'registration-count' = $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 29')
+    'registration-count' = $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 30')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) { throw "Sprint 35 grit blueprint tests failed: $($failed -join ', ')" }

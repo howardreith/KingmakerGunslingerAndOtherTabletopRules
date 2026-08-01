@@ -18,6 +18,8 @@ $checks = [ordered]@{
         $runner.Contains('DeserializeObject<Kingmaker.UnitLogic.UnitAbilityResource>')
     'collection-reconstruction' = $runner.Contains('replacementDescriptor.Resources.PersistantResources =') -and
         $runner.Contains('serializedRecordCount == 1 && replacementCurrent == 1')
+    'later-reapply-no-refill' = $runner.Contains('Progression.ReapplyFeaturesOnLevelUp()') -and
+        $runner.Contains('currentAfterLaterReapply == 1')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) { throw "Sprint 35 disposable grit-persistence tests failed: $($failed -join ', ')" }

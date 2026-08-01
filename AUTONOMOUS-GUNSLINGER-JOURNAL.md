@@ -1105,6 +1105,21 @@
   `0766e2c3e36dd8d84c8efad04e0e5293eda92bb1d101c898066e3af1f96ff503` /
   `3b9eccf6770898cc89493fc51a1754feda7a7459d32fbcef6672bda82b52f4d2`.
 
+### One-time initialization guard
+
+- Multiclass analysis found that a class-level-one-only reapply guard would
+  still refill grit on later unrelated class levels while Gunslinger remained
+  level one. Added stable hidden per-unit initialized marker
+  `KMG.Classes.GunslingerGritInitialized`.
+- First exact reapply restores and adds the marker; every later reapply sees the
+  marker and preserves current grit. The persistence scenario now explicitly
+  calls a later exact reapply after spending and requires current to remain one.
+- Ten focused blueprint checks, six persistence checks, inherited validation,
+  703/703 tests, clean Release build, and strict packaging pass. Candidate
+  package/DLL SHA-256 are
+  `1bdc5cdfd0e32d170b16037495441883beff4be96f0bcccaa4b74819f3768efc` /
+  `c72d2e3c7bbdb3ebce182a8ab29bdd5a468e4e6fec38e489935ebf205898bdee`.
+
 ### Native persistence runtime qualification
 
 - Commit `1949d80` passed exact mod load at

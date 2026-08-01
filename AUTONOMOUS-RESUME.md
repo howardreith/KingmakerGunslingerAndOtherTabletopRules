@@ -137,6 +137,13 @@ definition of done or a listed genuine human-input hard stop.
   candidate package/DLL SHA-256 are
   `0766e2c3e36dd8d84c8efad04e0e5293eda92bb1d101c898066e3af1f96ff503` /
   `3b9eccf6770898cc89493fc51a1754feda7a7459d32fbcef6672bda82b52f4d2`.
+- Multiclass audit found class-level-one alone would refill on later unrelated
+  levels. A new stable hidden per-unit initialization marker makes the exact
+  reapply restoration one-time; the persistence scenario now requires a later
+  reapply to preserve current one. All 703 tests and strict packaging pass;
+  candidate package/DLL SHA-256 are
+  `1bdc5cdfd0e32d170b16037495441883beff4be96f0bcccaa4b74819f3768efc` /
+  `c72d2e3c7bbdb3ebce182a8ab29bdd5a468e4e6fec38e489935ebf205898bdee`.
 
 - Native grit persistence round trip is source-qualified: a non-maximum current
   value uses Kingmaker `DefaultJsonSettings`, deserializes to a distinct record

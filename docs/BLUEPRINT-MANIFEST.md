@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **30 stable identifiers: 29 active and one reserved**. Sprint 35 adds the persistent Gunslinger grit resource and its level-one owner feature without changing any prior GUID. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+The append-only ledger contains **31 stable identifiers: 30 active and one reserved**. Sprint 35 adds the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker without changing any prior GUID. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 

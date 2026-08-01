@@ -32,7 +32,7 @@ $checks = [ordered]@{
         $class.Contains('result.ReflexSave = goodSave') -and
         $class.Contains('result.WillSave = poorSave')
     'bootstrap-registers-three-blueprints' =
-        $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 29') -and
+        $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 30') -and
         $bootstrap.Contains('GunslingerClassBlueprints.Register(')
     'catalog-publication-is-verified-and-reversible' =
         $class.Contains('GunslingerClassCatalogPublication Publish(') -and

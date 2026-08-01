@@ -3098,6 +3098,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object controller = null;
             int maximum = -1;
             int originalCurrent = -1;
+            int currentAfterLaterReapply = -1;
             int replacementCurrent = -1;
             int serializedRecordCount = -1;
             bool distinctRecord = false;
@@ -3155,6 +3156,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 maximum = grit.GetMaxAmount(originalDescriptor);
                 originalDescriptor.Resources.Spend(grit, 1);
                 originalCurrent = originalDescriptor.Resources.GetResourceAmount(grit);
+                originalDescriptor.Progression.ReapplyFeaturesOnLevelUp();
+                currentAfterLaterReapply =
+                    originalDescriptor.Resources.GetResourceAmount(grit);
 
                 stage = "native-json-roundtrip";
                 Kingmaker.UnitLogic.UnitAbilityResource record =
@@ -3194,6 +3198,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "maximum=" + maximum + ";originalCurrent=" +
                 originalCurrent + ";replacementCurrent=" + replacementCurrent +
+                ";afterLaterReapply=" + currentAfterLaterReapply +
                 ";records=" + serializedRecordCount + ";jsonLength=" + json.Length;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3203,6 +3208,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("native-json-roundtrip", "distinct record; exact grit blueprint",
                     observed, distinctRecord && exactBlueprint && json.Length > 0,
                     "DefaultJsonSettings and UnitAbilityResource JsonConstructor"),
+                Assertion("later-level-no-refill", "current remains 1",
+                    observed, currentAfterLaterReapply == 1,
+                    "persistent initialization marker across exact feature reapply"),
                 Assertion("persistent-collection-reconstruction", "one grit record at current=1",
                     observed, serializedRecordCount == 1 && replacementCurrent == 1,
                     "UnitAbilityResourceCollection.PersistantResources setter"),

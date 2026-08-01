@@ -10,21 +10,27 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal sealed class GritBlueprintSet
     {
-        internal GritBlueprintSet(BlueprintAbilityResource resource, BlueprintFeature feature)
+        internal GritBlueprintSet(BlueprintAbilityResource resource, BlueprintFeature feature,
+            BlueprintFeature initializedMarker)
         {
             Resource = resource ?? throw new ArgumentNullException("resource");
             Feature = feature ?? throw new ArgumentNullException("feature");
+            InitializedMarker = initializedMarker ??
+                throw new ArgumentNullException("initializedMarker");
         }
 
         internal BlueprintAbilityResource Resource { get; private set; }
         internal BlueprintFeature Feature { get; private set; }
-        internal int Count { get { return 2; } }
+        internal BlueprintFeature InitializedMarker { get; private set; }
+        internal int Count { get { return 3; } }
     }
 
     internal static class GritBlueprints
     {
         internal const string ResourceSymbol = "KMG.Classes.GunslingerGritResource";
         internal const string FeatureSymbol = "KMG.Classes.GunslingerGritFeature";
+        internal const string InitializedMarkerSymbol =
+            "KMG.Classes.GunslingerGritInitialized";
 
         internal static GritBlueprintSet Register(BlueprintRegistry registry,
             BlueprintCharacterClass gunslingerClass)
@@ -33,10 +39,12 @@ namespace KingmakerGunslinger.Blueprints
             if (gunslingerClass == null) throw new ArgumentNullException("gunslingerClass");
             BlueprintAbilityResource resource = registry.Register<BlueprintAbilityResource>(
                 ResourceSymbol, CreateResource);
+            BlueprintFeature marker = registry.Register<BlueprintFeature>(
+                InitializedMarkerSymbol, CreateInitializedMarker);
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
-                FeatureSymbol, () => CreateFeature(resource, gunslingerClass));
+                FeatureSymbol, () => CreateFeature(resource, gunslingerClass, marker));
             Validate(resource, feature);
-            return new GritBlueprintSet(resource, feature);
+            return new GritBlueprintSet(resource, feature, marker);
         }
 
         private static BlueprintAbilityResource CreateResource()
@@ -52,8 +60,19 @@ namespace KingmakerGunslinger.Blueprints
             return resource;
         }
 
+        private static BlueprintFeature CreateInitializedMarker()
+        {
+            var marker = ScriptableObject.CreateInstance<BlueprintFeature>();
+            marker.name = "KMG_Gunslinger_Grit_Initialized";
+            marker.Ranks = 1;
+            marker.IsClassFeature = false;
+            marker.HideInUI = true;
+            marker.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return marker;
+        }
+
         private static BlueprintFeature CreateFeature(BlueprintAbilityResource resource,
-            BlueprintCharacterClass gunslingerClass)
+            BlueprintCharacterClass gunslingerClass, BlueprintFeature marker)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_Gunslinger_Grit_Feature";
@@ -76,6 +95,7 @@ namespace KingmakerGunslinger.Blueprints
             initialRestore.name = "$KMG_Gunslinger_GritInitialLevelRestore";
             initialRestore.Resource = resource;
             initialRestore.CharacterClass = gunslingerClass;
+            initialRestore.InitializedMarker = marker;
             feature.ComponentsArray = new BlueprintComponent[]
                 { addResource, wisdomBonus, initialRestore };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
@@ -127,7 +147,8 @@ namespace KingmakerGunslinger.Blueprints
             if (add == null || bonus == null || !ReferenceEquals(add.Resource, resource) ||
                 !ReferenceEquals(bonus.Resource, resource) || !add.RestoreAmount ||
                 initial == null || !ReferenceEquals(initial.Resource, resource) ||
-                initial.CharacterClass == null || add.RestoreOnLevelUp ||
+                initial.CharacterClass == null || initial.InitializedMarker == null ||
+                add.RestoreOnLevelUp ||
                 add.UseThisAsResource)
                 throw new InvalidOperationException("Grit resource ownership contract is incomplete.");
         }

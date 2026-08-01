@@ -24,7 +24,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path) -> None:
     root = root.resolve()
-    validate_sprint34.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 29, 30)
+    validate_sprint34.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 30, 31)
     require_tokens(read(root, "planning/SPRINT-35-ENTRY-CRITERIA.md"),
         ["Wisdom modifier, minimum 1", "Daily reset", "duplicate spend",
          "unrelated unit stores"], "Sprint 35 entry criteria")
@@ -61,7 +61,8 @@ def validate(root: Path) -> None:
          "restored-to-maximum"], "Sprint 35 disposable grit-rest tests")
     require_tokens(read(root, "scripts/Test-Sprint35DisposableGritPersistence.ps1"),
         ["scenario-allowlisted", "two-detached-units", "native-json-settings",
-         "collection-reconstruction"], "Sprint 35 grit persistence tests")
+         "collection-reconstruction", "later-reapply-no-refill"],
+        "Sprint 35 grit persistence tests")
     print("Sprint 35 source invariant validation passed with inherited Sprint 34 checks.")
 
 def main() -> int:
