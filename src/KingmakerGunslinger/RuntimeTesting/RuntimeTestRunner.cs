@@ -2647,6 +2647,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
             Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            Kingmaker.Items.UnitBody originalBody = null;
             object seedController = null;
             object respecController = null;
             int fighterSeeded = -1;
@@ -2703,10 +2704,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
 
                 stage = "prepare-respec";
-                object bodyBefore = descriptor.Body;
+                originalBody = descriptor.Body;
                 entity.PrepareRespec();
-                bodyReplaced = descriptor.Body != null &&
-                    !ReferenceEquals(bodyBefore, descriptor.Body);
+                bodyReplaced = !ReferenceEquals(originalBody, descriptor.Body);
                 stage = "start-respec-controller";
                 object respec = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "Respec", false);
@@ -2745,6 +2745,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cancel.Invoke(respecController, null);
                 if (seedController != null && cancel != null)
                     cancel.Invoke(seedController, null);
+                if (descriptor != null && originalBody != null &&
+                    !ReferenceEquals(descriptor.Body, originalBody))
+                    typeof(Kingmaker.UnitLogic.UnitDescriptor).GetProperty("Body",
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.Instance).GetSetMethod(true).Invoke(descriptor,
+                            new object[] { originalBody });
                 if (entity != null) entity.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
@@ -2774,7 +2780,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Respec mode Gunslinger class selection without Commit"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
-                    "both controllers canceled and disposable entity disposed"),
+                    "original body restored, controllers canceled, entity disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

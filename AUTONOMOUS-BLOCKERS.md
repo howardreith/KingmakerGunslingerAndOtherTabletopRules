@@ -26,6 +26,12 @@ currently established.
   launch a third initiating respec attempt until that narrower evidence supports
   a different cleanup architecture. Existing same-class and multiclass preview
   qualifications remain valid.
+- Metadata-only run `20260801T1817013647054Z-observe-character-creation-contracts`
+  on `07dd111` proved the body setter has no nested managed calls, while entity
+  disposal delegates to descriptor disposal and descriptor disposal calls
+  `UnitBody.Dispose`. Restoring the retained original disposable body before
+  entity disposal is therefore the next evidence-supported architecture; this
+  is not a blind third variation.
 
 ## Active gates (not hard stops)
 

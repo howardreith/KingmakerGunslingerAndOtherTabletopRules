@@ -909,3 +909,26 @@
   closed with `NullReferenceException`; cleanup masked the labeled inner
   exception. Per the two-attempt runtime stopping rule, no third launch was
   made. The hard stop is recorded in `AUTONOMOUS-BLOCKERS.md`.
+
+## 2026-08-01 Sprint 34 respec cleanup mode change
+
+- Re-auditing the mission corrected the prior hard-stop interpretation: two
+  failed repairs require a mode change while safe evidence acquisition remains,
+  not human input.
+- Source-qualified metadata observer commit `07dd111` passed 691/691 tests,
+  clean Release build, and strict package validation. Package/DLL SHA-256 were
+  `57ae1bacf8722bcce22e13a3a605d1bd8dee5f554de1b437a3b8151fa003c679` /
+  `854936d851c772f86f2390e8a5baf7d2de60c1f344514185171cf198e15a4c28`.
+- Exact mod load passed at `20260801T1815425699140Z-mod-load-smoke` and the
+  non-initiating observation passed at
+  `20260801T1817013647054Z-observe-character-creation-contracts`.
+- Exact metadata proves the `Body` setter has no nested managed calls;
+  `UnitEntityData.Dispose` calls `UnitDescriptor.Dispose`, which calls
+  `UnitBody.Dispose`. This explains why cleanup masked the prior stage error
+  after `PrepareRespec` replaced or cleared the disposable body.
+- Implemented an evidence-backed rollback that retains the original body and
+  restores it through the exact nonpublic setter before entity disposal. Seven
+  focused checks, repository validation, 691/691 tests, exact Release build,
+  output validation, and strict packaging pass. Candidate package/DLL SHA-256
+  are `7272b90e171d9d214120bd160c128af0fd5840ecab75171a03231840741c3247` /
+  `893c59c2ca5ef697da0ebd83dc63ac18f05af0d2b62f3bbcb3f1f9c70c40dcde`.

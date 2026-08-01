@@ -151,8 +151,11 @@ isolation, and observed no save write.
 Same-class and Fighter-to-Gunslinger multiclass previews are runtime-qualified.
 The respec path changed to non-initiating evidence acquisition after two
 materially different save-free attempts failed with `NullReferenceException`;
-see `AUTONOMOUS-BLOCKERS.md`. Observe exact body-setter and cleanup call graphs
-before designing another initiating attempt. Resume from clean commit `5623bdb`.
+see `AUTONOMOUS-BLOCKERS.md`. Commit `07dd111` and metadata PASS run
+`20260801T1817013647054Z-observe-character-creation-contracts` prove the cleanup
+failure: respec clears `Body`, but descriptor disposal calls `Body.Dispose`.
+Restore the retained original disposable body before entity disposal, then
+source-qualify and retry the reduced scenario. Resume from clean commit `07dd111`.
 Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.

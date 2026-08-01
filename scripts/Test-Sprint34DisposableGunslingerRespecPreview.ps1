@@ -19,8 +19,11 @@ $checks = [ordered]@{
     'no-commit' = -not $runner.Substring($runner.IndexOf(
         'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')).Contains(
         'GetMethod("Commit"')
+    'body-restored-before-dispose' = $runner.Contains('new object[] { originalBody }') -and
+        $runner.IndexOf('new object[] { originalBody }') -lt
+            $runner.LastIndexOf('if (entity != null) entity.Dispose();')
     'external-isolation' = $runner.Contains('Exact isolated Respec preview is unavailable.') -and
-        $runner.Contains('both controllers canceled and disposable entity disposed')
+        $runner.Contains('original body restored, controllers canceled, entity disposed')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) {
