@@ -1626,9 +1626,31 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string DescribeProficiencies(BlueprintFeatureBase feature)
         {
+            BlueprintComponent[] components = feature.ComponentsArray ??
+                new BlueprintComponent[0];
+            AddProficiencies component = components.OfType<AddProficiencies>()
+                .SingleOrDefault();
+            if (component != null) return DescribeProficiencyComponent(component);
+            AddFacts addFacts = components.OfType<AddFacts>().SingleOrDefault();
+            if (addFacts == null) return string.Empty;
+            return "{facts=" + string.Join("+", (addFacts.Facts ??
+                new Kingmaker.Blueprints.Facts.BlueprintUnitFact[0])
+                .Where(value => value != null)
+                .Select(value => value.name + "@" + value.AssetGuid +
+                    DescribeDirectProficiency(value as BlueprintFeatureBase))
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray()) + "}";
+        }
+
+        private static string DescribeDirectProficiency(BlueprintFeatureBase feature)
+        {
+            if (feature == null) return string.Empty;
             AddProficiencies component = (feature.ComponentsArray ??
                 new BlueprintComponent[0]).OfType<AddProficiencies>().SingleOrDefault();
-            if (component == null) return string.Empty;
+            return component == null ? string.Empty : DescribeProficiencyComponent(component);
+        }
+
+        private static string DescribeProficiencyComponent(AddProficiencies component)
+        {
             string armor = string.Join("+", (component.ArmorProficiencies ??
                 new Kingmaker.Blueprints.Items.Armors.ArmorProficiencyGroup[0])
                 .Select(value => value.ToString()).OrderBy(value => value,

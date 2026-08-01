@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified proficiency-array observer, rebuild its exact commit, pass
-mod load, and rerun `observe-class-blueprint-contracts`. Use its exact weapon
-category array with light armor only in the production class proficiency
-feature. Character creation and level-up integration remain unqualified.
+Commit the qualified nested-proficiency observer, rebuild its exact commit,
+pass mod load, and rerun `observe-class-blueprint-contracts`. Then implement
+production class/progression/proficiency blueprints from the observed native
+mechanical references. Character creation remains unqualified.
 
 ## Safety boundaries
 

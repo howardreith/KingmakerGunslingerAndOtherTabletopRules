@@ -493,3 +493,16 @@
   `2bbad61365a954c6dce9ecc2f0478352c0680898a1515a781cf10c63f578c4e4` /
   `e33760ed93718f375eae369264b2b04941afe225817edc88b3a6096feb47ab69`.
 - Next action: commit, exact mod load, and run the narrowed observer.
+
+## 2026-08-01 Sprint 34 nested proficiency fact observer
+
+- Exact direct-component observer run
+  `20260801T1515199250253Z-9108990c8712453aa54aaaff144dcfd4` proved Rogue's
+  four direct weapon categories but showed Fighter's aggregate feature delegates
+  through nested facts.
+- Added exact `AddFacts` identity and nested `AddProficiencies` reporting.
+  Ten focused observer checks, 691/691 tests, clean Release build, and package
+  validation passed. Candidate package/DLL SHA-256:
+  `5f7449215f2424022d05761258584ae57e050ed0adccb7ef346df9a1e1b603b9` /
+  `a5a05bf49500904ff2119273fbd3ae116746e0c51597c6716a925b6f4fc66380`.
+- Next action: commit and run the final narrowed observation.

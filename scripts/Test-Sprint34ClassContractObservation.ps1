@@ -24,6 +24,8 @@ $checks = [ordered]@{
     'records-proficiency-component-values' = $runner.Contains('DescribeProficiencies') -and
         $runner.Contains('component.WeaponProficiencies') -and
         $runner.Contains('component.ArmorProficiencies')
+    'records-nested-proficiency-facts' = $runner.Contains('components.OfType<AddFacts>()') -and
+        $runner.Contains('DescribeDirectProficiency')
     'does-not-register' = -not $runner.Substring(
         $runner.IndexOf('private RuntimeTestResult RunClassBlueprintContractObservation'),
         $runner.IndexOf('private void Complete(', $runner.IndexOf(
