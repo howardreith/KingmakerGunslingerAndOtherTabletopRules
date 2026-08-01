@@ -18,9 +18,14 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Last runtime evidence
 
-- Canonical working-save smoke was qualified twice at implementation commit
-  `4f28dcf` as documented in `docs/WORKING-SAVE-SMOKE.md`.
-- No current-session run ID yet.
+- Exact commit `47fb861` passed `mod-load-smoke`, run ID
+  `20260801T0435526657821Z-4ba4ea84718947f1a8cfc3de1d6ad76a`.
+- Exact commit `47fb861` passed canonical `working-save-smoke`, run ID
+  `20260801T0437220565711Z-d8664d7f634542f58d8d95126e90fe51`.
+- Working-save evidence directory:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260801T0437220409268Z-working-save-smoke`.
+- Deployed DLL SHA-256:
+  `b1422ae9a2aed50a0ae8a8d2d3f4ff0defc5d03d31f142d7a19c57f5eb973d7b`.
 - First unproved invariant: generic marker-first Reload/Repair/Overhaul retains
   Sprint 29 behavior and Heavy Crossbow isolation in the exact 0.0.30 assembly.
 
@@ -36,20 +41,17 @@ definition of done or a listed genuine human-input hard stop.
   DLL SHA-256 is
   `5ce1b5bf0d3563648e9fcd9629981c4ee41cf2fb59143df7dedf4f94fbe373de`.
 
-## Next command
+## Next action
 
-```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
-  -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.30 `
-  -SaveName KMG_AUTOMATION_WORKING `
-  -ExitAfterCompletion:$true `
-  -Confirm:$false
-```
-
-Then inspect structured evidence and determine whether an existing guarded
-scenario proves Sprint 30 feature acceptance or whether a narrow feature
-scenario must be added and source-qualified first.
+Implement and test a guarded `sprint30-generic-actions` scenario. Reuse
+`WorkingSaveSmokeScenario` for exact load and save-write sentinels; only after
+its stable fingerprint invoke
+`DevelopmentControls.RunMaintenanceQualificationImmediately()`. Record the
+fixture's `MaintenanceLoopPassed` result plus marker-first selection and native
+Heavy Crossbow isolation. The action is in-memory only and must never call a
+save API. Then run full source/package gates, commit, and execute it through
+`Invoke-KingmakerRuntimeTest.ps1` with explicit
+`-SaveName KMG_AUTOMATION_WORKING`.
 
 ## Safety boundaries
 
