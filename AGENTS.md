@@ -126,3 +126,23 @@ repositories, or other games.
 
 Do not install software or use network access unless the task explicitly
 authorizes it.
+
+## Autonomous Gunslinger completion
+
+When an active goal references `AUTONOMOUS-GUNSLINGER-MISSION.md`, read that
+file before modifying source and treat it as the durable task and stopping
+contract.
+
+Sprint reports are checkpoints, not stopping conditions. Continue to the next
+incomplete coverage item without waiting for human confirmation.
+
+Maintain:
+
+- `planning/GUNSLINGER-COVERAGE-MATRIX.md`
+- `planning/GUNSLINGER-FIDELITY-MATRIX.md`
+- `AUTONOMOUS-GUNSLINGER-JOURNAL.md`
+- `AUTONOMOUS-BLOCKERS.md`
+- `AUTONOMOUS-RESUME.md`
+
+Do not ask for routine engineering decisions. Stop only for a hard stop defined
+by the mission.
