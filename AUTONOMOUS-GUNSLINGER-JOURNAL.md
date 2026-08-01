@@ -545,3 +545,28 @@
   character-class catalog. Next action: commit this qualified registration
   slice, then implement fail-closed catalog publication and a read-only exact
   Gunslinger structure observer.
+
+## 2026-08-01 Sprint 34 character-class catalog publication
+
+- Added fail-closed native catalog publication. It rejects unavailable or null
+  catalogs and duplicate reference/GUID identities, verifies the exact assigned
+  array, and restores only the exact array it published if later initialization
+  fails; concurrent catalog changes cause rollback refusal rather than overwrite.
+- Eight focused production checks, repository validation, 691/691 domain tests,
+  clean Release build, build-output validation, and strict package validation
+  passed. Candidate package/DLL SHA-256 are
+  `668befdf0fe76ea4af1698105050821a579f21f8776da7dbe99a0a1d18fd4216` /
+  `896cd312df98c9373512a188bbd1766e29168313e2385c248b723468b085a40d`.
+- Fresh guarded Steam mod load passed at
+  `20260801T1535128902157Z-mod-load-smoke`.
+- Fresh read-only catalog observation passed at
+  `20260801T1536273988367Z-observe-class-blueprint-contracts`. It observed 25
+  complete class entries and exactly one Gunslinger class
+  `abca4797366d4df0831a418eee39069a`, progression
+  `c3f6b41e0f4c4526af4bbd2a3b54aba2`, d10/full BAB/good Fortitude and Reflex/
+  poor Will/eight skills, plus level-one aggregate
+  `b9b6769f8a654a58a6bd55e10801ea22` containing the three exact native facts
+  and Firearm Proficiency `5148f69223044799800b65732b6cabea`.
+- Neither scenario required a save or invoked save or input APIs. Next action:
+  checkpoint publication, then inspect the creation contract and add starting
+  equipment before disposable-character qualification.

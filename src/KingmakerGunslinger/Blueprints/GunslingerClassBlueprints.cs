@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.FactLogic;
@@ -23,6 +24,29 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintProgression Progression { get; private set; }
         internal BlueprintFeature Proficiencies { get; private set; }
         internal int Count { get { return 3; } }
+    }
+
+    internal sealed class GunslingerClassCatalogPublication
+    {
+        private readonly BlueprintCharacterClass[] _previous;
+        private readonly BlueprintCharacterClass[] _published;
+
+        internal GunslingerClassCatalogPublication(BlueprintCharacterClass[] previous,
+            BlueprintCharacterClass[] published)
+        {
+            _previous = previous;
+            _published = published;
+        }
+
+        internal void Rollback()
+        {
+            BlueprintRoot root = BlueprintRoot.Instance;
+            if (root == null || root.Progression == null ||
+                !ReferenceEquals(root.Progression.CharacterClasses, _published))
+                throw new InvalidOperationException(
+                    "Gunslinger class catalog changed after publication; rollback refused.");
+            root.Progression.CharacterClasses = _previous;
+        }
     }
 
     internal static class GunslingerClassBlueprints
@@ -76,6 +100,39 @@ namespace KingmakerGunslinger.Blueprints
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression, proficiencies);
+        }
+
+        internal static GunslingerClassCatalogPublication Publish(
+            BlueprintCharacterClass characterClass)
+        {
+            if (characterClass == null) throw new ArgumentNullException("characterClass");
+            BlueprintRoot root = BlueprintRoot.Instance;
+            if (root == null || root.Progression == null ||
+                root.Progression.CharacterClasses == null)
+                throw new InvalidOperationException(
+                    "Kingmaker's character-class catalog is unavailable.");
+            BlueprintCharacterClass[] previous = root.Progression.CharacterClasses;
+            for (int index = 0; index < previous.Length; index++)
+            {
+                BlueprintCharacterClass existing = previous[index];
+                if (existing == null)
+                    throw new InvalidOperationException(
+                        "Kingmaker's character-class catalog contains a null entry.");
+                if (ReferenceEquals(existing, characterClass) ||
+                    string.Equals(existing.AssetGuid, characterClass.AssetGuid,
+                        StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        "Gunslinger is already present in the character-class catalog.");
+            }
+            var published = new BlueprintCharacterClass[previous.Length + 1];
+            Array.Copy(previous, published, previous.Length);
+            published[published.Length - 1] = characterClass;
+            root.Progression.CharacterClasses = published;
+            if (!ReferenceEquals(root.Progression.CharacterClasses, published) ||
+                !ReferenceEquals(published[published.Length - 1], characterClass))
+                throw new InvalidOperationException(
+                    "Gunslinger character-class catalog publication could not be verified.");
+            return new GunslingerClassCatalogPublication(previous, published);
         }
 
         private static BlueprintFeature CreateProficiencies(params BlueprintUnitFact[] facts)

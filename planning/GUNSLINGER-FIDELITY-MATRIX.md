@@ -8,7 +8,7 @@ and qualifies its exact Kingmaker mapping.
 
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
-| 1 | Weapon/armor/firearm proficiencies | EXACT | Stable aggregate production feature grants exact native simple, martial, and light-armor facts plus firearm proficiency; bootstrap runtime-qualified but class catalog publication pending | Publish class and qualify the level-one grant on a disposable runtime character |
+| 1 | Weapon/armor/firearm proficiencies | EXACT | Published class catalog entry exposes a stable aggregate feature granting exact native simple, martial, and light-armor facts plus firearm proficiency; exact structure is runtime-observed | Qualify the granted unit facts on a named disposable runtime character |
 | 1 | Gunsmith and battered starting firearm | ADAPTED | Not implemented | Provide production starting firearm and Gunsmithing equivalent; document battered-state adaptation |
 | 1 | Grit: Wisdom-based pool, daily reset, critical/killing-blow recovery | EXACT | Not implemented | Persistent per-unit pool with qualifying firearm event dedupe |
 | 1 | Deadeye | ADAPTED | Not implemented | Pre-shot range/touch-AC selection because post-declaration UI is unavailable |

@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified production class/progression/proficiency registration
-slice. Then safely publish the class into the native character-class catalog,
-add a read-only exact Gunslinger structure runtime scenario, and qualify that
-publication before beginning starting equipment or level-one feature work.
+Commit the qualified native class-catalog publication slice. Then inspect the
+exact character-creation and starting-item contracts, add production starting
+equipment without inventing the unresolved battered-state adaptation, and
+qualify the next disposable-character boundary through the guarded harness.
 
 ## Safety boundaries
 

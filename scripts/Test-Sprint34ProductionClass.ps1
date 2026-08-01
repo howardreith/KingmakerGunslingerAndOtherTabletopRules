@@ -34,6 +34,11 @@ $checks = [ordered]@{
     'bootstrap-registers-three-blueprints' =
         $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 27') -and
         $bootstrap.Contains('GunslingerClassBlueprints.Register(')
+    'catalog-publication-is-verified-and-reversible' =
+        $class.Contains('GunslingerClassCatalogPublication Publish(') -and
+        $class.Contains('root.Progression.CharacterClasses = published') -and
+        $class.Contains('ReferenceEquals(root.Progression.CharacterClasses, _published)') -and
+        $bootstrap.Contains('classPublication.Rollback()')
     'manifest-has-exact-production-symbols' =
         @($manifest.entries | Where-Object {
             $_.symbol -in @('KMG.Classes.GunslingerClass',

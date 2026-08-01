@@ -480,6 +480,7 @@ namespace KingmakerGunslinger.Bootstrap
                     probeDefinition));
 
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
+            GunslingerClassCatalogPublication classPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -548,6 +549,8 @@ namespace KingmakerGunslinger.Bootstrap
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
                         library, registry, firearmProficiency);
+                classPublication = GunslingerClassBlueprints.Publish(
+                    gunslingerClassBlueprints.CharacterClass);
 
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {
@@ -580,6 +583,21 @@ namespace KingmakerGunslinger.Bootstrap
             }
             catch (Exception initializationException)
             {
+                if (classPublication != null)
+                {
+                    try
+                    {
+                        classPublication.Rollback();
+                    }
+                    catch (Exception publicationRollbackException)
+                    {
+                        context.Logger.Failure(
+                            "blueprints",
+                            "class-catalog.rollback-failed",
+                            "Blueprint initialization failed and Gunslinger class catalog rollback was refused.",
+                            publicationRollbackException);
+                    }
+                }
                 try
                 {
                     registry.RollbackAll();
