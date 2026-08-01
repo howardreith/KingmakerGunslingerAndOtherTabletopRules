@@ -55,13 +55,14 @@ definition of done or a listed genuine human-input hard stop.
 
 - Sprint 32 exact-reference target planning is implemented with 10 focused
   cases. Native cone/volley aggregation adds 10 more; complete domain suite is
-  644/644 PASS.
+  joined by seven one-discharge transaction cases; complete domain suite is
+  651/651 PASS.
 - Package candidate SHA-256:
   `aedfef956e9b89812a2276eb4e69f1e606dae25742ebdba1b73fec1ec4085341`;
   DLL candidate SHA-256:
   `3207707a5771162f71e8ea32cc59aff50e9cbbb64d76b5799579ca0a44bf544a`.
 - This slice is source-qualified only. It does not establish cone length,
-  attack delivery, discharge, or feature runtime acceptance. Native 90-degree
+  native attack delivery or feature runtime acceptance. Native 90-degree
   directional geometry is contract-proven; numeric cone distance is not.
 
 ## Commands already run
@@ -87,11 +88,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit ADR-0037 and the source-qualified independent volley aggregator. Then
-implement a pure one-discharge scatter action transaction boundary with
-pre-delivery rollback and multi-target invariants. Keep the production
-Blunderbuss unavailable because the authorized local rules do not state its
-numeric cone distance.
+Commit the source-qualified one-discharge scatter boundary. Then complete the
+remaining project-authority audit for numeric Blunderbuss cone distance. If no
+explicit value exists, retain unavailable content and record the precise
+player-facing design question while continuing any independent scatter work.
 
 ## Safety boundaries
 

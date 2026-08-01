@@ -244,6 +244,83 @@ namespace KingmakerGunslinger.DomainTests
                 "An unplanned target received a scatter roll.");
         }
 
+        private static void ScatterDischargeZeroTargetsOnce()
+        {
+            AssertScatterFiredOnce(ScatterPlan());
+        }
+
+        private static void ScatterDischargeOneTargetOnce()
+        {
+            AssertScatterFiredOnce(ScatterPlan(new object()));
+        }
+
+        private static void ScatterDischargeManyTargetsOnce()
+        {
+            AssertScatterFiredOnce(ScatterPlan(new object(), new object(), new object()));
+        }
+
+        private static void ScatterDischargePrerequisiteRejection()
+        {
+            FirearmState before = LoadedState(1, FirearmCondition.Normal);
+            ScatterDischargeDecision decision = new ScatterDischargeService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), before,
+                ScatterPlan(new object()), false);
+            Assertions.Equal(ScatterDischargeStatus.RejectedBeforeDelivery, decision.Status,
+                "Pre-delivery rejection status mismatch.");
+            Assertions.Equal(0, decision.RoundsConsumed,
+                "Pre-delivery rejection consumed a chamber.");
+            Assertions.Equal(before, decision.After,
+                "Pre-delivery rejection mutated firearm state.");
+            Assertions.False(decision.ShouldForceMiss,
+                "Pre-delivery rejection became an attempted miss.");
+        }
+
+        private static void ScatterDischargeEmpty()
+        {
+            FirearmState before = FirearmState.CreateEmpty();
+            ScatterDischargeDecision decision = new ScatterDischargeService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), before, ScatterPlan(), true);
+            Assertions.Equal(ScatterDischargeStatus.Empty, decision.Status,
+                "Empty scatter status mismatch.");
+            Assertions.Equal(0, decision.RoundsConsumed, "Empty scatter consumed a chamber.");
+            Assertions.True(decision.ShouldForceMiss, "Empty scatter did not force a miss.");
+        }
+
+        private static void ScatterDischargeWrecked()
+        {
+            FirearmState before = new FirearmState(
+                FirearmState.CurrentSchemaVersion, 0, null, FirearmCondition.Wrecked);
+            ScatterDischargeDecision decision = new ScatterDischargeService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), before, ScatterPlan(), true);
+            Assertions.Equal(ScatterDischargeStatus.Wrecked, decision.Status,
+                "Wrecked scatter status mismatch.");
+            Assertions.Equal(before, decision.After, "Wrecked scatter mutated state.");
+        }
+
+        private static void ScatterDischargeNonScatterRejected()
+        {
+            Assertions.Throws<ArgumentException>(
+                () => new ScatterDischargeService().Evaluate(
+                    FirearmDefinitions.CreateEarlyMusket(),
+                    LoadedState(1, FirearmCondition.Normal), ScatterPlan(), true),
+                "A non-scatter firearm used scatter discharge.");
+        }
+
+        private static void AssertScatterFiredOnce(ScatterTargetPlan plan)
+        {
+            FirearmState before = LoadedState(1, FirearmCondition.Normal);
+            ScatterDischargeDecision decision = new ScatterDischargeService().Evaluate(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), before, plan, true);
+            Assertions.Equal(ScatterDischargeStatus.Fired, decision.Status,
+                "Loaded scatter status mismatch.");
+            Assertions.Equal(1, decision.RoundsConsumed,
+                "Scatter target count changed chamber consumption.");
+            Assertions.Equal(plan.TargetCount, decision.TargetCount,
+                "Scatter discharge lost target count evidence.");
+            Assertions.Equal(FirearmState.CreateEmpty(), decision.After,
+                "Scatter discharge did not perform one canonical Fire transition.");
+        }
+
         private static ScatterTargetPlan ScatterPlan(params object[] targets)
         {
             var candidates = new ScatterTargetCandidate[targets.Length];

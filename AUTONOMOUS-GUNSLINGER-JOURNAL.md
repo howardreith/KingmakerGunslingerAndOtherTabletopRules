@@ -237,3 +237,21 @@
   `edf19afb4d93a571195b97fb28614529f20b8604c8f7c4a5b41f8c1ead6bc310`.
 - Next action: commit this slice and implement the one-discharge scatter action
   transaction boundary while keeping runtime delivery unavailable.
+
+## 2026-08-01 Sprint 32 one-discharge checkpoint
+
+- Added a pure scatter discharge transaction boundary layered on the canonical
+  firearm Fire transition. All delivery prerequisites are validated first.
+- A loaded action consumes exactly one chamber for zero, one, or many accepted
+  targets. Pre-delivery rejection preserves state and consumes nothing; empty
+  and Wrecked attempts retain their established forced-miss behavior.
+- Non-scatter definitions reject before evaluation. Added seven focused tests;
+  full clean Release suite passed 651/651, exact private-reference compile and
+  strict package validation passed.
+- Candidate package SHA-256:
+  `2342ed2a56fe3d8e1c3b776769062eb1d3d7a6207b3eb1063856be619954bfee`.
+  Candidate DLL SHA-256:
+  `cc264db8df526787eda54e6aea4b38278814aecfd455d8f848927427e8e56de5`.
+- Next action: commit this source slice, complete the remaining local authority
+  audit for numeric Blunderbuss cone distance, then proceed or establish the
+  precise design hard stop without weakening fail-closed availability.
