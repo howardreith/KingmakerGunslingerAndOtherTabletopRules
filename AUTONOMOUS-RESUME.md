@@ -8,18 +8,29 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `8270ade` (runtime-qualified Sprint 40 Utility Shot source).
+- Audited HEAD: `4604717` (runtime-qualified Sprint 41 Bonus Feats source and
+  corrected native-selection probe).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 41 Bonus Feats is source-qualified. The exact
+- Current checkpoint: Sprint 41 Bonus Feats is runtime-qualified. The exact
   installed Fighter combat-feat selection is present once at levels
-  4/8/12/16/20 with native prerequisites; exact commit and runtime qualification
-  are next.
+  4/8/12/16/20 with 108 aggregate candidates and native prerequisites. Sprint
+  42 Gun Training is the next incomplete coverage item.
 - Version: `0.0.41`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Bonus Feats source commits `8a8ea7a` and probe correction `4604717` passed
+  mod load at `20260801T2319037969615Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2322304096701Z-disposable-gunslinger-bonus-feats` and
+  `20260801T2324134236411Z-disposable-gunslinger-bonus-feats` both observed
+  exact GUID `41c8486641f7d6d4283ca9dae4147a9f`, levels `4,8,12,16,20`, five
+  occurrences, 108 aggregate candidates, and `IgnorePrerequisites=False`.
+  Package/DLL SHA-256 are
+  `ceb4c03d1c229e95eee278f366492f726683da007094be1829c3bed24c106e95` /
+  `3b948b7cdaec3820678e94d4498700af3f30f0bee6a9f991b27409fc9746e71f`.
 
 - Utility Shot source commit `8270ade` passed mod load at
   `20260801T2306012700758Z-mod-load-smoke`. Independent Stop Bleeding PASS runs

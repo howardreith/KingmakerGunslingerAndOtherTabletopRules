@@ -1523,3 +1523,30 @@
   `f5422803cba7ea8af1ad6333a192e5038e79fa1977d4a70503d7a7c16c3f9f19`.
 - Next action: source checkpoint, exact mod load, and two independent Bonus
   Feats PASS runs. Sprint 41 is not a stopping condition.
+
+### Bonus Feats runtime qualification
+
+- Source checkpoint `8a8ea7a` passed exact mod load at
+  `20260801T2319037969615Z-mod-load-smoke` with version `0.0.41`, runtime
+  identity, and core initialization confirmed.
+- The first feature run failed closed only because the probe required the
+  native selection's direct `Features` array to be populated. Its structured
+  evidence already proved the production cadence and showed the installed
+  Fighter selection exposes candidates through `AllFeatures`: exact GUID
+  `41c8486641f7d6d4283ca9dae4147a9f`, levels `4,8,12,16,20`, five
+  occurrences, `Features=0`, `AllFeatures=108`, and
+  `IgnorePrerequisites=False`.
+- Narrow probe correction `4604717` removed only the invalid direct-array
+  requirement. It passed Sprint 41/inherited validation, all 751 tests,
+  exact-reference Release compilation, and strict package validation.
+- Independent fresh-process PASS runs were
+  `20260801T2322304096701Z-disposable-gunslinger-bonus-feats` and
+  `20260801T2324134236411Z-disposable-gunslinger-bonus-feats`. Both reproduced
+  the exact GUID, required five levels/occurrences, 108 aggregate candidates,
+  prerequisite enforcement, version `0.0.41`, and automatic exit without save
+  access or unit mutation.
+- Final package/DLL SHA-256 are
+  `ceb4c03d1c229e95eee278f366492f726683da007094be1829c3bed24c106e95` /
+  `3b948b7cdaec3820678e94d4498700af3f30f0bee6a9f991b27409fc9746e71f`.
+- Sprint 41 is complete. Continue immediately to Sprint 42 Gun Training; this
+  checkpoint is not a stopping condition.
