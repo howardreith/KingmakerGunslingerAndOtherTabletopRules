@@ -1144,6 +1144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             long moneyBefore = 0;
             FieldInfo classField = null;
             List<object> before = null;
+            BlueprintItem[] expected = null;
+            int[] beforeQuantities = null;
             var added = new List<object>();
             try
             {
@@ -1170,6 +1172,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The working character already has Gunslinger ClassData; identity substitution refused.");
 
                 before = EnumerateRuntimeInventory(player.Inventory);
+                expected = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
+                if (expected.Length != 3 || expected.Any(item => item == null) ||
+                    expected.Distinct().Count() != 3)
+                    throw new InvalidOperationException(
+                        "The production Gunslinger starting-item array is not three exact distinct items.");
+                beforeQuantities = expected.Select(item =>
+                    player.Inventory.Count(item)).ToArray();
                 moneyBefore = player.Money;
                 originalClass = classData.CharacterClass;
                 originalStartingGold = gunslinger.StartingGold;
@@ -1188,12 +1197,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 added.AddRange(afterGrant.Where(item =>
                     !before.Any(existing => ReferenceEquals(existing, item))));
                 addedCount = added.Count;
-                BlueprintItem[] expected = gunslinger.StartingItems ??
-                    Array.Empty<BlueprintItem>();
-                pistolCount = CountAddedBlueprint(added, expected, 0);
-                powderCount = CountAddedBlueprint(added, expected, 1);
-                ballCount = CountAddedBlueprint(added, expected, 2);
-                exactGrant = expected.Length == 3 && addedCount == 3 &&
+                pistolCount = player.Inventory.Count(expected[0]) -
+                    beforeQuantities[0];
+                powderCount = player.Inventory.Count(expected[1]) -
+                    beforeQuantities[1];
+                ballCount = player.Inventory.Count(expected[2]) -
+                    beforeQuantities[2];
+                exactGrant = added.All(item => expected.Any(blueprint =>
+                        ItemUsesRuntimeBlueprint(item, blueprint))) &&
                     pistolCount == 1 && powderCount == 1 && ballCount == 1;
                 moneyStable = player.Money == moneyBefore;
             }
@@ -1203,31 +1214,62 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (classData != null && originalClass != null && classField != null)
+                    classField.SetValue(classData, originalClass);
+                if (gunslinger != null)
+                    gunslinger.StartingGold = originalStartingGold;
                 if (player != null && player.Inventory != null)
                 {
                     foreach (object item in added)
                     {
                         object ignored;
                         string method;
-                        if (!ReflectionAccess.TryInvokeAny(player.Inventory,
-                            new[] { "Remove", "RemoveItem" },
-                            new[] { new object[] { item, 1, false },
-                                new object[] { item, 1 }, new object[] { item } },
-                            out ignored, out method))
-                            diagnostics.Add("Exact added item removal failed.");
+                        try
+                        {
+                            if (!ReflectionAccess.TryInvokeAny(player.Inventory,
+                                new[] { "Remove", "RemoveItem" },
+                                new[] { new object[] { item, 1, false },
+                                    new object[] { item, 1 }, new object[] { item } },
+                                out ignored, out method))
+                                diagnostics.Add("Exact added item removal failed.");
+                        }
+                        catch (Exception exception)
+                        {
+                            diagnostics.Add("Exact added item removal failed: " +
+                                exception.GetType().Name + ".");
+                        }
+                    }
+                    if (expected != null && beforeQuantities != null)
+                    {
+                        for (int index = 0; index < expected.Length; index++)
+                        {
+                            int excess = player.Inventory.Count(expected[index]) -
+                                beforeQuantities[index];
+                            if (excess > 0)
+                            {
+                                try
+                                {
+                                    player.Inventory.Remove(expected[index], excess);
+                                }
+                                catch (Exception exception)
+                                {
+                                    diagnostics.Add("Exact quantity rollback failed: " +
+                                        exception.GetType().Name + ".");
+                                }
+                            }
+                            else if (excess < 0)
+                                diagnostics.Add(
+                                    "Starting-item rollback observed a negative exact quantity delta.");
+                        }
                     }
                 }
-                if (classData != null && originalClass != null && classField != null)
-                    classField.SetValue(classData, originalClass);
-                if (gunslinger != null)
-                    gunslinger.StartingGold = originalStartingGold;
 
                 classRestored = classData == null ||
                     ReferenceEquals(classData.CharacterClass, originalClass);
                 startingGoldRestored = gunslinger == null ||
                     gunslinger.StartingGold == originalStartingGold;
                 if (player != null)
-                    moneyStable = moneyStable && player.Money == moneyBefore;
+                    moneyStable = player.Money == moneyBefore;
                 if (before != null && player != null && player.Inventory != null)
                 {
                     List<object> afterRollback =
@@ -1236,7 +1278,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         before.All(item => afterRollback.Any(current =>
                             ReferenceEquals(item, current))) &&
                         afterRollback.All(item => before.Any(previous =>
-                            ReferenceEquals(item, previous)));
+                            ReferenceEquals(item, previous))) &&
+                        expected.Select(item => player.Inventory.Count(item))
+                            .SequenceEqual(beforeQuantities);
                 }
             }
 
@@ -1288,23 +1332,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ReflectionAccess.Enumerate(inventory).ToList();
         }
 
-        private static int CountAddedBlueprint(List<object> items,
-            BlueprintItem[] expected, int index)
+        private static bool ItemUsesRuntimeBlueprint(object item,
+            BlueprintItem expected)
         {
-            if (expected == null || index < 0 || index >= expected.Length)
-                return -1;
-            int count = 0;
-            foreach (object item in items)
-            {
-                PropertyInfo property = item == null ? null :
-                    item.GetType().GetProperty("Blueprint",
-                        BindingFlags.Instance | BindingFlags.Public |
-                        BindingFlags.NonPublic);
-                if (property != null &&
-                    ReferenceEquals(property.GetValue(item, null), expected[index]))
-                    count++;
-            }
-            return count;
+            if (item == null || expected == null)
+                return false;
+            object actual;
+            string member;
+            return ReflectionAccess.TryGetFirstNonNullMember(item,
+                new[] { "Blueprint", "m_Blueprint", "BlueprintItem", "ItemBlueprint" },
+                out actual, out member) && ReferenceEquals(actual, expected);
         }
 
         private static int CountFirearmMarkers(BlueprintWeaponType weaponType)
