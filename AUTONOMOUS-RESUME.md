@@ -18,6 +18,14 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Last runtime evidence
 
+- Exact Sprint 31 entry commit `67d7779` passed `mod-load-smoke`, run ID
+  `20260801T1309524765214Z-f92ce74df2bc4c6695e6cdd3a6bbeeed`, and canonical
+  `working-save-smoke`, run ID
+  `20260801T1311109692839Z-c700cd91ca9c45e5aa9082adbc3ec263`.
+- Exact deployed DLL SHA-256:
+  `f133220a212d0cd6b7af21a58fc42af4f04f00c693329e3eb95185593eed6eaa`.
+  The working save was uniquely correlated, the baseline was distinct and not
+  loaded, the fingerprint was stable, and no save-writing API was observed.
 - Exact commit `47fb861` passed `mod-load-smoke`, run ID
   `20260801T0435526657821Z-4ba4ea84718947f1a8cfc3de1d6ad76a`.
 - Exact commit `47fb861` passed canonical `working-save-smoke`, run ID
@@ -53,12 +61,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified Sprint 31 entry/pistol-definition checkpoint, then
-run guarded exact-version `0.0.31` mod-load and canonical working-save smoke.
-After that, implement stable production pistol/musket/blunderbuss blueprint
-contracts and registrations with focused definition, marker, stable-ID,
-presentation, and generic-action tests. Do not invent a numeric blunderbuss
-range: the authoritative table says `special`, and scatter remains Sprint 32.
+Implement stable production pistol/musket/blunderbuss blueprint contracts and
+registrations with focused definition, marker, stable-ID, presentation, and
+generic-action tests. Do not invent a numeric blunderbuss range: the
+authoritative table says `special`, and scatter remains Sprint 32.
 
 ## Safety boundaries
 

@@ -117,3 +117,25 @@
 - Next action: commit this source-qualified narrow checkpoint, prove exact
   `0.0.31` mod load and working-save smoke, then add production catalog
   blueprint contracts and registrations.
+
+## 2026-08-01 Sprint 31 exact-commit runtime foundation
+
+- Exact commit `67d777980c6eb71649298fceb979978c9243a306` passed
+  guarded `mod-load-smoke`, run ID
+  `20260801T1309524765214Z-f92ce74df2bc4c6695e6cdd3a6bbeeed`.
+- The same commit passed guarded `working-save-smoke`, run ID
+  `20260801T1311109692839Z-c700cd91ca9c45e5aa9082adbc3ec263`.
+- Exact built and deployed DLL SHA-256:
+  `f133220a212d0cd6b7af21a58fc42af4f04f00c693329e3eb95185593eed6eaa`.
+  Local package SHA-256:
+  `495ed142e8f2b54723b1bd331365998a4739556d2c43ddb587713842c5a42a39`.
+- Working-save evidence proved one exact working descriptor and distinct
+  baseline, exact receiver-bound load correlation, stable expected
+  fingerprint, automatic exit, and no observed save-writing API.
+- Post-commit audit covered 23 explicit text paths and found no generated,
+  private, save, binary, credential, or machine-local payloads. The worktree
+  was clean and the checkpoint was reconstructable before runtime launch.
+- Next action: implement the production early-firearm catalog blueprint
+  contracts and registrations; retain fail-closed handling for the unresolved
+  numeric blunderbuss range until the existing local contract supports its
+  `special` range without an invented balance value.
