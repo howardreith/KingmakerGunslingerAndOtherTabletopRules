@@ -18,6 +18,15 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Last runtime evidence
 
+- Native grit repair commit `cd22f3d` passed mod load at
+  `20260801T1907337714075Z-mod-load-smoke`. Independent save-free PASS runs
+  `20260801T1908491510715Z-disposable-gunslinger-grit-resource` and
+  `20260801T1910149815825Z-disposable-gunslinger-grit-resource` proved initial
+  1/1, spend to zero, no level-up refill at Gunslinger 2, capped restore to one,
+  and exact cleanup. Package/DLL SHA-256 are
+  `4ddea7d37d08cd1255562cc8d21678ea686c01d1dc3a48ecaade6630d18c8fbd` /
+  `da0d1e20a51dc288daa3383fbd0fff628b79b76194b7946c1e60a774d6d1543b`.
+
 - Exact respec preview commit `3d4ba8f` passed mod load at
   `20260801T1836154433116Z-mod-load-smoke`, then two independent save-free PASS
   runs `20260801T1837314150470Z-disposable-gunslinger-respec-preview` and
@@ -95,9 +104,9 @@ definition of done or a listed genuine human-input hard stop.
 
 - First live grit attempt
   `20260801T1904500891309Z-disposable-gunslinger-grit-resource` failed safely
-  in native `BlueprintAbilityResource.GetMaxAmount`: its runtime-created
-  `Amount.Class` array was null. The exact narrow repair initializes all four
-  native class/archetype arrays to typed empty arrays; rebuild and retry next.
+  in native `BlueprintAbilityResource.GetMaxAmount` because its runtime-created
+  `Amount.Class` array was null. Commit `cd22f3d` resolved this by initializing
+  all four native class/archetype arrays; the two subsequent runs passed.
 
 - The native grit integration is source-qualified: stable resource and owner
   feature blueprints, exact Wisdom-floor subscriber, first-grant restore,
@@ -171,10 +180,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified native grit integration, then run mod-load-smoke
-and two fresh-process `disposable-gunslinger-grit-resource` passes. Record
-exact evidence and proceed to daily-rest and save/load behavior before
-implementing firearm critical/killing-blow recovery. Broad
+Native grit grant/spend/non-refill/restore is runtime-qualified. Inspect exact
+rest lifecycle contracts and implement a guarded daily-reset slice, then
+qualify save/load and multiclass/respec persistence before implementing firearm
+critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

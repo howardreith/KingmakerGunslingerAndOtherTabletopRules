@@ -1001,3 +1001,19 @@
 - Root cause: runtime construction of native `Amount` does not receive Unity's
   serialized empty-array defaults. Narrow repair initializes `Class`,
   `Archetypes`, `ClassDiv`, and `ArchetypesDiv` to correctly typed empty arrays.
+
+### Native grit resource runtime qualification
+
+- Repair commit `cd22f3d` passed exact mod load at
+  `20260801T1907337714075Z-mod-load-smoke`.
+- Two independent fresh-process PASS runs were
+  `20260801T1908491510715Z-disposable-gunslinger-grit-resource` and
+  `20260801T1910149815825Z-disposable-gunslinger-grit-resource`.
+- Both observed maximum/current 1/1 after level-one grant, current zero after
+  spend, current still zero at Gunslinger level two, restored current one, and
+  exact detached-entity cleanup with unchanged external reference snapshots.
+- Exact repaired package/DLL SHA-256 are
+  `4ddea7d37d08cd1255562cc8d21678ea686c01d1dc3a48ecaade6630d18c8fbd` /
+  `da0d1e20a51dc288daa3383fbd0fff628b79b76194b7946c1e60a774d6d1543b`.
+- Next checkpoint: exact daily-rest refill and persistence/respec behavior;
+  native grit recovery from qualifying firearm events follows.
