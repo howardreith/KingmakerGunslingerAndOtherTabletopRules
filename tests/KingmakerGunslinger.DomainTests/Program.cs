@@ -49,6 +49,13 @@ namespace KingmakerGunslinger.DomainTests
             Case("grit.recovery-target-exclusions", GritRecoveryTargetExclusions),
             Case("grit.recovery-half-level-boundary", GritRecoveryHalfLevelBoundary),
             Case("grit.recovery-invalid-request", GritRecoveryInvalidRequestRejected),
+            Case("deadeye.second-increment-cost-one", DeadeyeSecondIncrementCostsOne),
+            Case("deadeye.cost-scales", DeadeyeCostScalesBeyondFirst),
+            Case("deadeye.first-increment-no-spend", DeadeyeFirstIncrementDoesNotSpend),
+            Case("deadeye.insufficient-atomic", DeadeyeInsufficientGritFailsAtomic),
+            Case("deadeye.context-fail-closed", DeadeyeContextFailsClosed),
+            Case("deadeye.range-fail-closed", DeadeyeSpecialAndInvalidRangeFailClosed),
+            Case("deadeye.invalid-input", DeadeyeInvalidInputRejected),
             Case("valid.early-musket", ValidEarlyMusket),
             Case("factory.early-musket-fresh-instances", FactoryEarlyMusketFreshInstances),
             Case("factory.early-musket-canonical-equality", FactoryEarlyMusketCanonicalEquality),
@@ -662,6 +669,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("ac.boundary-touch", ArmorClassBoundaryUsesTouch),
             Case("ac.boundary-float-noise-touch", ArmorClassBoundaryFloatNoiseUsesTouch),
             Case("ac.distant-ordinary", ArmorClassDistantRangeUsesOrdinary),
+            Case("ac.deadeye-distant-touch", ArmorClassDeadeyeDistantUsesTouch),
+            Case("ac.deadeye-context-preserved", ArmorClassDeadeyePreservesContext),
             Case("ac.cover-preserved", ArmorClassPreservesCoverAdjustment),
             Case("ac.flat-footed-preserved", ArmorClassPreservesFlatFootedAdjustment),
             Case("ac.equal-no-write", ArmorClassEqualValuesRequireNoWrite),
@@ -6808,6 +6817,33 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(20, decision.SelectedTargetArmorClass, "Distant AC must remain unchanged.");
         }
 
+        private static void ArmorClassDeadeyeDistantUsesTouch()
+        {
+            FirearmArmorClassDecision decision = SelectArmorClass(
+                true, 1, EarlyMusket(),
+                (40d * FirearmArmorClassService.MetersPerFoot) + 0.001d,
+                20, 12, 20, false, true);
+            Assertions.True(decision.UsesTouchArmorClass,
+                "Authorized Deadeye did not extend touch AC beyond the first increment.");
+            Assertions.Equal(2, decision.RangeIncrement, "Deadeye range increment changed.");
+            Assertions.Equal(12, decision.SelectedTargetArmorClass,
+                "Deadeye did not select touch AC.");
+            Assertions.Equal("touch-ac-deadeye", decision.Reason,
+                "Deadeye selection reason changed.");
+        }
+
+        private static void ArmorClassDeadeyePreservesContext()
+        {
+            FirearmArmorClassDecision decision = SelectArmorClass(
+                true, 1, EarlyMusket(),
+                (80d * FirearmArmorClassService.MetersPerFoot) + 0.001d,
+                20, 12, 24, false, true);
+            Assertions.Equal(16, decision.SelectedTargetArmorClass,
+                "Deadeye did not preserve the contextual AC delta.");
+            Assertions.Equal(-8, decision.Adjustment,
+                "Deadeye contextual adjustment changed.");
+        }
+
         private static void ArmorClassPreservesCoverAdjustment()
         {
             FirearmArmorClassDecision decision = SelectArmorClass(
@@ -7055,6 +7091,22 @@ namespace KingmakerGunslinger.DomainTests
             int currentTargetArmorClass,
             bool alreadyApplied)
         {
+            return SelectArmorClass(isExactFirearm, markerCount, definition,
+                distanceMeters, ordinaryArmorClass, touchArmorClass,
+                currentTargetArmorClass, alreadyApplied, false);
+        }
+
+        private static FirearmArmorClassDecision SelectArmorClass(
+            bool isExactFirearm,
+            int markerCount,
+            FirearmDefinition definition,
+            double distanceMeters,
+            int ordinaryArmorClass,
+            int touchArmorClass,
+            int currentTargetArmorClass,
+            bool alreadyApplied,
+            bool deadeyeAuthorized)
+        {
             return FirearmArmorClassService.Select(
                 new FirearmArmorClassRequest(
                     isExactFirearm,
@@ -7064,7 +7116,8 @@ namespace KingmakerGunslinger.DomainTests
                     ordinaryArmorClass,
                     touchArmorClass,
                     currentTargetArmorClass,
-                    alreadyApplied));
+                    alreadyApplied,
+                    deadeyeAuthorized));
         }
 
         private static CombatTraceCorrelator NewCorrelator()

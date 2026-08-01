@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.35-s35-grit-resource",
-  "version": "0.0.35",
+  "milestone": "0.0.36-s36-core-deeds",
+  "version": "0.0.36",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 710,
+    "testCount": 719,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

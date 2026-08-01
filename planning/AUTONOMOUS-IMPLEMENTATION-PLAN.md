@@ -34,7 +34,11 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 35 grit resource and reusable deed framework. The first checkpoint adds
+Sprint 36 core deed bundle. Sprint 35 established and runtime-qualified the
+native grit pool, daily rest, persistence, multiclass no-refill, firearm
+critical/killing-blow recovery, and duplicate protection. Sprint 36 now adds
+Deadeye, Gunslinger's Dodge, and Quick Clear as one coherent level-one bundle.
+The first Sprint 35 checkpoint added
 the bounded dependency-free resource rules, daily reset, maximum reconciliation,
 atomic spend/restore, and operation deduplication. Next bind these rules to an
 exact persistent Kingmaker per-unit ability resource, then add daily-rest and

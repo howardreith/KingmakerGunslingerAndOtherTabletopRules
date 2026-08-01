@@ -20,12 +20,15 @@ using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Grit;
+using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.Firing;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 
@@ -259,6 +262,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -347,6 +351,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery)
                 {
                     Complete(RunDisposableGunslingerGritRecovery());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye)
+                {
+                    Complete(RunDisposableGunslingerDeadeye());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3236,6 +3246,154 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerDeadeye()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
+            BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            BlueprintItemWeapon pistolBlueprint = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            object controller = null;
+            int initial = -1, afterApplied = -1, afterDuplicate = -1,
+                afterInsufficient = -1;
+            bool armedBefore = false, armedAfter = true, authorized = false,
+                duplicateAuthorized = false, insufficientAuthorized = true,
+                insufficientConsumed = false, cleaned = false;
+            string stage = "construct-disposables";
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 14;
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { attacker.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslingerSet.CharacterClass, false }))
+                    throw new InvalidOperationException("Deadeye Gunslinger selection failed.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { attacker.Descriptor });
+                cancel.Invoke(controller, null); controller = null;
+
+                stage = "arm-and-fire-second-increment";
+                DeadeyeRuntimeDiagnostics.Reset();
+                initial = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                SetExactProperty(attacker, "Position", Vector3.zero);
+                SetExactProperty(target, "Position", new Vector3(7f, 0f, 0f));
+                weapon = new ItemEntityWeapon(pistolBlueprint);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                attacker.Descriptor.AddFact(gunslingerSet.Deadeye.ArmedMarker);
+                armedBefore = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedMarker);
+                var roll = new RuleAttackRoll(attacker, target, weapon, 0);
+                FirearmDischargeRuntime.BeforeAttackRoll(roll);
+                DeadeyeRuntime.BeforeAttackRoll(roll);
+                authorized = DeadeyeRuntime.IsAuthorized(roll);
+                afterApplied = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                armedAfter = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedMarker);
+                DeadeyeRuntime.BeforeAttackRoll(roll);
+                duplicateAuthorized = DeadeyeRuntime.IsAuthorized(roll);
+                afterDuplicate = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                FirearmMisfireRuntime.FinishAttack(roll);
+
+                stage = "insufficient-third-increment";
+                SetExactProperty(target, "Position", new Vector3(13f, 0f, 0f));
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                attacker.Descriptor.AddFact(gunslingerSet.Deadeye.ArmedMarker);
+                var insufficient = new RuleAttackRoll(attacker, target, weapon, 0);
+                FirearmDischargeRuntime.BeforeAttackRoll(insufficient);
+                DeadeyeRuntime.BeforeAttackRoll(insufficient);
+                insufficientAuthorized = DeadeyeRuntime.IsAuthorized(insufficient);
+                afterInsufficient = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                insufficientConsumed = !attacker.Descriptor.HasFact(
+                    gunslingerSet.Deadeye.ArmedMarker);
+                FirearmMisfireRuntime.FinishAttack(insufficient);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Deadeye failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (weapon != null) FirearmRuntimeState.Service.Forget(weapon);
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
+                ";authorized=" + authorized + ";afterApplied=" + afterApplied +
+                ";armedAfter=" + armedAfter + ";duplicateAuthorized=" + duplicateAuthorized +
+                ";afterDuplicate=" + afterDuplicate + ";insufficientAuthorized=" +
+                insufficientAuthorized + ";afterInsufficient=" + afterInsufficient +
+                ";insufficientConsumed=" + insufficientConsumed +
+                ";applied=" + DeadeyeRuntimeDiagnostics.Applied +
+                ";rejected=" + DeadeyeRuntimeDiagnostics.Rejected +
+                ";faults=" + DeadeyeRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("deadeye-native-fact", "armed true -> false", observed,
+                    armedBefore && !armedAfter, "native persisted BlueprintFeature fact"),
+                Assertion("deadeye-second-increment", "grit 2 -> 1; authorized", observed,
+                    initial == 2 && afterApplied == 1 && authorized,
+                    "exact loaded pistol discharge and 7-meter target distance"),
+                Assertion("deadeye-idempotent", "grit remains 1", observed,
+                    afterDuplicate == 1 && duplicateAuthorized,
+                    "same RuleAttackRoll retained one authorization without another spend"),
+                Assertion("deadeye-insufficient-atomic", "grit remains 1; unauthorized; marker consumed",
+                    observed, afterInsufficient == 1 && !insufficientAuthorized &&
+                    insufficientConsumed, "third increment requires two grit"),
+                Assertion("deadeye-diagnostics", "applied=1;rejected=1;faults=0", observed,
+                    DeadeyeRuntimeDiagnostics.Applied == 1 &&
+                    DeadeyeRuntimeDiagnostics.Rejected == 1 &&
+                    DeadeyeRuntimeDiagnostics.Faults == 0,
+                    "production Deadeye adapter diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "controller canceled, firearm state forgotten, disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerGritRecovery()

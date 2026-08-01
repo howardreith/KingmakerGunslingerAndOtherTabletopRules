@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Rules
 {
@@ -68,7 +69,9 @@ namespace KingmakerGunslinger.Rules
                 FirearmMarkerSnapshot marker = FirearmMarkerLookup.ReadFromRuleEvent(ruleAttackRoll);
                 frames.Push(new AttackFrame(
                     RuntimeHelpers.GetHashCode(ruleAttackRoll),
-                    marker));
+                    marker,
+                    DeadeyeRuntime.IsAuthorized(
+                        ruleAttackRoll as Kingmaker.RuleSystem.Rules.RuleAttackRoll)));
             }
             catch (Exception exception)
             {
@@ -183,7 +186,8 @@ namespace KingmakerGunslinger.Rules
                         ordinaryArmorClass,
                         touchArmorClass,
                         currentTargetArmorClass,
-                        false));
+                        false,
+                        ResolveDeadeyeAuthorization()));
 
                 if (!decision.UsesTouchArmorClass)
                 {
@@ -262,6 +266,12 @@ namespace KingmakerGunslinger.Rules
             }
 
             return _attackFrames.Peek().Marker;
+        }
+
+        private static bool ResolveDeadeyeAuthorization()
+        {
+            return _attackFrames != null && _attackFrames.Count != 0 &&
+                _attackFrames.Peek().DeadeyeAuthorized;
         }
 
         private static bool IsStamped(object ruleCalculateArmorClass)
@@ -380,15 +390,19 @@ namespace KingmakerGunslinger.Rules
 
         private sealed class AttackFrame
         {
-            internal AttackFrame(int eventIdentity, FirearmMarkerSnapshot marker)
+            internal AttackFrame(int eventIdentity, FirearmMarkerSnapshot marker,
+                bool deadeyeAuthorized)
             {
                 EventIdentity = eventIdentity;
                 Marker = marker ?? FirearmMarkerSnapshot.NoWeapon();
+                DeadeyeAuthorized = deadeyeAuthorized;
             }
 
             internal int EventIdentity { get; private set; }
 
             internal FirearmMarkerSnapshot Marker { get; private set; }
+
+            internal bool DeadeyeAuthorized { get; private set; }
         }
 
         private sealed class MutationStamp

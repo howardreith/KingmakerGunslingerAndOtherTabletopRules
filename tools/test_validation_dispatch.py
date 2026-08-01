@@ -32,11 +32,12 @@ def main() -> int:
     sprint33 = source / "tools" / "validate_sprint33.py"
     sprint34 = source / "tools" / "validate_sprint34.py"
     sprint35 = source / "tools" / "validate_sprint35.py"
+    sprint36 = source / "tools" / "validate_sprint36.py"
 
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.35 to validate_sprint35.py",
+        "dispatched version 0.0.36 to validate_sprint36.py",
     )
     run(
         [python, "-B", str(sprint29)],
@@ -58,7 +59,7 @@ def main() -> int:
         saved_report = report.read_bytes()
         report.unlink()
         run(
-            [python, "-B", str(sprint35), "--root", str(fixture)],
+            [python, "-B", str(sprint36), "--root", str(fixture)],
             1,
             "Required Sprint 34 file is missing: planning/SPRINT-34-ENTRY-CRITERIA.md",
         )
@@ -68,7 +69,7 @@ def main() -> int:
         saved_report35 = report35.read_bytes()
         report35.unlink()
         run(
-            [python, "-B", str(sprint35), "--root", str(fixture)],
+            [python, "-B", str(sprint36), "--root", str(fixture)],
             1,
             "Required Sprint 35 file is missing: planning/SPRINT-35-ENTRY-CRITERIA.md",
         )
@@ -76,12 +77,22 @@ def main() -> int:
 
         info_path = fixture / "Info.json"
         info = json.loads(info_path.read_text(encoding="utf-8"))
-        info["Version"] = "0.0.36"
+        report36 = fixture / "planning" / "SPRINT-36-ENTRY-CRITERIA.md"
+        saved_report36 = report36.read_bytes()
+        report36.unlink()
+        run(
+            [python, "-B", str(sprint36), "--root", str(fixture)],
+            1,
+            "Required Sprint 36 file is missing: planning/SPRINT-36-ENTRY-CRITERIA.md",
+        )
+        report36.write_bytes(saved_report36)
+
+        info["Version"] = "0.0.37"
         info_path.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
         run(
             [python, "-B", str(dispatcher), "--root", str(fixture)],
             1,
-            "Unsupported repository version: '0.0.36'",
+            "Unsupported repository version: '0.0.37'",
         )
 
         info["Version"] = "0.0.29"
@@ -122,7 +133,13 @@ def main() -> int:
             "Info.json does not declare version 0.0.35",
         )
 
-    print("Validation dispatch integration tests passed: 11 checks.")
+        run(
+            [python, "-B", str(sprint36), "--root", str(fixture)],
+            1,
+            "Info.json does not declare version 0.0.36",
+        )
+
+    print("Validation dispatch integration tests passed: 13 checks.")
     return 0
 
 

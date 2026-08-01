@@ -4,6 +4,7 @@ using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Grit;
+using KingmakerGunslinger.Deeds;
 using Kingmaker.RuleSystem.Rules.Damage;
 
 namespace KingmakerGunslinger.Diagnostics
@@ -68,6 +69,8 @@ namespace KingmakerGunslinger.Diagnostics
         private static void Prefix(object __instance)
         {
             FirearmDischargeRuntime.BeforeAttackRoll(__instance);
+            DeadeyeRuntime.BeforeAttackRoll(
+                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
             FirearmArmorClassRuntime.BeforeAttackRoll(__instance);
             CombatTraceRuntime.Before(CombatTraceStage.AttackRoll, __instance);
         }

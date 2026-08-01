@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <KmgVersion>0.0.35</KmgVersion>
-    <KmgInformationalVersion>0.0.35-s35-grit-resource</KmgInformationalVersion>
+    <KmgVersion>0.0.36</KmgVersion>
+    <KmgInformationalVersion>0.0.36-s36-core-deeds</KmgInformationalVersion>
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>

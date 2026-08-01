@@ -22,9 +22,13 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
     if missing:
         raise RuntimeError(f"{label} is missing required token(s): {missing}")
 
-def validate(root: Path) -> None:
+def validate(root: Path, version: str = VERSION,
+             informational_version: str = INFORMATIONAL_VERSION,
+             test_count: int = TEST_COUNT, active_blueprints: int = 30,
+             manifest_blueprints: int = 31) -> None:
     root = root.resolve()
-    validate_sprint34.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 30, 31)
+    validate_sprint34.validate(root, version, informational_version, test_count,
+                              active_blueprints, manifest_blueprints)
     require_tokens(read(root, "planning/SPRINT-35-ENTRY-CRITERIA.md"),
         ["Wisdom modifier, minimum 1", "Daily reset", "duplicate spend",
          "unrelated unit stores"], "Sprint 35 entry criteria")

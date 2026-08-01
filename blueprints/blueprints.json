@@ -255,6 +255,30 @@
       "status": "active",
       "milestone": "Sprint 35",
       "notes": "Hidden persistent per-unit marker preventing the post-level initial grit reconciliation from refilling on later multiclass levels."
+    },
+    {
+      "symbol": "KMG.Deeds.DeadeyeFeature",
+      "guid": "d7d30d84c6524b54bb7526745bc22166",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Level-one Gunslinger deed feature granting the Deadeye free action."
+    },
+    {
+      "symbol": "KMG.Deeds.DeadeyeAbility",
+      "guid": "984386dce5bf4788b508e9f61c7568e5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Personal free action that arms Deadeye for the next successfully discharged exact firearm shot."
+    },
+    {
+      "symbol": "KMG.Deeds.DeadeyeArmed",
+      "guid": "3a822564e76844ea9003277086b05e9a",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Hidden native persisted fact recording that Deadeye is armed."
     }
   ]
 }

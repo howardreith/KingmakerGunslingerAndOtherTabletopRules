@@ -34,6 +34,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Sprint36Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeDecision.cs">
+      <Link>Deeds\DeadeyeDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeRequest.cs">
+      <Link>Deeds\DeadeyeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeService.cs">
+      <Link>Deeds\DeadeyeService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeStatus.cs">
+      <Link>Deeds\DeadeyeStatus.cs</Link>
+    </Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

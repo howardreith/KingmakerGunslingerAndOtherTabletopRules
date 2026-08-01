@@ -75,7 +75,7 @@ namespace KingmakerGunslinger.Rules
                 return Ordinary(request, 0, "range-overflow");
             }
 
-            if (rangeIncrement != 1)
+            if (rangeIncrement != 1 && !request.DeadeyeAuthorized)
             {
                 return Ordinary(request, rangeIncrement, "outside-first-range-increment");
             }
@@ -98,7 +98,9 @@ namespace KingmakerGunslinger.Rules
                 rangeIncrement,
                 selectedArmorClass == request.CurrentTargetArmorClass
                     ? "touch-ac-selected-no-numeric-delta"
-                    : "touch-ac-first-range-increment");
+                    : request.DeadeyeAuthorized && rangeIncrement > 1
+                        ? "touch-ac-deadeye"
+                        : "touch-ac-first-range-increment");
         }
 
         private static FirearmArmorClassDecision Ordinary(

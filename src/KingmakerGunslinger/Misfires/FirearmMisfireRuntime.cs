@@ -387,6 +387,16 @@ namespace KingmakerGunslinger.Misfires
             }
         }
 
+        internal static bool IsEligibleAttack(RuleAttackRoll attackRoll)
+        {
+            if (attackRoll == null) return false;
+            lock (ContextGate)
+            {
+                EligibleAttackContext ignored;
+                return EligibleAttacks.TryGetValue(attackRoll, out ignored);
+            }
+        }
+
         private static void CommitConditionTransition(
             EligibleAttackContext context,
             FirearmMisfireConditionDecision condition)

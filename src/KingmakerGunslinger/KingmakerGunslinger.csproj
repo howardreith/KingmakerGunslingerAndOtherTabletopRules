@@ -127,6 +127,14 @@
     <Compile Include="Bootstrap\ModContext.cs" />
     <Compile Include="Bootstrap\ModLogger.cs" />
     <Compile Include="Development\DevelopmentControls.cs" />
+    <Compile Include="Deeds\DeadeyeDecision.cs" />
+    <Compile Include="Deeds\DeadeyeAbilityLogic.cs" />
+    <Compile Include="Deeds\DeadeyeRuntime.cs" />
+    <Compile Include="Deeds\DeadeyeRuntimeDiagnostics.cs" />
+    <Compile Include="Deeds\DeadeyeRequest.cs" />
+    <Compile Include="Deeds\DeadeyeService.cs" />
+    <Compile Include="Deeds\DeadeyeStatus.cs" />
+    <Compile Include="Blueprints\DeadeyeBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />

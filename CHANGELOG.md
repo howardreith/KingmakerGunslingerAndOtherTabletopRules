@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.36 — Sprint 36 core deed bundle (in progress)
+
+- Began the coherent level-one Deadeye, Gunslinger's Dodge, and Quick Clear
+  checkpoint on the runtime-qualified Sprint 35 grit foundation.
+- Advanced build, package, runtime-request, and repository validation guards to
+  version 0.0.36 while preserving all inherited Sprint 35 evidence.
+
 ## 0.0.35 — Sprint 35 grit resource (in progress)
 
 - Added the dependency-free bounded grit pool model and deterministic daily

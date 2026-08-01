@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 30;
+        internal const int ExpectedRegisteredBlueprintCount = 33;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -198,6 +198,18 @@ namespace KingmakerGunslinger.Bootstrap
         internal static GunslingerClassBlueprintSet GunslingerClass
         {
             get { lock (Gate) { return _gunslingerClassBlueprints; } }
+        }
+
+        internal static DeadeyeBlueprintSet Deadeye
+        {
+            get
+            {
+                lock (Gate)
+                {
+                    return _gunslingerClassBlueprints == null
+                        ? null : _gunslingerClassBlueprints.Deadeye;
+                }
+            }
         }
 
         internal static int ObservationCount
