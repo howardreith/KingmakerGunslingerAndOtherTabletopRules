@@ -1153,3 +1153,28 @@
 - Native respec transfers the same persistent resource-list contract already
   round-tripped here. Proceed immediately to firearm critical/killing-blow
   grit recovery and duplicate protection.
+
+## 2026-08-01 Sprint 35 firearm grit recovery source qualification
+
+- Exact installed metadata exposes final `RuleAttackRoll.IsCriticalConfirmed`,
+  correlated `RuleDealDamage.AttackRoll`, target `HPLeft`, native combat state,
+  helpless state, and character levels.
+- Exact installed `RuleAttackWithWeapon.OnTrigger` IL proves it assigns the
+  triggered damage rule to `MeleeDamage`; production killing-blow recovery
+  therefore rejects explosion or secondary damage by reference inequality.
+- Added separate confirmed-critical and killing-blow recovery paths. Critical
+  dedupes once per attack-roll reference; killing blow dedupes once per attack
+  and exact target. Both use weak identities and remain distinct clauses.
+- Recovery fails closed for non-firearms, noncombat events, noncreatures,
+  helpless or unaware targets, and targets below half the Gunslinger's total
+  character level.
+- Added guarded detached `disposable-gunslinger-grit-recovery`: Wisdom 14 grit
+  spends two to zero, critical restores one, killing blow restores one, both
+  duplicate calls preserve value, and an unaware-target critical is rejected.
+- Eleven focused grit checks, seven scenario checks, 40 preflight checks,
+  inherited validation, 710/710 tests, clean Release build, and strict package
+  validation pass. Candidate package/DLL SHA-256 are
+  `838a3882e5998da9496aaa608a55dfe73ced2433079f8f7ac97aee1b4d25047a` /
+  `d589582a7a27d1e146009f7352a62bbd5e0e8c97fd6e96a02fef513dd6122c90`.
+- Commit the reconstructable source checkpoint, then require exact mod load and
+  two independent fresh-process recovery PASS runs.

@@ -136,5 +136,97 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 service.CalculateMaximum(1, -1), "Negative maximum bonus was accepted.");
         }
+
+        private static void GritRecoveryCriticalEligible()
+        {
+            GritRecoveryDecision result = Recovery(GritRecoveryEventKind.ConfirmedCritical,
+                true, true, true, true, false, 5, 10);
+            Assertions.Equal(GritRecoveryStatus.Eligible, result.Status,
+                "A qualifying firearm critical was rejected.");
+            Assertions.Equal(1, result.RestoreAmount,
+                "A qualifying firearm critical did not restore exactly one.");
+        }
+
+        private static void GritRecoveryKillEligible()
+        {
+            GritRecoveryDecision result = Recovery(GritRecoveryEventKind.KillingBlow,
+                true, true, true, true, false, 8, 10);
+            Assertions.True(result.ShouldRestore,
+                "A qualifying firearm killing blow was rejected.");
+        }
+
+        private static void GritRecoveryOutcomeRequired()
+        {
+            foreach (GritRecoveryEventKind kind in Enum.GetValues(
+                typeof(GritRecoveryEventKind)))
+            {
+                GritRecoveryDecision result = Recovery(kind, false, true, true,
+                    true, false, 10, 10);
+                Assertions.Equal(GritRecoveryStatus.NotQualifyingOutcome,
+                    result.Status, "A nonqualifying outcome restored grit.");
+                Assertions.Equal(0, result.RestoreAmount,
+                    "A rejected outcome exposed a restore amount.");
+            }
+        }
+
+        private static void GritRecoveryContextFailsClosed()
+        {
+            Assertions.Equal(GritRecoveryStatus.NotExactFirearm,
+                Recovery(GritRecoveryEventKind.ConfirmedCritical, true, false,
+                    true, true, false, 10, 10).Status,
+                "A non-firearm critical restored grit.");
+            Assertions.Equal(GritRecoveryStatus.NotInCombat,
+                Recovery(GritRecoveryEventKind.KillingBlow, true, true,
+                    false, true, false, 10, 10).Status,
+                "An out-of-combat killing blow restored grit.");
+        }
+
+        private static void GritRecoveryTargetExclusions()
+        {
+            Assertions.Equal(GritRecoveryStatus.InvalidTarget,
+                Recovery(GritRecoveryEventKind.ConfirmedCritical, true, true,
+                    true, false, false, 10, 10).Status,
+                "A non-creature target restored grit.");
+            Assertions.Equal(GritRecoveryStatus.HelplessOrUnawareTarget,
+                Recovery(GritRecoveryEventKind.KillingBlow, true, true,
+                    true, true, true, 10, 10).Status,
+                "A helpless or unaware target restored grit.");
+        }
+
+        private static void GritRecoveryHalfLevelBoundary()
+        {
+            Assertions.Equal(GritRecoveryStatus.InsignificantTarget,
+                Recovery(GritRecoveryEventKind.KillingBlow, true, true,
+                    true, true, false, 4, 10).Status,
+                "A below-half-level target restored grit.");
+            Assertions.Equal(GritRecoveryStatus.Eligible,
+                Recovery(GritRecoveryEventKind.KillingBlow, true, true,
+                    true, true, false, 5, 10).Status,
+                "The exact half-level boundary was rejected.");
+        }
+
+        private static void GritRecoveryInvalidRequestRejected()
+        {
+            var service = new GritRecoveryService();
+            Assertions.Throws<ArgumentNullException>(() => service.Evaluate(null),
+                "A null recovery request was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new GritRecoveryRequest(GritRecoveryEventKind.ConfirmedCritical,
+                    true, true, true, true, false, -1, 1),
+                "Negative target Hit Dice were accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new GritRecoveryRequest(GritRecoveryEventKind.ConfirmedCritical,
+                    true, true, true, true, false, 1, 0),
+                "Zero character level was accepted.");
+        }
+
+        private static GritRecoveryDecision Recovery(GritRecoveryEventKind kind,
+            bool outcome, bool firearm, bool combat, bool creature,
+            bool helplessOrUnaware, int targetHitDice, int characterLevel)
+        {
+            return new GritRecoveryService().Evaluate(new GritRecoveryRequest(
+                kind, outcome, firearm, combat, creature, helplessOrUnaware,
+                targetHitDice, characterLevel));
+        }
     }
 }

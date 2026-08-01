@@ -3,6 +3,8 @@ using Harmony12;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.Grit;
+using Kingmaker.RuleSystem.Rules.Damage;
 
 namespace KingmakerGunslinger.Diagnostics
 {
@@ -74,6 +76,8 @@ namespace KingmakerGunslinger.Diagnostics
         {
             try
             {
+                FirearmGritRecoveryRuntime.AfterAttackRoll(
+                    __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
                 CombatTraceRuntime.After(CombatTraceStage.AttackRoll, __instance);
             }
             finally
@@ -88,6 +92,37 @@ namespace KingmakerGunslinger.Diagnostics
                         __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
                 }
             }
+        }
+    }
+
+    [HarmonyPatch]
+    internal static class RuleDealDamageGritRecoveryPatch
+    {
+        private const string TargetTypeName =
+            "Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage";
+        private static MethodBase _target;
+
+        private static bool Prepare()
+        {
+            return RuleEventPatchTarget.TryResolve(
+                TargetTypeName,
+                "firearm killing-blow grit recovery",
+                out _target);
+        }
+
+        private static MethodBase TargetMethod()
+        {
+            return _target;
+        }
+
+        private static void Prefix(object __instance)
+        {
+            FirearmGritRecoveryRuntime.BeforeDamage(__instance as RuleDealDamage);
+        }
+
+        private static void Postfix(object __instance)
+        {
+            FirearmGritRecoveryRuntime.AfterDamage(__instance as RuleDealDamage);
         }
     }
 

@@ -129,6 +129,15 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Firearm grit recovery is source-qualified. Exact critical and exact native
+  weapon-damage zero-crossing paths restore independently, weakly dedupe by
+  attack/target reference, and fail closed for invalid combat/target contexts.
+  A guarded detached runtime scenario covers both restores, duplicate calls,
+  unaware-target rejection, and exact cleanup. Complete suite is 710/710;
+  candidate package/DLL SHA-256 are
+  `838a3882e5998da9496aaa608a55dfe73ced2433079f8f7ac97aee1b4d25047a` /
+  `d589582a7a27d1e146009f7352a62bbd5e0e8c97fd6e96a02fef513dd6122c90`.
+
 - Persistence run `20260801T1927062718434Z` passed JSON identity/reconstruction
   but exposed initial-fill ordering at Wisdom 14: maximum two, current one
   before spend. The active repair adds an owner/class-filtered
@@ -247,9 +256,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Native grit persistence, later multiclass no-refill, and the exact native
-respec resource-list transfer contract are qualified. Implement firearm
-critical/killing-blow recovery with duplicate protection next. Broad
+Commit the source-qualified firearm grit recovery checkpoint, then run exact
+mod load and two independent detached recovery qualifications. Continue to the
+first level-one deed after recovery qualifies. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

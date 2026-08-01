@@ -28,6 +28,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-grit-rest";
         internal const string DisposableGunslingerGritPersistence =
             "disposable-gunslinger-grit-persistence";
+        internal const string DisposableGunslingerGritRecovery =
+            "disposable-gunslinger-grit-recovery";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -65,6 +67,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerGritResource,
                 DisposableGunslingerGritRest,
                 DisposableGunslingerGritPersistence,
+                DisposableGunslingerGritRecovery,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

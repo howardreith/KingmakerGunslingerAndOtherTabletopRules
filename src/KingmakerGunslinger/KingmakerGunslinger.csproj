@@ -210,8 +210,15 @@
     <Compile Include="Firing\FirearmDischargeStatus.cs" />
     <Compile Include="Firing\ReferenceEventGate.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
+    <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
+    <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />
     <Compile Include="Grit\GritResourceAmountBonus.cs" />
     <Compile Include="Grit\GritInitialLevelRestore.cs" />
+    <Compile Include="Grit\GritRecoveryDecision.cs" />
+    <Compile Include="Grit\GritRecoveryEventKind.cs" />
+    <Compile Include="Grit\GritRecoveryRequest.cs" />
+    <Compile Include="Grit\GritRecoveryService.cs" />
+    <Compile Include="Grit\GritRecoveryStatus.cs" />
     <Compile Include="Grit\GritPoolService.cs" />
     <Compile Include="Grit\GritPoolState.cs" />
     <Compile Include="Grit\GritTransactionResult.cs" />

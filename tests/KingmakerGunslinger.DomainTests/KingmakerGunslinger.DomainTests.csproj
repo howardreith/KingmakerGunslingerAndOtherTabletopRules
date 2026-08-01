@@ -49,6 +49,21 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritOperationGate.cs">
       <Link>Grit\GritOperationGate.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritRecoveryDecision.cs">
+      <Link>Grit\GritRecoveryDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritRecoveryEventKind.cs">
+      <Link>Grit\GritRecoveryEventKind.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritRecoveryRequest.cs">
+      <Link>Grit\GritRecoveryRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritRecoveryService.cs">
+      <Link>Grit\GritRecoveryService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritRecoveryStatus.cs">
+      <Link>Grit\GritRecoveryStatus.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritPoolService.cs">
       <Link>Grit\GritPoolService.cs</Link>
     </Compile>

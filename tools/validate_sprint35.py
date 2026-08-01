@@ -9,7 +9,7 @@ import validate_sprint34
 
 VERSION = "0.0.35"
 INFORMATIONAL_VERSION = "0.0.35-s35-grit-resource"
-TEST_COUNT = 703
+TEST_COUNT = 710
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -63,6 +63,18 @@ def validate(root: Path) -> None:
         ["scenario-allowlisted", "two-detached-units", "native-json-settings",
          "collection-reconstruction", "later-reapply-no-refill"],
         "Sprint 35 grit persistence tests")
+    require_tokens(read(root, "src/KingmakerGunslinger/Grit/GritRecoveryService.cs"),
+        ["NotExactFirearm", "NotInCombat", "HelplessOrUnawareTarget",
+         "TargetHitDice * 2 < request.CharacterLevel"],
+        "Sprint 35 grit recovery policy")
+    require_tokens(read(root, "src/KingmakerGunslinger/Grit/FirearmGritRecoveryRuntime.cs"),
+        ["AfterAttackRoll", "BeforeDamage", "AfterDamage", "TryMarkCritical",
+         "TryMarkKillingBlow", "ReferenceEquals(weaponAttack.MeleeDamage, damage)"],
+        "Sprint 35 firearm grit recovery runtime")
+    require_tokens(read(root, "scripts/Test-Sprint35DisposableGritRecovery.ps1"),
+        ["critical-reference-dedupe", "kill-reference-dedupe",
+         "zero-crossing-required", "cleanup-proven"],
+        "Sprint 35 disposable grit recovery tests")
     print("Sprint 35 source invariant validation passed with inherited Sprint 34 checks.")
 
 def main() -> int:

@@ -7,6 +7,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $service = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Grit\GritPoolService.cs')
 $state = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Grit\GritPoolState.cs')
 $tests = Get-Content -Raw -LiteralPath (Join-Path $root 'tests\KingmakerGunslinger.DomainTests\Sprint35Tests.cs')
+$recovery = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Grit\GritRecoveryService.cs')
 $checks = [ordered]@{
     'wisdom-minimum' = $service.Contains('Math.Max(1, wisdomModifier)')
     'daily-reset' = $service.Contains('ResetDaily') -and $service.Contains('maximum, maximum')
@@ -22,6 +23,13 @@ $checks = [ordered]@{
     'focused-tests' = $tests.Contains('GritDuplicateSpendRejected') -and
         $tests.Contains('GritDuplicateRestoreRejected') -and
         $tests.Contains('GritUnitGatesAreIsolated')
+    'firearm-recovery-eligibility' = $recovery.Contains('NotExactFirearm') -and
+        $recovery.Contains('NotInCombat') -and $recovery.Contains('InvalidTarget')
+    'recovery-target-exclusions' = $recovery.Contains('HelplessOrUnawareTarget') -and
+        $recovery.Contains('TargetHitDice * 2 < request.CharacterLevel')
+    'recovery-focused-tests' = $tests.Contains('GritRecoveryCriticalEligible') -and
+        $tests.Contains('GritRecoveryKillEligible') -and
+        $tests.Contains('GritRecoveryHalfLevelBoundary')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) {

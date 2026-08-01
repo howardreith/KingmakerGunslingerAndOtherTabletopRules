@@ -19,6 +19,10 @@ using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
+using KingmakerGunslinger.Grit;
+using Kingmaker.Items;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
@@ -254,6 +258,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -336,6 +341,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence)
                 {
                     Complete(RunDisposableGunslingerGritPersistence());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery)
+                {
+                    Complete(RunDisposableGunslingerGritRecovery());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3225,6 +3236,213 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerGritRecovery()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
+            BlueprintCharacterClass gunslinger = gunslingerSet.CharacterClass;
+            BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            BlueprintItemWeapon pistolBlueprint =
+                BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            object controller = null;
+            int maximum = -1;
+            int initial = -1;
+            int spent = -1;
+            int afterCritical = -1;
+            int afterCriticalDuplicate = -1;
+            int afterKillingBlow = -1;
+            int afterKillingDuplicate = -1;
+            int afterUnaware = -1;
+            int targetDamageBefore = 0;
+            bool cleaned = false;
+            string stage = "construct-disposables";
+            try
+            {
+                var attackerChargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                var targetChargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                attacker = attackerChargen.Unit;
+                target = targetChargen.Unit;
+                if (attacker == null || target == null || attacker.Descriptor == null ||
+                    target.Descriptor == null || attacker.Descriptor.Resources == null)
+                    throw new InvalidOperationException(
+                        "Disposable grit-recovery entities are unavailable.");
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 14;
+                SetExactProperty(target.Descriptor.Progression,
+                    "CharacterLevel", 1);
+
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native grit-recovery level-up method is unavailable.");
+
+                stage = "grant-and-empty-grit";
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { attacker.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable grit-recovery Gunslinger selection was rejected.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { attacker.Descriptor });
+                cancel.Invoke(controller, null);
+                controller = null;
+                maximum = grit.GetMaxAmount(attacker.Descriptor);
+                initial = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                attacker.Descriptor.Resources.Spend(grit, initial);
+                spent = attacker.Descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "install-detached-combat-state";
+                SetExactProperty(attacker, "CombatState",
+                    new Kingmaker.Controllers.Combat.UnitCombatState(attacker));
+                SetExactProperty(target, "CombatState",
+                    new Kingmaker.Controllers.Combat.UnitCombatState(target));
+
+                stage = "confirmed-critical";
+                var weapon = new ItemEntityWeapon(pistolBlueprint);
+                var attackRoll = new RuleAttackRoll(attacker, target, weapon, 0);
+                var weaponAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+                attackRoll.RuleAttackWithWeapon = weaponAttack;
+                SetExactProperty(weaponAttack, "AttackRoll", attackRoll);
+                SetExactProperty(attackRoll, "IsCriticalConfirmed", true);
+                FirearmGritRecoveryRuntimeDiagnostics.Reset();
+                FirearmGritRecoveryRuntime.AfterAttackRoll(attackRoll);
+                afterCritical = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                FirearmGritRecoveryRuntime.AfterAttackRoll(attackRoll);
+                afterCriticalDuplicate =
+                    attacker.Descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "killing-blow";
+                var bundle = new DamageBundle(new BaseDamage[0]);
+                var damage = new RuleDealDamage(attacker, target, bundle);
+                damage.AttackRoll = attackRoll;
+                SetExactProperty(weaponAttack, "MeleeDamage", damage);
+                targetDamageBefore = target.Damage;
+                FirearmGritRecoveryRuntime.BeforeDamage(damage);
+                target.Damage = target.MaxHP;
+                SetExactProperty(damage, "Damage", 1);
+                FirearmGritRecoveryRuntime.AfterDamage(damage);
+                afterKillingBlow = attacker.Descriptor.Resources.GetResourceAmount(grit);
+                FirearmGritRecoveryRuntime.AfterDamage(damage);
+                afterKillingDuplicate =
+                    attacker.Descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "unaware-target-exclusion";
+                attacker.Descriptor.Resources.Spend(grit, 1);
+                target.Damage = targetDamageBefore;
+                SetExactProperty(target, "CombatState", null);
+                var unawareRoll = new RuleAttackRoll(attacker, target, weapon, 0);
+                var unawareAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+                unawareRoll.RuleAttackWithWeapon = unawareAttack;
+                SetExactProperty(unawareAttack, "AttackRoll", unawareRoll);
+                SetExactProperty(unawareRoll, "IsCriticalConfirmed", true);
+                FirearmGritRecoveryRuntime.AfterAttackRoll(unawareRoll);
+                afterUnaware = attacker.Descriptor.Resources.GetResourceAmount(grit);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable grit recovery failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (target != null)
+                {
+                    target.Damage = targetDamageBefore;
+                    SetExactProperty(target, "CombatState", null);
+                }
+                if (attacker != null) SetExactProperty(attacker, "CombatState", null);
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "maximum=" + maximum + ";initial=" + initial +
+                ";spent=" + spent + ";afterCritical=" + afterCritical +
+                ";afterCriticalDuplicate=" + afterCriticalDuplicate +
+                ";afterKillingBlow=" + afterKillingBlow +
+                ";afterKillingDuplicate=" + afterKillingDuplicate +
+                ";afterUnaware=" + afterUnaware +
+                ";criticalApplied=" + FirearmGritRecoveryRuntimeDiagnostics.CriticalApplied +
+                ";killingApplied=" + FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied +
+                ";duplicates=" + FirearmGritRecoveryRuntimeDiagnostics.Duplicates +
+                ";ignored=" + FirearmGritRecoveryRuntimeDiagnostics.Ignored +
+                ";faults=" + FirearmGritRecoveryRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("recovery-fixture", "maximum=2;initial=2;spent=0",
+                    observed, maximum == 2 && initial == 2 && spent == 0,
+                    "detached Wisdom 14 Gunslinger and exact native grit spend"),
+                Assertion("confirmed-critical-restores-once", "0 -> 1; duplicate remains 1",
+                    observed, afterCritical == 1 && afterCriticalDuplicate == 1,
+                    "exact production firearm RuleAttackRoll reference identity"),
+                Assertion("killing-blow-restores-once", "1 -> 2; duplicate remains 2",
+                    observed, afterKillingBlow == 2 && afterKillingDuplicate == 2,
+                    "exact RuleAttackWithWeapon.MeleeDamage and target crossing zero"),
+                Assertion("unaware-target-rejected", "spent to 1; remains 1",
+                    observed, afterUnaware == 1,
+                    "target lacked native combat state at exact attack observation"),
+                Assertion("recovery-diagnostics", "critical=1;kill=1;duplicates=2;ignored=1;faults=0",
+                    observed,
+                    FirearmGritRecoveryRuntimeDiagnostics.CriticalApplied == 1 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied == 1 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.Duplicates == 2 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.Ignored == 1 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.Faults == 0,
+                    "production recovery adapter diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "controller canceled, combat states cleared, disposable entities disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static void SetExactProperty(object value, string name,
+            object propertyValue)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            PropertyInfo property = value.GetType().GetProperty(name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null)
+                throw new MissingMemberException(value.GetType().FullName, name);
+            setter.Invoke(value, new[] { propertyValue });
         }
 
         private static object ReadExactMember(object value, string name)

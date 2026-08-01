@@ -35,6 +35,7 @@ $expected = @(
     'disposable-gunslinger-grit-resource',
     'disposable-gunslinger-grit-rest',
     'disposable-gunslinger-grit-persistence',
+    'disposable-gunslinger-grit-recovery',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
