@@ -1236,3 +1236,29 @@
   `a59e090b2d14911f77f64ba57d26762d2692c1b25ae7e3b6bd38f25b48d7e8f8` /
   `ec58e53a0c9747a34fa55db2290219cf868f13c171978171b1622f9d45ea2426`.
 - Deadeye is runtime-qualified. Continue immediately to Gunslinger's Dodge.
+
+## 2026-08-01 Sprint 36 Gunslinger's Dodge drop-prone qualification
+
+- Source commit `f79b4a2` implements the safely representable drop-prone branch:
+  a personal free action arms a hidden persisted fact; the next incoming ranged
+  weapon attack in light/medium armor at light load spends one grit, applies
+  native prone, and adds +4 AC to that attack exactly once.
+- Insufficient grit consumes the reaction marker but preserves grit, standing
+  state, and native AC. Duplicate callbacks neither spend nor stack AC.
+- The 5-foot movement / +2 AC alternative remains explicitly pending safe
+  destination selection. Kingmaker has no Immediate command type, so the
+  overall adapted deed remains runtime-partial rather than overstated.
+- Repository validation, 727/727 tests, 18 request checks, 40 preflight checks,
+  13 dispatch checks, clean exact-reference Release build, and strict package
+  validation passed. The build helper now uses a response file to stay below
+  the Windows process command-line limit.
+- Exact mod load passed at `20260801T2059139120474Z-mod-load-smoke`.
+  Independent feature PASS runs were `20260801T2102104686115Z` and
+  `20260801T2103264904832Z`.
+- Both observed grit two to one, native prone, AC 20 to 24, duplicate stability,
+  atomic grit-zero rejection at AC 20, marker consumption, applied one,
+  rejected one, duplicate one, faults zero, and exact detached cleanup.
+- Package/DLL SHA-256 are
+  `40d738a160929a4c611aaa0263a53fe0d48ccca6fab2ecc93d8fc400b7dd9b4a` /
+  `798e1fe7f96cc083de8493e164e5e640ccad2592481ea97251a4fe6cd5815677`.
+- Continue immediately to Quick Clear.

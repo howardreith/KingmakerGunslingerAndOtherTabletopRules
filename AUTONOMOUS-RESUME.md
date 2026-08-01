@@ -8,16 +8,26 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `8ef8854` (runtime-qualified Deadeye source checkpoint).
+- Audited HEAD: `f79b4a2` (runtime-qualified Dodge drop-prone source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 36 core level-one deeds; Deadeye qualified and
-  Gunslinger's Dodge next.
+- Current checkpoint: Sprint 36 core level-one deeds; Deadeye and the safe
+  Gunslinger's Dodge drop-prone branch qualified; Quick Clear next.
 - Version: `0.0.36`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Gunslinger's Dodge source commit `f79b4a2` passed mod load at
+  `20260801T2059139120474Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2102104686115Z-disposable-gunslinger-dodge` and
+  `20260801T2103264904832Z-disposable-gunslinger-dodge` proved grit two to one,
+  native prone, AC 20 to 24, duplicate stability, atomic insufficient rejection,
+  zero faults, and exact cleanup. The movement alternative remains pending.
+  Package/DLL SHA-256 are
+  `40d738a160929a4c611aaa0263a53fe0d48ccca6fab2ecc93d8fc400b7dd9b4a` /
+  `798e1fe7f96cc083de8493e164e5e640ccad2592481ea97251a4fe6cd5815677`.
 
 - Deadeye commit `8ef8854` passed mod load at
   `20260801T2039304720861Z-mod-load-smoke`. Independent PASS runs
@@ -287,8 +297,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Firearm recovery is runtime-qualified. Audit and implement the first incomplete
-level-one deed in fidelity order next. Broad
+Deadeye and the safe Gunslinger's Dodge drop-prone branch are runtime-qualified.
+Audit and implement Quick Clear next. Preserve the movement alternative as a
+documented pending adaptation until deterministic destination selection is
+safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.
