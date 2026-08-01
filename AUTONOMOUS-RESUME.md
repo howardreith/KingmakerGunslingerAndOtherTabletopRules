@@ -74,10 +74,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Read and record Sprint 32 acceptance criteria, inspect exact installed target
-enumeration/area contracts, and implement the smallest pure scatter target and
-damage plan before adding a guarded working-save scenario. Keep the production
-Blunderbuss unavailable until scatter execution is source- and runtime-qualified.
+Inspect exact installed target enumeration, position/facing geometry,
+per-target attack-modifier, attack-roll, and damage-delivery contracts. Then
+implement the smallest pure deduplicating scatter target plan. The authorized
+local rules do not state a numeric Blunderbuss cone length, so keep the
+production Blunderbuss unavailable and do not invent one.
 
 ## Safety boundaries
 

@@ -181,3 +181,16 @@
   `c0e59abe94e89ec478a55c43327c8ce7763851dc1d50f4a141c39e7ad0767473`.
 - Next checkpoint: Sprint 32 scatter execution. Establish a contract-backed,
   fail-closed cone/target plan before enabling the production Blunderbuss.
+
+## 2026-08-01 Sprint 32 entry investigation
+
+- Read the roadmap and authorized local scatter rules. Separate per-target
+  attacks, -2 rolls, per-target critical confirmation, all-roll misfire, and
+  triple scatter-explosion damage are authoritative.
+- The available local source labels Blunderbuss range `special` but contains no
+  numeric cone length. Sprint 32 criteria therefore prohibit inventing one and
+  keep the production Blunderbuss unavailable during exact contract research.
+- Next action: inspect installed Kingmaker unit-enumeration, geometry,
+  attack-modifier, attack-roll, and damage-delivery contracts; then implement
+  the pure deduplicating target-plan slice that does not depend on a guessed
+  cone length.
