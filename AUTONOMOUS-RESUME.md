@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified level-one feature extension, rebuild its exact commit,
-pass mod load, and rerun `observe-class-blueprint-contracts`. Use only the exact
-observed proficiency identities to implement stable class/progression
-blueprints. Do not claim character creation or level-up integration yet.
+Commit the qualified proficiency-array observer, rebuild its exact commit, pass
+mod load, and rerun `observe-class-blueprint-contracts`. Use its exact weapon
+category array with light armor only in the production class proficiency
+feature. Character creation and level-up integration remain unqualified.
 
 ## Safety boundaries
 

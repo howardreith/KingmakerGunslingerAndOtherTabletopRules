@@ -479,3 +479,17 @@
   `94869c11589b051dcea920acbbe119dc31cb1f2031cb71dbfa7b14a3ae76f4ec` /
   `f483eaa91f6b10597b3bf658993f07a714847b8910a1d7ab72b331dbb0107d94`.
 - Next action: commit and run exact mod load plus the extended observer.
+
+## 2026-08-01 Sprint 34 exact proficiency-array observer
+
+- Exact extended observer run
+  `20260801T1511119074497Z-e8ca571c082a4e5f9242d68f6af90a36` identified
+  aggregate Fighter, Ranger, and Rogue level-one proficiency feature IDs.
+- Added read-only `AddProficiencies` component reporting for exact armor-group
+  and weapon-category arrays; this distinguishes Gunslinger's required
+  simple/martial plus light-armor scope from broader native bundles.
+- Nine focused observer checks, 691/691 tests, clean Release build, and strict
+  package validation passed. Candidate package/DLL SHA-256:
+  `2bbad61365a954c6dce9ecc2f0478352c0680898a1515a781cf10c63f578c4e4` /
+  `e33760ed93718f375eae369264b2b04941afe225817edc88b3a6096feb47ab69`.
+- Next action: commit, exact mod load, and run the narrowed observer.

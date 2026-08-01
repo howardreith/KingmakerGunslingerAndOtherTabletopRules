@@ -21,6 +21,9 @@ $checks = [ordered]@{
         $runner.Contains('characterClass.WillSave.AssetGuid')
     'records-level-one-features' = $runner.Contains('DescribeLevelOneFeatures') -and
         $runner.Contains('value.name + "@" + value.AssetGuid')
+    'records-proficiency-component-values' = $runner.Contains('DescribeProficiencies') -and
+        $runner.Contains('component.WeaponProficiencies') -and
+        $runner.Contains('component.ArmorProficiencies')
     'does-not-register' = -not $runner.Substring(
         $runner.IndexOf('private RuntimeTestResult RunClassBlueprintContractObservation'),
         $runner.IndexOf('private void Complete(', $runner.IndexOf(

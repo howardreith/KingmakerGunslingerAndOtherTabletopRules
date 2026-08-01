@@ -19,6 +19,7 @@ using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
 using UnityEngine;
 using UnityModManagerNet;
+using Kingmaker.UnitLogic.FactLogic;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -1618,8 +1619,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (entry == null || entry.Features == null) return "<missing>";
             return string.Join(",", entry.Features
                 .Where(value => value != null)
-                .Select(value => value.name + "@" + value.AssetGuid)
+                .Select(value => value.name + "@" + value.AssetGuid +
+                    DescribeProficiencies(value))
                 .OrderBy(value => value, StringComparer.Ordinal).ToArray());
+        }
+
+        private static string DescribeProficiencies(BlueprintFeatureBase feature)
+        {
+            AddProficiencies component = (feature.ComponentsArray ??
+                new BlueprintComponent[0]).OfType<AddProficiencies>().SingleOrDefault();
+            if (component == null) return string.Empty;
+            string armor = string.Join("+", (component.ArmorProficiencies ??
+                new Kingmaker.Blueprints.Items.Armors.ArmorProficiencyGroup[0])
+                .Select(value => value.ToString()).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray());
+            string weapons = string.Join("+", (component.WeaponProficiencies ??
+                new Kingmaker.Enums.WeaponCategory[0])
+                .Select(value => value.ToString()).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray());
+            return "{armor=" + armor + ";weapons=" + weapons + "}";
         }
 
         private void Complete(RuntimeTestResult result)
