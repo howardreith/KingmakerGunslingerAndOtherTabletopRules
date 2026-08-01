@@ -56,6 +56,14 @@ def validate(root: Path) -> None:
         ["AdvancedRifleWeaponTypeSymbol", "AdvancedRevolverWeaponTypeSymbol",
          "ProductionFirearmCatalog.CreateAdvancedRifle()", "Count { get { return 10; } }"],
         "Sprint 33 advanced blueprints")
+    require_tokens(read(root, "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs"),
+        ["RunSprint33AdvancedCapacity", "firstLoad.RoundsLoaded == 6",
+         "AdvancedBrokenRemainsBroken", "!explosion.RequiresBurstDamage"],
+        "Sprint 33 guarded capacity scenario")
+    require_tokens(read(root, "scripts/Test-Sprint33AdvancedCapacity.ps1"),
+        ["advanced-capacity", "KMG_AUTOMATION_WORKING",
+         "save-write-sentinel-retained", "steam-launch-only"],
+        "Sprint 33 guarded capacity scenario tests")
     print("Sprint 33 source invariant validation passed with inherited Sprint 32 checks.")
 
 def main() -> int:

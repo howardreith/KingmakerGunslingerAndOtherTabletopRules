@@ -11,6 +11,10 @@ using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Ammunition;
+using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.Explosions;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -231,6 +235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -270,6 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -287,6 +293,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -502,6 +509,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     RunSprint31ProductionFirearmCatalog();
                 }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity)
+                {
+                    RunSprint33AdvancedCapacity();
+                }
                 else
                 {
                     CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
@@ -707,6 +718,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
+            receiverBoundPath = receiverBoundPath ||
+                _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity;
             if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
@@ -952,6 +965,93 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !catalog.Blunderbuss.Spec.IsPlayerFireable &&
                         blunderbussUnavailable == 1,
                     "special-range definition and concrete item restriction"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved,
+                    "request-scoped native save-write sentinels"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            RuntimeTestResult result = CreateResult(
+                pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            _trace.Record("feature-acceptance-complete", "status=" + result.Status);
+            Complete(result);
+        }
+
+        private void RunSprint33AdvancedCapacity()
+        {
+            _trace.Record("feature-acceptance-start",
+                "sprint33 advanced capacity; request-local fixtures only");
+            FirearmDefinition definition = FirearmDefinitions.CreateAdvancedRevolver();
+            var rules = new FirearmStateRules(definition.Capacity,
+                new[] { definition.Reload.Ammunition });
+            var vault = new RuntimeCapacityVaultStore();
+            var repository = new VaultBackedFirearmStateRepository(vault, rules);
+            var inventory = new RuntimeCapacityInventory(12, 12);
+            object first = new object();
+            object second = new object();
+            var reload = new FirearmReloadTransactionService();
+            FirearmReloadResult firstLoad = reload.TryReloadBasicRounds(
+                new RuntimeCapacityReloadStore(repository, first), inventory, rules,
+                definition.Reload.Ammunition, definition.Reload.RoundsPerAction);
+            FirearmReloadResult secondLoad = reload.TryReloadBasicRounds(
+                new RuntimeCapacityReloadStore(repository, second), inventory, rules,
+                definition.Reload.Ammunition, definition.Reload.RoundsPerAction);
+            repository.Transition(first, FirearmStateMachine.Fire);
+            repository.Transition(first, FirearmStateMachine.Fire);
+            FirearmState firstAfterFire = repository.GetOrCreate(first).State;
+            FirearmState secondAfterFire = repository.GetOrCreate(second).State;
+
+            FirearmMisfireDecision misfire = new FirearmMisfireService().Evaluate(
+                1, definition.MisfireValue, true);
+            FirearmMisfireConditionDecision firstMisfire =
+                new FirearmMisfireConditionService().Evaluate(
+                    definition, misfire, firstAfterFire);
+            repository.Set(first, firstMisfire.After);
+            FirearmMisfireConditionDecision repeatedMisfire =
+                new FirearmMisfireConditionService().Evaluate(
+                    definition, misfire, firstMisfire.After);
+            FirearmExplosionDecision explosion =
+                new FirearmExplosionService().Evaluate(repeatedMisfire);
+
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-save", "stable exact working-save load",
+                    evidence.StableFingerprint,
+                    evidence.CompletionCallbackObserved && evidence.DescriptorReferenceCorrelated &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "qualified receiver-bound working-save path"),
+                Assertion("batch-reload", "first=6;second=6;inventory=0/0",
+                    "first=" + firstLoad.AfterState.LoadedRounds +
+                        ";second=" + secondLoad.AfterState.LoadedRounds +
+                        ";inventory=" + inventory.Powder + "/" + inventory.Balls,
+                    firstLoad.RoundsLoaded == 6 && secondLoad.RoundsLoaded == 6 &&
+                        inventory.Powder == 0 && inventory.Balls == 0,
+                    "compiled atomic multi-round transaction services"),
+                Assertion("repeated-discharge-isolation", "first=4;second=6;records=2",
+                    "first=" + firstAfterFire.LoadedRounds +
+                        ";second=" + secondAfterFire.LoadedRounds +
+                        ";records=" + repository.PersistedRecordCount,
+                    firstAfterFire.LoadedRounds == 4 && secondAfterFire.LoadedRounds == 6 &&
+                        repository.PersistedRecordCount == 2,
+                    "reference-distinct save-vault records and canonical Fire transitions"),
+                Assertion("advanced-misfire-no-explosion",
+                    "NormalToBroken then AdvancedBrokenRemainsBroken; rounds=4;burst=false",
+                    firstMisfire.Transition + " then " + repeatedMisfire.Transition +
+                        ";rounds=" + repeatedMisfire.After.LoadedRounds +
+                        ";burst=" + explosion.RequiresBurstDamage,
+                    firstMisfire.Transition == FirearmMisfireConditionTransition.NormalToBroken &&
+                        repeatedMisfire.Transition ==
+                            FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken &&
+                        repeatedMisfire.After.LoadedRounds == 4 &&
+                        !explosion.RequiresBurstDamage,
+                    "compiled era-aware misfire and explosion policies"),
                 Assertion("no-save-writing-api", "none",
                     evidence.SaveWritingApiObserved ? "observed" : "none",
                     !evidence.SaveWritingApiObserved,
@@ -1524,6 +1624,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Structured ERROR evidence also could not be committed; the game remains running.",
                     fallbackException);
             }
+        }
+
+        private sealed class RuntimeCapacityInventory : IBasicAmmunitionInventory
+        {
+            internal RuntimeCapacityInventory(int powder, int balls)
+            {
+                Powder = powder;
+                Balls = balls;
+            }
+            internal int Powder { get; private set; }
+            internal int Balls { get; private set; }
+            public int Count(BasicAmmunitionComponent component)
+            {
+                return component == BasicAmmunitionComponent.BlackPowderCharge ? Powder : Balls;
+            }
+            public void Add(BasicAmmunitionComponent component, int amount)
+            {
+                if (component == BasicAmmunitionComponent.BlackPowderCharge) Powder += amount;
+                else Balls += amount;
+            }
+            public void Remove(BasicAmmunitionComponent component, int amount)
+            {
+                if (component == BasicAmmunitionComponent.BlackPowderCharge) Powder -= amount;
+                else Balls -= amount;
+            }
+        }
+
+        private sealed class RuntimeCapacityReloadStore : IFirearmReloadStateStore
+        {
+            private readonly VaultBackedFirearmStateRepository _repository;
+            private readonly object _item;
+            internal RuntimeCapacityReloadStore(
+                VaultBackedFirearmStateRepository repository, object item)
+            {
+                _repository = repository;
+                _item = item;
+            }
+            public FirearmState Read() { return _repository.GetOrCreate(_item).State; }
+            public void Replace(FirearmState expectedCurrent, FirearmState replacement)
+            {
+                if (Read() != expectedCurrent)
+                    throw new InvalidOperationException("Runtime capacity state changed concurrently.");
+                _repository.Set(_item, replacement);
+            }
+        }
+
+        private sealed class RuntimeCapacityVaultStore : IFirearmStateVaultStore
+        {
+            private readonly Dictionary<object, FirearmStateData> _records =
+                new Dictionary<object, FirearmStateData>(ReferenceIdentityComparer.Instance);
+            public int RecordCount { get { return _records.Count; } }
+            public bool TryRead(object itemInstance, out FirearmStateData data)
+            {
+                FirearmStateData value;
+                if (!_records.TryGetValue(itemInstance, out value))
+                {
+                    data = null;
+                    return false;
+                }
+                data = FirearmStateDataUtility.Clone(value);
+                return true;
+            }
+            public void Replace(object itemInstance, FirearmStateData expectedData,
+                FirearmStateData targetData)
+            {
+                FirearmStateData current;
+                _records.TryGetValue(itemInstance, out current);
+                if (!FirearmStateDataUtility.AreEqual(current, expectedData))
+                    throw new InvalidOperationException("Runtime capacity vault compare failed.");
+                if (targetData == null) _records.Remove(itemInstance);
+                else _records[itemInstance] = FirearmStateDataUtility.Clone(targetData);
+            }
+            public bool Remove(object itemInstance) { return _records.Remove(itemInstance); }
         }
 
         private RuntimeTestResult CreateResult(

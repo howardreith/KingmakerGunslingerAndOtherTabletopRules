@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `69d5efd` (Sprint 32 fail-closed cone-distance boundary).
+- Audited HEAD: `ad3b051` (advanced firearm catalog runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 33 capacity, partial reload, and advanced firearms.
@@ -118,9 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the curated advanced catalog runtime evidence. Then implement and test
-the guarded Sprint 33 capacity scenario for batch reload, repeated discharge,
-save-owned round counts, advanced misfire behavior, and exact item isolation.
+Commit the qualified guarded Sprint 33 capacity scenario source. Rebuild the
+exact commit, pass guarded mod load, and run `advanced-capacity` twice in fresh
+processes. Curate exact evidence without claiming native inventory or save-vault
+mutation, then continue to the next incomplete coverage item.
 
 ## Safety boundaries
 

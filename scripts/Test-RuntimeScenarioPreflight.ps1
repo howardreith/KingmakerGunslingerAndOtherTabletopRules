@@ -31,6 +31,7 @@ $expected = @(
     'working-save-smoke',
     'generic-firearm-actions',
     'production-firearm-catalog',
+    'advanced-capacity',
     'observe-working-save-entry-action',
     'observe-working-save-selection-load-action',
     'observe-working-save-receiver-bound-action'
@@ -62,6 +63,13 @@ Assert-True $productionCatalog.RequiresSaveName `
     'sprint31-catalog-requires-save-name'
 Assert-True ($productionCatalog.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
     'sprint31-catalog-only-permits-working-save'
+$advancedCapacity = Get-KmgRuntimeScenarioMetadata 'advanced-capacity'
+Assert-True (-not $advancedCapacity.RequiresManualInteraction) `
+    'sprint33-capacity-is-autonomous'
+Assert-True $advancedCapacity.RequiresSaveName `
+    'sprint33-capacity-requires-save-name'
+Assert-True ($advancedCapacity.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'sprint33-capacity-only-permits-working-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'

@@ -395,3 +395,21 @@
   `ba0f28e9197e1fb6949de9e829a3ccd60b65d865cea2962b6a06528ee87b4a64`.
 - Next action: commit curated evidence and implement the guarded capacity
   transaction scenario; catalog proof alone is not live round-count proof.
+
+## 2026-08-01 Sprint 33 guarded capacity scenario source
+
+- Added autonomous `advanced-capacity`, restricted to the exact
+  `KMG_AUTOMATION_WORKING` save and the existing guarded Steam launch path.
+- After exact save correlation completes, request-local compiled fixtures prove
+  two atomic six-round reloads, two-firearm discharge isolation, remaining-round
+  preservation, and the advanced repeated-misfire no-explosion policy. The
+  scenario deliberately does not claim native inventory or save-vault mutation.
+- Added request, metadata, preflight, and ten scenario-source checks. Repository
+  validation and the clean Release suite passed 685/685; strict package
+  validation passed.
+- Candidate package SHA-256:
+  `3945f9938d64e3b6b2e263ca216a6a1b8c50942fb1657703e8150c4a132a84db`.
+  Candidate DLL SHA-256:
+  `38b633bce9ab969c5b39d695cbf80ee7239ab4a9b5523e5398ada779813ae5da`.
+- Next action: commit this source checkpoint, rebuild the exact commit, then run
+  guarded mod-load and two fresh-process capacity acceptances.

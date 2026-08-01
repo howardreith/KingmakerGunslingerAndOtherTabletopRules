@@ -18,6 +18,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "generic-firearm-actions";
         internal const string ProductionFirearmCatalog =
             "production-firearm-catalog";
+        internal const string AdvancedCapacity = "advanced-capacity";
         internal const string ObserveWorkingSaveEntryAction =
             "observe-working-save-entry-action";
         internal const string ObserveWorkingSaveSelectionLoadAction =
@@ -36,6 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveSmoke,
                 GenericFirearmActions,
                 ProductionFirearmCatalog,
+                AdvancedCapacity,
                 ObserveWorkingSaveEntryAction,
                 ObserveWorkingSaveSelectionLoadAction,
                 ObserveWorkingSaveReceiverBoundAction
