@@ -55,7 +55,8 @@
     "standaloneBinaryCount": 1,
     "privateReferencesRedistributed": false,
     "sprint28RuntimeAcceptancePassed": true,
-    "runtimeAcceptancePending": true,
+    "runtimeAcceptancePending": false,
+    "runtimeAcceptancePassed": true,
     "sprint30EntryApproved": true
   }
 }

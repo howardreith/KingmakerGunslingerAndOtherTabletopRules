@@ -11,7 +11,7 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `5c92012701873421adff1fc0e127b0b3597c352c`
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 30 runtime qualification.
+- Current checkpoint: early production firearm catalog.
 - Version: `0.0.30`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
@@ -27,7 +27,8 @@ definition of done or a listed genuine human-input hard stop.
 - Deployed DLL SHA-256:
   `b1422ae9a2aed50a0ae8a8d2d3f4ff0defc5d03d31f142d7a19c57f5eb973d7b`.
 - First unproved invariant: generic marker-first Reload/Repair/Overhaul retains
-  Sprint 29 behavior and Heavy Crossbow isolation in the exact 0.0.30 assembly.
+  production pistol, musket, and blunderbuss definition-specific behavior and
+  identity without native Heavy Crossbow leakage.
 
 ## Commands already run
 
@@ -41,15 +42,23 @@ definition of done or a listed genuine human-input hard stop.
   DLL SHA-256 is
   `5ce1b5bf0d3563648e9fcd9629981c4ee41cf2fb59143df7dedf4f94fbe373de`.
 
+## Sprint 30 closure
+
+Commit `0052dad` passed exact mod load and two fresh-process feature runs. Latest
+run ID is `20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac`;
+deployed DLL SHA-256 is
+`de9f8507e5180adeb5df8dab4559e901da68022be556ef4fe1ffb874034e3d3f`.
+Both feature runs reached `MaintenanceLoopPassed`, proved native Heavy Crossbow
+isolation, and observed no save write.
+
 ## Next action
 
-The guarded `generic-firearm-actions` scenario is source-qualified: focused
-tests, repository validation, 611/611 exact domain tests, private-reference
-Release compile, strict package validation, and WhatIf all pass. Commit the
-checkpoint, require a clean tree, run `mod-load-smoke` for that exact assembly,
-then execute it through `Invoke-KingmakerRuntimeTest.ps1` with explicit
-`-SaveName KMG_AUTOMATION_WORKING`. Candidate DLL SHA-256 is
-`530a96be4133e6b574dab2638da07336ae41a6454584deceea6773486af07531`.
+Audit the local firearm rules and existing blueprint clone/manifest contracts,
+then record acceptance criteria for an early pistol, production early musket,
+and blunderbuss. Implement them as stable definition-driven content without
+scatter attack behavior yet; add focused definition, marker, stable-ID,
+presentation, and generic-action tests. Do not silently invent balance data:
+use authoritative local firearm tables and existing adaptation decisions.
 
 ## Safety boundaries
 

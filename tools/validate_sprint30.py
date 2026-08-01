@@ -60,8 +60,15 @@ def validate(root: Path) -> None:
     for key, expected in expected_qualification.items():
         if qualification.get(key) != expected:
             fail(f"BUILD-QUALIFICATION-S30.json has incorrect {key!r}.")
-    if "pending" not in str(qualification.get("runtimeAcceptance", "")).lower():
-        fail("Sprint 30 must remain classified as runtime-pending.")
+    if "accepted" not in str(qualification.get("runtimeAcceptance", "")).lower():
+        fail("Sprint 30 must be classified as runtime-accepted.")
+    if qualification.get("runtimePassRunIds") != [
+        "20260801T0446479175229Z-feac50caa3fd439a80b9a09c7a383cc0",
+        "20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac",
+    ]:
+        fail("Sprint 30 runtime PASS run IDs are missing or out of order.")
+    if qualification.get("runtimeSaveWriteObserved") is not False:
+        fail("Sprint 30 must record that no save-writing API was observed.")
 
     static = json.loads(read(root, "validation/static-validation.json"))
     if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
@@ -69,6 +76,9 @@ def validate(root: Path) -> None:
     sprint = static.get("sprint29", {})
     if sprint.get("testCount") != TEST_COUNT or sprint.get("sprint30EntryApproved") is not True:
         fail("Static validation does not record the Sprint 30 test count and entry decision.")
+    if sprint.get("runtimeAcceptancePending") is not False or \
+            sprint.get("runtimeAcceptancePassed") is not True:
+        fail("Static validation does not record Sprint 30 runtime acceptance.")
 
     project = read(root, "src/KingmakerGunslinger/KingmakerGunslinger.csproj")
     require_tokens(
@@ -156,13 +166,19 @@ def validate(root: Path) -> None:
             "native Heavy Crossbow",
             "stage=MaintenanceLoopPassed",
             "interrupt Repair",
-            "Sprint 31 remains blocked",
+            "Sprint 31 content may begin",
         ],
         "Sprint 30 smoke guide",
     )
     require_tokens(
         read(root, "SPRINT-30-REPORT.md"),
-        ["marker-first context", "611 tests", "compile-qualified, not runtime-accepted"],
+        [
+            "marker-first context",
+            "611 tests",
+            "Runtime acceptance",
+            "20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac",
+            "de9f8507e5180adeb5df8dab4559e901da68022be556ef4fe1ffb874034e3d3f",
+        ],
         "Sprint 30 report",
     )
     print("Sprint 30 source invariant validation passed with inherited Sprint 29 checks.")

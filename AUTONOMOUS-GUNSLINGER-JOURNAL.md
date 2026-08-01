@@ -74,3 +74,23 @@
   `530a96be4133e6b574dab2638da07336ae41a6454584deceea6773486af07531`.
 - Next command after committing the source-qualified checkpoint: run
   `mod-load-smoke` for the exact commit, then run `generic-firearm-actions`.
+
+## 2026-08-01 Sprint 30 runtime-qualified
+
+- Exact commit `0052dad0dae299eeefd302e511a0ae4b57dcdbac` passed
+  `mod-load-smoke` run
+  `20260801T0445314107675Z-8c9b8ceb1bea4cb5ae1a7655a3e98913`.
+- Two consecutive fresh-process `generic-firearm-actions` PASS runs:
+  `20260801T0446479175229Z-feac50caa3fd439a80b9a09c7a383cc0`
+  and `20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac`.
+- Both feature runs deployed DLL SHA-256
+  `de9f8507e5180adeb5df8dab4559e901da68022be556ef4fe1ffb874034e3d3f`.
+- Both reached `MaintenanceLoopPassed`, observed
+  `nativeMarkers=0;markedMarkers=1`, used exact working-save correlation, and
+  observed no save-writing API. Baseline was distinguished and never loaded.
+- Sprint 30 generic definition-driven actions are RUNTIME-QUALIFIED. Current
+  matrix runtime-qualified count is 6 of 32 areas (18.8%); final integration
+  remains pending.
+- Next checkpoint: production early firearm catalog (pistol, musket,
+  blunderbuss) using stable blueprint IDs and generic runtime. Establish
+  definition/presentation/acquisition acceptance criteria before source edits.

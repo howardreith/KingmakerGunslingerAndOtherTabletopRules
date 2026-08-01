@@ -14,9 +14,14 @@
   "exactReferenceCompileRuns": 2,
   "sameOutputPathDllByteIdentical": true,
   "sameOutputPathPdbByteIdentical": true,
-  "modDllSha256": "63779862c6e1cde2acb0199b96e10643f957a9d96a323ff4babbe4703398cd3c",
-  "modPdbSha256": "2ec629e4fac363e1306cff4ae0a0001583ebd50ed42aff11dc8aae48dde818ed",
+  "modDllSha256": "de9f8507e5180adeb5df8dab4559e901da68022be556ef4fe1ffb874034e3d3f",
+  "modPdbSha256": "fa6c0a3f79c0aa7bc9a2554fdc4b2c7eabd15bc337c6b9f0dac83f4ce74e9339",
   "privateReferencesRedistributed": false,
-  "runtimeAcceptance": "Pending focused 0.0.30 Kingmaker gate",
+  "runtimeAcceptance": "Accepted by mod-load-smoke and two consecutive fresh-process generic-firearm-actions PASS runs on commit 0052dad",
+  "runtimePassRunIds": [
+    "20260801T0446479175229Z-feac50caa3fd439a80b9a09c7a383cc0",
+    "20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac"
+  ],
+  "runtimeSaveWriteObserved": false,
   "readyForKingmakerSmokeTest": true
 }

@@ -33,9 +33,24 @@ including 12 focused generic-action and ammunition-profile cases. The main
 runtime assembly compiles successfully against the exact supplied Kingmaker
 2.1.7b private references.
 
-## Remaining gate
+## Runtime acceptance
 
-The reconstructed 0.0.30 source is compile-qualified, not runtime-accepted.
-Before Sprint 31, use the focused 0.0.30 smoke test to prove native Heavy
-Crossbow non-leakage, unchanged Test Musket maintenance behavior, one Repair
-interruption, and final persistence in Kingmaker.
+Commit `0052dad0dae299eeefd302e511a0ae4b57dcdbac` passed exact-assembly
+`mod-load-smoke`, then two consecutive independent fresh-process guarded
+`generic-firearm-actions` runs:
+
+- `20260801T0446479175229Z-feac50caa3fd439a80b9a09c7a383cc0`
+- `20260801T0448285054152Z-4e5925080ce1422fbcb44c2ee07adcac`
+
+Both runs used deployed DLL SHA-256
+`de9f8507e5180adeb5df8dab4559e901da68022be556ef4fe1ffb874034e3d3f`,
+loaded exactly `KMG_AUTOMATION_WORKING`, reached `MaintenanceLoopPassed` with
+all exact-item, independent-second-item, revision, inventory, fault, duplicate,
+Overhaul, Repair, and Reload checks passing, and observed
+`nativeMarkers=0;markedMarkers=1`. Save-write sentinels observed no save API.
+The game exited automatically without persisting fixture mutations.
+
+The definition-driven Sprint 30 runtime gate is accepted. Previously qualified
+action-bar delivery/interruption and persistence evidence remains carried
+forward; this checkpoint did not reclassify those behaviors from indirect to
+new direct evidence.

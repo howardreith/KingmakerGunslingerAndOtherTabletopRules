@@ -17,4 +17,7 @@ Use a disposable campaign and the exact 0.0.30 package.
    target to remain loaded/Normal, the second item to retain its independent
    state, and token conflicts/faults to remain zero.
 
-Sprint 31 remains blocked until this focused gate passes in Kingmaker.
+This focused gate passed twice from independent fresh processes on commit
+`0052dad0dae299eeefd302e511a0ae4b57dcdbac`. The guarded evidence is recorded
+in `SPRINT-30-REPORT.md`; Sprint 31 content may begin from that qualified
+baseline.
