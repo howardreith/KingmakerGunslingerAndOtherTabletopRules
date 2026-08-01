@@ -8,15 +8,26 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `4e543fd` (one-time native grit initialization guard).
+- Audited HEAD: `8ef8854` (runtime-qualified Deadeye source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 35 grit resource and deed framework.
-- Version: `0.0.35` (Sprint 35 source work active).
+- Current checkpoint: Sprint 36 core level-one deeds; Deadeye qualified and
+  Gunslinger's Dodge next.
+- Version: `0.0.36`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Deadeye commit `8ef8854` passed mod load at
+  `20260801T2039304720861Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2040462109967Z-disposable-gunslinger-deadeye` and
+  `20260801T2042028613784Z-disposable-gunslinger-deadeye` proved native armed
+  fact consumption, grit two to one at the second increment, duplicate spend
+  protection, atomic insufficient rejection, zero faults, and exact cleanup.
+  Package/DLL SHA-256 are
+  `a59e090b2d14911f77f64ba57d26762d2692c1b25ae7e3b6bd38f25b48d7e8f8` /
+  `ec58e53a0c9747a34fa55db2290219cf868f13c171978171b1622f9d45ea2426`.
 
 - Firearm grit recovery repair commit `b4c4874` passed mod load at
   `20260801T2010547590872Z-mod-load-smoke`. Independent PASS runs

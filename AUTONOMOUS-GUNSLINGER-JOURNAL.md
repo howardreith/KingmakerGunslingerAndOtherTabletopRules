@@ -1215,3 +1215,24 @@
   `1596f0b56a60144212e7680aa1dd1421decb90d507b1725c424b3ae3c3759138`.
 - Recovery and dedupe are runtime-qualified. Continue immediately to the first
   incomplete level-one deed in fidelity order.
+
+## 2026-08-01 Sprint 36 Deadeye runtime qualification
+
+- Source commit `8ef8854` introduced version 0.0.36 and the first production
+  deed: a level-one Deadeye feature, personal free action, and hidden native
+  persisted armed fact.
+- A successfully discharged exact firearm consumes the fact. Range-scaled grit
+  spending is atomic, authorizes touch AC beyond the first increment, preserves
+  contextual AC deltas, and leaves native range penalties untouched.
+- Repository validation, 719/719 tests, 18 request checks, 40 preflight checks,
+  13 dispatch checks, exact-reference Release build, and strict packaging pass.
+- Exact mod load passed at `20260801T2039304720861Z-mod-load-smoke`.
+  Independent feature PASS runs were `20260801T2040462109967Z` and
+  `20260801T2042028613784Z`.
+- Both observed initial grit two, second-increment authorization and spend to
+  one, no duplicate spend, atomic third-increment insufficient rejection,
+  diagnostics applied one/rejected one/faults zero, and exact cleanup.
+- Package/DLL SHA-256 are
+  `a59e090b2d14911f77f64ba57d26762d2692c1b25ae7e3b6bd38f25b48d7e8f8` /
+  `ec58e53a0c9747a34fa55db2290219cf868f13c171978171b1622f9d45ea2426`.
+- Deadeye is runtime-qualified. Continue immediately to Gunslinger's Dodge.
