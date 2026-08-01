@@ -8,19 +8,28 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `23cf0df` (runtime-qualified Gunslinger Initiative evidence).
+- Audited HEAD: `abfd426` (runtime-qualified Sprint 39 Pistol-Whip source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 38 Gunslinger Initiative is disposition-complete
-  for the supported game. Its +2 is runtime-qualified; the conditional draw is
-  explicitly omitted while Kingmaker has no Quick Draw feat and direct set
-  mutation would bypass native action accounting. Pistol-Whip contract audit
-  is next.
+- Current checkpoint: Sprint 39 Pistol-Whip is runtime-qualified. The next
+  incomplete level-three coverage item is Utility Shot, beginning with exact
+  supported-interaction audits for blast lock, unattended-object movement, and
+  stop bleeding before implementing any surviving adaptation.
 - Version: `0.0.39`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Pistol-Whip source commit `abfd426` passed mod load at
+  `20260801T2244554687322Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2246129650055Z-disposable-gunslinger-pistol-whip` and
+  `20260801T2247321424917Z-disposable-gunslinger-pistol-whip` proved one grit
+  spent per delivered attack, native 1d6/1d10 melee surrogates, native Trip on
+  each forced hit, enhancement propagation, zero-grit atomic rejection,
+  unchanged firearm state, zero faults, and exact cleanup. Package/DLL SHA-256
+  are `d89f093a3c4e0f78d8dfe660b49af1b2919c1ce482d774730835b4bb24c538ef` /
+  `7a7da98b0770228b531df2f090389c463f5ca6bf2d5cd77b33f68ce0a4f1d564`.
 
 - Gunslinger Initiative repair commit `8ecb3aa` passed mod load at
   `20260801T2211000340072Z-mod-load-smoke`. Independent PASS runs
@@ -344,9 +353,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Audit Pistol-Whip's exact native melee attack, damage, combat-maneuver trip,
-firearm-handedness, grit transaction, and action-economy contracts; establish
-acceptance criteria before implementation. Preserve the Dodge movement
+Audit Utility Shot's three authoritative branches against exact installed
+Kingmaker interaction contracts. Confirm the existing no-meaningful-interaction
+dispositions for locks and unattended objects, then determine whether native
+bleed removal supports a narrow stop-bleeding ability without inventing a new
+balance decision. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until

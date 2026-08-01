@@ -62,6 +62,9 @@ No genuine human-input hard stop is currently established.
 
 ## Active gates (not hard stops)
 
+- Sprint 39 Pistol-Whip is runtime-qualified on `abfd426`; Utility Shot contract
+  disposition is the next engineering gate. No human-input blocker was created.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

@@ -1431,3 +1431,31 @@
 - Next action: audit Pistol-Whip's native melee attack, damage, trip, firearm
   handedness, grit, and action-economy contracts. Sprint 38 is not a stopping
   condition.
+
+## 2026-08-01 Sprint 39 Pistol-Whip qualification
+
+- Implemented the level-three standard-action deed with exactly one equipped
+  marked firearm, one-grit atomic delivery, Wrecked rejection, and transient
+  unowned native melee surrogates. One-handed firearms use 1d6 and two-handed
+  firearms use 1d10; both are bludgeoning 20/x2 weapons whose native attack and
+  damage enhancement fields copy the equipped firearm's enhancement.
+- A successful native `RuleAttackWithWeapon` hit triggers a free native Trip
+  combat maneuver. The deed does not discharge ammunition, change firearm
+  condition, switch equipment, or persist its surrogate. Exceptional delivery
+  restores the spent grit.
+- Source commit `abfd426` passed Sprint 39 and inherited validation, 744/744
+  domain tests, 18 runtime-request checks, 40 preflight checks, 20 validation
+  dispatch checks, exact-reference Release compilation, and strict package
+  validation. Exact package/DLL SHA-256 are
+  `d89f093a3c4e0f78d8dfe660b49af1b2919c1ce482d774730835b4bb24c538ef` /
+  `7a7da98b0770228b531df2f090389c463f5ca6bf2d5cd77b33f68ce0a4f1d564`.
+- Exact mod load passed at `20260801T2244554687322Z-mod-load-smoke`.
+  Independent fresh-launch feature PASS runs were
+  `20260801T2246129650055Z-disposable-gunslinger-pistol-whip` and
+  `20260801T2247321424917Z-disposable-gunslinger-pistol-whip`. Both observed
+  grit `1 -> 0`, one-handed d6 and two-handed d10 hits with Trip, enhancement
+  propagation, unchanged loaded/Broken firearm snapshots, zero-grit
+  `InsufficientGrit` rejection, applied/rejected/hit/fault counts `2/1/2/0`,
+  and exact external cleanup.
+- Sprint 39 is a checkpoint, not a stopping condition. Continue immediately to
+  Utility Shot's three branch dispositions.
