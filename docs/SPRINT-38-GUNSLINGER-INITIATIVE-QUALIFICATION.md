@@ -51,7 +51,13 @@ classless resource maximum.
 
 ## Disposition
 
-The +2 initiative slice is `RUNTIME-QUALIFIED`. Gunslinger Initiative remains
-partially complete until the conditional Quick Draw clause receives an
-evidence-backed implementation or documented adaptation disposition. Continue
-that contract audit immediately; Sprint 38 is not a stopping condition.
+The +2 initiative behavior is `RUNTIME-QUALIFIED`. The conditional draw clause
+is `OMITTED-NO-MEANINGFUL-INTERACTION` for the current supported game: the
+installed 2.1.7b English localization has no player-facing Quick Draw feat
+entry, and repository source has no Quick Draw blueprint. Exact IL further
+shows ordinary weapon-set changes use `UnitSwitchHandEquipmentSet` and native
+turn accounting; directly changing the active set from the initiative handler
+would silently evade that action cost. The clause may be revisited only if the
+separate bonus-feat work adds Quick Draw together with deterministic
+free/unrestrained-hand and visible-firearm selection contracts. Continue to
+Pistol-Whip; Sprint 38 is not a stopping condition.

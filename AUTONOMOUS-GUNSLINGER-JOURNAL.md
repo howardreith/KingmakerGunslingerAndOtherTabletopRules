@@ -1410,3 +1410,24 @@
 - The +2 slice is runtime-qualified. Continue immediately into the conditional
   Quick Draw contract; the overall feature and Sprint 38 are not stopping
   conditions.
+
+### Initiative conditional-draw disposition
+
+- The supported installed Kingmaker 2.1.7b English localization contains the
+  words `Quick Draw` only in a surprise-round rules sentence and has no
+  player-facing Quick Draw feat entry. Repository source likewise contains no
+  Quick Draw blueprint; bonus-feat implementation remains a separate pending
+  coverage row.
+- Exact installed IL represents ordinary weapon-set changes through
+  `UnitSwitchHandEquipmentSet`, with the turn controller charging the native
+  change-weapon action. Mutating the active equipment set inside the initiative
+  handler would therefore bypass normal action accounting rather than model a
+  proven Quick Draw exemption.
+- The conditional draw clause is explicitly
+  `OMITTED-NO-MEANINGFUL-INTERACTION` for the current supported game. It may be
+  revisited only if later feat work introduces Quick Draw and exact
+  free/unrestrained-hand plus visible-firearm contracts. The runtime-qualified
+  +2 remains the narrow faithful Gunslinger Initiative adaptation.
+- Next action: audit Pistol-Whip's native melee attack, damage, trip, firearm
+  handedness, grit, and action-economy contracts. Sprint 38 is not a stopping
+  condition.

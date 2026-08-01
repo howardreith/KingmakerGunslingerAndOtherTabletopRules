@@ -8,12 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `8ecb3aa` (runtime-qualified Gunslinger Initiative +2 source).
+- Audited HEAD: `23cf0df` (runtime-qualified Gunslinger Initiative evidence).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 38 Gunslinger Initiative +2 is runtime-qualified;
-  the conditional Quick Draw/free-hands/visible-firearm clause is under exact
-  native contract audit.
+- Current checkpoint: Sprint 38 Gunslinger Initiative is disposition-complete
+  for the supported game. Its +2 is runtime-qualified; the conditional draw is
+  explicitly omitted while Kingmaker has no Quick Draw feat and direct set
+  mutation would bypass native action accounting. Pistol-Whip contract audit
+  is next.
 - Version: `0.0.38`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
@@ -342,12 +344,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Complete the exact native contract audit for the Initiative Quick Draw clause.
-Implement it only if Quick Draw identity, free/unrestrained hands, visible
-firearm selection, and action-free weapon-set mutation are all deterministic;
-otherwise record the narrowest faithful adaptation disposition and continue to
-Pistol-Whip. Preserve the Dodge movement alternative as a documented
-pending adaptation until deterministic destination selection is safe. Broad
+Audit Pistol-Whip's exact native melee attack, damage, combat-maneuver trip,
+firearm-handedness, grit transaction, and action-economy contracts; establish
+acceptance criteria before implementation. Preserve the Dodge movement
+alternative as a documented pending adaptation until deterministic destination
+selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.
