@@ -605,3 +605,22 @@
   `55c29771445947d685dba9e1ead46a42` on the Gunslinger class.
 - Next action: commit this starting-kit contract, then establish a guarded,
   disposable in-memory character-creation observer before claiming item grant.
+
+## 2026-08-01 Sprint 34 character-creation contract observer
+
+- Added save-free guarded `observe-character-creation-contracts`. It performs
+  metadata-only reflection over eight exact Assembly-CSharp types and invokes
+  no constructor, method, UI, input, save, registry, or game-state mutation.
+- Five focused scenario checks, repository validation, 691/691 domain tests,
+  clean Release build, output validation, and strict package validation passed.
+  Candidate package/DLL SHA-256 are
+  `b8594aa6f40d98afcbd7a0b7492597d3890c8dc5fbb63c4bd1f6e89fc4f6ba1e` /
+  `da04e3e67b7a5834ef5ce1bbfc1bf710126ca9ed2776fd72eb4090837f7da624`.
+- Guarded Steam PASS evidence:
+  `20260801T1548242006681Z-observe-character-creation-contracts`.
+- Exact contracts include `ChargenUnit(BlueprintUnit)`,
+  `LevelUpController.StartWithoutAssigningStaticInstance`, `SelectClass`,
+  `ApplyClassMechanics`, `Commit`, `Cancel`, `UnitDescriptor.AddStartingInventory`,
+  and descriptor/entity disposal. Next action: commit this observer, identify an
+  exact disposable `BlueprintUnit` source and prove construction/cleanup without
+  attaching the unit to player, scene, roster, or save state.

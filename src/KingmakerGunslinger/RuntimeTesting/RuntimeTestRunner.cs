@@ -239,6 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -261,6 +262,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveClassBlueprintContracts)
                 {
                     Complete(RunClassBlueprintContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts)
+                {
+                    Complete(RunCharacterCreationContractObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -1611,6 +1618,67 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunCharacterCreationContractObservation()
+        {
+            string[] typeNames =
+            {
+                "Kingmaker.UI.LevelUp.ChargenUnit",
+                "Kingmaker.UI.LevelUp.ChargenUnitData",
+                "Kingmaker.UnitLogic.Class.LevelUp.LevelUpController",
+                "Kingmaker.UnitLogic.Class.LevelUp.LevelUpState",
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass",
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.ApplyClassMechanics",
+                "Kingmaker.UnitLogic.UnitDescriptor",
+                "Kingmaker.EntitySystem.Entities.UnitEntityData"
+            };
+            Assembly assembly = typeof(Kingmaker.UnitLogic.UnitDescriptor).Assembly;
+            var records = new List<string>();
+            bool complete = true;
+            foreach (string typeName in typeNames)
+            {
+                Type type = assembly.GetType(typeName, false, false);
+                if (type == null) { complete = false; continue; }
+                records.Add(DescribeCreationType(type));
+            }
+            string observed = string.Join(" | ", records.ToArray());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("creation-contracts", "all exact creation types and declared contracts",
+                    observed, complete && records.Count == typeNames.Length,
+                    "Assembly-CSharp runtime Type constructors, methods, fields, and properties"),
+                Assertion("observation-only", "no unit construction or game-state mutation",
+                    "metadata-only reflection", true,
+                    "scenario invokes no constructor, method, save, input, or registry mutation"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static string DescribeCreationType(Type type)
+        {
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            string constructors = string.Join(",", type.GetConstructors(flags)
+                .Select(value => value.ToString()).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray());
+            string methods = string.Join(",", type.GetMethods(flags)
+                .Where(value => !value.IsSpecialName)
+                .Select(value => value.ToString()).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray());
+            string members = string.Join(",", type.GetMembers(flags)
+                .Where(value => value.MemberType == MemberTypes.Field ||
+                    value.MemberType == MemberTypes.Property)
+                .Select(value => value.MemberType + ":" + value.Name)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray());
+            return "type=" + type.FullName + ";constructors=" + constructors +
+                ";methods=" + methods + ";members=" + members;
         }
 
         private static string DescribeStartingItems(BlueprintCharacterClass characterClass)

@@ -50,6 +50,9 @@ def validate(root: Path) -> None:
         ["exact-native-progression-identities", "level-one-grants-aggregate",
          "twenty-exact-level-rows", "manifest-has-exact-production-symbols"],
         "Sprint 34 production class tests")
+    require_tokens(read(root, "scripts/Test-Sprint34CharacterCreationContractObservation.ps1"),
+        ["scenario-allowlisted", "save-free-autonomous", "metadata-only",
+         "no-construction"], "Sprint 34 character-creation contract observer tests")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:

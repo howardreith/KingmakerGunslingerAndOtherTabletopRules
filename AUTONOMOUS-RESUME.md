@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified production starting-kit slice. Then inspect exact native
-character-creation contracts and add a guarded disposable in-memory observer
-that proves class selection, level-one facts, and granted starting items without
-save selection, save mutation, UI automation, or development controls.
+Commit the qualified metadata-only character-creation contract observer. Then
+identify an exact disposable native `BlueprintUnit` source and implement a
+fail-closed construction/cleanup probe that never attaches the unit to player,
+scene, roster, inventory, or save state before testing class selection.
 
 ## Safety boundaries
 
