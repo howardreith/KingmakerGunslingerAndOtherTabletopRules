@@ -159,7 +159,11 @@ source-qualify and retry the reduced scenario. Commit `4fdbfea` passed mod load
 at `20260801T1821061256490Z-mod-load-smoke`; run
 `20260801T1822203121648Z-disposable-gunslinger-respec-preview` now identifies
 `start-respec-controller` as the first failure. Inspect its exact constructor
-and preview call graphs without invocation before another attempt.
+and preview call graphs without invocation before another attempt. Metadata run
+`20260801T1826247826437Z-observe-character-creation-contracts` proves controller
+construction requests and turns on its preview immediately. Retry only the
+reduced native `Respec` preview with the disposable source body intact; do not
+call `PrepareRespec` or `Commit`.
 Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.

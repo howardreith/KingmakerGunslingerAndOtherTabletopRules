@@ -39,6 +39,13 @@ currently established.
   Investigation has changed back to metadata-only inspection of controller
   start, construction, and preview call graphs before any further initiating
   attempt.
+- Metadata PASS run `20260801T1826247826437Z-observe-character-creation-contracts`
+  on `578d404` proved startup immediately constructs the controller; its
+  constructor starts/requests the preview, and `RequestPreview` posts and turns
+  on the preview entity. Destructive source preparation before construction is
+  the invalid ordering. The next reduced scenario keeps the disposable source
+  body intact and tests native `Respec` preview mode without `PrepareRespec` or
+  `Commit`.
 
 ## Active gates (not hard stops)
 
