@@ -26,13 +26,15 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ResourceSymbol = "KMG.Classes.GunslingerGritResource";
         internal const string FeatureSymbol = "KMG.Classes.GunslingerGritFeature";
 
-        internal static GritBlueprintSet Register(BlueprintRegistry registry)
+        internal static GritBlueprintSet Register(BlueprintRegistry registry,
+            BlueprintCharacterClass gunslingerClass)
         {
             if (registry == null) throw new ArgumentNullException("registry");
+            if (gunslingerClass == null) throw new ArgumentNullException("gunslingerClass");
             BlueprintAbilityResource resource = registry.Register<BlueprintAbilityResource>(
                 ResourceSymbol, CreateResource);
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
-                FeatureSymbol, () => CreateFeature(resource));
+                FeatureSymbol, () => CreateFeature(resource, gunslingerClass));
             Validate(resource, feature);
             return new GritBlueprintSet(resource, feature);
         }
@@ -50,7 +52,8 @@ namespace KingmakerGunslinger.Blueprints
             return resource;
         }
 
-        private static BlueprintFeature CreateFeature(BlueprintAbilityResource resource)
+        private static BlueprintFeature CreateFeature(BlueprintAbilityResource resource,
+            BlueprintCharacterClass gunslingerClass)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_Gunslinger_Grit_Feature";
@@ -69,7 +72,12 @@ namespace KingmakerGunslinger.Blueprints
             var wisdomBonus = ScriptableObject.CreateInstance<GritResourceAmountBonus>();
             wisdomBonus.name = "$KMG_Gunslinger_GritWisdomBonus";
             wisdomBonus.Resource = resource;
-            feature.ComponentsArray = new BlueprintComponent[] { addResource, wisdomBonus };
+            var initialRestore = ScriptableObject.CreateInstance<GritInitialLevelRestore>();
+            initialRestore.name = "$KMG_Gunslinger_GritInitialLevelRestore";
+            initialRestore.Resource = resource;
+            initialRestore.CharacterClass = gunslingerClass;
+            feature.ComponentsArray = new BlueprintComponent[]
+                { addResource, wisdomBonus, initialRestore };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.Gunslinger.Grit.Feature.Name", "Grit"),
                 LocalizationService.Create("KMG.Gunslinger.Grit.Feature.Description",
@@ -110,13 +118,17 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void Validate(BlueprintAbilityResource resource, BlueprintFeature feature)
         {
-            if (feature.ComponentsArray == null || feature.ComponentsArray.Length != 2)
+            if (feature.ComponentsArray == null || feature.ComponentsArray.Length != 3)
                 throw new InvalidOperationException("Grit feature components are incomplete.");
             AddAbilityResources add = feature.ComponentsArray[0] as AddAbilityResources;
             GritResourceAmountBonus bonus = feature.ComponentsArray[1] as GritResourceAmountBonus;
+            GritInitialLevelRestore initial = feature.ComponentsArray[2] as
+                GritInitialLevelRestore;
             if (add == null || bonus == null || !ReferenceEquals(add.Resource, resource) ||
                 !ReferenceEquals(bonus.Resource, resource) || !add.RestoreAmount ||
-                add.RestoreOnLevelUp || add.UseThisAsResource)
+                initial == null || !ReferenceEquals(initial.Resource, resource) ||
+                initial.CharacterClass == null || add.RestoreOnLevelUp ||
+                add.UseThisAsResource)
                 throw new InvalidOperationException("Grit resource ownership contract is incomplete.");
         }
     }

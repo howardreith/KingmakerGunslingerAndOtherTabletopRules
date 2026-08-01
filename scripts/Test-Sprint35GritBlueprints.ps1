@@ -6,6 +6,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $blueprints = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Blueprints\GritBlueprints.cs')
 $bonus = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Grit\GritResourceAmountBonus.cs')
+$initial = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Grit\GritInitialLevelRestore.cs')
 $class = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Blueprints\GunslingerClassBlueprints.cs')
 $bootstrap = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Bootstrap\BlueprintBootstrap.cs')
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $root 'blueprints\blueprints.json') | ConvertFrom-Json
@@ -20,6 +21,11 @@ $checks = [ordered]@{
         $blueprints.Contains('ConfigureEmptyArray(amountField.FieldType, amount, "ArchetypesDiv")')
     'exact-resource-filter' = $bonus.Contains('resource != Resource') -and
         $bonus.Contains('fact == null || !fact.Active')
+    'first-class-level-reconcile' = $initial.Contains('IUnitGainLevelHandler') -and
+        $initial.Contains('GetClassLevel(CharacterClass) != 1') -and
+        $initial.Contains('Owner.Resources.Restore(Resource)')
+    'unrelated-unit-and-class-filter' = $initial.Contains('!ReferenceEquals(unit, Owner)') -and
+        $initial.Contains('!ReferenceEquals(characterClass, CharacterClass)')
     'level-one-grant' = $class.Contains('new List<BlueprintFeatureBase> { proficiencies, grit }')
     'manifest-identities' = @($manifest.entries | Where-Object {
         $_.symbol -in @('KMG.Classes.GunslingerGritResource',

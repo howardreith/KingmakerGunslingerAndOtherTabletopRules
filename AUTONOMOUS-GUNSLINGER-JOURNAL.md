@@ -1067,3 +1067,21 @@
   `4d519cd6d807d01da2499402599101e5e7c599f951b9e978bb17a6b89ad67c61`.
 - Commit, then run exact mod load and two independent fresh-process persistence
   PASS runs. This invokes no save API and writes no save file.
+
+### First live persistence attempt
+
+- Commit `d7ddc34` passed mod load at
+  `20260801T1925523230210Z-mod-load-smoke`.
+- Run `20260801T1927062718434Z-disposable-gunslinger-grit-persistence`
+  proved exact JSON blueprint identity and collection reconstruction, but
+  correctly failed its nontrivial value assertions: final maximum was two while
+  initial current had been one, so spending one yielded zero.
+- Root cause is native level application order: first feature activation fills
+  the one-point base before final attribute recalculation. Add an exact global
+  unit-level handler filtered to its owner, Gunslinger class, and class level
+  exactly one. It restores after recalculation and never refills later levels.
+- The repair passes nine focused grit-blueprint checks, inherited validation,
+  703/703 tests, clean Release build, and strict packaging. Candidate
+  package/DLL SHA-256 are
+  `92b0c3133e81c5cac2b1abb0a8c0fb1f8f952bf28b1120350db54dae703e2686` /
+  `400a78b2c5950f45978bacb1e0aaeabfff4afa172c27639818a6f39bb292de2a`.

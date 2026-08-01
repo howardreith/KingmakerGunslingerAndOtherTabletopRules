@@ -111,6 +111,16 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Persistence run `20260801T1927062718434Z` passed JSON identity/reconstruction
+  but exposed initial-fill ordering at Wisdom 14: maximum two, current one
+  before spend. The active repair adds an owner/class-filtered
+  `IUnitGainLevelHandler` restoring only when Gunslinger class level equals one;
+  later levels remain non-refilling. Rebuild, commit, and retry next.
+  The repair now passes 703/703 tests and strict packaging; candidate
+  package/DLL SHA-256 are
+  `92b0c3133e81c5cac2b1abb0a8c0fb1f8f952bf28b1120350db54dae703e2686` /
+  `400a78b2c5950f45978bacb1e0aaeabfff4afa172c27639818a6f39bb292de2a`.
+
 - Native grit persistence round trip is source-qualified: a non-maximum current
   value uses Kingmaker `DefaultJsonSettings`, deserializes to a distinct record
   with the exact grit blueprint, and rebuilds a fresh detached resource map.

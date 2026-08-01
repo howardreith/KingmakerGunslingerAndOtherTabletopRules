@@ -98,10 +98,10 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature proficiencies = registry.Register<BlueprintFeature>(
                 ProficienciesSymbol, () => CreateProficiencies(simple, martial,
                     lightArmor, firearmProficiency));
-            GritBlueprintSet grit = GritBlueprints.Register(registry);
             BlueprintCharacterClass characterClass = registry.Register<BlueprintCharacterClass>(
                 ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
                     startingPistol, blackPowder, leadBall));
+            GritBlueprintSet grit = GritBlueprints.Register(registry, characterClass);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
