@@ -506,3 +506,17 @@
   `5f7449215f2424022d05761258584ae57e050ed0adccb7ef346df9a1e1b603b9` /
   `a5a05bf49500904ff2119273fbd3ae116746e0c51597c6716a925b6f4fc66380`.
 - Next action: commit and run the final narrowed observation.
+
+## 2026-08-01 Sprint 34 multi-component observer repair
+
+- Exact run at commit `755c617` returned structured ERROR because a nested
+  native proficiency fact contains multiple `AddProficiencies` components;
+  `SingleOrDefault` rejected that real cardinality. No mutation or save API was
+  involved.
+- Repaired the read-only formatter to preserve every direct and nested
+  proficiency component deterministically. Ten focused checks, 691/691 tests,
+  clean Release build, and package validation passed.
+- Candidate package/DLL SHA-256:
+  `accb96788a21f413d1a9ec2dfdda81b5fa5a59485a35ca58fe1407ac5a266bbd` /
+  `31659470103ef2b880bcf6bea1d0304e5f7c68cf31fbf5fad30d58bcd1ca5317`.
+- Next action: commit repair, mod load, rerun observation.

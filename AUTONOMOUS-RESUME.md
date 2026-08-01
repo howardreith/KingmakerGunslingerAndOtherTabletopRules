@@ -118,10 +118,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified nested-proficiency observer, rebuild its exact commit,
+Commit the qualified multi-component observer repair, rebuild its exact commit,
 pass mod load, and rerun `observe-class-blueprint-contracts`. Then implement
-production class/progression/proficiency blueprints from the observed native
-mechanical references. Character creation remains unqualified.
+production class/progression/proficiency blueprints from exact evidence.
 
 ## Safety boundaries
 

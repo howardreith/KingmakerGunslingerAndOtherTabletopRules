@@ -1628,12 +1628,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintComponent[] components = feature.ComponentsArray ??
                 new BlueprintComponent[0];
-            AddProficiencies component = components.OfType<AddProficiencies>()
-                .SingleOrDefault();
-            if (component != null) return DescribeProficiencyComponent(component);
-            AddFacts addFacts = components.OfType<AddFacts>().SingleOrDefault();
-            if (addFacts == null) return string.Empty;
-            return "{facts=" + string.Join("+", (addFacts.Facts ??
+            AddProficiencies[] direct = components.OfType<AddProficiencies>().ToArray();
+            if (direct.Length > 0) return string.Join("&", direct
+                .Select(DescribeProficiencyComponent).ToArray());
+            AddFacts[] addFacts = components.OfType<AddFacts>().ToArray();
+            if (addFacts.Length == 0) return string.Empty;
+            return "{facts=" + string.Join("+", addFacts.SelectMany(value => value.Facts ??
                 new Kingmaker.Blueprints.Facts.BlueprintUnitFact[0])
                 .Where(value => value != null)
                 .Select(value => value.name + "@" + value.AssetGuid +
@@ -1644,9 +1644,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string DescribeDirectProficiency(BlueprintFeatureBase feature)
         {
             if (feature == null) return string.Empty;
-            AddProficiencies component = (feature.ComponentsArray ??
-                new BlueprintComponent[0]).OfType<AddProficiencies>().SingleOrDefault();
-            return component == null ? string.Empty : DescribeProficiencyComponent(component);
+            AddProficiencies[] components = (feature.ComponentsArray ??
+                new BlueprintComponent[0]).OfType<AddProficiencies>().ToArray();
+            return components.Length == 0 ? string.Empty : string.Join("&",
+                components.Select(DescribeProficiencyComponent).ToArray());
         }
 
         private static string DescribeProficiencyComponent(AddProficiencies component)
