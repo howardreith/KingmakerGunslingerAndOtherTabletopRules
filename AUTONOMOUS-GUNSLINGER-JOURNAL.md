@@ -274,3 +274,20 @@
   authoritative numeric Blunderbuss cone distance.
 - Next action: commit this source-qualified slice and continue the independent
   native scatter-delivery adapter boundary without inventing that distance.
+
+## 2026-08-01 Sprint 32 cone-distance boundary checkpoint
+
+- Added the explicit boundary between a future project-authorized cone length
+  and the native cone API's meter input. Missing authority and non-scatter
+  definitions reject; supplied values must be bounded five-foot steps.
+- The boundary converts feet to meters deterministically but supplies no
+  default, so the production Blunderbuss remains unavailable.
+- Added five focused tests. Repository validation and clean Release suite
+  passed 662/662; exact compile and strict package validation passed.
+- Candidate package SHA-256:
+  `e45b9e2253435a1e5926dccc6c9e00a9cadc96ae25af404a2749e0cc6249a639`.
+  Candidate DLL SHA-256:
+  `33b9cddac997428d945c35e156f04ee004e7109d1a10bb08ed5fa409886c67f7`.
+- Next action: commit this boundary, then preserve a clean human-input record
+  for the missing player-facing distance and move to the next independent
+  mandatory coverage dependency.

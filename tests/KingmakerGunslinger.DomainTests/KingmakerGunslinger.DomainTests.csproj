@@ -145,6 +145,12 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterGeometryDisposition.cs">
       <Link>Scatter\ScatterGeometryDisposition.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterConeDistanceDecision.cs">
+      <Link>Scatter\ScatterConeDistanceDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterConeDistanceService.cs">
+      <Link>Scatter\ScatterConeDistanceService.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterAttackRollObservation.cs">
       <Link>Scatter\ScatterAttackRollObservation.cs</Link>
     </Compile>

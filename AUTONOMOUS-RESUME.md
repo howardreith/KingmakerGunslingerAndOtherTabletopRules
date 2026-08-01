@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `9e14ccd` (Sprint 32 one-discharge boundary).
+- Audited HEAD: `ee70a75` (Sprint 32 scatter triple-explosion policy).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
@@ -55,12 +55,12 @@ definition of done or a listed genuine human-input hard stop.
 
 - Sprint 32 exact-reference target planning is implemented with 10 focused
   cases. Native cone/volley aggregation adds 10, one-discharge transactions add
-  seven, and triple-explosion policy adds six; the complete domain suite is
-  657/657 PASS.
+  seven, triple-explosion policy adds six, and the fail-closed cone-distance
+  boundary adds five; the complete domain suite is 662/662 PASS.
 - Package candidate SHA-256:
-  `85cf357c9fe80387f7afef659b9fad69d194170b7fede30885534e47de472adf`;
+  `e45b9e2253435a1e5926dccc6c9e00a9cadc96ae25af404a2749e0cc6249a639`;
   DLL candidate SHA-256:
-  `9a2c79aa55721c88dd12bd61beaa83c0c755a65f26975caa420a8cd66e48ed36`.
+  `33b9cddac997428d945c35e156f04ee004e7109d1a10bb08ed5fa409886c67f7`.
 - This slice is source-qualified only. It does not establish cone length,
   native attack delivery or feature runtime acceptance. Native 90-degree
   directional geometry is contract-proven; numeric cone distance is not.
@@ -88,9 +88,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified scatter-explosion boundary. Then implement the
-independent native scatter-delivery adapter contract while keeping content
-unavailable until an authoritative numeric Blunderbuss cone distance exists.
+Commit the source-qualified cone-distance boundary. Record the precise missing
+player-facing rule without enabling content, then select the next independent
+mandatory coverage dependency.
 
 ## Safety boundaries
 

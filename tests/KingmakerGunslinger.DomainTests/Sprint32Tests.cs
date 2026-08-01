@@ -8,6 +8,40 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static partial class Program
     {
+        private static void ScatterDistanceMissingRejected()
+        {
+            Assertions.Throws<InvalidOperationException>(() => new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), null), "Missing authority did not fail closed.");
+        }
+
+        private static void ScatterDistanceExactConversion()
+        {
+            ScatterConeDistanceDecision decision = new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), 15);
+            Assertions.Equal(15, decision.DistanceFeet, "Authorized feet changed.");
+            Assertions.Equal(4.572f, decision.DistanceMeters, "Native meter conversion changed.");
+        }
+
+        private static void ScatterDistanceNonScatterRejected()
+        {
+            Assertions.Throws<ArgumentException>(() => new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyMusket(), 15), "A non-scatter firearm accepted cone distance.");
+        }
+
+        private static void ScatterDistanceStepRejected()
+        {
+            Assertions.Throws<ArgumentException>(() => new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), 12), "A non-five-foot distance was accepted.");
+        }
+
+        private static void ScatterDistanceBoundsRejected()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() => new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), 0), "A zero cone distance was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => new ScatterConeDistanceService().Resolve(
+                FirearmDefinitions.CreateEarlyBlunderbuss(), 1005), "An excessive cone distance was accepted.");
+        }
+
         private static void ScatterPlanEmpty()
         {
             ScatterTargetPlan plan = new ScatterTargetPlanService().Build(

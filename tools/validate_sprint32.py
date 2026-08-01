@@ -11,7 +11,7 @@ import validate_sprint31
 
 VERSION = "0.0.32"
 INFORMATIONAL_VERSION = "0.0.32-s32-scatter-attacks"
-TEST_COUNT = 657
+TEST_COUNT = 662
 
 
 def read(root: Path, relative: str) -> str:
@@ -34,6 +34,11 @@ def validate(root: Path) -> None:
         version=VERSION,
         informational_version=INFORMATIONAL_VERSION,
         test_count=TEST_COUNT,
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Scatter/ScatterConeDistanceService.cs"),
+        ["authorizedDistanceFeet.HasValue", "MetersPerFoot", "definition.IsScatter", "five-foot step"],
+        "Sprint 32 fail-closed cone distance boundary",
     )
     require_tokens(
         read(root, "planning/SPRINT-32-ENTRY-CRITERIA.md"),
