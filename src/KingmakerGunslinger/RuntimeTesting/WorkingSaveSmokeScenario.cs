@@ -149,6 +149,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                       _loadEntryInvocations == 1));
             }
         }
+        internal bool ObservationComplete
+        {
+            get
+            {
+                return _completionCallback && _stableSamples >= 2 &&
+                    _descriptorCorrelated && !_writeObserved && !_wrongThread;
+            }
+        }
         internal bool WriteObserved { get { return _writeObserved; } }
         internal Exception ScenarioException { get { return _exception; } }
         internal string LastCompletedStage { get { return _lastCompletedStage; } }
@@ -168,13 +176,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _buttonCandidates == 1 && _stage == "action-invocation";
             }
         }
-        internal bool EntryActionReady
+        internal bool WorkingEntryReady
         {
             get
             {
-                return _observeEntryAction && _stage == "entry-action-ready" &&
-                    _entryCandidates == 1 && _entryActionCandidates == 1 &&
-                    _entryAction != null;
+                return _observeEntryAction && _stage == "working-entry-click" &&
+                    _workingCount == 1 && _baselineCount == 1 &&
+                    _catalogComplete && _entryCandidates <= 1 &&
+                    _entryActionCandidates <= 1 && _loadEntry != null;
             }
         }
         internal List<string> HookIdentifiers
@@ -295,21 +304,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "immutable scalar descriptor evidence captured");
                     Add("baseline-excluded", null, null,
                         "working and baseline object references are distinct");
-                    Transition("load-entry-invocation",
+                    Transition(_observeEntryAction
+                            ? "working-entry-readiness" : "load-entry-invocation",
                         "unique working descriptor and distinct baseline proven");
                     return;
                 }
             }
+            if (_stage == "working-entry-readiness")
+            {
+                ResolveWorkingEntryAction();
+                if (_entryCandidates <= 1 && _entryActionCandidates <= 1)
+                    Transition("working-entry-click",
+                        "pre-click descriptor identity proven and exact LoadGame observation armed; entry action correlation may complete after the human click");
+                return;
+            }
             if (_stage == "load-entry-invocation")
             {
-                if (_observeEntryAction)
-                {
-                    ResolveWorkingEntryAction();
-                    if (_entryCandidates == 1 && _entryActionCandidates == 1)
-                        Transition("entry-action-ready",
-                            "one object-reference-correlated working entry and Load action identified; probe did not invoke it");
-                    return;
-                }
                 _loadEntryReceiver = ResolveLoadEntryReceiver(
                     _mainMenuButtons as Component,
                     typeof(Kingmaker.Game).Assembly.GetType(MainMenuType, true));
@@ -337,7 +347,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Transition("load-completion", "exact MainMenu.LoadGame invoked once");
                 return;
             }
-            if (_stage == "entry-action-ready" && _loadEntryInvocations == 1)
+            if (_stage == "working-entry-click" && _loadEntryInvocations == 1)
             {
                 Transition("load-completion",
                     "human invoked exact working-entry action once");
@@ -814,6 +824,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_observeEntryAction) _loadEntryInvocations++;
                 Add("load-entry-enter", method, args,
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
+                if (_observeEntryAction && _descriptorCorrelated &&
+                    (_stage == "working-entry-click" ||
+                     _stage == "load-entry-invocation"))
+                    Transition("load-completion",
+                        "human-selected load entry correlated to exact working descriptor");
             }
             else if (_observeEntryAction &&
                 method.DeclaringType == typeof(UnityEvent) &&
@@ -823,6 +838,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add("working-entry-unityevent-enter", method, args,
                     "count=" + _humanActionInvocations + ";action=" +
                     ObjectIdentity(receiver));
+                if (_stage == "working-entry-click")
+                    Transition("load-entry-invocation",
+                        "human invoked the pre-click-correlated working entry action");
             }
             else if (_observeEntryAction && method == _listenerMethod &&
                 (ReferenceEquals(receiver, _listenerTarget) ||

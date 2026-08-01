@@ -58,8 +58,31 @@ $checks = [ordered]@{
     'visible-text-insufficient' =
         -not $entryResolver.Contains('SafeLabelIdentities')
     'banner-after-readiness' =
-        $runner.Contains('_workingSaveSmoke.EntryActionReady') -and
+        $runner.Contains('_workingSaveSmoke.WorkingEntryReady') -and
+        $runner.Contains('? "working-entry-ready"') -and
         $orchestrator.Contains('CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW')
+    'pre-click-readiness-not-load-invocation' =
+        $scenario.Contains('_stage == "working-entry-readiness"') -and
+        $scenario.Contains('Transition("working-entry-click"') -and
+        $scenario.IndexOf('Transition("working-entry-click"') -lt
+            $scenario.IndexOf('if (_stage == "working-entry-click" && _loadEntryInvocations == 1)')
+    'readiness-allows-post-click-action-proof' =
+        $scenario.Contains('_entryActionCandidates <= 1 && _loadEntry != null') -and
+        $runner.Contains('RuntimeTestStatuses.Ambiguous') -and
+        $runner.Contains('"entry-action-correlation"')
+    'readiness-marker-save-identity' =
+        $result.Contains('[JsonProperty("saveName", Order = 14)]') -and
+        $runner.Contains('WorkingSaveSmokeScenario.ExpectedName') -and
+        $common.Contains("`$Marker.saveName -ceq 'KMG_AUTOMATION_WORKING'")
+    'click-timeout-post-readiness' =
+        $scenario.Contains('stage == "working-entry-click"') -and
+        $runner.Contains('return _request.SelectionTimeoutSeconds')
+    'click-before-load-distinguished' =
+        $scenario.Contains('Transition("load-entry-invocation"') -and
+        $runner.Contains('return _request.LoadEntryTimeoutSeconds')
+    'load-completion-timeout-distinguished' =
+        $runner.Contains('if (stage == "load-completion")') -and
+        $runner.Contains('return _request.CompletionTimeoutSeconds')
     'observer-never-invokes-entry-action' =
         -not ($entryResolver -match '\.Invoke\s*\(') -and
         $result.Contains('probeInvokedEntryAction')
@@ -74,6 +97,11 @@ $checks = [ordered]@{
     'descriptor-through-load-entry' =
         $scenario.Contains('ReferenceEquals(argument, _workingDescriptor)') -and
         $scenario.Contains('_observedLoadReceiver = receiver')
+    'wrong-descriptor-fails' =
+        $runner.Contains('RuntimeTestStatuses.Fail') -and
+        $runner.Contains('"forbidden-save-selection"') -and
+        $scenario.Contains('_baselineLoadObserved = IsBaseline(argument)') -and
+        $scenario.Contains('_otherLoadObserved = !_baselineLoadObserved')
     'completion-and-fingerprint-required' =
         $scenario.Contains('_completionCallback && _stableSamples >= 2')
     'no-deliberate-save-write' =

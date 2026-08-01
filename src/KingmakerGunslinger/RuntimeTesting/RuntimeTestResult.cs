@@ -202,6 +202,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         public string UmmStartupState { get; set; }
         [JsonProperty("readinessStage", Order = 13)]
         public string ReadinessStage { get; set; }
+        [JsonProperty("saveName", Order = 14)] public string SaveName { get; set; }
     }
 
     internal sealed class RuntimeStageMarker

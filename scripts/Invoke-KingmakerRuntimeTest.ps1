@@ -355,14 +355,17 @@ try {
         while (-not $ready) {
             if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
                 $startupResult = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
-                throw "Observer failed before readiness. stage=observer-readiness; status=$($startupResult.status); diagnostics=$($startupResult.diagnostics -join ';')"
+                $readinessStage = if ($Scenario -eq 'observe-working-save-entry-action') { 'working-entry-readiness' } else { 'observer-readiness' }
+                throw "Observer failed before readiness. stage=$readinessStage; status=$($startupResult.status); diagnostics=$($startupResult.diagnostics -join ';')"
             }
             $process.Refresh()
             if ($process.HasExited) {
-                throw "Kingmaker exited before observer readiness. stage=observer-readiness; PID=$($process.Id)"
+                $readinessStage = if ($Scenario -eq 'observe-working-save-entry-action') { 'working-entry-readiness' } else { 'observer-readiness' }
+                throw "Kingmaker exited before observer readiness. stage=$readinessStage; PID=$($process.Id)"
             }
             if ([DateTime]::UtcNow -ge $readyDeadline) {
-                throw "Observer readiness timed out. stage=observer-readiness; timeoutSeconds=$ObserverStartupTimeoutSeconds"
+                $readinessStage = if ($Scenario -eq 'observe-working-save-entry-action') { 'working-entry-readiness' } else { 'observer-readiness' }
+                throw "Observer readiness timed out. stage=$readinessStage; timeoutStage=$readinessStage; timeoutSeconds=$ObserverStartupTimeoutSeconds"
             }
             if (Test-Path -LiteralPath $readyPath -PathType Leaf) {
                 try {

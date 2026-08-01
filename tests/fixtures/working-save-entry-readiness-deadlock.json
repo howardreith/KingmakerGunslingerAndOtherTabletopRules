@@ -1,0 +1,14 @@
+{
+  "scenario": "observe-working-save-entry-action",
+  "stage": "load-entry-invocation",
+  "catalogComplete": true,
+  "workingMatchCount": 1,
+  "baselineMatchCount": 1,
+  "entryCandidateCount": 1,
+  "entryActionCandidateCount": 0,
+  "loadEntryInvocationCount": 0,
+  "readinessWritten": false,
+  "bannerPrinted": false,
+  "humanClickPermitted": false,
+  "timeoutStage": "load-entry-invocation"
+}

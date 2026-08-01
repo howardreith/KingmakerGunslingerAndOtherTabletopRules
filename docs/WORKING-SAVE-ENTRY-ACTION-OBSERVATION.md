@@ -37,12 +37,25 @@ UnityEvent. It captures the exact `List<SaveInfo>` passed to
 the established stable fields, and requires them to be distinct objects.
 
 After catalog initialization, the probe finds active UI components holding the
-exact working `SaveInfo` reference. It accepts exactly one such entry and
-exactly one active, interactable child/owner Load action whose runtime delegate
-target is that entry or directly holds the same descriptor reference. Visible
-text is recorded only as supporting evidence and never establishes identity.
+exact working `SaveInfo` reference and attempts to resolve the entry's active,
+interactable Load action. Visible text is supporting evidence only. If the
+delegate cannot be proven before interaction, the already-installed narrow
+`MainMenu.LoadGame(SaveInfo)` hook correlates the human's next action to the
+exact catalog object; missing UnityEvent/listener proof makes the result
+`AMBIGUOUS`, while a baseline or other descriptor makes it `FAIL`.
 
-Only then is `runtime-ready.json` written. The orchestrator prints:
+Pre-click readiness never depends on a click or `LoadGame` invocation. Once the
+complete catalog, unique working descriptor, distinct baseline, and narrow
+observation hooks are proven, `runtime-ready.json` is atomically written with
+run ID, scenario, save name, and `working-entry-ready`.
+
+The preceding `observer-armed` lifecycle marker records Stage A after the
+request, version, runner, narrow hooks, and exact main-menu Load Game action
+are ready. `working-entry-ready` is Stage B; `working-entry-click`,
+`load-entry-invocation`, and `load-completion` distinguish the supervised and
+downstream waits.
+
+The orchestrator then starts the human-click timeout and prints:
 
 ```text
 CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW

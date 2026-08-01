@@ -367,11 +367,14 @@ function Test-KmgRuntimeReadyMarker {
         if (-not $metadata.UsesWorkingStageTimeouts) { return $true }
         $expectedStage = if ($metadata.ReadinessBehavior -ceq
             'human-working-save-entry-action') {
-            'working-entry-action-ready'
+            'working-entry-ready'
         } else {
             'load-game-action-resolved'
         }
-        return $Marker.runtimeRunnerActive -eq $true -and
+        $saveIdentityReady = $metadata.ReadinessBehavior -cne
+            'human-working-save-entry-action' -or
+            $Marker.saveName -ceq 'KMG_AUTOMATION_WORKING'
+        return $saveIdentityReady -and $Marker.runtimeRunnerActive -eq $true -and
             $Marker.updateCallbackCount -ge 2 -and
             $Marker.mainMenuLifecycleReady -eq $true -and
             $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent' -and

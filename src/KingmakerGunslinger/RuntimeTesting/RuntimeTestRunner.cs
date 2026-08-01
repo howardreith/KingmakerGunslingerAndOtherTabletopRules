@@ -317,14 +317,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool supervisedEntry = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
+            if (supervisedEntry && _workingSaveSmoke.MainMenuReady &&
+                _workingStartupStage != "observer-armed")
+            {
+                _workingStartupStage = "observer-armed";
+                WriteLifecycleStage(_workingStartupStage);
+            }
             bool requestedReadiness = supervisedEntry
-                ? _workingSaveSmoke.EntryActionReady
+                ? _workingSaveSmoke.WorkingEntryReady
                 : _workingSaveSmoke.MainMenuReady;
             if (!_workingReadyWritten && requestedReadiness &&
                 _updateCallbackCount >= 2)
             {
                 _workingStartupStage = supervisedEntry
-                    ? "working-entry-action-ready"
+                    ? "working-entry-ready"
                     : "load-game-action-resolved";
                 WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("runtime-ready",
@@ -343,7 +349,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UpdateCallbackCount = _updateCallbackCount,
                     MainMenuLifecycleReady = true,
                     UmmStartupState = "initialized; overlay nonblocking-or-absent",
-                    ReadinessStage = _workingStartupStage
+                    ReadinessStage = _workingStartupStage,
+                    SaveName = supervisedEntry
+                        ? WorkingSaveSmokeScenario.ExpectedName : ""
                 });
                 _workingStartupStage = "working-save-ready";
                 WriteLifecycleStage(_workingStartupStage);
@@ -431,6 +439,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
                 return;
             }
+            if (supervisedEntry && _workingSaveSmoke.ObservationComplete)
+            {
+                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                    "entry-action-correlation",
+                    "Load completed for the exact working descriptor, but the clicked UnityEvent and listener could not both be proven.");
+                return;
+            }
             int timeout = WorkingSaveStageTimeout(_workingSaveSmoke.Stage);
             if (_workingSaveSmoke.StageElapsedMilliseconds >= timeout * 1000L)
             {
@@ -453,10 +468,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _request.CatalogTimeoutSeconds;
             if (stage == "descriptor-resolution")
                 return _request.DescriptorResolutionTimeoutSeconds;
+            if (stage == "working-entry-readiness")
+                return _request.DescriptorResolutionTimeoutSeconds;
+            if (stage == "working-entry-click")
+                return _request.SelectionTimeoutSeconds;
             if (stage == "load-entry-invocation")
                 return _request.LoadEntryTimeoutSeconds;
-            if (stage == "entry-action-ready")
-                return _request.SelectionTimeoutSeconds;
             if (stage == "load-completion")
                 return _request.CompletionTimeoutSeconds;
             if (stage == "post-load-fingerprint")
