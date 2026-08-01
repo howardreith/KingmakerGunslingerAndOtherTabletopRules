@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
@@ -1654,6 +1655,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Kingmaker.UnitLogic.Class.LevelUp.LevelUpState",
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass",
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.ApplyClassMechanics",
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.LevelUpHelper",
                 "Kingmaker.UnitLogic.UnitDescriptor",
                 "Kingmaker.UnitLogic.UnitProgressionData",
                 "Kingmaker.UnitLogic.ClassData",
@@ -1679,6 +1681,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 startWithoutStatic.GetParameters()[4].ParameterType;
             if (buildModeType == null) complete = false;
             else records.Add(DescribeCreationType(buildModeType));
+            Type descriptorType = typeof(Kingmaker.UnitLogic.UnitDescriptor);
+            Type selectActionType = assembly.GetType(
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass", false, false);
+            Type mechanicsActionType = assembly.GetType(
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.ApplyClassMechanics", false, false);
+            Type helperType = assembly.GetType(
+                "Kingmaker.UnitLogic.Class.LevelUp.Actions.LevelUpHelper", false, false);
+            string callGraph = "Commit=" + DescribeCalledMethods(
+                controllerType.GetMethod("Commit", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | SetupNewCharacher=" + DescribeCalledMethods(
+                    controllerType.GetMethod("SetupNewCharacher", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | AddStartingInventory=" + DescribeCalledMethods(
+                    descriptorType.GetMethod("AddStartingInventory", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | SelectClass.Apply=" + DescribeCalledMethods(
+                    RequireExactApplyMethod(selectActionType)) +
+                " | ApplyClassMechanics.Apply=" + DescribeCalledMethods(
+                    RequireExactApplyMethod(mechanicsActionType)) +
+                " | SetupNewCharacher.delegate=" + DescribeCalledMethods(
+                    controllerType.GetMethod("<SetupNewCharacher>b__71_0",
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.Instance)) +
+                " | LevelUpHelper.AddStartingItems=" + DescribeCalledMethods(
+                    helperType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.Static).SingleOrDefault(value =>
+                            value.Name == "AddStartingItems"));
             string observed = string.Join(" | ", records.ToArray());
             BlueprintRoot root = BlueprintRoot.Instance;
             BlueprintUnit defaultPlayer = root == null ? null : root.DefaultPlayerCharacter;
@@ -1697,6 +1727,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rootedUnits, defaultPlayer != null && pregens != null && pregens.Length > 0 &&
                         pregens.All(value => value != null),
                     "BlueprintRoot.Instance direct fields; no CharGenRoot method invocation"),
+                Assertion("creation-call-graph", "exact commit/setup/inventory called methods",
+                    callGraph, !callGraph.Contains("<unavailable>"),
+                    "MethodBody IL call/callvirt tokens resolved without method invocation"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
                     "metadata-only reflection", true,
                     "scenario invokes no constructor, method, save, input, or registry mutation"),
@@ -2106,6 +2139,72 @@ namespace KingmakerGunslinger.RuntimeTesting
             return "type=" + type.FullName + ";constructors=" + constructors +
                 ";methods=" + methods + ";members=" + members +
                 ";enumValues=" + enumValues;
+        }
+
+        private static string DescribeCalledMethods(MethodInfo method)
+        {
+            if (method == null || method.GetMethodBody() == null) return "<unavailable>";
+            byte[] il = method.GetMethodBody().GetILAsByteArray();
+            var oneByte = new Dictionary<byte, OpCode>();
+            var twoByte = new Dictionary<byte, OpCode>();
+            foreach (FieldInfo field in typeof(OpCodes).GetFields(
+                BindingFlags.Public | BindingFlags.Static))
+            {
+                if (field.FieldType != typeof(OpCode)) continue;
+                OpCode code = (OpCode)field.GetValue(null);
+                ushort value = unchecked((ushort)code.Value);
+                if (value <= byte.MaxValue) oneByte[(byte)value] = code;
+                else if ((value & 0xff00) == 0xfe00) twoByte[(byte)(value & 0xff)] = code;
+            }
+            var calls = new List<string>();
+            int offset = 0;
+            while (offset < il.Length)
+            {
+                byte first = il[offset++];
+                OpCode code;
+                if (first == 0xfe)
+                {
+                    if (offset >= il.Length || !twoByte.TryGetValue(il[offset++], out code))
+                        break;
+                }
+                else if (!oneByte.TryGetValue(first, out code)) break;
+                int operandStart = offset;
+                if (code.OperandType == OperandType.InlineMethod && offset + 4 <= il.Length)
+                {
+                    int token = BitConverter.ToInt32(il, offset);
+                    try
+                    {
+                        MethodBase called = method.Module.ResolveMethod(token);
+                        calls.Add(called.DeclaringType.FullName + "." + called.Name);
+                    }
+                    catch (ArgumentException) { calls.Add("<unresolved-method-token>"); }
+                }
+                offset = operandStart + OperandSize(code.OperandType, il, operandStart);
+            }
+            return string.Join(",", calls.Distinct().ToArray());
+        }
+
+        private static MethodInfo RequireExactApplyMethod(Type actionType)
+        {
+            if (actionType == null) return null;
+            return actionType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance).SingleOrDefault(value =>
+                    value.Name == "Apply" && value.GetParameters().Length == 2);
+        }
+
+        private static int OperandSize(OperandType type, byte[] il, int offset)
+        {
+            if (type == OperandType.InlineNone) return 0;
+            if (type == OperandType.ShortInlineBrTarget || type == OperandType.ShortInlineI ||
+                type == OperandType.ShortInlineVar) return 1;
+            if (type == OperandType.InlineVar) return 2;
+            if (type == OperandType.InlineI8 || type == OperandType.InlineR) return 8;
+            if (type == OperandType.InlineSwitch)
+            {
+                if (offset + 4 > il.Length) return il.Length - offset;
+                return 4 + (BitConverter.ToInt32(il, offset) * 4);
+            }
+            return 4;
         }
 
         private static string DescribeStartingItems(BlueprintCharacterClass characterClass)

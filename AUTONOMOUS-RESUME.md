@@ -118,12 +118,12 @@ isolation, and observed no save write.
 
 ## Next action
 
-Do not use `UnitDescriptor.AddStartingInventory` for class items: guarded run
-`20260801T1653067738684Z-31c75c40cc2642038ec2771b3c2325fd` proved it grants
-the default `BlueprintUnit` inventory instead. Inspect the exact native
-`LevelUpController.Commit`/`SetupNewCharacher` call contract read-only, then
-build a separately guarded disposable creation-commit scenario that requires
-the three class item identities and unchanged player/global-unit snapshots.
+Exact metadata run `20260801T1704113460224Z-67a8c8fb00194ac28840c0b3d3012d39`
+resolved `LevelUpHelper.AddStartingItems(UnitDescriptor)` as the native class
+item path. Invoke only that helper on the disposable refreshed preview, with
+production `StartingGold` temporarily zeroed and restored in `finally`; require
+unchanged player money, exact pistol/powder/ball deltas, restored blueprint
+state, and unchanged player/global-unit snapshots. Do not invoke full setup.
 
 ## Safety boundaries
 

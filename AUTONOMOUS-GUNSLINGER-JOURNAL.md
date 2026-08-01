@@ -765,3 +765,25 @@
 - The incorrect call and assertion were removed, restoring a clean tree at
   `a8674ca`. Next action is read-only native commit/setup contract inspection,
   then a separately guarded disposable creation-commit scenario if supported.
+
+## 2026-08-01 Sprint 34 native class-item grant call graph
+
+- Added metadata-only IL call-graph resolution for exact creation methods.
+  `Commit` calls `ApplyLevelup` and first-level `SetupNewCharacher`; setup can
+  attach the entity to player state and calls default-unit inventory, so it is
+  not an isolated receiver.
+- The exact setup delegate resolves to
+  `LevelUpHelper.AddStartingItems(UnitDescriptor)`. Its call graph reads the
+  maximum class/class data, adds class items to the descriptor inventory,
+  equips compatible items, applies `AddStartingEquipment` components, and may
+  call `Player.GainMoney`.
+- Seven focused observer checks, repository validation, 691/691 tests, clean
+  Release, and strict packaging passed. Candidate package/DLL SHA-256 are
+  `339b65d5722dc85ec51e78be3ccf6da490450eaecf2b1bc1abfb43220b508561` /
+  `7deadb7d7af294a74449444058e428becdc21147e7e44206ee55552328df9e6a`.
+- Save-free guarded metadata PASS run
+  `20260801T1704113460224Z-67a8c8fb00194ac28840c0b3d3012d39` invoked none
+  of the inspected methods.
+- Next action: checkpoint the call graph, then invoke only the exact helper on
+  the disposable preview with `StartingGold` temporarily zeroed/restored and
+  require unchanged player money and exact class-item deltas.

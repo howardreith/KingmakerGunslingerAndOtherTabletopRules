@@ -17,12 +17,22 @@ $checks = [ordered]@{
         $runner.Contains('Kingmaker.Blueprints.BlueprintUnit') -and
         $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.LevelUpController') -and
         $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass') -and
+        $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.Actions.LevelUpHelper') -and
         $runner.Contains('Kingmaker.UnitLogic.UnitProgressionData') -and
         $runner.Contains('Kingmaker.UnitLogic.ClassData')
     'metadata-only' = $runner.Contains('GetConstructors(flags)') -and
         $runner.Contains('GetMethods(flags)') -and $runner.Contains('GetMembers(flags)') -and
         $runner.Contains('Enum.GetNames(type)') -and
         $runner.Contains('startWithoutStatic.GetParameters()[4].ParameterType')
+    'exact-call-graph' = $runner.Contains('DescribeCalledMethods(') -and
+        $runner.Contains('GetMethod("Commit"') -and
+        $runner.Contains('GetMethod("SetupNewCharacher"') -and
+        $runner.Contains('GetMethod("AddStartingInventory"') -and
+        $runner.Contains('RequireExactApplyMethod(selectActionType)') -and
+        $runner.Contains('RequireExactApplyMethod(mechanicsActionType)') -and
+        $runner.Contains('GetMethod("<SetupNewCharacher>b__71_0"') -and
+        $runner.Contains('value.Name == "AddStartingItems"') -and
+        $runner.Contains('MethodBody IL call/callvirt tokens resolved without method invocation')
     'reads-rooted-unit-identities' = $runner.Contains('root.DefaultPlayerCharacter') -and
         $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')
