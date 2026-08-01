@@ -90,7 +90,22 @@ namespace KingmakerGunslinger.Blueprints
             if (baseField == null || baseField.FieldType != typeof(int))
                 throw new MissingFieldException(amountField.FieldType.FullName, "BaseValue");
             baseField.SetValue(amount, baseValue);
+            ConfigureEmptyArray(amountField.FieldType, amount, "Class");
+            ConfigureEmptyArray(amountField.FieldType, amount, "Archetypes");
+            ConfigureEmptyArray(amountField.FieldType, amount, "ClassDiv");
+            ConfigureEmptyArray(amountField.FieldType, amount, "ArchetypesDiv");
             amountField.SetValue(resource, amount);
+        }
+
+        private static void ConfigureEmptyArray(Type amountType, object amount,
+            string fieldName)
+        {
+            FieldInfo field = amountType.GetField(fieldName,
+                BindingFlags.Instance | BindingFlags.Public);
+            if (field == null || !field.FieldType.IsArray)
+                throw new MissingFieldException(amountType.FullName, fieldName);
+            field.SetValue(amount, Array.CreateInstance(
+                field.FieldType.GetElementType(), 0));
         }
 
         private static void Validate(BlueprintAbilityResource resource, BlueprintFeature feature)

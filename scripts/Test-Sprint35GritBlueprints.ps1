@@ -16,6 +16,8 @@ $checks = [ordered]@{
         $blueprints.Contains('RestoreOnLevelUp = false')
     'wisdom-floor-formula' = $blueprints.Contains('ConfigureBaseAmount(resource, 1)') -and
         $bonus.Contains('StatType.Wisdom') -and $bonus.Contains('wisdomModifier - 1')
+    'native-amount-arrays' = $blueprints.Contains('ConfigureEmptyArray(amountField.FieldType, amount, "Class")') -and
+        $blueprints.Contains('ConfigureEmptyArray(amountField.FieldType, amount, "ArchetypesDiv")')
     'exact-resource-filter' = $bonus.Contains('resource != Resource') -and
         $bonus.Contains('fact == null || !fact.Active')
     'level-one-grant' = $class.Contains('new List<BlueprintFeatureBase> { proficiencies, grit }')

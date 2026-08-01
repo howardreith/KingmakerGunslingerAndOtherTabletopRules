@@ -989,3 +989,15 @@
   `8de23371914342fa66ae5a379c5d156ad874e4e233eaab081c094b068d6d6306`.
 - Runtime launch correctly refused the dirty tree. Commit this source-qualified
   slice, then run exact mod load and two fresh-process feature passes.
+
+### First live grit attempt
+
+- Commit `aede630` passed mod load at
+  `20260801T1903334246022Z-mod-load-smoke`.
+- Run `20260801T1904500891309Z-disposable-gunslinger-grit-resource` failed
+  safely before assertions at `grant-level-one-grit`: exact stack evidence
+  located a null dereference inside native `BlueprintAbilityResource.GetMaxAmount`.
+  No save was loaded or written.
+- Root cause: runtime construction of native `Amount` does not receive Unity's
+  serialized empty-array defaults. Narrow repair initializes `Class`,
+  `Archetypes`, `ClassDiv`, and `ArchetypesDiv` to correctly typed empty arrays.

@@ -40,7 +40,8 @@ def validate(root: Path) -> None:
         "Sprint 35 focused source tests")
     require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/GritBlueprints.cs"),
         ["BlueprintAbilityResource", "AddAbilityResources", "RestoreAmount = true",
-         "RestoreOnLevelUp = false", "ConfigureBaseAmount(resource, 1)"],
+         "RestoreOnLevelUp = false", "ConfigureBaseAmount(resource, 1)",
+         "ConfigureEmptyArray(amountField.FieldType, amount, \"Class\")"],
         "Sprint 35 grit blueprints")
     require_tokens(read(root, "src/KingmakerGunslinger/Grit/GritResourceAmountBonus.cs"),
         ["IResourceAmountBonusHandler", "StatType.Wisdom", "wisdomModifier - 1",

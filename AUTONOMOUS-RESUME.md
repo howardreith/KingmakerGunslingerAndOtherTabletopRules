@@ -93,6 +93,12 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- First live grit attempt
+  `20260801T1904500891309Z-disposable-gunslinger-grit-resource` failed safely
+  in native `BlueprintAbilityResource.GetMaxAmount`: its runtime-created
+  `Amount.Class` array was null. The exact narrow repair initializes all four
+  native class/archetype arrays to typed empty arrays; rebuild and retry next.
+
 - The native grit integration is source-qualified: stable resource and owner
   feature blueprints, exact Wisdom-floor subscriber, first-grant restore,
   no level-up refill, and a guarded detached-unit acceptance scenario. Full
