@@ -707,3 +707,25 @@
   Neither run loaded or wrote a save.
 - Next action: checkpoint preview mechanics, then observe exact preview facts
   and stats before invoking starting inventory on the disposable preview.
+
+## 2026-08-01 Sprint 34 exact preview class data
+
+- Extended the qualified controller-preview boundary to exact native
+  `ClassData`. Both runs proved level one and production full-BAB
+  `b3057560ffff3514299e8b93e7648a9d`, good Fortitude/Reflex
+  `ff4662bde9e75f145853417313842751`, and poor Will
+  `dc0c7c1aba755c54f96c089cdf7d14a3` identities.
+- The first broader assertion also observed that `Progression.Features` is
+  still empty at this stage. The proficiency aggregate is therefore not
+  claimed as materialized; it remains a separate controller-refresh/commit
+  contract investigation.
+- Six focused preview checks, repository validation, 691/691 tests, clean
+  Release, and strict packaging passed. Candidate package/DLL SHA-256 are
+  `d92acf8e2d114da1885273cae04f04b7695fbb3c6a53de4e816c413d0eed3fc5` /
+  `d1a7118126e3c428719c8aa08109647852bfebf542555ac62335d63f08a385d9`.
+- Independent fresh-process PASS run IDs are
+  `20260801T1632531458628Z-092ddb04a7df4a86b677183ec448970e` and
+  `20260801T1634085276178Z-30f01289d10d4e96be16f1bc82de5824`.
+- Next action: checkpoint exact class data, then observe the native preview
+  refresh/commit boundary required to materialize feature facts before adding
+  starting inventory.

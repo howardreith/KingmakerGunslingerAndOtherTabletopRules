@@ -13,6 +13,10 @@ $checks = [ordered]@{
     'native-preview-refresh' = $runner.Contains('previewAfterSelection == 1') -and
         $runner.Contains('ReadExactMember(controller, "LevelUpActions")')
     'source-unchanged' = $runner.Contains('previewAfter == 1') -and $runner.Contains('sourceAfter == 0')
+    'exact-class-data' = $runner.Contains('classData.BaseAttackBonus.AssetGuid') -and
+        $runner.Contains('b3057560ffff3514299e8b93e7648a9d') -and
+        $runner.Contains('ff4662bde9e75f145853417313842751') -and
+        $runner.Contains('dc0c7c1aba755c54f96c089cdf7d14a3')
     'external-isolation' = $runner.Contains('SameReferences(partyBefore') -and $runner.Contains('SameReferences(unitsBefore')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)

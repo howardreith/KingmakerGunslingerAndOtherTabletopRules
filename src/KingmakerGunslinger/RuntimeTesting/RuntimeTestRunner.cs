@@ -1883,6 +1883,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int previewAfter = -1;
             int sourceAfter = -1;
             int queuedCount = -1;
+            int classDataLevel = -1;
+            string baseAttack = "";
+            string fortitude = "";
+            string reflex = "";
+            string will = "";
             bool cleaned = false;
             try
             {
@@ -1933,6 +1938,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReadExactMember(controller, "LevelUpActions")).Length;
                 previewAfter = preview.Progression.GetClassLevel(gunslinger);
                 sourceAfter = sourceDescriptor.Progression.GetClassLevel(gunslinger);
+                Kingmaker.UnitLogic.ClassData classData =
+                    preview.Progression.GetClassData(gunslinger);
+                if (classData == null || !ReferenceEquals(classData.CharacterClass, gunslinger))
+                    throw new InvalidOperationException(
+                        "Exact Gunslinger preview ClassData is unavailable.");
+                classDataLevel = classData.Level;
+                baseAttack = classData.BaseAttackBonus.AssetGuid;
+                fortitude = classData.FortitudeSave.AssetGuid;
+                reflex = classData.ReflexSave.AssetGuid;
+                will = classData.WillSave.AssetGuid;
             }
             finally
             {
@@ -1949,7 +1964,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";previewBefore=" + previewBefore +
                 ";previewAfterSelection=" + previewAfterSelection +
                 ";previewAfterMechanics=" + previewAfter +
-                ";sourceAfter=" + sourceAfter + ";queuedCount=" + queuedCount;
+                ";sourceAfter=" + sourceAfter + ";queuedCount=" + queuedCount +
+                ";classData=" + classDataLevel + "/" + baseAttack + "/" +
+                fortitude + "/" + reflex + "/" + will;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("preview-application", "level-one Gunslinger only on controller preview",
@@ -1957,6 +1974,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         previewAfterSelection == 1 && previewAfter == 1 &&
                         sourceAfter == 0 && queuedCount == 2,
                     "native controller preview refresh and exact GetClassLevel identities"),
+                Assertion("preview-class-data", "level 1 and exact BAB/save identities",
+                    "classData=" + classDataLevel + "/" + baseAttack + "/" +
+                        fortitude + "/" + reflex + "/" + will,
+                    classDataLevel == 1 && baseAttack ==
+                        "b3057560ffff3514299e8b93e7648a9d" && fortitude ==
+                        "ff4662bde9e75f145853417313842751" && reflex ==
+                        "ff4662bde9e75f145853417313842751" && will ==
+                        "dc0c7c1aba755c54f96c089cdf7d14a3",
+                    "ClassData exact progression identities"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "Cancel plus source preview-entity disposal and reference snapshots"),
