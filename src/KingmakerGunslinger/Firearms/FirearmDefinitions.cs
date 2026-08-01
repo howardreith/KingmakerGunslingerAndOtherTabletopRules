@@ -31,5 +31,18 @@ namespace KingmakerGunslinger.Firearms
                 new ReloadProfile(ReloadActionType.FullRound, true, 1),
                 false);
         }
+
+        internal static FirearmDefinition CreateEarlyBlunderbuss()
+        {
+            return new FirearmDefinition(
+                FirearmEra.Early,
+                FirearmKind.Blunderbuss,
+                1,
+                null,
+                2,
+                10,
+                new ReloadProfile(ReloadActionType.FullRound, true, 1),
+                true);
+        }
     }
 }

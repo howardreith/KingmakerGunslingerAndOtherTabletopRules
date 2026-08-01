@@ -26,6 +26,9 @@ namespace KingmakerGunslinger.DomainTests
             Case("factory.early-musket-canonical-equality", FactoryEarlyMusketCanonicalEquality),
             Case("factory.early-pistol-fresh-instances", FactoryEarlyPistolFreshInstances),
             Case("factory.early-pistol-canonical-equality", FactoryEarlyPistolCanonicalEquality),
+            Case("factory.early-blunderbuss-fresh-instances", FactoryEarlyBlunderbussFreshInstances),
+            Case("factory.early-blunderbuss-special-range", FactoryEarlyBlunderbussSpecialRange),
+            Case("factory.early-blunderbuss-fixed-range-rejected", FactoryEarlyBlunderbussFixedRangeRejected),
             Case("valid.early-pistol", ValidEarlyPistol),
             Case("valid.early-blunderbuss", ValidEarlyBlunderbuss),
             Case("valid.advanced-pistol", ValidAdvancedPistol),
@@ -568,6 +571,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("ac.equal-no-write", ArmorClassEqualValuesRequireNoWrite),
             Case("ac.already-applied", ArmorClassAlreadyAppliedIsSkipped),
             Case("ac.advanced-fails-closed", ArmorClassAdvancedFirearmFailsClosed),
+            Case("ac.special-range-fails-closed", ArmorClassSpecialRangeFailsClosed),
             Case("ac.invalid-distance", ArmorClassInvalidDistanceFailsClosed),
             Case("ac.negative-distance", ArmorClassNegativeDistanceFailsClosed),
             Case("ac.infinite-distance", ArmorClassInfiniteDistanceFailsClosed),
@@ -1872,6 +1876,47 @@ namespace KingmakerGunslinger.DomainTests
                 false);
             Assertions.Equal(expected, FirearmDefinitions.CreateEarlyPistol(),
                 "Canonical early-pistol definition changed.");
+        }
+
+        private static void FactoryEarlyBlunderbussFreshInstances()
+        {
+            FirearmDefinition first = FirearmDefinitions.CreateEarlyBlunderbuss();
+            FirearmDefinition second = FirearmDefinitions.CreateEarlyBlunderbuss();
+            Assertions.False(ReferenceEquals(first, second),
+                "The canonical blunderbuss factory must return a fresh definition.");
+            Assertions.False(ReferenceEquals(first.Reload, second.Reload),
+                "The canonical blunderbuss factory must return a fresh reload profile.");
+            Assertions.Equal(first, second,
+                "Fresh canonical blunderbuss definitions must compare equal.");
+        }
+
+        private static void FactoryEarlyBlunderbussSpecialRange()
+        {
+            FirearmDefinition definition = FirearmDefinitions.CreateEarlyBlunderbuss();
+            Assertions.Equal(FirearmEra.Early, definition.Era, "Era mismatch.");
+            Assertions.Equal(FirearmKind.Blunderbuss, definition.Kind, "Kind mismatch.");
+            Assertions.Equal(1, definition.Capacity, "Capacity mismatch.");
+            Assertions.False(definition.HasFixedRangeIncrement,
+                "The authoritative blunderbuss special range must not become numeric.");
+            Assertions.Equal<int?>(null, definition.FixedRangeIncrementFeet,
+                "A special-range blunderbuss exposed an invented increment.");
+            Assertions.Equal(2, definition.MisfireValue, "Misfire mismatch.");
+            Assertions.Equal(10, definition.MisfireBurstRadiusFeet, "Burst mismatch.");
+            Assertions.Equal(ReloadActionType.FullRound, definition.Reload.BaseAction,
+                "Reload mismatch.");
+            Assertions.True(definition.IsScatter, "Blunderbuss must be scatter.");
+            Assertions.Equal(
+                "Early Blunderbuss; capacity=1; range=special; misfire=1-2; misfireBurst=10ft; reload=(FullRound; freeHand=True; roundsPerAction=1); scatter=True",
+                definition.ToString(),
+                "Special-range formatting changed.");
+        }
+
+        private static void FactoryEarlyBlunderbussFixedRangeRejected()
+        {
+            FirearmDefinition definition = FirearmDefinitions.CreateEarlyBlunderbuss();
+            Assertions.Throws<InvalidOperationException>(
+                () => { int ignored = definition.RangeIncrementFeet; },
+                "A special-range firearm must reject fixed-range access.");
         }
 
         private static void ValidEarlyMusket()
@@ -6749,6 +6794,23 @@ namespace KingmakerGunslinger.DomainTests
                 false);
             Assertions.False(decision.UsesTouchArmorClass, "Advanced-firearm penetration is outside Sprint 9.");
             Assertions.Equal("advanced-firearm-not-implemented", decision.Reason, "Advanced-firearm reason mismatch.");
+        }
+
+        private static void ArmorClassSpecialRangeFailsClosed()
+        {
+            FirearmArmorClassDecision decision = SelectArmorClass(
+                true,
+                1,
+                FirearmDefinitions.CreateEarlyBlunderbuss(),
+                2d,
+                20,
+                12,
+                20,
+                false);
+            Assertions.False(decision.UsesTouchArmorClass,
+                "A special-range firearm must retain ordinary AC until scatter is implemented.");
+            Assertions.Equal("special-range-not-implemented", decision.Reason,
+                "Special-range fail-closed reason mismatch.");
         }
 
         private static void ArmorClassInvalidDistanceFailsClosed()

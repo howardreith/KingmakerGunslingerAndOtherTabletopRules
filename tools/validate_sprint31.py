@@ -11,7 +11,7 @@ import validate_sprint30
 
 VERSION = "0.0.31"
 INFORMATIONAL_VERSION = "0.0.31-s31-early-firearm-catalog"
-TEST_COUNT = 613
+TEST_COUNT = 617
 
 
 def fail(message: str) -> None:
@@ -56,16 +56,27 @@ def validate(root: Path) -> None:
         read(root, "src/KingmakerGunslinger/Firearms/FirearmDefinitions.cs"),
         [
             "CreateEarlyPistol",
+            "CreateEarlyBlunderbuss",
             "FirearmKind.Pistol",
+            "FirearmKind.Blunderbuss",
             "ReloadActionType.Standard",
+            "ReloadActionType.FullRound",
         ],
         "Sprint 31 canonical definitions",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Firearms/FirearmDefinition.cs"),
+        ["HasFixedRangeIncrement", "FixedRangeIncrementFeet", '"special"'],
+        "Sprint 31 range vocabulary",
     )
     require_tokens(
         read(root, "tests/KingmakerGunslinger.DomainTests/Program.cs"),
         [
             'Case("factory.early-pistol-fresh-instances"',
             'Case("factory.early-pistol-canonical-equality"',
+            'Case("factory.early-blunderbuss-special-range"',
+            'Case("factory.early-blunderbuss-fixed-range-rejected"',
+            'Case("ac.special-range-fails-closed"',
         ],
         "Sprint 31 definition tests",
     )

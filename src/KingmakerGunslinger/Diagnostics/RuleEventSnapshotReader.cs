@@ -106,12 +106,16 @@ namespace KingmakerGunslinger.Diagnostics
             if (TryReadDistanceMeters(initiator, target, out distanceMeters))
             {
                 fields["distanceMeters"] = distanceMeters.ToString("0.###", CultureInfo.InvariantCulture);
-                if (marker.Definition != null)
+                if (marker.Definition != null && marker.Definition.HasFixedRangeIncrement)
                 {
                     double incrementMeters = marker.Definition.RangeIncrementFeet * MetersPerFoot;
                     fields["rangeIncrement"] = FirearmRangeMath.CalculateIncrement(
                         distanceMeters,
                         incrementMeters).ToString(CultureInfo.InvariantCulture);
+                }
+                else if (marker.Definition != null)
+                {
+                    fields["rangeIncrement"] = "special";
                 }
             }
 

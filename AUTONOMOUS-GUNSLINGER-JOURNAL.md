@@ -139,3 +139,24 @@
   contracts and registrations; retain fail-closed handling for the unresolved
   numeric blunderbuss range until the existing local contract supports its
   `special` range without an invented balance value.
+
+## 2026-08-01 special-range firearm definition checkpoint
+
+- Extended the immutable firearm definition and serialized marker vocabulary
+  to distinguish a fixed numeric increment from an authoritative `special`
+  range profile.
+- Added canonical early blunderbuss construction with capacity 1, misfire 1-2,
+  10-foot burst, full-round free-hand reload, scatter identity, and no numeric
+  range value.
+- Fixed-range access on the special profile throws; the touch-AC selector
+  retains ordinary AC with reason `special-range-not-implemented`, and combat
+  tracing records `rangeIncrement=special` without performing range math.
+- Added four focused tests. Repository validation PASS; clean Release domain
+  suite PASS 617/617; exact private-reference Release compile, build-output
+  validation, and strict package validation PASS.
+- Candidate package SHA-256:
+  `4d4e74081145a272ce1257bd0055da843b0c46ddb47427727fc07a8f92b2b664`.
+  Candidate DLL SHA-256:
+  `8493d5e3106b58ebbbff3fdc6b83972c865c934cef36c395630743f107844f15`.
+- Next action: commit this source-qualified slice, run exact-commit guarded
+  mod-load smoke, then implement the production blueprint catalog.

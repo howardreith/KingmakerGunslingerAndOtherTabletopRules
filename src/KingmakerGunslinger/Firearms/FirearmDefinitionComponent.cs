@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.Firearms
         private int m_RangeIncrementFeet;
 
         [SerializeField]
+        private bool m_HasFixedRangeIncrement;
+
+        [SerializeField]
         private int m_MisfireValue;
 
         [SerializeField]
@@ -58,7 +61,7 @@ namespace KingmakerGunslinger.Firearms
                     m_Era,
                     m_Kind,
                     m_Capacity,
-                    m_RangeIncrementFeet,
+                    m_HasFixedRangeIncrement ? (int?)m_RangeIncrementFeet : null,
                     m_MisfireValue,
                     m_MisfireBurstRadiusFeet,
                     reload,
@@ -78,7 +81,8 @@ namespace KingmakerGunslinger.Firearms
             component.m_Era = definition.Era;
             component.m_Kind = definition.Kind;
             component.m_Capacity = definition.Capacity;
-            component.m_RangeIncrementFeet = definition.RangeIncrementFeet;
+            component.m_HasFixedRangeIncrement = definition.HasFixedRangeIncrement;
+            component.m_RangeIncrementFeet = definition.FixedRangeIncrementFeet.GetValueOrDefault();
             component.m_MisfireValue = definition.MisfireValue;
             component.m_MisfireBurstRadiusFeet = definition.MisfireBurstRadiusFeet;
             component.m_BaseReloadAction = definition.Reload.BaseAction;

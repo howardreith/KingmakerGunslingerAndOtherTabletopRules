@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.Firearms
         private readonly FirearmEra _era;
         private readonly FirearmKind _kind;
         private readonly int _capacity;
-        private readonly int _rangeIncrementFeet;
+        private readonly int? _fixedRangeIncrementFeet;
         private readonly int _misfireValue;
         private readonly int _misfireBurstRadiusFeet;
         private readonly ReloadProfile _reload;
@@ -36,11 +36,32 @@ namespace KingmakerGunslinger.Firearms
             int misfireBurstRadiusFeet,
             ReloadProfile reload,
             bool isScatter)
+            : this(
+                era,
+                kind,
+                capacity,
+                (int?)rangeIncrementFeet,
+                misfireValue,
+                misfireBurstRadiusFeet,
+                reload,
+                isScatter)
+        {
+        }
+
+        internal FirearmDefinition(
+            FirearmEra era,
+            FirearmKind kind,
+            int capacity,
+            int? fixedRangeIncrementFeet,
+            int misfireValue,
+            int misfireBurstRadiusFeet,
+            ReloadProfile reload,
+            bool isScatter)
         {
             ValidateEnum(era, "era");
             ValidateEnum(kind, "kind");
             ValidateCapacity(capacity);
-            ValidateRangeIncrement(rangeIncrementFeet);
+            ValidateRangeIncrement(kind, isScatter, fixedRangeIncrementFeet);
             ValidateMisfireValue(misfireValue);
             ValidateMisfireBurstRadius(misfireBurstRadiusFeet);
 
@@ -70,7 +91,7 @@ namespace KingmakerGunslinger.Firearms
             _era = era;
             _kind = kind;
             _capacity = capacity;
-            _rangeIncrementFeet = rangeIncrementFeet;
+            _fixedRangeIncrementFeet = fixedRangeIncrementFeet;
             _misfireValue = misfireValue;
             _misfireBurstRadiusFeet = misfireBurstRadiusFeet;
             _reload = reload;
@@ -94,7 +115,26 @@ namespace KingmakerGunslinger.Firearms
 
         internal int RangeIncrementFeet
         {
-            get { return _rangeIncrementFeet; }
+            get
+            {
+                if (!_fixedRangeIncrementFeet.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "This firearm has a special range profile rather than a fixed range increment.");
+                }
+
+                return _fixedRangeIncrementFeet.Value;
+            }
+        }
+
+        internal bool HasFixedRangeIncrement
+        {
+            get { return _fixedRangeIncrementFeet.HasValue; }
+        }
+
+        internal int? FixedRangeIncrementFeet
+        {
+            get { return _fixedRangeIncrementFeet; }
         }
 
         internal int MisfireValue
@@ -123,7 +163,7 @@ namespace KingmakerGunslinger.Firearms
                 _era == other._era &&
                 _kind == other._kind &&
                 _capacity == other._capacity &&
-                _rangeIncrementFeet == other._rangeIncrementFeet &&
+                _fixedRangeIncrementFeet == other._fixedRangeIncrementFeet &&
                 _misfireValue == other._misfireValue &&
                 _misfireBurstRadiusFeet == other._misfireBurstRadiusFeet &&
                 Equals(_reload, other._reload) &&
@@ -143,7 +183,7 @@ namespace KingmakerGunslinger.Firearms
                 hash = (hash * 31) + (int)_era;
                 hash = (hash * 31) + (int)_kind;
                 hash = (hash * 31) + _capacity;
-                hash = (hash * 31) + _rangeIncrementFeet;
+                hash = (hash * 31) + _fixedRangeIncrementFeet.GetHashCode();
                 hash = (hash * 31) + _misfireValue;
                 hash = (hash * 31) + _misfireBurstRadiusFeet;
                 hash = (hash * 31) + _reload.GetHashCode();
@@ -156,11 +196,13 @@ namespace KingmakerGunslinger.Firearms
         {
             return string.Format(
                 CultureInfo.InvariantCulture,
-                "{0} {1}; capacity={2}; range={3}ft; misfire=1-{4}; misfireBurst={5}ft; reload=({6}); scatter={7}",
+                "{0} {1}; capacity={2}; range={3}; misfire=1-{4}; misfireBurst={5}ft; reload=({6}); scatter={7}",
                 _era,
                 _kind,
                 _capacity,
-                _rangeIncrementFeet,
+                _fixedRangeIncrementFeet.HasValue
+                    ? _fixedRangeIncrementFeet.Value.ToString(CultureInfo.InvariantCulture) + "ft"
+                    : "special",
                 _misfireValue,
                 _misfireBurstRadiusFeet,
                 _reload,
@@ -219,8 +261,24 @@ namespace KingmakerGunslinger.Firearms
             }
         }
 
-        private static void ValidateRangeIncrement(int rangeIncrementFeet)
+        private static void ValidateRangeIncrement(
+            FirearmKind kind,
+            bool isScatter,
+            int? fixedRangeIncrementFeet)
         {
+            if (!fixedRangeIncrementFeet.HasValue)
+            {
+                if (kind != FirearmKind.Blunderbuss || !isScatter)
+                {
+                    throw new ArgumentException(
+                        "Only a scatter blunderbuss may use a special range profile.",
+                        "fixedRangeIncrementFeet");
+                }
+
+                return;
+            }
+
+            int rangeIncrementFeet = fixedRangeIncrementFeet.Value;
             if (rangeIncrementFeet < MinimumRangeIncrementFeet ||
                 rangeIncrementFeet > MaximumRangeIncrementFeet)
             {

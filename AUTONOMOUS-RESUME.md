@@ -61,10 +61,12 @@ isolation, and observed no save write.
 
 ## Next action
 
-Implement stable production pistol/musket/blunderbuss blueprint contracts and
-registrations with focused definition, marker, stable-ID, presentation, and
-generic-action tests. Do not invent a numeric blunderbuss range: the
-authoritative table says `special`, and scatter remains Sprint 32.
+Commit the source-qualified special-range definition slice and run guarded
+exact-commit mod-load smoke. Then implement stable production
+pistol/musket/blunderbuss blueprint contracts and registrations with focused
+marker, stable-ID, presentation, mechanical-field, and generic-action tests.
+The blunderbuss definition now records `special` without a numeric increment;
+scatter execution remains Sprint 32.
 
 ## Safety boundaries
 

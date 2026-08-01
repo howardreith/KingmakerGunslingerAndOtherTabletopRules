@@ -42,6 +42,11 @@ namespace KingmakerGunslinger.Rules
                 return Ordinary(request, 0, "advanced-firearm-not-implemented");
             }
 
+            if (!request.Definition.HasFixedRangeIncrement)
+            {
+                return Ordinary(request, 0, "special-range-not-implemented");
+            }
+
             if (double.IsNaN(request.DistanceMeters) ||
                 double.IsInfinity(request.DistanceMeters) ||
                 request.DistanceMeters < 0d)
