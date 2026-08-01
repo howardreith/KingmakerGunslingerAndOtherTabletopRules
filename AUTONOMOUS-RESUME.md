@@ -118,11 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Checkpoint the qualified exact preview class-data extension. Then investigate
-the native preview refresh/commit boundary that materializes the queued
-proficiency aggregate; `Progression.Features` was empty before that boundary.
-Do not add starting inventory until facts are observed; retain cancel/dispose
-and unchanged player/global-unit snapshots.
+Checkpoint the qualified exact preview proficiency facts. Then invoke
+`AddStartingInventory` only on the disposable refreshed preview and observe
+exact Early Pistol, black powder, and lead-ball identities and counts. Do not
+call `Commit`; retain cancel/dispose and unchanged player/global-unit snapshots.
 
 ## Safety boundaries
 

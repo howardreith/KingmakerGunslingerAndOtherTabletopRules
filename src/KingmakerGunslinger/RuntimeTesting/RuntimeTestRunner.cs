@@ -1875,6 +1875,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData sourceEntity = null;
             Kingmaker.UnitLogic.UnitDescriptor sourceDescriptor = null;
             Kingmaker.UnitLogic.UnitDescriptor preview = null;
+            Kingmaker.UnitLogic.UnitDescriptor refreshedPreview = null;
             object controller = null;
             bool selected = false;
             int sourceBefore = -1;
@@ -1888,6 +1889,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string fortitude = "";
             string reflex = "";
             string will = "";
+            string featureStoreContract = "";
+            string refreshedFeatures = "";
             bool cleaned = false;
             try
             {
@@ -1938,6 +1941,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReadExactMember(controller, "LevelUpActions")).Length;
                 previewAfter = preview.Progression.GetClassLevel(gunslinger);
                 sourceAfter = sourceDescriptor.Progression.GetClassLevel(gunslinger);
+                MethodInfo updatePreview = controllerType.GetMethod("UpdatePreview",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (updatePreview == null)
+                    throw new InvalidOperationException("Exact UpdatePreview method is unavailable.");
+                updatePreview.Invoke(controller, null);
+                refreshedPreview = ReadExactMember(controller, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                if (refreshedPreview == null || refreshedPreview.Progression == null)
+                    throw new InvalidOperationException(
+                        "Refreshed controller preview/progression is unavailable.");
+                object featureStore = refreshedPreview.Progression.Features;
+                if (featureStore == null)
+                    throw new InvalidOperationException(
+                        "Refreshed preview feature store is unavailable.");
+                featureStoreContract = DescribeCreationType(featureStore.GetType());
+                PropertyInfo enumerableProperty = featureStore.GetType().GetProperty(
+                    "Enumerable", BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                if (enumerableProperty == null)
+                    throw new InvalidOperationException(
+                        "Exact declared FeatureCollection.Enumerable is unavailable.");
+                object enumerableFeatures = enumerableProperty.GetValue(featureStore, null);
+                refreshedFeatures = string.Join(",", SnapshotReferences(
+                    enumerableFeatures).Select(value =>
+                    {
+                        BlueprintScriptableObject blueprint =
+                            ReadExactMember(value, "Blueprint") as BlueprintScriptableObject;
+                        return blueprint == null ? "<missing>" : blueprint.AssetGuid;
+                    }).OrderBy(value => value, StringComparer.Ordinal).ToArray());
                 Kingmaker.UnitLogic.ClassData classData =
                     preview.Progression.GetClassData(gunslinger);
                 if (classData == null || !ReferenceEquals(classData.CharacterClass, gunslinger))
@@ -1983,6 +2015,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "ff4662bde9e75f145853417313842751" && will ==
                         "dc0c7c1aba755c54f96c089cdf7d14a3",
                     "ClassData exact progression identities"),
+                Assertion("preview-feature-store-contract", "exact runtime feature-store metadata",
+                    featureStoreContract,
+                    refreshedPreview != null &&
+                        refreshedPreview.Progression.GetClassLevel(gunslinger) == 1 &&
+                        !string.IsNullOrEmpty(featureStoreContract) &&
+                        sourceDescriptor.Progression.GetClassLevel(gunslinger) == 0,
+                    "single exact Progression.Features receiver; no feature-store method invocation"),
+                Assertion("preview-proficiency-aggregate", "one exact proficiency aggregate feature",
+                    "features=" + refreshedFeatures,
+                    new[]
+                    {
+                        "b9b6769f8a654a58a6bd55e10801ea22",
+                        "e70ecf1ed95ca2f40b754f1adb22bbdd",
+                        "203992ef5b35c864390b4e4a1e200629",
+                        "6d3728d4e9c9898458fe5e9532951132",
+                        "5148f69223044799800b65732b6cabea"
+                    }.All(required => refreshedFeatures.Split(new[] { ',' },
+                        StringSplitOptions.RemoveEmptyEntries).Count(value =>
+                            value == required) == 1),
+                    "FeatureCollection.Enumerable and Feature.Blueprint identities"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "Cancel plus source preview-entity disposal and reference snapshots"),

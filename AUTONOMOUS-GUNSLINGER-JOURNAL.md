@@ -729,3 +729,25 @@
 - Next action: checkpoint exact class data, then observe the native preview
   refresh/commit boundary required to materialize feature facts before adding
   starting inventory.
+
+## 2026-08-01 Sprint 34 exact preview proficiency facts
+
+- Two application theories appeared to show an empty feature store. Narrow
+  metadata inspection established that `Progression.Features` is a native
+  `FeatureCollection`; contents are exposed by its declared `Enumerable`
+  property rather than by directly enumerating the collection.
+- Exact declared-property observation proved one production aggregate
+  `b9b6769f8a654a58a6bd55e10801ea22` and one each of simple weapons
+  `e70ecf1ed95ca2f40b754f1adb22bbdd`, martial weapons
+  `203992ef5b35c864390b4e4a1e200629`, light armor
+  `6d3728d4e9c9898458fe5e9532951132`, and firearm proficiency
+  `5148f69223044799800b65732b6cabea` on the disposable level-one preview.
+- Eight focused preview checks, repository validation, 691/691 tests, clean
+  Release, and strict packaging passed. Candidate package/DLL SHA-256 are
+  `8cc336312e067eb125673cc840992318142f562b821498cf604ebba1c21047e7` /
+  `c27521a85b2f233da33b14aef83bd52c5b26ae0497bf772c6c1a999db7e99190`.
+- Fresh-process PASS run IDs are
+  `20260801T1646395750915Z-05d1dda2cd1d4306aa07f19f0ff40e12` and
+  `20260801T1647528331254Z-26e8105b5534435282cfc6c83b9411ed`.
+- Next action: checkpoint the exact facts, then invoke `AddStartingInventory`
+  only on the disposable refreshed preview and observe exact item identities.
