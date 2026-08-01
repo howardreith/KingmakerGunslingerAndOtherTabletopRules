@@ -8,16 +8,26 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `f79b4a2` (runtime-qualified Dodge drop-prone source checkpoint).
+- Audited HEAD: `fb4fd51` (runtime-qualified Quick Clear source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 36 core level-one deeds; Quick Clear is
-  source-qualified and awaits exact-commit guarded runtime qualification.
+- Current checkpoint: Sprint 36 level-one deed bundle is runtime-qualified
+  except the documented Dodge movement alternative; select the next incomplete
+  fidelity row.
 - Version: `0.0.36`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Quick Clear commit `fb4fd51` passed mod load at
+  `20260801T2119244427175Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2120422933376Z-disposable-gunslinger-quick-clear` and
+  `20260801T2122029596275Z-disposable-gunslinger-quick-clear` proved standard
+  no-spend repair, move one-grit repair, zero-grit atomic rejection, zero
+  faults, and exact cleanup. Package/DLL SHA-256 are
+  `0443b50c7af34857f5ae6eaf7fa491eaff52bae2b38fc133bec7d36d6f557ce4` /
+  `e1c3d9273c73b0e1722922896128c60d21f035558b53cbb9f6fb43e9c792f746`.
 
 - Gunslinger's Dodge source commit `f79b4a2` passed mod load at
   `20260801T2059139120474Z-mod-load-smoke`. Independent PASS runs
@@ -306,10 +316,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the Quick Clear source-qualified checkpoint, then run exact mod load and
-two independent `disposable-gunslinger-quick-clear` fresh-process runs. Preserve
-the Dodge movement alternative as a documented pending adaptation until
-deterministic destination selection is safe. Broad
+Commit the Quick Clear runtime evidence and select the next incomplete fidelity
+row. Preserve the Dodge movement alternative as a documented pending adaptation
+until deterministic destination selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

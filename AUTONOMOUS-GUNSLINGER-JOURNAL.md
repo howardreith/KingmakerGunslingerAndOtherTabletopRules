@@ -1287,3 +1287,19 @@
   `34fd2cd6acdc105f378bed9ab276acb3b2771a382fbbde3348b05ca239fb6b41`.
 - Next action: commit the reconstructable source checkpoint, require exact mod
   load, and run two independent fresh-process Quick Clear PASS runs.
+
+### Quick Clear runtime qualification
+
+- Source commit `fb4fd51` passed exact mod load at
+  `20260801T2119244427175Z-mod-load-smoke`.
+- Independent fresh-process PASS runs were
+  `20260801T2120422933376Z-disposable-gunslinger-quick-clear` and
+  `20260801T2122029596275Z-disposable-gunslinger-quick-clear`.
+- Both observed standard grit two unchanged and Broken-to-Normal; move grit two
+  to one and Broken-to-Normal; zero-grit rejection remaining Broken; applied
+  two, rejected one, faults zero; and exact detached cleanup.
+- Exact package/DLL SHA-256 are
+  `0443b50c7af34857f5ae6eaf7fa491eaff52bae2b38fc133bec7d36d6f557ce4` /
+  `e1c3d9273c73b0e1722922896128c60d21f035558b53cbb9f6fb43e9c792f746`.
+- Quick Clear is runtime-qualified. Continue immediately to the next incomplete
+  fidelity row; Sprint 36 is not a stopping condition.
