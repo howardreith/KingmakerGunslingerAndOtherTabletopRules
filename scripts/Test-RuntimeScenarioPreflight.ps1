@@ -29,7 +29,8 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
-    'observe-working-save-entry-action'
+    'observe-working-save-entry-action',
+    'observe-working-save-selection-load-action'
 )
 $catalog = Get-Content -LiteralPath $catalogPath -Raw
 $csharpNames = @([regex]::Matches($catalog, '"([a-z][a-z-]+)"') |

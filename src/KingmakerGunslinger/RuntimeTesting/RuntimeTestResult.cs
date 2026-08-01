@@ -80,6 +80,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("workingSaveEntryActionObservation", Order = 30,
             NullValueHandling = NullValueHandling.Ignore)]
         public WorkingSaveSmokeEvidence WorkingSaveEntryActionObservation { get; set; }
+        [JsonProperty("workingSaveSelectionLoadActionObservation", Order = 31,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public WorkingSaveSmokeEvidence WorkingSaveSelectionLoadActionObservation { get; set; }
         [JsonProperty("evidenceDirectory", Order = 31)]
         public string EvidenceDirectory { get; set; }
     }
@@ -121,6 +124,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("listenerMethod", Order = 33)] public string ListenerMethod { get; set; }
         [JsonProperty("loadEntryReceiverIdentity", Order = 34)] public string LoadEntryReceiverIdentity { get; set; }
         [JsonProperty("probeInvokedEntryAction", Order = 35)] public bool ProbeInvokedEntryAction { get; set; }
+        [JsonProperty("ownerObjectIdentity", Order = 36)] public string OwnerObjectIdentity { get; set; }
+        [JsonProperty("listObjectIdentity", Order = 37)] public string ListObjectIdentity { get; set; }
+        [JsonProperty("scopedActionCandidates", Order = 38)] public List<string> ScopedActionCandidates { get; set; }
+        [JsonProperty("observedScopedInvocations", Order = 39)] public List<string> ObservedScopedInvocations { get; set; }
+        [JsonProperty("selectedSaveStorage", Order = 40)] public List<string> SelectedSaveStorage { get; set; }
+        [JsonProperty("selectedWorkingStateObserved", Order = 41)] public bool SelectedWorkingStateObserved { get; set; }
+        [JsonProperty("finalLoadActionCount", Order = 42)] public int FinalLoadActionCount { get; set; }
+        [JsonProperty("immediateLoadCaller", Order = 43)] public string ImmediateLoadCaller { get; set; }
+        [JsonProperty("immediateLoadCallerType", Order = 44)] public string ImmediateLoadCallerType { get; set; }
+        [JsonProperty("loadCallerChain", Order = 45)] public List<string> LoadCallerChain { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence

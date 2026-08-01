@@ -218,7 +218,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke;
             bool workingEntryObservation = request.Scenario ==
-                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
             bool catalogScenario = request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider ||

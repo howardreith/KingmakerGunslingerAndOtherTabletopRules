@@ -1,0 +1,17 @@
+{
+  "sourceRun": "20260801T0044287441027Z-observe-working-save-entry-action",
+  "status": "AMBIGUOUS",
+  "stage": "post-load-fingerprint",
+  "descriptorReferenceCorrelated": true,
+  "loadEntryInvocationCount": 1,
+  "completionCallbackObserved": true,
+  "loadingBegan": true,
+  "loadingCompleted": true,
+  "stableFingerprint": true,
+  "entryCandidateCount": 1,
+  "entryActionCandidateCount": 0,
+  "humanActionInvocationCount": 0,
+  "listenerInvocationCount": 0,
+  "saveWritingApiObserved": false,
+  "finalInvariant": "entry-action-correlation"
+}

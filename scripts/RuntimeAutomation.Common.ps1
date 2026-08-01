@@ -44,6 +44,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'observe-working-save-selection-load-action' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $true; ReadinessBehavior = 'human-working-save-selection-load-action'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
 }
 $script:KmgRuntimeScenarios = @($script:KmgRuntimeScenarioMetadata.Keys)
 $script:KmgSteamAppId = 640820

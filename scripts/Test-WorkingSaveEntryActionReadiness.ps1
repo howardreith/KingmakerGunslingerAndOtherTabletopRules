@@ -24,7 +24,8 @@ $checks = [ordered]@{
         $runner.IndexOf('_workingStartupStage = "observer-armed"') -lt
             $runner.IndexOf('? "working-entry-ready"')
     'stage-b-does-not-require-load-entry' = $scenario.Contains(
-        '_entryActionCandidates <= 1 && _loadEntry != null')
+        '_observeSelectionLoadAction || _entryActionCandidates <= 1') -and
+        $scenario.Contains('_loadEntry != null')
     'banner-follows-marker-validation' = $orchestrator.IndexOf(
         'Test-KmgRuntimeReadyMarker') -lt $orchestrator.IndexOf(
         'CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW')

@@ -67,7 +67,8 @@ $checks = [ordered]@{
         $scenario.IndexOf('Transition("working-entry-click"') -lt
             $scenario.IndexOf('if (_stage == "working-entry-click" && _loadEntryInvocations == 1)')
     'readiness-allows-post-click-action-proof' =
-        $scenario.Contains('_entryActionCandidates <= 1 && _loadEntry != null') -and
+        $scenario.Contains('_observeSelectionLoadAction || _entryActionCandidates <= 1') -and
+        $scenario.Contains('_loadEntry != null') -and
         $runner.Contains('RuntimeTestStatuses.Ambiguous') -and
         $runner.Contains('"entry-action-correlation"')
     'readiness-marker-save-identity' =

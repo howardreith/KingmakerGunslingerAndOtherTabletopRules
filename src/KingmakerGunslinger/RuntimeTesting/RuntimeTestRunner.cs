@@ -224,6 +224,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -259,7 +260,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction)
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction)
                 {
                     RunWorkingSaveSmoke();
                     return;
@@ -270,7 +273,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction) &&
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction) &&
                     _workingReadyWritten && _workingSaveSmoke != null)
                     CompletePostReadinessError(exception);
                 else
@@ -289,7 +294,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction);
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
@@ -316,7 +325,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             bool supervisedEntry = _request.Scenario ==
-                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
             if (supervisedEntry && _workingSaveSmoke.MainMenuReady &&
                 _workingStartupStage != "observer-armed")
             {
@@ -401,6 +412,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return;
             }
             if (supervisedEntry &&
+                !_workingSaveSmoke.SelectionLoadObservation &&
                 (_workingSaveSmoke.EntryCandidateCount > 1 ||
                  _workingSaveSmoke.EntryActionCandidateCount > 1))
             {
@@ -614,7 +626,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(status, assertions, null);
             bool supervisedEntry = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
-            if (supervisedEntry)
+            bool selectionLoadObservation = _request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
+            if (selectionLoadObservation)
+            {
+                result.WorkingSaveSelectionLoadActionObservation = evidence;
+                assertions.Add(Assertion("unique-working-slot",
+                    "one exact object-reference-correlated SaveSlot",
+                    "entries=" + evidence.EntryCandidateCount,
+                    evidence.EntryCandidateCount == 1,
+                    "exact captured working SaveInfo reference"));
+                assertions.Add(Assertion("selected-working-state",
+                    "exact working SaveInfo in selected-save storage",
+                    evidence.SelectedWorkingStateObserved ? "correlated" : "not-correlated",
+                    evidence.SelectedWorkingStateObserved,
+                    "field reference identity on exact scoped owner"));
+                assertions.Add(Assertion("unique-final-load-action",
+                    "one exact caller into MainMenu.LoadGame",
+                    "count=" + evidence.FinalLoadActionCount + ";caller=" +
+                        evidence.ImmediateLoadCaller,
+                    evidence.FinalLoadActionCount == 1 &&
+                        !string.IsNullOrWhiteSpace(evidence.ImmediateLoadCaller),
+                    "managed caller chain and scoped receiver identity"));
+                assertions.Add(Assertion("visible-text-not-identity",
+                    "no text-only correlation", "object-reference and receiver identity",
+                    true, "labels are supporting evidence only"));
+                assertions.Add(Assertion("observer-non-initiating",
+                    "false", evidence.ProbeInvokedEntryAction.ToString(),
+                    !evidence.ProbeInvokedEntryAction,
+                    "observer invokes neither selection nor loading"));
+            }
+            else if (supervisedEntry)
             {
                 result.WorkingSaveEntryActionObservation = evidence;
                 assertions.Add(Assertion("unique-working-entry",

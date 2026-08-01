@@ -102,6 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _sealed;
         private bool _buttonResolutionAttempted;
         private readonly bool _observeEntryAction;
+        private readonly bool _observeSelectionLoadAction;
         private Button _entryAction;
         private UnityEvent _entryUnityEvent;
         private Component _entryOwner;
@@ -113,6 +114,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private object _listenerTarget;
         private MethodInfo _listenerMethod;
         private object _observedLoadReceiver;
+        private readonly List<object> _scopedReceivers = new List<object>();
+        private readonly List<MethodInfo> _scopedActionMethods = new List<MethodInfo>();
+        private readonly List<string> _scopedActionCandidates = new List<string>();
+        private readonly List<string> _observedScopedInvocations = new List<string>();
+        private readonly List<string> _loadCallerChain = new List<string>();
+        private readonly List<string> _selectedSaveStorage = new List<string>();
+        private string _immediateLoadCaller = "";
+        private string _immediateLoadCallerType = "";
+        private string _ownerObjectIdentity = "";
+        private string _listObjectIdentity = "";
+        private bool _selectedWorkingStateObserved;
+        private int _finalLoadActionCount;
         private bool _baselineLoadObserved;
         private bool _otherLoadObserved;
         private Exception _exception;
@@ -120,7 +133,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal WorkingSaveSmokeScenario(ModContext context, Stopwatch elapsed,
             string runId, Action<SaveLoadObservationEvent> sink,
-            bool observeEntryAction = false)
+            bool observeEntryAction = false,
+            bool observeSelectionLoadAction = false)
         {
             _context = context;
             _elapsed = elapsed;
@@ -128,6 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _sink = sink;
             _gameThreadId = Thread.CurrentThread.ManagedThreadId;
             _observeEntryAction = observeEntryAction;
+            _observeSelectionLoadAction = observeSelectionLoadAction;
             _stageStarted = elapsed.ElapsedMilliseconds;
         }
 
@@ -143,10 +158,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _completionCallback && _stableSamples >= 2 &&
                     _descriptorCorrelated && !_writeObserved && !_wrongThread &&
                     (!_observeEntryAction ||
+                     (_observeSelectionLoadAction
+                         ? (_entryCandidates == 1 &&
+                            _selectedWorkingStateObserved &&
+                            _finalLoadActionCount == 1 &&
+                            _loadEntryInvocations == 1 &&
+                            _loadCallerChain.Count != 0)
+                         :
                      (_entryCandidates == 1 && _entryActionCandidates == 1 &&
                       _humanActionInvocations == 1 &&
                       _listenerInvocations == 1 &&
-                      _loadEntryInvocations == 1));
+                      _loadEntryInvocations == 1)));
             }
         }
         internal bool ObservationComplete
@@ -158,6 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
         internal bool WriteObserved { get { return _writeObserved; } }
+        internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
         internal Exception ScenarioException { get { return _exception; } }
         internal string LastCompletedStage { get { return _lastCompletedStage; } }
         internal int WorkingCount { get { return _workingCount; } }
@@ -183,7 +206,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _observeEntryAction && _stage == "working-entry-click" &&
                     _workingCount == 1 && _baselineCount == 1 &&
                     _catalogComplete && _entryCandidates <= 1 &&
-                    _entryActionCandidates <= 1 && _loadEntry != null;
+                    (_observeSelectionLoadAction || _entryActionCandidates <= 1) &&
+                    _loadEntry != null;
             }
         }
         internal List<string> HookIdentifiers
@@ -312,8 +336,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "working-entry-readiness")
             {
-                ResolveWorkingEntryAction();
-                if (_entryCandidates <= 1 && _entryActionCandidates <= 1)
+                if (_observeSelectionLoadAction)
+                    ResolveWorkingSelectionLoadActions();
+                else ResolveWorkingEntryAction();
+                if (_entryCandidates <= 1 &&
+                    (_observeSelectionLoadAction || _entryActionCandidates <= 1))
                     Transition("working-entry-click",
                         "pre-click descriptor identity proven and exact LoadGame observation armed; entry action correlation may complete after the human click");
                 return;
@@ -407,7 +434,186 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ListenerMethod = FormatSignature(_listenerMethod),
                 LoadEntryReceiverIdentity = ObjectIdentity(_observedLoadReceiver),
                 ProbeInvokedEntryAction = false
+                , OwnerObjectIdentity = _ownerObjectIdentity
+                , ListObjectIdentity = _listObjectIdentity
+                , ScopedActionCandidates = new List<string>(_scopedActionCandidates)
+                , ObservedScopedInvocations = new List<string>(_observedScopedInvocations)
+                , SelectedSaveStorage = new List<string>(_selectedSaveStorage)
+                , SelectedWorkingStateObserved = _selectedWorkingStateObserved
+                , FinalLoadActionCount = _finalLoadActionCount
+                , ImmediateLoadCaller = _immediateLoadCaller
+                , ImmediateLoadCallerType = _immediateLoadCallerType
+                , LoadCallerChain = new List<string>(_loadCallerChain)
             };
+        }
+
+        private void ResolveWorkingSelectionLoadActions()
+        {
+            var entries = Resources.FindObjectsOfTypeAll(typeof(Component))
+                .OfType<Component>()
+                .Where(component => component != null &&
+                    component.gameObject.activeInHierarchy &&
+                    ObjectContainsReference(component, _workingDescriptor))
+                .ToList();
+            entries = UniqueComponents(entries);
+            _entryCandidates = entries.Count;
+            if (entries.Count != 1) return;
+            _entryOwner = entries[0];
+
+            Transform root = _entryOwner.transform;
+            while (root.parent != null)
+            {
+                Component[] components = root.gameObject.GetComponents<Component>();
+                if (components.Any(component => component != null &&
+                    component.GetType().FullName == "Kingmaker.UI.SaveLoadWindow.SaveLoadWindow"))
+                    break;
+                root = root.parent;
+            }
+            foreach (Component component in root.gameObject.GetComponentsInChildren<Component>(true))
+            {
+                if (component == null) continue;
+                string typeName = component.GetType().FullName;
+                bool relevant = ReferenceEquals(component, _entryOwner) ||
+                    typeName == CatalogType ||
+                    typeName == "Kingmaker.UI.SaveLoadWindow.SaveLoadWindow" ||
+                    component is Selectable ||
+                    typeName == "UnityEngine.EventSystems.EventTrigger" ||
+                    ImplementsUiActionHandler(component.GetType());
+                if (!relevant) continue;
+                AddUniqueReference(_scopedReceivers, component);
+                if (typeName == CatalogType) _listObjectIdentity = ObjectIdentity(component);
+                if (typeName == "Kingmaker.UI.SaveLoadWindow.SaveLoadWindow")
+                    _ownerObjectIdentity = ObjectIdentity(component);
+                AddCandidateMethods(component);
+            }
+            foreach (Button button in root.gameObject.GetComponentsInChildren<Button>(true))
+            {
+                if (button == null || !button.gameObject.activeInHierarchy ||
+                    !button.interactable) continue;
+                foreach (Delegate listener in RuntimeDelegates(button.onClick))
+                {
+                    AddUniqueReference(_scopedReceivers, listener.Target);
+                    AddCandidateMethod(listener.Method,
+                        "button=" + ObjectIdentity(button) + ";event=" +
+                        ObjectIdentity(button.onClick) + ";target=" +
+                        ObjectIdentity(listener.Target));
+                }
+            }
+            _entryActionCandidates = _scopedActionCandidates.Count;
+            CaptureSelectedSaveStorage("readiness");
+            Add("working-selection-load-observer-ready", null, null,
+                "entry=" + ObjectIdentity(_entryOwner) + ";owner=" +
+                _ownerObjectIdentity + ";list=" + _listObjectIdentity +
+                ";candidates=" + _entryActionCandidates);
+        }
+
+        private void AddCandidateMethods(object receiver)
+        {
+            foreach (MethodInfo method in receiver.GetType().GetMethods(AllInstance))
+            {
+                string name = method.Name;
+                bool namedAction = name.IndexOf("Select", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    name.IndexOf("Click", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    name.IndexOf("Submit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    name.IndexOf("Load", StringComparison.OrdinalIgnoreCase) >= 0;
+                bool interfaceAction = IsUiActionMethod(receiver.GetType(), method);
+                if (!namedAction && !interfaceAction) continue;
+                if (method.IsAbstract || method.ContainsGenericParameters) continue;
+                AddCandidateMethod(method, "receiver=" + ObjectIdentity(receiver));
+            }
+        }
+
+        private static bool ImplementsUiActionHandler(Type type)
+        {
+            return type.GetInterfaces().Any(value => IsUiActionInterface(value.FullName));
+        }
+
+        private static bool IsUiActionMethod(Type type, MethodInfo method)
+        {
+            foreach (Type contract in type.GetInterfaces())
+            {
+                if (!IsUiActionInterface(contract.FullName)) continue;
+                InterfaceMapping map;
+                try { map = type.GetInterfaceMap(contract); } catch { continue; }
+                if (map.TargetMethods.Any(value => value == method)) return true;
+            }
+            return false;
+        }
+
+        private static bool IsUiActionInterface(string name)
+        {
+            return name == "UnityEngine.EventSystems.IPointerClickHandler" ||
+                name == "UnityEngine.EventSystems.ISubmitHandler" ||
+                name == "UnityEngine.EventSystems.ISelectHandler" ||
+                name == "UnityEngine.EventSystems.IDeselectHandler" ||
+                name == "UnityEngine.EventSystems.IPointerDownHandler" ||
+                name == "UnityEngine.EventSystems.IPointerUpHandler";
+        }
+
+        private void AddCandidateMethod(MethodInfo method, string source)
+        {
+            if (method == null || method.DeclaringType == typeof(object)) return;
+            if (!_scopedActionMethods.Contains(method))
+            {
+                _scopedActionMethods.Add(method);
+                if (!_patched.Contains(method))
+                    Patch(method, typeof(WorkingSaveSmokeScenario).GetMethod(
+                        "Prefix", BindingFlags.Static | BindingFlags.NonPublic), null);
+            }
+            string candidate = FormatSignature(method) + ";" + source;
+            if (!_scopedActionCandidates.Contains(candidate))
+                _scopedActionCandidates.Add(candidate);
+        }
+
+        private static void AddUniqueReference(List<object> values, object value)
+        {
+            if (value != null && !values.Any(item => ReferenceEquals(item, value)))
+                values.Add(value);
+        }
+
+        private void CaptureSelectedSaveStorage(string phase)
+        {
+            foreach (object receiver in _scopedReceivers.ToArray())
+            {
+                if (receiver == null) continue;
+                if (ReferenceEquals(receiver, _entryOwner)) continue;
+                for (Type type = receiver.GetType(); type != null; type = type.BaseType)
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsValueType || field.FieldType == typeof(string))
+                        continue;
+                    object value;
+                    try { value = field.GetValue(receiver); } catch { continue; }
+                    if (!ReferenceEquals(value, _workingDescriptor)) continue;
+                    _selectedWorkingStateObserved = true;
+                    string storage = phase + ";owner=" + ObjectIdentity(receiver) +
+                        ";field=" + field.DeclaringType.FullName + "." + field.Name +
+                        ";descriptor=" + ObjectIdentity(value);
+                    if (!_selectedSaveStorage.Contains(storage))
+                        _selectedSaveStorage.Add(storage);
+                }
+                for (Type propertyType = receiver.GetType(); propertyType != null;
+                    propertyType = propertyType.BaseType)
+                foreach (PropertyInfo property in propertyType.GetProperties(
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (!property.CanRead || property.GetIndexParameters().Length != 0 ||
+                        property.PropertyType.IsValueType ||
+                        property.PropertyType == typeof(string)) continue;
+                    object value;
+                    try { value = property.GetValue(receiver, null); } catch { continue; }
+                    if (!ReferenceEquals(value, _workingDescriptor)) continue;
+                    _selectedWorkingStateObserved = true;
+                    string storage = phase + ";owner=" + ObjectIdentity(receiver) +
+                        ";property=" + property.DeclaringType.FullName + "." +
+                        property.Name + ";descriptor=" + ObjectIdentity(value);
+                    if (!_selectedSaveStorage.Contains(storage))
+                        _selectedSaveStorage.Add(storage);
+                }
+            }
         }
 
         private void ResolveWorkingEntryAction()
@@ -822,6 +1028,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ContainsReference(_catalogObject, _workingDescriptor);
                 _observedLoadReceiver = receiver;
                 if (_observeEntryAction) _loadEntryInvocations++;
+                if (_observeSelectionLoadAction)
+                {
+                    CaptureSelectedSaveStorage("load-entry");
+                    CaptureLoadCallerChain();
+                }
                 Add("load-entry-enter", method, args,
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
                 if (_observeEntryAction && _descriptorCorrelated &&
@@ -851,12 +1062,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "count=" + _listenerInvocations + ";target=" +
                     ObjectIdentity(receiver));
             }
+            else if (_observeSelectionLoadAction &&
+                _scopedActionMethods.Contains(method as MethodInfo) &&
+                _scopedReceivers.Any(value => ReferenceEquals(value, receiver)))
+            {
+                string invocation = FormatSignature(method) + ";receiver=" +
+                    ObjectIdentity(receiver) + ";sequence=" +
+                    (_observedScopedInvocations.Count + 1);
+                _observedScopedInvocations.Add(invocation);
+                CaptureSelectedSaveStorage("before-action");
+                Add("scoped-ui-action-enter", method, args, invocation);
+            }
+            else if (_observeSelectionLoadAction &&
+                _scopedActionMethods.Contains(method as MethodInfo))
+            {
+                // The same method may execute on an unrelated row or window.
+                // It is outside this request's exact receiver scope.
+            }
             else
             {
                 _writeObserved = true;
                 Add("unexpected-save-write", method, args,
                     "native save-writing or migration entry observed");
             }
+        }
+
+        private void CaptureLoadCallerChain()
+        {
+            _loadCallerChain.Clear();
+            StackFrame[] frames = new StackTrace(1, false).GetFrames() ??
+                new StackFrame[0];
+            foreach (StackFrame frame in frames)
+            {
+                MethodBase caller = frame.GetMethod();
+                if (caller == null) continue;
+                string signature = FormatSignature(caller);
+                _loadCallerChain.Add(signature);
+                if (_immediateLoadCaller.Length != 0 ||
+                    caller.DeclaringType == typeof(WorkingSaveSmokeScenario) ||
+                    (caller.DeclaringType != null &&
+                     caller.DeclaringType.FullName.StartsWith("Harmony", StringComparison.Ordinal)))
+                    continue;
+                _immediateLoadCaller = signature;
+                _immediateLoadCallerType = caller.DeclaringType == null ? "" :
+                    caller.DeclaringType.FullName;
+                if (_scopedActionMethods.Contains(caller as MethodInfo))
+                    _finalLoadActionCount++;
+            }
+            Add("load-entry-caller-chain", _loadEntry, null,
+                "immediate=" + _immediateLoadCaller + ";frames=" +
+                _loadCallerChain.Count + ";finalActionCount=" +
+                _finalLoadActionCount);
         }
 
         private void OnLoadCompleted()
