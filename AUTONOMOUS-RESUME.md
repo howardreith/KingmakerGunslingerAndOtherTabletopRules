@@ -87,6 +87,13 @@ definition of done or a listed genuine human-input hard stop.
   `30e5f6b53efcdef9068e2524945bad49b06a78e77ce745c9c29afc79bf0ad957`;
   DLL SHA-256 is
   `5621847b5197518f97e97912eb680b6a024adfde20448ee40fd8c496fa9deae5`.
+- Exact commit `41f299a` passed `mod-load-smoke` run
+  `20260801T1433034839705Z-56c2363396894593961542057943f189` and two expanded
+  catalog runs `20260801T1434411929092Z-b69f2b13cc1f4a03945624f83ff3c5b9`
+  and `20260801T1436113008241Z-3c3f36a8807e4ed3869826afd13a5543`.
+  Both feature runs observed no save-writing API. Exact deployed package/DLL
+  SHA-256 are `6a8386e782f47726c38be60cda52e5e9b335d943a3650426cf6263c5deb51cf2`
+  and `ba0f28e9197e1fb6949de9e829a3ccd60b65d865cea2962b6a06528ee87b4a64`.
 
 ## Commands already run
 
@@ -111,9 +118,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified advanced blueprint slice. Then pass guarded
-`mod-load-smoke` for the exact assembly and implement the Sprint 33 feature
-scenario for batch reload, repeated discharge, and exact item isolation.
+Commit the curated advanced catalog runtime evidence. Then implement and test
+the guarded Sprint 33 capacity scenario for batch reload, repeated discharge,
+save-owned round counts, advanced misfire behavior, and exact item isolation.
 
 ## Safety boundaries
 
