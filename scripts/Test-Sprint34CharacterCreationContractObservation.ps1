@@ -35,6 +35,9 @@ $checks = [ordered]@{
         $runner.Contains('MethodBody IL call/callvirt tokens resolved without method invocation')
     'reads-rooted-unit-identities' = $runner.Contains('root.DefaultPlayerCharacter') -and
         $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
+    'exact-respec-call-graphs' = $runner.Contains('UnitDescriptor.PrepareRespec=') -and
+        $runner.Contains('UnitEntityData.PrepareRespec=') -and
+        $runner.Contains('neither respec method invoked')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)

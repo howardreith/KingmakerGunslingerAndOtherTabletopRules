@@ -1932,6 +1932,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (buildModeType == null) complete = false;
             else records.Add(DescribeCreationType(buildModeType));
             Type descriptorType = typeof(Kingmaker.UnitLogic.UnitDescriptor);
+            Type entityType = typeof(Kingmaker.EntitySystem.Entities.UnitEntityData);
             Type selectActionType = assembly.GetType(
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass", false, false);
             Type mechanicsActionType = assembly.GetType(
@@ -1958,7 +1959,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 " | LevelUpHelper.AddStartingItems=" + DescribeCalledMethods(
                     helperType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                         BindingFlags.Static).SingleOrDefault(value =>
-                            value.Name == "AddStartingItems"));
+                            value.Name == "AddStartingItems")) +
+                " | UnitDescriptor.PrepareRespec=" + DescribeCalledMethods(
+                    descriptorType.GetMethod("PrepareRespec", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | UnitEntityData.PrepareRespec=" + DescribeCalledMethods(
+                    entityType.GetMethod("PrepareRespec", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance));
             string observed = string.Join(" | ", records.ToArray());
             BlueprintRoot root = BlueprintRoot.Instance;
             BlueprintUnit defaultPlayer = root == null ? null : root.DefaultPlayerCharacter;
@@ -1980,6 +1987,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("creation-call-graph", "exact commit/setup/inventory called methods",
                     callGraph, !callGraph.Contains("<unavailable>"),
                     "MethodBody IL call/callvirt tokens resolved without method invocation"),
+                Assertion("respec-call-graph", "exact descriptor and entity respec calls",
+                    callGraph, callGraph.Contains("UnitDescriptor.PrepareRespec=") &&
+                        callGraph.Contains("UnitEntityData.PrepareRespec=") &&
+                        !callGraph.Contains("PrepareRespec=<unavailable>"),
+                    "metadata-only MethodBody IL; neither respec method invoked"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
                     "metadata-only reflection", true,
                     "scenario invokes no constructor, method, save, input, or registry mutation"),
