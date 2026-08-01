@@ -74,7 +74,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete fourteen-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete twenty-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 

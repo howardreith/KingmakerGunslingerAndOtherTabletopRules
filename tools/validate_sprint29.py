@@ -348,14 +348,17 @@ def validate(
             fail(f"Sprint 28 acceptance evidence hash mismatch: {name}")
 
     architecture = read(root, "docs/ARCHITECTURE.md")
+    active_words = "fourteen" if expected_active_blueprints == 14 else "twenty-four"
+    ledger_summary = (f"{expected_ledger_entries} stable IDs: "
+                      f"{expected_active_blueprints} active and one reserved")
     require_tokens(
         architecture,
         [
             "## Sprint 29 current layer",
-            "fourteen active blueprints",
+            active_words + " active blueprints",
             "Repair ability delivery",
             "## Sprint 29 authoritative maintenance layer",
-            "15 stable IDs: 14 active and one reserved",
+            ledger_summary,
         ],
         "Architecture",
     )
@@ -363,8 +366,9 @@ def validate(
     require_tokens(
         manifest_doc,
         [
-            "15 stable identifiers: 14 active and one reserved",
-            "complete fourteen-blueprint transaction",
+            (f"{expected_ledger_entries} stable identifiers: "
+             f"{expected_active_blueprints} active and one reserved"),
+            "complete " + active_words + "-blueprint transaction",
             "KMG.Test.RepairAbility",
             "c914b3c0786463b7a1e17e47447ee5b1",
         ],
