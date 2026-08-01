@@ -15,6 +15,7 @@ using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Recovery;
 using KingmakerGunslinger.Persistence;
 using KingmakerGunslinger.Scatter;
+using KingmakerGunslinger.Classes;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -22,6 +23,12 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("class.chassis-constants", ClassChassisConstants),
+            Case("class.chassis-exact-rows", ClassChassisExactRows),
+            Case("class.chassis-complete-monotonic", ClassChassisCompleteMonotonic),
+            Case("class.chassis-save-formulas", ClassChassisSaveFormulas),
+            Case("class.chassis-invalid-level", ClassChassisInvalidLevel),
+            Case("class.chassis-level-value", ClassChassisLevelValueSemantics),
             Case("valid.early-musket", ValidEarlyMusket),
             Case("factory.early-musket-fresh-instances", FactoryEarlyMusketFreshInstances),
             Case("factory.early-musket-canonical-equality", FactoryEarlyMusketCanonicalEquality),

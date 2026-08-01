@@ -44,6 +44,13 @@
     <Compile Include="Sprint31Tests.cs" />
     <Compile Include="Sprint32Tests.cs" />
     <Compile Include="Sprint33Tests.cs" />
+    <Compile Include="Sprint34Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerClassChassis.cs">
+      <Link>Classes\GunslingerClassChassis.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerClassLevel.cs">
+      <Link>Classes\GunslingerClassLevel.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionDecision.cs">
       <Link>Actions\FirearmActionDecision.cs</Link>
     </Compile>

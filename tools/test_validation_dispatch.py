@@ -30,11 +30,12 @@ def main() -> int:
     sprint31 = source / "tools" / "validate_sprint31.py"
     sprint32 = source / "tools" / "validate_sprint32.py"
     sprint33 = source / "tools" / "validate_sprint33.py"
+    sprint34 = source / "tools" / "validate_sprint34.py"
 
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.33 to validate_sprint33.py",
+        "dispatched version 0.0.34 to validate_sprint34.py",
     )
     run(
         [python, "-B", str(sprint29)],
@@ -52,24 +53,24 @@ def main() -> int:
             ignore=shutil.ignore_patterns(".git", "artifacts", "__pycache__"),
         )
 
-        report = fixture / "planning" / "SPRINT-33-ENTRY-CRITERIA.md"
+        report = fixture / "planning" / "SPRINT-34-ENTRY-CRITERIA.md"
         saved_report = report.read_bytes()
         report.unlink()
         run(
-            [python, "-B", str(sprint33), "--root", str(fixture)],
+            [python, "-B", str(sprint34), "--root", str(fixture)],
             1,
-            "Required Sprint 33 file is missing: planning/SPRINT-33-ENTRY-CRITERIA.md",
+            "Required Sprint 34 file is missing: planning/SPRINT-34-ENTRY-CRITERIA.md",
         )
         report.write_bytes(saved_report)
 
         info_path = fixture / "Info.json"
         info = json.loads(info_path.read_text(encoding="utf-8"))
-        info["Version"] = "0.0.34"
+        info["Version"] = "0.0.35"
         info_path.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
         run(
             [python, "-B", str(dispatcher), "--root", str(fixture)],
             1,
-            "Unsupported repository version: '0.0.34'",
+            "Unsupported repository version: '0.0.35'",
         )
 
         info["Version"] = "0.0.29"
@@ -98,7 +99,13 @@ def main() -> int:
             "Info.json does not declare version 0.0.33",
         )
 
-    print("Validation dispatch integration tests passed: 9 checks.")
+        run(
+            [python, "-B", str(sprint34), "--root", str(fixture)],
+            1,
+            "Info.json does not declare version 0.0.34",
+        )
+
+    print("Validation dispatch integration tests passed: 10 checks.")
     return 0
 
 

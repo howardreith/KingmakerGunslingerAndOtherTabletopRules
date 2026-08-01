@@ -118,6 +118,8 @@
     <Compile Include="Blueprints\TestMusketBlueprints.cs" />
     <Compile Include="Blueprints\WeaponBlueprintAccess.cs" />
     <Compile Include="Blueprints\WeaponTypeMechanicalAccess.cs" />
+    <Compile Include="Classes\GunslingerClassChassis.cs" />
+    <Compile Include="Classes\GunslingerClassLevel.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />

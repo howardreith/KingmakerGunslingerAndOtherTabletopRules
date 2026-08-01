@@ -34,8 +34,8 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 33 capacity, partial reload, and advanced firearms. The exact batch
-reload foundation is source-qualified. Next add authoritative advanced content,
-capacity-aware finite persistence, repeated discharge/misfire coverage, exact
-two-item isolation, and a guarded runtime scenario. Scatter content remains
-fail-closed pending an authoritative numeric Blunderbuss cone distance.
+Sprint 34 Gunslinger class chassis. The exact 20-level domain progression is
+source-qualified. Next register stable class/progression blueprints, map only
+supported Kingmaker skills and proficiencies, then integrate starting equipment
+and guarded class-structure acceptance. Scatter content remains fail-closed
+pending an authoritative numeric Blunderbuss cone distance.

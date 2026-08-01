@@ -430,3 +430,21 @@
   `3e610b43025b2771bd9003396ca469cd10e9028dfb7d5fb180f7f821369622d3`.
 - Next action: commit curated evidence and begin the next incomplete coverage
   item; Sprint 33 is a checkpoint, not a stopping condition.
+
+## 2026-08-01 Sprint 34 class chassis foundation
+
+- Advanced the active version to `0.0.34` and added inherited Sprint 34
+  validation plus exact entry criteria.
+- Added an engine-independent canonical 20-level Gunslinger chassis: d10 hit
+  die, full BAB, good Fortitude/Reflex, poor Will, and four skill ranks per
+  level. Invalid levels fail closed and level rows have deterministic value
+  semantics.
+- Added six focused tests. Repository validation and the clean Release suite
+  passed 691/691; strict package validation passed.
+- Candidate package/DLL SHA-256:
+  `8be4a23e89208264e0fc1db936f5721d34c1aed76152370ce92b2475a7cf9bc9` /
+  `026272d69e9e7044ce525964ad3bc0b9a2a419cfdeed4869ab7fcff37267b5d0`.
+- Removed one disposable `artifacts/tmp/KmgValidatorTests-*` fixture left by a
+  sandbox-denied validator run; it contained only copied test repository data.
+- Next action: commit this foundation, then implement stable production class
+  and progression blueprints with exact supported skill/proficiency mappings.

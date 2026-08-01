@@ -5,7 +5,7 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 
 | Mandatory area | Authority | Status | Implementation | Deterministic tests | Runtime scenario / latest evidence | Remaining work | Final disposition |
 |---|---|---|---|---|---|---|---|
-| Class chassis, levels 1-20, BAB, saves, hit die, skills | private `GUNSLINGER_PFSRD.md`; mission 4.1 | NOT-STARTED | none | none | none | Implement and qualify full progression | Pending |
+| Class chassis, levels 1-20, BAB, saves, hit die, skills | private `GUNSLINGER_PFSRD.md`; mission 4.1 | SOURCE-IMPLEMENTED | canonical 20-level domain chassis with d10, full BAB, good Fortitude/Reflex, poor Will, four skill ranks | 6 focused Sprint 34 cases within 691-test suite | feature runtime absent | Register exact class/progression blueprints, map Kingmaker skills, and qualify creation/level-up flows | Pending |
 | Character creation, level-up, multiclass, respec | mission 4.1 | NOT-STARTED | none | none | none | Implement stable class/progression blueprints and live flows | Pending |
 | Presentation, localization, progression UI | mission 4.1 | NOT-STARTED | firearm-only localization exists | none | none | Class/features/icons/tooltips | Pending |
 | Firearm proficiency | rules; ADR-0014 | RUNTIME-QUALIFIED | `FirearmProficiencyBlueprints.cs`, restriction/runtime | domain suite | accepted through Sprint 29; 0.0.30 regression pending | Preserve and integrate into class | Pending final integration |

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.33-s33-capacity-advanced-firearms",
-  "version": "0.0.33",
+  "milestone": "0.0.34-s34-gunslinger-class-chassis",
+  "version": "0.0.34",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 685,
+    "testCount": 691,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

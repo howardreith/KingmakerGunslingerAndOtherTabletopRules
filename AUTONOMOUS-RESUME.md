@@ -8,11 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `f851ae2` (guarded advanced-capacity acceptance source).
+- Audited HEAD: `7052be4` (Sprint 33 capacity runtime qualification evidence).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 33 capacity, partial reload, and advanced firearms.
-- Version: `0.0.33` (Sprint 33 source work active).
+- Current checkpoint: Sprint 34 Gunslinger class chassis.
+- Version: `0.0.34` (Sprint 34 source work active).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the curated exact-commit Sprint 33 capacity evidence, then select and
-begin the next incomplete coverage item. The capacity proof uses request-local
-transaction fixtures and must not be described as native inventory or
-save-vault mutation.
+Commit the source-qualified Sprint 34 canonical chassis/version checkpoint,
+then implement stable production class/progression blueprints and exact
+Kingmaker-supported skill/proficiency mappings. Do not claim character creation
+or level-up integration until guarded runtime evidence exists.
 
 ## Safety boundaries
 
