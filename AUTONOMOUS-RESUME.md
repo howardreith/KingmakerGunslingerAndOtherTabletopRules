@@ -18,6 +18,15 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Last runtime evidence
 
+- Firearm grit recovery repair commit `b4c4874` passed mod load at
+  `20260801T2010547590872Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2012145241329Z-disposable-gunslinger-grit-recovery` and
+  `20260801T2013336952646Z-disposable-gunslinger-grit-recovery` proved exact
+  critical `0 -> 1`, killing blow `1 -> 2`, duplicate stability, unaware-target
+  rejection, zero faults, and exact cleanup. Package/deployed-DLL SHA-256 are
+  `cbeeb299e4e10843cd01079b48ee8c702bd71cf4b469f99c294ac2fd4692bc93` /
+  `1596f0b56a60144212E7680AA1DD1421DECB90D507B1725C424B3AE3C3759138`.
+
 - One-time native grit initialization commit `4e543fd` passed mod load at
   `20260801T1945287324618Z-mod-load-smoke`. Independent persistence PASS runs
   `20260801T1946581078281Z-disposable-gunslinger-grit-persistence` and
@@ -267,9 +276,8 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified firearm grit recovery checkpoint, then run exact
-mod load and two independent detached recovery qualifications. Continue to the
-first level-one deed after recovery qualifies. Broad
+Firearm recovery is runtime-qualified. Audit and implement the first incomplete
+level-one deed in fidelity order next. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

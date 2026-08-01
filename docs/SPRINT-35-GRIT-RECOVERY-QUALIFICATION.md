@@ -45,7 +45,7 @@ events or sharing state between units.
 - Candidate DLL SHA-256:
   `36583d9893390380aedb83e3e0e4d952d8303d9a2d60c23159246337fee59b53`.
 
-## Runtime acceptance plan
+## Runtime acceptance
 
 The guarded `disposable-gunslinger-grit-recovery` scenario uses two detached
 units and no save API. It creates an exact production Pistol attack context,
@@ -55,5 +55,27 @@ proves an unaware-target critical remains one. Temporary detached combat state,
 target damage, controllers, and entities are cleared or disposed before exact
 party/global-unit reference snapshots are compared.
 
-Require exact-commit `mod-load-smoke` and two independent fresh-process PASS
-runs before changing this row to `RUNTIME-QUALIFIED`.
+Commit `b4c4874338a3be7827bfba8ec7cfc93ce29fbdd7` passed exact mod load:
+
+- `20260801T2010547590872Z-mod-load-smoke`
+
+Two independent fresh-process guarded runs passed:
+
+- `20260801T2012145241329Z-disposable-gunslinger-grit-recovery`
+- `20260801T2013336952646Z-disposable-gunslinger-grit-recovery`
+
+Both observed maximum/initial two, spend to zero, confirmed critical to one,
+duplicate critical remaining one, killing blow to two, duplicate killing blow
+remaining two, spend to one, and unaware-target rejection remaining one.
+Diagnostics were identical: one critical application, one killing-blow
+application, two duplicates, one intentional ignore, and zero faults. Both
+disposed the detached units with unchanged party/global-unit references.
+
+Exact package SHA-256:
+`cbeeb299e4e10843cd01079b48ee8c702bd71cf4b469f99c294ac2fd4692bc93`.
+Exact deployed DLL SHA-256:
+`1596f0b56a60144212e7680aa1dd1421decb90d507b1725c424b3ae3c3759138`.
+
+Firearm critical/killing-blow grit recovery and duplicate protection are
+`RUNTIME-QUALIFIED`. Continue to level-one deeds; this is not a stopping
+condition.

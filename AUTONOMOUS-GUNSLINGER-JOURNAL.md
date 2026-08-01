@@ -1196,3 +1196,22 @@
   packaging. Candidate package/DLL SHA-256 are
   `9b982127b5bebe48d07b7ea4199dcfc0da114a9d9376939a0c402726698f82c2` /
   `36583d9893390380aedb83e3e0e4d952d8303d9a2d60c23159246337fee59b53`.
+
+### Firearm grit recovery runtime qualification
+
+- Repair commit `b4c4874` passed exact mod load at
+  `20260801T2010547590872Z-mod-load-smoke`.
+- Independent fresh-process PASS runs were
+  `20260801T2012145241329Z-disposable-gunslinger-grit-recovery` and
+  `20260801T2013336952646Z-disposable-gunslinger-grit-recovery`.
+- Both observed `0 -> 1` confirmed-critical recovery and `1 -> 2`
+  killing-blow recovery; duplicate callbacks preserved one/two, and an unaware
+  target preserved the post-spend value one. Diagnostics were exactly
+  critical one, killing blow one, duplicates two, ignored one, faults zero.
+- Both runs cleared detached combat states, restored disposable target damage,
+  disposed both entities, and preserved party/global-unit reference snapshots.
+- Exact package/deployed-DLL SHA-256 are
+  `cbeeb299e4e10843cd01079b48ee8c702bd71cf4b469f99c294ac2fd4692bc93` /
+  `1596f0b56a60144212e7680aa1dd1421decb90d507b1725c424b3ae3c3759138`.
+- Recovery and dedupe are runtime-qualified. Continue immediately to the first
+  incomplete level-one deed in fidelity order.
