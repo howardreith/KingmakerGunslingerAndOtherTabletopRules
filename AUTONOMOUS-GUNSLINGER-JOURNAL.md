@@ -1262,3 +1262,28 @@
   `40d738a160929a4c611aaa0263a53fe0d48ccca6fab2ecc93d8fc400b7dd9b4a` /
   `798e1fe7f96cc083de8493e164e5e640ccad2592481ea97251a4fe6cd5815677`.
 - Continue immediately to Quick Clear.
+
+## 2026-08-01 Sprint 36 Quick Clear source qualification
+
+- The authoritative rule is represented by two personal extraordinary actions:
+  standard requires at least one current grit and spends none; move spends one
+  grit. Both require exactly one equipped firearm whose item-owned state is
+  Broken and repair it to Normal without a kit.
+- The current architecture writes Broken only through firearm misfire damage,
+  so the production adapter treats the exact Broken token as misfire-origin;
+  no unrelated source can manufacture that state.
+- Availability is fail-closed for zero grit, normal/wrecked state, no firearm,
+  or ambiguous equipped firearms. Delivery re-evaluates the same exact item,
+  rolls back a move-action grit spend and any partial state write on failure,
+  and preserves loaded-round/ammunition fields through the existing repair
+  transition.
+- Added three stable production blueprints, a guarded save-free detached
+  `disposable-gunslinger-quick-clear` scenario, five focused policy cases, and
+  production diagnostics. Repository validation, 732/732 tests, 18 request
+  checks, 40 preflight checks, exact-reference Release build, and strict package
+  validation pass.
+- Candidate package/DLL SHA-256 are
+  `01fd8fe73c53575c08f957aae99cae21fdb262e333949698f670b89fc732dd28` /
+  `34fd2cd6acdc105f378bed9ab276acb3b2771a382fbbde3348b05ca239fb6b41`.
+- Next action: commit the reconstructable source checkpoint, require exact mod
+  load, and run two independent fresh-process Quick Clear PASS runs.

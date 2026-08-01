@@ -18,7 +18,7 @@ namespace KingmakerGunslinger.Blueprints
         internal GunslingerClassBlueprintSet(BlueprintCharacterClass characterClass,
             BlueprintProgression progression, BlueprintFeature proficiencies,
             GritBlueprintSet grit, DeadeyeBlueprintSet deadeye,
-            GunslingerDodgeBlueprintSet dodge)
+            GunslingerDodgeBlueprintSet dodge, QuickClearBlueprintSet quickClear)
         {
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
@@ -26,6 +26,7 @@ namespace KingmakerGunslinger.Blueprints
             Grit = grit ?? throw new ArgumentNullException("grit");
             Deadeye = deadeye ?? throw new ArgumentNullException("deadeye");
             Dodge = dodge ?? throw new ArgumentNullException("dodge");
+            QuickClear = quickClear ?? throw new ArgumentNullException("quickClear");
         }
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
@@ -33,7 +34,8 @@ namespace KingmakerGunslinger.Blueprints
         internal GritBlueprintSet Grit { get; private set; }
         internal DeadeyeBlueprintSet Deadeye { get; private set; }
         internal GunslingerDodgeBlueprintSet Dodge { get; private set; }
-        internal int Count { get { return 3 + Grit.Count + Deadeye.Count + Dodge.Count; } }
+        internal QuickClearBlueprintSet QuickClear { get; private set; }
+        internal int Count { get { return 3 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -110,18 +112,19 @@ namespace KingmakerGunslinger.Blueprints
             DeadeyeBlueprintSet deadeye = DeadeyeBlueprints.Register(registry);
             GunslingerDodgeBlueprintSet dodge =
                 GunslingerDodgeBlueprints.Register(registry);
+            QuickClearBlueprintSet quickClear = QuickClearBlueprints.Register(registry);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
             characterClass.Progression = progression;
             progression.Classes = new[] { characterClass };
             progression.LevelEntries = CreateLevelEntries(proficiencies, grit.Feature,
-                deadeye.Feature, dodge.Feature);
+                deadeye.Feature, dodge.Feature, quickClear.Feature);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression,
-                proficiencies, grit, deadeye, dodge);
+                proficiencies, grit, deadeye, dodge, quickClear);
         }
 
         internal static GunslingerClassCatalogPublication Publish(
@@ -228,13 +231,13 @@ namespace KingmakerGunslinger.Blueprints
 
         private static LevelEntry[] CreateLevelEntries(BlueprintFeature proficiencies,
             BlueprintFeature grit, BlueprintFeature deadeye,
-            BlueprintFeature dodge)
+            BlueprintFeature dodge, BlueprintFeature quickClear)
         {
             var entries = new LevelEntry[20];
             for (int level = 1; level <= 20; level++)
                 entries[level - 1] = new LevelEntry { Level = level,
                     Features = level == 1 ? new List<BlueprintFeatureBase>
-                        { proficiencies, grit, deadeye, dodge } :
+                        { proficiencies, grit, deadeye, dodge, quickClear } :
                         new List<BlueprintFeatureBase>() };
             return entries;
         }

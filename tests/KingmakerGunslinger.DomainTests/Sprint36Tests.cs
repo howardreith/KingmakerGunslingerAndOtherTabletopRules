@@ -178,5 +178,66 @@ namespace KingmakerGunslinger.DomainTests
             return new GunslingerDodgeService().Evaluate(new GunslingerDodgeRequest(
                 true, mode, ranged, armor, load, grit));
         }
+
+        private static void QuickClearStandardExact()
+        {
+            QuickClearDecision result = QuickClear(QuickClearMode.Standard, true,
+                FirearmCondition.Broken, true, 1);
+            Assertions.True(result.ShouldRepair, "Eligible standard Quick Clear was rejected.");
+            Assertions.Equal(0, result.GritCost, "Standard Quick Clear spent grit.");
+        }
+
+        private static void QuickClearMoveExact()
+        {
+            QuickClearDecision result = QuickClear(QuickClearMode.Move, true,
+                FirearmCondition.Broken, true, 1);
+            Assertions.True(result.ShouldRepair, "Eligible move Quick Clear was rejected.");
+            Assertions.Equal(1, result.GritCost, "Move Quick Clear cost changed.");
+        }
+
+        private static void QuickClearGritRequired()
+        {
+            foreach (QuickClearMode mode in new[] { QuickClearMode.Standard, QuickClearMode.Move })
+            {
+                QuickClearDecision result = QuickClear(mode, true,
+                    FirearmCondition.Broken, true, 0);
+                Assertions.Equal(QuickClearStatus.InsufficientGrit, result.Status,
+                    "Zero grit activated Quick Clear.");
+                Assertions.Equal(0, result.GritCost, "Rejected Quick Clear exposed a cost.");
+            }
+        }
+
+        private static void QuickClearContextFailsClosed()
+        {
+            Assertions.Equal(QuickClearStatus.NotExactEquippedFirearm,
+                QuickClear(QuickClearMode.Standard, false, FirearmCondition.Broken,
+                    true, 1).Status, "Ambiguous firearm activated Quick Clear.");
+            Assertions.Equal(QuickClearStatus.NotBroken,
+                QuickClear(QuickClearMode.Standard, true, FirearmCondition.Normal,
+                    true, 1).Status, "Normal firearm activated Quick Clear.");
+            Assertions.Equal(QuickClearStatus.NotMisfireBroken,
+                QuickClear(QuickClearMode.Standard, true, FirearmCondition.Broken,
+                    false, 1).Status, "Non-misfire break activated Quick Clear.");
+        }
+
+        private static void QuickClearInvalidInput()
+        {
+            var service = new QuickClearService();
+            Assertions.Throws<ArgumentNullException>(() => service.Evaluate(null),
+                "Null Quick Clear request was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new QuickClearRequest(QuickClearMode.Unknown, true,
+                    FirearmCondition.Broken, true, 1), "Unknown mode was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new QuickClearRequest(QuickClearMode.Standard, true,
+                    FirearmCondition.Broken, true, -1), "Negative grit was accepted.");
+        }
+
+        private static QuickClearDecision QuickClear(QuickClearMode mode,
+            bool exact, FirearmCondition condition, bool misfire, int grit)
+        {
+            return new QuickClearService().Evaluate(new QuickClearRequest(mode,
+                exact, condition, misfire, grit));
+        }
     }
 }

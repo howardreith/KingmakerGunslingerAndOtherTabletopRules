@@ -266,6 +266,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDodge &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -366,6 +367,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerDodge)
                 {
                     Complete(RunDisposableGunslingerDodge());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear)
+                {
+                    Complete(RunDisposableGunslingerQuickClear());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3255,6 +3262,144 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerQuickClear()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintAbilityResource grit = gunslinger.Grit.Resource;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            ItemEntityWeapon weapon = null; object controller = null;
+            int initial = -1, afterStandard = -1, afterMove = -1,
+                afterRejected = -1;
+            FirearmCondition standardCondition = FirearmCondition.Wrecked,
+                moveCondition = FirearmCondition.Wrecked,
+                rejectedCondition = FirearmCondition.Wrecked;
+            bool cleaned = false; string stage = "construct-disposable";
+            QuickClearRuntimeDiagnostics.Reset();
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.Wisdom.BaseValue = 14;
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { unit.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger.CharacterClass, false }))
+                    throw new InvalidOperationException("Quick Clear Gunslinger selection failed.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { unit.Descriptor });
+                cancel.Invoke(controller, null); controller = null;
+
+                stage = "equip-exact-firearm";
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                if (!ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon))
+                    throw new InvalidOperationException("Exact pistol was not equipped.");
+                initial = unit.Descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "standard-action";
+                FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
+                    FirearmState.CreateEmpty()));
+                QuickClearRuntime.Execute(unit.Descriptor, QuickClearMode.Standard);
+                afterStandard = unit.Descriptor.Resources.GetResourceAmount(grit);
+                standardCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition;
+
+                stage = "move-action";
+                FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
+                    FirearmState.CreateEmpty()));
+                QuickClearRuntime.Execute(unit.Descriptor, QuickClearMode.Move);
+                afterMove = unit.Descriptor.Resources.GetResourceAmount(grit);
+                moveCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition;
+
+                stage = "insufficient-rejection";
+                FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
+                    FirearmState.CreateEmpty()));
+                unit.Descriptor.Resources.Spend(grit, afterMove);
+                QuickClearRuntime.Execute(unit.Descriptor, QuickClearMode.Standard);
+                afterRejected = unit.Descriptor.Resources.GetResourceAmount(grit);
+                rejectedCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Quick Clear failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (unit != null) unit.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit));
+            }
+            string observed = "initial=" + initial + ";afterStandard=" + afterStandard +
+                ";standard=" + standardCondition + ";afterMove=" + afterMove +
+                ";move=" + moveCondition + ";afterRejected=" + afterRejected +
+                ";rejected=" + rejectedCondition + ";applied=" +
+                QuickClearRuntimeDiagnostics.Applied + ";rejectedCount=" +
+                QuickClearRuntimeDiagnostics.Rejected + ";faults=" +
+                QuickClearRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("quick-clear-standard", "grit 2 unchanged; Broken -> Normal",
+                    observed, initial == 2 && afterStandard == 2 &&
+                    standardCondition == FirearmCondition.Normal,
+                    "production exact-equipped state transition"),
+                Assertion("quick-clear-move", "grit 2 -> 1; Broken -> Normal",
+                    observed, afterMove == 1 && moveCondition == FirearmCondition.Normal,
+                    "production exact-equipped state and native grit transition"),
+                Assertion("quick-clear-insufficient-atomic", "grit 0; remains Broken",
+                    observed, afterRejected == 0 && rejectedCondition == FirearmCondition.Broken,
+                    "production fail-closed policy"),
+                Assertion("quick-clear-diagnostics", "applied=2;rejected=1;faults=0",
+                    observed, QuickClearRuntimeDiagnostics.Applied == 2 &&
+                    QuickClearRuntimeDiagnostics.Rejected == 1 &&
+                    QuickClearRuntimeDiagnostics.Faults == 0,
+                    "production deed diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned, "firearm forgotten and detached unit disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerDodge()

@@ -303,6 +303,30 @@
       "status": "active",
       "milestone": "Sprint 36",
       "notes": "Hidden native persisted fact recording an armed drop-prone reaction."
+    },
+    {
+      "symbol": "KMG.Deeds.QuickClearFeature",
+      "guid": "5c3ca8be372b4fc2a6bcc6bbfa59e17d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Level-one Quick Clear feature granting the standard and move-equivalent actions."
+    },
+    {
+      "symbol": "KMG.Deeds.QuickClearStandardAbility",
+      "guid": "c191d9cac2b349d1b9cb79e4172664be",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Standard action repairing one exact equipped misfire-broken firearm while grit-positive without spending grit."
+    },
+    {
+      "symbol": "KMG.Deeds.QuickClearMoveAbility",
+      "guid": "a6ea61a048ca4d18899c2bbf78e70411",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Move action spending one grit to repair one exact equipped misfire-broken firearm."
     }
   ]
 }

@@ -144,8 +144,17 @@
     <Compile Include="Deeds\GunslingerDodgeProneAbilityLogic.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntime.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntimeDiagnostics.cs" />
+    <Compile Include="Deeds\QuickClearDecision.cs" />
+    <Compile Include="Deeds\QuickClearMode.cs" />
+    <Compile Include="Deeds\QuickClearRequest.cs" />
+    <Compile Include="Deeds\QuickClearService.cs" />
+    <Compile Include="Deeds\QuickClearStatus.cs" />
+    <Compile Include="Deeds\QuickClearAbilityLogic.cs" />
+    <Compile Include="Deeds\QuickClearRuntime.cs" />
+    <Compile Include="Deeds\QuickClearRuntimeDiagnostics.cs" />
     <Compile Include="Blueprints\DeadeyeBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerDodgeBlueprints.cs" />
+    <Compile Include="Blueprints\QuickClearBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />

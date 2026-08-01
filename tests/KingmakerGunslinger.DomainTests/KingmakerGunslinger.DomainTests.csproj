@@ -68,6 +68,11 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeStatus.cs">
       <Link>Deeds\GunslingerDodgeStatus.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearDecision.cs"><Link>Deeds\QuickClearDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearMode.cs"><Link>Deeds\QuickClearMode.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearRequest.cs"><Link>Deeds\QuickClearRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearService.cs"><Link>Deeds\QuickClearService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearStatus.cs"><Link>Deeds\QuickClearStatus.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

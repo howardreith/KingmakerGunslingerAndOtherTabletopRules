@@ -9,7 +9,7 @@ import validate_sprint35
 
 VERSION = "0.0.36"
 INFORMATIONAL_VERSION = "0.0.36-s36-core-deeds"
-TEST_COUNT = 727
+TEST_COUNT = 732
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -25,7 +25,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 def validate(root: Path) -> None:
     root = root.resolve()
     validate_sprint35.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 36, 37)
+                               TEST_COUNT, 39, 40)
     require_tokens(read(root, "planning/SPRINT-36-ENTRY-CRITERIA.md"),
         ["Deadeye", "Gunslinger's Dodge", "Quick Clear",
          "one grit per range increment beyond the first",
@@ -45,6 +45,9 @@ def validate(root: Path) -> None:
         "Sprint 36 Gunslinger's Dodge policy")
     require_tokens(read(root, "src/KingmakerGunslinger/Deeds/GunslingerDodgeMode.cs"),
         ["MoveFiveFeet", "DropProne"], "Sprint 36 dodge mode vocabulary")
+    require_tokens(read(root, "src/KingmakerGunslinger/Deeds/QuickClearService.cs"),
+        ["NotExactEquippedFirearm", "NotBroken", "NotMisfireBroken",
+         "InsufficientGrit", "QuickClearMode.Move"], "Sprint 36 Quick Clear policy")
     print("Sprint 36 source invariant validation passed with inherited Sprint 35 checks.")
 
 def main() -> int:

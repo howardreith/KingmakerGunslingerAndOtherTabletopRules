@@ -11,8 +11,8 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `f79b4a2` (runtime-qualified Dodge drop-prone source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 36 core level-one deeds; Deadeye and the safe
-  Gunslinger's Dodge drop-prone branch qualified; Quick Clear next.
+- Current checkpoint: Sprint 36 core level-one deeds; Quick Clear is
+  source-qualified and awaits exact-commit guarded runtime qualification.
 - Version: `0.0.36`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
@@ -159,6 +159,15 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Quick Clear now has exact standard and move actions over one equipped
+  item-owned misfire-broken firearm. Standard requires positive grit without
+  spending; move spends one. Both repair without a kit and fail atomically.
+  The guarded detached scenario covers both successes, zero-grit rejection,
+  diagnostics, and cleanup. Validation, 732/732 tests, exact-reference Release
+  build, and strict packaging pass. Candidate package/DLL SHA-256 are
+  `01fd8fe73c53575c08f957aae99cae21fdb262e333949698f670b89fc732dd28` /
+  `34fd2cd6acdc105f378bed9ab276acb3b2771a382fbbde3348b05ca239fb6b41`.
+
 - First recovery run `20260801T2006592774427Z` failed safely because a newly
   constructed detached `UnitCombatState` retains `m_InCombat=false`. Exact
   `UnitEntityData.IsInCombat` IL delegates to that flag. The repaired fixture
@@ -297,10 +306,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Deadeye and the safe Gunslinger's Dodge drop-prone branch are runtime-qualified.
-Audit and implement Quick Clear next. Preserve the movement alternative as a
-documented pending adaptation until deterministic destination selection is
-safe. Broad
+Commit the Quick Clear source-qualified checkpoint, then run exact mod load and
+two independent `disposable-gunslinger-quick-clear` fresh-process runs. Preserve
+the Dodge movement alternative as a documented pending adaptation until
+deterministic destination selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.
