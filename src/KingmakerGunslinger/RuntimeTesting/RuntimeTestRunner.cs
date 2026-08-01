@@ -1587,6 +1587,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "skills=" + string.Join(",", (characterClass.ClassSkills ??
                             new Kingmaker.EntitySystem.Stats.StatType[0])
                             .Select(value => value.ToString()).ToArray()),
+                        "startingItems=" + DescribeStartingItems(characterClass),
                         "level1=" + DescribeLevelOneFeatures(characterClass.Progression)
                     }));
                 }
@@ -1610,6 +1611,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static string DescribeStartingItems(BlueprintCharacterClass characterClass)
+        {
+            return string.Join(",", (characterClass.StartingItems ??
+                new Kingmaker.Blueprints.Items.BlueprintItem[0])
+                .Where(value => value != null)
+                .Select(value => value.name + "@" + value.AssetGuid)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray());
         }
 
         private static string DescribeLevelOneFeatures(BlueprintProgression progression)

@@ -570,3 +570,16 @@
 - Neither scenario required a save or invoked save or input APIs. Next action:
   checkpoint publication, then inspect the creation contract and add starting
   equipment before disposable-character qualification.
+
+## 2026-08-01 Sprint 34 starting-item contract observer
+
+- Extended the existing read-only class observer to record each native class's
+  exact starting-item names and blueprint GUIDs. Eleven focused observer checks,
+  repository validation, 691/691 tests, clean Release build, and strict package
+  validation passed. Candidate package/DLL SHA-256 are
+  `617aa64cc2d91f7c4d0be8bd1c970c132920a82b7aa00a6480f19e704c402b82` /
+  `73c64a1080bae3f656accc157593b56722bc6218257d790069fe215f63a8b6df`.
+- Guarded save-free Steam observation PASS evidence:
+  `20260801T1539170231770Z-observe-class-blueprint-contracts`.
+- Next action: commit the observer extension, curate the exact native item
+  contracts, and wire the authorized production firearm/ammunition kit.

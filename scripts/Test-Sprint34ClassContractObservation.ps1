@@ -19,6 +19,9 @@ $checks = [ordered]@{
         $runner.Contains('characterClass.Progression.AssetGuid')
     'records-mechanical-progressions' = $runner.Contains('characterClass.BaseAttackBonus.AssetGuid') -and
         $runner.Contains('characterClass.WillSave.AssetGuid')
+    'records-starting-item-identities' = $runner.Contains('DescribeStartingItems') -and
+        $runner.Contains('characterClass.StartingItems') -and
+        $runner.Contains('value.name + "@" + value.AssetGuid')
     'records-level-one-features' = $runner.Contains('DescribeLevelOneFeatures') -and
         $runner.Contains('value.name + "@" + value.AssetGuid')
     'records-proficiency-component-values' = $runner.Contains('DescribeProficiencies') -and

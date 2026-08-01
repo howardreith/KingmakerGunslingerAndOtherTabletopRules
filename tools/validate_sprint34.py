@@ -37,7 +37,8 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs"),
         ["RunClassBlueprintContractObservation", "root.Progression.CharacterClasses",
          "characterClass.BaseAttackBonus.AssetGuid", "DescribeLevelOneFeatures",
-         "DescribeProficiencies", "DescribeDirectProficiency"],
+         "DescribeProficiencies", "DescribeDirectProficiency",
+         "DescribeStartingItems", "characterClass.StartingItems"],
         "Sprint 34 class-contract observation")
     require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["KMG.Classes.GunslingerClass", "FullBaseAttackGuid",
