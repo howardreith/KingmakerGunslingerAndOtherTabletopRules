@@ -18,6 +18,15 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Last runtime evidence
 
+- Native daily grit rest commit `b0ca3f3` passed mod load at
+  `20260801T1916580082273Z-mod-load-smoke`. Independent save-free PASS runs
+  `20260801T1918185563653Z-disposable-gunslinger-grit-rest` and
+  `20260801T1919385521658Z-disposable-gunslinger-grit-rest` proved
+  `maximum=1;initial=1;spent=0;rested=1` with exact cleanup. Package/DLL
+  SHA-256 are
+  `9211a4cd8dfb0e9b2dc9c2092673f9b4fb947cf3849aa176685e13d5a4608694` /
+  `997ad369b55856321a3c1ce8593dc219864a0a38857df086e46c5a8902f8e8d6`.
+
 - Native grit repair commit `cd22f3d` passed mod load at
   `20260801T1907337714075Z-mod-load-smoke`. Independent save-free PASS runs
   `20260801T1908491510715Z-disposable-gunslinger-grit-resource` and
@@ -188,9 +197,8 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified native daily-rest scenario, then run exact mod load
-and two fresh-process `disposable-gunslinger-grit-rest` passes. Next qualify
-save/load and multiclass/respec persistence before implementing firearm
+Native daily grit rest is runtime-qualified. Next qualify save/load and
+multiclass/respec persistence before implementing firearm
 critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them

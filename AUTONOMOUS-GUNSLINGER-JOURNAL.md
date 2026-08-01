@@ -1034,3 +1034,18 @@
   `c77b482cbe7b9579cd69f88ececc3e551fdc43631e97a4466f4a01b04849f199`.
 - Commit this source-qualified scenario, then require exact mod load and two
   independent fresh-process daily-rest PASS runs.
+
+### Native daily-rest runtime qualification
+
+- Commit `b0ca3f3` passed exact mod load at
+  `20260801T1916580082273Z-mod-load-smoke`.
+- Two independent fresh-process PASS runs were
+  `20260801T1918185563653Z-disposable-gunslinger-grit-rest` and
+  `20260801T1919385521658Z-disposable-gunslinger-grit-rest`.
+- Both observed `maximum=1;initial=1;spent=0;rested=1` and exact detached
+  cleanup with unchanged party/global-unit reference snapshots.
+- Exact package/DLL SHA-256 are
+  `9211a4cd8dfb0e9b2dc9c2092673f9b4fb947cf3849aa176685e13d5a4608694` /
+  `997ad369b55856321a3c1ce8593dc219864a0a38857df086e46c5a8902f8e8d6`.
+- Daily grit reset is runtime-qualified. Continue to exact save/load and
+  multiclass/respec persistence; do not stop at this checkpoint.
