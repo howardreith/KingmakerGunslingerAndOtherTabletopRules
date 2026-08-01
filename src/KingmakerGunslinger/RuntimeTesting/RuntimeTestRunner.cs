@@ -2659,6 +2659,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
             Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData respecEntity = null;
+            Kingmaker.UnitLogic.UnitDescriptor respecDescriptor = null;
             object seedController = null;
             object respecController = null;
             int fighterSeeded = -1;
@@ -2714,12 +2716,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 seedController = null;
                 fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
 
-                Kingmaker.Items.UnitBody originalBody = descriptor.Body;
+                var replacement = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                respecEntity = replacement.Unit;
+                respecDescriptor = respecEntity == null ? null : respecEntity.Descriptor;
+                if (respecDescriptor == null || respecDescriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable respec replacement descriptor is unavailable.");
+                Kingmaker.Items.UnitBody originalBody = respecDescriptor.Body;
                 stage = "start-respec-controller";
                 object respec = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "Respec", false);
                 respecController = start.Invoke(null,
-                    new object[] { descriptor, false, null, null, respec });
+                    new object[] { respecDescriptor, false, null, null, respec });
                 Kingmaker.UnitLogic.UnitDescriptor preview =
                     ReadExactMember(respecController, "Preview") as
                         Kingmaker.UnitLogic.UnitDescriptor;
@@ -2728,7 +2736,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Exact isolated Respec preview is unavailable.");
                 bodyPreserved = originalBody != null &&
-                    ReferenceEquals(originalBody, descriptor.Body);
+                    ReferenceEquals(originalBody, respecDescriptor.Body);
                 stage = "read-respec-preview";
                 previewFighterBefore = preview.Progression.GetClassLevel(fighter);
                 previewGunslingerBefore = preview.Progression.GetClassLevel(gunslinger);
@@ -2755,11 +2763,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cancel.Invoke(respecController, null);
                 if (seedController != null && cancel != null)
                     cancel.Invoke(seedController, null);
+                if (respecEntity != null) respecEntity.Dispose();
                 if (entity != null) entity.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     (entity == null || !ContainsReference(party, entity)) &&
-                    (entity == null || !ContainsReference(allUnits, entity));
+                    (entity == null || !ContainsReference(allUnits, entity)) &&
+                    (respecEntity == null || !ContainsReference(party, respecEntity)) &&
+                    (respecEntity == null || !ContainsReference(allUnits, respecEntity));
             }
             string observed = "fighterSeeded=" + fighterSeeded +
                 ";bodyPreserved=" + bodyPreserved +
@@ -2774,7 +2785,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Assertion("respec-source", "disposable Fighter 1 with intact source body",
                     observed, fighterSeeded == 1 && bodyPreserved,
-                    "native Respec controller requests preview before destructive preparation"),
+                    "fresh detached replacement mirrors native Player.RespecCompanion"),
                 Assertion("gunslinger-respec-preview",
                     "preview resets Fighter and reaches Gunslinger 1; source remains Fighter 1",
                     observed, selected && previewFighterBefore == 0 &&
@@ -2784,7 +2795,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Respec mode Gunslinger class selection without Commit"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
-                    "controllers canceled and intact disposable entity disposed"),
+                    "controllers canceled and both disposable entities disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

@@ -46,6 +46,14 @@ currently established.
   the invalid ordering. The next reduced scenario keeps the disposable source
   body intact and tests native `Respec` preview mode without `PrepareRespec` or
   `Commit`.
+- The reduced single-unit run
+  `20260801T1831121462577Z-disposable-gunslinger-respec-preview` completed safely:
+  source/body isolation and cleanup passed, but preview retained Fighter 1 and
+  added Gunslinger 1. Exact installed `Player.RespecCompanion` IL then proved
+  native respec creates a fresh unit from the same blueprint, copies experience,
+  and initiates respec on that replacement candidate. The next scenario uses a
+  second detached `ChargenUnit` as the level-zero replacement and avoids the
+  native global creation/replacement callbacks.
 
 ## Active gates (not hard stops)
 

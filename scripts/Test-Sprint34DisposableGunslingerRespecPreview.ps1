@@ -11,7 +11,9 @@ $checks = [ordered]@{
     'scenario-allowlisted' = $catalog.Contains('DisposableGunslingerRespecPreview') -and
         $common.Contains("'disposable-gunslinger-respec-preview'")
     'exact-respec-mode' = $runner.Contains('"Respec", false') -and
-        $runner.Contains('native Respec controller requests preview')
+        $runner.Contains('fresh detached replacement mirrors native Player.RespecCompanion')
+    'fresh-replacement-target' = $runner.Contains('var replacement = new Kingmaker.UI.LevelUp.ChargenUnit(source);') -and
+        $runner.Contains('new object[] { respecDescriptor, false, null, null, respec }')
     'disposable-fighter-seed' = $runner.Contains('fighterSeeded == 1 && bodyPreserved')
     'gunslinger-respec-preview' = $runner.Contains('previewFighterBefore == 0') -and
         $runner.Contains('previewGunslingerAfter == 1') -and
@@ -19,12 +21,12 @@ $checks = [ordered]@{
     'no-commit' = -not $runner.Substring($runner.IndexOf(
         'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')).Contains(
         'GetMethod("Commit"')
-    'body-preserved' = $runner.Contains('ReferenceEquals(originalBody, descriptor.Body)') -and
+    'body-preserved' = $runner.Contains('ReferenceEquals(originalBody, respecDescriptor.Body)') -and
         -not $runner.Substring($runner.IndexOf(
             'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')).Contains(
                 'entity.PrepareRespec()')
     'external-isolation' = $runner.Contains('Exact isolated Respec preview is unavailable.') -and
-        $runner.Contains('controllers canceled and intact disposable entity disposed')
+        $runner.Contains('controllers canceled and both disposable entities disposed')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) {

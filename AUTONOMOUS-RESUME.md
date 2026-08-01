@@ -163,7 +163,12 @@ and preview call graphs without invocation before another attempt. Metadata run
 `20260801T1826247826437Z-observe-character-creation-contracts` proves controller
 construction requests and turns on its preview immediately. Retry only the
 reduced native `Respec` preview with the disposable source body intact; do not
-call `PrepareRespec` or `Commit`.
+call `PrepareRespec` or `Commit`. Run
+`20260801T1831121462577Z-disposable-gunslinger-respec-preview` proved that a
+single-unit preview retains Fighter 1. Exact installed `Player.RespecCompanion`
+IL proves native respec instead creates a fresh same-blueprint unit and initiates
+respec on that replacement. Use a second detached `ChargenUnit` as the safe
+level-zero replacement target; do not invoke global creation or replacement.
 Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.
