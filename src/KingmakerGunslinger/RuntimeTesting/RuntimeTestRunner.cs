@@ -1626,6 +1626,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 "Kingmaker.UI.LevelUp.ChargenUnit",
                 "Kingmaker.UI.LevelUp.ChargenUnitData",
+                "Kingmaker.Blueprints.Root.BlueprintRoot",
+                "Kingmaker.Blueprints.Root.CharGenRoot",
+                "Kingmaker.Blueprints.BlueprintUnit",
                 "Kingmaker.UnitLogic.Class.LevelUp.LevelUpController",
                 "Kingmaker.UnitLogic.Class.LevelUp.LevelUpState",
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass",
@@ -1643,11 +1646,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 records.Add(DescribeCreationType(type));
             }
             string observed = string.Join(" | ", records.ToArray());
+            BlueprintRoot root = BlueprintRoot.Instance;
+            BlueprintUnit defaultPlayer = root == null ? null : root.DefaultPlayerCharacter;
+            BlueprintUnit[] pregens = root == null || root.CharGen == null
+                ? null : root.CharGen.Pregens;
+            string rootedUnits = "default=" + DescribeBlueprintUnit(defaultPlayer) +
+                ";pregens=" + string.Join(",", (pregens ?? new BlueprintUnit[0])
+                    .Where(value => value != null).Select(DescribeBlueprintUnit)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("creation-contracts", "all exact creation types and declared contracts",
                     observed, complete && records.Count == typeNames.Length,
                     "Assembly-CSharp runtime Type constructors, methods, fields, and properties"),
+                Assertion("rooted-unit-contracts", "exact default-player and pregen identities",
+                    rootedUnits, defaultPlayer != null && pregens != null && pregens.Length > 0 &&
+                        pregens.All(value => value != null),
+                    "BlueprintRoot.Instance direct fields; no CharGenRoot method invocation"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
                     "metadata-only reflection", true,
                     "scenario invokes no constructor, method, save, input, or registry mutation"),
@@ -1659,6 +1674,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static string DescribeBlueprintUnit(BlueprintUnit unit)
+        {
+            return unit == null ? "<missing>" : unit.name + "@" + unit.AssetGuid;
         }
 
         private static string DescribeCreationType(Type type)

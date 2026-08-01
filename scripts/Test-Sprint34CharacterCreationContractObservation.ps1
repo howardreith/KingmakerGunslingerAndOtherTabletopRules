@@ -13,10 +13,14 @@ $checks = [ordered]@{
     'save-free-autonomous' = $common.Contains("'observe-character-creation-contracts' = [pscustomobject]") -and
         $common.Contains('RequiresSaveName = $false')
     'exact-types' = $runner.Contains('Kingmaker.UI.LevelUp.ChargenUnit') -and
+        $runner.Contains('Kingmaker.Blueprints.Root.CharGenRoot') -and
+        $runner.Contains('Kingmaker.Blueprints.BlueprintUnit') -and
         $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.LevelUpController') -and
         $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass')
     'metadata-only' = $runner.Contains('GetConstructors(flags)') -and
         $runner.Contains('GetMethods(flags)') -and $runner.Contains('GetMembers(flags)')
+    'reads-rooted-unit-identities' = $runner.Contains('root.DefaultPlayerCharacter') -and
+        $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)

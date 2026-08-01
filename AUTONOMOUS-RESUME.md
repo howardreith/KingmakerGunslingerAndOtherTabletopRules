@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified metadata-only character-creation contract observer. Then
-identify an exact disposable native `BlueprintUnit` source and implement a
-fail-closed construction/cleanup probe that never attaches the unit to player,
-scene, roster, inventory, or save state before testing class selection.
+Commit the rooted-unit contract extension. Then construct only a disposable
+`ChargenUnit` from exact default-player blueprint
+`4391e8b9afbb0cf43aeba700c089f56d`, prove it is absent from player, scene,
+roster, and save state, and dispose it before attempting Gunslinger selection.
 
 ## Safety boundaries
 

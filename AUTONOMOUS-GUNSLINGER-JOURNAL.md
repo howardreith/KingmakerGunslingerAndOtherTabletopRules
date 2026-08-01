@@ -624,3 +624,20 @@
   and descriptor/entity disposal. Next action: commit this observer, identify an
   exact disposable `BlueprintUnit` source and prove construction/cleanup without
   attaching the unit to player, scene, roster, or save state.
+
+## 2026-08-01 Sprint 34 rooted chargen-unit contract extension
+
+- Extended the metadata observer with exact `BlueprintRoot`, `CharGenRoot`, and
+  `BlueprintUnit` contracts plus direct, read-only rooted unit identities. It
+  does not call `GetPregens`, `PreparePregensCoroutine`, or any constructor.
+- Six focused checks, repository validation, 691/691 tests, clean Release build,
+  and strict package validation passed. Candidate package/DLL SHA-256 are
+  `0432ba6526a2f0a3a10a146d222a8f0c676b90b6aa0634b79f47e17ca14145b5` /
+  `402300ec6e125f93c6c7b409097c150219a40ee5eacfa241ee1a81736387e40e`.
+- Guarded Steam PASS evidence:
+  `20260801T1553095129386Z-observe-character-creation-contracts`. Exact default
+  player source is `StartGame_Player_Unit@4391e8b9afbb0cf43aeba700c089f56d`;
+  five complete pregen sources were also observed without initializing them.
+- Next action: commit the extension, then construct only a disposable
+  `ChargenUnit` from the exact default-player source, prove it is absent from
+  player/scene/roster state, and dispose it before attempting class selection.
