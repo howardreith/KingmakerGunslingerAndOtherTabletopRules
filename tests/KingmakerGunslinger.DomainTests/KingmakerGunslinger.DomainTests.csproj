@@ -77,6 +77,10 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\PistolWhipRequest.cs"><Link>Deeds\PistolWhipRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\PistolWhipService.cs"><Link>Deeds\PistolWhipService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\PistolWhipStatus.cs"><Link>Deeds\PistolWhipStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StopBleedingDecision.cs"><Link>Deeds\StopBleedingDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StopBleedingRequest.cs"><Link>Deeds\StopBleedingRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StopBleedingService.cs"><Link>Deeds\StopBleedingService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StopBleedingStatus.cs"><Link>Deeds\StopBleedingStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleArmor.cs"><Link>Classes\NimbleArmor.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleService.cs"><Link>Classes\NimbleService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerInitiativeService.cs"><Link>Classes\GunslingerInitiativeService.cs</Link></Compile>

@@ -1459,3 +1459,27 @@
   and exact external cleanup.
 - Sprint 39 is a checkpoint, not a stopping condition. Continue immediately to
   Utility Shot's three branch dispositions.
+
+## 2026-08-01 Sprint 40 Utility Shot source qualification
+
+- Exact installed metadata confirms Kingmaker locks are map interaction,
+  Pick Lock, and Disable Device objects rather than firearm-attack targets; it
+  also exposes no general movable unattended-object combat target. Blast Lock
+  and Scoot Unattended Object are therefore explicitly
+  `OMITTED-NO-MEANINGFUL-INTERACTION`, not silently skipped.
+- Stop Bleeding is adapted as the tabletop shoot-into-air branch: a standard
+  action requiring positive grit without spend, exactly one equipped loaded
+  non-Wrecked firearm, and self or an adjacent target with native Bleed. It
+  performs no attack roll or damage, consumes exactly one chamber, removes one
+  `SpellDescriptor.Bleed` fact, preserves other facts, and restores the prior
+  firearm state if delivery faults after discharge.
+- Added two stable blueprints, four focused policy cases, and a save-free
+  guarded self/adjacent/zero-grit scenario. Sprint 40 and inherited validation,
+  748/748 domain tests, 18 request checks, 40 preflight checks, 22 validation
+  dispatch checks, exact-reference Release compilation, and strict package
+  validation pass. Candidate package/DLL SHA-256 are
+  `1387df20e7f43a34b93f0661a6dd193d1b264ea8bdfea8f84f02a1587b21d709` /
+  `ebf4c938045e281a1c39910d53ceb8d53487a28689199e01df14d54522ad625e`.
+- Next action: create the exact source checkpoint, require mod load, and run two
+  independent Stop Bleeding PASS attempts. Sprint 40 is not a stopping
+  condition.

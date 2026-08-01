@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -29,6 +30,8 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
@@ -272,6 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerNimble &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerInitiative &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -395,6 +399,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip)
                 {
                     Complete(RunDisposableGunslingerPistolWhip());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding)
+                {
+                    Complete(RunDisposableGunslingerStopBleeding());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3494,6 +3504,185 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerStopBleeding()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData caster = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            StopBleedingResult self = null, adjacent = null, rejected = null;
+            int initialGrit = -1, afterSelfGrit = -1, afterAdjacentGrit = -1;
+            int selfBleedsBefore = -1, selfBleedsAfter = -1;
+            int targetBleedsBefore = -1, targetBleedsAfter = -1;
+            int roundsAfterSelf = -1, roundsAfterAdjacent = -1,
+                roundsAfterRejected = -1;
+            bool cleaned = false;
+            string stage = "construct-disposables";
+            StopBleedingRuntimeDiagnostics.Reset();
+            try
+            {
+                caster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                caster.Descriptor.Stats.Wisdom.BaseValue = 14;
+                caster.Descriptor.AddFact(gunslinger.Grit.Feature);
+                initialGrit = caster.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                caster.Body.PrimaryHand.InsertItem(weapon);
+
+                BlueprintBuff selfBleedOne = CreateRuntimeBleedBlueprint(
+                    "KMG_Runtime_StopBleeding_Self_One");
+                BlueprintBuff selfBleedTwo = CreateRuntimeBleedBlueprint(
+                    "KMG_Runtime_StopBleeding_Self_Two");
+                caster.Descriptor.AddFact(selfBleedOne);
+                caster.Descriptor.AddFact(selfBleedTwo);
+                selfBleedsBefore = StopBleedingRuntime.CountBleeds(caster);
+                SetRuntimeLoadedRound(weapon);
+
+                stage = "self-delivery";
+                self = StopBleedingRuntime.Execute(caster.Descriptor, caster, caster);
+                selfBleedsAfter = StopBleedingRuntime.CountBleeds(caster);
+                roundsAfterSelf = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                afterSelfGrit = caster.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                BlueprintBuff targetBleed = CreateRuntimeBleedBlueprint(
+                    "KMG_Runtime_StopBleeding_Adjacent");
+                target.Descriptor.AddFact(targetBleed);
+                targetBleedsBefore = StopBleedingRuntime.CountBleeds(target);
+                SetRuntimeLoadedRound(weapon);
+
+                stage = "adjacent-delivery";
+                adjacent = StopBleedingRuntime.Execute(caster.Descriptor,
+                    caster, target);
+                targetBleedsAfter = StopBleedingRuntime.CountBleeds(target);
+                roundsAfterAdjacent = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                afterAdjacentGrit = caster.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                stage = "zero-grit-rejection";
+                SetRuntimeLoadedRound(weapon);
+                caster.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    afterAdjacentGrit);
+                rejected = StopBleedingRuntime.Execute(caster.Descriptor,
+                    caster, caster);
+                roundsAfterRejected = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Stop Bleeding failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (caster != null && caster.Body.PrimaryHand.MaybeItem != null)
+                        caster.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (caster != null)
+                {
+                    Buff bleed;
+                    while ((bleed = StopBleedingRuntime.FirstBleed(caster)) != null)
+                        caster.Descriptor.Buffs.RemoveFact(bleed);
+                    if (caster.Descriptor.HasFact(gunslinger.Grit.Feature))
+                        caster.Descriptor.RemoveFact(gunslinger.Grit.Feature);
+                    caster.Dispose();
+                }
+                if (target != null)
+                {
+                    Buff bleed;
+                    while ((bleed = StopBleedingRuntime.FirstBleed(target)) != null)
+                        target.Descriptor.Buffs.RemoveFact(bleed);
+                    target.Dispose();
+                }
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (caster == null || !ContainsReference(allUnits, caster)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "initialGrit=" + initialGrit +
+                ";afterSelfGrit=" + afterSelfGrit +
+                ";afterAdjacentGrit=" + afterAdjacentGrit +
+                ";selfBleeds=" + selfBleedsBefore + "->" + selfBleedsAfter +
+                ";targetBleeds=" + targetBleedsBefore + "->" + targetBleedsAfter +
+                ";rounds=" + roundsAfterSelf + "," + roundsAfterAdjacent +
+                "," + roundsAfterRejected + ";rejected=" +
+                (rejected == null ? "null" : rejected.Decision.Status.ToString()) +
+                ";applied=" + StopBleedingRuntimeDiagnostics.Applied +
+                ";rejectedCount=" + StopBleedingRuntimeDiagnostics.Rejected +
+                ";faults=" + StopBleedingRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("stop-bleeding-self",
+                    "two bleeds -> one; one chamber -> zero; grit unchanged",
+                    observed, self != null && self.Applied && selfBleedsBefore == 2 &&
+                    selfBleedsAfter == 1 && roundsAfterSelf == 0 && initialGrit > 0 &&
+                    afterSelfGrit == initialGrit,
+                    "native Bleed fact and exact item-owned firearm state"),
+                Assertion("stop-bleeding-adjacent",
+                    "one bleed -> zero; one chamber -> zero; grit unchanged",
+                    observed, adjacent != null && adjacent.Applied &&
+                    targetBleedsBefore == 1 && targetBleedsAfter == 0 &&
+                    roundsAfterAdjacent == 0 && afterAdjacentGrit == initialGrit,
+                    "detached adjacent target and native Bleed fact"),
+                Assertion("stop-bleeding-zero-grit",
+                    "InsufficientGrit; loaded chamber preserved", observed,
+                    rejected != null &&
+                    rejected.Decision.Status == StopBleedingStatus.InsufficientGrit &&
+                    !rejected.Applied && roundsAfterRejected == 1,
+                    "production fail-closed policy"),
+                Assertion("stop-bleeding-diagnostics",
+                    "applied=2;rejected=1;faults=0", observed,
+                    StopBleedingRuntimeDiagnostics.Applied == 2 &&
+                    StopBleedingRuntimeDiagnostics.Rejected == 1 &&
+                    StopBleedingRuntimeDiagnostics.Faults == 0,
+                    "production Stop Bleeding diagnostics"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "firearm removed, facts removed, detached units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static BlueprintBuff CreateRuntimeBleedBlueprint(string name)
+        {
+            var blueprint = ScriptableObject.CreateInstance<BlueprintBuff>();
+            blueprint.name = name;
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.name = "$" + name + "_Descriptor";
+            descriptor.Descriptor = SpellDescriptor.Bleed;
+            blueprint.ComponentsArray = new BlueprintComponent[] { descriptor };
+            return blueprint;
+        }
+
+        private static void SetRuntimeLoadedRound(ItemEntityWeapon weapon)
+        {
+            FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                FirearmState.CurrentSchemaVersion, 1,
+                FirearmStateTokenCatalog.DiagnosticLeadBall,
+                FirearmCondition.Normal));
         }
 
         private RuntimeTestResult RunDisposableGunslingerPistolWhip()

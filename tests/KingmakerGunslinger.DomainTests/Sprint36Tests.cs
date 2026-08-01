@@ -321,6 +321,64 @@ namespace KingmakerGunslinger.DomainTests
                 exact, twoHanded, condition, grit));
         }
 
+        private static void StopBleedingEligible()
+        {
+            StopBleedingDecision result = StopBleeding(true,
+                FirearmCondition.Broken, 2, 1, 5d * 0.3048d, 2);
+            Assertions.Equal(StopBleedingStatus.Eligible, result.Status,
+                "Loaded Broken firearm did not support Stop Bleeding.");
+            Assertions.Equal(1, result.RoundsConsumed,
+                "Stop Bleeding did not consume exactly one chamber.");
+        }
+
+        private static void StopBleedingContextFailsClosed()
+        {
+            Assertions.Equal(StopBleedingStatus.NotExactEquippedFirearm,
+                StopBleeding(false, FirearmCondition.Normal, 1, 1, 0d, 1).Status,
+                "Ambiguous firearm activated Stop Bleeding.");
+            Assertions.Equal(StopBleedingStatus.Wrecked,
+                StopBleeding(true, FirearmCondition.Wrecked, 0, 1, 0d, 1).Status,
+                "Wrecked firearm activated Stop Bleeding.");
+            Assertions.Equal(StopBleedingStatus.OutOfRange,
+                StopBleeding(true, FirearmCondition.Normal, 1, 1,
+                    (5d * 0.3048d) + 0.002d, 1).Status,
+                "Distant target activated Stop Bleeding.");
+        }
+
+        private static void StopBleedingRejectionsAtomic()
+        {
+            Assertions.Equal(0, StopBleeding(true, FirearmCondition.Normal,
+                0, 1, 0d, 1).RoundsConsumed,
+                "Empty rejection exposed a partial discharge.");
+            Assertions.Equal(StopBleedingStatus.InsufficientGrit,
+                StopBleeding(true, FirearmCondition.Normal, 1, 0, 0d, 1).Status,
+                "Zero grit activated Stop Bleeding.");
+            Assertions.Equal(StopBleedingStatus.NoBleed,
+                StopBleeding(true, FirearmCondition.Normal, 1, 1, 0d, 0).Status,
+                "Bleed-free target activated Stop Bleeding.");
+        }
+
+        private static void StopBleedingInvalidInput()
+        {
+            var service = new StopBleedingService();
+            Assertions.Throws<ArgumentNullException>(() => service.Evaluate(null),
+                "Null Stop Bleeding request was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new StopBleedingRequest(true, FirearmCondition.Normal, -1, 1, 0d, 1),
+                "Negative loaded rounds were accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new StopBleedingRequest(true, FirearmCondition.Normal, 1, 1,
+                    double.NaN, 1), "Invalid distance was accepted.");
+        }
+
+        private static StopBleedingDecision StopBleeding(bool exact,
+            FirearmCondition condition, int loadedRounds, int grit,
+            double distanceMeters, int bleedCount)
+        {
+            return new StopBleedingService().Evaluate(new StopBleedingRequest(
+                exact, condition, loadedRounds, grit, distanceMeters, bleedCount));
+        }
+
         private static void NimbleExactLevels()
         {
             var service = new NimbleService();

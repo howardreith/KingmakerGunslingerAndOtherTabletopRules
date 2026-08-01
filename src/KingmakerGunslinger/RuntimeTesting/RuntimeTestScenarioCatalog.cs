@@ -42,6 +42,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-initiative";
         internal const string DisposableGunslingerPistolWhip =
             "disposable-gunslinger-pistol-whip";
+        internal const string DisposableGunslingerStopBleeding =
+            "disposable-gunslinger-stop-bleeding";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -86,6 +88,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerNimble,
                 DisposableGunslingerInitiative,
                 DisposableGunslingerPistolWhip,
+                DisposableGunslingerStopBleeding,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

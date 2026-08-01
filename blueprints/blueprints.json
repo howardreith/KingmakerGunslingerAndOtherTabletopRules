@@ -423,6 +423,22 @@
       "status": "active",
       "milestone": "Sprint 39",
       "notes": "Unowned two-handed Pistol-Whip rule-event item."
+    },
+    {
+      "symbol": "KMG.Deeds.UtilityShotFeature",
+      "guid": "813ac15208d84be196416bf1a0f47eb9",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 40",
+      "notes": "Level-three Utility Shot grant; exposes the supported Stop Bleeding branch."
+    },
+    {
+      "symbol": "KMG.Deeds.UtilityShotStopBleedingAbility",
+      "guid": "6c9cebcc46604ec09d3c0ea49e48bdad",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 40",
+      "notes": "Positive-grit standard action consumes one chamber and removes one adjacent native Bleed fact."
     }
   ]
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.40 — Sprint 40 Utility Shot (in progress)
+
+- Classified Blast Lock and Scoot Unattended Object as having no meaningful
+  supported Kingmaker interaction, and began the Stop Bleeding vertical slice
+  with exact grit, range, bleed-descriptor, and one-chamber contracts.
+
 ## 0.0.39 — Sprint 39 Pistol-Whip (in progress)
 
 - Began the level-three Pistol-Whip vertical slice with explicit handedness,

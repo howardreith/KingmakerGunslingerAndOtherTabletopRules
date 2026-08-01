@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.39-s39-pistol-whip",
-  "version": "0.0.39",
+  "milestone": "0.0.40-s40-utility-shot",
+  "version": "0.0.40",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 28,
-    "activeEntryCount": 27,
+    "entryCount": 54,
+    "activeEntryCount": 53,
     "reservedEntryCount": 1,
-    "registrationCount": 27
+    "registrationCount": 53
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 744,
+    "testCount": 748,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

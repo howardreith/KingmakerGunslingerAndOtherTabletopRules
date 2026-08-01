@@ -11,11 +11,11 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `abfd426` (runtime-qualified Sprint 39 Pistol-Whip source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 39 Pistol-Whip is runtime-qualified. The next
-  incomplete level-three coverage item is Utility Shot, beginning with exact
-  supported-interaction audits for blast lock, unattended-object movement, and
-  stop bleeding before implementing any surviving adaptation.
-- Version: `0.0.39`.
+- Current checkpoint: Sprint 40 Utility Shot is source-implemented. Blast Lock
+  and Scoot Unattended Object are explicitly omitted for lack of supported
+  interactions; Stop Bleeding awaits an exact source commit, mod-load smoke,
+  and two independent fresh-process feature PASS runs.
+- Version: `0.0.40`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -353,11 +353,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Audit Utility Shot's three authoritative branches against exact installed
-Kingmaker interaction contracts. Confirm the existing no-meaningful-interaction
-dispositions for locks and unattended objects, then determine whether native
-bleed removal supports a narrow stop-bleeding ability without inventing a new
-balance decision. Preserve the Dodge movement
+Commit the reconstructable Sprint 40 source checkpoint, require exact mod load,
+and run two fresh-process `disposable-gunslinger-stop-bleeding` qualifications.
+Then record evidence and select the next incomplete progression item. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
