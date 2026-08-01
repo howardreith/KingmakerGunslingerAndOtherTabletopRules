@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.Firearms;
 using UnityEngine;
@@ -228,6 +230,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -266,6 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -282,6 +286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -492,6 +497,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     RunSprint30GenericActions();
                 }
+                else if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ProductionFirearmCatalog)
+                {
+                    RunSprint31ProductionFirearmCatalog();
+                }
                 else
                 {
                     CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
@@ -695,7 +705,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
-                _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions;
+                _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
@@ -858,6 +869,95 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Warnings.Add("Sprint 30 maintenance diagnostic failed closed.");
             _trace.Record("feature-acceptance-complete",
                 "status=" + result.Status);
+            Complete(result);
+        }
+
+        private void RunSprint31ProductionFirearmCatalog()
+        {
+            _trace.Record("feature-acceptance-start",
+                "sprint31 production firearm catalog; blueprint observation only");
+            ProductionFirearmBlueprintCatalog catalog =
+                BlueprintBootstrap.ProductionFirearms;
+            bool catalogValidated = false;
+            string validation = "catalog unavailable";
+            if (catalog != null)
+            {
+                try
+                {
+                    ProductionFirearmBlueprints.Validate(
+                        catalog,
+                        WeaponBlueprintAccess.Resolve(),
+                        WeaponTypeMechanicalAccess.Resolve());
+                    catalogValidated = true;
+                    validation = "three distinct entries; six registered blueprints";
+                }
+                catch (Exception exception)
+                {
+                    validation = exception.GetType().Name + ": " + exception.Message;
+                }
+            }
+
+            int nativeHeavyMarkers = CountFirearmMarkers(
+                BlueprintBootstrap.NativeHeavyCrossbowWeaponType);
+            int pistolMarkers = catalog == null ? -1 :
+                CountFirearmMarkers(catalog.Pistol.WeaponType);
+            int musketMarkers = catalog == null ? -1 :
+                CountFirearmMarkers(catalog.Musket.WeaponType);
+            int blunderbussMarkers = catalog == null ? -1 :
+                CountFirearmMarkers(catalog.Blunderbuss.WeaponType);
+            int blunderbussUnavailable = catalog == null ? -1 :
+                (catalog.Blunderbuss.Item.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                .OfType<UnavailableProductionFirearmRestriction>().Count();
+
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-save", "stable exact working-save load",
+                    evidence.StableFingerprint,
+                    evidence.CompletionCallbackObserved &&
+                        evidence.DescriptorReferenceCorrelated &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "qualified receiver-bound working-save path"),
+                Assertion("production-catalog-runtime-contract",
+                    "three exact entries; count=6", validation,
+                    catalogValidated && catalog.Count == 6 &&
+                        catalog.Pistol.Spec.Equals(ProductionFirearmCatalog.CreatePistol()) &&
+                        catalog.Musket.Spec.Equals(ProductionFirearmCatalog.CreateMusket()) &&
+                        catalog.Blunderbuss.Spec.Equals(
+                            ProductionFirearmCatalog.CreateBlunderbuss()),
+                    "concrete registered runtime blueprints and exact mechanical access"),
+                Assertion("marker-and-native-source-isolation",
+                    "nativeHeavy=0;pistol=1;musket=1;blunderbuss=1",
+                    "nativeHeavy=" + nativeHeavyMarkers +
+                        ";pistol=" + pistolMarkers + ";musket=" + musketMarkers +
+                        ";blunderbuss=" + blunderbussMarkers,
+                    nativeHeavyMarkers == 0 &&
+                        pistolMarkers == 1 && musketMarkers == 1 &&
+                        blunderbussMarkers == 1,
+                    "concrete BlueprintWeaponType component arrays"),
+                Assertion("special-range-fails-closed", "unavailableRestrictions=1",
+                    "unavailableRestrictions=" + blunderbussUnavailable,
+                    catalog != null &&
+                        !catalog.Blunderbuss.Spec.Definition.HasFixedRangeIncrement &&
+                        !catalog.Blunderbuss.Spec.IsPlayerFireable &&
+                        blunderbussUnavailable == 1,
+                    "special-range definition and concrete item restriction"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved,
+                    "request-scoped native save-write sentinels"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            RuntimeTestResult result = CreateResult(
+                pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            _trace.Record("feature-acceptance-complete", "status=" + result.Status);
             Complete(result);
         }
 

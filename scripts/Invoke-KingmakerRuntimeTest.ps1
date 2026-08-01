@@ -198,7 +198,8 @@ try {
     $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
     $result = $null
 
-    if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions')) {
+    if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
+        'production-firearm-catalog')) {
         $orchestration.stage = 'waiting-for-runtime-readiness'
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
@@ -413,6 +414,7 @@ try {
     }
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
+        'production-firearm-catalog',
         'observe-working-save-entry-action',
         'observe-working-save-selection-load-action',
         'observe-working-save-receiver-bound-action')) {

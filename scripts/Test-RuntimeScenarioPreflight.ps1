@@ -30,6 +30,7 @@ $expected = @(
     'observe-load-game-button-action',
     'working-save-smoke',
     'generic-firearm-actions',
+    'production-firearm-catalog',
     'observe-working-save-entry-action',
     'observe-working-save-selection-load-action',
     'observe-working-save-receiver-bound-action'
@@ -54,10 +55,17 @@ Assert-True (-not $feature.RequiresManualInteraction) `
 Assert-True $feature.RequiresSaveName 'sprint30-feature-requires-save-name'
 Assert-True ($feature.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
     'sprint30-feature-only-permits-working-save'
+$productionCatalog = Get-KmgRuntimeScenarioMetadata 'production-firearm-catalog'
+Assert-True (-not $productionCatalog.RequiresManualInteraction) `
+    'sprint31-catalog-is-autonomous'
+Assert-True $productionCatalog.RequiresSaveName `
+    'sprint31-catalog-requires-save-name'
+Assert-True ($productionCatalog.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'sprint31-catalog-only-permits-working-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.30'
+    ExpectedVersion = '0.0.31'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -90,7 +98,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.30' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.31' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -145,7 +153,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.30' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.31' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {
