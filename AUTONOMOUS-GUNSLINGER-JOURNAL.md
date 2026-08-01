@@ -1104,3 +1104,19 @@
   package/DLL SHA-256 are
   `0766e2c3e36dd8d84c8efad04e0e5293eda92bb1d101c898066e3af1f96ff503` /
   `3b9eccf6770898cc89493fc51a1754feda7a7459d32fbcef6672bda82b52f4d2`.
+
+### Native persistence runtime qualification
+
+- Commit `1949d80` passed exact mod load at
+  `20260801T1935464087387Z-mod-load-smoke`.
+- Two independent fresh-process PASS runs were
+  `20260801T1937081415049Z-disposable-gunslinger-grit-persistence` and
+  `20260801T1938272020280Z-disposable-gunslinger-grit-persistence`.
+- Both observed maximum two/current one, a distinct JSON record retaining the
+  exact grit blueprint, one reconstructed replacement record at current one,
+  and exact two-entity cleanup. No save API was invoked.
+- Exact package/DLL SHA-256 are
+  `519c5f99a430808895d1ea787f832088f51b2b861b19974409d6bb2a02715429` /
+  `0b37c7748cdca07c0015a730da3626b8a0a6a8d132c96e9ef72f64c325d60866`.
+- Continue to explicit multiclass/respec value behavior, then qualifying
+  firearm critical/killing-blow grit recovery.
