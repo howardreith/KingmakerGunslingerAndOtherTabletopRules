@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Version `0.0.30-s30-generic-firearm-actions` reconstructs the missing editable Sprint 30 source for Pathfinder: Kingmaker 2.1.7b.
+Version `0.0.31-s31-early-firearm-catalog` develops the first production early-firearm catalog for Pathfinder: Kingmaker 2.1.7b from the runtime-qualified Sprint 30 baseline.
 
 ## Current vertical slice
 

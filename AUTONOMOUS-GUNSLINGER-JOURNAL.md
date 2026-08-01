@@ -94,3 +94,26 @@
 - Next checkpoint: production early firearm catalog (pistol, musket,
   blunderbuss) using stable blueprint IDs and generic runtime. Establish
   definition/presentation/acquisition acceptance criteria before source edits.
+
+## 2026-08-01 Sprint 31 entry and pistol-definition checkpoint
+
+- Recorded the authoritative early pistol, musket, and blunderbuss table and
+  explicit Sprint 31 acceptance criteria. The source calls blunderbuss range
+  `special`; no numeric single-target range has been invented, and scatter
+  execution remains assigned to Sprint 32.
+- Advanced active development metadata and guarded-runtime exact-version
+  contracts to `0.0.31`; added inherited Sprint 31 repository validation and
+  updated its dispatch integration coverage.
+- Added the canonical fresh-instance early-pistol definition factory with
+  exact capacity 1, 20-foot increment, misfire 1, 5-foot burst, standard
+  free-hand reload, and non-scatter identity.
+- Repository validation PASS; validator-dispatch integration PASS 7/7; clean
+  Release domain suite PASS 613/613; exact private-reference Release compile,
+  build-output validation, and strict standalone package validation PASS.
+- Local package SHA-256:
+  `07cee3091fe57307192ef0f7419a7f8d842db775295171dbf31910e3dcc4d04b`.
+  DLL SHA-256:
+  `74c7837e3041b6b1aee01249dffd698c4dd5e14e9d50252b6aba4ad13d1b7c93`.
+- Next action: commit this source-qualified narrow checkpoint, prove exact
+  `0.0.31` mod load and working-save smoke, then add production catalog
+  blueprint contracts and registrations.

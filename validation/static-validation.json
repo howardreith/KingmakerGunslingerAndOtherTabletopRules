@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.30-s30-generic-firearm-actions",
-  "version": "0.0.30",
+  "milestone": "0.0.31-s31-early-firearm-catalog",
+  "version": "0.0.31",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 611,
+    "testCount": 613,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

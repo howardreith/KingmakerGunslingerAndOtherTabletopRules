@@ -10,3 +10,8 @@ No genuine human-input hard stop is currently established.
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.
   Existing project authority and reversible evidence gathering remain available.
+- The authoritative firearm table labels blunderbuss range `special` but the
+  local extract contains no numeric normal-bullet range description. This is an
+  active Sprint 31 design investigation, not yet a human-input hard stop:
+  pistol/musket content and exact blueprint contracts can progress independently,
+  and the scatter implementation is already assigned to Sprint 32.

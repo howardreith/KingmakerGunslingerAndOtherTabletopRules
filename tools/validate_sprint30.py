@@ -32,14 +32,19 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
         fail(f"{label} is missing required token(s): {missing}")
 
 
-def validate(root: Path) -> None:
+def validate(
+    root: Path,
+    version: str = VERSION,
+    informational_version: str = INFORMATIONAL_VERSION,
+    test_count: int = TEST_COUNT,
+) -> None:
     root = root.resolve()
     validate_sprint29.validate(
         False,
         root=root,
-        version=VERSION,
-        informational_version=INFORMATIONAL_VERSION,
-        test_count=TEST_COUNT,
+        version=version,
+        informational_version=informational_version,
+        test_count=test_count,
         require_current_guide_match=False,
     )
 
@@ -71,11 +76,11 @@ def validate(root: Path) -> None:
         fail("Sprint 30 must record that no save-writing API was observed.")
 
     static = json.loads(read(root, "validation/static-validation.json"))
-    if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
-        fail("validation/static-validation.json does not identify Sprint 30.")
+    if static.get("version") != version or static.get("milestone") != informational_version:
+        fail("validation/static-validation.json does not identify the active milestone.")
     sprint = static.get("sprint29", {})
-    if sprint.get("testCount") != TEST_COUNT or sprint.get("sprint30EntryApproved") is not True:
-        fail("Static validation does not record the Sprint 30 test count and entry decision.")
+    if sprint.get("testCount") != test_count or sprint.get("sprint30EntryApproved") is not True:
+        fail("Static validation does not record the active test count and Sprint 30 entry decision.")
     if sprint.get("runtimeAcceptancePending") is not False or \
             sprint.get("runtimeAcceptancePassed") is not True:
         fail("Static validation does not record Sprint 30 runtime acceptance.")

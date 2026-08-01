@@ -12,7 +12,7 @@ definition of done or a listed genuine human-input hard stop.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: early production firearm catalog.
-- Version: `0.0.30`.
+- Version: `0.0.31` (Sprint 31 in progress).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -53,12 +53,12 @@ isolation, and observed no save write.
 
 ## Next action
 
-Audit the local firearm rules and existing blueprint clone/manifest contracts,
-then record acceptance criteria for an early pistol, production early musket,
-and blunderbuss. Implement them as stable definition-driven content without
-scatter attack behavior yet; add focused definition, marker, stable-ID,
-presentation, and generic-action tests. Do not silently invent balance data:
-use authoritative local firearm tables and existing adaptation decisions.
+Commit the source-qualified Sprint 31 entry/pistol-definition checkpoint, then
+run guarded exact-version `0.0.31` mod-load and canonical working-save smoke.
+After that, implement stable production pistol/musket/blunderbuss blueprint
+contracts and registrations with focused definition, marker, stable-ID,
+presentation, and generic-action tests. Do not invent a numeric blunderbuss
+range: the authoritative table says `special`, and scatter remains Sprint 32.
 
 ## Safety boundaries
 

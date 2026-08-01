@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.31 — Sprint 31 early firearm catalog (in progress)
+
+- Began canonical production definition data with the tabletop early pistol.
+- Added explicit catalog acceptance criteria for pistol, musket, and
+  blunderbuss without silently inventing the blunderbuss's `special` range.
+- Preserved the runtime-qualified Sprint 30 generic action and item-owned state
+  baseline.
+
 ## 0.0.30 — Sprint 30 generic definition-driven firearm actions
 
 - Accepted Sprint 29 from the combined live contract evidence and exact 0.0.29 passing maintenance matrix.

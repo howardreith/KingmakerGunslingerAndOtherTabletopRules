@@ -681,9 +681,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.SaveWritingApiObserved ? "observed" : "none",
                     !evidence.SaveWritingApiObserved,
                     "request-scoped native save-write sentinels"),
-                Assertion("loaded-mod-version", "0.0.30",
+                Assertion("loaded-mod-version", "0.0.31",
                     _context.ModEntry.Info.Version,
-                    _context.ModEntry.Info.Version == "0.0.30",
+                    _context.ModEntry.Info.Version == "0.0.31",
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);

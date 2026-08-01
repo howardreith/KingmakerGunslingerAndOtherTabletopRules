@@ -6,6 +6,19 @@ namespace KingmakerGunslinger.Firearms
     /// </summary>
     internal static class FirearmDefinitions
     {
+        internal static FirearmDefinition CreateEarlyPistol()
+        {
+            return new FirearmDefinition(
+                FirearmEra.Early,
+                FirearmKind.Pistol,
+                1,
+                20,
+                1,
+                5,
+                new ReloadProfile(ReloadActionType.Standard, true, 1),
+                false);
+        }
+
         internal static FirearmDefinition CreateEarlyMusket()
         {
             return new FirearmDefinition(

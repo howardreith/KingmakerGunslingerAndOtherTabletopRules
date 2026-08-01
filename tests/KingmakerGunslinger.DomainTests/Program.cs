@@ -24,6 +24,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("valid.early-musket", ValidEarlyMusket),
             Case("factory.early-musket-fresh-instances", FactoryEarlyMusketFreshInstances),
             Case("factory.early-musket-canonical-equality", FactoryEarlyMusketCanonicalEquality),
+            Case("factory.early-pistol-fresh-instances", FactoryEarlyPistolFreshInstances),
+            Case("factory.early-pistol-canonical-equality", FactoryEarlyPistolCanonicalEquality),
             Case("valid.early-pistol", ValidEarlyPistol),
             Case("valid.early-blunderbuss", ValidEarlyBlunderbuss),
             Case("valid.advanced-pistol", ValidAdvancedPistol),
@@ -1845,6 +1847,31 @@ namespace KingmakerGunslinger.DomainTests
                 FullRoundReload(1),
                 false);
             Assertions.Equal(expected, FirearmDefinitions.CreateEarlyMusket(), "Canonical early-musket definition changed.");
+        }
+
+        private static void FactoryEarlyPistolFreshInstances()
+        {
+            FirearmDefinition first = FirearmDefinitions.CreateEarlyPistol();
+            FirearmDefinition second = FirearmDefinitions.CreateEarlyPistol();
+            Assertions.False(ReferenceEquals(first, second),
+                "The canonical pistol factory must return a fresh definition.");
+            Assertions.False(ReferenceEquals(first.Reload, second.Reload),
+                "The canonical pistol factory must return a fresh reload profile.");
+        }
+
+        private static void FactoryEarlyPistolCanonicalEquality()
+        {
+            var expected = new FirearmDefinition(
+                FirearmEra.Early,
+                FirearmKind.Pistol,
+                1,
+                20,
+                1,
+                5,
+                StandardReload(1),
+                false);
+            Assertions.Equal(expected, FirearmDefinitions.CreateEarlyPistol(),
+                "Canonical early-pistol definition changed.");
         }
 
         private static void ValidEarlyMusket()
