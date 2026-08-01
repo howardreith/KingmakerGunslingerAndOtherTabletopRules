@@ -231,6 +231,22 @@
       "status": "active",
       "milestone": "Sprint 34",
       "notes": "Exact simple, martial, firearm, and light-armor proficiency aggregate for level one."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerGritResource",
+      "guid": "9876b3e744dd422b9c259d19861ad222",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Sprint 35",
+      "notes": "Persistent per-unit grit pool with a one-point floor and an exact Wisdom-modifier subscriber bonus."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerGritFeature",
+      "guid": "4c5aa9c4bc2843229b83eb57a80f9f1f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 35",
+      "notes": "Level-one Gunslinger feature that owns, initially restores, and does not level-up-refill the per-unit grit resource."
     }
   ]
 }

@@ -40,3 +40,8 @@ atomic spend/restore, and operation deduplication. Next bind these rules to an
 exact persistent Kingmaker per-unit ability resource, then add daily-rest and
 firearm critical/killing-blow recovery contracts. Scatter content remains
 fail-closed pending an authoritative numeric Blunderbuss cone distance.
+The second checkpoint binds that model to a stable native per-unit ability
+resource. Its level-one owner restores only on initial activation, never on
+level-up, and an exact active-unit subscriber produces `max(1, Wisdom modifier)`.
+Guarded detached-unit acceptance covers grant, spend, non-refill, restore, and
+external cleanup before rest/save-backed evidence is attempted.

@@ -115,6 +115,7 @@
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />
+    <Compile Include="Blueprints\GritBlueprints.cs" />
     <Compile Include="Blueprints\FirearmStateTokenBlueprints.cs" />
     <Compile Include="Blueprints\TestMusketBlueprints.cs" />
     <Compile Include="Blueprints\WeaponBlueprintAccess.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Firing\FirearmDischargeStatus.cs" />
     <Compile Include="Firing\ReferenceEventGate.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
+    <Compile Include="Grit\GritResourceAmountBonus.cs" />
     <Compile Include="Grit\GritPoolService.cs" />
     <Compile Include="Grit\GritPoolState.cs" />
     <Compile Include="Grit\GritTransactionResult.cs" />

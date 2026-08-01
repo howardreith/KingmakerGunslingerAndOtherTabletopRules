@@ -24,7 +24,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path) -> None:
     root = root.resolve()
-    validate_sprint34.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT)
+    validate_sprint34.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 29, 30)
     require_tokens(read(root, "planning/SPRINT-35-ENTRY-CRITERIA.md"),
         ["Wisdom modifier, minimum 1", "Daily reset", "duplicate spend",
          "unrelated unit stores"], "Sprint 35 entry criteria")
@@ -38,6 +38,19 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "scripts/Test-Sprint35GritDomain.ps1"),
         ["wisdom-minimum", "atomic-spend", "operation-dedupe", "focused-tests"],
         "Sprint 35 focused source tests")
+    require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/GritBlueprints.cs"),
+        ["BlueprintAbilityResource", "AddAbilityResources", "RestoreAmount = true",
+         "RestoreOnLevelUp = false", "ConfigureBaseAmount(resource, 1)"],
+        "Sprint 35 grit blueprints")
+    require_tokens(read(root, "src/KingmakerGunslinger/Grit/GritResourceAmountBonus.cs"),
+        ["IResourceAmountBonusHandler", "StatType.Wisdom", "wisdomModifier - 1",
+         "resource != Resource"], "Sprint 35 Wisdom resource bonus")
+    require_tokens(read(root, "scripts/Test-Sprint35GritBlueprints.ps1"),
+        ["persistent-unit-resource", "wisdom-floor-formula", "level-one-grant",
+         "manifest-identities"], "Sprint 35 grit blueprint tests")
+    require_tokens(read(root, "scripts/Test-Sprint35DisposableGritResource.ps1"),
+        ["scenario-allowlisted", "detached-only", "native-resource-path",
+         "no-level-refill"], "Sprint 35 disposable grit runtime tests")
     print("Sprint 35 source invariant validation passed with inherited Sprint 34 checks.")
 
 def main() -> int:

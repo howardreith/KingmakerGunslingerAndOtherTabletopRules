@@ -16,16 +16,19 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class GunslingerClassBlueprintSet
     {
         internal GunslingerClassBlueprintSet(BlueprintCharacterClass characterClass,
-            BlueprintProgression progression, BlueprintFeature proficiencies)
+            BlueprintProgression progression, BlueprintFeature proficiencies,
+            GritBlueprintSet grit)
         {
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
             Proficiencies = proficiencies ?? throw new ArgumentNullException("proficiencies");
+            Grit = grit ?? throw new ArgumentNullException("grit");
         }
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
         internal BlueprintFeature Proficiencies { get; private set; }
-        internal int Count { get { return 3; } }
+        internal GritBlueprintSet Grit { get; private set; }
+        internal int Count { get { return 3 + Grit.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -95,6 +98,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature proficiencies = registry.Register<BlueprintFeature>(
                 ProficienciesSymbol, () => CreateProficiencies(simple, martial,
                     lightArmor, firearmProficiency));
+            GritBlueprintSet grit = GritBlueprints.Register(registry);
             BlueprintCharacterClass characterClass = registry.Register<BlueprintCharacterClass>(
                 ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
                     startingPistol, blackPowder, leadBall));
@@ -103,11 +107,11 @@ namespace KingmakerGunslinger.Blueprints
 
             characterClass.Progression = progression;
             progression.Classes = new[] { characterClass };
-            progression.LevelEntries = CreateLevelEntries(proficiencies);
+            progression.LevelEntries = CreateLevelEntries(proficiencies, grit.Feature);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
-            return new GunslingerClassBlueprintSet(characterClass, progression, proficiencies);
+            return new GunslingerClassBlueprintSet(characterClass, progression, proficiencies, grit);
         }
 
         internal static GunslingerClassCatalogPublication Publish(
@@ -212,12 +216,13 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static LevelEntry[] CreateLevelEntries(BlueprintFeature proficiencies)
+        private static LevelEntry[] CreateLevelEntries(BlueprintFeature proficiencies,
+            BlueprintFeature grit)
         {
             var entries = new LevelEntry[20];
             for (int level = 1; level <= 20; level++)
                 entries[level - 1] = new LevelEntry { Level = level,
-                    Features = level == 1 ? new List<BlueprintFeatureBase> { proficiencies } :
+                    Features = level == 1 ? new List<BlueprintFeatureBase> { proficiencies, grit } :
                         new List<BlueprintFeatureBase>() };
             return entries;
         }

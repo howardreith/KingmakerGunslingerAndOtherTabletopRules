@@ -251,6 +251,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -315,6 +316,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview)
                 {
                     Complete(RunDisposableGunslingerRespecPreview());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerGritResource)
+                {
+                    Complete(RunDisposableGunslingerGritResource());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2796,6 +2803,150 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "controllers canceled and both disposable entities disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerGritResource()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
+            BlueprintCharacterClass gunslinger = gunslingerSet.CharacterClass;
+            BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            object firstController = null;
+            object secondController = null;
+            int maximumAfterGrant = -1;
+            int currentAfterGrant = -1;
+            int currentAfterSpend = -1;
+            int currentAfterLevelUp = -1;
+            int currentAfterRestore = -1;
+            int gunslingerLevel = -1;
+            bool cleaned = false;
+            string stage = "construct-disposable";
+            try
+            {
+                var chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                entity = chargen.Unit;
+                descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null ||
+                    descriptor.Resources == null)
+                    throw new InvalidOperationException(
+                        "Disposable grit descriptor or resource collection is unavailable.");
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native grit level-up controller method is unavailable.");
+
+                stage = "grant-level-one-grit";
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                firstController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(firstController,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable grit Gunslinger selection was rejected.");
+                mechanics.Invoke(firstController, null);
+                applyLevelup.Invoke(firstController, new object[] { descriptor });
+                cancel.Invoke(firstController, null);
+                firstController = null;
+                maximumAfterGrant = grit.GetMaxAmount(descriptor);
+                currentAfterGrant = descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "spend-and-level";
+                if (!descriptor.Resources.HasEnoughResource(grit, 1))
+                    throw new InvalidOperationException(
+                        "Fresh disposable grit resource cannot fund one point.");
+                descriptor.Resources.Spend(grit, 1);
+                currentAfterSpend = descriptor.Resources.GetResourceAmount(grit);
+                object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "LevelUp", false);
+                secondController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, levelUp });
+                if (!(bool)selectClass.Invoke(secondController,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable second Gunslinger level selection was rejected.");
+                mechanics.Invoke(secondController, null);
+                applyLevelup.Invoke(secondController, new object[] { descriptor });
+                cancel.Invoke(secondController, null);
+                secondController = null;
+                gunslingerLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                currentAfterLevelUp = descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "restore-grit";
+                descriptor.Resources.Restore(grit, 1);
+                currentAfterRestore = descriptor.Resources.GetResourceAmount(grit);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable grit resource failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (secondController != null && cancel != null)
+                    cancel.Invoke(secondController, null);
+                if (firstController != null && cancel != null)
+                    cancel.Invoke(firstController, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "maximumAfterGrant=" + maximumAfterGrant +
+                ";currentAfterGrant=" + currentAfterGrant +
+                ";currentAfterSpend=" + currentAfterSpend +
+                ";gunslingerLevel=" + gunslingerLevel +
+                ";currentAfterLevelUp=" + currentAfterLevelUp +
+                ";currentAfterRestore=" + currentAfterRestore;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("grit-initial-grant", "maximum=1;current=1",
+                    observed, maximumAfterGrant == 1 && currentAfterGrant == 1,
+                    "native AddAbilityResources on disposable Gunslinger level one"),
+                Assertion("grit-spend-no-level-refill",
+                    "spend reaches zero and Gunslinger level two remains zero",
+                    observed, currentAfterSpend == 0 && gunslingerLevel == 2 &&
+                        currentAfterLevelUp == 0,
+                    "native Spend plus RestoreOnLevelUp=false"),
+                Assertion("grit-capped-restore", "current=maximum=1",
+                    observed, currentAfterRestore == maximumAfterGrant,
+                    "native UnitAbilityResourceCollection.Restore"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "controllers canceled and disposable entity disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

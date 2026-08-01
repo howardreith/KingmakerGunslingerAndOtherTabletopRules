@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `3d4ba8f` (detached-replacement Gunslinger respec preview).
+- Audited HEAD: `e116c89` (bounded per-unit grit domain).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 35 grit resource and deed framework.
@@ -93,6 +93,13 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- The native grit integration is source-qualified: stable resource and owner
+  feature blueprints, exact Wisdom-floor subscriber, first-grant restore,
+  no level-up refill, and a guarded detached-unit acceptance scenario. Full
+  clean validation passes 703/703 tests; candidate package/DLL SHA-256 are
+  `6ba5a00008d8d72b14a3db1439e519a02d5b347bdcca6c9db4916954d17ab5bd` /
+  `8de23371914342fa66ae5a379c5d156ad874e4e233eaab081c094b068d6d6306`.
+
 - Sprint 32 exact-reference target planning is implemented with 10 focused
   cases. Native cone/volley aggregation adds 10, one-discharge transactions add
   seven, triple-explosion policy adds six, and the fail-closed cone-distance
@@ -158,10 +165,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-The dependency-free grit pool checkpoint passes 703/703 tests and strict
-packaging at 0.0.35. Bind its maximum/current semantics to an exact persistent
-Kingmaker per-unit ability resource, then qualify daily-rest and save/load
-behavior before implementing firearm critical/killing-blow recovery. Broad
+Commit the source-qualified native grit integration, then run mod-load-smoke
+and two fresh-process `disposable-gunslinger-grit-resource` passes. Record
+exact evidence and proceed to daily-rest and save/load behavior before
+implementing firearm critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

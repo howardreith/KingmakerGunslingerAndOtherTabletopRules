@@ -969,3 +969,23 @@
   `d3d59745b713386502aa9ef23eefdf2651ae2059130486324352604d93b64a44`.
 - This checkpoint is source-only. Next bind the exact Kingmaker per-unit
   resource and qualify persistence/rest before adding firearm recovery.
+
+## 2026-08-01 Sprint 35 native grit resource source qualification
+
+- Exact installed IL established that `BlueprintAbilityResource.GetMaxAmount`
+  computes and caps its base before raising `IResourceAmountBonusHandler`, and
+  that native `IncreaseResourceAmount` is an active owned-unit subscriber.
+- Added two stable blueprint identities: a one-point-base native grit resource
+  and its level-one owner feature. The feature restores on first activation but
+  not level-up; its exact resource-filtered subscriber adds only positive
+  `Wisdom modifier - 1`, yielding the rules floor without affecting other pools.
+- Added guarded `disposable-gunslinger-grit-resource` acceptance for native
+  grant, spend, second-level non-refill, capped restore, reference-snapshot
+  isolation, controller cancellation, and entity disposal.
+- Focused grit blueprint/runtime checks, inherited repository validation,
+  703/703 domain/reflection tests, clean Release build, output validation, and
+  strict package validation pass. Candidate package/DLL SHA-256 are
+  `6ba5a00008d8d72b14a3db1439e519a02d5b347bdcca6c9db4916954d17ab5bd` /
+  `8de23371914342fa66ae5a379c5d156ad874e4e233eaab081c094b068d6d6306`.
+- Runtime launch correctly refused the dirty tree. Commit this source-qualified
+  slice, then run exact mod load and two fresh-process feature passes.

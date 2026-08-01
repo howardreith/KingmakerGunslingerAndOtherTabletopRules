@@ -8,6 +8,11 @@
 - Added 12 focused cases, bringing the complete suite to 703 tests.
 - Advanced active build, package, runtime-request, and repository validation
   guards to version 0.0.35 while preserving inherited Sprint 34 checks.
+- Added stable native grit resource/feature blueprints, level-one progression
+  ownership, an exact Wisdom-floor maximum subscriber, initial restoration,
+  and fail-closed non-refill on ordinary level-up.
+- Added a guarded save-free detached-unit scenario for native grant, spend,
+  level-up retention, capped restore, and cleanup qualification.
 
 ## 0.0.31 — Sprint 31 early firearm catalog (in progress)
 

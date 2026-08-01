@@ -21,7 +21,7 @@ $checks = [ordered]@{
         $class.Contains('203992ef5b35c864390b4e4a1e200629') -and
         $class.Contains('6d3728d4e9c9898458fe5e9532951132')
     'level-one-grants-aggregate' =
-        $class.Contains('level == 1 ? new List<BlueprintFeatureBase> { proficiencies }')
+        $class.Contains('level == 1 ? new List<BlueprintFeatureBase> { proficiencies, grit }')
     'twenty-exact-level-rows' =
         $class.Contains('var entries = new LevelEntry[20]') -and
         $class.Contains('progression.LevelEntries.Length != 20')
@@ -32,7 +32,7 @@ $checks = [ordered]@{
         $class.Contains('result.ReflexSave = goodSave') -and
         $class.Contains('result.WillSave = poorSave')
     'bootstrap-registers-three-blueprints' =
-        $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 27') -and
+        $bootstrap.Contains('ExpectedRegisteredBlueprintCount = 29') -and
         $bootstrap.Contains('GunslingerClassBlueprints.Register(')
     'catalog-publication-is-verified-and-reversible' =
         $class.Contains('GunslingerClassCatalogPublication Publish(') -and

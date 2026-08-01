@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 27;
+        internal const int ExpectedRegisteredBlueprintCount = 29;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;

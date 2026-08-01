@@ -32,6 +32,7 @@ $expected = @(
     'disposable-gunslinger-levelup-preview',
     'disposable-gunslinger-multiclass-preview',
     'disposable-gunslinger-respec-preview',
+    'disposable-gunslinger-grit-resource',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',

@@ -24,9 +24,11 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path, version: str = VERSION,
              informational_version: str = INFORMATIONAL_VERSION,
-             test_count: int = TEST_COUNT) -> None:
+             test_count: int = TEST_COUNT, active_blueprints: int = 27,
+             manifest_blueprints: int = 28) -> None:
     root = root.resolve()
-    validate_sprint33.validate(root, version, informational_version, test_count, 27, 28)
+    validate_sprint33.validate(root, version, informational_version, test_count,
+                              active_blueprints, manifest_blueprints)
     require_tokens(read(root, "planning/SPRINT-34-ENTRY-CRITERIA.md"),
         ["d10 hit dice", "full base attack bonus", "levels 1 through 20",
          "multiclass, level-up, respec"], "Sprint 34 entry criteria")
