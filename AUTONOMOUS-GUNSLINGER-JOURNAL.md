@@ -1049,3 +1049,21 @@
   `997ad369b55856321a3c1ce8593dc219864a0a38857df086e46c5a8902f8e8d6`.
 - Daily grit reset is runtime-qualified. Continue to exact save/load and
   multiclass/respec persistence; do not stop at this checkpoint.
+
+## 2026-08-01 Sprint 35 native grit persistence entry
+
+- Exact installed contracts mark `UnitAbilityResource`'s blueprint and amount
+  as JSON properties with a JSON constructor. The owning collection's
+  serialized `PersistantResources` setter rebuilds its blueprint-keyed map;
+  native respec transfers this same property to the replacement unit.
+- Added a guarded no-file round trip using Kingmaker's exact
+  `DefaultJsonSettings`: detached Wisdom 14 Gunslinger grit reaches maximum two,
+  spends to one, serializes to JSON, deserializes into a distinct exact-blueprint
+  record, and reconstructs current one on a second detached descriptor.
+- Five focused persistence checks, 40 runtime-preflight checks, inherited
+  validation, 703/703 tests, clean Release build, and strict packaging pass.
+  Candidate package/DLL SHA-256 are
+  `ccf5facff8d846c8b6ac3598115fe9cebb57df9c6570b1a7aceb7f62b8cf3e2f` /
+  `4d519cd6d807d01da2499402599101e5e7c599f951b9e978bb17a6b89ad67c61`.
+- Commit, then run exact mod load and two independent fresh-process persistence
+  PASS runs. This invokes no save API and writes no save file.

@@ -51,3 +51,13 @@ resource and calls native full `Restore` whenever
 Kingmaker build that eligibility method returns true unconditionally. Grit
 therefore uses the ordinary resource rest path; no global rest patch or custom
 rest subscriber is required.
+
+## Native persistence contract
+
+Exact installed IL marks `UnitAbilityResource(BlueprintScriptableObject)` as a
+JSON constructor and both `Blueprint` and `Amount` as JSON properties. The
+owning collection exposes serialized `PersistantResources`; its setter rebuilds
+the blueprint-keyed dictionary. A guarded test must use Kingmaker's exact
+`DefaultJsonSettings` to round-trip a non-maximum current value into a distinct
+record and reconstruct it on a fresh detached descriptor. This proves the
+native save representation without authorizing or writing a real save.

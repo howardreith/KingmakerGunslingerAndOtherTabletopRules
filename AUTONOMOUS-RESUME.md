@@ -111,6 +111,13 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Native grit persistence round trip is source-qualified: a non-maximum current
+  value uses Kingmaker `DefaultJsonSettings`, deserializes to a distinct record
+  with the exact grit blueprint, and rebuilds a fresh detached resource map.
+  Complete suite remains 703/703; candidate package/DLL SHA-256 are
+  `ccf5facff8d846c8b6ac3598115fe9cebb57df9c6570b1a7aceb7f62b8cf3e2f` /
+  `4d519cd6d807d01da2499402599101e5e7c599f951b9e978bb17a6b89ad67c61`.
+
 - Exact IL shows native `RestController.ApplyRest(UnitDescriptor)` restores all
   registered unit resources and the supported-build eligibility helper always
   permits resource restore. A guarded detached `disposable-gunslinger-grit-rest`
@@ -197,8 +204,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Native daily grit rest is runtime-qualified. Next qualify save/load and
-multiclass/respec persistence before implementing firearm
+Commit the source-qualified `disposable-gunslinger-grit-persistence` scenario,
+then run exact mod load and two fresh-process feature passes. Next close any
+remaining multiclass/respec persistence evidence before implementing firearm
 critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them

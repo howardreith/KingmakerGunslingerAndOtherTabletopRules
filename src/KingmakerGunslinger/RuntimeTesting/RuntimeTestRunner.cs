@@ -253,6 +253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -329,6 +330,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerGritRest)
                 {
                     Complete(RunDisposableGunslingerGritRest());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence)
+                {
+                    Complete(RunDisposableGunslingerGritPersistence());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3064,6 +3071,144 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "controller canceled and disposable entity disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerGritPersistence()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
+            BlueprintCharacterClass gunslinger = gunslingerSet.CharacterClass;
+            BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData originalEntity = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData replacementEntity = null;
+            object controller = null;
+            int maximum = -1;
+            int originalCurrent = -1;
+            int replacementCurrent = -1;
+            int serializedRecordCount = -1;
+            bool distinctRecord = false;
+            bool exactBlueprint = false;
+            bool cleaned = false;
+            string json = string.Empty;
+            string stage = "construct-disposables";
+            try
+            {
+                var original = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                var replacement = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                originalEntity = original.Unit;
+                replacementEntity = replacement.Unit;
+                Kingmaker.UnitLogic.UnitDescriptor originalDescriptor =
+                    originalEntity == null ? null : originalEntity.Descriptor;
+                Kingmaker.UnitLogic.UnitDescriptor replacementDescriptor =
+                    replacementEntity == null ? null : replacementEntity.Descriptor;
+                if (originalDescriptor == null || replacementDescriptor == null ||
+                    originalDescriptor.Resources == null || replacementDescriptor.Resources == null)
+                    throw new InvalidOperationException(
+                        "Disposable grit persistence descriptors are unavailable.");
+                originalDescriptor.Stats.Wisdom.BaseValue = 14;
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native grit persistence controller method is unavailable.");
+
+                stage = "grant-and-spend";
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { originalDescriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable grit persistence Gunslinger selection was rejected.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { originalDescriptor });
+                cancel.Invoke(controller, null);
+                controller = null;
+                maximum = grit.GetMaxAmount(originalDescriptor);
+                originalDescriptor.Resources.Spend(grit, 1);
+                originalCurrent = originalDescriptor.Resources.GetResourceAmount(grit);
+
+                stage = "native-json-roundtrip";
+                Kingmaker.UnitLogic.UnitAbilityResource record =
+                    originalDescriptor.Resources.PersistantResources.Single(value =>
+                        value != null && ReferenceEquals(value.Blueprint, grit));
+                json = JsonConvert.SerializeObject(record, Formatting.None,
+                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings.DefaultSettings);
+                Kingmaker.UnitLogic.UnitAbilityResource clone =
+                    JsonConvert.DeserializeObject<Kingmaker.UnitLogic.UnitAbilityResource>(json,
+                        Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings.DefaultSettings);
+                if (clone == null)
+                    throw new InvalidOperationException(
+                        "Native grit persistence JSON round trip returned null.");
+                distinctRecord = !ReferenceEquals(record, clone);
+                exactBlueprint = ReferenceEquals(clone.Blueprint, grit);
+                replacementDescriptor.Resources.PersistantResources =
+                    new List<Kingmaker.UnitLogic.UnitAbilityResource> { clone };
+                serializedRecordCount = replacementDescriptor.Resources.PersistantResources.Count;
+                replacementCurrent = replacementDescriptor.Resources.GetResourceAmount(grit);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable grit persistence failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (replacementEntity != null) replacementEntity.Dispose();
+                if (originalEntity != null) originalEntity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (originalEntity == null || !ContainsReference(allUnits, originalEntity)) &&
+                    (replacementEntity == null || !ContainsReference(allUnits, replacementEntity));
+            }
+            string observed = "maximum=" + maximum + ";originalCurrent=" +
+                originalCurrent + ";replacementCurrent=" + replacementCurrent +
+                ";records=" + serializedRecordCount + ";jsonLength=" + json.Length;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("nontrivial-grit-fixture", "maximum=2;current=1",
+                    observed, maximum == 2 && originalCurrent == 1,
+                    "detached Wisdom 14 Gunslinger plus native Spend"),
+                Assertion("native-json-roundtrip", "distinct record; exact grit blueprint",
+                    observed, distinctRecord && exactBlueprint && json.Length > 0,
+                    "DefaultJsonSettings and UnitAbilityResource JsonConstructor"),
+                Assertion("persistent-collection-reconstruction", "one grit record at current=1",
+                    observed, serializedRecordCount == 1 && replacementCurrent == 1,
+                    "UnitAbilityResourceCollection.PersistantResources setter"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "controller canceled and both disposable entities disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
