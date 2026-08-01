@@ -249,6 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -301,6 +302,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview)
                 {
                     Complete(RunDisposableGunslingerLevelUpPreview());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview)
+                {
+                    Complete(RunDisposableGunslingerMulticlassPreview());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2437,6 +2444,150 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, selected && previewBefore == 1 && previewAfter == 2 &&
                         sourceAfter == 1 && queuedCount == 2,
                     "native LevelUp mode, SelectClass, and ApplyClassMechanics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "both controllers canceled and disposable entity disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerMulticlassPreview()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
+                .Single(value => value != null && value.AssetGuid ==
+                    "48ac8db94d5de7645906c7d0ad3bcfbd");
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.UI.LevelUp.ChargenUnit chargen = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            object seedController = null;
+            object levelController = null;
+            int fighterBefore = -1;
+            int fighterSeeded = -1;
+            int sourceGunslingerBefore = -1;
+            int previewFighter = -1;
+            int previewGunslingerBefore = -1;
+            int previewGunslingerAfter = -1;
+            int sourceFighterAfter = -1;
+            int sourceGunslingerAfter = -1;
+            int queuedCount = -1;
+            bool selected = false;
+            bool cleaned = false;
+            try
+            {
+                chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                entity = chargen.Unit;
+                descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable multiclass source descriptor is unavailable.");
+                fighterBefore = descriptor.Progression.GetClassLevel(fighter);
+                sourceGunslingerBefore = descriptor.Progression.GetClassLevel(gunslinger);
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native multiclass controller method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seedController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seedController,
+                    new object[] { fighter, false }))
+                    throw new InvalidOperationException(
+                        "Disposable Fighter level-one seed selection was rejected.");
+                mechanics.Invoke(seedController, null);
+                applyLevelup.Invoke(seedController, new object[] { descriptor });
+                cancel.Invoke(seedController, null);
+                seedController = null;
+                fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
+
+                object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "LevelUp", false);
+                levelController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, levelUp });
+                Kingmaker.UnitLogic.UnitDescriptor preview =
+                    ReadExactMember(levelController, "Preview") as
+                        Kingmaker.UnitLogic.UnitDescriptor;
+                if (preview == null || preview.Progression == null ||
+                    ReferenceEquals(preview, descriptor))
+                    throw new InvalidOperationException(
+                        "Exact isolated multiclass preview is unavailable.");
+                previewFighter = preview.Progression.GetClassLevel(fighter);
+                previewGunslingerBefore = preview.Progression.GetClassLevel(gunslinger);
+                selected = (bool)selectClass.Invoke(levelController,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(levelController, null);
+                queuedCount = SnapshotReferences(
+                    ReadExactMember(levelController, "LevelUpActions")).Length;
+                previewGunslingerAfter = preview.Progression.GetClassLevel(gunslinger);
+                sourceFighterAfter = descriptor.Progression.GetClassLevel(fighter);
+                sourceGunslingerAfter = descriptor.Progression.GetClassLevel(gunslinger);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (levelController != null && cancel != null)
+                    cancel.Invoke(levelController, null);
+                if (seedController != null && cancel != null)
+                    cancel.Invoke(seedController, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "fighterBefore=" + fighterBefore +
+                ";fighterSeeded=" + fighterSeeded +
+                ";gunslingerBefore=" + sourceGunslingerBefore +
+                ";previewFighter=" + previewFighter +
+                ";previewGunslingerBefore=" + previewGunslingerBefore +
+                ";selected=" + selected +
+                ";previewGunslingerAfter=" + previewGunslingerAfter +
+                ";sourceFighterAfter=" + sourceFighterAfter +
+                ";sourceGunslingerAfter=" + sourceGunslingerAfter +
+                ";queued=" + queuedCount;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("fighter-level-one-seed", "isolated Fighter 0 -> 1",
+                    observed, fighterBefore == 0 && fighterSeeded == 1 &&
+                        sourceGunslingerBefore == 0,
+                    "exact Fighter blueprint and disposable ApplyLevelup"),
+                Assertion("gunslinger-multiclass-preview",
+                    "preview Fighter 1/Gunslinger 1; source Fighter 1/Gunslinger 0",
+                    observed, selected && previewFighter == 1 &&
+                        previewGunslingerBefore == 0 && previewGunslingerAfter == 1 &&
+                        sourceFighterAfter == 1 && sourceGunslingerAfter == 0 &&
+                        queuedCount == 2,
+                    "native LevelUp mode Gunslinger class selection"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "both controllers canceled and disposable entity disposed"),
