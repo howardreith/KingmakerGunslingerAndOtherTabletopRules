@@ -21,11 +21,11 @@ $checks = [ordered]@{
         $blueprints.Contains('ConfigureEmptyArray(amountField.FieldType, amount, "ArchetypesDiv")')
     'exact-resource-filter' = $bonus.Contains('resource != Resource') -and
         $bonus.Contains('fact == null || !fact.Active')
-    'first-class-level-reconcile' = $initial.Contains('IUnitGainLevelHandler') -and
+    'first-class-level-reconcile' = $initial.Contains('IUnitReapplyFeaturesOnLevelUpHandler') -and
         $initial.Contains('GetClassLevel(CharacterClass) != 1') -and
         $initial.Contains('Owner.Resources.Restore(Resource)')
-    'unrelated-unit-and-class-filter' = $initial.Contains('!ReferenceEquals(unit, Owner)') -and
-        $initial.Contains('!ReferenceEquals(characterClass, CharacterClass)')
+    'unit-scoped-reapply' = $initial.Contains('IUnitSubscriber') -and
+        $initial.Contains('HandleUnitReapplyFeaturesOnLevelUp()')
     'level-one-grant' = $class.Contains('new List<BlueprintFeatureBase> { proficiencies, grit }')
     'manifest-identities' = @($manifest.entries | Where-Object {
         $_.symbol -in @('KMG.Classes.GunslingerGritResource',

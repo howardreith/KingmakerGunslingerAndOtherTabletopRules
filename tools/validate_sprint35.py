@@ -47,7 +47,7 @@ def validate(root: Path) -> None:
         ["IResourceAmountBonusHandler", "StatType.Wisdom", "wisdomModifier - 1",
          "resource != Resource"], "Sprint 35 Wisdom resource bonus")
     require_tokens(read(root, "src/KingmakerGunslinger/Grit/GritInitialLevelRestore.cs"),
-        ["IUnitGainLevelHandler", "!ReferenceEquals(unit, Owner)",
+        ["IUnitReapplyFeaturesOnLevelUpHandler", "IUnitSubscriber",
          "GetClassLevel(CharacterClass) != 1", "Owner.Resources.Restore(Resource)"],
         "Sprint 35 initial grit reconciliation")
     require_tokens(read(root, "scripts/Test-Sprint35GritBlueprints.ps1"),

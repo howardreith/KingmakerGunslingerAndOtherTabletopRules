@@ -1085,3 +1085,22 @@
   package/DLL SHA-256 are
   `92b0c3133e81c5cac2b1abb0a8c0fb1f8f952bf28b1120350db54dae703e2686` /
   `400a78b2c5950f45978bacb1e0aaeabfff4afa172c27639818a6f39bb292de2a`.
+
+### Persistence lifecycle mode change
+
+- Repair run `20260801T1932396799284Z-disposable-gunslinger-grit-persistence`
+  reproduced maximum two/current zero after spend. The global gain-level handler
+  did not run on the detached `ApplyLevelup` path.
+- Exact `ApplyLevelup` IL shows no gain-level event. It applies queued actions,
+  then invokes unit progression `ReapplyFeaturesOnLevelUp`; native
+  `AddAbilityResources.RestoreOnLevelUp` uses the corresponding unit-scoped
+  subscriber interface.
+- Replaced the unused global hook with that exact unit-scoped reapply contract,
+  retaining the Gunslinger-class-level-equals-one guard. This is a new
+  evidence-supported lifecycle architecture, not a third variation of the
+  disproven global event theory.
+- Unit-scoped repair passes nine focused blueprint checks, inherited validation,
+  703/703 tests, clean Release build, and strict packaging. Candidate
+  package/DLL SHA-256 are
+  `0766e2c3e36dd8d84c8efad04e0e5293eda92bb1d101c898066e3af1f96ff503` /
+  `3b9eccf6770898cc89493fc51a1754feda7a7459d32fbcef6672bda82b52f4d2`.

@@ -10,17 +10,14 @@ namespace KingmakerGunslinger.Grit
     /// recalculation complete. Later Gunslinger or unrelated levels never refill.
     /// </summary>
     public sealed class GritInitialLevelRestore : OwnedGameLogicComponent<UnitDescriptor>,
-        IUnitGainLevelHandler, IGlobalSubscriber
+        IUnitReapplyFeaturesOnLevelUpHandler, IUnitSubscriber
     {
         public BlueprintAbilityResource Resource;
         public BlueprintCharacterClass CharacterClass;
 
-        public void HandleUnitGainLevel(UnitDescriptor unit,
-            BlueprintCharacterClass characterClass)
+        public void HandleUnitReapplyFeaturesOnLevelUp()
         {
-            if (unit == null || Owner == null || !ReferenceEquals(unit, Owner) ||
-                Resource == null || CharacterClass == null ||
-                !ReferenceEquals(characterClass, CharacterClass) ||
+            if (Owner == null || Resource == null || CharacterClass == null ||
                 Owner.Progression == null ||
                 Owner.Progression.GetClassLevel(CharacterClass) != 1)
                 return;

@@ -120,6 +120,14 @@ definition of done or a listed genuine human-input hard stop.
   package/DLL SHA-256 are
   `92b0c3133e81c5cac2b1abb0a8c0fb1f8f952bf28b1120350db54dae703e2686` /
   `400a78b2c5950f45978bacb1e0aaeabfff4afa172c27639818a6f39bb292de2a`.
+- Run `20260801T1932396799284Z` reproduced the initial-fill failure. Exact
+  `ApplyLevelup` IL proves it does not raise the global gain-level event; it
+  explicitly invokes unit-scoped feature reapply after queued actions. The
+  repair now uses `IUnitReapplyFeaturesOnLevelUpHandler` with the same exact
+  class-level-one guard. It passes 703/703 tests and strict packaging;
+  candidate package/DLL SHA-256 are
+  `0766e2c3e36dd8d84c8efad04e0e5293eda92bb1d101c898066e3af1f96ff503` /
+  `3b9eccf6770898cc89493fc51a1754feda7a7459d32fbcef6672bda82b52f4d2`.
 
 - Native grit persistence round trip is source-qualified: a non-maximum current
   value uses Kingmaker `DefaultJsonSettings`, deserializes to a distinct record
