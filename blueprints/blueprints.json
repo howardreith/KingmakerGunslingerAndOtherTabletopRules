@@ -327,6 +327,46 @@
       "status": "active",
       "milestone": "Sprint 36",
       "notes": "Move action spending one grit to repair one exact equipped misfire-broken firearm."
+    },
+    {
+      "symbol": "KMG.Classes.Nimble1",
+      "guid": "9b59c47d419a4a12a32a75bfa71df202",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 37",
+      "notes": "Level-two cumulative first point of light/no-armor dodge AC from Nimble."
+    },
+    {
+      "symbol": "KMG.Classes.Nimble2",
+      "guid": "1b9371b1de03410f9882be36e9c2bfbd",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 37",
+      "notes": "Level-six cumulative second point of light/no-armor dodge AC from Nimble."
+    },
+    {
+      "symbol": "KMG.Classes.Nimble3",
+      "guid": "070e58e11fd14d1c86c2db4ce0712ca5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 37",
+      "notes": "Level-ten cumulative third point of light/no-armor dodge AC from Nimble."
+    },
+    {
+      "symbol": "KMG.Classes.Nimble4",
+      "guid": "b6461c0d02c84c19a1daf0f641953879",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 37",
+      "notes": "Level-fourteen cumulative fourth point of light/no-armor dodge AC from Nimble."
+    },
+    {
+      "symbol": "KMG.Classes.Nimble5",
+      "guid": "c626980ecb54443fb107019e5b1207ab",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 37",
+      "notes": "Level-eighteen cumulative fifth and final point of light/no-armor dodge AC from Nimble."
     }
   ]
 }

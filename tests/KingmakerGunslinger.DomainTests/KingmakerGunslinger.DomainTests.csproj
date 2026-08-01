@@ -73,6 +73,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearRequest.cs"><Link>Deeds\QuickClearRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearService.cs"><Link>Deeds\QuickClearService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\QuickClearStatus.cs"><Link>Deeds\QuickClearStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleArmor.cs"><Link>Classes\NimbleArmor.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleService.cs"><Link>Classes\NimbleService.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

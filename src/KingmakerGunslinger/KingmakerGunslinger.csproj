@@ -122,6 +122,9 @@
     <Compile Include="Blueprints\WeaponTypeMechanicalAccess.cs" />
     <Compile Include="Classes\GunslingerClassChassis.cs" />
     <Compile Include="Classes\GunslingerClassLevel.cs" />
+    <Compile Include="Classes\NimbleArmor.cs" />
+    <Compile Include="Classes\NimbleArmorClassBonus.cs" />
+    <Compile Include="Classes\NimbleService.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
@@ -155,6 +158,7 @@
     <Compile Include="Blueprints\DeadeyeBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerDodgeBlueprints.cs" />
     <Compile Include="Blueprints\QuickClearBlueprints.cs" />
+    <Compile Include="Blueprints\NimbleBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />

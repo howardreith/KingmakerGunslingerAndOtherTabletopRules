@@ -267,6 +267,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDodge &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerNimble &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -373,6 +374,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear)
                 {
                     Complete(RunDisposableGunslingerQuickClear());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableGunslingerNimble)
+                {
+                    Complete(RunDisposableGunslingerNimble());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3262,6 +3268,106 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerNimble()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemArmor lightArmor = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintItemArmor>().Where(value => value.Type != null &&
+                    value.Type.IsArmor && value.Type.ProficiencyGroup ==
+                    ArmorProficiencyGroup.Light)
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+            BlueprintItemArmor mediumArmor = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintItemArmor>().Where(value => value.Type != null &&
+                    value.Type.IsArmor && value.Type.ProficiencyGroup ==
+                    ArmorProficiencyGroup.Medium)
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            int baseAc = -1, noArmorAc = -1, baseFlat = -1, nimbleFlat = -1,
+                lightWith = -1, lightWithout = -1, mediumWith = -1,
+                mediumWithout = -1;
+            bool cleaned = false; string stage = "construct-disposable";
+            try
+            {
+                if (lightArmor == null || mediumArmor == null)
+                    throw new InvalidOperationException("Native light/medium armor fixtures are unavailable.");
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                baseAc = unit.Descriptor.Stats.AC.ModifiedValue;
+                baseFlat = unit.Descriptor.Stats.AC.FlatFooted;
+
+                stage = "no-armor-five-ranks";
+                foreach (BlueprintFeature feature in gunslinger.Nimble.Features)
+                    unit.Descriptor.AddFact(feature);
+                noArmorAc = unit.Descriptor.Stats.AC.ModifiedValue;
+                nimbleFlat = unit.Descriptor.Stats.AC.FlatFooted;
+
+                stage = "light-armor";
+                unit.Body.Armor.InsertItem(new ItemEntityArmor(lightArmor));
+                lightWith = unit.Descriptor.Stats.AC.ModifiedValue;
+                foreach (BlueprintFeature feature in gunslinger.Nimble.Features)
+                    unit.Descriptor.RemoveFact(feature);
+                lightWithout = unit.Descriptor.Stats.AC.ModifiedValue;
+                foreach (BlueprintFeature feature in gunslinger.Nimble.Features)
+                    unit.Descriptor.AddFact(feature);
+
+                stage = "medium-armor";
+                unit.Body.Armor.RemoveItem(false);
+                unit.Body.Armor.InsertItem(new ItemEntityArmor(mediumArmor));
+                mediumWith = unit.Descriptor.Stats.AC.ModifiedValue;
+                foreach (BlueprintFeature feature in gunslinger.Nimble.Features)
+                    unit.Descriptor.RemoveFact(feature);
+                mediumWithout = unit.Descriptor.Stats.AC.ModifiedValue;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Nimble failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    foreach (BlueprintFeature feature in gunslinger.Nimble.Features)
+                        if (unit.Descriptor.HasFact(feature)) unit.Descriptor.RemoveFact(feature);
+                    if (unit.Body != null && unit.Body.Armor.HasArmor)
+                        unit.Body.Armor.RemoveItem(false);
+                    unit.Dispose();
+                }
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit));
+            }
+            string observed = "base=" + baseAc + ";noArmor=" + noArmorAc +
+                ";baseFlat=" + baseFlat + ";nimbleFlat=" + nimbleFlat +
+                ";lightWith=" + lightWith + ";lightWithout=" + lightWithout +
+                ";mediumWith=" + mediumWith + ";mediumWithout=" + mediumWithout;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("nimble-no-armor", "+5 ordinary AC", observed,
+                    noArmorAc == baseAc + 5, "five cumulative native Dodge modifiers"),
+                Assertion("nimble-flat-footed", "no Nimble bonus", observed,
+                    nimbleFlat == baseFlat, "ModifiableValueArmorClass.FlatFooted"),
+                Assertion("nimble-light-armor", "+5 ordinary AC", observed,
+                    lightWith == lightWithout + 5, "exact native light armor slot"),
+                Assertion("nimble-medium-armor", "+0 ordinary AC", observed,
+                    mediumWith == mediumWithout, "exact native medium armor slot"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned, "armor/facts removed and detached unit disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerQuickClear()

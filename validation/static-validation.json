@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.36-s36-core-deeds",
-  "version": "0.0.36",
+  "milestone": "0.0.37-s37-class-integration",
+  "version": "0.0.37",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 732,
+    "testCount": 737,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

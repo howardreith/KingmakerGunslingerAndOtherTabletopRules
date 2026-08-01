@@ -1303,3 +1303,26 @@
   `e1c3d9273c73b0e1722922896128c60d21f035558b53cbb9f6fb43e9c792f746`.
 - Quick Clear is runtime-qualified. Continue immediately to the next incomplete
   fidelity row; Sprint 36 is not a stopping condition.
+
+## 2026-08-01 Sprint 37 Nimble source qualification
+
+- Advanced the active version to `0.0.37-s37-class-integration` after the
+  runtime-qualified Sprint 36 deed bundle.
+- The authoritative rule is represented by five cumulative +1 class facts at
+  levels 2, 6, 10, 14, and 18. Each adds an exact native Dodge-descriptor AC
+  modifier only in light or no armor and refreshes on exact armor-slot or active
+  equipment-set changes.
+- Installed metadata inspection confirmed `AddStatBonus`, the public
+  `ModifiableValue.AddModifier(int, Fact, string, ModifierDescriptor)` contract,
+  exact equipment subscriber methods, and `ModifiableValueArmorClass.FlatFooted`.
+  Native Dodge semantics therefore remove Nimble whenever Dexterity AC is lost.
+- Added a save-free detached `disposable-gunslinger-nimble` scenario proving
+  cumulative +5 with no armor, flat-footed exclusion, +5 in light armor, zero
+  in medium armor, and exact cleanup.
+- Sprint 37/inherited validation, 737/737 tests, exact-reference Release build,
+  strict package validation, and 15 validation-dispatch checks pass. Candidate
+  package/DLL SHA-256 are
+  `3a322ff1b18dcc1e9cf80cbb2d89952b9b01a22ecc4b4a73400446bcd987a1ba` /
+  `0188eb4ea037af6e81ed6c15674ee1735eed963302a70b2ccf45e38424bd6e40`.
+- Next action: commit this reconstructable source checkpoint, exact mod load,
+  and two independent fresh-process Nimble PASS runs.

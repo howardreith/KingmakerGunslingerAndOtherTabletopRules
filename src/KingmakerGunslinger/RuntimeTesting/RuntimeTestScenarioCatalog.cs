@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-dodge";
         internal const string DisposableGunslingerQuickClear =
             "disposable-gunslinger-quick-clear";
+        internal const string DisposableGunslingerNimble =
+            "disposable-gunslinger-nimble";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -77,6 +79,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerDeadeye,
                 DisposableGunslingerDodge,
                 DisposableGunslingerQuickClear,
+                DisposableGunslingerNimble,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

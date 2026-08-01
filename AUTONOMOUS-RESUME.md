@@ -11,10 +11,9 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `fb4fd51` (runtime-qualified Quick Clear source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 36 level-one deed bundle is runtime-qualified
-  except the documented Dodge movement alternative; select the next incomplete
-  fidelity row.
-- Version: `0.0.36`.
+- Current checkpoint: Sprint 37 Nimble is source-qualified and awaits
+  exact-commit guarded runtime qualification.
+- Version: `0.0.37`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -169,6 +168,14 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Nimble has five cumulative +1 native Dodge facts at levels 2/6/10/14/18,
+  exact light/no-armor gating, equipment refresh, and native flat-footed
+  exclusion. The guarded detached scenario covers no/light/medium armor and
+  cleanup. Sprint 37 validation, 737/737 tests, exact-reference Release build,
+  strict packaging, and 15 dispatch checks pass. Candidate package/DLL SHA-256:
+  `3a322ff1b18dcc1e9cf80cbb2d89952b9b01a22ecc4b4a73400446bcd987a1ba` /
+  `0188eb4ea037af6e81ed6c15674ee1735eed963302a70b2ccf45e38424bd6e40`.
+
 - Quick Clear now has exact standard and move actions over one equipped
   item-owned misfire-broken firearm. Standard requires positive grit without
   spending; move spends one. Both repair without a kit and fail atomically.
@@ -316,9 +323,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the Quick Clear runtime evidence and select the next incomplete fidelity
-row. Preserve the Dodge movement alternative as a documented pending adaptation
-until deterministic destination selection is safe. Broad
+Commit the Nimble source checkpoint, then exact mod load and run two independent
+`disposable-gunslinger-nimble` fresh-process scenarios. Preserve the Dodge
+movement alternative as a documented pending adaptation until deterministic
+destination selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

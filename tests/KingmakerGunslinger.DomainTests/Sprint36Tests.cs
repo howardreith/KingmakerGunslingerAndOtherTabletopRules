@@ -1,6 +1,7 @@
 using System;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Classes;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -238,6 +239,55 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new QuickClearService().Evaluate(new QuickClearRequest(mode,
                 exact, condition, misfire, grit));
+        }
+
+        private static void NimbleExactLevels()
+        {
+            var service = new NimbleService();
+            int[] levels = { 2, 6, 10, 14, 18, 20 };
+            int[] expected = { 1, 2, 3, 4, 5, 5 };
+            for (int index = 0; index < levels.Length; index++)
+                Assertions.Equal(expected[index], service.CalculateBonus(levels[index],
+                    NimbleArmor.Light, true), "Nimble exact level progression changed.");
+        }
+
+        private static void NimbleBetweenLevels()
+        {
+            var service = new NimbleService();
+            Assertions.Equal(0, service.CalculateBonus(1, NimbleArmor.None, true),
+                "Nimble activated before level two.");
+            Assertions.Equal(1, service.CalculateBonus(5, NimbleArmor.None, true),
+                "Nimble increased before level six.");
+            Assertions.Equal(4, service.CalculateBonus(17, NimbleArmor.Light, true),
+                "Nimble increased before level eighteen.");
+        }
+
+        private static void NimbleArmorGate()
+        {
+            var service = new NimbleService();
+            Assertions.Equal(3, service.CalculateBonus(10, NimbleArmor.None, true),
+                "No-armor Nimble was rejected.");
+            Assertions.Equal(0, service.CalculateBonus(10, NimbleArmor.Medium, true),
+                "Medium armor retained Nimble.");
+            Assertions.Equal(0, service.CalculateBonus(10, NimbleArmor.Heavy, true),
+                "Heavy armor retained Nimble.");
+        }
+
+        private static void NimbleDexterityLoss()
+        {
+            Assertions.Equal(0, new NimbleService().CalculateBonus(18,
+                NimbleArmor.Light, false), "Nimble survived Dexterity AC loss.");
+        }
+
+        private static void NimbleInvalidInput()
+        {
+            var service = new NimbleService();
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                service.CalculateBonus(-1, NimbleArmor.Light, true),
+                "Negative Gunslinger level was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                service.CalculateBonus(2, NimbleArmor.Unknown, true),
+                "Unknown Nimble armor was accepted.");
         }
     }
 }

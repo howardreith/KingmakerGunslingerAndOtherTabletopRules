@@ -1,11 +1,20 @@
 # Changelog
 
-## 0.0.36 — Sprint 36 core deed bundle (in progress)
+## 0.0.37 — Sprint 37 class integration (in progress)
+
+- Began the next progression slice with exact cumulative Nimble ranks at levels
+  2, 6, 10, 14, and 18, using native Dodge AC semantics in light or no armor.
+- Advanced build, package, runtime-request, and repository validation guards to
+  version 0.0.37 while preserving inherited Sprint 36 evidence.
+
+## 0.0.36 — Sprint 36 core deed bundle
 
 - Began the coherent level-one Deadeye, Gunslinger's Dodge, and Quick Clear
   checkpoint on the runtime-qualified Sprint 35 grit foundation.
 - Advanced build, package, runtime-request, and repository validation guards to
   version 0.0.36 while preserving all inherited Sprint 35 evidence.
+- Runtime-qualified Deadeye, the Gunslinger's Dodge drop-prone branch, and both
+  Quick Clear action-economy variants on exact source commits.
 
 ## 0.0.35 — Sprint 35 grit resource (in progress)
 
