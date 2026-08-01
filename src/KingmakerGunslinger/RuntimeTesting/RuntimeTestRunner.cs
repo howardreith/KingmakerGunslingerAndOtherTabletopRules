@@ -3624,7 +3624,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmCondition.Broken));
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(5);
                 var untrainedAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
-                untrainedAttack.AutoHit = true;
                 Rulebook.Trigger(untrainedAttack);
                 untrainedAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
@@ -3646,7 +3645,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmCondition.Broken));
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(5);
                 var trainedAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
-                trainedAttack.AutoHit = true;
                 Rulebook.Trigger(trainedAttack);
                 trainedAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
