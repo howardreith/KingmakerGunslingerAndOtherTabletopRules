@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.42 — Sprint 42 Gun Training (in progress)
+
+- Adds cumulative firearm-kind selections at levels 5, 9, 13, and 17.
+- Adds exact selected-kind Dexterity-to-damage and trained Broken-state misfire
+  handling without using borrowed weapon categories as firearm identity.
+
 ## 0.0.41 — Sprint 41 Gunslinger bonus feats (in progress)
 
 - Began exact level 4/8/12/16/20 bonus-feat integration by reusing

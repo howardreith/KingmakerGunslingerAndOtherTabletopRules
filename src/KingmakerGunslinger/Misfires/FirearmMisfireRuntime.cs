@@ -6,6 +6,7 @@ using System.Threading;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Firearms;
@@ -98,7 +99,10 @@ namespace KingmakerGunslinger.Misfires
                     wielder,
                     postDischargeState,
                     postDischarge.Repository.RepositoryIdentity,
-                    postDischarge.Definition.MisfireValue,
+                    Classes.GunTrainingPolicy.EffectiveMisfireValue(
+                        postDischarge.Definition.MisfireValue,
+                        postDischargeState.Condition,
+                        HasGunTraining(wielder, postDischarge.Definition.Kind)),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName));
                 lock (ContextGate)
@@ -124,6 +128,19 @@ namespace KingmakerGunslinger.Misfires
                     exception);
                 return false;
             }
+        }
+
+        private static bool HasGunTraining(UnitEntityData wielder,
+            FirearmKind kind)
+        {
+            Blueprints.GunslingerClassBlueprintSet gunslinger =
+                BlueprintBootstrap.GunslingerClass;
+            if (wielder == null || gunslinger == null ||
+                gunslinger.GunTraining == null ||
+                !Classes.GunTrainingPolicy.IsSupportedKind(kind))
+                return false;
+            return wielder.Descriptor.HasFact(
+                gunslinger.GunTraining.ChoiceFor(kind));
         }
 
         internal static void BeforeSetRoll(

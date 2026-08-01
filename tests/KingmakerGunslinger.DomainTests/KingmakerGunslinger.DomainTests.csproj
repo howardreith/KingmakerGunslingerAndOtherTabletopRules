@@ -85,6 +85,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\NimbleService.cs"><Link>Classes\NimbleService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerInitiativeService.cs"><Link>Classes\GunslingerInitiativeService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\BonusFeatProgression.cs"><Link>Classes\BonusFeatProgression.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingPolicy.cs"><Link>Classes\GunTrainingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingProgression.cs"><Link>Classes\GunTrainingProgression.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

@@ -115,6 +115,7 @@
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />
+    <Compile Include="Blueprints\GunTrainingBlueprints.cs" />
     <Compile Include="Blueprints\GritBlueprints.cs" />
     <Compile Include="Blueprints\FirearmStateTokenBlueprints.cs" />
     <Compile Include="Blueprints\TestMusketBlueprints.cs" />
@@ -128,6 +129,9 @@
     <Compile Include="Classes\GunslingerInitiativeBonus.cs" />
     <Compile Include="Classes\GunslingerInitiativeRuntime.cs" />
     <Compile Include="Classes\BonusFeatProgression.cs" />
+    <Compile Include="Classes\GunTrainingDamage.cs" />
+    <Compile Include="Classes\GunTrainingPolicy.cs" />
+    <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />

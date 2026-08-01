@@ -8,15 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `4604717` (runtime-qualified Sprint 41 Bonus Feats source and
-  corrected native-selection probe).
+- Audited HEAD: `86d20e2` (runtime-qualified Sprint 41 checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 41 Bonus Feats is runtime-qualified. The exact
-  installed Fighter combat-feat selection is present once at levels
-  4/8/12/16/20 with 108 aggregate candidates and native prerequisites. Sprint
-  42 Gun Training is the next incomplete coverage item.
-- Version: `0.0.41`.
+- Current checkpoint: Sprint 42 Gun Training is source-qualified. Cumulative
+  exact-kind choices are present at 5/9/13/17, matching firearms add Dexterity
+  through native weapon stats, and Broken misfire uses ordinary +4 or trained
+  +2. Source checkpoint and guarded runtime qualification are next.
+- Version: `0.0.42`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 

@@ -1550,3 +1550,31 @@
   `3b948b7cdaec3820678e94d4498700af3f30f0bee6a9f991b27409fc9746e71f`.
 - Sprint 41 is complete. Continue immediately to Sprint 42 Gun Training; this
   checkpoint is not a stopping condition.
+
+## 2026-08-01 Sprint 42 Gun Training source qualification
+
+- The authoritative feature grants cumulative specific-firearm selections at
+  levels 5/9/13/17, Dexterity to damage for selected types, and a +2 rather
+  than +4 Broken-state misfire increase. Exact installed IL confirmed
+  `RuleCalculateWeaponStats.AddBonusDamage(int)` feeds the primary native weapon
+  damage descriptor without replacing the ordinary damage stat.
+- Added one stable obligatory `BlueprintFeatureSelection` and five rank-one
+  Pistol/Musket/Blunderbuss/Rifle/Revolver choices keyed only to immutable
+  `FirearmDefinition.Kind`. Native selection rank checks prevent duplicate
+  choices; no borrowed weapon category or custom UI is used.
+- Added the missing ordinary Broken misfire rule: effective threshold is base
+  +4, reduced to base +2 for a matching trained kind, clamped to 20. Wrecked
+  firearms remain rejected. Matching facts add the exact positive, zero, or
+  negative Dexterity modifier once through native weapon-stat calculation;
+  unmarked, ambiguous, and different-kind weapons fail closed.
+- Added five focused cases; all 756 domain tests pass. Sprint 42 and inherited
+  source validation, 18 request checks, 40 preflight checks, 26 dispatch
+  checks, exact-reference Release compilation, and strict package validation
+  pass. The save-free guarded scenario inspects production cadence and choices,
+  compares untrained/trained native pistol damage, and forces natural 5 against
+  Broken state to distinguish untrained Wrecked from trained Broken.
+- Candidate package/DLL SHA-256 are
+  `60754bbf1ea7e1e91f6847c7aed9283b12ffb535d2cecb41fc6eaff8e706a6c0` /
+  `adbeee6dc2dbc496f0b9714a58a1925c041ddbc70b5085ef8aa52e7e3e202fdb`.
+  Runtime qualification remains required and Sprint 42 is not a stopping
+  condition.

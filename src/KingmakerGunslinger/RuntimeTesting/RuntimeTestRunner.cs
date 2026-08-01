@@ -278,6 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -413,6 +414,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats)
                 {
                     Complete(RunDisposableGunslingerBonusFeats());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining)
+                {
+                    Complete(RunDisposableGunslingerGunTraining());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3552,6 +3559,147 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact Fighter selection; candidates nonempty; prerequisites enforced",
                     observed, nativeContract,
                     "exact installed BlueprintFeatureSelection identity"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerGunTraining()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            GunTrainingBlueprintSet training = gunslinger.GunTraining;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            int untrainedDamage = int.MinValue, trainedDamage = int.MinValue;
+            FirearmCondition untrainedAfter = FirearmCondition.Normal;
+            FirearmCondition trainedAfter = FirearmCondition.Normal;
+            int targetDamageBefore = 0;
+            bool cleaned = false;
+            string stage = "progression-contract";
+            int[] requiredLevels = Classes.GunTrainingProgression.Levels;
+            var observedLevels = new List<int>();
+            int occurrences = 0;
+            foreach (LevelEntry entry in gunslinger.Progression.LevelEntries)
+            {
+                int count = entry.Features.Count(feature =>
+                    ReferenceEquals(feature, training.Selection));
+                occurrences += count;
+                if (count > 0) observedLevels.Add(entry.Level);
+            }
+            bool selectionContract = observedLevels.SequenceEqual(requiredLevels) &&
+                occurrences == requiredLevels.Length && training.Choices.Length == 5 &&
+                training.Selection.AllFeatures.SequenceEqual(training.Choices) &&
+                training.Choices.Select(value => value.AssetGuid).Distinct().Count() == 5 &&
+                training.Choices.All(value => value.Ranks == 1) &&
+                training.Selection.Obligatory && !training.Selection.IgnorePrerequisites;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 18;
+                targetDamageBefore = target.Damage;
+
+                stage = "untrained-broken-shot";
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                var untrainedStats = new RuleCalculateWeaponStats(attacker, weapon, null);
+                Rulebook.Trigger(untrainedStats);
+                untrainedDamage = untrainedStats.BonusDamage;
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(5);
+                var untrainedAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+                untrainedAttack.AutoHit = true;
+                Rulebook.Trigger(untrainedAttack);
+                untrainedAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition;
+
+                stage = "trained-broken-shot";
+                FirearmRuntimeState.Service.Forget(weapon);
+                attacker.Body.PrimaryHand.RemoveItem(false);
+                weapon = null;
+                attacker.Descriptor.AddFact(
+                    training.ChoiceFor(FirearmKind.Pistol));
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                var trainedStats = new RuleCalculateWeaponStats(attacker, weapon, null);
+                Rulebook.Trigger(trainedStats);
+                trainedDamage = trainedStats.BonusDamage;
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(5);
+                var trainedAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+                trainedAttack.AutoHit = true;
+                Rulebook.Trigger(trainedAttack);
+                trainedAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Gun Training failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (attacker != null && attacker.Descriptor.HasFact(
+                    training.ChoiceFor(FirearmKind.Pistol)))
+                    attacker.Descriptor.RemoveFact(
+                        training.ChoiceFor(FirearmKind.Pistol));
+                if (target != null) target.Damage = targetDamageBefore;
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "levels=" + string.Join(",", observedLevels) +
+                ";occurrences=" + occurrences + ";choices=" + training.Choices.Length +
+                ";untrainedDamage=" + untrainedDamage +
+                ";trainedDamage=" + trainedDamage +
+                ";untrainedAfter=" + untrainedAfter +
+                ";trainedAfter=" + trainedAfter;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("gun-training-progression",
+                    "5,9,13,17 exactly once; five distinct rank-one choices",
+                    observed, selectionContract,
+                    "production progression and stable BlueprintFeatureSelection"),
+                Assertion("gun-training-damage", "selected pistol adds Dexterity +4 once",
+                    observed, trainedDamage == untrainedDamage + 4,
+                    "native RuleCalculateWeaponStats.AddBonusDamage pipeline"),
+                Assertion("gun-training-misfire",
+                    "forced 5: untrained Broken -> Wrecked; trained remains Broken",
+                    observed, untrainedAfter == FirearmCondition.Wrecked &&
+                    trainedAfter == FirearmCondition.Broken,
+                    "production discharge and natural-roll misfire pipeline"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "facts removed, item state forgotten, disposables disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

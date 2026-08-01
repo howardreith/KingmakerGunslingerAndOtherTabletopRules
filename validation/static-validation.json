@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.41-s41-bonus-feats",
-  "version": "0.0.41",
+  "milestone": "0.0.42-s42-gun-training",
+  "version": "0.0.42",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 54,
-    "activeEntryCount": 53,
+    "entryCount": 60,
+    "activeEntryCount": 59,
     "reservedEntryCount": 1,
-    "registrationCount": 53
+    "registrationCount": 59
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 751,
+    "testCount": 756,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

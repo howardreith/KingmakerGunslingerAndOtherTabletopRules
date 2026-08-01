@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **54 stable identifiers: 53 active and one reserved**. Sprint 40 adds Utility Shot's feature and supported Stop Bleeding ability. Sprint 39 adds Pistol-Whip's feature, ability, and four hidden transient melee-surrogate identities. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+The append-only ledger contains **60 stable identifiers: 59 active and one reserved**. Sprint 42 adds one cumulative Gun Training selection and five exact firearm-kind choices. Sprint 40 adds Utility Shot's feature and supported Stop Bleeding ability. Sprint 39 adds Pistol-Whip's feature, ability, and four hidden transient melee-surrogate identities. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 
@@ -74,7 +74,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete twenty-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete fifty-nine-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -105,6 +105,12 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.PistolWhipOneHandedItem` | `eeed7234a3ee49db995f1b668d021822` | `BlueprintItemWeapon` | Active | Unowned one-handed rule-event item |
 | `KMG.Deeds.PistolWhipTwoHandedType` | `a6006de207d54de19e9c0c60f341840b` | `BlueprintWeaponType` | Active | Hidden 1d10 melee surrogate type |
 | `KMG.Deeds.PistolWhipTwoHandedItem` | `77b668da744842bcb9183ef22982ba6d` | `BlueprintItemWeapon` | Active | Unowned two-handed rule-event item |
+| `KMG.Classes.GunTrainingSelection` | `3f6c5b8a19d447df9d6af862bc4f83a1` | `BlueprintFeatureSelection` | Active | Cumulative levels 5/9/13/17 firearm-kind selection |
+| `KMG.Classes.GunTrainingPistol` | `58b90ab430a249a8a482eaf27b65d874` | `BlueprintFeature` | Active | Pistol Gun Training |
+| `KMG.Classes.GunTrainingMusket` | `970bdf4a11ea4f758f9e6ac3fd2ee716` | `BlueprintFeature` | Active | Musket Gun Training |
+| `KMG.Classes.GunTrainingBlunderbuss` | `dc258ec601b04745a5b613d2fc095894` | `BlueprintFeature` | Active | Blunderbuss Gun Training |
+| `KMG.Classes.GunTrainingRifle` | `144876ce59f847a39031e043fcd939d2` | `BlueprintFeature` | Active | Rifle Gun Training |
+| `KMG.Classes.GunTrainingRevolver` | `aa7e85bead1044018285c579b9417691` | `BlueprintFeature` | Active | Revolver Gun Training |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

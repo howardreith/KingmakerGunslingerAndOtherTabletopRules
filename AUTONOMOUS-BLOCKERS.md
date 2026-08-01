@@ -71,6 +71,10 @@ No genuine human-input hard stop is currently established.
   documented and does not block the base combat-feat progression. Sprint 42
   Gun Training is the next engineering gate.
 
+- Sprint 42 Gun Training is source-qualified at version `0.0.42`. Exact mod
+  load and two independent guarded damage/misfire runs remain an engineering
+  gate, not a human-input blocker.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

@@ -69,6 +69,80 @@ namespace KingmakerGunslinger.DomainTests
                 "Bonus-feat cadence exposed mutable storage.");
         }
 
+        private static void GunTrainingExactLevels()
+        {
+            int[] expected = { 5, 9, 13, 17 };
+            int[] observed = GunTrainingProgression.Levels;
+            Assertions.Equal(expected.Length, observed.Length,
+                "Gun Training cadence count changed.");
+            for (int level = 0; level <= 20; level++)
+            {
+                bool required = level == 5 || level == 9 || level == 13 || level == 17;
+                Assertions.Equal(required, GunTrainingProgression.GrantsAt(level),
+                    "Gun Training cadence changed at level " + level + ".");
+            }
+            observed[0] = 17;
+            Assertions.Equal(5, GunTrainingProgression.Levels[0],
+                "Gun Training cadence exposed mutable storage.");
+        }
+
+        private static void GunTrainingDamageKind()
+        {
+            Assertions.Equal(4, GunTrainingPolicy.DamageBonus(
+                FirearmKind.Pistol, FirearmKind.Pistol, 4),
+                "Selected pistol did not receive Dexterity damage.");
+            Assertions.Equal(0, GunTrainingPolicy.DamageBonus(
+                FirearmKind.Pistol, FirearmKind.Musket, 4),
+                "Unselected musket received pistol training.");
+            Assertions.True(GunTrainingPolicy.IsSupportedKind(FirearmKind.Revolver),
+                "Production revolver kind was omitted.");
+        }
+
+        private static void GunTrainingDamageModifiers()
+        {
+            Assertions.Equal(0, GunTrainingPolicy.DamageBonus(
+                FirearmKind.Rifle, FirearmKind.Rifle, 0),
+                "Zero Dexterity modifier changed damage.");
+            Assertions.Equal(-2, GunTrainingPolicy.DamageBonus(
+                FirearmKind.Blunderbuss, FirearmKind.Blunderbuss, -2),
+                "Negative Dexterity modifier was not preserved.");
+        }
+
+        private static void GunTrainingMisfirePolicy()
+        {
+            Assertions.Equal(2, GunTrainingPolicy.EffectiveMisfireValue(
+                2, FirearmCondition.Normal, false),
+                "Normal firearm gained a Broken-state increase.");
+            Assertions.Equal(6, GunTrainingPolicy.EffectiveMisfireValue(
+                2, FirearmCondition.Broken, false),
+                "Untrained Broken firearm did not gain +4 misfire.");
+            Assertions.Equal(4, GunTrainingPolicy.EffectiveMisfireValue(
+                2, FirearmCondition.Broken, true),
+                "Trained Broken firearm did not gain +2 misfire.");
+            Assertions.Equal(20, GunTrainingPolicy.EffectiveMisfireValue(
+                19, FirearmCondition.Broken, false),
+                "Broken misfire threshold exceeded the d20 range.");
+        }
+
+        private static void GunTrainingInvalidInputs()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                GunTrainingProgression.GrantsAt(21),
+                "Post-cap level was accepted for Gun Training.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                GunTrainingPolicy.DamageBonus(FirearmKind.Unknown,
+                    FirearmKind.Pistol, 1),
+                "Unknown selected firearm kind was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                GunTrainingPolicy.EffectiveMisfireValue(0,
+                    FirearmCondition.Normal, false),
+                "Invalid base misfire threshold was accepted.");
+            Assertions.Throws<ArgumentException>(() =>
+                GunTrainingPolicy.EffectiveMisfireValue(2,
+                    FirearmCondition.Wrecked, true),
+                "Wrecked firearm entered misfire evaluation.");
+        }
+
         private static void DeadeyeSecondIncrementCostsOne()
         {
             DeadeyeDecision result = Deadeye((20d * 0.3048d) + 0.001d, 1);

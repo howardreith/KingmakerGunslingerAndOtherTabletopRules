@@ -348,7 +348,8 @@ def validate(
             fail(f"Sprint 28 acceptance evidence hash mismatch: {name}")
 
     architecture = read(root, "docs/ARCHITECTURE.md")
-    active_words = "fourteen" if expected_active_blueprints == 14 else "twenty-four"
+    active_words = ({14: "fourteen", 59: "fifty-nine"}
+                    .get(expected_active_blueprints, "twenty-four"))
     ledger_summary = (f"{expected_ledger_entries} stable IDs: "
                       f"{expected_active_blueprints} active and one reserved")
     require_tokens(
