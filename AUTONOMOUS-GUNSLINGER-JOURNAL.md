@@ -804,3 +804,36 @@
   variation is authorized. Next mode is a guarded `KMG_AUTOMATION_WORKING`
   scenario using the actual main character with exact item/money snapshots,
   explicit rollback, no save, and unchanged fingerprint evidence.
+
+## 2026-08-01 Sprint 34 native starting-item runtime qualification
+
+- Added guarded `gunslinger-starting-items` acceptance on the already-qualified
+  receiver-bound `KMG_AUTOMATION_WORKING` lifecycle. It temporarily substitutes
+  only the real main receiver's readonly maximum-class identity, zeros/restores
+  production class gold, calls exact `LevelUpHelper.AddStartingItems`, and
+  restores exact inventory quantities/references and all altered values.
+- The first exact-commit diagnostic run
+  `20260801T1727050485069Z-f37fe13f57be4cbfa5eceeebd34f5898`
+  proved native ammunition stack merging: the pistol was a new instance while
+  powder and ball merged into existing stacks. It also exposed an ambiguous
+  reflective Blueprint property read. Structured FAIL was preserved; exact
+  working-save correlation, class/gold/inventory-reference restoration, and no
+  save write passed.
+- Repair commit `cc2f77d` measures native total quantities, removes the exact
+  new instance plus only merged excess quantities, restores class/gold first in
+  `finally`, and verifies final money directly. Repository validation, request
+  tests 18/18, preflight tests 40/40, 691/691 domain tests, exact private-
+  reference Release compile, output validation, and strict package validation
+  passed.
+- Exact-assembly mod-load PASS:
+  `20260801T1731148707849Z-mod-load-smoke`. Two independent fresh-process
+  starting-item PASS run IDs are
+  `20260801T1732334037249Z-ccbfd7861d04442782c358cf7d236dc9` and
+  `20260801T1734133597055Z-4fa5d631d72f4b999751ceeb7d119fd5`.
+  Both observed `added=1;pistol=1;powder=1;ball=1`, complete inventory/class/
+  gold/money rollback, stable exact save fingerprint, and no save-writing API.
+- Exact package/DLL SHA-256 are
+  `6a41ed815d910983e0067184fdfb40ca16629b8e70aab83f4d1a24fa4ff57153` /
+  `2f4d2a0f2772b5923349ce467bbebf7426bb80348c25548d16f0238af23d0fb4`.
+- Next action: inspect and qualify the normal creation commit outcome without
+  persisting a character, then proceed to level-up, multiclass, and respec.

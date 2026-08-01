@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `0f49720` (Sprint 34 repaired exact class-contract observer).
+- Audited HEAD: `cc2f77d` (native starting-item stack-merge qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 34 Gunslinger class chassis.
@@ -17,6 +17,17 @@ definition of done or a listed genuine human-input hard stop.
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Exact Sprint 34 starting-item commit `cc2f77d` passed `mod-load-smoke` at
+  `20260801T1731148707849Z-mod-load-smoke`, then two independent fresh-process
+  `gunslinger-starting-items` runs:
+  `20260801T1732334037249Z-ccbfd7861d04442782c358cf7d236dc9` and
+  `20260801T1734133597055Z-4fa5d631d72f4b999751ceeb7d119fd5`.
+  Both proved one Pistol, one powder, one ball, exact instance/quantity rollback,
+  restored class identity/gold/money, stable working-save identity, and no save
+  write. Package/DLL SHA-256 are
+  `6a41ed815d910983e0067184fdfb40ca16629b8e70aab83f4d1a24fa4ff57153` /
+  `2f4d2a0f2772b5923349ce467bbebf7426bb80348c25548d16f0238af23d0fb4`.
 
 - Exact Sprint 31 catalog commit `1539ae9` passed `mod-load-smoke`, run ID
   `20260801T1334059331758Z-9736bc0a7d7844bd83bc9d26b5a30676`.
@@ -118,15 +129,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Exact helper receivers failed safely at
-`20260801T1708158441657Z-f718c0f1dd60494cae934f9512e572eb` and
-`20260801T1710226633438Z-aa873b9035364e4eabd74d27b5c3a0d6`: native class
-items are gated to the real main character/custom companion. Do not attempt a
-third save-free receiver. Build a guarded `KMG_AUTOMATION_WORKING` scenario that
-uses the actual main character, snapshots exact item quantities and money,
-temporarily zeroes/restores class gold, invokes only the helper, removes only
-the exact added item instances, verifies full rollback/fingerprint stability,
-and never saves.
+Starting-item helper semantics are runtime-qualified on the real receiver.
+Inspect the exact normal `LevelUpController.Commit` creation path and establish
+a reversible, non-persisting commit-equivalent acceptance boundary. Do not
+repeat save-free helper receiver attempts. After creation outcome, qualify
+ordinary level-up, multiclass, and respec in dependency order.
 
 ## Safety boundaries
 
