@@ -9,7 +9,7 @@ and qualifies its exact Kingmaker mapping.
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
 | 1 | Weapon/armor/firearm proficiencies | EXACT | Published class catalog entry exposes a stable aggregate feature granting exact native simple, martial, and light-armor facts plus firearm proficiency; exact structure is runtime-observed | Qualify the granted unit facts on a named disposable runtime character |
-| 1 | Gunsmith and battered starting firearm | ADAPTED | Published starting-item contract includes one production Early Pistol and one complete load; actual character grant not yet observed, and battered/Gunsmith adaptation is not implemented | Qualify native creation grant, then implement only an explicitly authorized battered-state/Gunsmith equivalent |
+| 1 | Gunsmith and battered starting firearm | ADAPTED | Published starting-item contract includes one production Early Pistol and one complete load; exact-source detached descriptor construction is runtime-qualified, but actual character grant and the battered/Gunsmith adaptation are not yet implemented | Qualify isolated Gunslinger selection and native creation grant, then implement only an explicitly authorized battered-state/Gunsmith equivalent |
 | 1 | Grit: Wisdom-based pool, daily reset, critical/killing-blow recovery | EXACT | Not implemented | Persistent per-unit pool with qualifying firearm event dedupe |
 | 1 | Deadeye | ADAPTED | Not implemented | Pre-shot range/touch-AC selection because post-declaration UI is unavailable |
 | 1 | Gunslinger's Dodge | ADAPTED | Not implemented | Determine faithful reaction representation without unsafe automated movement |

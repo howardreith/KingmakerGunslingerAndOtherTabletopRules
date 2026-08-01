@@ -53,6 +53,9 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "scripts/Test-Sprint34CharacterCreationContractObservation.ps1"),
         ["scenario-allowlisted", "save-free-autonomous", "metadata-only",
          "no-construction"], "Sprint 34 character-creation contract observer tests")
+    require_tokens(read(root, "scripts/Test-Sprint34DisposableChargenConstruction.ps1"),
+        ["exact-source", "detached", "finally-disposed", "snapshots-verified"],
+        "Sprint 34 disposable chargen construction tests")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:

@@ -641,3 +641,24 @@
 - Next action: commit the extension, then construct only a disposable
   `ChargenUnit` from the exact default-player source, prove it is absent from
   player/scene/roster state, and dispose it before attempting class selection.
+
+## 2026-08-01 Sprint 34 disposable descriptor construction boundary
+
+- The first exact `ChargenUnit(BlueprintUnit)` experiment failed closed because
+  native construction attached a preview view; cleanup succeeded with unchanged
+  empty party/global-unit snapshots. The materially different direct descriptor
+  boundary uses the observed non-public `UnitDescriptor(BlueprintUnit)` contract.
+- Six focused checks, repository validation, 691/691 domain tests, clean
+  exact-reference Release build, output validation, and strict packaging pass.
+  Candidate package/DLL SHA-256 are
+  `22323d1f29763d35f5da6ff813858a58794e990180f9f5d5ff6ae2840aa8ad40` /
+  `a529443ea74a6c1b847e76c187399a331c4cb7590aaef10d5df74b982d045099`.
+- Two independent fresh-process guarded Steam runs passed:
+  `20260801T1600264550680Z-34603ecdf85e45e69d11e30fb98b1bc1` and
+  `20260801T1601407816389Z-cd6a9e332a0442ae8b755355cee55e4e`.
+  Both constructed the exact default-player descriptor with no entity, party,
+  or `Game.State.AllUnits` attachment and proved unchanged snapshots after
+  `Dispose`. Neither scenario loaded or wrote a save.
+- Next action: checkpoint the qualified boundary, then use it to observe exact
+  isolated Gunslinger class selection and cancellation before any commit or
+  starting-inventory invocation.

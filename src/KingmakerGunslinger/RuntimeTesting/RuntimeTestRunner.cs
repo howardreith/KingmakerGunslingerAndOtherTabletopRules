@@ -240,6 +240,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -268,6 +269,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts)
                 {
                     Complete(RunCharacterCreationContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableDescriptorConstruction)
+                {
+                    Complete(RunDisposableDescriptorConstruction());
                     return;
                 }
                 if (_request.Scenario ==
@@ -1674,6 +1681,99 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableDescriptorConstruction()
+        {
+            BlueprintRoot root = BlueprintRoot.Instance;
+            BlueprintUnit source = root == null ? null : root.DefaultPlayerCharacter;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            string observed = "";
+            bool isolated = false;
+            bool cleaned = false;
+            try
+            {
+                if (source == null || source.AssetGuid !=
+                    "4391e8b9afbb0cf43aeba700c089f56d")
+                    throw new InvalidOperationException(
+                        "Exact default-player blueprint source is unavailable.");
+                descriptor = (Kingmaker.UnitLogic.UnitDescriptor)Activator.CreateInstance(
+                    typeof(Kingmaker.UnitLogic.UnitDescriptor),
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                    null, new object[] { source }, null);
+                isolated = descriptor != null &&
+                    ReferenceEquals(descriptor.Blueprint, source) && descriptor.Unit == null &&
+                    !ContainsReference(party, descriptor) && !ContainsReference(allUnits, descriptor) &&
+                    SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+                observed = "source=" + DescribeBlueprintUnit(source) +
+                    ";descriptor=" + (descriptor == null ? "missing" : "constructed") +
+                    ";unit=" + (descriptor == null || descriptor.Unit == null ? "none" : "attached") +
+                    ";partyBefore=" + partyBefore.Length + ";unitsBefore=" + unitsBefore.Length;
+            }
+            finally
+            {
+                if (descriptor != null) descriptor.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (descriptor == null || !ContainsReference(party, descriptor)) &&
+                    (descriptor == null || !ContainsReference(allUnits, descriptor));
+            }
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("disposable-construction", "detached exact-source unit descriptor",
+                    observed, isolated,
+                    "exact reflected UnitDescriptor(BlueprintUnit); no entity, party, or Game.State.AllUnits attachment"),
+                Assertion("cleanup", "unchanged party and global unit snapshots after Dispose",
+                    "cleaned=" + cleaned, cleaned,
+                    "UnitDescriptor.Dispose plus reference-identity snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static object ReadExactMember(object value, string name)
+        {
+            if (value == null) return null;
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance;
+            PropertyInfo property = value.GetType().GetProperty(name, flags);
+            if (property != null) return property.GetValue(value, null);
+            FieldInfo field = value.GetType().GetField(name, flags);
+            return field == null ? null : field.GetValue(value);
+        }
+
+        private static object[] SnapshotReferences(object collection)
+        {
+            var values = new List<object>();
+            var enumerable = collection as System.Collections.IEnumerable;
+            if (enumerable != null)
+                foreach (object value in enumerable) values.Add(value);
+            return values.ToArray();
+        }
+
+        private static bool ContainsReference(object collection, object target)
+        {
+            return SnapshotReferences(collection).Any(value => ReferenceEquals(value, target));
+        }
+
+        private static bool SameReferences(object[] left, object[] right)
+        {
+            if (left.Length != right.Length) return false;
+            for (int index = 0; index < left.Length; index++)
+                if (!ReferenceEquals(left[index], right[index])) return false;
+            return true;
         }
 
         private static string DescribeBlueprintUnit(BlueprintUnit unit)
