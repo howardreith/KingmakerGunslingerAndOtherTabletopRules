@@ -163,6 +163,12 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterDischargeService.cs">
       <Link>Scatter\ScatterDischargeService.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterExplosionDamageDecision.cs">
+      <Link>Scatter\ScatterExplosionDamageDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterExplosionDamageService.cs">
+      <Link>Scatter\ScatterExplosionDamageService.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterTargetCandidate.cs">
       <Link>Scatter\ScatterTargetCandidate.cs</Link>
     </Compile>

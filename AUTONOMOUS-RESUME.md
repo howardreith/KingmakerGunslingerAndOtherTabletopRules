@@ -8,11 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `31678e2` (Sprint 32 target plan and exact `0.0.32` mod-load foundation).
+- Audited HEAD: `9e14ccd` (Sprint 32 one-discharge boundary).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
-- Version: `0.0.32` (Sprint 32 scatter target-plan source work active).
+- Version: `0.0.32` (Sprint 32 scatter source work active).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -54,13 +54,13 @@ definition of done or a listed genuine human-input hard stop.
 ## Current source evidence
 
 - Sprint 32 exact-reference target planning is implemented with 10 focused
-  cases. Native cone/volley aggregation adds 10 more; complete domain suite is
-  joined by seven one-discharge transaction cases; complete domain suite is
-  651/651 PASS.
+  cases. Native cone/volley aggregation adds 10, one-discharge transactions add
+  seven, and triple-explosion policy adds six; the complete domain suite is
+  657/657 PASS.
 - Package candidate SHA-256:
-  `aedfef956e9b89812a2276eb4e69f1e606dae25742ebdba1b73fec1ec4085341`;
+  `85cf357c9fe80387f7afef659b9fad69d194170b7fede30885534e47de472adf`;
   DLL candidate SHA-256:
-  `3207707a5771162f71e8ea32cc59aff50e9cbbb64d76b5799579ca0a44bf544a`.
+  `9a2c79aa55721c88dd12bd61beaa83c0c755a65f26975caa420a8cd66e48ed36`.
 - This slice is source-qualified only. It does not establish cone length,
   native attack delivery or feature runtime acceptance. Native 90-degree
   directional geometry is contract-proven; numeric cone distance is not.
@@ -88,10 +88,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified one-discharge scatter boundary. Then complete the
-remaining project-authority audit for numeric Blunderbuss cone distance. If no
-explicit value exists, retain unavailable content and record the precise
-player-facing design question while continuing any independent scatter work.
+Commit the source-qualified scatter-explosion boundary. Then implement the
+independent native scatter-delivery adapter contract while keeping content
+unavailable until an authoritative numeric Blunderbuss cone distance exists.
 
 ## Safety boundaries
 

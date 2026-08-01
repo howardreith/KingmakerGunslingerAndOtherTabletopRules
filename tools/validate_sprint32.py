@@ -11,7 +11,7 @@ import validate_sprint31
 
 VERSION = "0.0.32"
 INFORMATIONAL_VERSION = "0.0.32-s32-scatter-attacks"
-TEST_COUNT = 651
+TEST_COUNT = 657
 
 
 def read(root: Path, relative: str) -> str:
@@ -71,6 +71,13 @@ def validate(root: Path) -> None:
         ["deliveryPrerequisitesSatisfied", "RejectedBeforeDelivery",
          "_discharge.Evaluate(state)", "result.RoundsConsumed"],
         "Sprint 32 one-discharge boundary",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Scatter/ScatterExplosionDamageService.cs"),
+        ["RequiresBurstDamage", "AllRollsMisfire",
+         "ScatterExplosionDamageDecision(true, 3)",
+         "ScatterExplosionDamageDecision(true, 1)"],
+        "Sprint 32 scatter explosion multiplier",
     )
     print("Sprint 32 source invariant validation passed with inherited Sprint 31 checks.")
 

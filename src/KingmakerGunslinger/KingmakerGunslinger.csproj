@@ -298,6 +298,8 @@
     <Compile Include="Scatter\ScatterDischargeStatus.cs" />
     <Compile Include="Scatter\ScatterDischargeDecision.cs" />
     <Compile Include="Scatter\ScatterDischargeService.cs" />
+    <Compile Include="Scatter\ScatterExplosionDamageDecision.cs" />
+    <Compile Include="Scatter\ScatterExplosionDamageService.cs" />
     <Compile Include="Scatter\ScatterTargetCandidate.cs" />
     <Compile Include="Scatter\ScatterTargetPlan.cs" />
     <Compile Include="Scatter\ScatterTargetPlanService.cs" />

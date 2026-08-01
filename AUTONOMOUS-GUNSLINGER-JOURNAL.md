@@ -255,3 +255,22 @@
 - Next action: commit this source slice, complete the remaining local authority
   audit for numeric Blunderbuss cone distance, then proceed or establish the
   precise design hard stop without weakening fail-closed availability.
+
+## 2026-08-01 Sprint 32 scatter-explosion checkpoint
+
+- Added a fail-closed scatter explosion damage policy. A nonempty scatter
+  volley applies the authoritative triple base damage only when every separate
+  attack roll misfires; partial and vacuous volley evidence rejects.
+- Preserved ordinary firearm explosion damage at one times base damage and
+  rejected scatter evidence supplied for a non-scatter firearm.
+- Added six focused tests. Repository validation and the clean Release domain
+  suite passed 657/657; exact private-reference compile and strict standalone
+  package validation passed.
+- Candidate package SHA-256:
+  `85cf357c9fe80387f7afef659b9fad69d194170b7fede30885534e47de472adf`.
+  Candidate DLL SHA-256:
+  `9a2c79aa55721c88dd12bd61beaa83c0c755a65f26975caa420a8cd66e48ed36`.
+- Runtime delivery remains unavailable: the project still contains no
+  authoritative numeric Blunderbuss cone distance.
+- Next action: commit this source-qualified slice and continue the independent
+  native scatter-delivery adapter boundary without inventing that distance.

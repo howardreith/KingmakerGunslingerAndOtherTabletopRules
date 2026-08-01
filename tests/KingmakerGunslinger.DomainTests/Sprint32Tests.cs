@@ -1,5 +1,7 @@
 using System;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Explosions;
+using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Scatter;
 
 namespace KingmakerGunslinger.DomainTests
@@ -319,6 +321,83 @@ namespace KingmakerGunslinger.DomainTests
                 "Scatter discharge lost target count evidence.");
             Assertions.Equal(FirearmState.CreateEmpty(), decision.After,
                 "Scatter discharge did not perform one canonical Fire transition.");
+        }
+
+        private static void ScatterExplosionTriple()
+        {
+            ScatterExplosionDamageDecision decision =
+                new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), BurstExplosion(),
+                    new ScatterAttackVolleyDecision(2, 0, 2, 0, 0));
+            Assertions.True(decision.ShouldApply, "All-roll scatter explosion was suppressed.");
+            Assertions.Equal(3, decision.BaseDamageMultiplier,
+                "Scatter explosion did not triple base damage.");
+        }
+
+        private static void ScatterExplosionPartialMisfireRejected()
+        {
+            Assertions.Throws<InvalidOperationException>(
+                () => new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), BurstExplosion(),
+                    new ScatterAttackVolleyDecision(2, 1, 1, 0, 0)),
+                "A partial-misfire scatter volley exploded.");
+        }
+
+        private static void ScatterExplosionEmptyVolleyRejected()
+        {
+            Assertions.Throws<InvalidOperationException>(
+                () => new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), BurstExplosion(),
+                    new ScatterAttackVolleyDecision(0, 0, 0, 0, 0)),
+                "An empty volley caused a vacuous scatter explosion.");
+        }
+
+        private static void ScatterExplosionNone()
+        {
+            ScatterExplosionDamageDecision decision =
+                new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), NoExplosion(), null);
+            Assertions.False(decision.ShouldApply, "A non-explosion applied damage.");
+            Assertions.Equal(0, decision.BaseDamageMultiplier,
+                "A non-explosion retained a damage multiplier.");
+        }
+
+        private static void ScatterExplosionOrdinarySingle()
+        {
+            ScatterExplosionDamageDecision decision =
+                new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyMusket(), BurstExplosion(), null);
+            Assertions.True(decision.ShouldApply, "Ordinary explosion was suppressed.");
+            Assertions.Equal(1, decision.BaseDamageMultiplier,
+                "Ordinary explosion damage was multiplied.");
+        }
+
+        private static void ScatterExplosionOrdinaryVolleyRejected()
+        {
+            Assertions.Throws<ArgumentException>(
+                () => new ScatterExplosionDamageService().Evaluate(
+                    FirearmDefinitions.CreateEarlyMusket(), BurstExplosion(),
+                    new ScatterAttackVolleyDecision(1, 0, 1, 0, 0)),
+                "A non-scatter explosion accepted scatter volley evidence.");
+        }
+
+        private static FirearmExplosionDecision BurstExplosion()
+        {
+            FirearmMisfireDecision roll = new FirearmMisfireService().Evaluate(1, 2, true);
+            FirearmState broken = FirearmStateMachine.ApplyMisfireDamage(
+                FirearmState.CreateEmpty());
+            FirearmMisfireConditionDecision condition =
+                new FirearmMisfireConditionService().Evaluate(roll, broken);
+            return new FirearmExplosionService().Evaluate(condition);
+        }
+
+        private static FirearmExplosionDecision NoExplosion()
+        {
+            FirearmMisfireDecision roll = new FirearmMisfireService().Evaluate(3, 2, true);
+            FirearmMisfireConditionDecision condition =
+                new FirearmMisfireConditionService().Evaluate(
+                    roll, FirearmState.CreateEmpty());
+            return new FirearmExplosionService().Evaluate(condition);
         }
 
         private static ScatterTargetPlan ScatterPlan(params object[] targets)
