@@ -1578,3 +1578,27 @@
   `adbeee6dc2dbc496f0b9714a58a1925c041ddbc70b5085ef8aa52e7e3e202fdb`.
   Runtime qualification remains required and Sprint 42 is not a stopping
   condition.
+
+### Gun Training runtime qualification
+
+- Source checkpoint `72ab329` passed initial mod load. Its first feature run
+  proved production progression and native Dexterity damage but failed closed
+  because the fixture's `AutoHit` flag suppresses Kingmaker's natural-roll
+  setter; neither Broken firearm entered misfire evaluation.
+- Narrow correction `76ae9f9` removed only that fixture bypass. It re-passed
+  Sprint 42/inherited validation, all 756 tests, exact-reference Release
+  compilation, and strict package validation.
+- Exact correction-assembly mod load passed at
+  `20260801T2353104199349Z-mod-load-smoke`. Independent post-gate fresh-process
+  PASS runs were
+  `20260801T2354325601237Z-disposable-gunslinger-gun-training` and
+  `20260801T2355488749660Z-disposable-gunslinger-gun-training`.
+- Both PASS runs observed levels `5,9,13,17`, four occurrences, five distinct
+  rank-one choices, untrained/trained pistol native bonus damage `0/4`, forced
+  natural 5 changing untrained Broken to Wrecked while the trained pistol
+  remained Broken, version `0.0.42`, and exact detached cleanup.
+- Final package/DLL SHA-256 are
+  `703b611c52cc8a4d55b84052e2a54386af203afb22f46f3617f9ec9d4a28bcaa` /
+  `593477e79f303c8207574ae511961d7bd003db01ca433e92d1d0b43c9cc5c5db`.
+- Sprint 42 is complete. Continue immediately to the next incomplete base-class
+  or deed row; this checkpoint is not a stopping condition.

@@ -8,18 +8,31 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `86d20e2` (runtime-qualified Sprint 41 checkpoint).
+- Audited HEAD: `76ae9f9` (runtime-qualified Sprint 42 Gun Training source and
+  natural-roll fixture correction).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 42 Gun Training is source-qualified. Cumulative
+- Current checkpoint: Sprint 42 Gun Training is runtime-qualified. Cumulative
   exact-kind choices are present at 5/9/13/17, matching firearms add Dexterity
   through native weapon stats, and Broken misfire uses ordinary +4 or trained
-  +2. Source checkpoint and guarded runtime qualification are next.
+  +2. Select the next incomplete fidelity/coverage row immediately.
 - Version: `0.0.42`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Gun Training source `72ab329` plus natural-roll fixture correction `76ae9f9`
+  passed exact mod load at `20260801T2353104199349Z-mod-load-smoke`.
+  Independent post-gate PASS runs
+  `20260801T2354325601237Z-disposable-gunslinger-gun-training` and
+  `20260801T2355488749660Z-disposable-gunslinger-gun-training` both observed
+  levels `5,9,13,17`, four selection occurrences, five choices, untrained versus
+  trained damage `0 -> 4`, forced natural 5 changing untrained Broken to
+  Wrecked while trained remained Broken, and exact cleanup. Package/DLL
+  SHA-256 are
+  `703b611c52cc8a4d55b84052e2a54386af203afb22f46f3617f9ec9d4a28bcaa` /
+  `593477e79f303c8207574ae511961d7bd003db01ca433e92d1d0b43c9cc5c5db`.
 
 - Bonus Feats source commits `8a8ea7a` and probe correction `4604717` passed
   mod load at `20260801T2319037969615Z-mod-load-smoke`. Independent PASS runs
