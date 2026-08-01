@@ -199,7 +199,8 @@ try {
     $result = $null
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
-        'production-firearm-catalog', 'advanced-capacity')) {
+        'production-firearm-catalog', 'advanced-capacity',
+        'gunslinger-starting-items')) {
         $orchestration.stage = 'waiting-for-runtime-readiness'
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
@@ -416,6 +417,7 @@ try {
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
         'production-firearm-catalog',
         'advanced-capacity',
+        'gunslinger-starting-items',
         'observe-working-save-entry-action',
         'observe-working-save-selection-load-action',
         'observe-working-save-receiver-bound-action')) {

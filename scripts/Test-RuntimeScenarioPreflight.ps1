@@ -25,6 +25,10 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 $expected = @(
     'mod-load-smoke',
     'observe-class-blueprint-contracts',
+    'observe-character-creation-contracts',
+    'disposable-descriptor-construction',
+    'disposable-gunslinger-selection',
+    'disposable-gunslinger-preview-application',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -33,6 +37,7 @@ $expected = @(
     'generic-firearm-actions',
     'production-firearm-catalog',
     'advanced-capacity',
+    'gunslinger-starting-items',
     'observe-working-save-entry-action',
     'observe-working-save-selection-load-action',
     'observe-working-save-receiver-bound-action'
@@ -71,6 +76,13 @@ Assert-True $advancedCapacity.RequiresSaveName `
     'sprint33-capacity-requires-save-name'
 Assert-True ($advancedCapacity.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
     'sprint33-capacity-only-permits-working-save'
+$startingItems = Get-KmgRuntimeScenarioMetadata 'gunslinger-starting-items'
+Assert-True (-not $startingItems.RequiresManualInteraction) `
+    'starting-items-is-autonomous'
+Assert-True $startingItems.RequiresSaveName `
+    'starting-items-requires-save-name'
+Assert-True ($startingItems.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'starting-items-only-permits-working-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'

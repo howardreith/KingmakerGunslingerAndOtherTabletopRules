@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
@@ -21,6 +22,8 @@ using KingmakerGunslinger.Explosions;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker;
+using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -240,6 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.GunslingerStartingItems &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
@@ -314,6 +318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -332,6 +337,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -551,6 +557,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     RunSprint33AdvancedCapacity();
                 }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems)
+                {
+                    RunGunslingerStartingItems();
+                }
                 else
                 {
                     CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
@@ -758,6 +768,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity;
+            receiverBoundPath = receiverBoundPath ||
+                _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems;
             if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
@@ -1106,6 +1118,193 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.WorkingSaveSmoke = evidence;
             _trace.Record("feature-acceptance-complete", "status=" + result.Status);
             Complete(result);
+        }
+
+        private void RunGunslingerStartingItems()
+        {
+            _trace.Record("feature-acceptance-start",
+                "native Gunslinger starting items; exact request-local rollback");
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            var diagnostics = new List<string>();
+            bool exactGrant = false;
+            bool exactRollback = false;
+            bool moneyStable = false;
+            bool classRestored = false;
+            bool startingGoldRestored = false;
+            int addedCount = -1;
+            int pistolCount = -1;
+            int powderCount = -1;
+            int ballCount = -1;
+
+            Player player = null;
+            Kingmaker.UnitLogic.ClassData classData = null;
+            BlueprintCharacterClass originalClass = null;
+            BlueprintCharacterClass gunslinger = null;
+            int originalStartingGold = 0;
+            long moneyBefore = 0;
+            FieldInfo classField = null;
+            List<object> before = null;
+            var added = new List<object>();
+            try
+            {
+                player = Game.Instance == null ? null : Game.Instance.Player;
+                if (player == null || player.Inventory == null ||
+                    player.MainCharacter.Value == null)
+                    throw new InvalidOperationException(
+                        "The exact loaded player, inventory, or main character is unavailable.");
+
+                gunslinger = BlueprintBootstrap.GunslingerClass == null
+                    ? null : BlueprintBootstrap.GunslingerClass.CharacterClass;
+                if (gunslinger == null)
+                    throw new InvalidOperationException(
+                        "The production Gunslinger class blueprint is unavailable.");
+
+                var descriptor = player.MainCharacter.Value.Descriptor;
+                BlueprintCharacterClass maximum = descriptor.Progression.GetMaxClass();
+                classData = descriptor.Progression.GetClassData(maximum);
+                if (classData == null)
+                    throw new InvalidOperationException(
+                        "The main character has no exact maximum ClassData receiver.");
+                if (descriptor.Progression.GetClassData(gunslinger) != null)
+                    throw new InvalidOperationException(
+                        "The working character already has Gunslinger ClassData; identity substitution refused.");
+
+                before = EnumerateRuntimeInventory(player.Inventory);
+                moneyBefore = player.Money;
+                originalClass = classData.CharacterClass;
+                originalStartingGold = gunslinger.StartingGold;
+                classField = typeof(Kingmaker.UnitLogic.ClassData).GetField(
+                    "CharacterClass", BindingFlags.Instance | BindingFlags.Public);
+                if (classField == null || !classField.IsInitOnly ||
+                    !ReferenceEquals(classField.GetValue(classData), originalClass))
+                    throw new MissingFieldException(
+                        "The exact readonly ClassData.CharacterClass field is unavailable.");
+
+                gunslinger.StartingGold = 0;
+                classField.SetValue(classData, gunslinger);
+                LevelUpHelper.AddStartingItems(descriptor);
+
+                List<object> afterGrant = EnumerateRuntimeInventory(player.Inventory);
+                added.AddRange(afterGrant.Where(item =>
+                    !before.Any(existing => ReferenceEquals(existing, item))));
+                addedCount = added.Count;
+                BlueprintItem[] expected = gunslinger.StartingItems ??
+                    Array.Empty<BlueprintItem>();
+                pistolCount = CountAddedBlueprint(added, expected, 0);
+                powderCount = CountAddedBlueprint(added, expected, 1);
+                ballCount = CountAddedBlueprint(added, expected, 2);
+                exactGrant = expected.Length == 3 && addedCount == 3 &&
+                    pistolCount == 1 && powderCount == 1 && ballCount == 1;
+                moneyStable = player.Money == moneyBefore;
+            }
+            catch (Exception exception)
+            {
+                diagnostics.Add(exception.GetType().Name + ": " + exception.Message);
+            }
+            finally
+            {
+                if (player != null && player.Inventory != null)
+                {
+                    foreach (object item in added)
+                    {
+                        object ignored;
+                        string method;
+                        if (!ReflectionAccess.TryInvokeAny(player.Inventory,
+                            new[] { "Remove", "RemoveItem" },
+                            new[] { new object[] { item, 1, false },
+                                new object[] { item, 1 }, new object[] { item } },
+                            out ignored, out method))
+                            diagnostics.Add("Exact added item removal failed.");
+                    }
+                }
+                if (classData != null && originalClass != null && classField != null)
+                    classField.SetValue(classData, originalClass);
+                if (gunslinger != null)
+                    gunslinger.StartingGold = originalStartingGold;
+
+                classRestored = classData == null ||
+                    ReferenceEquals(classData.CharacterClass, originalClass);
+                startingGoldRestored = gunslinger == null ||
+                    gunslinger.StartingGold == originalStartingGold;
+                if (player != null)
+                    moneyStable = moneyStable && player.Money == moneyBefore;
+                if (before != null && player != null && player.Inventory != null)
+                {
+                    List<object> afterRollback =
+                        EnumerateRuntimeInventory(player.Inventory);
+                    exactRollback = before.Count == afterRollback.Count &&
+                        before.All(item => afterRollback.Any(current =>
+                            ReferenceEquals(item, current))) &&
+                        afterRollback.All(item => before.Any(previous =>
+                            ReferenceEquals(item, previous)));
+                }
+            }
+
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-save", "stable exact working-save load",
+                    evidence.StableFingerprint,
+                    evidence.CompletionCallbackObserved &&
+                        evidence.DescriptorReferenceCorrelated &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "qualified receiver-bound working-save path"),
+                Assertion("native-starting-item-grant", "pistol=1;powder=1;ball=1",
+                    "added=" + addedCount + ";pistol=" + pistolCount +
+                        ";powder=" + powderCount + ";ball=" + ballCount,
+                    exactGrant,
+                    "LevelUpHelper.AddStartingItems on the exact main descriptor"),
+                Assertion("exact-in-memory-rollback",
+                    "inventory references, class identity, gold, and money restored",
+                    "inventory=" + exactRollback + ";class=" + classRestored +
+                        ";startingGold=" + startingGoldRestored +
+                        ";money=" + moneyStable,
+                    exactRollback && classRestored && startingGoldRestored && moneyStable,
+                    "exact newly created item references and finally restoration"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved,
+                    "request-scoped native save-write sentinels"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            RuntimeTestResult result = CreateResult(
+                pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            foreach (string diagnostic in diagnostics)
+                result.Diagnostics.Add(diagnostic);
+            _trace.Record("feature-acceptance-complete", "status=" + result.Status);
+            Complete(result);
+        }
+
+        private static List<object> EnumerateRuntimeInventory(object inventory)
+        {
+            if (!ReflectionAccess.CanEnumerate(inventory))
+                throw new MissingMemberException(
+                    "The exact shared inventory is not enumerable.");
+            return ReflectionAccess.Enumerate(inventory).ToList();
+        }
+
+        private static int CountAddedBlueprint(List<object> items,
+            BlueprintItem[] expected, int index)
+        {
+            if (expected == null || index < 0 || index >= expected.Length)
+                return -1;
+            int count = 0;
+            foreach (object item in items)
+            {
+                PropertyInfo property = item == null ? null :
+                    item.GetType().GetProperty("Blueprint",
+                        BindingFlags.Instance | BindingFlags.Public |
+                        BindingFlags.NonPublic);
+                if (property != null &&
+                    ReferenceEquals(property.GetValue(item, null), expected[index]))
+                    count++;
+            }
+            return count;
         }
 
         private static int CountFirearmMarkers(BlueprintWeaponType weaponType)

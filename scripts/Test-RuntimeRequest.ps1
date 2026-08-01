@@ -83,6 +83,21 @@ if ($capacityRequest.scenario -cne 'advanced-capacity' -or
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'advanced-capacity' `
     -ExpectedVersion '0.0.34' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'sprint33-save-name-missing'
+$startingItemsRequest = New-KmgRuntimeRequest -Scenario 'gunslinger-starting-items' `
+    -ExpectedVersion '0.0.34' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
+    -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
+    -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
+    -ActionResolutionTimeoutSeconds 30 -ActionInvocationTimeoutSeconds 30 `
+    -DescriptorResolutionTimeoutSeconds 30 -LoadEntryTimeoutSeconds 30 `
+    -FingerprintTimeoutSeconds 30
+if ($startingItemsRequest.scenario -cne 'gunslinger-starting-items' -or
+    $startingItemsRequest.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+    $failures.Add('starting-items-request-valid')
+}
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'gunslinger-starting-items' `
+    -ExpectedVersion '0.0.34' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -EvidenceDirectory $synthetic -Parameters @{} } 'starting-items-save-name-missing'
 $entryRequest = New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
     -ExpectedVersion '0.0.34' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
