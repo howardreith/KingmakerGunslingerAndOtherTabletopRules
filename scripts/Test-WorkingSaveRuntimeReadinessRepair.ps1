@@ -54,7 +54,8 @@ $checks = [ordered]@{
     'stage-specific-missing-ready' = $runner.Contains(
         'startupTimeout.Diagnostics.Add("timeoutStage=" + _workingStartupStage)')
     'repeated-update-error-terminal' = $runner.Contains(
-        'CompleteStartupError(_workingStartupStage, exception);')
+        'CompleteStartupError(_workingSaveSmoke != null &&') -and
+        $runner.Contains(': _workingStartupStage, exception);')
     'umm-visibility-neutral' = $runner.Contains(
         'overlay nonblocking-or-absent') -and
         -not $runner.Contains('ShowOnStart')

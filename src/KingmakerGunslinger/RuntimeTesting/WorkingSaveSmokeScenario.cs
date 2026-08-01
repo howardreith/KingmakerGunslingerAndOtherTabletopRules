@@ -120,8 +120,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _observedScopedInvocations = new List<string>();
         private readonly List<string> _loadCallerChain = new List<string>();
         private readonly List<string> _selectedSaveStorage = new List<string>();
+        private readonly List<string> _candidateRejections = new List<string>();
         private string _immediateLoadCaller = "";
         private string _immediateLoadCallerType = "";
+        private string _immediateLoadCallerReceiverIdentity = "";
+        private int _compatibleCallerReceiverCount;
+        private string _observerArmingSubstage = "";
         private string _ownerObjectIdentity = "";
         private string _listObjectIdentity = "";
         private bool _selectedWorkingStateObserved;
@@ -183,6 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
         internal Exception ScenarioException { get { return _exception; } }
         internal string LastCompletedStage { get { return _lastCompletedStage; } }
+        internal string ObserverArmingSubstage { get { return _observerArmingSubstage; } }
         internal int WorkingCount { get { return _workingCount; } }
         internal int BaselineCount { get { return _baselineCount; } }
         internal int ButtonCandidateCount { get { return _buttonCandidates; } }
@@ -443,12 +448,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 , FinalLoadActionCount = _finalLoadActionCount
                 , ImmediateLoadCaller = _immediateLoadCaller
                 , ImmediateLoadCallerType = _immediateLoadCallerType
+                , ImmediateLoadCallerReceiverIdentity = _immediateLoadCallerReceiverIdentity
+                , CompatibleCallerReceiverCount = _compatibleCallerReceiverCount
                 , LoadCallerChain = new List<string>(_loadCallerChain)
+                , CandidateRejections = new List<string>(_candidateRejections)
             };
         }
 
         private void ResolveWorkingSelectionLoadActions()
         {
+            _observerArmingSubstage = "working-selection-component-discovery";
             var entries = Resources.FindObjectsOfTypeAll(typeof(Component))
                 .OfType<Component>()
                 .Where(component => component != null &&
@@ -460,6 +469,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (entries.Count != 1) return;
             _entryOwner = entries[0];
 
+            _observerArmingSubstage = "working-selection-owner-discovery";
             Transform root = _entryOwner.transform;
             while (root.parent != null)
             {
@@ -484,8 +494,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (typeName == CatalogType) _listObjectIdentity = ObjectIdentity(component);
                 if (typeName == "Kingmaker.UI.SaveLoadWindow.SaveLoadWindow")
                     _ownerObjectIdentity = ObjectIdentity(component);
-                AddCandidateMethods(component);
+                DiscoverCandidateMethods(component);
             }
+            _observerArmingSubstage = "working-selection-unityevent-inspection";
             foreach (Button button in root.gameObject.GetComponentsInChildren<Button>(true))
             {
                 if (button == null || !button.gameObject.activeInHierarchy ||
@@ -493,33 +504,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (Delegate listener in RuntimeDelegates(button.onClick))
                 {
                     AddUniqueReference(_scopedReceivers, listener.Target);
-                    AddCandidateMethod(listener.Method,
+                    RecordCandidateMethod(listener.Method,
                         "button=" + ObjectIdentity(button) + ";event=" +
                         ObjectIdentity(button.onClick) + ";target=" +
                         ObjectIdentity(listener.Target));
                 }
             }
             _entryActionCandidates = _scopedActionCandidates.Count;
+            _observerArmingSubstage = "working-selection-selected-state-inspection";
             CaptureSelectedSaveStorage("readiness");
+            _observerArmingSubstage = "working-selection-readiness-writing";
             Add("working-selection-load-observer-ready", null, null,
                 "entry=" + ObjectIdentity(_entryOwner) + ";owner=" +
                 _ownerObjectIdentity + ";list=" + _listObjectIdentity +
                 ";candidates=" + _entryActionCandidates);
         }
 
-        private void AddCandidateMethods(object receiver)
+        private void DiscoverCandidateMethods(object receiver)
         {
+            _observerArmingSubstage = "working-selection-candidate-method-enumeration";
             foreach (MethodInfo method in receiver.GetType().GetMethods(AllInstance))
             {
-                string name = method.Name;
-                bool namedAction = name.IndexOf("Select", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    name.IndexOf("Click", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    name.IndexOf("Submit", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    name.IndexOf("Load", StringComparison.OrdinalIgnoreCase) >= 0;
                 bool interfaceAction = IsUiActionMethod(receiver.GetType(), method);
-                if (!namedAction && !interfaceAction) continue;
-                if (method.IsAbstract || method.ContainsGenericParameters) continue;
-                AddCandidateMethod(method, "receiver=" + ObjectIdentity(receiver));
+                if (!interfaceAction) continue;
+                RecordCandidateMethod(method, "receiver=" + ObjectIdentity(receiver));
             }
         }
 
@@ -550,19 +558,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 name == "UnityEngine.EventSystems.IPointerUpHandler";
         }
 
-        private void AddCandidateMethod(MethodInfo method, string source)
+        private void RecordCandidateMethod(MethodInfo method, string source)
         {
             if (method == null || method.DeclaringType == typeof(object)) return;
-            if (!_scopedActionMethods.Contains(method))
+            string rejection = CandidateRejection(method);
+            if (rejection.Length != 0)
             {
-                _scopedActionMethods.Add(method);
-                if (!_patched.Contains(method))
-                    Patch(method, typeof(WorkingSaveSmokeScenario).GetMethod(
-                        "Prefix", BindingFlags.Static | BindingFlags.NonPublic), null);
+                string rejected = FormatSignature(method) + ";reason=" + rejection +
+                    ";" + source;
+                if (!_candidateRejections.Contains(rejected))
+                    _candidateRejections.Add(rejected);
+                Add("optional-action-candidate-rejected", method, null, rejected);
+                return;
             }
+            if (!_scopedActionMethods.Contains(method)) _scopedActionMethods.Add(method);
             string candidate = FormatSignature(method) + ";" + source;
             if (!_scopedActionCandidates.Contains(candidate))
                 _scopedActionCandidates.Add(candidate);
+        }
+
+        private static string CandidateRejection(MethodInfo method)
+        {
+            if (method.IsAbstract) return "abstract";
+            if (method.IsGenericMethodDefinition || method.ContainsGenericParameters)
+                return "generic";
+            if ((method.Attributes & MethodAttributes.PinvokeImpl) != 0) return "pinvoke";
+            MethodImplAttributes implementation = method.GetMethodImplementationFlags();
+            if ((implementation & MethodImplAttributes.InternalCall) != 0 ||
+                (implementation & MethodImplAttributes.Runtime) != 0)
+                return "runtime-implemented";
+            if (method.GetMethodBody() == null) return "no-managed-body";
+            if (method.IsSpecialName) return "property-or-event-accessor";
+            if (method.DeclaringType != null &&
+                method.DeclaringType.FullName.StartsWith("UnityEngine.", StringComparison.Ordinal))
+                return "unity-framework-method";
+            return "";
         }
 
         private static void AddUniqueReference(List<object> values, object value)
@@ -1106,13 +1136,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _immediateLoadCaller = signature;
                 _immediateLoadCallerType = caller.DeclaringType == null ? "" :
                     caller.DeclaringType.FullName;
-                if (_scopedActionMethods.Contains(caller as MethodInfo))
-                    _finalLoadActionCount++;
+                Type callerType = caller.DeclaringType;
+                List<object> receivers = callerType == null ? new List<object>() :
+                    _scopedReceivers.Where(value => value != null &&
+                        callerType.IsInstanceOfType(value)).ToList();
+                _compatibleCallerReceiverCount = receivers.Count;
+                if (receivers.Count == 1)
+                {
+                    _immediateLoadCallerReceiverIdentity = ObjectIdentity(receivers[0]);
+                    _finalLoadActionCount = 1;
+                }
             }
             Add("load-entry-caller-chain", _loadEntry, null,
                 "immediate=" + _immediateLoadCaller + ";frames=" +
                 _loadCallerChain.Count + ";finalActionCount=" +
-                _finalLoadActionCount);
+                _finalLoadActionCount + ";compatibleReceivers=" +
+                _compatibleCallerReceiverCount + ";receiver=" +
+                _immediateLoadCallerReceiverIdentity);
         }
 
         private void OnLoadCompleted()

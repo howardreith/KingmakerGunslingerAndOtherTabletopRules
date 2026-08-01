@@ -16,7 +16,7 @@ $fixtures = @(
     Get-Content -Raw -LiteralPath (Join-Path $root 'tests\fixtures\working-save-entry-action-ambiguous-run-2.json') | ConvertFrom-Json
 )
 $selectionStart = $scenario.IndexOf('private void ResolveWorkingSelectionLoadActions()')
-$selectionEnd = $scenario.IndexOf('private void AddCandidateMethods', $selectionStart)
+$selectionEnd = $scenario.IndexOf('private void DiscoverCandidateMethods', $selectionStart)
 $selectionResolver = $scenario.Substring($selectionStart, $selectionEnd - $selectionStart)
 
 $checks = [ordered]@{

@@ -134,6 +134,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("immediateLoadCaller", Order = 43)] public string ImmediateLoadCaller { get; set; }
         [JsonProperty("immediateLoadCallerType", Order = 44)] public string ImmediateLoadCallerType { get; set; }
         [JsonProperty("loadCallerChain", Order = 45)] public List<string> LoadCallerChain { get; set; }
+        [JsonProperty("immediateLoadCallerReceiverIdentity", Order = 46)] public string ImmediateLoadCallerReceiverIdentity { get; set; }
+        [JsonProperty("compatibleCallerReceiverCount", Order = 47)] public int CompatibleCallerReceiverCount { get; set; }
+        [JsonProperty("candidateRejections", Order = 48)] public List<string> CandidateRejections { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence

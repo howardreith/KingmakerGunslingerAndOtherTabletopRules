@@ -1,0 +1,19 @@
+{
+  "status": "ERROR",
+  "errorStage": "working-entry-readiness",
+  "startupErrorStage": "observer-armed",
+  "lastSuccessfulEvent": "stage-enter:working-entry-readiness",
+  "operation": "Harmony patch installation from AddCandidateMethod during AddCandidateMethods",
+  "method": "UnityEngine.UI.SelectionState UnityEngine.UI.Selectable::get_currentSelectionState()",
+  "exceptionType": "System.ArgumentException",
+  "exceptionMessage": "You can only patch implemented methods/constructors. Patch the declared method UnityEngine.UI.SelectionState UnityEngine.UI.Selectable::get_currentSelectionState() instead.",
+  "exceptionChain": [
+    "HarmonyLib.PatchProcessor.Patch",
+    "Harmony12.PatchProcessor.Patch",
+    "Harmony12.HarmonyInstance.Patch",
+    "WorkingSaveSmokeScenario.Patch",
+    "WorkingSaveSmokeScenario.AddCandidateMethod",
+    "WorkingSaveSmokeScenario.AddCandidateMethods",
+    "WorkingSaveSmokeScenario.ResolveWorkingSelectionLoadActions"
+  ]
+}

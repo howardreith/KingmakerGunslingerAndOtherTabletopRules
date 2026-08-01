@@ -279,7 +279,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _workingReadyWritten && _workingSaveSmoke != null)
                     CompletePostReadinessError(exception);
                 else
-                    CompleteStartupError(_workingStartupStage, exception);
+                    CompleteStartupError(_workingSaveSmoke != null &&
+                        !string.IsNullOrWhiteSpace(_workingSaveSmoke.ObserverArmingSubstage)
+                            ? _workingSaveSmoke.ObserverArmingSubstage
+                            : _workingStartupStage, exception);
             }
         }
 
@@ -455,7 +458,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
                     "entry-action-correlation",
-                    "Load completed for the exact working descriptor, but the clicked UnityEvent and listener could not both be proven.");
+                    _workingSaveSmoke.SelectionLoadObservation
+                        ? "Load completed for the exact working descriptor, but one caller and one compatible scoped receiver were not uniquely proven."
+                        : "Load completed for the exact working descriptor, but the clicked UnityEvent and listener could not both be proven.");
                 return;
             }
             int timeout = WorkingSaveStageTimeout(_workingSaveSmoke.Stage);
@@ -646,7 +651,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "count=" + evidence.FinalLoadActionCount + ";caller=" +
                         evidence.ImmediateLoadCaller,
                     evidence.FinalLoadActionCount == 1 &&
-                        !string.IsNullOrWhiteSpace(evidence.ImmediateLoadCaller),
+                        evidence.CompatibleCallerReceiverCount == 1 &&
+                        !string.IsNullOrWhiteSpace(evidence.ImmediateLoadCaller) &&
+                        !string.IsNullOrWhiteSpace(
+                            evidence.ImmediateLoadCallerReceiverIdentity),
                     "managed caller chain and scoped receiver identity"));
                 assertions.Add(Assertion("visible-text-not-identity",
                     "no text-only correlation", "object-reference and receiver identity",
