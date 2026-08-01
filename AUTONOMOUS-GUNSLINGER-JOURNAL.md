@@ -413,3 +413,20 @@
   `38b633bce9ab969c5b39d695cbf80ee7239ab4a9b5523e5398ada779813ae5da`.
 - Next action: commit this source checkpoint, rebuild the exact commit, then run
   guarded mod-load and two fresh-process capacity acceptances.
+
+## 2026-08-01 Sprint 33 advanced capacity runtime qualification
+
+- Exact commit `f851ae2` passed guarded mod load, run ID
+  `20260801T1447365484819Z-10da17eb731c4ba08e76fce5ac216fef`.
+- Two independent `advanced-capacity` fresh-process runs passed, run IDs
+  `20260801T1448590698485Z-c8d4099979754579b6bc68fde049bbc5` and
+  `20260801T1450305002704Z-681c230576604963897eda2927f1c866`.
+- Both proved exact six/six reload, four/six post-discharge isolation, advanced
+  repeated-misfire no-explosion behavior, stable working-save correlation, and
+  no save-writing API. Fixtures were request-local and do not claim native
+  inventory or save-vault mutation.
+- Exact package/DLL SHA-256:
+  `01774ec30fbe71580b3bc3ff7e63337aad0784e7881b868553ed88539d4a284a` /
+  `3e610b43025b2771bd9003396ca469cd10e9028dfb7d5fb180f7f821369622d3`.
+- Next action: commit curated evidence and begin the next incomplete coverage
+  item; Sprint 33 is a checkpoint, not a stopping condition.
