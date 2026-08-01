@@ -43,15 +43,13 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Next action
 
-Implement and test a guarded `sprint30-generic-actions` scenario. Reuse
-`WorkingSaveSmokeScenario` for exact load and save-write sentinels; only after
-its stable fingerprint invoke
-`DevelopmentControls.RunMaintenanceQualificationImmediately()`. Record the
-fixture's `MaintenanceLoopPassed` result plus marker-first selection and native
-Heavy Crossbow isolation. The action is in-memory only and must never call a
-save API. Then run full source/package gates, commit, and execute it through
-`Invoke-KingmakerRuntimeTest.ps1` with explicit
-`-SaveName KMG_AUTOMATION_WORKING`.
+The guarded `generic-firearm-actions` scenario is source-qualified: focused
+tests, repository validation, 611/611 exact domain tests, private-reference
+Release compile, strict package validation, and WhatIf all pass. Commit the
+checkpoint, require a clean tree, run `mod-load-smoke` for that exact assembly,
+then execute it through `Invoke-KingmakerRuntimeTest.ps1` with explicit
+`-SaveName KMG_AUTOMATION_WORKING`. Candidate DLL SHA-256 is
+`530a96be4133e6b574dab2638da07336ae41a6454584deceea6773486af07531`.
 
 ## Safety boundaries
 

@@ -16,7 +16,7 @@ $fixture = Get-Content -Raw -LiteralPath (
 $launchBoundary = $orchestrator.IndexOf(
     '$process = $launch.kingmakerProcess', [StringComparison]::Ordinal)
 $scenarioBoundary = $orchestrator.IndexOf(
-    'if ($Scenario -eq ''working-save-smoke'') {', $launchBoundary,
+    'if ($Scenario -in @(''working-save-smoke'', ''generic-firearm-actions'')) {', $launchBoundary,
     [StringComparison]::Ordinal)
 $commonInitialization = $orchestrator.Substring(
     $launchBoundary, $scenarioBoundary - $launchBoundary)

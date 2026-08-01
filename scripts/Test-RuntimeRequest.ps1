@@ -38,6 +38,21 @@ Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVe
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.30' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'baseline-forbidden'
+$featureRequest = New-KmgRuntimeRequest -Scenario 'generic-firearm-actions' `
+    -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
+    -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
+    -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
+    -ActionResolutionTimeoutSeconds 30 -ActionInvocationTimeoutSeconds 30 `
+    -DescriptorResolutionTimeoutSeconds 30 -LoadEntryTimeoutSeconds 30 `
+    -FingerprintTimeoutSeconds 30
+if ($featureRequest.scenario -cne 'generic-firearm-actions' -or
+    $featureRequest.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+    $failures.Add('sprint30-feature-request-valid')
+}
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'generic-firearm-actions' `
+    -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -EvidenceDirectory $synthetic -Parameters @{} } 'sprint30-save-name-missing'
 $entryRequest = New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
     -ExpectedVersion '0.0.30' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
@@ -59,4 +74,4 @@ Assert-Throws { New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-acti
     -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'entry-baseline-forbidden'
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 12'
+Write-Host 'Runtime request source tests passed: 14'

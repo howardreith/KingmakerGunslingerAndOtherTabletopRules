@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintItem _firearmRepairKit;
         private static BlueprintWeaponType _testMusketWeaponType;
         private static BlueprintItemWeapon _testMusketItem;
+        private static BlueprintWeaponType _nativeHeavyCrossbowWeaponType;
         private static FirearmStateTokenBlueprintSet _firearmStateTokens;
         private static BasicAmmunitionBlueprintSet _basicAmmunition;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
@@ -144,6 +145,17 @@ namespace KingmakerGunslinger.Bootstrap
                 lock (Gate)
                 {
                     return _testMusketItem;
+                }
+            }
+        }
+
+        internal static BlueprintWeaponType NativeHeavyCrossbowWeaponType
+        {
+            get
+            {
+                lock (Gate)
+                {
+                    return _nativeHeavyCrossbowWeaponType;
                 }
             }
         }
@@ -361,6 +373,8 @@ namespace KingmakerGunslinger.Bootstrap
                     _firearmRepairKit = result.FirearmRepairKit;
                     _testMusketWeaponType = result.TestMusket.WeaponType;
                     _testMusketItem = result.TestMusket.Item;
+                    _nativeHeavyCrossbowWeaponType =
+                        result.TestMusket.NativeWeaponType;
                     _firearmStateTokens = result.FirearmStateTokens;
                     _basicAmmunition = result.BasicAmmunition;
                     _initializationCount++;

@@ -49,7 +49,28 @@
   maintenance fixture after guarded working-save load and emit explicit generic
   marker-first action/Heavy Crossbow isolation assertions. No existing scenario
   currently invokes this fixture.
-- Next exact action: add a guarded `sprint30-generic-actions` scenario by
+- Next exact action: add a guarded `generic-firearm-actions` scenario by
   extending the qualified working-save flow only after its stable fingerprint;
   invoke the existing one-command maintenance diagnostic without saving, add
   request/orchestrator tests, and source-qualify before live execution.
+
+## 2026-08-01 generic firearm actions source checkpoint
+
+- Added guarded `generic-firearm-actions`, locked to
+  `KMG_AUTOMATION_WORKING` and the qualified Steam/receiver-bound load path.
+- The scenario runs only after a stable post-load fingerprint, requires the
+  existing two-item maintenance evaluator to reach `MaintenanceLoopPassed`,
+  proves the concrete native Heavy Crossbow type has zero firearm markers while
+  the distinct Test Musket type has exactly one, and retains save-write
+  sentinels through final evidence.
+- Focused tests PASS: generic-action scenario 10, runtime request 14, scenario
+  preflight 31, orchestration initialization 9, runner safety 19.
+- Repository validation PASS; exact dependency-free domain suite PASS 611/611;
+  exact private-reference Release compile PASS; strict standalone package PASS;
+  scenario WhatIf PASS with no deployment or launch.
+- Candidate package SHA-256:
+  `b6e136110c3039813d0901ca231071a17f845434e58df3fef6ae688f2c53ac5f`.
+- Candidate DLL SHA-256:
+  `530a96be4133e6b574dab2638da07336ae41a6454584deceea6773486af07531`.
+- Next command after committing the source-qualified checkpoint: run
+  `mod-load-smoke` for the exact commit, then run `generic-firearm-actions`.

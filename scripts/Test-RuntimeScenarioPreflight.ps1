@@ -29,6 +29,7 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
+    'generic-firearm-actions',
     'observe-working-save-entry-action',
     'observe-working-save-selection-load-action',
     'observe-working-save-receiver-bound-action'
@@ -47,6 +48,12 @@ Assert-True $entry.RequiresManualInteraction 'entry-requires-manual-interaction'
 Assert-True $entry.RequiresSaveName 'entry-requires-save-name'
 Assert-True ($entry.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
     'entry-only-permits-working-save'
+$feature = Get-KmgRuntimeScenarioMetadata 'generic-firearm-actions'
+Assert-True (-not $feature.RequiresManualInteraction) `
+    'sprint30-feature-is-autonomous'
+Assert-True $feature.RequiresSaveName 'sprint30-feature-requires-save-name'
+Assert-True ($feature.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'sprint30-feature-only-permits-working-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'

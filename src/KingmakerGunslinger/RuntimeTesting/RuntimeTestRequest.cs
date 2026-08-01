@@ -216,7 +216,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
             bool workingSmoke = request.Scenario ==
-                RuntimeTestScenarioCatalog.WorkingSaveSmoke;
+                RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions;
             bool workingEntryObservation = request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||

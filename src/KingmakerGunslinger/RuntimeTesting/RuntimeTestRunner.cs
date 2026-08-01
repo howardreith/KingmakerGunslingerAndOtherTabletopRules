@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Weapons;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Development;
+using KingmakerGunslinger.Firearms;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -223,6 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -260,6 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -275,6 +281,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -480,7 +487,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.GenericFirearmActions)
+                {
+                    RunSprint30GenericActions();
+                }
+                else
+                {
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
+                }
                 return;
             }
             if (supervisedEntry && _workingSaveSmoke.ObservationComplete)
@@ -679,7 +694,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool receiverBoundObservation = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             bool receiverBoundPath = receiverBoundObservation ||
-                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke;
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions;
             if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
@@ -786,6 +802,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Diagnostics.Add("timeoutStage=" + stage);
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
             Complete(result);
+        }
+
+        private void RunSprint30GenericActions()
+        {
+            _trace.Record("feature-acceptance-start",
+                "sprint30 generic marker-first maintenance actions; in-memory only");
+            DevelopmentActionResult maintenance =
+                DevelopmentControls.RunMaintenanceQualificationImmediately();
+            bool completeLoop = maintenance.Succeeded &&
+                maintenance.Message.IndexOf("MaintenanceLoopPassed",
+                    StringComparison.Ordinal) >= 0;
+            BlueprintWeaponType nativeHeavyCrossbow =
+                BlueprintBootstrap.NativeHeavyCrossbowWeaponType;
+            BlueprintWeaponType markedTestMusket =
+                BlueprintBootstrap.TestMusketWeaponType;
+            int nativeMarkerCount = CountFirearmMarkers(nativeHeavyCrossbow);
+            int markedMarkerCount = CountFirearmMarkers(markedTestMusket);
+
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-save", "stable exact working-save load",
+                    evidence.StableFingerprint,
+                    evidence.CompletionCallbackObserved &&
+                        evidence.DescriptorReferenceCorrelated &&
+                        !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
+                    "qualified receiver-bound working-save path"),
+                Assertion("generic-maintenance-loop", "MaintenanceLoopPassed",
+                    maintenance.Message, completeLoop,
+                    "definition-driven exact-equipped Overhaul, Repair, and Reload diagnostics"),
+                Assertion("native-heavy-crossbow-isolation",
+                    "nativeMarkers=0;markedMarkers=1",
+                    "nativeMarkers=" + nativeMarkerCount +
+                        ";markedMarkers=" + markedMarkerCount,
+                    nativeHeavyCrossbow != null && markedTestMusket != null &&
+                        !ReferenceEquals(nativeHeavyCrossbow, markedTestMusket) &&
+                        nativeMarkerCount == 0 && markedMarkerCount == 1,
+                    "concrete runtime BlueprintWeaponType component arrays"),
+                Assertion("no-save-writing-api", "none",
+                    evidence.SaveWritingApiObserved ? "observed" : "none",
+                    !evidence.SaveWritingApiObserved,
+                    "request-scoped native save-write sentinels"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            RuntimeTestResult result = CreateResult(
+                pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!maintenance.Succeeded)
+                result.Warnings.Add("Sprint 30 maintenance diagnostic failed closed.");
+            _trace.Record("feature-acceptance-complete",
+                "status=" + result.Status);
+            Complete(result);
+        }
+
+        private static int CountFirearmMarkers(BlueprintWeaponType weaponType)
+        {
+            if (weaponType == null)
+                return -1;
+            int count = 0;
+            foreach (BlueprintComponent component in
+                weaponType.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+            {
+                if (component is FirearmDefinitionComponent)
+                    count++;
+            }
+            return count;
         }
 
         private void RunLoadGameButtonActionObservation()
