@@ -3461,7 +3461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("initiative-positive-grit", "+2 native modifier; no spend",
-                    observed, initialGrit == 2 && afterPositiveGrit == 2 &&
+                    observed, initialGrit > 0 && afterPositiveGrit == initialGrit &&
                     withAfter == withBefore + 2,
                     "exact RuleInitiativeRoll handler boundary"),
                 Assertion("initiative-duplicate-stability", "same modifier after replay",

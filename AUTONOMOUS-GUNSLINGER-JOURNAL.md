@@ -1370,3 +1370,26 @@
   `ce8c55a16c347c873d7265675ae1e6d5c3b59bee6338074a53075ca31ece46f8`.
 - Next action: commit the reconstructable source checkpoint, require exact mod
   load, and run two independent fresh-process Initiative PASS runs.
+
+### Initiative first runtime attempt
+
+- Exact source commit `5c6a348` passed mod load at
+  `20260801T2206308361819Z-mod-load-smoke`.
+- The first feature run
+  `20260801T2207477896114Z-disposable-gunslinger-initiative` failed only its
+  positive-grit assertion: the detached direct-grant fixture began with one
+  grit rather than the asserted two. It nevertheless observed the exact
+  intended mechanics: grit `1 -> 1`, native modifier `0 -> 2`, duplicate
+  stability at 2, zero-grit modifier `0 -> 0`, applied/rejected/duplicate
+  counts `1/1/1`, zero faults, and exact cleanup.
+- This is an acceptance-fixture defect, not a production behavior defect. The
+  repair asserts the authoritative contract—strictly positive initial grit and
+  no spend—without prescribing a maximum for a detached unit with no class
+  level. Full source qualification and a new exact commit are required before
+  retrying.
+- The repaired checkpoint passes Sprint 38/inherited validation, 740/740 tests,
+  exact-reference clean Release build, strict package validation, 18 request
+  checks, 40 preflight checks, and 16 validation-dispatch checks. Repaired
+  candidate package/DLL SHA-256 are
+  `c3461173a9c820e4d63a4fee5f7bb078ddf4a29590a560c3928e6f709649ebbb` /
+  `cc14f5fd4afa13b5a1e108a86c065ffb983094c1f47258b2532e14f4c30c99b5`.

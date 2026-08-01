@@ -11,9 +11,11 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `9cad0e9` (runtime-qualified Nimble documentation checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 38 Gunslinger Initiative +2 is source-qualified
-  and awaits an exact source commit plus guarded runtime qualification. The
-  conditional Quick Draw clause remains separately under contract review.
+- Current checkpoint: Sprint 38 source commit `5c6a348` passed exact mod load.
+  Its first Initiative run proved every mechanic but failed an over-specific
+  fixture assertion that expected two initial grit; the narrow assertion repair
+  is fully source-qualified and requires a new exact commit. The conditional
+  Quick Draw clause remains separately under contract review.
 - Version: `0.0.38`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
