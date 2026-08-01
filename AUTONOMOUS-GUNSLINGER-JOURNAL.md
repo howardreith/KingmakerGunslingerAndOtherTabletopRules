@@ -932,3 +932,24 @@
   output validation, and strict packaging pass. Candidate package/DLL SHA-256
   are `7272b90e171d9d214120bd160c128af0fd5840ecab75171a03231840741c3247` /
   `893c59c2ca5ef697da0ebd83dc63ac18f05af0d2b62f3bbcb3f1f9c70c40dcde`.
+
+## 2026-08-01 Sprint 34 detached-replacement respec qualification
+
+- A reduced single-unit Respec run completed safely but proved native Respec
+  mode alone retains Fighter 1. Exact installed `Player.RespecCompanion` IL
+  established that Kingmaker instead creates a fresh same-blueprint unit and
+  initiates respec on that level-zero replacement candidate.
+- Commit `3d4ba8f` mirrors that reset boundary with two detached `ChargenUnit`
+  instances and invokes no global creation, UI, replacement callback,
+  `PrepareRespec`, or `Commit`.
+- Eight focused checks, repository validation, 691/691 tests, exact Release
+  build, output validation, and strict packaging passed. Package/DLL SHA-256
+  are `fffd41f772c7b8b3668c7b8c4d2e8364a16a19cb118dccba112a67d826721e05` /
+  `5616dfd5da3eb32431c28501fa53289d6866364e818fa37a9568f235a9e6f36e`.
+- Exact mod load passed at `20260801T1836154433116Z-mod-load-smoke`.
+  Independent PASS runs were
+  `20260801T1837314150470Z-disposable-gunslinger-respec-preview` and
+  `20260801T1838472989503Z-disposable-gunslinger-respec-preview`.
+- Both proved replacement Fighter 0/Gunslinger 0 -> Gunslinger 1, unchanged
+  source Fighter 1/Gunslinger 0, two queued actions, intact body, exact cleanup,
+  and no save load/write.

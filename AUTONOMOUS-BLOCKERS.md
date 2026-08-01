@@ -1,9 +1,8 @@
 # Autonomous Gunslinger blockers
 
-A respec cleanup investigation is active; no genuine human-input hard stop is
-currently established.
+No genuine human-input hard stop is currently established.
 
-## 2026-08-01 disposable respec cleanup investigation
+## 2026-08-01 disposable respec cleanup investigation (resolved)
 
 - Exact metadata observation on `dd85431` passed twice and proved
   `UnitEntityData.PrepareRespec` delegates to `UnitDescriptor.PrepareRespec`,
@@ -54,6 +53,12 @@ currently established.
   and initiates respec on that replacement candidate. The next scenario uses a
   second detached `ChargenUnit` as the level-zero replacement and avoids the
   native global creation/replacement callbacks.
+- Exact detached-replacement commit `3d4ba8f` passed mod load at
+  `20260801T1836154433116Z-mod-load-smoke` and two independent respec preview
+  runs `20260801T1837314150470Z-disposable-gunslinger-respec-preview` and
+  `20260801T1838472989503Z-disposable-gunslinger-respec-preview`. The runtime
+  investigation is resolved; broad replacement commit remains an engineering
+  boundary, not a human-input hard stop.
 
 ## Active gates (not hard stops)
 

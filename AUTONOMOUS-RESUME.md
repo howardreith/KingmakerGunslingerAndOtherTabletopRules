@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `c1eb9b7` (disposable Fighter-to-Gunslinger multiclass preview).
+- Audited HEAD: `3d4ba8f` (detached-replacement Gunslinger respec preview).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 34 Gunslinger class chassis.
@@ -17,6 +17,16 @@ definition of done or a listed genuine human-input hard stop.
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Exact respec preview commit `3d4ba8f` passed mod load at
+  `20260801T1836154433116Z-mod-load-smoke`, then two independent save-free PASS
+  runs `20260801T1837314150470Z-disposable-gunslinger-respec-preview` and
+  `20260801T1838472989503Z-disposable-gunslinger-respec-preview`. Both proved a
+  fresh detached replacement at Fighter 0/Gunslinger 0 reached Gunslinger 1,
+  while the original disposable source remained Fighter 1/Gunslinger 0; both
+  detached entities were cleaned up. Package/DLL SHA-256 are
+  `fffd41f772c7b8b3668c7b8c4d2e8364a16a19cb118dccba112a67d826721e05` /
+  `5616dfd5da3eb32431c28501fa53289d6866364e818fa37a9568f235a9e6f36e`.
 
 - Exact multiclass preview commit `c1eb9b7` passed mod-load at
   `20260801T1748568385594Z-mod-load-smoke`, then two save-free PASS runs:
@@ -148,27 +158,12 @@ isolation, and observed no save write.
 
 ## Next action
 
-Same-class and Fighter-to-Gunslinger multiclass previews are runtime-qualified.
-The respec path changed to non-initiating evidence acquisition after two
-materially different save-free attempts failed with `NullReferenceException`;
-see `AUTONOMOUS-BLOCKERS.md`. Commit `07dd111` and metadata PASS run
-`20260801T1817013647054Z-observe-character-creation-contracts` prove the cleanup
-failure: respec clears `Body`, but descriptor disposal calls `Body.Dispose`.
-Restore the retained original disposable body before entity disposal, then
-source-qualify and retry the reduced scenario. Commit `4fdbfea` passed mod load
-at `20260801T1821061256490Z-mod-load-smoke`; run
-`20260801T1822203121648Z-disposable-gunslinger-respec-preview` now identifies
-`start-respec-controller` as the first failure. Inspect its exact constructor
-and preview call graphs without invocation before another attempt. Metadata run
-`20260801T1826247826437Z-observe-character-creation-contracts` proves controller
-construction requests and turns on its preview immediately. Retry only the
-reduced native `Respec` preview with the disposable source body intact; do not
-call `PrepareRespec` or `Commit`. Run
-`20260801T1831121462577Z-disposable-gunslinger-respec-preview` proved that a
-single-unit preview retains Fighter 1. Exact installed `Player.RespecCompanion`
-IL proves native respec instead creates a fresh same-blueprint unit and initiates
-respec on that replacement. Use a second detached `ChargenUnit` as the safe
-level-zero replacement target; do not invoke global creation or replacement.
+Starting items, same-class level-up, multiclass, and detached-replacement respec
+previews are runtime-qualified. Re-audit the coverage matrix and select the next
+highest-dependency incomplete class-integration or base-feature slice. Broad
+first-level `Commit` and native replacement callbacks remain deferred until
+their global mutations have complete rollback proof; do not invoke them
+speculatively.
 Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.
