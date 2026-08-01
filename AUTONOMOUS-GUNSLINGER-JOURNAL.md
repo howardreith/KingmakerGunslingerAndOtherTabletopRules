@@ -160,3 +160,24 @@
   `8493d5e3106b58ebbbff3fdc6b83972c865c934cef36c395630743f107844f15`.
 - Next action: commit this source-qualified slice, run exact-commit guarded
   mod-load smoke, then implement the production blueprint catalog.
+
+## 2026-08-01 Sprint 31 production catalog runtime-qualified
+
+- Commits `ab9aef1` and `1539ae9` added six stable production blueprints for
+  Pistol, Musket, and fail-closed special-range Blunderbuss content plus the
+  guarded `production-firearm-catalog` scenario.
+- Exact commit `1539ae9` passed `mod-load-smoke`, run ID
+  `20260801T1334059331758Z-9736bc0a7d7844bd83bc9d26b5a30676`.
+- Two independent fresh-process catalog PASS runs:
+  `20260801T1335276981327Z-5145ec8fbc864500889d489fb4c23fad` and
+  `20260801T1336546357107Z-1986affde5794aad8eb0710a31932eb0`.
+- Both feature runs proved exact runtime item/type mechanics, one marker per
+  production type, native Heavy Crossbow isolation, one fail-closed
+  Blunderbuss restriction, stable exact working-save fingerprint, and no
+  observed save-writing API. The baseline was distinguished and never loaded.
+- Clean Release/package gates passed with 624/624 domain tests. Exact package
+  SHA-256 was `0ca093bd05eaa19a6dc3e3577b618fea2b3db018b29e61965fc0742815e2c342`;
+  DLL SHA-256 was
+  `c0e59abe94e89ec478a55c43327c8ce7763851dc1d50f4a141c39e7ad0767473`.
+- Next checkpoint: Sprint 32 scatter execution. Establish a contract-backed,
+  fail-closed cone/target plan before enabling the production Blunderbuss.

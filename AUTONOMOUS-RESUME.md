@@ -8,15 +8,28 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `5c92012701873421adff1fc0e127b0b3597c352c`
+- Audited HEAD: `1539ae9` (Sprint 31 runtime implementation; evidence docs pending commit).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: early production firearm catalog.
-- Version: `0.0.31` (Sprint 31 in progress).
+- Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
+- Version: `0.0.31` (Sprint 31 runtime-qualified; Sprint 32 entry next).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Exact Sprint 31 catalog commit `1539ae9` passed `mod-load-smoke`, run ID
+  `20260801T1334059331758Z-9736bc0a7d7844bd83bc9d26b5a30676`.
+- Two fresh-process `production-firearm-catalog` PASS runs:
+  `20260801T1335276981327Z-5145ec8fbc864500889d489fb4c23fad` and
+  `20260801T1336546357107Z-1986affde5794aad8eb0710a31932eb0`.
+- Exact deployed package SHA-256:
+  `0ca093bd05eaa19a6dc3e3577b618fea2b3db018b29e61965fc0742815e2c342`;
+  DLL SHA-256:
+  `c0e59abe94e89ec478a55c43327c8ce7763851dc1d50f4a141c39e7ad0767473`.
+  Both feature runs proved the three concrete catalog entries, marker/native
+  isolation, special-range fail-closed behavior, stable working-save identity,
+  and no save write.
 
 - Exact Sprint 31 entry commit `67d7779` passed `mod-load-smoke`, run ID
   `20260801T1309524765214Z-f92ce74df2bc4c6695e6cdd3a6bbeeed`, and canonical
@@ -34,9 +47,9 @@ definition of done or a listed genuine human-input hard stop.
   `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260801T0437220409268Z-working-save-smoke`.
 - Deployed DLL SHA-256:
   `b1422ae9a2aed50a0ae8a8d2d3f4ff0defc5d03d31f142d7a19c57f5eb973d7b`.
-- First unproved invariant: generic marker-first Reload/Repair/Overhaul retains
-  production pistol, musket, and blunderbuss definition-specific behavior and
-  identity without native Heavy Crossbow leakage.
+- First unproved invariant: scatter target enumeration and close-range damage
+  affect each legal target exactly once, consume exactly one chamber, and do
+  not affect non-scatter firearms or targets outside the verified shape.
 
 ## Commands already run
 
@@ -61,12 +74,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified special-range definition slice and run guarded
-exact-commit mod-load smoke. Then implement stable production
-pistol/musket/blunderbuss blueprint contracts and registrations with focused
-marker, stable-ID, presentation, mechanical-field, and generic-action tests.
-The blunderbuss definition now records `special` without a numeric increment;
-scatter execution remains Sprint 32.
+Read and record Sprint 32 acceptance criteria, inspect exact installed target
+enumeration/area contracts, and implement the smallest pure scatter target and
+damage plan before adding a guarded working-save scenario. Keep the production
+Blunderbuss unavailable until scatter execution is source- and runtime-qualified.
 
 ## Safety boundaries
 
