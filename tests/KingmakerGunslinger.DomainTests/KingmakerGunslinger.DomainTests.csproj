@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Assertions.cs" />
     <Compile Include="Sprint30Tests.cs" />
+    <Compile Include="Sprint31Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionDecision.cs">
       <Link>Actions\FirearmActionDecision.cs</Link>
     </Compile>
@@ -264,6 +265,12 @@
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmDefinitions.cs">
       <Link>Domain\FirearmDefinitions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\ProductionFirearmCatalog.cs">
+      <Link>Domain\ProductionFirearmCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\ProductionFirearmWeaponSpec.cs">
+      <Link>Domain\ProductionFirearmWeaponSpec.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmEra.cs">
       <Link>Domain\FirearmEra.cs</Link>

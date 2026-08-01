@@ -110,12 +110,14 @@
     <Compile Include="Blueprints\DiagnosticBlueprints.cs" />
     <Compile Include="Blueprints\LocalizationService.cs" />
     <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
+    <Compile Include="Blueprints\ProductionFirearmBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\FirearmStateTokenBlueprints.cs" />
     <Compile Include="Blueprints\TestMusketBlueprints.cs" />
     <Compile Include="Blueprints\WeaponBlueprintAccess.cs" />
+    <Compile Include="Blueprints\WeaponTypeMechanicalAccess.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
@@ -150,6 +152,8 @@
     <Compile Include="Firearms\FirearmDefinition.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />
+    <Compile Include="Firearms\ProductionFirearmCatalog.cs" />
+    <Compile Include="Firearms\ProductionFirearmWeaponSpec.cs" />
     <Compile Include="Firearms\FirearmDomainProbe.cs" />
     <Compile Include="Firearms\FirearmProficiencyRestriction.cs" />
     <Compile Include="Firearms\FirearmItemId.cs" />
@@ -224,6 +228,7 @@
     <Compile Include="Firearms\FirearmEra.cs" />
     <Compile Include="Firearms\FirearmKind.cs" />
     <Compile Include="Firearms\ReloadProfile.cs" />
+    <Compile Include="Firearms\UnavailableProductionFirearmRestriction.cs" />
     <Compile Include="Reloading\FirearmItemReloadStateStore.cs" />
     <Compile Include="Reloading\FirearmReloadResult.cs" />
     <Compile Include="Reloading\FirearmReloadStatus.cs" />

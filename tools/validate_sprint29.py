@@ -61,6 +61,9 @@ def validate(
     informational_version: str = INFORMATIONAL_VERSION,
     test_count: int = TEST_COUNT,
     require_current_guide_match: bool = True,
+    expected_active_blueprints: int = EXPECTED_ACTIVE_BLUEPRINTS,
+    expected_ledger_entries: int = EXPECTED_LEDGER_ENTRIES,
+    expected_registered_blueprints: int = EXPECTED_ACTIVE_BLUEPRINTS,
 ) -> None:
     root = (root or Path(__file__).resolve().parents[1]).resolve()
 
@@ -96,11 +99,11 @@ def validate(
 
     ledger = json.loads(read(root, "blueprints/blueprints.json"))
     entries = ledger.get("entries", [])
-    if len(entries) != EXPECTED_LEDGER_ENTRIES:
-        fail(f"Blueprint ledger expected {EXPECTED_LEDGER_ENTRIES} entries, observed {len(entries)}.")
+    if len(entries) != expected_ledger_entries:
+        fail(f"Blueprint ledger expected {expected_ledger_entries} entries, observed {len(entries)}.")
     active = [entry for entry in entries if entry.get("status") == "active"]
-    if len(active) != EXPECTED_ACTIVE_BLUEPRINTS:
-        fail(f"Blueprint ledger expected {EXPECTED_ACTIVE_BLUEPRINTS} active entries, observed {len(active)}.")
+    if len(active) != expected_active_blueprints:
+        fail(f"Blueprint ledger expected {expected_active_blueprints} active entries, observed {len(active)}.")
     symbols = [entry.get("symbol") for entry in entries]
     guids = [entry.get("guid") for entry in entries]
     if len(symbols) != len(set(symbols)) or len(guids) != len(set(guids)):
@@ -158,7 +161,7 @@ def validate(
     require_tokens(
         bootstrap,
         [
-            "ExpectedRegisteredBlueprintCount = 14",
+            f"ExpectedRegisteredBlueprintCount = {expected_registered_blueprints}",
             "RepairTestMusketAbilityBlueprints.Register",
             "repairTestMusketAbility",
             "AttachAbilities",

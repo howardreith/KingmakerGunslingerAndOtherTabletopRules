@@ -37,6 +37,9 @@ def validate(
     version: str = VERSION,
     informational_version: str = INFORMATIONAL_VERSION,
     test_count: int = TEST_COUNT,
+    expected_active_blueprints: int = validate_sprint29.EXPECTED_ACTIVE_BLUEPRINTS,
+    expected_ledger_entries: int = validate_sprint29.EXPECTED_LEDGER_ENTRIES,
+    expected_registered_blueprints: int = validate_sprint29.EXPECTED_ACTIVE_BLUEPRINTS,
 ) -> None:
     root = root.resolve()
     validate_sprint29.validate(
@@ -46,6 +49,9 @@ def validate(
         informational_version=informational_version,
         test_count=test_count,
         require_current_guide_match=False,
+        expected_active_blueprints=expected_active_blueprints,
+        expected_ledger_entries=expected_ledger_entries,
+        expected_registered_blueprints=expected_registered_blueprints,
     )
 
     qualification = json.loads(read(root, "BUILD-QUALIFICATION-S30.json"))

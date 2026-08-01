@@ -11,7 +11,9 @@ import validate_sprint30
 
 VERSION = "0.0.31"
 INFORMATIONAL_VERSION = "0.0.31-s31-early-firearm-catalog"
-TEST_COUNT = 617
+TEST_COUNT = 624
+EXPECTED_ACTIVE_BLUEPRINTS = 20
+EXPECTED_LEDGER_ENTRIES = 21
 
 
 def fail(message: str) -> None:
@@ -38,6 +40,9 @@ def validate(root: Path) -> None:
         version=VERSION,
         informational_version=INFORMATIONAL_VERSION,
         test_count=TEST_COUNT,
+        expected_active_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,
+        expected_ledger_entries=EXPECTED_LEDGER_ENTRIES,
+        expected_registered_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,
     )
     require_tokens(
         read(root, "planning/SPRINT-31-ENTRY-CRITERIA.md"),
@@ -79,6 +84,34 @@ def validate(root: Path) -> None:
             'Case("ac.special-range-fails-closed"',
         ],
         "Sprint 31 definition tests",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs"),
+        [
+            "CreatePistol",
+            "CreateMusket",
+            "CreateBlunderbuss",
+            '"pistol"',
+            '"musket"',
+            '"blunderbuss"',
+        ],
+        "Sprint 31 production firearm catalog",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs"),
+        [
+            "EarlyPistolWeaponType",
+            "EarlyMusketWeaponType",
+            "EarlyBlunderbussWeaponType",
+            "UnavailableProductionFirearmRestriction",
+            "mechanicalAccess.Configure",
+        ],
+        "Sprint 31 production firearm blueprints",
+    )
+    require_tokens(
+        read(root, "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs"),
+        ["ExpectedRegisteredBlueprintCount = 20", "ProductionFirearmBlueprints.Register"],
+        "Sprint 31 blueprint bootstrap",
     )
     print("Sprint 31 source invariant validation passed with inherited Sprint 30 checks.")
 

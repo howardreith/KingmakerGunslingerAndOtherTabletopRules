@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 14;
+        internal const int ExpectedRegisteredBlueprintCount = 20;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -35,6 +35,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintWeaponType _nativeHeavyCrossbowWeaponType;
         private static FirearmStateTokenBlueprintSet _firearmStateTokens;
         private static BasicAmmunitionBlueprintSet _basicAmmunition;
+        private static ProductionFirearmBlueprintCatalog _productionFirearms;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -182,6 +183,17 @@ namespace KingmakerGunslinger.Bootstrap
             }
         }
 
+        internal static ProductionFirearmBlueprintCatalog ProductionFirearms
+        {
+            get
+            {
+                lock (Gate)
+                {
+                    return _productionFirearms;
+                }
+            }
+        }
+
         internal static int ObservationCount
         {
             get
@@ -259,6 +271,11 @@ namespace KingmakerGunslinger.Bootstrap
                     if (_basicAmmunition != null)
                     {
                         count += _basicAmmunition.Count;
+                    }
+
+                    if (_productionFirearms != null)
+                    {
+                        count += _productionFirearms.Count;
                     }
 
                     return count;
@@ -377,6 +394,7 @@ namespace KingmakerGunslinger.Bootstrap
                         result.TestMusket.NativeWeaponType;
                     _firearmStateTokens = result.FirearmStateTokens;
                     _basicAmmunition = result.BasicAmmunition;
+                    _productionFirearms = result.ProductionFirearms;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
                 }
@@ -384,7 +402,7 @@ namespace KingmakerGunslinger.Bootstrap
                 context.Logger.Info(
                     "blueprints",
                     "initialize.complete",
-                    "Blueprint lifecycle initialization completed exactly once; the firearm domain probe passed, fourteen custom blueprints were registered transactionally, the item-token firearm-state carrier was configured, basic ammunition and Firearm Repair Kit items were published, and the full-round Reload, Overhaul, and Repair abilities were attached to Firearm Proficiency.");
+                    "Blueprint lifecycle initialization completed exactly once; the firearm domain probe passed, twenty custom blueprints were registered transactionally, the production early-firearm catalog and item-token state carrier were configured, basic ammunition and Firearm Repair Kit items were published, and Reload, Overhaul, and Repair were attached to Firearm Proficiency.");
                 return true;
             }
             catch (Exception exception)
@@ -465,6 +483,13 @@ namespace KingmakerGunslinger.Bootstrap
                     context.Logger,
                     firearmProficiency);
 
+                ProductionFirearmBlueprintCatalog productionFirearms =
+                    ProductionFirearmBlueprints.Register(
+                        library,
+                        registry,
+                        context.Logger,
+                        firearmProficiency);
+
                 FirearmStateTokenBlueprintSet firearmStateTokens =
                     FirearmStateTokenBlueprints.Register(registry, context.Logger);
 
@@ -532,6 +557,7 @@ namespace KingmakerGunslinger.Bootstrap
                     repairTestMusketAbility,
                     firearmRepairKit,
                     testMusket,
+                    productionFirearms,
                     firearmStateTokens,
                     basicAmmunition);
             }
@@ -594,6 +620,7 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintAbility repairTestMusketAbility,
                 BlueprintItem firearmRepairKit,
                 TestMusketBlueprintSet testMusket,
+                ProductionFirearmBlueprintCatalog productionFirearms,
                 FirearmStateTokenBlueprintSet firearmStateTokens,
                 BasicAmmunitionBlueprintSet basicAmmunition)
             {
@@ -604,6 +631,7 @@ namespace KingmakerGunslinger.Bootstrap
                 RepairTestMusketAbility = repairTestMusketAbility ?? throw new ArgumentNullException("repairTestMusketAbility");
                 FirearmRepairKit = firearmRepairKit ?? throw new ArgumentNullException("firearmRepairKit");
                 TestMusket = testMusket ?? throw new ArgumentNullException("testMusket");
+                ProductionFirearms = productionFirearms ?? throw new ArgumentNullException("productionFirearms");
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
                 BasicAmmunition = basicAmmunition ?? throw new ArgumentNullException("basicAmmunition");
             }
@@ -621,6 +649,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintItem FirearmRepairKit { get; private set; }
 
             internal TestMusketBlueprintSet TestMusket { get; private set; }
+
+            internal ProductionFirearmBlueprintCatalog ProductionFirearms { get; private set; }
 
             internal FirearmStateTokenBlueprintSet FirearmStateTokens { get; private set; }
 

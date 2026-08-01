@@ -127,6 +127,54 @@
       "status": "active",
       "milestone": "Sprint 29",
       "notes": "Full-round personal extraordinary ability that consumes one Firearm Repair Kit and changes exactly one equipped empty Broken Test Musket to empty Normal without loading or replacing the item."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyPistolWeaponType",
+      "guid": "1b1eede8ce3a459fa7d766e481b633ee",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Pistol type with explicit 1d8/x4/20-foot one-handed mechanics and one immutable firearm marker; Light Crossbow presentation adapter only."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyPistolItem",
+      "guid": "a303d71d244640959827e9464df5a867",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Pistol item wired to its custom type and gated by Firearm Proficiency."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyMusketWeaponType",
+      "guid": "71d97f61a13543429eabc0aa20001dc2",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Musket type with explicit 1d12/x4/40-foot two-handed mechanics and one immutable firearm marker; Heavy Crossbow presentation adapter only."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyMusketItem",
+      "guid": "6c9cdfa2d47e4894847fa85d5319fbd2",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Musket item wired to its custom type and gated by Firearm Proficiency."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyBlunderbussWeaponType",
+      "guid": "e2b9409f344d46baa270bd13b1c9d2c2",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Blunderbuss content type with explicit 1d8/x2 two-handed mechanics and special-range scatter definition; Heavy Crossbow presentation adapter only."
+    },
+    {
+      "symbol": "KMG.Firearms.EarlyBlunderbussItem",
+      "guid": "236f3e167f5542bcac22bca72046fb1f",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 31",
+      "notes": "Production early Blunderbuss item gated by Firearm Proficiency and an additional fail-closed availability restriction until Sprint 32 scatter execution is qualified."
     }
   ]
 }

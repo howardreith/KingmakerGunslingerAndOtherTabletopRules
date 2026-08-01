@@ -67,6 +67,29 @@ namespace KingmakerGunslinger.Blueprints
             int cost,
             float weight)
         {
+            ConfigureCore(item, name, description, flavor, cost, weight, true);
+        }
+
+        internal void ConfigureWeapon(
+            BlueprintItem item,
+            LocalizedString name,
+            LocalizedString description,
+            LocalizedString flavor,
+            int cost,
+            float weight)
+        {
+            ConfigureCore(item, name, description, flavor, cost, weight, false);
+        }
+
+        private void ConfigureCore(
+            BlueprintItem item,
+            LocalizedString name,
+            LocalizedString description,
+            LocalizedString flavor,
+            int cost,
+            float weight,
+            bool isStackable)
+        {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
@@ -102,7 +125,7 @@ namespace KingmakerGunslinger.Blueprints
             _flavor.SetValue(item, flavor);
             _nonIdentifiedName.SetValue(item, name);
             _nonIdentifiedDescription.SetValue(item, description);
-            _isStackable.SetValue(item, true);
+            _isStackable.SetValue(item, isStackable);
             _cost.SetValue(item, cost);
             _weight.SetValue(item, weight);
             _isNotable.SetValue(item, false);
