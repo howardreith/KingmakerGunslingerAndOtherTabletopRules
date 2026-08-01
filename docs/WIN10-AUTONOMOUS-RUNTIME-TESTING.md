@@ -150,16 +150,12 @@ the Kingmaker adapters or prove native weapon isolation. The scenario must not
 be faked. A later design may add a save-backed, supervised fixture after exact
 save loading and cleanup contracts are proven.
 
-`working-save-smoke` is likewise not allowlisted. No safe supported API has
-been established for programmatically loading the exact
-`KMG_AUTOMATION_WORKING` save. The immutable `KMG_AUTOMATION_BASELINE` must
-never be loaded for mutation, overwritten, renamed, or deleted.
-
-Reflection-only inspection of the installed Kingmaker assembly found candidate
-load methods, but their save-list, load-mode, write/migration, completion, and
-failure semantics could not be established safely. See
-`docs/SAVE-BACKED-RUNTIME-AUTOMATION-BLOCKER.md` for the exact metadata and
-blocker. No save-backed substitute is implemented.
+`working-save-smoke` is allowlisted and qualified for unattended use with the
+exact receiver-bound contract documented in `WORKING-SAVE-SMOKE.md`. Use only
+the canonical command there, only `KMG_AUTOMATION_WORKING`, and only guarded
+Steam App ID 640820 launches. No other save or loading boundary is authorized.
+The immutable `KMG_AUTOMATION_BASELINE` must never be selected, loaded,
+modified, overwritten, renamed, or deleted.
 
 A direct `Kingmaker.exe` launch can omit the Steam-owned initialization needed
 for DLC entitlement. It is not a valid save-backed qualification environment.

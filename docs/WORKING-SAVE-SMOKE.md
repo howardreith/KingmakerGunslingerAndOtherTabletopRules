@@ -6,7 +6,13 @@ and launches through Steam App ID 640820.
 
 ## Authoritative contracts
 
-The implementation consumes these PASS observations:
+The final receiver-bound implementation is qualified from this authoritative
+PASS observation:
+
+- `20260801T0322575962389Z-observe-working-save-receiver-bound-action`
+
+The earlier observations remain provenance for the main-menu and catalog
+boundaries:
 
 - `20260729T0143436024338Z-observe-manual-save-load`
 - `20260729T0208479601809Z-observe-save-catalog-and-selection`
@@ -37,8 +43,18 @@ The working identity is the exact combination
 `FolderName/FileName=Manual_298_KMG_AUTOMATION_BASELINE.zks`. Both share the
 observed GameId, so GameId alone cannot identify a manual save.
 
-The exact captured working `SaveInfo` reference is passed once to
-`Kingmaker.MainMenu.LoadGame(SaveInfo):Void`. Observed downstream calls are
+The exact captured working `SaveInfo` is retained by exactly one active
+`Kingmaker.UI.SaveLoadWindow.SaveSlot` through
+`Kingmaker.UI.SaveLoadWindow.SaveSlotBase.SaveInfo`. That exact slot has one
+owning `SaveLoadWindow`, which owns the exact captured `ListOfSaves`. Autonomous
+execution invokes exactly once, on the Unity game thread:
+
+1. `SaveSlot.OnButtonSaveLoad():Void`
+2. `SaveLoadWindow.HandleHardcodeMainMenuSaveLoad(SaveInfo):Void`
+3. `MainMenu.LoadGame(SaveInfo):Void`
+
+Both downstream arguments must be the exact captured working object. Observed
+downstream calls are
 `Game.LoadGameFromMainMenu`, `Game.LoadGame`, and
 `SaveManager.LoadRoutine(SaveInfo, false)`. PASS requires the after-load
 callback and two stable samples with the expected GameId, party count 3,
@@ -60,10 +76,10 @@ catalog, descriptor resolution, ordered events, load lifecycle, fingerprint,
 summary, and result. Hooks are removed before completion. Exit is requested
 only after the result flush succeeds.
 
-First supervised command:
+Canonical unattended command:
 
 ```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.30 -SaveName KMG_AUTOMATION_WORKING -ExitAfterCompletion $true -Confirm
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.30 -SaveName KMG_AUTOMATION_WORKING -ExitAfterCompletion:$true -Confirm:$false
 ```
 
 `-WhatIf` performs build/package validation but no backup, deployment, Steam
@@ -76,8 +92,10 @@ save or direct executable. Restore only from the single backup recorded in the
 deployment manifest using the documented restore script. Never modify saves.
 
 These contracts are qualified only for the observed Kingmaker environment and
-mod 0.0.30. The first autonomous run remains supervised. Source-only success is
-not proof of in-game correctness.
+mod 0.0.30. Qualification completed with consecutive fresh-launch unattended
+PASS runs `20260801T0343387209693Z-3170322e7e804cfeb9fe001042920d97` and
+`20260801T0345210049976Z-0ed3ada3dd4b4f3b962cde8cc272d1fc`. Source-only
+success is not proof of in-game correctness.
 ## Confirmation boundary
 
 The orchestrator owns one high-level confirmation boundary before its first

@@ -75,6 +75,18 @@ The autonomous `working-save-smoke` procedure is documented in
 `docs/WORKING-SAVE-SMOKE.md`. A guarded request must explicitly name
 `KMG_AUTOMATION_WORKING`; the scenario fails closed on ambiguous UI, catalog,
 descriptor, load-correlation, completion, fingerprint, or save-write evidence.
+It was qualified on commit `4f28dcfda655e35ed7be59babc9c0fe4ee4982ff`
+with two consecutive unattended fresh-launch PASS runs. Feature-development
+sessions should use this canonical command after source qualification:
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario working-save-smoke `
+  -ExpectedVersion 0.0.30 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true `
+  -Confirm:$false
+```
 
 Stop rather than guessing when:
 
