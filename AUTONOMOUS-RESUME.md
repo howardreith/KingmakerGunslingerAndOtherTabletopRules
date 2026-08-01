@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified native class-catalog publication slice. Then inspect the
-exact character-creation and starting-item contracts, add production starting
-equipment without inventing the unresolved battered-state adaptation, and
-qualify the next disposable-character boundary through the guarded harness.
+Commit the qualified production starting-kit slice. Then inspect exact native
+character-creation contracts and add a guarded disposable in-memory observer
+that proves class selection, level-one facts, and granted starting items without
+save selection, save mutation, UI automation, or development controls.
 
 ## Safety boundaries
 

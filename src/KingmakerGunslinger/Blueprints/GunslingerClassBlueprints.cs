@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
@@ -65,11 +67,15 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static GunslingerClassBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry,
-            BlueprintFeature firearmProficiency)
+            BlueprintFeature firearmProficiency, BlueprintItemWeapon startingPistol,
+            BlueprintItem blackPowder, BlueprintItem leadBall)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
             if (firearmProficiency == null) throw new ArgumentNullException("firearmProficiency");
+            if (startingPistol == null) throw new ArgumentNullException("startingPistol");
+            if (blackPowder == null) throw new ArgumentNullException("blackPowder");
+            if (leadBall == null) throw new ArgumentNullException("leadBall");
 
             BlueprintCharacterClass fighter = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
                 library, FighterClassGuid, "Gunslinger presentation source Fighter class");
@@ -90,7 +96,8 @@ namespace KingmakerGunslinger.Blueprints
                 ProficienciesSymbol, () => CreateProficiencies(simple, martial,
                     lightArmor, firearmProficiency));
             BlueprintCharacterClass characterClass = registry.Register<BlueprintCharacterClass>(
-                ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave));
+                ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
+                    startingPistol, blackPowder, leadBall));
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
@@ -98,7 +105,8 @@ namespace KingmakerGunslinger.Blueprints
             progression.Classes = new[] { characterClass };
             progression.LevelEntries = CreateLevelEntries(proficiencies);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
-                poorSave, simple, martial, lightArmor, firearmProficiency);
+                poorSave, startingPistol, blackPowder, leadBall,
+                simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression, proficiencies);
         }
 
@@ -156,7 +164,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static BlueprintCharacterClass CreateClass(BlueprintCharacterClass fighter,
             BlueprintStatProgression fullBab, BlueprintStatProgression goodSave,
-            BlueprintStatProgression poorSave)
+            BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
+            BlueprintItem blackPowder, BlueprintItem leadBall)
         {
             var result = ScriptableObject.CreateInstance<BlueprintCharacterClass>();
             result.name = "KMG_Gunslinger_Class";
@@ -175,7 +184,8 @@ namespace KingmakerGunslinger.Blueprints
                 StatType.SkillKnowledgeWorld, StatType.SkillLoreNature,
                 StatType.SkillLoreReligion, StatType.SkillPerception };
             result.StartingGold = fighter.StartingGold;
-            result.StartingItems = Array.Empty<Kingmaker.Blueprints.Items.BlueprintItem>();
+            result.StartingItems = new BlueprintItem[]
+                { startingPistol, blackPowder, leadBall };
             result.Archetypes = Array.Empty<BlueprintArchetype>();
             result.RecommendedAttributes = new[] { StatType.Dexterity, StatType.Wisdom };
             result.NotRecommendedAttributes = Array.Empty<StatType>();
@@ -215,7 +225,9 @@ namespace KingmakerGunslinger.Blueprints
         private static void Validate(BlueprintCharacterClass characterClass,
             BlueprintProgression progression, BlueprintFeature proficiencies,
             BlueprintStatProgression fullBab, BlueprintStatProgression goodSave,
-            BlueprintStatProgression poorSave, params BlueprintUnitFact[] facts)
+            BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
+            BlueprintItem blackPowder, BlueprintItem leadBall,
+            params BlueprintUnitFact[] facts)
         {
             if (characterClass.HitDie != DiceType.D10 || characterClass.SkillPoints != 4 ||
                 !ReferenceEquals(characterClass.BaseAttackBonus, fullBab) ||
@@ -225,7 +237,11 @@ namespace KingmakerGunslinger.Blueprints
                 !ReferenceEquals(characterClass.Progression, progression) ||
                 progression.Classes.Length != 1 ||
                 !ReferenceEquals(progression.Classes[0], characterClass) ||
-                progression.LevelEntries.Length != 20)
+                progression.LevelEntries.Length != 20 ||
+                characterClass.StartingItems.Length != 3 ||
+                !ReferenceEquals(characterClass.StartingItems[0], startingPistol) ||
+                !ReferenceEquals(characterClass.StartingItems[1], blackPowder) ||
+                !ReferenceEquals(characterClass.StartingItems[2], leadBall))
                 throw new InvalidOperationException("Gunslinger class chassis references are incomplete.");
             AddFacts grant = (AddFacts)proficiencies.ComponentsArray[0];
             if (grant.Facts.Length != facts.Length)

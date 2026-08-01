@@ -43,7 +43,8 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["KMG.Classes.GunslingerClass", "FullBaseAttackGuid",
          "SimpleWeaponGuid", "LightArmorGuid", "CreateLevelEntries",
-         "GunslingerClassCatalogPublication", "CharacterClasses = published"],
+         "GunslingerClassCatalogPublication", "CharacterClasses = published",
+         "startingPistol, blackPowder, leadBall", "StartingItems.Length != 3"],
         "Sprint 34 production class blueprints")
     require_tokens(read(root, "scripts/Test-Sprint34ProductionClass.ps1"),
         ["exact-native-progression-identities", "level-one-grants-aggregate",

@@ -583,3 +583,25 @@
   `20260801T1539170231770Z-observe-class-blueprint-contracts`.
 - Next action: commit the observer extension, curate the exact native item
   contracts, and wire the authorized production firearm/ammunition kit.
+
+## 2026-08-01 Sprint 34 production starting kit
+
+- Native observation established that `BlueprintCharacterClass.StartingItems`
+  is an ordered item-reference array and repeated references express quantity.
+  No source authority specifies an invented ammunition quantity, so the exact
+  minimum functional package is one Early Pistol, one black-powder charge, and
+  one lead ball. The separate battered-state/Gunsmith adaptation remains open.
+- Wired the class to existing production identities and added exact null,
+  cardinality, order, and reference checks. Nine focused production checks,
+  repository validation, 691/691 domain tests, clean Release build, output
+  validation, and strict packaging passed. Candidate package/DLL SHA-256 are
+  `a846b35e2bfb2d0616f02520770285963f12444220f8af894e965b45d38c7efb` /
+  `a3a3d0eb4454b1629842b373a4d1b637da836f45fb5bfea1b4fbcf88dd5e975b`.
+- Fresh guarded Steam mod load passed at
+  `20260801T1542218801301Z-mod-load-smoke`. Fresh save-free class observation
+  passed at `20260801T1543407360853Z-observe-class-blueprint-contracts` and
+  proved exactly Early Pistol `a303d71d244640959827e9464df5a867`, black
+  powder `ea966bf998a647cf97b0ed92f71c4b7d`, and lead ball
+  `55c29771445947d685dba9e1ead46a42` on the Gunslinger class.
+- Next action: commit this starting-kit contract, then establish a guarded,
+  disposable in-memory character-creation observer before claiming item grant.

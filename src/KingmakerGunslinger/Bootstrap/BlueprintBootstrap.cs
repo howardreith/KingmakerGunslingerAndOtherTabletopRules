@@ -548,7 +548,10 @@ namespace KingmakerGunslinger.Bootstrap
 
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
-                        library, registry, firearmProficiency);
+                        library, registry, firearmProficiency,
+                        productionFirearms.Pistol.Item,
+                        basicAmmunition.BlackPowder,
+                        basicAmmunition.LeadBall);
                 classPublication = GunslingerClassBlueprints.Publish(
                     gunslingerClassBlueprints.CharacterClass);
 

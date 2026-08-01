@@ -39,6 +39,12 @@ $checks = [ordered]@{
         $class.Contains('root.Progression.CharacterClasses = published') -and
         $class.Contains('ReferenceEquals(root.Progression.CharacterClasses, _published)') -and
         $bootstrap.Contains('classPublication.Rollback()')
+    'starting-kit-uses-production-identities' =
+        $class.Contains('{ startingPistol, blackPowder, leadBall }') -and
+        $class.Contains('characterClass.StartingItems.Length != 3') -and
+        $bootstrap.Contains('productionFirearms.Pistol.Item') -and
+        $bootstrap.Contains('basicAmmunition.BlackPowder') -and
+        $bootstrap.Contains('basicAmmunition.LeadBall')
     'manifest-has-exact-production-symbols' =
         @($manifest.entries | Where-Object {
             $_.symbol -in @('KMG.Classes.GunslingerClass',
