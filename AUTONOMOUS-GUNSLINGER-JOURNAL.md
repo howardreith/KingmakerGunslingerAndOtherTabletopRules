@@ -751,3 +751,17 @@
   `20260801T1647528331254Z-26e8105b5534435282cfc6c83b9411ed`.
 - Next action: checkpoint the exact facts, then invoke `AddStartingInventory`
   only on the disposable refreshed preview and observe exact item identities.
+
+## 2026-08-01 Sprint 34 starting-inventory contract correction
+
+- A guarded disposable-preview call to `UnitDescriptor.AddStartingInventory`
+  did not grant class items. It added two instances of default-player blueprint
+  item `850c86ad8b953c74bb85f9bb1d1148bc`, proving that method consumes
+  `BlueprintUnit.StartingInventory`, not `BlueprintCharacterClass.StartingItems`.
+- Structured FAIL evidence is
+  `20260801T1653067738684Z-31c75c40cc2642038ec2771b3c2325fd`.
+  Class selection, class data, all exact proficiency facts, cancel, disposal,
+  and external isolation still passed; no save was loaded or written.
+- The incorrect call and assertion were removed, restoring a clean tree at
+  `a8674ca`. Next action is read-only native commit/setup contract inspection,
+  then a separately guarded disposable creation-commit scenario if supported.

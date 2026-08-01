@@ -118,10 +118,12 @@ isolation, and observed no save write.
 
 ## Next action
 
-Checkpoint the qualified exact preview proficiency facts. Then invoke
-`AddStartingInventory` only on the disposable refreshed preview and observe
-exact Early Pistol, black powder, and lead-ball identities and counts. Do not
-call `Commit`; retain cancel/dispose and unchanged player/global-unit snapshots.
+Do not use `UnitDescriptor.AddStartingInventory` for class items: guarded run
+`20260801T1653067738684Z-31c75c40cc2642038ec2771b3c2325fd` proved it grants
+the default `BlueprintUnit` inventory instead. Inspect the exact native
+`LevelUpController.Commit`/`SetupNewCharacher` call contract read-only, then
+build a separately guarded disposable creation-commit scenario that requires
+the three class item identities and unchanged player/global-unit snapshots.
 
 ## Safety boundaries
 
