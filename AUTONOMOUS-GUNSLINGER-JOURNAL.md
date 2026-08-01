@@ -291,3 +291,26 @@
 - Next action: commit this boundary, then preserve a clean human-input record
   for the missing player-facing distance and move to the next independent
   mandatory coverage dependency.
+
+## 2026-08-01 Sprint 33 multi-round reload foundation
+
+- Advanced active development metadata to `0.0.33` and added inherited Sprint
+  33 validation plus explicit capacity/partial-reload entry criteria.
+- Generalized the atomic basic-ammunition transaction to consume an exact
+  positive batch and generalized exact-item reload to add the lesser of the
+  action batch and remaining capacity.
+- Partial top-ups preserve ammunition identity. Full, Wrecked, mixed-ammunition,
+  and under-resourced attempts reject before mutation; post-mutation failures
+  retain exact state and inventory rollback.
+- Removed the generic action policy's capacity-one/full-round restriction, so
+  valid partial and advanced move-action definitions can report reload
+  availability while full or impossible states remain unavailable.
+- Added eight focused cases. Validation dispatch passed 9 checks, runtime
+  request tests 16, preflight tests 34, and the complete clean Release suite
+  passed 670/670. Exact compile and strict package validation passed.
+- Candidate package SHA-256:
+  `f04448c1cc8de40b9eae5ad781730a4c911a10cd3d9aec83ce6f560d2710dd55`.
+  Candidate DLL SHA-256:
+  `75788f9ff56f76a3012754802e0c78d847da11c6c1ecd806abada23e065e2b51`.
+- Next action: commit this source foundation, then add exact advanced firearm
+  definitions/catalog entries and capacity-aware finite persistence.

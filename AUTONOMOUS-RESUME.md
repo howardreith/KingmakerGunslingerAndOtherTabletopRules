@@ -8,11 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `ee70a75` (Sprint 32 scatter triple-explosion policy).
+- Audited HEAD: `69d5efd` (Sprint 32 fail-closed cone-distance boundary).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
-- Version: `0.0.32` (Sprint 32 scatter source work active).
+- Current checkpoint: Sprint 33 capacity, partial reload, and advanced firearms.
+- Version: `0.0.33` (Sprint 33 source work active).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -47,9 +47,9 @@ definition of done or a listed genuine human-input hard stop.
   `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260801T0437220409268Z-working-save-smoke`.
 - Deployed DLL SHA-256:
   `b1422ae9a2aed50a0ae8a8d2d3f4ff0defc5d03d31f142d7a19c57f5eb973d7b`.
-- First unproved invariant: scatter target enumeration and close-range damage
-  affect each legal target exactly once, consume exactly one chamber, and do
-  not affect non-scatter firearms or targets outside the verified shape.
+- First active Sprint 33 invariant: exact multi-round state and inventory
+  deltas remain atomic across partial top-up, persistence, repeated discharge,
+  misfire, and two otherwise identical firearms.
 
 ## Current source evidence
 
@@ -64,6 +64,11 @@ definition of done or a listed genuine human-input hard stop.
 - This slice is source-qualified only. It does not establish cone length,
   native attack delivery or feature runtime acceptance. Native 90-degree
   directional geometry is contract-proven; numeric cone distance is not.
+- Sprint 33 exact batch reload and partial top-up transactions add eight
+  focused cases. Complete suite is 670/670 PASS. Package candidate SHA-256 is
+  `f04448c1cc8de40b9eae5ad781730a4c911a10cd3d9aec83ce6f560d2710dd55`;
+  DLL candidate SHA-256 is
+  `75788f9ff56f76a3012754802e0c78d847da11c6c1ecd806abada23e065e2b51`.
 
 ## Commands already run
 
@@ -88,9 +93,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified cone-distance boundary. Record the precise missing
-player-facing rule without enabling content, then select the next independent
-mandatory coverage dependency.
+Commit the source-qualified Sprint 33 multi-round reload foundation. Then add
+the authoritative advanced pistol/rifle/revolver catalog slice and generalize
+finite item-state persistence for every supported capacity.
 
 ## Safety boundaries
 

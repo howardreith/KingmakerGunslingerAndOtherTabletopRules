@@ -43,30 +43,24 @@ namespace KingmakerGunslinger.Actions
             FirearmState state,
             bool hasResources)
         {
-            if (definition.Reload.BaseAction != ReloadActionType.FullRound)
-            {
-                return Rejected(FirearmActionKind.Reload, "Only full-round reload is supported.");
-            }
-
-            if (definition.Capacity != 1 || definition.Reload.RoundsPerAction != 1)
-            {
-                return Rejected(
-                    FirearmActionKind.Reload,
-                    "Multi-round and partial reload are deferred until Sprint 33.");
-            }
-
             if (state.Condition == FirearmCondition.Wrecked)
             {
                 return Rejected(FirearmActionKind.Reload, "A Wrecked firearm cannot be reloaded.");
             }
 
-            if (!state.IsEmpty)
+            if (state.LoadedRounds > definition.Capacity)
             {
-                return Rejected(FirearmActionKind.Reload, "The firearm is already loaded.");
+                return Rejected(FirearmActionKind.Reload,
+                    "The firearm state exceeds its definition capacity.");
+            }
+
+            if (state.LoadedRounds == definition.Capacity)
+            {
+                return Rejected(FirearmActionKind.Reload, "The firearm is at full capacity.");
             }
 
             return hasResources
-                ? Available(FirearmActionKind.Reload, "The firearm is ready to reload.")
+                ? Available(FirearmActionKind.Reload, "The firearm has capacity available to reload.")
                 : Rejected(FirearmActionKind.Reload, "Required ammunition is missing.");
         }
 

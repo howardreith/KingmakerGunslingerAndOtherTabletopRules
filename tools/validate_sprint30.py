@@ -135,7 +135,7 @@ def validate(
             "FirearmActionKind.Reload",
             "FirearmActionKind.Overhaul",
             "FirearmActionKind.Repair",
-            "Multi-round and partial reload are deferred until Sprint 33",
+            "The firearm has capacity available to reload.",
         ],
         "Generic action policy",
     )

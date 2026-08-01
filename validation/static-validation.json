@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.32-s32-scatter-attacks",
-  "version": "0.0.32",
+  "milestone": "0.0.33-s33-capacity-advanced-firearms",
+  "version": "0.0.33",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 662,
+    "testCount": 670,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

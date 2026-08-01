@@ -31,6 +31,16 @@ namespace KingmakerGunslinger.Reloading
             FirearmStateRules rules,
             AmmunitionId ammunition)
         {
+            return TryReloadBasicRounds(stateStore, inventory, rules, ammunition, 1);
+        }
+
+        internal FirearmReloadResult TryReloadBasicRounds(
+            IFirearmReloadStateStore stateStore,
+            IBasicAmmunitionInventory inventory,
+            FirearmStateRules rules,
+            AmmunitionId ammunition,
+            int roundsPerAction)
+        {
             if (stateStore == null)
             {
                 throw new ArgumentNullException("stateStore");
@@ -50,6 +60,10 @@ namespace KingmakerGunslinger.Reloading
             {
                 throw new ArgumentNullException("ammunition");
             }
+            if (roundsPerAction <= 0 || roundsPerAction > rules.Capacity)
+            {
+                throw new ArgumentOutOfRangeException("roundsPerAction");
+            }
 
             FirearmState beforeState = stateStore.Read();
             if (beforeState == null)
@@ -63,7 +77,10 @@ namespace KingmakerGunslinger.Reloading
 
             FirearmReloadStatus? rejected = GetRejection(
                 beforeState,
-                beforeInventory);
+                beforeInventory,
+                rules,
+                ammunition,
+                roundsPerAction);
             if (rejected.HasValue)
             {
                 return new FirearmReloadResult(
@@ -74,11 +91,12 @@ namespace KingmakerGunslinger.Reloading
                     beforeInventory);
             }
 
+            int roundsToLoad = Math.Min(roundsPerAction, rules.Capacity - beforeState.LoadedRounds);
             FirearmState loadedState = FirearmStateMachine.Load(
                 beforeState,
                 rules,
                 ammunition,
-                1);
+                roundsToLoad);
             bool inventoryMayHaveChanged = false;
             bool stateMayHaveChanged = false;
 
@@ -89,7 +107,7 @@ namespace KingmakerGunslinger.Reloading
                 // may occur after a partial write and before that inner rollback completes.
                 inventoryMayHaveChanged = true;
                 BasicAmmunitionTransactionResult consumption =
-                    _ammunitionService.TryConsumeOneLoad(inventory);
+                    _ammunitionService.TryConsumeLoads(inventory, roundsToLoad);
                 if (!consumption.Succeeded)
                 {
                     throw new InvalidOperationException(
@@ -166,6 +184,18 @@ namespace KingmakerGunslinger.Reloading
             FirearmState state,
             BasicAmmunitionInventorySnapshot inventory)
         {
+            return GetRejection(state, inventory, new FirearmStateRules(1,
+                new[] { FirearmStateTokenCatalog.DiagnosticLeadBall }),
+                FirearmStateTokenCatalog.DiagnosticLeadBall, 1);
+        }
+
+        internal static FirearmReloadStatus? GetRejection(
+            FirearmState state,
+            BasicAmmunitionInventorySnapshot inventory,
+            FirearmStateRules rules,
+            AmmunitionId ammunition,
+            int roundsPerAction)
+        {
             if (state == null)
             {
                 throw new ArgumentNullException("state");
@@ -181,17 +211,26 @@ namespace KingmakerGunslinger.Reloading
                 return FirearmReloadStatus.Wrecked;
             }
 
-            if (!state.IsEmpty)
+            if (state.LoadedRounds >= rules.Capacity)
             {
                 return FirearmReloadStatus.AlreadyLoaded;
             }
 
-            if (inventory.BlackPowderCharges == 0)
+            if (!state.IsEmpty && state.LoadedAmmunition != ammunition)
+            {
+                throw new FirearmStateTransitionException(
+                    FirearmStateTransitionError.MixedAmmunition,
+                    "A partially loaded firearm cannot mix ammunition identities.");
+            }
+
+            int required = Math.Min(roundsPerAction, rules.Capacity - state.LoadedRounds);
+
+            if (inventory.BlackPowderCharges < required)
             {
                 return FirearmReloadStatus.InsufficientBlackPowder;
             }
 
-            if (inventory.LeadBalls == 0)
+            if (inventory.LeadBalls < required)
             {
                 return FirearmReloadStatus.InsufficientLeadBall;
             }

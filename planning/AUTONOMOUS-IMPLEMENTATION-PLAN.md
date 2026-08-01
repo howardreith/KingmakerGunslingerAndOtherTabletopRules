@@ -34,7 +34,8 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 30 runtime qualification. Do not add Sprint 31 content until the exact
-0.0.30 assembly passes the documented guarded working-save smoke and the
-definition-driven Reload/Repair/Overhaul acceptance evidence required by
-`SPRINT-30-REPORT.md` and `planning/SPRINT-30-ENTRY-CRITERIA.md`.
+Sprint 33 capacity, partial reload, and advanced firearms. The exact batch
+reload foundation is source-qualified. Next add authoritative advanced content,
+capacity-aware finite persistence, repeated discharge/misfire coverage, exact
+two-item isolation, and a guarded runtime scenario. Scatter content remains
+fail-closed pending an authoritative numeric Blunderbuss cone distance.

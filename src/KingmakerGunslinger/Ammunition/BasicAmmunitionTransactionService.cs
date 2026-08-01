@@ -12,14 +12,25 @@ namespace KingmakerGunslinger.Ammunition
         internal BasicAmmunitionTransactionResult TryConsumeOneLoad(
             IBasicAmmunitionInventory inventory)
         {
+            return TryConsumeLoads(inventory, 1);
+        }
+
+        internal BasicAmmunitionTransactionResult TryConsumeLoads(
+            IBasicAmmunitionInventory inventory,
+            int loads)
+        {
             if (inventory == null)
             {
                 throw new ArgumentNullException("inventory");
             }
+            if (loads <= 0)
+            {
+                throw new ArgumentOutOfRangeException("loads");
+            }
 
             BasicAmmunitionInventorySnapshot before =
                 BasicAmmunitionInventorySnapshot.Capture(inventory);
-            if (!before.HasOneLoad)
+            if (before.BlackPowderCharges < loads || before.LeadBalls < loads)
             {
                 return new BasicAmmunitionTransactionResult(
                     BasicAmmunitionTransactionStatus.InsufficientComponents,
@@ -29,15 +40,15 @@ namespace KingmakerGunslinger.Ammunition
 
             try
             {
-                inventory.Remove(BasicAmmunitionComponent.BlackPowderCharge, 1);
-                inventory.Remove(BasicAmmunitionComponent.LeadBall, 1);
+                inventory.Remove(BasicAmmunitionComponent.BlackPowderCharge, loads);
+                inventory.Remove(BasicAmmunitionComponent.LeadBall, loads);
 
                 BasicAmmunitionInventorySnapshot after =
                     BasicAmmunitionInventorySnapshot.Capture(inventory);
                 BasicAmmunitionInventorySnapshot expected =
                     new BasicAmmunitionInventorySnapshot(
-                        before.BlackPowderCharges - 1,
-                        before.LeadBalls - 1);
+                        before.BlackPowderCharges - loads,
+                        before.LeadBalls - loads);
                 if (!expected.Equals(after))
                 {
                     throw new InvalidOperationException(

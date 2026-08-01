@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""Portable source validator for Sprint 33 with inherited Sprint 32 checks."""
+from __future__ import annotations
+import argparse
+import sys
+from pathlib import Path
+sys.dont_write_bytecode = True
+import validate_sprint32
+
+VERSION = "0.0.33"
+INFORMATIONAL_VERSION = "0.0.33-s33-capacity-advanced-firearms"
+TEST_COUNT = 670
+
+def read(root: Path, relative: str) -> str:
+    path = root / relative
+    if not path.is_file():
+        raise RuntimeError(f"Required Sprint 33 file is missing: {relative}")
+    return path.read_text(encoding="utf-8")
+
+def require_tokens(text: str, tokens: list[str], label: str) -> None:
+    missing = [token for token in tokens if token not in text]
+    if missing:
+        raise RuntimeError(f"{label} is missing required token(s): {missing}")
+
+def validate(root: Path) -> None:
+    root = root.resolve()
+    validate_sprint32.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT)
+    require_tokens(read(root, "planning/SPRINT-33-ENTRY-CRITERIA.md"),
+        ["Advanced firearms load all chambers", "partially loaded firearm",
+         "exact pre-operation snapshots", "Two consecutive fresh-process PASS runs"],
+        "Sprint 33 entry criteria")
+    require_tokens(read(root, "src/KingmakerGunslinger/Reloading/FirearmReloadTransactionService.cs"),
+        ["TryReloadBasicRounds", "roundsToLoad", "TryConsumeLoads",
+         "rules.Capacity - beforeState.LoadedRounds"],
+        "Sprint 33 multi-round reload transaction")
+    require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Program.cs"),
+        ['Case("capacity.reload-empty-to-full"', 'Case("capacity.reload-partial-top-up"',
+         'Case("capacity.reload-write-failure-rolls-back"'], "Sprint 33 capacity tests")
+    print("Sprint 33 source invariant validation passed with inherited Sprint 32 checks.")
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    args = parser.parse_args()
+    try:
+        validate(args.root)
+    except Exception as exception:
+        print(f"Sprint 33 validation failed: {exception}", file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())

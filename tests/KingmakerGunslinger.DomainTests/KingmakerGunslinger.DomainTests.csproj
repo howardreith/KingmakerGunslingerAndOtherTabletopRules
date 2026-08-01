@@ -43,6 +43,7 @@
     <Compile Include="Sprint30Tests.cs" />
     <Compile Include="Sprint31Tests.cs" />
     <Compile Include="Sprint32Tests.cs" />
+    <Compile Include="Sprint33Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionDecision.cs">
       <Link>Actions\FirearmActionDecision.cs</Link>
     </Compile>

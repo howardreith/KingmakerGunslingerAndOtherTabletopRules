@@ -30,11 +30,12 @@ namespace KingmakerGunslinger.Ammunition
 
             if (status == BasicAmmunitionTransactionStatus.Consumed)
             {
-                if (After.BlackPowderCharges != Before.BlackPowderCharges - 1 ||
-                    After.LeadBalls != Before.LeadBalls - 1)
+                int powderConsumed = Before.BlackPowderCharges - After.BlackPowderCharges;
+                int ballsConsumed = Before.LeadBalls - After.LeadBalls;
+                if (powderConsumed <= 0 || powderConsumed != ballsConsumed)
                 {
                     throw new ArgumentException(
-                        "A successful ammunition transaction must consume exactly one of each component.");
+                        "A successful ammunition transaction must consume the same positive count of each component.");
                 }
             }
             else if (!Before.Equals(After))
@@ -53,6 +54,11 @@ namespace KingmakerGunslinger.Ammunition
         internal bool Succeeded
         {
             get { return Status == BasicAmmunitionTransactionStatus.Consumed; }
+        }
+
+        internal int LoadsConsumed
+        {
+            get { return Succeeded ? Before.BlackPowderCharges - After.BlackPowderCharges : 0; }
         }
 
         public override string ToString()

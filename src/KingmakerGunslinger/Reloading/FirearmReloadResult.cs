@@ -31,19 +31,20 @@ namespace KingmakerGunslinger.Reloading
 
             if (status == FirearmReloadStatus.Loaded)
             {
+                int roundsLoaded = AfterState.LoadedRounds - BeforeState.LoadedRounds;
                 bool loadableCondition =
                     BeforeState.Condition == FirearmCondition.Normal ||
                     BeforeState.Condition == FirearmCondition.Broken;
                 if (!loadableCondition ||
-                    !BeforeState.IsEmpty ||
+                    roundsLoaded <= 0 ||
                     AfterState.Condition != BeforeState.Condition ||
-                    AfterState.LoadedRounds != 1 ||
                     AfterState.LoadedAmmunition == null ||
-                    AfterInventory.BlackPowderCharges != BeforeInventory.BlackPowderCharges - 1 ||
-                    AfterInventory.LeadBalls != BeforeInventory.LeadBalls - 1)
+                    (!BeforeState.IsEmpty && BeforeState.LoadedAmmunition != AfterState.LoadedAmmunition) ||
+                    AfterInventory.BlackPowderCharges != BeforeInventory.BlackPowderCharges - roundsLoaded ||
+                    AfterInventory.LeadBalls != BeforeInventory.LeadBalls - roundsLoaded)
                 {
                     throw new ArgumentException(
-                        "A successful reload must preserve an empty Normal or Broken firearm's condition, load exactly one round, and consume exactly one of each component.");
+                        "A successful reload must preserve condition and ammunition identity, load a positive round count, and consume the matching component count.");
                 }
             }
             else
@@ -69,6 +70,11 @@ namespace KingmakerGunslinger.Reloading
         internal bool Succeeded
         {
             get { return Status == FirearmReloadStatus.Loaded; }
+        }
+
+        internal int RoundsLoaded
+        {
+            get { return Succeeded ? AfterState.LoadedRounds - BeforeState.LoadedRounds : 0; }
         }
 
         public override string ToString()
