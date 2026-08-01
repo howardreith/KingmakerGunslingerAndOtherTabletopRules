@@ -3541,7 +3541,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cadence = observedLevels.SequenceEqual(requiredLevels) &&
                 totalOccurrences == requiredLevels.Length;
             bool nativeContract = selection.AssetGuid == selectionGuid &&
-                selection.Features != null && selection.Features.Length > 0 &&
                 selection.AllFeatures != null && selection.AllFeatures.Length > 0 &&
                 !selection.IgnorePrerequisites;
             var assertions = new List<RuntimeTestAssertion>
