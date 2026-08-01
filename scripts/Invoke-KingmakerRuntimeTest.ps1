@@ -371,14 +371,16 @@ try {
                 try {
                     $candidate = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
                     $requestWrittenUtc = (Get-Item -LiteralPath $requestPath).LastWriteTimeUtc
+                    $failedReadyPredicates = $null
                     if (Test-KmgRuntimeReadyMarker -Marker $candidate `
                         -RunId $request.runId -Scenario $Scenario `
                         -ExpectedVersion $ExpectedVersion -ProcessId $process.Id `
-                        -RequestWrittenUtc $requestWrittenUtc) {
+                        -RequestWrittenUtc $requestWrittenUtc `
+                        -FailedPredicates ([ref]$failedReadyPredicates)) {
                         $ready = $candidate
                     }
                     else {
-                        throw 'Ready marker identity, freshness, version, process, or hooks did not match this run.'
+                        throw "Ready marker failed predicates: $($failedReadyPredicates -join ', ')."
                     }
                 }
                 catch {

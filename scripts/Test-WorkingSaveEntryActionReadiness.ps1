@@ -51,7 +51,9 @@ $checks = [ordered]@{
     'hooks-request-scoped' = $scenario.Contains('RemoveHooks();') -and
         $scenario.Contains('if (ReferenceEquals(_active, this)) _active = null')
     'readiness-validates-save' = $result.Contains('JsonProperty("saveName"') -and
-        $common.Contains("`$Marker.saveName -ceq 'KMG_AUTOMATION_WORKING'")
+        $common.Contains('Test-KmgSupervisedWorkingSaveEntryReadinessBehavior') -and
+        $common.Contains("`$Marker.saveName -cne 'KMG_AUTOMATION_WORKING'") -and
+        $common.Contains("`$failures.Add('saveName')")
     'steam-only' = $common.Contains('$script:KmgSteamAppId = 640820') -and
         -not $orchestrator.Contains('Kingmaker.exe')
     'atomic-ready-and-result' = $result.Contains('stream.Flush(true)') -and

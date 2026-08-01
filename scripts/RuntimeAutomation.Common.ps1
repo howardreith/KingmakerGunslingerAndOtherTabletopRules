@@ -73,6 +73,14 @@ function Get-KmgRuntimeScenarioMetadata {
     return $script:KmgRuntimeScenarioMetadata[$Scenario]
 }
 
+function Test-KmgSupervisedWorkingSaveEntryReadinessBehavior {
+    param([Parameter(Mandatory = $true)][string]$ReadinessBehavior)
+    return $ReadinessBehavior -cin @(
+        'human-working-save-entry-action',
+        'human-working-save-selection-load-action'
+    )
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -354,39 +362,73 @@ function Test-KmgRuntimeReadyMarker {
         [Parameter(Mandatory = $true)][string]$Scenario,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [Parameter(Mandatory = $true)][int]$ProcessId,
-        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc
+        [Parameter(Mandatory = $true)][DateTime]$RequestWrittenUtc,
+        [ref]$FailedPredicates
     )
+    $failures = [Collections.Generic.List[string]]::new()
     try {
         $readyUtc = [DateTime]::Parse(
             $Marker.readinessTimestampUtc,
             [Globalization.CultureInfo]::InvariantCulture,
             [Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
-        $coreReady = $Marker.schemaVersion -eq 1 -and
-            $Marker.runId -ceq $RunId -and
-            $Marker.scenario -ceq $Scenario -and
-            $Marker.loadedModVersion -ceq $ExpectedVersion -and
-            $Marker.processId -eq $ProcessId -and
-            $readyUtc -ge $RequestWrittenUtc.ToUniversalTime() -and
-            @($Marker.installedObservationHookIdentifiers).Count -gt 0
-        if (-not $coreReady) { return $false }
+        if ($Marker.schemaVersion -ne 1) { $failures.Add('schemaVersion') }
+        if ($Marker.runId -cne $RunId) { $failures.Add('runId') }
+        if ($Marker.scenario -cne $Scenario) { $failures.Add('scenario') }
+        if ($Marker.loadedModVersion -cne $ExpectedVersion) {
+            $failures.Add('loadedModVersion')
+        }
+        if ($Marker.processId -ne $ProcessId) { $failures.Add('processId') }
+        if ($readyUtc -lt $RequestWrittenUtc.ToUniversalTime()) {
+            $failures.Add('freshness')
+        }
+        if (@($Marker.installedObservationHookIdentifiers).Count -le 0) {
+            $failures.Add('installedObservationHookIdentifiers')
+        }
         $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-        if (-not $metadata.UsesWorkingStageTimeouts) { return $true }
-        $expectedStage = if ($metadata.ReadinessBehavior -ceq
-            'human-working-save-entry-action') {
+        if (-not $metadata.UsesWorkingStageTimeouts) {
+            if ($PSBoundParameters.ContainsKey('FailedPredicates')) {
+                $FailedPredicates.Value = @($failures)
+            }
+            return $failures.Count -eq 0
+        }
+        $isSupervisedWorkingEntry =
+            Test-KmgSupervisedWorkingSaveEntryReadinessBehavior `
+                -ReadinessBehavior $metadata.ReadinessBehavior
+        $expectedStage = if ($isSupervisedWorkingEntry) {
             'working-entry-ready'
         } else {
             'load-game-action-resolved'
         }
-        $saveIdentityReady = $metadata.ReadinessBehavior -cne
-            'human-working-save-entry-action' -or
-            $Marker.saveName -ceq 'KMG_AUTOMATION_WORKING'
-        return $saveIdentityReady -and $Marker.runtimeRunnerActive -eq $true -and
-            $Marker.updateCallbackCount -ge 2 -and
-            $Marker.mainMenuLifecycleReady -eq $true -and
-            $Marker.ummStartupState -ceq 'initialized; overlay nonblocking-or-absent' -and
-            $Marker.readinessStage -ceq $expectedStage
+        if ($isSupervisedWorkingEntry -and
+            $Marker.saveName -cne 'KMG_AUTOMATION_WORKING') {
+            $failures.Add('saveName')
+        }
+        if ($Marker.runtimeRunnerActive -ne $true) {
+            $failures.Add('runtimeRunnerActive')
+        }
+        if ($Marker.updateCallbackCount -lt 2) { $failures.Add('updateCallbackCount') }
+        if ($Marker.mainMenuLifecycleReady -ne $true) {
+            $failures.Add('mainMenuLifecycleReady')
+        }
+        if ($Marker.ummStartupState -cne
+            'initialized; overlay nonblocking-or-absent') {
+            $failures.Add('ummStartupState')
+        }
+        if ($Marker.readinessStage -cne $expectedStage) {
+            $failures.Add('readinessStage')
+        }
+        if ($PSBoundParameters.ContainsKey('FailedPredicates')) {
+            $FailedPredicates.Value = @($failures)
+        }
+        return $failures.Count -eq 0
     }
-    catch { return $false }
+    catch {
+        $failures.Add('markerSchemaOrTimestamp')
+        if ($PSBoundParameters.ContainsKey('FailedPredicates')) {
+            $FailedPredicates.Value = @($failures)
+        }
+        return $false
+    }
 }
 
 function Get-KmgCurrentRuntimeResult {

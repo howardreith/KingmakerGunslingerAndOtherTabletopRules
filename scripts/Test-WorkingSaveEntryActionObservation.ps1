@@ -74,7 +74,8 @@ $checks = [ordered]@{
     'readiness-marker-save-identity' =
         $result.Contains('[JsonProperty("saveName", Order = 14)]') -and
         $runner.Contains('WorkingSaveSmokeScenario.ExpectedName') -and
-        $common.Contains("`$Marker.saveName -ceq 'KMG_AUTOMATION_WORKING'")
+        $common.Contains("`$Marker.saveName -cne 'KMG_AUTOMATION_WORKING'") -and
+        $common.Contains("`$failures.Add('saveName')")
     'click-timeout-post-readiness' =
         $scenario.Contains('stage == "working-entry-click"') -and
         $runner.Contains('return _request.SelectionTimeoutSeconds')
