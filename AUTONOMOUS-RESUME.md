@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `cc2f77d` (native starting-item stack-merge qualification).
+- Audited HEAD: `84bb692` (disposable same-class level-up preview).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 34 Gunslinger class chassis.
@@ -17,6 +17,16 @@ definition of done or a listed genuine human-input hard stop.
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Exact Sprint 34 level-up preview commit `84bb692` passed mod-load at
+  `20260801T1741332784385Z-mod-load-smoke`, then two independent save-free
+  `disposable-gunslinger-levelup-preview` runs:
+  `20260801T1742575116740Z-8a6cca94fc1c4d97bda6a25e01dad80a` and
+  `20260801T1744173560342Z-aae78c49ec4849d19bedbde1f12446fb`.
+  Both proved isolated Gunslinger 1 -> 2 preview, unchanged source at level 1,
+  two exact actions, and external cleanup. Package/DLL SHA-256 are
+  `a1a2e199df996427eef7ca7f123fbdac9da37709c51f7ada5d2960a08455d63e` /
+  `386772a6ab12125a40d7647e1d1049ed64a5c2bead7f81ade123d17b735e2472`.
 
 - Exact Sprint 34 starting-item commit `cc2f77d` passed `mod-load-smoke` at
   `20260801T1731148707849Z-mod-load-smoke`, then two independent fresh-process
@@ -129,11 +139,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Starting-item helper semantics are runtime-qualified on the real receiver.
-Inspect the exact normal `LevelUpController.Commit` creation path and establish
-a reversible, non-persisting commit-equivalent acceptance boundary. Do not
-repeat save-free helper receiver attempts. After creation outcome, qualify
-ordinary level-up, multiclass, and respec in dependency order.
+Same-class level-up preview is runtime-qualified. Reuse the disposable exact
+level-one seed to qualify a native Fighter 1 -> Gunslinger 1 multiclass preview,
+then inspect and qualify respec mode. Full first-level `Commit` remains deferred
+until its global rest/entity/remote-companion/view mutations have a complete
+rollback proof; do not invoke it speculatively.
 
 ## Safety boundaries
 

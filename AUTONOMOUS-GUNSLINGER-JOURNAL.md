@@ -837,3 +837,28 @@
   `2f4d2a0f2772b5923349ce467bbebf7426bb80348c25548d16f0238af23d0fb4`.
 - Next action: inspect and qualify the normal creation commit outcome without
   persisting a character, then proceed to level-up, multiclass, and respec.
+
+## 2026-08-01 Sprint 34 same-class level-up preview
+
+- Exact creation `Commit` remains too broad for the current rollback proof: its
+  first-level setup performs global rest, entity registration, remote-companion
+  mutation, body/default inventory initialization, view attachment, and dynamic
+  root parenting. This is an engineering boundary, not a human-input blocker.
+- Added save-free `disposable-gunslinger-levelup-preview`. It applies the exact
+  two level-one actions to an isolated source, cancels that controller, starts
+  native `LevelUp` mode, selects Gunslinger again, and observes the isolated
+  preview at Gunslinger 2 while the source remains Gunslinger 1.
+- Six focused checks, repository validation, 691/691 tests, exact private-
+  reference Release build, output validation, and strict packaging passed.
+  Exact commit is `84bb692`; mod-load PASS evidence directory is
+  `20260801T1741332784385Z-mod-load-smoke`.
+- Fresh-process PASS run IDs are
+  `20260801T1742575116740Z-8a6cca94fc1c4d97bda6a25e01dad80a`
+  and `20260801T1744173560342Z-aae78c49ec4849d19bedbde1f12446fb`.
+  Both observed `initial=0;seeded=1;previewBefore=1;selected=True;previewAfter=2;sourceAfter=1;queued=2`
+  and exact external cleanup; no save was loaded.
+- Package/DLL SHA-256 are
+  `a1a2e199df996427eef7ca7f123fbdac9da37709c51f7ada5d2960a08455d63e` /
+  `386772a6ab12125a40d7647e1d1049ed64a5c2bead7f81ade123d17b735e2472`.
+- Next action: reuse the isolated level-one seed to qualify Fighter 1 ->
+  Gunslinger 1 multiclass preview, then inspect respec mode contracts.
