@@ -252,6 +252,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -322,6 +323,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerGritResource)
                 {
                     Complete(RunDisposableGunslingerGritResource());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerGritRest)
+                {
+                    Complete(RunDisposableGunslingerGritRest());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2947,6 +2954,116 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "controllers canceled and disposable entity disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerGritRest()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
+            BlueprintCharacterClass gunslinger = gunslingerSet.CharacterClass;
+            BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            object controller = null;
+            int maximum = -1;
+            int initial = -1;
+            int spent = -1;
+            int rested = -1;
+            bool cleaned = false;
+            string stage = "construct-disposable";
+            try
+            {
+                var chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                entity = chargen.Unit;
+                descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null ||
+                    descriptor.Resources == null)
+                    throw new InvalidOperationException(
+                        "Disposable grit-rest descriptor is unavailable.");
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native grit-rest controller method is unavailable.");
+
+                stage = "grant-and-spend";
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable grit-rest Gunslinger selection was rejected.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { descriptor });
+                cancel.Invoke(controller, null);
+                controller = null;
+                maximum = grit.GetMaxAmount(descriptor);
+                initial = descriptor.Resources.GetResourceAmount(grit);
+                descriptor.Resources.Spend(grit, 1);
+                spent = descriptor.Resources.GetResourceAmount(grit);
+
+                stage = "apply-native-rest";
+                Kingmaker.Controllers.Rest.RestController.ApplyRest(descriptor);
+                rested = descriptor.Resources.GetResourceAmount(grit);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable grit rest failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "maximum=" + maximum + ";initial=" + initial +
+                ";spent=" + spent + ";rested=" + rested;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("grit-rest-fixture", "maximum=1;initial=1;spent=0",
+                    observed, maximum == 1 && initial == 1 && spent == 0,
+                    "native level-one grant and resource spend"),
+                Assertion("native-rest-refill", "rested=maximum=1",
+                    observed, rested == maximum,
+                    "RestController.ApplyRest restores registered unit resources"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "controller canceled and disposable entity disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

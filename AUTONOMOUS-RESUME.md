@@ -102,6 +102,14 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- Exact IL shows native `RestController.ApplyRest(UnitDescriptor)` restores all
+  registered unit resources and the supported-build eligibility helper always
+  permits resource restore. A guarded detached `disposable-gunslinger-grit-rest`
+  scenario is source-qualified with 703/703 tests and strict packaging.
+  Candidate package/DLL SHA-256 are
+  `5e4711b5fdfdd4c7ed478fa77e76ad2afddb124c691b2cf498cb5a69b00cd1a9` /
+  `c77b482cbe7b9579cd69f88ececc3e551fdc43631e97a4466f4a01b04849f199`.
+
 - First live grit attempt
   `20260801T1904500891309Z-disposable-gunslinger-grit-resource` failed safely
   in native `BlueprintAbilityResource.GetMaxAmount` because its runtime-created
@@ -180,9 +188,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Native grit grant/spend/non-refill/restore is runtime-qualified. Inspect exact
-rest lifecycle contracts and implement a guarded daily-reset slice, then
-qualify save/load and multiclass/respec persistence before implementing firearm
+Commit the source-qualified native daily-rest scenario, then run exact mod load
+and two fresh-process `disposable-gunslinger-grit-rest` passes. Next qualify
+save/load and multiclass/respec persistence before implementing firearm
 critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them

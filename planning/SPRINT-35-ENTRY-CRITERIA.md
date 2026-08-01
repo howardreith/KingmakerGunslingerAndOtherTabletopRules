@@ -42,3 +42,12 @@
 - No deed behavior, firearm-event recovery, UI, save mutation, balance choice,
   alternative grit/panache pooling, favored-class bonuses, or speculative
   Harmony patch.
+## Native daily-rest contract
+
+Exact installed IL establishes that public static
+`RestController.ApplyRest(UnitDescriptor)` enumerates every registered unit
+resource and calls native full `Restore` whenever
+`UnitRestExtension.CanRestoreResourcesOnRest` permits it. In the supported
+Kingmaker build that eligibility method returns true unconditionally. Grit
+therefore uses the ordinary resource rest path; no global rest patch or custom
+rest subscriber is required.

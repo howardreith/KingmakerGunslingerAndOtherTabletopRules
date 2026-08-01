@@ -1017,3 +1017,20 @@
   `da0d1e20a51dc288daa3383fbd0fff628b79b76194b7946c1e60a774d6d1543b`.
 - Next checkpoint: exact daily-rest refill and persistence/respec behavior;
   native grit recovery from qualifying firearm events follows.
+
+## 2026-08-01 Sprint 35 native daily-rest entry
+
+- Exact installed IL proves public static `RestController.ApplyRest` enumerates
+  every registered unit resource and invokes full native `Restore`; the exact
+  supported-build `CanRestoreResourcesOnRest` helper returns true.
+- Added a guarded detached-unit daily-rest scenario: grant Gunslinger 1, spend
+  grit from one to zero, call the exact native unit rest method, require refill
+  to maximum, cancel the controller, dispose the entity, and verify unchanged
+  party/global-unit snapshots.
+- Five focused rest checks, 40 runtime-preflight checks, inherited repository
+  validation, 703/703 tests, clean Release build, and strict packaging pass.
+  Candidate package/DLL SHA-256 are
+  `5e4711b5fdfdd4c7ed478fa77e76ad2afddb124c691b2cf498cb5a69b00cd1a9` /
+  `c77b482cbe7b9579cd69f88ececc3e551fdc43631e97a4466f4a01b04849f199`.
+- Commit this source-qualified scenario, then require exact mod load and two
+  independent fresh-process daily-rest PASS runs.

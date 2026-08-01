@@ -52,6 +52,9 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "scripts/Test-Sprint35DisposableGritResource.ps1"),
         ["scenario-allowlisted", "detached-only", "native-resource-path",
          "no-level-refill"], "Sprint 35 disposable grit runtime tests")
+    require_tokens(read(root, "scripts/Test-Sprint35DisposableGritRest.ps1"),
+        ["scenario-allowlisted", "detached-only", "native-rest-contract",
+         "restored-to-maximum"], "Sprint 35 disposable grit-rest tests")
     print("Sprint 35 source invariant validation passed with inherited Sprint 34 checks.")
 
 def main() -> int:
