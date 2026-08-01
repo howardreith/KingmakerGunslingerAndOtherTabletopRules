@@ -8,19 +8,26 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `9cad0e9` (runtime-qualified Nimble documentation checkpoint).
+- Audited HEAD: `8ecb3aa` (runtime-qualified Gunslinger Initiative +2 source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 38 source commit `5c6a348` passed exact mod load.
-  Its first Initiative run proved every mechanic but failed an over-specific
-  fixture assertion that expected two initial grit; the narrow assertion repair
-  is fully source-qualified and requires a new exact commit. The conditional
-  Quick Draw clause remains separately under contract review.
+- Current checkpoint: Sprint 38 Gunslinger Initiative +2 is runtime-qualified;
+  the conditional Quick Draw/free-hands/visible-firearm clause is under exact
+  native contract audit.
 - Version: `0.0.38`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Gunslinger Initiative repair commit `8ecb3aa` passed mod load at
+  `20260801T2211000340072Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2212165760676Z-disposable-gunslinger-initiative` and
+  `20260801T2213341079691Z-disposable-gunslinger-initiative` proved grit
+  `1 -> 1`, native modifier `0 -> 2`, duplicate stability, zero-grit rejection,
+  zero faults, and exact cleanup. Package/DLL SHA-256 are
+  `33e70a386dba3c28cf5ca4fc74cdfa6b291586da24d25269b44a4abf6e499d61` /
+  `1e120508f20f13ab74136c244c409f396bc29c97e9ced175398ebf8b71101a26`.
 
 - Nimble commit `b82768b` passed mod load at
   `20260801T2144324918751Z-mod-load-smoke`. Independent PASS runs
@@ -335,12 +342,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the Sprint 38 Gunslinger Initiative source checkpoint, then require exact
-`0.0.38` mod load and run two independent
-`disposable-gunslinger-initiative` fresh-process scenarios. After recording
-qualification, continue the exact native contract audit for the Initiative
-Quick Draw clause or select Pistol-Whip if that clause requires a distinct
-evidence checkpoint. Preserve the Dodge movement alternative as a documented
+Complete the exact native contract audit for the Initiative Quick Draw clause.
+Implement it only if Quick Draw identity, free/unrestrained hands, visible
+firearm selection, and action-free weapon-set mutation are all deterministic;
+otherwise record the narrowest faithful adaptation disposition and continue to
+Pistol-Whip. Preserve the Dodge movement alternative as a documented
 pending adaptation until deterministic destination selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them

@@ -1393,3 +1393,20 @@
   candidate package/DLL SHA-256 are
   `c3461173a9c820e4d63a4fee5f7bb078ddf4a29590a560c3928e6f709649ebbb` /
   `cc14f5fd4afa13b5a1e108a86c065ffb983094c1f47258b2532e14f4c30c99b5`.
+
+### Initiative +2 runtime qualification
+
+- Repaired source commit `8ecb3aa` passed exact mod load at
+  `20260801T2211000340072Z-mod-load-smoke`.
+- Independent fresh-process PASS runs were
+  `20260801T2212165760676Z-disposable-gunslinger-initiative` and
+  `20260801T2213341079691Z-disposable-gunslinger-initiative`.
+- Both observed grit `1 -> 1`, native initiative modifier `0 -> 2`, duplicate
+  stability at 2, zero-grit modifier `0 -> 0`, applied/rejected/duplicate counts
+  `1/1/1`, zero faults, and exact detached cleanup.
+- Exact package/DLL SHA-256 are
+  `33e70a386dba3c28cf5ca4fc74cdfa6b291586da24d25269b44a4abf6e499d61` /
+  `1e120508f20f13ab74136c244c409f396bc29c97e9ced175398ebf8b71101a26`.
+- The +2 slice is runtime-qualified. Continue immediately into the conditional
+  Quick Draw contract; the overall feature and Sprint 38 are not stopping
+  conditions.
