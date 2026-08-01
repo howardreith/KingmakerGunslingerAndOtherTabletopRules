@@ -463,3 +463,19 @@
   `ffac2365ce5414c4b218d142af5618030c6299c829b1d26c886027f53f290f93`.
 - Next action: commit, pass exact mod load, run the observer, curate the exact
   native references, then implement class/progression blueprints.
+
+## 2026-08-01 Sprint 34 level-one feature contract extension
+
+- Exact observer run `20260801T1506494769744Z-6243addc919545bfb797ebaa75c04a26`
+  proved 24 complete native classes and identified full BAB
+  `b3057560ffff3514299e8b93e7648a9d`, good save
+  `ff4662bde9e75f145853417313842751`, and poor save
+  `dc0c7c1aba755c54f96c089cdf7d14a3`.
+- Extended the read-only observer to record exact level-one feature identities
+  so simple/martial weapon and light-armor proficiency features are not guessed.
+- Eight focused observer checks, repository validation, 691/691 tests, clean
+  Release build, and package validation passed.
+- Candidate package/DLL SHA-256:
+  `94869c11589b051dcea920acbbe119dc31cb1f2031cb71dbfa7b14a3ae76f4ec` /
+  `f483eaa91f6b10597b3bf658993f07a714847b8910a1d7ab72b331dbb0107d94`.
+- Next action: commit and run exact mod load plus the extended observer.

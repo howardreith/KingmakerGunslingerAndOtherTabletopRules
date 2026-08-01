@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the qualified read-only native class-contract observer, rebuild its exact
-commit, pass mod load, and run `observe-class-blueprint-contracts`. Use only its
-exact identities to implement stable class/progression blueprints. Do not claim
-character creation or level-up integration until guarded runtime evidence exists.
+Commit the qualified level-one feature extension, rebuild its exact commit,
+pass mod load, and rerun `observe-class-blueprint-contracts`. Use only the exact
+observed proficiency identities to implement stable class/progression
+blueprints. Do not claim character creation or level-up integration yet.
 
 ## Safety boundaries
 

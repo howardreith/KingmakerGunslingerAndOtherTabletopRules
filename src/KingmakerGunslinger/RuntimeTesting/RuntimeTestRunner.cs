@@ -1585,7 +1585,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "hitDie=" + characterClass.HitDie,
                         "skills=" + string.Join(",", (characterClass.ClassSkills ??
                             new Kingmaker.EntitySystem.Stats.StatType[0])
-                            .Select(value => value.ToString()).ToArray())
+                            .Select(value => value.ToString()).ToArray()),
+                        "level1=" + DescribeLevelOneFeatures(characterClass.Progression)
                     }));
                 }
             }
@@ -1608,6 +1609,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static string DescribeLevelOneFeatures(BlueprintProgression progression)
+        {
+            LevelEntry entry = (progression.LevelEntries ?? new LevelEntry[0])
+                .SingleOrDefault(value => value != null && value.Level == 1);
+            if (entry == null || entry.Features == null) return "<missing>";
+            return string.Join(",", entry.Features
+                .Where(value => value != null)
+                .Select(value => value.name + "@" + value.AssetGuid)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray());
         }
 
         private void Complete(RuntimeTestResult result)
