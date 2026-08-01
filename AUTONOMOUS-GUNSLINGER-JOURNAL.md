@@ -1326,3 +1326,19 @@
   `0188eb4ea037af6e81ed6c15674ee1735eed963302a70b2ccf45e38424bd6e40`.
 - Next action: commit this reconstructable source checkpoint, exact mod load,
   and two independent fresh-process Nimble PASS runs.
+
+### Nimble runtime qualification
+
+- Source commit `b82768b` passed exact mod load at
+  `20260801T2144324918751Z-mod-load-smoke`.
+- Independent fresh-process PASS runs were
+  `20260801T2145560578604Z-disposable-gunslinger-nimble` and
+  `20260801T2147123020977Z-disposable-gunslinger-nimble`.
+- Both observed base/no-armor AC 10/15, base/Nimble flat-footed AC 10/10,
+  light armor with/without Nimble 23/18, medium armor with/without Nimble
+  20/20, and exact detached cleanup.
+- Exact package/DLL SHA-256 are
+  `e8244e972dfcd257f163246d1179a467e5a17ed6ab9caaa79c52dfeb18e7807f` /
+  `dafbb6bd85f01df1497815d21e3ed97c81ee95cce2797c63b7252798a026272a`.
+- Nimble is runtime-qualified. Continue immediately to Gunslinger Initiative;
+  Sprint 37 is not a stopping condition.

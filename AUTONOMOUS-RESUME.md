@@ -8,16 +8,25 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `fb4fd51` (runtime-qualified Quick Clear source checkpoint).
+- Audited HEAD: `b82768b` (runtime-qualified Nimble source checkpoint).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 37 Nimble is source-qualified and awaits
-  exact-commit guarded runtime qualification.
+- Current checkpoint: Sprint 37 Nimble is runtime-qualified; Gunslinger
+  Initiative is the next incomplete fidelity row under audit.
 - Version: `0.0.37`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Nimble commit `b82768b` passed mod load at
+  `20260801T2144324918751Z-mod-load-smoke`. Independent PASS runs
+  `20260801T2145560578604Z-disposable-gunslinger-nimble` and
+  `20260801T2147123020977Z-disposable-gunslinger-nimble` proved +5 ordinary AC
+  in light/no armor, zero in medium armor, native flat-footed exclusion, and
+  exact cleanup. Package/DLL SHA-256 are
+  `e8244e972dfcd257f163246d1179a467e5a17ed6ab9caaa79c52dfeb18e7807f` /
+  `dafbb6bd85f01df1497815d21e3ed97c81ee95cce2797c63b7252798a026272a`.
 
 - Quick Clear commit `fb4fd51` passed mod load at
   `20260801T2119244427175Z-mod-load-smoke`. Independent PASS runs
