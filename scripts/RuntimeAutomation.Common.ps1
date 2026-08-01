@@ -50,6 +50,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'observe-working-save-receiver-bound-action' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $true; ReadinessBehavior = 'human-working-save-receiver-bound-action'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
 }
 $script:KmgRuntimeScenarios = @($script:KmgRuntimeScenarioMetadata.Keys)
 $script:KmgSteamAppId = 640820
@@ -77,7 +83,8 @@ function Test-KmgSupervisedWorkingSaveEntryReadinessBehavior {
     param([Parameter(Mandatory = $true)][string]$ReadinessBehavior)
     return $ReadinessBehavior -cin @(
         'human-working-save-entry-action',
-        'human-working-save-selection-load-action'
+        'human-working-save-selection-load-action',
+        'human-working-save-receiver-bound-action'
     )
 }
 
@@ -394,7 +401,11 @@ function Test-KmgRuntimeReadyMarker {
         $isSupervisedWorkingEntry =
             Test-KmgSupervisedWorkingSaveEntryReadinessBehavior `
                 -ReadinessBehavior $metadata.ReadinessBehavior
-        $expectedStage = if ($isSupervisedWorkingEntry) {
+        $receiverBound = $metadata.ReadinessBehavior -ceq
+            'human-working-save-receiver-bound-action'
+        $expectedStage = if ($receiverBound) {
+            'working-receiver-bound-action-ready'
+        } elseif ($isSupervisedWorkingEntry) {
             'working-entry-ready'
         } else {
             'load-game-action-resolved'
@@ -416,6 +427,24 @@ function Test-KmgRuntimeReadyMarker {
         }
         if ($Marker.readinessStage -cne $expectedStage) {
             $failures.Add('readinessStage')
+        }
+        if ($receiverBound) {
+            if ([string]::IsNullOrWhiteSpace([string]$Marker.exactSlotIdentity)) {
+                $failures.Add('exactSlotIdentity')
+            }
+            if ([string]::IsNullOrWhiteSpace([string]$Marker.exactWindowIdentity)) {
+                $failures.Add('exactWindowIdentity')
+            }
+            $requiredHooks = @(
+                'Kingmaker.UI.SaveLoadWindow.SaveSlot.OnButtonSaveLoad():System.Void',
+                'Kingmaker.UI.SaveLoadWindow.SaveLoadWindow.HandleHardcodeMainMenuSaveLoad(Kingmaker.EntitySystem.Persistence.SaveInfo):System.Void',
+                'Kingmaker.MainMenu.LoadGame(Kingmaker.EntitySystem.Persistence.SaveInfo):System.Void'
+            )
+            foreach ($requiredHook in $requiredHooks) {
+                if ($requiredHook -cnotin @($Marker.installedObservationHookIdentifiers)) {
+                    $failures.Add("installedExactHook:$requiredHook")
+                }
+            }
         }
         if ($PSBoundParameters.ContainsKey('FailedPredicates')) {
             $FailedPredicates.Value = @($failures)

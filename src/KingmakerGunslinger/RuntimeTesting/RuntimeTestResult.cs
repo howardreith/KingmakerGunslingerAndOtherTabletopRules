@@ -83,6 +83,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("workingSaveSelectionLoadActionObservation", Order = 31,
             NullValueHandling = NullValueHandling.Ignore)]
         public WorkingSaveSmokeEvidence WorkingSaveSelectionLoadActionObservation { get; set; }
+        [JsonProperty("workingSaveReceiverBoundActionObservation", Order = 32,
+            NullValueHandling = NullValueHandling.Ignore)]
+        public WorkingSaveSmokeEvidence WorkingSaveReceiverBoundActionObservation { get; set; }
         [JsonProperty("evidenceDirectory", Order = 31)]
         public string EvidenceDirectory { get; set; }
     }
@@ -137,6 +140,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("immediateLoadCallerReceiverIdentity", Order = 46)] public string ImmediateLoadCallerReceiverIdentity { get; set; }
         [JsonProperty("compatibleCallerReceiverCount", Order = 47)] public int CompatibleCallerReceiverCount { get; set; }
         [JsonProperty("candidateRejections", Order = 48)] public List<string> CandidateRejections { get; set; }
+        [JsonProperty("descriptorMemberIdentity", Order = 49)] public string DescriptorMemberIdentity { get; set; }
+        [JsonProperty("entryHierarchyPath", Order = 50)] public string EntryHierarchyPath { get; set; }
+        [JsonProperty("gameThreadManagedId", Order = 51)] public int GameThreadManagedId { get; set; }
+        [JsonProperty("receiverBoundHookIdentifiers", Order = 52)] public List<string> ReceiverBoundHookIdentifiers { get; set; }
+        [JsonProperty("slotActionInvocationCount", Order = 53)] public int SlotActionInvocationCount { get; set; }
+        [JsonProperty("slotReceiverReferenceCorrelated", Order = 54)] public bool SlotReceiverReferenceCorrelated { get; set; }
+        [JsonProperty("windowHandlerInvocationCount", Order = 55)] public int WindowHandlerInvocationCount { get; set; }
+        [JsonProperty("windowReceiverReferenceCorrelated", Order = 56)] public bool WindowReceiverReferenceCorrelated { get; set; }
+        [JsonProperty("windowArgumentReferenceCorrelated", Order = 57)] public bool WindowArgumentReferenceCorrelated { get; set; }
+        [JsonProperty("slotActionSequence", Order = 58)] public int SlotActionSequence { get; set; }
+        [JsonProperty("windowHandlerSequence", Order = 59)] public int WindowHandlerSequence { get; set; }
+        [JsonProperty("loadEntrySequence", Order = 60)] public int LoadEntrySequence { get; set; }
+        [JsonProperty("completionSequence", Order = 61)] public int CompletionSequence { get; set; }
+        [JsonProperty("fingerprintSequence", Order = 62)] public int FingerprintSequence { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence
@@ -219,6 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("readinessStage", Order = 13)]
         public string ReadinessStage { get; set; }
         [JsonProperty("saveName", Order = 14)] public string SaveName { get; set; }
+        [JsonProperty("exactSlotIdentity", Order = 15)] public string ExactSlotIdentity { get; set; }
+        [JsonProperty("exactWindowIdentity", Order = 16)] public string ExactWindowIdentity { get; set; }
     }
 
     internal sealed class RuntimeStageMarker

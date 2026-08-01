@@ -225,6 +225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -262,7 +263,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction)
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction)
                 {
                     RunWorkingSaveSmoke();
                     return;
@@ -275,7 +278,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction) &&
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction) &&
                     _workingReadyWritten && _workingSaveSmoke != null)
                     CompletePostReadinessError(exception);
                 else
@@ -299,9 +304,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
                     _request.Scenario ==
-                        RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction);
+                        RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
@@ -330,7 +339,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool supervisedEntry = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                 _request.Scenario ==
-                    RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
+                    RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             if (supervisedEntry && _workingSaveSmoke.MainMenuReady &&
                 _workingStartupStage != "observer-armed")
             {
@@ -343,8 +354,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!_workingReadyWritten && requestedReadiness &&
                 _updateCallbackCount >= 2)
             {
-                _workingStartupStage = supervisedEntry
-                    ? "working-entry-ready"
+                _workingStartupStage = _workingSaveSmoke.ReceiverBoundObservation
+                    ? "working-receiver-bound-action-ready"
+                    : supervisedEntry ? "working-entry-ready"
                     : "load-game-action-resolved";
                 WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("runtime-ready",
@@ -365,7 +377,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UmmStartupState = "initialized; overlay nonblocking-or-absent",
                     ReadinessStage = _workingStartupStage,
                     SaveName = supervisedEntry
-                        ? WorkingSaveSmokeScenario.ExpectedName : ""
+                        ? WorkingSaveSmokeScenario.ExpectedName : "",
+                    ExactSlotIdentity = _workingSaveSmoke.ReceiverBoundObservation
+                        ? _workingSaveSmoke.ExactSlotIdentity : "",
+                    ExactWindowIdentity = _workingSaveSmoke.ReceiverBoundObservation
+                        ? _workingSaveSmoke.ExactWindowIdentity : ""
                 });
                 _workingStartupStage = "working-save-ready";
                 WriteLifecycleStage(_workingStartupStage);
@@ -374,6 +390,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (!_workingReadyWritten)
             {
+                if (_workingSaveSmoke.ReceiverBoundScopeResolutionFailed)
+                {
+                    CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
+                        "receiver-bound-readiness",
+                        "The exact working SaveSlot or owning SaveLoadWindow had zero or multiple matches.");
+                    return;
+                }
                 int readinessTimeout = WorkingSaveStageTimeout(
                     _workingSaveSmoke.Stage);
                 if (_workingSaveSmoke.StageElapsedMilliseconds >=
@@ -458,7 +481,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 CompleteWorkingSaveSmoke(RuntimeTestStatuses.Ambiguous,
                     "entry-action-correlation",
-                    _workingSaveSmoke.SelectionLoadObservation
+                    _workingSaveSmoke.ReceiverBoundObservation
+                        ? "Load completed, but exact receiver references, invocation counts, or strict ordering were not uniquely proven."
+                        : _workingSaveSmoke.SelectionLoadObservation
                         ? "Load completed for the exact working descriptor, but one caller and one compatible scoped receiver were not uniquely proven."
                         : "Load completed for the exact working descriptor, but the clicked UnityEvent and listener could not both be proven.");
                 return;
@@ -468,7 +493,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 string status = _workingSaveSmoke.Stage == "descriptor-resolution" &&
                     _workingSaveSmoke.WorkingCount > 1
-                    ? RuntimeTestStatuses.Ambiguous : RuntimeTestStatuses.Timeout;
+                    ? RuntimeTestStatuses.Ambiguous :
+                    _workingSaveSmoke.ReceiverBoundObservation &&
+                    (_workingSaveSmoke.Stage == "working-entry-click" ||
+                     _workingSaveSmoke.Stage == "slot-action-invocation" ||
+                     _workingSaveSmoke.Stage == "window-handler-invocation" ||
+                     _workingSaveSmoke.Stage == "load-entry-invocation")
+                        ? RuntimeTestStatuses.Ambiguous
+                        : RuntimeTestStatuses.Timeout;
                 CompleteWorkingSaveSmoke(status, _workingSaveSmoke.Stage,
                     "Stage-specific timeout expired.");
             }
@@ -489,6 +521,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _request.DescriptorResolutionTimeoutSeconds;
             if (stage == "working-entry-click")
                 return _request.SelectionTimeoutSeconds;
+            if (stage == "slot-action-invocation" ||
+                stage == "window-handler-invocation")
+                return _request.LoadEntryTimeoutSeconds;
             if (stage == "load-entry-invocation")
                 return _request.LoadEntryTimeoutSeconds;
             if (stage == "load-completion")
@@ -633,7 +668,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
             bool selectionLoadObservation = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction;
-            if (selectionLoadObservation)
+            bool receiverBoundObservation = _request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
+            if (receiverBoundObservation)
+            {
+                result.WorkingSaveReceiverBoundActionObservation = evidence;
+                assertions.Add(Assertion("unique-working-slot",
+                    "one exact object-reference-correlated SaveSlot",
+                    "entries=" + evidence.EntryCandidateCount,
+                    evidence.EntryCandidateCount == 1,
+                    "exact captured working SaveInfo reference"));
+                assertions.Add(Assertion("exact-receiver-bound-path",
+                    "one exact slot, window, and load invocation",
+                    "slot=" + evidence.SlotActionInvocationCount +
+                        ";window=" + evidence.WindowHandlerInvocationCount +
+                        ";load=" + evidence.LoadEntryInvocationCount,
+                    evidence.SlotActionInvocationCount == 1 &&
+                        evidence.WindowHandlerInvocationCount == 1 &&
+                        evidence.LoadEntryInvocationCount == 1 &&
+                        evidence.SlotReceiverReferenceCorrelated &&
+                        evidence.WindowReceiverReferenceCorrelated &&
+                        evidence.WindowArgumentReferenceCorrelated,
+                    "exact receiver and SaveInfo object references"));
+                assertions.Add(Assertion("strict-receiver-bound-order",
+                    "slot < window < load < callback < fingerprint",
+                    evidence.SlotActionSequence + "<" +
+                        evidence.WindowHandlerSequence + "<" +
+                        evidence.LoadEntrySequence + "<" +
+                        evidence.CompletionSequence + "<" +
+                        evidence.FingerprintSequence,
+                    evidence.SlotActionSequence > 0 &&
+                        evidence.SlotActionSequence < evidence.WindowHandlerSequence &&
+                        evidence.WindowHandlerSequence < evidence.LoadEntrySequence &&
+                        evidence.LoadEntrySequence < evidence.CompletionSequence &&
+                        evidence.CompletionSequence < evidence.FingerprintSequence,
+                    "monotonic request-scoped event sequence"));
+                assertions.Add(Assertion("probe-non-initiating",
+                    "false", evidence.ProbeInvokedEntryAction.ToString(),
+                    !evidence.ProbeInvokedEntryAction,
+                    "observer invokes neither selection nor loading"));
+            }
+            else if (selectionLoadObservation)
             {
                 result.WorkingSaveSelectionLoadActionObservation = evidence;
                 assertions.Add(Assertion("unique-working-slot",

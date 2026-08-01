@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-working-save-entry-action";
         internal const string ObserveWorkingSaveSelectionLoadAction =
             "observe-working-save-selection-load-action";
+        internal const string ObserveWorkingSaveReceiverBoundAction =
+            "observe-working-save-receiver-bound-action";
 
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
@@ -29,7 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
                 ObserveWorkingSaveEntryAction,
-                ObserveWorkingSaveSelectionLoadAction
+                ObserveWorkingSaveSelectionLoadAction,
+                ObserveWorkingSaveReceiverBoundAction
             };
 
         internal static bool IsAllowed(string scenario)

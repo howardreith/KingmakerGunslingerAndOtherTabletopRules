@@ -355,16 +355,16 @@ try {
         while (-not $ready) {
             if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
                 $startupResult = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
-                $readinessStage = if ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
+                $readinessStage = if ($Scenario -eq 'observe-working-save-receiver-bound-action') { 'receiver-bound-readiness' } elseif ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
                 throw "Observer failed before readiness. stage=$readinessStage; status=$($startupResult.status); diagnostics=$($startupResult.diagnostics -join ';')"
             }
             $process.Refresh()
             if ($process.HasExited) {
-                $readinessStage = if ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
+                $readinessStage = if ($Scenario -eq 'observe-working-save-receiver-bound-action') { 'receiver-bound-readiness' } elseif ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
                 throw "Kingmaker exited before observer readiness. stage=$readinessStage; PID=$($process.Id)"
             }
             if ([DateTime]::UtcNow -ge $readyDeadline) {
-                $readinessStage = if ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
+                $readinessStage = if ($Scenario -eq 'observe-working-save-receiver-bound-action') { 'receiver-bound-readiness' } elseif ($Scenario -in @('observe-working-save-entry-action', 'observe-working-save-selection-load-action')) { 'working-entry-readiness' } else { 'observer-readiness' }
                 throw "Observer readiness timed out. stage=$readinessStage; timeoutStage=$readinessStage; timeoutSeconds=$ObserverStartupTimeoutSeconds"
             }
             if (Test-Path -LiteralPath $readyPath -PathType Leaf) {
@@ -394,7 +394,8 @@ try {
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
         Write-Host ''
         Write-Host '============================================================' -ForegroundColor Yellow
-        if ($Scenario -eq 'observe-working-save-selection-load-action') {
+        if ($Scenario -in @('observe-working-save-selection-load-action',
+            'observe-working-save-receiver-bound-action')) {
             Write-Host 'CLICK THE NORMAL LOAD ACTION FOR KMG_AUTOMATION_WORKING ONCE' -ForegroundColor Yellow
             Write-Host 'DO NOT CLICK KMG_AUTOMATION_BASELINE' -ForegroundColor Red
         }
@@ -413,7 +414,8 @@ try {
 
     if ($Scenario -in @('working-save-smoke',
         'observe-working-save-entry-action',
-        'observe-working-save-selection-load-action')) {
+        'observe-working-save-selection-load-action',
+        'observe-working-save-receiver-bound-action')) {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $MainMenuTimeoutSeconds + $ActionResolutionTimeoutSeconds +
             $ActionInvocationTimeoutSeconds + $CatalogTimeoutSeconds +

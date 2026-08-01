@@ -14,9 +14,9 @@ using UnityEngine.UI;
 namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
-    /// Guarded, request-scoped execution of the three observed main-menu contracts.
-    /// It invokes one normal Unity button event, consumes Kingmaker's exact catalog
-    /// List instance, and passes its exact working SaveInfo instance to MainMenu.
+    /// Guarded, request-scoped working-save execution and supervised observation.
+    /// Autonomous mode invokes only its qualified path; supervised modes consume
+    /// the exact catalog and passively correlate the human's normal save action.
     /// </summary>
     internal sealed class WorkingSaveSmokeScenario
     {
@@ -40,6 +40,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string DescriptorType =
             "Kingmaker.EntitySystem.Persistence.SaveInfo";
         private const string MainMenuType = "Kingmaker.MainMenu";
+        private const string SaveSlotType =
+            "Kingmaker.UI.SaveLoadWindow.SaveSlot";
+        private const string SaveLoadWindowType =
+            "Kingmaker.UI.SaveLoadWindow.SaveLoadWindow";
         private const string ButtonPath =
             "!LIGHT_SETUP/SceneUICanvas/SideBar/Buttons/LoadGame";
         private static readonly string[] ExactComponents =
@@ -73,6 +77,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private MethodInfo _handler;
         private MethodInfo _initialize;
         private MethodInfo _loadEntry;
+        private MethodInfo _slotAction;
+        private MethodInfo _windowHandler;
         private string _stage = "runtime-readiness";
         private long _stageStarted;
         private Button _button;
@@ -80,6 +86,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private object _mainMenuButtons;
         private object _loadEntryReceiver;
         private object _catalogObject;
+        private object _catalogReceiver;
         private object _workingDescriptor;
         private SaveCatalogDescriptorEvidence _workingEvidence;
         private int _buttonCandidates;
@@ -103,6 +110,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _buttonResolutionAttempted;
         private readonly bool _observeEntryAction;
         private readonly bool _observeSelectionLoadAction;
+        private readonly bool _observeReceiverBoundAction;
         private Button _entryAction;
         private UnityEvent _entryUnityEvent;
         private Component _entryOwner;
@@ -134,11 +142,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _otherLoadObserved;
         private Exception _exception;
         private string _lastCompletedStage = "runtime-readiness";
+        private object _receiverBoundSlot;
+        private object _receiverBoundWindow;
+        private string _descriptorMemberIdentity = "";
+        private string _entryHierarchyPath = "";
+        private int _slotActionInvocations;
+        private int _windowHandlerInvocations;
+        private bool _slotReceiverCorrelated;
+        private bool _windowReceiverCorrelated;
+        private bool _windowArgumentCorrelated;
+        private int _slotActionSequence;
+        private int _windowHandlerSequence;
+        private int _loadEntrySequence;
+        private int _completionSequence;
+        private int _fingerprintSequence;
+        private bool _receiverScopeResolutionAttempted;
 
         internal WorkingSaveSmokeScenario(ModContext context, Stopwatch elapsed,
             string runId, Action<SaveLoadObservationEvent> sink,
             bool observeEntryAction = false,
-            bool observeSelectionLoadAction = false)
+            bool observeSelectionLoadAction = false,
+            bool observeReceiverBoundAction = false)
         {
             _context = context;
             _elapsed = elapsed;
@@ -147,6 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gameThreadId = Thread.CurrentThread.ManagedThreadId;
             _observeEntryAction = observeEntryAction;
             _observeSelectionLoadAction = observeSelectionLoadAction;
+            _observeReceiverBoundAction = observeReceiverBoundAction;
             _stageStarted = elapsed.ElapsedMilliseconds;
         }
 
@@ -162,7 +187,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _completionCallback && _stableSamples >= 2 &&
                     _descriptorCorrelated && !_writeObserved && !_wrongThread &&
                     (!_observeEntryAction ||
-                     (_observeSelectionLoadAction
+                     (_observeReceiverBoundAction
+                         ? (_entryCandidates == 1 &&
+                            _slotActionInvocations == 1 &&
+                            _windowHandlerInvocations == 1 &&
+                            _loadEntryInvocations == 1 &&
+                            _slotReceiverCorrelated &&
+                            _windowReceiverCorrelated &&
+                            _windowArgumentCorrelated &&
+                            StrictReceiverBoundOrder())
+                         : _observeSelectionLoadAction
                          ? (_entryCandidates == 1 &&
                             _selectedWorkingStateObserved &&
                             _finalLoadActionCount == 1 &&
@@ -185,6 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal bool WriteObserved { get { return _writeObserved; } }
         internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
+        internal bool ReceiverBoundObservation { get { return _observeReceiverBoundAction; } }
         internal Exception ScenarioException { get { return _exception; } }
         internal string LastCompletedStage { get { return _lastCompletedStage; } }
         internal string ObserverArmingSubstage { get { return _observerArmingSubstage; } }
@@ -210,9 +245,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return _observeEntryAction && _stage == "working-entry-click" &&
                     _workingCount == 1 && _baselineCount == 1 &&
-                    _catalogComplete && _entryCandidates <= 1 &&
-                    (_observeSelectionLoadAction || _entryActionCandidates <= 1) &&
+                    _catalogComplete &&
+                    (_observeReceiverBoundAction
+                        ? (_entryCandidates == 1 &&
+                           _entryActionCandidates == 1 &&
+                           _receiverBoundSlot != null &&
+                           _receiverBoundWindow != null)
+                        : _entryCandidates <= 1) &&
+                    (_observeReceiverBoundAction ||
+                     (_observeSelectionLoadAction || _entryActionCandidates <= 1)) &&
                     _loadEntry != null;
+            }
+        }
+        internal string ExactSlotIdentity { get { return ObjectIdentity(_receiverBoundSlot); } }
+        internal string ExactWindowIdentity { get { return ObjectIdentity(_receiverBoundWindow); } }
+        internal bool ReceiverBoundScopeResolutionFailed
+        {
+            get
+            {
+                return _observeReceiverBoundAction &&
+                    _stage == "working-entry-click" &&
+                    (_entryCandidates != 1 || _entryActionCandidates != 1 ||
+                     _receiverBoundSlot == null || _receiverBoundWindow == null);
+            }
+        }
+        internal List<string> ReceiverBoundHookIdentifiers
+        {
+            get
+            {
+                return new[] { _slotAction, _windowHandler, _loadEntry }
+                    .Where(x => x != null).Select(FormatSignature)
+                    .OrderBy(x => x).ToList();
             }
         }
         internal List<string> HookIdentifiers
@@ -245,6 +308,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     method.GetParameters().Length == 1 &&
                     method.GetParameters()[0].ParameterType.FullName == DescriptorType &&
                     method.ReturnType == typeof(void));
+                if (_observeReceiverBoundAction)
+                {
+                    Type slot = assembly.GetType(SaveSlotType, true);
+                    Type window = assembly.GetType(SaveLoadWindowType, true);
+                    Type descriptor = assembly.GetType(DescriptorType, true);
+                    _slotAction = ExactPatchableMethod(slot,
+                        "OnButtonSaveLoad", Type.EmptyTypes, typeof(void));
+                    _windowHandler = ExactPatchableMethod(window,
+                        "HandleHardcodeMainMenuSaveLoad",
+                        new[] { descriptor }, typeof(void));
+                    RequirePatchableContract(_loadEntry, menu, "LoadGame",
+                        new[] { descriptor }, typeof(void));
+                }
                 MethodInfo prefix = typeof(WorkingSaveSmokeScenario).GetMethod(
                     "Prefix", BindingFlags.Static | BindingFlags.NonPublic);
                 MethodInfo postfix = typeof(WorkingSaveSmokeScenario).GetMethod(
@@ -252,15 +328,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Patch(_handler, prefix, null);
                 Patch(_initialize, prefix, postfix);
                 Patch(_loadEntry, prefix, null);
-                foreach (MethodInfo method in assembly.GetType(
-                    "Kingmaker.EntitySystem.Persistence.SaveManager", true)
-                    .GetMethods(AllInstance))
+                if (_observeReceiverBoundAction)
                 {
-                    if (WritePrefixes.Any(prefixValue =>
-                        method.Name.StartsWith(prefixValue, StringComparison.Ordinal)) &&
-                        method.Name != "SaveList" && method.Name != "SaveInfo")
-                        Patch(method, prefix, null);
+                    Patch(_slotAction, prefix, null);
+                    Patch(_windowHandler, prefix, null);
                 }
+                if (_observeReceiverBoundAction)
+                    InstallExactSaveWriteSentinels(assembly, prefix);
+                else
+                    InstallLegacySaveWriteSentinels(assembly, prefix);
                 _active = this;
                 Transition("main-menu-readiness",
                     "contracts installed; no action invoked");
@@ -341,11 +417,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "working-entry-readiness")
             {
-                if (_observeSelectionLoadAction)
+                if (_observeReceiverBoundAction)
+                    ResolveWorkingReceiverBoundScope();
+                else if (_observeSelectionLoadAction)
                     ResolveWorkingSelectionLoadActions();
                 else ResolveWorkingEntryAction();
-                if (_entryCandidates <= 1 &&
-                    (_observeSelectionLoadAction || _entryActionCandidates <= 1))
+                if ((_observeReceiverBoundAction &&
+                     _receiverScopeResolutionAttempted) ||
+                    (_entryCandidates <= 1 &&
+                    (_observeSelectionLoadAction || _observeReceiverBoundAction ||
+                     _entryActionCandidates <= 1)))
                     Transition("working-entry-click",
                         "pre-click descriptor identity proven and exact LoadGame observation armed; entry action correlation may complete after the human click");
                 return;
@@ -452,7 +533,205 @@ namespace KingmakerGunslinger.RuntimeTesting
                 , CompatibleCallerReceiverCount = _compatibleCallerReceiverCount
                 , LoadCallerChain = new List<string>(_loadCallerChain)
                 , CandidateRejections = new List<string>(_candidateRejections)
+                , DescriptorMemberIdentity = _descriptorMemberIdentity
+                , EntryHierarchyPath = _entryHierarchyPath
+                , GameThreadManagedId = _gameThreadId
+                , ReceiverBoundHookIdentifiers = ReceiverBoundHookIdentifiers
+                , SlotActionInvocationCount = _slotActionInvocations
+                , SlotReceiverReferenceCorrelated = _slotReceiverCorrelated
+                , WindowHandlerInvocationCount = _windowHandlerInvocations
+                , WindowReceiverReferenceCorrelated = _windowReceiverCorrelated
+                , WindowArgumentReferenceCorrelated = _windowArgumentCorrelated
+                , SlotActionSequence = _slotActionSequence
+                , WindowHandlerSequence = _windowHandlerSequence
+                , LoadEntrySequence = _loadEntrySequence
+                , CompletionSequence = _completionSequence
+                , FingerprintSequence = _fingerprintSequence
             };
+        }
+
+        private void ResolveWorkingReceiverBoundScope()
+        {
+            if (_receiverScopeResolutionAttempted) return;
+            _receiverScopeResolutionAttempted = true;
+            _observerArmingSubstage = "working-receiver-bound-slot-resolution";
+            Type slotType = typeof(Kingmaker.Game).Assembly.GetType(SaveSlotType, true);
+            var slots = Resources.FindObjectsOfTypeAll(slotType)
+                .OfType<Component>()
+                .Where(component => component != null &&
+                    component.GetType() == slotType &&
+                    component.gameObject.activeInHierarchy &&
+                    HasExactDescriptorMember(component, _workingDescriptor))
+                .ToList();
+            slots = UniqueComponents(slots);
+            _entryCandidates = slots.Count;
+            if (slots.Count != 1) return;
+            _entryOwner = slots[0];
+            _receiverBoundSlot = slots[0];
+            string memberIdentity;
+            if (!TryFindExactDescriptorMember(
+                _receiverBoundSlot, _workingDescriptor, out memberIdentity)) return;
+            _descriptorMemberIdentity = memberIdentity;
+            _entryHierarchyPath = HierarchyPath(_entryOwner.transform);
+
+            _observerArmingSubstage = "working-receiver-bound-window-resolution";
+            Type windowType = typeof(Kingmaker.Game).Assembly.GetType(
+                SaveLoadWindowType, true);
+            var windows = new List<Component>();
+            for (Transform current = _entryOwner.transform;
+                current != null; current = current.parent)
+                windows.AddRange(current.gameObject.GetComponents<Component>()
+                    .Where(component => component != null &&
+                        component.GetType() == windowType));
+            windows = UniqueComponents(windows);
+            if (windows.Count != 1)
+            {
+                _entryActionCandidates = windows.Count;
+                return;
+            }
+            _receiverBoundWindow = windows[0];
+            _ownerObjectIdentity = ObjectIdentity(_receiverBoundWindow);
+            var lists = ((Component)_receiverBoundWindow).gameObject
+                .GetComponentsInChildren<Component>(true)
+                .Where(component => component != null &&
+                    component.GetType().FullName == CatalogType &&
+                    ReferenceEquals(component, _catalogReceiver)).ToList();
+            lists = UniqueComponents(lists);
+            if (lists.Count != 1)
+            {
+                _entryActionCandidates = lists.Count;
+                return;
+            }
+            _listObjectIdentity = ObjectIdentity(lists[0]);
+            _entryActionCandidates = 1;
+            _observerArmingSubstage = "working-receiver-bound-readiness-writing";
+            Add("working-receiver-bound-action-ready", null, null,
+                "slot=" + ObjectIdentity(_receiverBoundSlot) +
+                ";window=" + ObjectIdentity(_receiverBoundWindow) +
+                ";list=" + _listObjectIdentity +
+                ";descriptorMember=" + _descriptorMemberIdentity +
+                ";path=" + _entryHierarchyPath);
+        }
+
+        private static bool TryFindExactDescriptorMember(
+            object owner, object expected, out string identity)
+        {
+            identity = "";
+            for (Type type = owner == null ? null : owner.GetType();
+                type != null; type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsValueType || field.FieldType == typeof(string))
+                        continue;
+                    object value;
+                    try { value = field.GetValue(owner); } catch { continue; }
+                    if (!ReferenceEquals(value, expected)) continue;
+                    identity = field.DeclaringType.FullName + "." + field.Name;
+                    return true;
+                }
+                foreach (PropertyInfo property in type.GetProperties(
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (!property.CanRead || property.GetIndexParameters().Length != 0 ||
+                        property.PropertyType.IsValueType ||
+                        property.PropertyType == typeof(string)) continue;
+                    object value;
+                    try { value = property.GetValue(owner, null); } catch { continue; }
+                    if (!ReferenceEquals(value, expected)) continue;
+                    identity = property.DeclaringType.FullName + "." + property.Name;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool HasExactDescriptorMember(object owner, object expected)
+        {
+            string ignored;
+            return TryFindExactDescriptorMember(owner, expected, out ignored);
+        }
+
+        private bool StrictReceiverBoundOrder()
+        {
+            return _slotActionSequence > 0 &&
+                _slotActionSequence < _windowHandlerSequence &&
+                _windowHandlerSequence < _loadEntrySequence &&
+                _loadEntrySequence < _completionSequence &&
+                _completionSequence < _fingerprintSequence;
+        }
+
+        private static MethodInfo ExactPatchableMethod(Type declaringType,
+            string name, Type[] parameterTypes, Type returnType)
+        {
+            MethodInfo method = declaringType.GetMethod(name,
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null, parameterTypes, null);
+            RequirePatchableContract(method, declaringType, name,
+                parameterTypes, returnType);
+            return method;
+        }
+
+        private void InstallExactSaveWriteSentinels(
+            Assembly assembly, MethodInfo prefix)
+        {
+            Type manager = assembly.GetType(
+                "Kingmaker.EntitySystem.Persistence.SaveManager", true);
+            Type descriptor = assembly.GetType(DescriptorType, true);
+            Type areaState = assembly.GetType(
+                "Kingmaker.EntitySystem.AreaPersistentState", true);
+            Patch(ExactPatchableMethod(manager, "DeleteSave",
+                new[] { descriptor }, typeof(void)), prefix, null);
+            Patch(ExactPatchableMethod(manager, "DeleteSave",
+                new[] { typeof(string) }, typeof(void)), prefix, null);
+            Patch(ExactPatchableMethod(manager, "RemoveSaveFromList",
+                new[] { descriptor }, typeof(void)), prefix, null);
+            Patch(ExactPatchableMethod(manager, "SaveStashedArea",
+                new[] { descriptor, areaState }, typeof(void)), prefix, null);
+            MethodInfo saveRoutine = manager.GetMethod("SaveRoutine",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null, new[] { descriptor, typeof(bool) }, null);
+            if (saveRoutine == null || saveRoutine.DeclaringType != manager ||
+                saveRoutine.ReturnType.FullName !=
+                    "System.Collections.Generic.IEnumerator`1[[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]")
+                throw new MissingMethodException(manager.FullName,
+                    "SaveRoutine exact save-write sentinel contract");
+            RequirePatchableContract(saveRoutine, manager, "SaveRoutine",
+                new[] { descriptor, typeof(bool) }, saveRoutine.ReturnType);
+            Patch(saveRoutine, prefix, null);
+        }
+
+        private void InstallLegacySaveWriteSentinels(
+            Assembly assembly, MethodInfo prefix)
+        {
+            foreach (MethodInfo method in assembly.GetType(
+                "Kingmaker.EntitySystem.Persistence.SaveManager", true)
+                .GetMethods(AllInstance))
+            {
+                if (WritePrefixes.Any(prefixValue =>
+                    method.Name.StartsWith(prefixValue, StringComparison.Ordinal)) &&
+                    method.Name != "SaveList" && method.Name != "SaveInfo")
+                    Patch(method, prefix, null);
+            }
+        }
+
+        private static void RequirePatchableContract(MethodInfo method,
+            Type declaringType, string name, Type[] parameterTypes,
+            Type returnType)
+        {
+            if (method == null || method.DeclaringType != declaringType ||
+                method.Name != name || method.ReturnType != returnType ||
+                method.IsAbstract || method.IsGenericMethodDefinition ||
+                method.ContainsGenericParameters || method.GetMethodBody() == null ||
+                !method.GetParameters().Select(value => value.ParameterType)
+                    .SequenceEqual(parameterTypes))
+                throw new MissingMethodException(declaringType.FullName,
+                    name + " exact managed patchable contract");
         }
 
         private void ResolveWorkingSelectionLoadActions()
@@ -978,6 +1257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             else { _lastFingerprint = value; _stableSamples = 1; }
             if (_stableSamples == 2)
             {
+                _fingerprintSequence = _events.Count + 1;
                 Add("stable-post-load-fingerprint", null, null, value);
                 Add("fingerprint-complete", null, null, value);
             }
@@ -1031,7 +1311,43 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void ObserveEnter(MethodBase method, object receiver, object[] args)
         {
             RequireGameThread();
-            if (method == _handler)
+            if (_observeReceiverBoundAction && method == _slotAction)
+            {
+                _slotActionInvocations++;
+                bool exact = ReferenceEquals(receiver, _receiverBoundSlot);
+                _slotReceiverCorrelated = _slotReceiverCorrelated || exact;
+                _slotActionSequence = _events.Count + 1;
+                Add("receiver-bound-slot-action-enter", method, args,
+                    "count=" + _slotActionInvocations + ";receiver=" +
+                    ObjectIdentity(receiver) + ";exactWorkingSlot=" + exact);
+                if (_stage == "working-entry-click")
+                    Transition("slot-action-invocation",
+                        "human normal action entered exact SaveSlot boundary");
+            }
+            else if (_observeReceiverBoundAction && method == _windowHandler)
+            {
+                _windowHandlerInvocations++;
+                object argument = args == null || args.Length != 1 ? null : args[0];
+                bool exactReceiver = ReferenceEquals(receiver, _receiverBoundWindow);
+                bool exactArgument = ReferenceEquals(argument, _workingDescriptor);
+                _windowReceiverCorrelated =
+                    _windowReceiverCorrelated || exactReceiver;
+                _windowArgumentCorrelated =
+                    _windowArgumentCorrelated || exactArgument;
+                _baselineLoadObserved = _baselineLoadObserved || IsBaseline(argument);
+                _otherLoadObserved = _otherLoadObserved ||
+                    (!IsBaseline(argument) && !exactArgument);
+                _windowHandlerSequence = _events.Count + 1;
+                Add("receiver-bound-window-handler-enter", method, args,
+                    "count=" + _windowHandlerInvocations + ";receiver=" +
+                    ObjectIdentity(receiver) + ";exactWindow=" + exactReceiver +
+                    ";argument=" + ObjectIdentity(argument) +
+                    ";exactWorkingDescriptor=" + exactArgument);
+                if (_stage == "slot-action-invocation")
+                    Transition("window-handler-invocation",
+                        "exact owning SaveLoadWindow handler observed");
+            }
+            else if (method == _handler)
             {
                 _handlerInvocations++;
                 Add("load-game-handler-enter", method, args,
@@ -1045,6 +1361,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Catalog initialization was not ordered after one action.");
                 _catalogObject = args == null || args.Length == 0 ? null : args[0];
+                _catalogReceiver = receiver;
                 Add("catalog-initialize-enter", method, args,
                     "capturedExactList=True;count=" + _catalogInvocations);
             }
@@ -1058,6 +1375,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ContainsReference(_catalogObject, _workingDescriptor);
                 _observedLoadReceiver = receiver;
                 if (_observeEntryAction) _loadEntryInvocations++;
+                if (_observeReceiverBoundAction)
+                    _loadEntrySequence = _events.Count + 1;
                 if (_observeSelectionLoadAction)
                 {
                     CaptureSelectedSaveStorage("load-entry");
@@ -1067,6 +1386,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "objectReferenceCorrelated=" + _descriptorCorrelated);
                 if (_observeEntryAction && _descriptorCorrelated &&
                     (_stage == "working-entry-click" ||
+                     _stage == "window-handler-invocation" ||
                      _stage == "load-entry-invocation"))
                     Transition("load-completion",
                         "human-selected load entry correlated to exact working descriptor");
@@ -1159,6 +1479,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             RequireGameThread();
             _completionCallback = true;
+            _completionSequence = _events.Count + 1;
             Add("after-load-callback", null, null,
                 "SaveManager after-load callback invoked");
         }
