@@ -1,8 +1,9 @@
 # Autonomous Gunslinger blockers
 
-A runtime hard stop is active for the disposable native respec preview.
+A respec cleanup investigation is active; no genuine human-input hard stop is
+currently established.
 
-## 2026-08-01 disposable respec cleanup hard stop
+## 2026-08-01 disposable respec cleanup investigation
 
 - Exact metadata observation on `dd85431` passed twice and proved
   `UnitEntityData.PrepareRespec` delegates to `UnitDescriptor.PrepareRespec`,
@@ -19,11 +20,12 @@ A runtime hard stop is active for the disposable native respec preview.
   closed with `NullReferenceException`. Mandatory cleanup masked the labeled
   inner exception, consistent with disposal after native body replacement but
   not sufficient to claim the exact call site.
-- The mission requires stopping after two materially different attempts at the
-  same runtime implementation fail. Do not launch a third respec attempt until
-  a human authorizes renewed investigation or supplies an exact native cleanup
-  contract. Existing same-class and multiclass preview qualifications remain
-  valid.
+- Two materially different initiating attempts failed, so the mission requires
+  a mode change. The next authorized action is a metadata-only observation of
+  the exact body setter and descriptor/entity disposal call graphs. Do not
+  launch a third initiating respec attempt until that narrower evidence supports
+  a different cleanup architecture. Existing same-class and multiclass preview
+  qualifications remain valid.
 
 ## Active gates (not hard stops)
 

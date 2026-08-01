@@ -1972,6 +1972,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BindingFlags.NonPublic | BindingFlags.Instance)) +
                 " | UnitEntityData.PrepareRespec=" + DescribeCalledMethods(
                     entityType.GetMethod("PrepareRespec", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | UnitDescriptor.Body.set=" + DescribeCalledMethods(
+                    descriptorType.GetProperty("Body", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance).GetSetMethod(true)) +
+                " | UnitDescriptor.Dispose=" + DescribeCalledMethods(
+                    descriptorType.GetMethod("Dispose", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | UnitEntityData.Dispose=" + DescribeCalledMethods(
+                    entityType.GetMethod("Dispose", BindingFlags.Public |
                         BindingFlags.NonPublic | BindingFlags.Instance));
             string observed = string.Join(" | ", records.ToArray());
             BlueprintRoot root = BlueprintRoot.Instance;
@@ -1997,8 +2006,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("respec-call-graph", "exact descriptor and entity respec calls",
                     callGraph, callGraph.Contains("UnitDescriptor.PrepareRespec=") &&
                         callGraph.Contains("UnitEntityData.PrepareRespec=") &&
+                        callGraph.Contains("UnitDescriptor.Body.set=") &&
+                        callGraph.Contains("UnitDescriptor.Dispose=") &&
+                        callGraph.Contains("UnitEntityData.Dispose=") &&
                         !callGraph.Contains("PrepareRespec=<unavailable>"),
-                    "metadata-only MethodBody IL; neither respec method invoked"),
+                    "metadata-only MethodBody IL; no respec or cleanup method invoked"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
                     "metadata-only reflection", true,
                     "scenario invokes no constructor, method, save, input, or registry mutation"),

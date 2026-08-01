@@ -149,10 +149,11 @@ isolation, and observed no save write.
 ## Next action
 
 Same-class and Fighter-to-Gunslinger multiclass previews are runtime-qualified.
-The respec path is stopped after two materially different save-free attempts
-failed with `NullReferenceException`; see `AUTONOMOUS-BLOCKERS.md`. Do not run a
-third attempt without renewed human authorization or an exact native cleanup
-contract. Resume from clean commit `f2fbcc5`. Full first-level `Commit` remains
+The respec path changed to non-initiating evidence acquisition after two
+materially different save-free attempts failed with `NullReferenceException`;
+see `AUTONOMOUS-BLOCKERS.md`. Observe exact body-setter and cleanup call graphs
+before designing another initiating attempt. Resume from clean commit `5623bdb`.
+Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.
 

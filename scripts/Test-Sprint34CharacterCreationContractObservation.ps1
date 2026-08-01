@@ -37,7 +37,10 @@ $checks = [ordered]@{
         $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
     'exact-respec-call-graphs' = $runner.Contains('UnitDescriptor.PrepareRespec=') -and
         $runner.Contains('UnitEntityData.PrepareRespec=') -and
-        $runner.Contains('neither respec method invoked')
+        $runner.Contains('UnitDescriptor.Body.set=') -and
+        $runner.Contains('UnitDescriptor.Dispose=') -and
+        $runner.Contains('UnitEntityData.Dispose=') -and
+        $runner.Contains('no respec or cleanup method invoked')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
