@@ -118,11 +118,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Checkpoint the qualified disposable descriptor boundary. Then use exact
-default-player descriptor `4391e8b9afbb0cf43aeba700c089f56d` as the isolated
-receiver for `LevelUpController.StartWithoutAssigningStaticInstance`, select
-Gunslinger, observe exact mechanics, cancel, dispose, and prove all player and
-global-unit snapshots remain unchanged before attempting inventory grant.
+Checkpoint the qualified isolated Gunslinger selection/cancel boundary. Then
+investigate the exact safe controller action-application or preview-result
+contract; do not call `Commit` or `AddStartingInventory` until applied mechanics
+can be observed on a disposable receiver and rolled back with unchanged player
+and global-unit snapshots.
 
 ## Safety boundaries
 

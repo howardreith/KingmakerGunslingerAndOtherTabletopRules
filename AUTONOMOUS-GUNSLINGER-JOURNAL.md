@@ -662,3 +662,25 @@
 - Next action: checkpoint the qualified boundary, then use it to observe exact
   isolated Gunslinger class selection and cancellation before any commit or
   starting-inventory invocation.
+
+## 2026-08-01 Sprint 34 isolated Gunslinger selection boundary
+
+- Exact metadata observation resolved nested
+  `LevelUpState.CharBuildMode` values and progression/class-data contracts. A
+  bare descriptor could not satisfy native `RequestPreview`; the native
+  `ChargenUnit` preview owner did, while remaining externally isolated.
+- `SelectClass` returned true, `State.SelectedClass` was the exact production
+  Gunslinger, and the controller queued exact `SelectClass` and
+  `ApplyClassMechanics` actions. The source descriptor correctly remained level
+  zero because actions were not applied. `Cancel` preserved level zero and
+  entity disposal left party/global-unit snapshots unchanged.
+- Six focused selection checks, repository validation, 691/691 tests, clean
+  Release, and strict packaging passed. Candidate package/DLL SHA-256 are
+  `20f2855f7ddee207866eb9ed7f6870e62e81e3b75711749f0015be98e21e852a` /
+  `f95378fe0b32a261e9934ec5d8642c9972c665d9e261322647a1489a96019fd8`.
+- Independent fresh-process PASS run IDs are
+  `20260801T1614399128650Z-853ebae7a0054627aab7b589eba025b9` and
+  `20260801T1615556388755Z-efbaedd302864c00b5e8b7e6b6601b73`.
+  Neither run loaded or wrote a save.
+- Next action: checkpoint exact selection/cancel, then observe a safe native
+  action-application or preview-result boundary before inventory grant.

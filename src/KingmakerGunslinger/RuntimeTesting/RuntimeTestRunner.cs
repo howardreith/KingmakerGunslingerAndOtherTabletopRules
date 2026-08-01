@@ -241,6 +241,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -275,6 +276,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableDescriptorConstruction)
                 {
                     Complete(RunDisposableDescriptorConstruction());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerSelection)
+                {
+                    Complete(RunDisposableGunslingerSelection());
                     return;
                 }
                 if (_request.Scenario ==
@@ -1641,6 +1648,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass",
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.ApplyClassMechanics",
                 "Kingmaker.UnitLogic.UnitDescriptor",
+                "Kingmaker.UnitLogic.UnitProgressionData",
+                "Kingmaker.UnitLogic.ClassData",
                 "Kingmaker.EntitySystem.Entities.UnitEntityData"
             };
             Assembly assembly = typeof(Kingmaker.UnitLogic.UnitDescriptor).Assembly;
@@ -1652,6 +1661,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (type == null) { complete = false; continue; }
                 records.Add(DescribeCreationType(type));
             }
+            Type controllerType = assembly.GetType(
+                "Kingmaker.UnitLogic.Class.LevelUp.LevelUpController", false, false);
+            MethodInfo startWithoutStatic = controllerType == null ? null :
+                controllerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Static).SingleOrDefault(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+            Type buildModeType = startWithoutStatic == null ? null :
+                startWithoutStatic.GetParameters()[4].ParameterType;
+            if (buildModeType == null) complete = false;
+            else records.Add(DescribeCreationType(buildModeType));
             string observed = string.Join(" | ", records.ToArray());
             BlueprintRoot root = BlueprintRoot.Instance;
             BlueprintUnit defaultPlayer = root == null ? null : root.DefaultPlayerCharacter;
@@ -1664,7 +1684,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("creation-contracts", "all exact creation types and declared contracts",
-                    observed, complete && records.Count == typeNames.Length,
+                    observed, complete && records.Count == typeNames.Length + 1,
                     "Assembly-CSharp runtime Type constructors, methods, fields, and properties"),
                 Assertion("rooted-unit-contracts", "exact default-player and pregen identities",
                     rootedUnits, defaultPlayer != null && pregens != null && pregens.Length > 0 &&
@@ -1743,6 +1763,97 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestStatuses.Fail, assertions, null);
         }
 
+        private RuntimeTestResult RunDisposableGunslingerSelection()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.UI.LevelUp.ChargenUnit chargen = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            object controller = null;
+            int beforeLevel = -1;
+            int selectedLevel = -1;
+            int canceledLevel = -1;
+            bool selected = false;
+            bool stateSelected = false;
+            string queuedActions = "";
+            bool cleaned = false;
+            try
+            {
+                chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                entity = chargen.Unit;
+                descriptor = entity.Descriptor;
+                beforeLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                Type modeType = start.GetParameters()[4].ParameterType;
+                object charGen = Enum.Parse(modeType, "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                selected = (bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false });
+                controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance).Invoke(controller, null);
+                selectedLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                object levelUpState = ReadExactMember(controller, "State");
+                stateSelected = ReferenceEquals(
+                    ReadExactMember(levelUpState, "SelectedClass"), gunslinger);
+                queuedActions = string.Join(",", SnapshotReferences(
+                    ReadExactMember(controller, "LevelUpActions"))
+                    .Select(value => value.GetType().FullName).ToArray());
+            }
+            finally
+            {
+                if (controller != null)
+                    controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance).Invoke(controller, null);
+                if (descriptor != null)
+                    canceledLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "before=" + beforeLevel + ";selected=" + selected +
+                ";stateSelected=" + stateSelected + ";queued=" + queuedActions +
+                ";sourceLevel=" + selectedLevel + ";canceledLevel=" + canceledLevel;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("gunslinger-selection", "exact isolated selection state and queued mechanics",
+                    observed, selected && stateSelected && beforeLevel == 0 &&
+                        selectedLevel == 0 &&
+                        queuedActions.Contains(".Actions.SelectClass") &&
+                        queuedActions.Contains(".Actions.ApplyClassMechanics"),
+                    "controller State.SelectedClass and exact LevelUpActions type identities"),
+                Assertion("cancel-rollback", "zero Gunslinger levels after Cancel",
+                    "canceledLevel=" + canceledLevel, canceledLevel == 0,
+                    "LevelUpController.Cancel then exact GetClassLevel"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "native ChargenUnit preview owner; reference snapshots after entity disposal"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
         private static object ReadExactMember(object value, string name)
         {
             if (value == null) return null;
@@ -1797,8 +1908,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.MemberType == MemberTypes.Property)
                 .Select(value => value.MemberType + ":" + value.Name)
                 .OrderBy(value => value, StringComparer.Ordinal).ToArray());
+            string enumValues = type.IsEnum ? string.Join(",", Enum.GetNames(type)) : "";
             return "type=" + type.FullName + ";constructors=" + constructors +
-                ";methods=" + methods + ";members=" + members;
+                ";methods=" + methods + ";members=" + members +
+                ";enumValues=" + enumValues;
         }
 
         private static string DescribeStartingItems(BlueprintCharacterClass characterClass)

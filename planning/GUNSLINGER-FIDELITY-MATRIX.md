@@ -8,7 +8,7 @@ and qualifies its exact Kingmaker mapping.
 
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
-| 1 | Weapon/armor/firearm proficiencies | EXACT | Published class catalog entry exposes a stable aggregate feature granting exact native simple, martial, and light-armor facts plus firearm proficiency; exact structure is runtime-observed | Qualify the granted unit facts on a named disposable runtime character |
+| 1 | Weapon/armor/firearm proficiencies | EXACT | Published class catalog entry exposes the exact aggregate; isolated CharGen selection now queues exact Gunslinger `SelectClass` and `ApplyClassMechanics` actions with cancel/cleanup runtime-qualified | Safely apply the queued mechanics and qualify granted facts on the disposable preview receiver |
 | 1 | Gunsmith and battered starting firearm | ADAPTED | Published starting-item contract includes one production Early Pistol and one complete load; exact-source detached descriptor construction is runtime-qualified, but actual character grant and the battered/Gunsmith adaptation are not yet implemented | Qualify isolated Gunslinger selection and native creation grant, then implement only an explicitly authorized battered-state/Gunsmith equivalent |
 | 1 | Grit: Wisdom-based pool, daily reset, critical/killing-blow recovery | EXACT | Not implemented | Persistent per-unit pool with qualifying firearm event dedupe |
 | 1 | Deadeye | ADAPTED | Not implemented | Pre-shot range/touch-AC selection because post-declaration UI is unavailable |

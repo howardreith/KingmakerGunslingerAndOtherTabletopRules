@@ -16,9 +16,13 @@ $checks = [ordered]@{
         $runner.Contains('Kingmaker.Blueprints.Root.CharGenRoot') -and
         $runner.Contains('Kingmaker.Blueprints.BlueprintUnit') -and
         $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.LevelUpController') -and
-        $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass')
+        $runner.Contains('Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass') -and
+        $runner.Contains('Kingmaker.UnitLogic.UnitProgressionData') -and
+        $runner.Contains('Kingmaker.UnitLogic.ClassData')
     'metadata-only' = $runner.Contains('GetConstructors(flags)') -and
-        $runner.Contains('GetMethods(flags)') -and $runner.Contains('GetMembers(flags)')
+        $runner.Contains('GetMethods(flags)') -and $runner.Contains('GetMembers(flags)') -and
+        $runner.Contains('Enum.GetNames(type)') -and
+        $runner.Contains('startWithoutStatic.GetParameters()[4].ParameterType')
     'reads-rooted-unit-identities' = $runner.Contains('root.DefaultPlayerCharacter') -and
         $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
     'no-construction' = $runner.Contains('scenario invokes no constructor, method, save, input, or registry mutation')

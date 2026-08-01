@@ -56,6 +56,10 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "scripts/Test-Sprint34DisposableChargenConstruction.ps1"),
         ["exact-source", "detached", "finally-disposed", "snapshots-verified"],
         "Sprint 34 disposable chargen construction tests")
+    require_tokens(read(root, "scripts/Test-Sprint34DisposableGunslingerSelection.ps1"),
+        ["scenario-allowlisted", "exact-char-gen-mode", "select-and-apply",
+         "cancel-rollback", "external-isolation"],
+        "Sprint 34 disposable Gunslinger selection tests")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:
