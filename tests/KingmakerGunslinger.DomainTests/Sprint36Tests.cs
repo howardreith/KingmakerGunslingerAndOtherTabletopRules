@@ -264,6 +264,63 @@ namespace KingmakerGunslinger.DomainTests
                 exact, condition, misfire, grit));
         }
 
+        private static void PistolWhipHandednessExact()
+        {
+            PistolWhipDecision one = PistolWhip(true, false,
+                FirearmCondition.Normal, 1);
+            PistolWhipDecision two = PistolWhip(true, true,
+                FirearmCondition.Broken, 2);
+            Assertions.True(one.ShouldAttack && two.ShouldAttack,
+                "Eligible Pistol-Whip was rejected.");
+            Assertions.Equal(6, one.DamageDieSides,
+                "One-handed Pistol-Whip damage changed.");
+            Assertions.Equal(10, two.DamageDieSides,
+                "Two-handed Pistol-Whip damage changed.");
+            Assertions.Equal(1, one.GritCost, "Pistol-Whip grit cost changed.");
+        }
+
+        private static void PistolWhipContextFailsClosed()
+        {
+            Assertions.Equal(PistolWhipStatus.NotExactEquippedFirearm,
+                PistolWhip(false, false, FirearmCondition.Normal, 2).Status,
+                "Ambiguous firearm activated Pistol-Whip.");
+            Assertions.Equal(PistolWhipStatus.Wrecked,
+                PistolWhip(true, true, FirearmCondition.Wrecked, 2).Status,
+                "Wrecked firearm activated Pistol-Whip.");
+        }
+
+        private static void PistolWhipInsufficientAtomic()
+        {
+            PistolWhipDecision result = PistolWhip(true, false,
+                FirearmCondition.Normal, 0);
+            Assertions.Equal(PistolWhipStatus.InsufficientGrit, result.Status,
+                "Zero grit activated Pistol-Whip.");
+            Assertions.Equal(0, result.GritCost,
+                "Rejected Pistol-Whip exposed a partial cost.");
+            Assertions.Equal(0, result.DamageDieSides,
+                "Rejected Pistol-Whip exposed damage.");
+        }
+
+        private static void PistolWhipInvalidInput()
+        {
+            var service = new PistolWhipService();
+            Assertions.Throws<ArgumentNullException>(() => service.Evaluate(null),
+                "Null Pistol-Whip request was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new PistolWhipRequest(true, false, (FirearmCondition)99, 1),
+                "Unknown firearm condition was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new PistolWhipRequest(true, false, FirearmCondition.Normal, -1),
+                "Negative Pistol-Whip grit was accepted.");
+        }
+
+        private static PistolWhipDecision PistolWhip(bool exact, bool twoHanded,
+            FirearmCondition condition, int grit)
+        {
+            return new PistolWhipService().Evaluate(new PistolWhipRequest(
+                exact, twoHanded, condition, grit));
+        }
+
         private static void NimbleExactLevels()
         {
             var service = new NimbleService();

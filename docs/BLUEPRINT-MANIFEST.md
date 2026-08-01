@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **46 stable identifiers: 45 active and one reserved**. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+The append-only ledger contains **52 stable identifiers: 51 active and one reserved**. Sprint 39 adds Pistol-Whip's feature, ability, and four hidden transient melee-surrogate identities. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 
@@ -99,6 +99,12 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Firearms.AdvancedRifleItem` | `a267e7bbc10e425f8adb87844d572b29` | `BlueprintItemWeapon` | Active | Advanced Rifle item |
 | `KMG.Firearms.AdvancedRevolverWeaponType` | `a7d3b805c579488eaf91e840896f5d80` | `BlueprintWeaponType` | Active | Six-chamber Advanced Revolver type |
 | `KMG.Firearms.AdvancedRevolverItem` | `8ed461fbcc154c51b07e5549211e9f5e` | `BlueprintItemWeapon` | Active | Advanced Revolver item |
+| `KMG.Deeds.PistolWhipFeature` | `aa94b21dcaa64fcaa0483c9774a5ee75` | `BlueprintFeature` | Active | Level-three deed grant |
+| `KMG.Deeds.PistolWhipAbility` | `9c011fb0a9d34a78b93f6bec673f8210` | `BlueprintAbility` | Active | Standard-action melee attack and Trip |
+| `KMG.Deeds.PistolWhipOneHandedType` | `b49cca444edd4c0998f2c9d744b15cfa` | `BlueprintWeaponType` | Active | Hidden 1d6 melee surrogate type |
+| `KMG.Deeds.PistolWhipOneHandedItem` | `eeed7234a3ee49db995f1b668d021822` | `BlueprintItemWeapon` | Active | Unowned one-handed rule-event item |
+| `KMG.Deeds.PistolWhipTwoHandedType` | `a6006de207d54de19e9c0c60f341840b` | `BlueprintWeaponType` | Active | Hidden 1d10 melee surrogate type |
+| `KMG.Deeds.PistolWhipTwoHandedItem` | `77b668da744842bcb9183ef22982ba6d` | `BlueprintItemWeapon` | Active | Unowned two-handed rule-event item |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

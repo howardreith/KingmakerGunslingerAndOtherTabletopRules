@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.0.38 — Sprint 38 Gunslinger Initiative (in progress)
+## 0.0.39 — Sprint 39 Pistol-Whip (in progress)
+
+- Began the level-three Pistol-Whip vertical slice with explicit handedness,
+  grit, condition, native melee-attack, enhancement, and Trip contracts.
+
+## 0.0.38 — Sprint 38 Gunslinger Initiative
 
 - Added the level-three grit-gated +2 native initiative-check slice through
   Kingmaker's exact post-roll `IUnitInitiativeHandler` boundary.

@@ -19,6 +19,7 @@ VALIDATORS = {
     "0.0.36": "validate_sprint36.py",
     "0.0.37": "validate_sprint37.py",
     "0.0.38": "validate_sprint38.py",
+    "0.0.39": "validate_sprint39.py",
 }
 
 
@@ -36,7 +37,7 @@ def main() -> int:
             raise RuntimeError(f"Unsupported repository version: {version!r}")
         validator = Path(__file__).resolve().parent / validator_name
         command = [sys.executable, str(validator)]
-        if version in {"0.0.30", "0.0.31", "0.0.32", "0.0.33", "0.0.34", "0.0.35", "0.0.36", "0.0.37", "0.0.38"}:
+        if version in {"0.0.30", "0.0.31", "0.0.32", "0.0.33", "0.0.34", "0.0.35", "0.0.36", "0.0.37", "0.0.38", "0.0.39"}:
             command.extend(["--root", str(root)])
         elif root != Path(__file__).resolve().parents[1]:
             raise RuntimeError("Sprint 29 fixture-root dispatch is not supported by its historical CLI.")

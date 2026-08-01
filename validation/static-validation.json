@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.38-s38-gunslinger-initiative",
-  "version": "0.0.38",
+  "milestone": "0.0.39-s39-pistol-whip",
+  "version": "0.0.39",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 740,
+    "testCount": 744,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

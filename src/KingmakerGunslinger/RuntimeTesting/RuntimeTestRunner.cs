@@ -271,6 +271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerNimble &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerInitiative &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -388,6 +389,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerInitiative)
                 {
                     Complete(RunDisposableGunslingerInitiative());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip)
+                {
+                    Complete(RunDisposableGunslingerPistolWhip());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3480,6 +3487,172 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "facts removed and detached unit disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerPistolWhip()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon musket = BlueprintBootstrap.ProductionFirearms.Musket.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            int initial = -1, afterOne = -1, beforeTwo = -1, afterTwo = -1,
+                afterRejected = -1;
+            PistolWhipResult one = null, two = null, rejected = null;
+            FirearmState oneBefore = null, oneAfter = null, twoBefore = null,
+                twoAfter = null;
+            bool cleaned = false;
+            string stage = "construct-disposables";
+            PistolWhipRuntimeDiagnostics.Reset();
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 14;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                initial = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                stage = "one-handed-hit";
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion,
+                    1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                oneBefore = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State;
+                one = PistolWhipRuntime.ExecuteForRuntimeTest(attacker, target,
+                    gunslinger.PistolWhip.OneHandedItem,
+                    gunslinger.PistolWhip.TwoHandedItem, true);
+                afterOne = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                oneAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State;
+
+                stage = "two-handed-hit";
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                FirearmRuntimeState.Service.Forget(weapon);
+                attacker.Body.PrimaryHand.RemoveItem(false);
+                weapon = new ItemEntityWeapon(musket);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon,
+                    FirearmStateMachine.ApplyMisfireDamage(FirearmState.CreateEmpty()));
+                twoBefore = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State;
+                beforeTwo = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                two = PistolWhipRuntime.ExecuteForRuntimeTest(attacker, target,
+                    gunslinger.PistolWhip.OneHandedItem,
+                    gunslinger.PistolWhip.TwoHandedItem, true);
+                afterTwo = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                twoAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State;
+
+                stage = "zero-grit-rejection";
+                rejected = PistolWhipRuntime.ExecuteForRuntimeTest(attacker, target,
+                    gunslinger.PistolWhip.OneHandedItem,
+                    gunslinger.PistolWhip.TwoHandedItem, true);
+                afterRejected = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Pistol-Whip failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (attacker != null)
+                {
+                    if (attacker.Descriptor.HasFact(gunslinger.Grit.Feature))
+                        attacker.Descriptor.RemoveFact(gunslinger.Grit.Feature);
+                    attacker.Dispose();
+                }
+                if (target != null) target.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "initial=" + initial + ";afterOne=" + afterOne +
+                ";oneHit=" + (one != null && one.Hit) + ";oneTrip=" +
+                (one != null && one.Trip != null) + ";oneDie=" +
+                (one == null ? -1 : one.Decision.DamageDieSides) +
+                ";oneEnhancement=" + (one == null ? -1 : one.Enhancement) +
+                ";beforeTwo=" + beforeTwo + ";afterTwo=" + afterTwo +
+                ";twoHit=" + (two != null && two.Hit) + ";twoTrip=" +
+                (two != null && two.Trip != null) + ";twoDie=" +
+                (two == null ? -1 : two.Decision.DamageDieSides) +
+                ";twoEnhancement=" + (two == null ? -1 : two.Enhancement) +
+                ";afterRejected=" + afterRejected + ";rejected=" +
+                (rejected == null ? "null" : rejected.Decision.Status.ToString()) +
+                ";applied=" + PistolWhipRuntimeDiagnostics.Applied +
+                ";rejectedCount=" + PistolWhipRuntimeDiagnostics.Rejected +
+                ";hits=" + PistolWhipRuntimeDiagnostics.Hits + ";faults=" +
+                PistolWhipRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("pistol-whip-one-handed", "grit 1 -> 0; 1d6; hit; Trip",
+                    observed, initial > 0 && afterOne == initial - 1 && one != null &&
+                    one.Hit && one.Trip != null && one.Decision.DamageDieSides == 6 &&
+                    ReferenceEquals(one.Attack.Weapon.Blueprint,
+                        gunslinger.PistolWhip.OneHandedItem),
+                    "exact equipped pistol and native melee rule event"),
+                Assertion("pistol-whip-two-handed", "grit 1 -> 0; 1d10; hit; Trip",
+                    observed, beforeTwo == 1 && afterTwo == 0 && two != null &&
+                    two.Hit && two.Trip != null && two.Decision.DamageDieSides == 10 &&
+                    ReferenceEquals(two.Attack.Weapon.Blueprint,
+                        gunslinger.PistolWhip.TwoHandedItem),
+                    "exact equipped musket and native melee rule event"),
+                Assertion("pistol-whip-enhancement", "copied into both native fields",
+                    observed, one != null && two != null &&
+                    one.Attack.WeaponStats.Enhancement == one.Enhancement &&
+                    one.Attack.WeaponStats.EnhancementTotal == one.Enhancement &&
+                    two.Attack.WeaponStats.Enhancement == two.Enhancement &&
+                    two.Attack.WeaponStats.EnhancementTotal == two.Enhancement,
+                    "RuleCalculateWeaponStats enhancement surface"),
+                Assertion("pistol-whip-state-isolation", "firearm state unchanged",
+                    observed, oneBefore == oneAfter && twoBefore == twoAfter,
+                    "exact item-owned state snapshots"),
+                Assertion("pistol-whip-zero-grit", "rejected without spend or attack",
+                    observed, afterRejected == 0 && rejected != null &&
+                    rejected.Decision.Status == PistolWhipStatus.InsufficientGrit &&
+                    rejected.Attack == null, "production fail-closed policy"),
+                Assertion("pistol-whip-diagnostics",
+                    "applied=2;rejected=1;hits=2;faults=0", observed,
+                    PistolWhipRuntimeDiagnostics.Applied == 2 &&
+                    PistolWhipRuntimeDiagnostics.Rejected == 1 &&
+                    PistolWhipRuntimeDiagnostics.Hits == 2 &&
+                    PistolWhipRuntimeDiagnostics.Faults == 0,
+                    "production Pistol-Whip diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "firearm removed and detached units disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

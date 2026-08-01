@@ -374,7 +374,55 @@
       "plannedType": "BlueprintFeature",
       "status": "active",
       "milestone": "Sprint 38",
-      "notes": "Level-three grit-gated +2 native initiative-check feature; initiative-time Quick Draw clause remains separately under contract review."
+      "notes": "Level-three grit-gated +2 native initiative-check feature; conditional draw is explicitly omitted while the supported game has no Quick Draw feat."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipFeature",
+      "guid": "aa94b21dcaa64fcaa0483c9774a5ee75",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Level-three Pistol-Whip grant."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipAbility",
+      "guid": "9c011fb0a9d34a78b93f6bec673f8210",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Standard-action adjacent firearm melee attack and Trip delivery."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipOneHandedType",
+      "guid": "b49cca444edd4c0998f2c9d744b15cfa",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Hidden transient one-handed 1d6 bludgeoning melee surrogate."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipOneHandedItem",
+      "guid": "eeed7234a3ee49db995f1b668d021822",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Unowned one-handed Pistol-Whip rule-event item."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipTwoHandedType",
+      "guid": "a6006de207d54de19e9c0c60f341840b",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Hidden transient two-handed 1d10 bludgeoning melee surrogate."
+    },
+    {
+      "symbol": "KMG.Deeds.PistolWhipTwoHandedItem",
+      "guid": "77b668da744842bcb9183ef22982ba6d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Sprint 39",
+      "notes": "Unowned two-handed Pistol-Whip rule-event item."
     }
   ]
 }

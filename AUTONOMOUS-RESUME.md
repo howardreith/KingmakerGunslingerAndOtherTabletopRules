@@ -16,7 +16,7 @@ definition of done or a listed genuine human-input hard stop.
   explicitly omitted while Kingmaker has no Quick Draw feat and direct set
   mutation would bypass native action accounting. Pistol-Whip contract audit
   is next.
-- Version: `0.0.38`.
+- Version: `0.0.39`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
