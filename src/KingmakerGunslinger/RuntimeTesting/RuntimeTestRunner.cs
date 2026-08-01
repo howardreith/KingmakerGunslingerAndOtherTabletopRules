@@ -3318,10 +3318,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spent = attacker.Descriptor.Resources.GetResourceAmount(grit);
 
                 stage = "install-detached-combat-state";
-                SetExactProperty(attacker, "CombatState",
-                    new Kingmaker.Controllers.Combat.UnitCombatState(attacker));
-                SetExactProperty(target, "CombatState",
-                    new Kingmaker.Controllers.Combat.UnitCombatState(target));
+                var attackerCombat =
+                    new Kingmaker.Controllers.Combat.UnitCombatState(attacker);
+                var targetCombat =
+                    new Kingmaker.Controllers.Combat.UnitCombatState(target);
+                SetExactField(attackerCombat, "m_InCombat", true);
+                SetExactField(targetCombat, "m_InCombat", true);
+                SetExactProperty(attacker, "CombatState", attackerCombat);
+                SetExactProperty(target, "CombatState", targetCombat);
+                if (!attacker.IsInCombat || !target.IsInCombat)
+                    throw new InvalidOperationException(
+                        "Detached native combat-state flags did not become observable.");
 
                 stage = "confirmed-critical";
                 var weapon = new ItemEntityWeapon(pistolBlueprint);
@@ -3443,6 +3450,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
             setter.Invoke(value, new[] { propertyValue });
+        }
+
+        private static void SetExactField(object value, string name,
+            object fieldValue)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            FieldInfo field = value.GetType().GetField(name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field == null)
+                throw new MissingFieldException(value.GetType().FullName, name);
+            field.SetValue(value, fieldValue);
         }
 
         private static object ReadExactMember(object value, string name)

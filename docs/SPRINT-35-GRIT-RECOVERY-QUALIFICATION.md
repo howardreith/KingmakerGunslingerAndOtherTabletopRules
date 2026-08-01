@@ -41,9 +41,9 @@ events or sharing state between units.
 - Repository validation, clean private-reference Release build, build-output
   validation, and strict standalone packaging: PASS.
 - Candidate package SHA-256:
-  `838a3882e5998da9496aaa608a55dfe73ced2433079f8f7ac97aee1b4d25047a`.
+  `9b982127b5bebe48d07b7ea4199dcfc0da114a9d9376939a0c402726698f82c2`.
 - Candidate DLL SHA-256:
-  `d589582a7a27d1e146009f7352a62bbd5e0e8c97fd6e96a02fef513dd6122c90`.
+  `36583d9893390380aedb83e3e0e4d952d8303d9a2d60c23159246337fee59b53`.
 
 ## Runtime acceptance plan
 

@@ -1178,3 +1178,21 @@
   `d589582a7a27d1e146009f7352a62bbd5e0e8c97fd6e96a02fef513dd6122c90`.
 - Commit the reconstructable source checkpoint, then require exact mod load and
   two independent fresh-process recovery PASS runs.
+
+### First firearm recovery runtime attempt
+
+- Commit `a968b2e` passed exact mod load at
+  `20260801T2005414175062Z-mod-load-smoke`.
+- Run `20260801T2006592774427Z-disposable-gunslinger-grit-recovery` failed
+  safely with all recovery evaluations ignored and no faults or leaked entity
+  references.
+- Exact `UnitEntityData.IsInCombat` IL delegates to
+  `UnitCombatState.IsInCombat`; constructing that detached state does not set
+  its exact `m_InCombat` backing flag. The fixture now sets that flag true on
+  both detached states, asserts both native getters, and still clears the
+  complete states during cleanup. Production recovery logic is unchanged.
+- The repaired fixture passes eight focused checks, 40 isolated preflight
+  checks, inherited validation, 710/710 tests, clean Release build, and strict
+  packaging. Candidate package/DLL SHA-256 are
+  `9b982127b5bebe48d07b7ea4199dcfc0da114a9d9376939a0c402726698f82c2` /
+  `36583d9893390380aedb83e3e0e4d952d8303d9a2d60c23159246337fee59b53`.

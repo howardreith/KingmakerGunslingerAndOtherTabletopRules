@@ -129,6 +129,17 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Current source evidence
 
+- First recovery run `20260801T2006592774427Z` failed safely because a newly
+  constructed detached `UnitCombatState` retains `m_InCombat=false`. Exact
+  `UnitEntityData.IsInCombat` IL delegates to that flag. The repaired fixture
+  sets both exact detached flags and asserts their native getters before event
+  evaluation; production recovery code is unchanged. Rebuild and commit before
+  the repaired runtime attempt.
+  The rebuild now passes 710/710 and strict packaging; candidate package/DLL
+  SHA-256 are
+  `9b982127b5bebe48d07b7ea4199dcfc0da114a9d9376939a0c402726698f82c2` /
+  `36583d9893390380aedb83e3e0e4d952d8303d9a2d60c23159246337fee59b53`.
+
 - Firearm grit recovery is source-qualified. Exact critical and exact native
   weapon-damage zero-crossing paths restore independently, weakly dedupe by
   attack/target reference, and fail closed for invalid combat/target contexts.

@@ -25,6 +25,8 @@ $checks = [ordered]@{
     'exact-rule-patches' = $patches.Contains('RuleDealDamageGritRecoveryPatch') -and
         $patches.Contains('FirearmGritRecoveryRuntime.AfterAttackRoll')
     'cleanup-proven' = $runner.Contains('combat states cleared, disposable entities disposed')
+    'exact-detached-combat-flag' = $runner.Contains('SetExactField(attackerCombat, "m_InCombat", true)') -and
+        $runner.Contains('!attacker.IsInCombat || !target.IsInCombat')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } |
     ForEach-Object Key)

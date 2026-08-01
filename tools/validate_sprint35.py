@@ -73,7 +73,8 @@ def validate(root: Path) -> None:
         "Sprint 35 firearm grit recovery runtime")
     require_tokens(read(root, "scripts/Test-Sprint35DisposableGritRecovery.ps1"),
         ["critical-reference-dedupe", "kill-reference-dedupe",
-         "zero-crossing-required", "cleanup-proven"],
+         "zero-crossing-required", "cleanup-proven",
+         "exact-detached-combat-flag"],
         "Sprint 35 disposable grit recovery tests")
     print("Sprint 35 source invariant validation passed with inherited Sprint 34 checks.")
 
