@@ -881,3 +881,31 @@
   `66265d13b598477701674ec05cf50dec009bf2809bca0a3cbd63533ec9cffd86`.
 - Next action: inspect exact respec build modes and reset contracts, then add a
   save-free reversible respec preview if the native boundary supports one.
+
+## 2026-08-01 Sprint 34 disposable respec hard stop
+
+- Metadata-only commit `dd85431` added exact call graphs for both native
+  `PrepareRespec` entry points. Mod load passed at
+  `20260801T1757540871121Z-mod-load-smoke`; independent observation PASS runs
+  were `20260801T1759106312890Z-observe-character-creation-contracts` and
+  `20260801T1800273782467Z-observe-character-creation-contracts`.
+- The observed direct calls were `UnitEntityData.get_Descriptor` plus
+  `UnitDescriptor.PrepareRespec`, and `UnitDescriptor.set_Body`, respectively.
+- Added save-free native Respec-mode preview commit `25d2da1`. All focused
+  checks, repository validation, 691/691 tests, clean Release build, and strict
+  package validation passed. Package/DLL SHA-256 were
+  `d1a3d1facb21ae3e69e70b8ac2f6470060e22302af87618e9c72f43239d02f60` /
+  `6328d59dfb8953fafc2170e2c4bf4b32cba65645f5d5763bdd1af0818cf8f59a`.
+  Exact mod load passed at `20260801T1805094993616Z-mod-load-smoke`.
+- First attempt `20260801T1806257874513Z-disposable-gunslinger-respec-preview`
+  failed closed with `NullReferenceException` and no save load.
+- Added deterministic stage labeling in `f2fbcc5`; all source gates passed,
+  package/DLL SHA-256 were
+  `8d2573a4befee67041e2641426fc8336ea6820b5b9a76d3c19b4de8c386410bb` /
+  `df6a944204e8bd06a004914abfe6b354746069e5d831611fceff5815dc3ed14b`,
+  and mod load passed at `20260801T1809469616185Z-mod-load-smoke`.
+- The materially different run
+  `20260801T1811040970058Z-disposable-gunslinger-respec-preview` also failed
+  closed with `NullReferenceException`; cleanup masked the labeled inner
+  exception. Per the two-attempt runtime stopping rule, no third launch was
+  made. The hard stop is recorded in `AUTONOMOUS-BLOCKERS.md`.

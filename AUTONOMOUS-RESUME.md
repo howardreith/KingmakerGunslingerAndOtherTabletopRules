@@ -149,10 +149,12 @@ isolation, and observed no save write.
 ## Next action
 
 Same-class and Fighter-to-Gunslinger multiclass previews are runtime-qualified.
-Inspect exact respec build modes and reset contracts, then add a save-free
-reversible respec preview if supported. Full first-level `Commit` remains deferred
-until its global rest/entity/remote-companion/view mutations have a complete
-rollback proof; do not invoke it speculatively.
+The respec path is stopped after two materially different save-free attempts
+failed with `NullReferenceException`; see `AUTONOMOUS-BLOCKERS.md`. Do not run a
+third attempt without renewed human authorization or an exact native cleanup
+contract. Resume from clean commit `f2fbcc5`. Full first-level `Commit` remains
+deferred until its global rest/entity/remote-companion/view mutations have a
+complete rollback proof; do not invoke it speculatively.
 
 ## Safety boundaries
 
