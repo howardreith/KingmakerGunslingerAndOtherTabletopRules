@@ -248,6 +248,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -294,6 +295,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication)
                 {
                     Complete(RunDisposableGunslingerPreviewApplication());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview)
+                {
+                    Complete(RunDisposableGunslingerLevelUpPreview());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2307,6 +2314,132 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "Cancel plus source preview-entity disposal and reference snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerLevelUpPreview()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.UI.LevelUp.ChargenUnit chargen = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            Kingmaker.UnitLogic.UnitDescriptor descriptor = null;
+            object seedController = null;
+            object levelController = null;
+            int initialLevel = -1;
+            int seededLevel = -1;
+            int previewBefore = -1;
+            int previewAfter = -1;
+            int sourceAfter = -1;
+            int queuedCount = -1;
+            bool selected = false;
+            bool cleaned = false;
+            try
+            {
+                chargen = new Kingmaker.UI.LevelUp.ChargenUnit(source);
+                entity = chargen.Unit;
+                descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable level-up source descriptor is unavailable.");
+                initialLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native level-up controller method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seedController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seedController,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException(
+                        "Disposable Gunslinger level-one seed selection was rejected.");
+                mechanics.Invoke(seedController, null);
+                applyLevelup.Invoke(seedController, new object[] { descriptor });
+                cancel.Invoke(seedController, null);
+                seedController = null;
+                seededLevel = descriptor.Progression.GetClassLevel(gunslinger);
+
+                object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "LevelUp", false);
+                levelController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, levelUp });
+                Kingmaker.UnitLogic.UnitDescriptor preview =
+                    ReadExactMember(levelController, "Preview") as
+                        Kingmaker.UnitLogic.UnitDescriptor;
+                if (preview == null || preview.Progression == null ||
+                    ReferenceEquals(preview, descriptor))
+                    throw new InvalidOperationException(
+                        "Exact isolated LevelUp preview is unavailable.");
+                previewBefore = preview.Progression.GetClassLevel(gunslinger);
+                selected = (bool)selectClass.Invoke(levelController,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(levelController, null);
+                queuedCount = SnapshotReferences(
+                    ReadExactMember(levelController, "LevelUpActions")).Length;
+                previewAfter = preview.Progression.GetClassLevel(gunslinger);
+                sourceAfter = descriptor.Progression.GetClassLevel(gunslinger);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (levelController != null && cancel != null)
+                    cancel.Invoke(levelController, null);
+                if (seedController != null && cancel != null)
+                    cancel.Invoke(seedController, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "initial=" + initialLevel + ";seeded=" + seededLevel +
+                ";previewBefore=" + previewBefore + ";selected=" + selected +
+                ";previewAfter=" + previewAfter + ";sourceAfter=" + sourceAfter +
+                ";queued=" + queuedCount;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("level-one-seed", "isolated source Gunslinger 0 -> 1",
+                    observed, initialLevel == 0 && seededLevel == 1,
+                    "exact ApplyLevelup on disposable source only"),
+                Assertion("same-class-levelup-preview",
+                    "source remains 1; isolated LevelUp preview reaches Gunslinger 2",
+                    observed, selected && previewBefore == 1 && previewAfter == 2 &&
+                        sourceAfter == 1 && queuedCount == 2,
+                    "native LevelUp mode, SelectClass, and ApplyClassMechanics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "both controllers canceled and disposable entity disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

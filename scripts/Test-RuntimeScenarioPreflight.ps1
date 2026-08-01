@@ -29,6 +29,7 @@ $expected = @(
     'disposable-descriptor-construction',
     'disposable-gunslinger-selection',
     'disposable-gunslinger-preview-application',
+    'disposable-gunslinger-levelup-preview',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
