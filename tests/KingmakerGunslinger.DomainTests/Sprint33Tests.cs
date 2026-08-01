@@ -3,6 +3,8 @@ using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Actions;
+using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.Explosions;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -127,6 +129,170 @@ namespace KingmakerGunslinger.DomainTests
             FirearmActionDecision decision = FirearmActionPolicy.Evaluate(
                 FirearmActionKind.Reload, AdvancedRevolverDefinition(), full, true);
             Assertions.False(decision.IsAvailable, "Full advanced firearm remained reloadable.");
+        }
+
+        private static void AdvancedFactoryRifleExact()
+        {
+            FirearmDefinition value = FirearmDefinitions.CreateAdvancedRifle();
+            Assertions.Equal(FirearmEra.Advanced, value.Era, "Rifle era changed.");
+            Assertions.Equal(FirearmKind.Rifle, value.Kind, "Rifle kind changed.");
+            Assertions.Equal(1, value.Capacity, "Rifle capacity changed.");
+            Assertions.Equal(80, value.RangeIncrementFeet, "Rifle range changed.");
+            Assertions.Equal(1, value.MisfireValue, "Rifle misfire changed.");
+            Assertions.Equal(ReloadActionType.Move, value.Reload.BaseAction, "Rifle reload changed.");
+            Assertions.Equal(1, value.Reload.RoundsPerAction, "Rifle reload batch changed.");
+        }
+
+        private static void AdvancedFactoryRevolverExact()
+        {
+            FirearmDefinition value = FirearmDefinitions.CreateAdvancedRevolver();
+            Assertions.Equal(FirearmEra.Advanced, value.Era, "Revolver era changed.");
+            Assertions.Equal(FirearmKind.Revolver, value.Kind, "Revolver kind changed.");
+            Assertions.Equal(6, value.Capacity, "Revolver capacity changed.");
+            Assertions.Equal(20, value.RangeIncrementFeet, "Revolver range changed.");
+            Assertions.Equal(1, value.MisfireValue, "Revolver misfire changed.");
+            Assertions.Equal(ReloadActionType.Move, value.Reload.BaseAction, "Revolver reload changed.");
+            Assertions.Equal(6, value.Reload.RoundsPerAction, "Revolver did not load all chambers.");
+        }
+
+        private static void AdvancedCatalogRifleExact()
+        {
+            ProductionFirearmWeaponSpec value = ProductionFirearmCatalog.CreateAdvancedRifle();
+            Assertions.Equal("advanced-rifle", value.Key, "Rifle key changed.");
+            Assertions.Equal("Advanced Rifle", value.DisplayName, "Rifle name changed.");
+            Assertions.Equal(1, value.DamageDiceCount, "Rifle dice count changed.");
+            Assertions.Equal(10, value.DamageDieSides, "Rifle damage die changed.");
+            Assertions.Equal(4, value.CriticalMultiplier, "Rifle critical changed.");
+            Assertions.True(value.IsTwoHanded, "Rifle handedness changed.");
+            Assertions.Equal(5000, value.CostGold, "Rifle cost changed.");
+            Assertions.Equal(12f, value.WeightPounds, "Rifle weight changed.");
+            Assertions.True(value.IsPlayerFireable, "Rifle was unexpectedly unavailable.");
+        }
+
+        private static void AdvancedCatalogRevolverExact()
+        {
+            ProductionFirearmWeaponSpec value = ProductionFirearmCatalog.CreateAdvancedRevolver();
+            Assertions.Equal("advanced-revolver", value.Key, "Revolver key changed.");
+            Assertions.Equal("Advanced Revolver", value.DisplayName, "Revolver name changed.");
+            Assertions.Equal(1, value.DamageDiceCount, "Revolver dice count changed.");
+            Assertions.Equal(8, value.DamageDieSides, "Revolver damage die changed.");
+            Assertions.Equal(4, value.CriticalMultiplier, "Revolver critical changed.");
+            Assertions.False(value.IsTwoHanded, "Revolver handedness changed.");
+            Assertions.Equal(4000, value.CostGold, "Revolver cost changed.");
+            Assertions.Equal(4f, value.WeightPounds, "Revolver weight changed.");
+            Assertions.True(value.IsPlayerFireable, "Revolver was unexpectedly unavailable.");
+        }
+
+        private static void AdvancedFactoriesFresh()
+        {
+            Assertions.False(ReferenceEquals(FirearmDefinitions.CreateAdvancedRifle(),
+                FirearmDefinitions.CreateAdvancedRifle()), "Rifle factory reused identity.");
+            Assertions.True(FirearmDefinitions.CreateAdvancedRifle().Equals(
+                FirearmDefinitions.CreateAdvancedRifle()), "Rifle factory values changed.");
+            Assertions.False(ReferenceEquals(ProductionFirearmCatalog.CreateAdvancedRevolver(),
+                ProductionFirearmCatalog.CreateAdvancedRevolver()), "Revolver catalog reused identity.");
+            Assertions.True(ProductionFirearmCatalog.CreateAdvancedRevolver().Equals(
+                ProductionFirearmCatalog.CreateAdvancedRevolver()), "Revolver catalog values changed.");
+        }
+
+        private static void CapacityTokensSixRoundComplete()
+        {
+            FirearmStateTokenCatalog catalog = FirearmStateTokenCatalog.CreateBasicCapacity(6);
+            Assertions.Equal(14, catalog.Definitions.Count,
+                "Six-round finite catalog does not cover normal/broken counts plus empty broken/Wrecked.");
+            for (int rounds = 1; rounds <= 6; rounds++)
+            {
+                FirearmState normal = new FirearmState(FirearmState.CurrentSchemaVersion,
+                    rounds, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal);
+                FirearmState broken = new FirearmState(FirearmState.CurrentSchemaVersion,
+                    rounds, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Broken);
+                Assertions.True(catalog.Encode(normal) != null, "Normal round count was not finite-encoded.");
+                Assertions.True(catalog.Encode(broken) != null, "Broken round count was not finite-encoded.");
+            }
+        }
+
+        private static void CapacityTokensRoundTrip()
+        {
+            FirearmStateTokenCatalog catalog = FirearmStateTokenCatalog.CreateBasicCapacity(6);
+            foreach (FirearmStateTokenDefinition definition in catalog.Definitions)
+            {
+                Assertions.Equal(definition.State, catalog.Decode(new[] { definition.TokenId }),
+                    "Capacity token did not decode to its exact state.");
+                Assertions.Equal(definition.TokenId, catalog.Encode(definition.State),
+                    "Capacity state did not encode to its exact token.");
+            }
+        }
+
+        private static void CapacityTokensLegacyStable()
+        {
+            FirearmStateTokenCatalog catalog = FirearmStateTokenCatalog.CreateBasicCapacity(6);
+            Assertions.Equal(FirearmStateTokenCatalog.LoadedNormalTokenId,
+                catalog.Encode(new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal)),
+                "Legacy loaded-normal token changed.");
+            Assertions.Equal(FirearmStateTokenCatalog.BrokenLoadedTokenId,
+                catalog.Encode(new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Broken)),
+                "Legacy broken-loaded token changed.");
+        }
+
+        private static void CapacityTokensInvalidCapacity()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(
+                () => FirearmStateTokenCatalog.CreateBasicCapacity(0),
+                "Zero finite-token capacity was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(
+                () => FirearmStateTokenCatalog.CreateBasicCapacity(65),
+                "Oversized finite-token capacity was accepted.");
+        }
+
+        private static FirearmMisfireDecision MisfireRoll()
+        {
+            return new FirearmMisfireService().Evaluate(1, 1, true);
+        }
+
+        private static void AdvancedMisfireNormalPreservesRounds()
+        {
+            FirearmState postDischarge = FirearmStateMachine.Load(FirearmState.CreateEmpty(),
+                RevolverRules(), FirearmStateTokenCatalog.DiagnosticLeadBall, 5);
+            FirearmMisfireConditionDecision decision = new FirearmMisfireConditionService().Evaluate(
+                FirearmDefinitions.CreateAdvancedRevolver(), MisfireRoll(), postDischarge);
+            Assertions.Equal(FirearmMisfireConditionTransition.NormalToBroken, decision.Transition,
+                "First advanced misfire transition changed.");
+            Assertions.Equal(5, decision.After.LoadedRounds, "First advanced misfire lost remaining chambers.");
+            Assertions.Equal(FirearmCondition.Broken, decision.After.Condition, "First advanced misfire did not break firearm.");
+        }
+
+        private static void AdvancedMisfireBrokenNoExplosion()
+        {
+            FirearmState normal = FirearmStateMachine.Load(FirearmState.CreateEmpty(),
+                RevolverRules(), FirearmStateTokenCatalog.DiagnosticLeadBall, 4);
+            FirearmState broken = FirearmStateMachine.ApplyMisfireDamage(normal);
+            FirearmMisfireConditionDecision condition = new FirearmMisfireConditionService().Evaluate(
+                FirearmDefinitions.CreateAdvancedRevolver(), MisfireRoll(), broken);
+            Assertions.Equal(FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken,
+                condition.Transition, "Repeated advanced misfire used early-firearm damage.");
+            Assertions.Equal(broken, condition.After, "Repeated advanced misfire changed remaining chambers.");
+            Assertions.False(new FirearmExplosionService().Evaluate(condition).RequiresBurstDamage,
+                "Advanced firearm exploded on a repeated misfire.");
+        }
+
+        private static void CapacityEarlyBrokenMisfireWrecks()
+        {
+            var rules = new FirearmStateRules(2,
+                new[] { FirearmStateTokenCatalog.DiagnosticLeadBall });
+            FirearmState normal = FirearmStateMachine.Load(FirearmState.CreateEmpty(), rules,
+                FirearmStateTokenCatalog.DiagnosticLeadBall, 1);
+            FirearmState broken = FirearmStateMachine.ApplyMisfireDamage(normal);
+            FirearmDefinition early = new FirearmDefinition(FirearmEra.Early, FirearmKind.Pistol,
+                2, 20, 1, 5, new ReloadProfile(ReloadActionType.Standard, true, 1), false);
+            FirearmMisfireConditionDecision condition = new FirearmMisfireConditionService().Evaluate(
+                early, MisfireRoll(), broken);
+            Assertions.Equal(FirearmMisfireConditionTransition.BrokenToWrecked, condition.Transition,
+                "Repeated early misfire did not wreck firearm.");
+            Assertions.True(condition.After.IsEmpty, "Early explosion retained loaded chambers.");
+            Assertions.True(new FirearmExplosionService().Evaluate(condition).RequiresBurstDamage,
+                "Repeated early misfire did not schedule explosion.");
         }
     }
 }

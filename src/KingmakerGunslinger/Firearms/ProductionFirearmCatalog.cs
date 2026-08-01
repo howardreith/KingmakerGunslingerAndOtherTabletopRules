@@ -49,5 +49,17 @@ namespace KingmakerGunslinger.Firearms
                 8f,
                 false);
         }
+
+        internal static ProductionFirearmWeaponSpec CreateAdvancedRifle()
+        {
+            return new ProductionFirearmWeaponSpec("advanced-rifle", "Advanced Rifle",
+                FirearmDefinitions.CreateAdvancedRifle(), 1, 10, 4, true, 5000, 12f, true);
+        }
+
+        internal static ProductionFirearmWeaponSpec CreateAdvancedRevolver()
+        {
+            return new ProductionFirearmWeaponSpec("advanced-revolver", "Advanced Revolver",
+                FirearmDefinitions.CreateAdvancedRevolver(), 1, 8, 4, false, 4000, 4f, true);
+        }
     }
 }

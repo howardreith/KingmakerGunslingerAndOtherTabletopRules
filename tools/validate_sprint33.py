@@ -9,7 +9,7 @@ import validate_sprint32
 
 VERSION = "0.0.33"
 INFORMATIONAL_VERSION = "0.0.33-s33-capacity-advanced-firearms"
-TEST_COUNT = 670
+TEST_COUNT = 682
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -36,6 +36,18 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Program.cs"),
         ['Case("capacity.reload-empty-to-full"', 'Case("capacity.reload-partial-top-up"',
          'Case("capacity.reload-write-failure-rolls-back"'], "Sprint 33 capacity tests")
+    require_tokens(read(root, "src/KingmakerGunslinger/Firearms/FirearmDefinitions.cs"),
+        ["CreateAdvancedRifle", "CreateAdvancedRevolver", "ReloadActionType.Move"],
+        "Sprint 33 advanced definitions")
+    require_tokens(read(root, "src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs"),
+        ["advanced-rifle", "advanced-revolver", "5000", "4000"],
+        "Sprint 33 advanced catalog")
+    require_tokens(read(root, "src/KingmakerGunslinger/Firearms/FirearmStateTokenCatalog.cs"),
+        ["CreateBasicCapacity", "rounds <= capacity", "rounds-", "LoadedNormalTokenId"],
+        "Sprint 33 capacity token catalog")
+    require_tokens(read(root, "src/KingmakerGunslinger/Misfires/FirearmMisfireConditionService.cs"),
+        ["definition.Era == FirearmEra.Advanced", "AdvancedBrokenRemainsBroken",
+         "ApplyMisfireDamage(postDischargeState)"], "Sprint 33 advanced misfire policy")
     print("Sprint 33 source invariant validation passed with inherited Sprint 32 checks.")
 
 def main() -> int:

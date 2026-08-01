@@ -25,12 +25,6 @@ namespace KingmakerGunslinger.Misfires
                 throw new ArgumentOutOfRangeException("transition", transition, "A defined condition transition is required.");
             }
 
-            if (!before.IsEmpty || !after.IsEmpty)
-            {
-                throw new ArgumentException(
-                    "A misfire condition decision must begin and end with the already-discharged firearm empty.");
-            }
-
             Validate(misfire, before, after, transition);
             Transition = transition;
         }
@@ -88,7 +82,9 @@ namespace KingmakerGunslinger.Misfires
                 case FirearmMisfireConditionTransition.NormalToBroken:
                     RequireMisfire(misfire);
                     if (before.Condition != FirearmCondition.Normal ||
-                        after.Condition != FirearmCondition.Broken)
+                        after.Condition != FirearmCondition.Broken ||
+                        before.LoadedRounds != after.LoadedRounds ||
+                        before.LoadedAmmunition != after.LoadedAmmunition)
                     {
                         throw new ArgumentException(
                             "NormalToBroken requires an empty Normal state followed by an empty Broken state.");
@@ -99,12 +95,21 @@ namespace KingmakerGunslinger.Misfires
                 case FirearmMisfireConditionTransition.BrokenToWrecked:
                     RequireMisfire(misfire);
                     if (before.Condition != FirearmCondition.Broken ||
-                        after.Condition != FirearmCondition.Wrecked)
+                        after.Condition != FirearmCondition.Wrecked || !after.IsEmpty)
                     {
                         throw new ArgumentException(
                             "BrokenToWrecked requires an empty Broken state followed by an empty Wrecked state.");
                     }
 
+                    return;
+
+                case FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken:
+                    RequireMisfire(misfire);
+                    if (before.Condition != FirearmCondition.Broken || before != after)
+                    {
+                        throw new ArgumentException(
+                            "AdvancedBrokenRemainsBroken requires an unchanged Broken state.");
+                    }
                     return;
 
                 default:

@@ -13,6 +13,9 @@
 Advanced firearms load all chambers with one move action. Early multi-barrel
 firearms load one barrel per normal reload action. Each valid projectile still
 consumes exactly one chamber. Advanced misfires cause Broken but never explode.
+The roadmap's advanced one-handed/pistol-form slot maps to the authoritative
+table's Revolver entry; no separate generic "advanced pistol" statistics are
+invented where the local table provides none.
 
 ## First observable slice
 

@@ -14,6 +14,20 @@ namespace KingmakerGunslinger.Misfires
             FirearmMisfireDecision misfire,
             FirearmState postDischargeState)
         {
+            if (postDischargeState != null && !postDischargeState.IsEmpty)
+                throw new ArgumentException(
+                    "The capacity-one compatibility path requires an empty post-discharge state.",
+                    "postDischargeState");
+            return Evaluate(FirearmDefinitions.CreateEarlyMusket(), misfire, postDischargeState);
+        }
+
+        internal FirearmMisfireConditionDecision Evaluate(
+            FirearmDefinition definition,
+            FirearmMisfireDecision misfire,
+            FirearmState postDischargeState)
+        {
+            if (definition == null)
+                throw new ArgumentNullException("definition");
             if (misfire == null)
             {
                 throw new ArgumentNullException("misfire");
@@ -22,13 +36,6 @@ namespace KingmakerGunslinger.Misfires
             if (postDischargeState == null)
             {
                 throw new ArgumentNullException("postDischargeState");
-            }
-
-            if (!postDischargeState.IsEmpty)
-            {
-                throw new ArgumentException(
-                    "Sprint 24 condition handling requires the exact firearm's loaded round to be discharged first.",
-                    "postDischargeState");
             }
 
             if (postDischargeState.Condition == FirearmCondition.Wrecked)
@@ -47,12 +54,23 @@ namespace KingmakerGunslinger.Misfires
                     FirearmMisfireConditionTransition.None);
             }
 
-            FirearmState after = FirearmStateMachine.ApplyMisfireDamage(
-                postDischargeState);
-            FirearmMisfireConditionTransition transition =
-                postDischargeState.Condition == FirearmCondition.Normal
-                    ? FirearmMisfireConditionTransition.NormalToBroken
-                    : FirearmMisfireConditionTransition.BrokenToWrecked;
+            FirearmState after;
+            FirearmMisfireConditionTransition transition;
+            if (postDischargeState.Condition == FirearmCondition.Normal)
+            {
+                after = FirearmStateMachine.ApplyMisfireDamage(postDischargeState);
+                transition = FirearmMisfireConditionTransition.NormalToBroken;
+            }
+            else if (definition.Era == FirearmEra.Advanced)
+            {
+                after = postDischargeState;
+                transition = FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken;
+            }
+            else
+            {
+                after = FirearmStateMachine.ApplyMisfireDamage(postDischargeState);
+                transition = FirearmMisfireConditionTransition.BrokenToWrecked;
+            }
             return new FirearmMisfireConditionDecision(
                 misfire,
                 postDischargeState,

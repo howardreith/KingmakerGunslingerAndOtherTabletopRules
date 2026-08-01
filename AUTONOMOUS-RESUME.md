@@ -69,6 +69,12 @@ definition of done or a listed genuine human-input hard stop.
   `f04448c1cc8de40b9eae5ad781730a4c911a10cd3d9aec83ce6f560d2710dd55`;
   DLL candidate SHA-256 is
   `75788f9ff56f76a3012754802e0c78d847da11c6c1ecd806abada23e065e2b51`.
+- Advanced Rifle/Revolver definitions, six-round finite token semantics, and
+  capacity-aware early/advanced misfire handling add twelve more focused cases;
+  complete suite is 682/682 PASS. Latest package SHA-256 is
+  `35527b3cba8d7764b3882e8910c58d43bc600741c1e13bc33ba6ff679afde94a`;
+  DLL SHA-256 is
+  `9ebbfaaf3dd023441c5e424b777fc04b4609ae2d5185ac8f953ff0fb11ec46ac`.
 
 ## Commands already run
 
@@ -93,9 +99,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified Sprint 33 multi-round reload foundation. Then add
-the authoritative advanced pistol/rifle/revolver catalog slice and generalize
-finite item-state persistence for every supported capacity.
+Commit the source-qualified advanced definition/state slice. Then register
+stable finite-token blueprints for additional round counts and prove repeated
+discharge plus exact two-item isolation before building guarded runtime acceptance.
 
 ## Safety boundaries
 

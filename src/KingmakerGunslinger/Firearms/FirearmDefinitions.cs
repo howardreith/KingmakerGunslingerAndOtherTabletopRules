@@ -44,5 +44,17 @@ namespace KingmakerGunslinger.Firearms
                 new ReloadProfile(ReloadActionType.FullRound, true, 1),
                 true);
         }
+
+        internal static FirearmDefinition CreateAdvancedRifle()
+        {
+            return new FirearmDefinition(FirearmEra.Advanced, FirearmKind.Rifle,
+                1, 80, 1, 5, new ReloadProfile(ReloadActionType.Move, true, 1), false);
+        }
+
+        internal static FirearmDefinition CreateAdvancedRevolver()
+        {
+            return new FirearmDefinition(FirearmEra.Advanced, FirearmKind.Revolver,
+                6, 20, 1, 5, new ReloadProfile(ReloadActionType.Move, true, 6), false);
+        }
     }
 }

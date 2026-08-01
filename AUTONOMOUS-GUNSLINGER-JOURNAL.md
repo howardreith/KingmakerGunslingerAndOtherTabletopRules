@@ -314,3 +314,26 @@
   `75788f9ff56f76a3012754802e0c78d847da11c6c1ecd806abada23e065e2b51`.
 - Next action: commit this source foundation, then add exact advanced firearm
   definitions/catalog entries and capacity-aware finite persistence.
+
+## 2026-08-01 Sprint 33 advanced definitions and state semantics
+
+- Added canonical Advanced Rifle and Advanced Revolver factories and production
+  catalog specs from the authorized local table. Revolver is the table-backed
+  advanced one-handed/pistol-form entry; no unsupported generic pistol stats
+  were invented.
+- Added a bounded finite-token catalog for every Normal and Broken load count
+  through a requested capacity while preserving all four legacy capacity-one
+  token IDs and absence-as-empty semantics. Six-round coverage contains 14
+  exact states and round-trips each token deterministically.
+- Generalized misfire condition evaluation for remaining chambers. A first
+  advanced misfire preserves remaining rounds while becoming Broken; repeated
+  advanced misfires remain Broken without explosion. Repeated early-firearm
+  misfires still empty, Wreck, and schedule burst damage.
+- Added twelve focused tests. Repository validation and clean Release suite
+  passed 682/682; exact compile and strict package validation passed.
+- Candidate package SHA-256:
+  `35527b3cba8d7764b3882e8910c58d43bc600741c1e13bc33ba6ff679afde94a`.
+  Candidate DLL SHA-256:
+  `9ebbfaaf3dd023441c5e424b777fc04b4609ae2d5185ac8f953ff0fb11ec46ac`.
+- Next action: commit this slice, register the additional finite token
+  blueprints with stable IDs, and prove repeated discharge/two-item isolation.

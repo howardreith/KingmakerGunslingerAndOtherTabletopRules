@@ -8,6 +8,7 @@ namespace KingmakerGunslinger.Misfires
     {
         None = 0,
         NormalToBroken = 1,
-        BrokenToWrecked = 2
+        BrokenToWrecked = 2,
+        AdvancedBrokenRemainsBroken = 3
     }
 }

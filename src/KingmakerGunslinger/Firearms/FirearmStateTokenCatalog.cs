@@ -92,38 +92,43 @@ namespace KingmakerGunslinger.Firearms
 
         internal static FirearmStateTokenCatalog CreateCapacityOneDiagnostic()
         {
-            return new FirearmStateTokenCatalog(
-                new[]
-                {
-                    new FirearmStateTokenDefinition(
-                        LoadedNormalTokenId,
-                        new FirearmState(
-                            FirearmState.CurrentSchemaVersion,
-                            1,
-                            DiagnosticLeadBall,
-                            FirearmCondition.Normal)),
-                    new FirearmStateTokenDefinition(
-                        BrokenEmptyTokenId,
-                        new FirearmState(
-                            FirearmState.CurrentSchemaVersion,
-                            0,
-                            null,
-                            FirearmCondition.Broken)),
-                    new FirearmStateTokenDefinition(
-                        BrokenLoadedTokenId,
-                        new FirearmState(
-                            FirearmState.CurrentSchemaVersion,
-                            1,
-                            DiagnosticLeadBall,
-                            FirearmCondition.Broken)),
-                    new FirearmStateTokenDefinition(
-                        WreckedTokenId,
-                        new FirearmState(
-                            FirearmState.CurrentSchemaVersion,
-                            0,
-                            null,
-                            FirearmCondition.Wrecked))
-                });
+            return CreateBasicCapacity(1);
+        }
+
+        internal static FirearmStateTokenCatalog CreateBasicCapacity(int capacity)
+        {
+            if (capacity < FirearmDefinition.MinimumCapacity ||
+                capacity > FirearmDefinition.MaximumCapacity)
+                throw new ArgumentOutOfRangeException("capacity");
+
+            var definitions = new List<FirearmStateTokenDefinition>();
+            definitions.Add(new FirearmStateTokenDefinition(BrokenEmptyTokenId,
+                State(0, null, FirearmCondition.Broken)));
+            definitions.Add(new FirearmStateTokenDefinition(WreckedTokenId,
+                State(0, null, FirearmCondition.Wrecked)));
+            for (int rounds = 1; rounds <= capacity; rounds++)
+            {
+                string normalToken = rounds == 1
+                    ? LoadedNormalTokenId
+                    : "kmg.state.v1.loaded-normal.rounds-" + rounds + ".lead-ball";
+                string brokenToken = rounds == 1
+                    ? BrokenLoadedTokenId
+                    : "kmg.state.v1.broken-loaded.rounds-" + rounds + ".lead-ball";
+                definitions.Add(new FirearmStateTokenDefinition(normalToken,
+                    State(rounds, DiagnosticLeadBall, FirearmCondition.Normal)));
+                definitions.Add(new FirearmStateTokenDefinition(brokenToken,
+                    State(rounds, DiagnosticLeadBall, FirearmCondition.Broken)));
+            }
+            return new FirearmStateTokenCatalog(definitions);
+        }
+
+        private static FirearmState State(
+            int rounds,
+            AmmunitionId ammunition,
+            FirearmCondition condition)
+        {
+            return new FirearmState(FirearmState.CurrentSchemaVersion,
+                rounds, ammunition, condition);
         }
 
         internal FirearmState Decode(IEnumerable<string> tokenIds)
