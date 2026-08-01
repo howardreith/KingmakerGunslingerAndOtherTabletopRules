@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.35 — Sprint 35 grit resource (in progress)
+
+- Added the dependency-free bounded grit pool model and deterministic daily
+  reset, maximum reconciliation, spend, restore, and operation-deduplication
+  plumbing.
+- Added 12 focused cases, bringing the complete suite to 703 tests.
+- Advanced active build, package, runtime-request, and repository validation
+  guards to version 0.0.35 while preserving inherited Sprint 34 checks.
+
 ## 0.0.31 — Sprint 31 early firearm catalog (in progress)
 
 - Began canonical production definition data with the tabletop early pistol.

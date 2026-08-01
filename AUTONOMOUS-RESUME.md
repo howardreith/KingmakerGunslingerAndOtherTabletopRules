@@ -11,8 +11,8 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `3d4ba8f` (detached-replacement Gunslinger respec preview).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 34 Gunslinger class chassis.
-- Version: `0.0.34` (Sprint 34 source work active).
+- Current checkpoint: Sprint 35 grit resource and deed framework.
+- Version: `0.0.35` (Sprint 35 source work active).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -158,9 +158,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Starting items, same-class level-up, multiclass, and detached-replacement respec
-previews are runtime-qualified. Re-audit the coverage matrix and select the next
-highest-dependency incomplete class-integration or base-feature slice. Broad
+The dependency-free grit pool checkpoint passes 703/703 tests and strict
+packaging at 0.0.35. Bind its maximum/current semantics to an exact persistent
+Kingmaker per-unit ability resource, then qualify daily-rest and save/load
+behavior before implementing firearm critical/killing-blow recovery. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

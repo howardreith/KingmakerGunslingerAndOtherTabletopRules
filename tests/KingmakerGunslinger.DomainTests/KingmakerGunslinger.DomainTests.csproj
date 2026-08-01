@@ -45,6 +45,22 @@
     <Compile Include="Sprint32Tests.cs" />
     <Compile Include="Sprint33Tests.cs" />
     <Compile Include="Sprint34Tests.cs" />
+    <Compile Include="Sprint35Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritOperationGate.cs">
+      <Link>Grit\GritOperationGate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritPoolService.cs">
+      <Link>Grit\GritPoolService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritPoolState.cs">
+      <Link>Grit\GritPoolState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritTransactionResult.cs">
+      <Link>Grit\GritTransactionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Grit\GritTransactionStatus.cs">
+      <Link>Grit\GritTransactionStatus.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerClassChassis.cs">
       <Link>Classes\GunslingerClassChassis.cs</Link>
     </Compile>

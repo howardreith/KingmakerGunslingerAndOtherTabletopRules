@@ -953,3 +953,19 @@
 - Both proved replacement Fighter 0/Gunslinger 0 -> Gunslinger 1, unchanged
   source Fighter 1/Gunslinger 0, two queued actions, intact body, exact cleanup,
   and no save load/write.
+
+## 2026-08-01 Sprint 35 grit domain entry
+
+- Advanced the active repository/build/runtime version to `0.0.35` with an
+  inherited Sprint 35 validator; validation-dispatch fixtures pass 11 checks.
+- Recorded exact grit acceptance criteria from the authorized rules source:
+  Wisdom modifier minimum 1, daily refill to maximum, bounded current value,
+  explicit bonus maximum, atomic spend/restore, and per-unit operation dedupe.
+- Added dependency-free grit state, service, transaction result/status, and
+  operation gate plus 12 focused cases. Complete suite is 703/703 PASS.
+- Clean exact-reference Release build, output validation, and strict package
+  validation pass. Package/DLL SHA-256 are
+  `527c076df6278f769159cb9e29a5faf3f3472f91f071ce76ec4508fad55351ce` /
+  `d3d59745b713386502aa9ef23eefdf2651ae2059130486324352604d93b64a44`.
+- This checkpoint is source-only. Next bind the exact Kingmaker per-unit
+  resource and qualify persistence/rest before adding firearm recovery.

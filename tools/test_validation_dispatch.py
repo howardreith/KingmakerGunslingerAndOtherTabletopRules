@@ -31,11 +31,12 @@ def main() -> int:
     sprint32 = source / "tools" / "validate_sprint32.py"
     sprint33 = source / "tools" / "validate_sprint33.py"
     sprint34 = source / "tools" / "validate_sprint34.py"
+    sprint35 = source / "tools" / "validate_sprint35.py"
 
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.34 to validate_sprint34.py",
+        "dispatched version 0.0.35 to validate_sprint35.py",
     )
     run(
         [python, "-B", str(sprint29)],
@@ -57,20 +58,30 @@ def main() -> int:
         saved_report = report.read_bytes()
         report.unlink()
         run(
-            [python, "-B", str(sprint34), "--root", str(fixture)],
+            [python, "-B", str(sprint35), "--root", str(fixture)],
             1,
             "Required Sprint 34 file is missing: planning/SPRINT-34-ENTRY-CRITERIA.md",
         )
         report.write_bytes(saved_report)
 
+        report35 = fixture / "planning" / "SPRINT-35-ENTRY-CRITERIA.md"
+        saved_report35 = report35.read_bytes()
+        report35.unlink()
+        run(
+            [python, "-B", str(sprint35), "--root", str(fixture)],
+            1,
+            "Required Sprint 35 file is missing: planning/SPRINT-35-ENTRY-CRITERIA.md",
+        )
+        report35.write_bytes(saved_report35)
+
         info_path = fixture / "Info.json"
         info = json.loads(info_path.read_text(encoding="utf-8"))
-        info["Version"] = "0.0.35"
+        info["Version"] = "0.0.36"
         info_path.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
         run(
             [python, "-B", str(dispatcher), "--root", str(fixture)],
             1,
-            "Unsupported repository version: '0.0.35'",
+            "Unsupported repository version: '0.0.36'",
         )
 
         info["Version"] = "0.0.29"
@@ -105,7 +116,13 @@ def main() -> int:
             "Info.json does not declare version 0.0.34",
         )
 
-    print("Validation dispatch integration tests passed: 10 checks.")
+        run(
+            [python, "-B", str(sprint35), "--root", str(fixture)],
+            1,
+            "Info.json does not declare version 0.0.35",
+        )
+
+    print("Validation dispatch integration tests passed: 11 checks.")
     return 0
 
 

@@ -89,7 +89,7 @@ Assert-True ($startingItems.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.34'
+    ExpectedVersion = '0.0.35'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -122,7 +122,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.34' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.35' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -177,7 +177,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.34' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.35' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

@@ -16,6 +16,7 @@ using KingmakerGunslinger.Recovery;
 using KingmakerGunslinger.Persistence;
 using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Classes;
+using KingmakerGunslinger.Grit;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -29,6 +30,18 @@ namespace KingmakerGunslinger.DomainTests
             Case("class.chassis-save-formulas", ClassChassisSaveFormulas),
             Case("class.chassis-invalid-level", ClassChassisInvalidLevel),
             Case("class.chassis-level-value", ClassChassisLevelValueSemantics),
+            Case("grit.maximum-wisdom-minimum", GritMaximumWisdomMinimum),
+            Case("grit.daily-reset-exact", GritDailyResetExact),
+            Case("grit.state-invalid-bounds", GritStateRejectsInvalidBounds),
+            Case("grit.reconcile-clamp-no-refill", GritReconcileClampsWithoutRefill),
+            Case("grit.spend-applied", GritSpendApplied),
+            Case("grit.spend-insufficient-atomic", GritSpendInsufficientAtomic),
+            Case("grit.restore-applied-capped", GritRestoreAppliedAndCapped),
+            Case("grit.restore-at-maximum-atomic", GritRestoreAtMaximumAtomic),
+            Case("grit.duplicate-spend", GritDuplicateSpendRejected),
+            Case("grit.duplicate-restore", GritDuplicateRestoreRejected),
+            Case("grit.unit-gates-isolated", GritUnitGatesAreIsolated),
+            Case("grit.invalid-transactions", GritInvalidTransactionsRejected),
             Case("valid.early-musket", ValidEarlyMusket),
             Case("factory.early-musket-fresh-instances", FactoryEarlyMusketFreshInstances),
             Case("factory.early-musket-canonical-equality", FactoryEarlyMusketCanonicalEquality),

@@ -34,8 +34,9 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 34 Gunslinger class chassis. The exact 20-level domain progression is
-source-qualified. Next register stable class/progression blueprints, map only
-supported Kingmaker skills and proficiencies, then integrate starting equipment
-and guarded class-structure acceptance. Scatter content remains fail-closed
-pending an authoritative numeric Blunderbuss cone distance.
+Sprint 35 grit resource and reusable deed framework. The first checkpoint adds
+the bounded dependency-free resource rules, daily reset, maximum reconciliation,
+atomic spend/restore, and operation deduplication. Next bind these rules to an
+exact persistent Kingmaker per-unit ability resource, then add daily-rest and
+firearm critical/killing-blow recovery contracts. Scatter content remains
+fail-closed pending an authoritative numeric Blunderbuss cone distance.

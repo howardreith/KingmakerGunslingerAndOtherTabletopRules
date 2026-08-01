@@ -208,6 +208,11 @@
     <Compile Include="Firing\FirearmDischargeService.cs" />
     <Compile Include="Firing\FirearmDischargeStatus.cs" />
     <Compile Include="Firing\ReferenceEventGate.cs" />
+    <Compile Include="Grit\GritOperationGate.cs" />
+    <Compile Include="Grit\GritPoolService.cs" />
+    <Compile Include="Grit\GritPoolState.cs" />
+    <Compile Include="Grit\GritTransactionResult.cs" />
+    <Compile Include="Grit\GritTransactionStatus.cs" />
     <Compile Include="Explosions\FirearmExplosionDecision.cs" />
     <Compile Include="Explosions\FirearmExplosionDisposition.cs" />
     <Compile Include="Explosions\FirearmExplosionRuntime.cs" />
