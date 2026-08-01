@@ -8,18 +8,28 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `abfd426` (runtime-qualified Sprint 39 Pistol-Whip source).
+- Audited HEAD: `8270ade` (runtime-qualified Sprint 40 Utility Shot source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 40 Utility Shot is source-implemented. Blast Lock
-  and Scoot Unattended Object are explicitly omitted for lack of supported
-  interactions; Stop Bleeding awaits an exact source commit, mod-load smoke,
-  and two independent fresh-process feature PASS runs.
+- Current checkpoint: Sprint 40 Utility Shot is disposition-complete. Blast
+  Lock and Scoot Unattended Object are explicitly omitted for lack of supported
+  interactions; Stop Bleeding is runtime-qualified. Level-four Bonus Feats are
+  the next incomplete progression item.
 - Version: `0.0.40`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Utility Shot source commit `8270ade` passed mod load at
+  `20260801T2306012700758Z-mod-load-smoke`. Independent Stop Bleeding PASS runs
+  `20260801T2307201904813Z-disposable-gunslinger-stop-bleeding` and
+  `20260801T2308408422774Z-disposable-gunslinger-stop-bleeding` both observed
+  grit `1 -> 1`, self bleeds `2 -> 1`, adjacent bleeds `1 -> 0`, discharged
+  rounds `0/0`, zero-grit `InsufficientGrit` with the loaded chamber preserved,
+  applied/rejected/fault counts `2/1/0`, and exact cleanup. Package/DLL SHA-256
+  are `1387df20e7f43a34b93f0661a6dd193d1b264ea8bdfea8f84f02a1587b21d709` /
+  `ebf4c938045e281a1c39910d53ceb8d53487a28689199e01df14d54522ad625e`.
 
 - Pistol-Whip source commit `abfd426` passed mod load at
   `20260801T2244554687322Z-mod-load-smoke`. Independent PASS runs
@@ -353,9 +363,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the reconstructable Sprint 40 source checkpoint, require exact mod load,
-and run two fresh-process `disposable-gunslinger-stop-bleeding` qualifications.
-Then record evidence and select the next incomplete progression item. Preserve the Dodge movement
+Audit the authoritative Bonus Feats rule and exact Kingmaker feature-selection
+contracts, then establish level 4/8/12/16/20 acceptance criteria before
+implementation. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until

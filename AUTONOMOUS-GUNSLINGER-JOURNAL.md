@@ -1483,3 +1483,20 @@
 - Next action: create the exact source checkpoint, require mod load, and run two
   independent Stop Bleeding PASS attempts. Sprint 40 is not a stopping
   condition.
+
+### Utility Shot runtime qualification
+
+- Exact source commit `8270ade` passed mod load at
+  `20260801T2306012700758Z-mod-load-smoke`.
+- Independent fresh-process PASS runs were
+  `20260801T2307201904813Z-disposable-gunslinger-stop-bleeding` and
+  `20260801T2308408422774Z-disposable-gunslinger-stop-bleeding`.
+- Both observed grit `1 -> 1`, self Bleed facts `2 -> 1`, adjacent Bleed facts
+  `1 -> 0`, one chamber consumed per successful delivery, zero-grit
+  `InsufficientGrit` with its loaded chamber preserved, applied/rejected/fault
+  counts `2/1/0`, and exact detached cleanup.
+- Exact package/DLL SHA-256 are
+  `1387df20e7f43a34b93f0661a6dd193d1b264ea8bdfea8f84f02a1587b21d709` /
+  `ebf4c938045e281a1c39910d53ceb8d53487a28689199e01df14d54522ad625e`.
+- Utility Shot is disposition-complete for the supported game. Continue
+  immediately to level-four Bonus Feats; Sprint 40 is not a stopping condition.
