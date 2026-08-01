@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.Diagnostics
 
         private static void Prefix(object __instance)
         {
+            GunslingerDodgeRuntime.BeforeAttackRoll(
+                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
             FirearmDischargeRuntime.BeforeAttackRoll(__instance);
             DeadeyeRuntime.BeforeAttackRoll(
                 __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
@@ -91,8 +93,16 @@ namespace KingmakerGunslinger.Diagnostics
                 }
                 finally
                 {
-                    FirearmMisfireRuntime.FinishAttack(
-                        __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                    try
+                    {
+                        GunslingerDodgeRuntime.AfterAttackRoll(
+                            __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                    }
+                    finally
+                    {
+                        FirearmMisfireRuntime.FinishAttack(
+                            __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                    }
                 }
             }
         }
@@ -157,6 +167,7 @@ namespace KingmakerGunslinger.Diagnostics
         private static void Postfix(object __instance)
         {
             FirearmArmorClassRuntime.AfterCalculateArmorClass(__instance);
+            GunslingerDodgeRuntime.AfterCalculateArmorClass(__instance);
             CombatTraceRuntime.After(CombatTraceStage.ArmorClass, __instance);
         }
     }

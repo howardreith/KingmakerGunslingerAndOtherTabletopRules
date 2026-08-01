@@ -86,5 +86,97 @@ namespace KingmakerGunslinger.DomainTests
             return new DeadeyeService().Evaluate(new DeadeyeRequest(true, true, 1,
                 ProductionFirearmCatalog.CreatePistol().Definition, distanceMeters, grit));
         }
+
+        private static void GunslingerDodgeMoveExact()
+        {
+            GunslingerDodgeDecision result = Dodge(GunslingerDodgeMode.MoveFiveFeet,
+                true, GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light, 1);
+            Assertions.True(result.ShouldApply, "Eligible movement dodge was rejected.");
+            Assertions.Equal(2, result.ArmorClassBonus, "Movement dodge AC changed.");
+            Assertions.Equal(1, result.GritCost, "Movement dodge cost changed.");
+            Assertions.False(result.ShouldDropProne, "Movement dodge forced prone.");
+        }
+
+        private static void GunslingerDodgeProneExact()
+        {
+            GunslingerDodgeDecision result = Dodge(GunslingerDodgeMode.DropProne,
+                true, GunslingerDodgeArmor.Medium, GunslingerDodgeLoad.Light, 1);
+            Assertions.True(result.ShouldApply, "Eligible prone dodge was rejected.");
+            Assertions.Equal(4, result.ArmorClassBonus, "Prone dodge AC changed.");
+            Assertions.True(result.ShouldDropProne, "Prone dodge omitted prone rider.");
+        }
+
+        private static void GunslingerDodgeRequiresRangedTrigger()
+        {
+            Assertions.Equal(GunslingerDodgeStatus.NotRangedAttack,
+                Dodge(GunslingerDodgeMode.MoveFiveFeet, false,
+                    GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light, 2).Status,
+                "Melee attack activated Gunslinger's Dodge.");
+        }
+
+        private static void GunslingerDodgeArmorExact()
+        {
+            Assertions.Equal(GunslingerDodgeStatus.UnsupportedArmor,
+                Dodge(GunslingerDodgeMode.DropProne, true,
+                    GunslingerDodgeArmor.None, GunslingerDodgeLoad.Light, 2).Status,
+                "No armor bypassed the exact light/medium restriction.");
+            Assertions.Equal(GunslingerDodgeStatus.UnsupportedArmor,
+                Dodge(GunslingerDodgeMode.DropProne, true,
+                    GunslingerDodgeArmor.Heavy, GunslingerDodgeLoad.Light, 2).Status,
+                "Heavy armor activated Gunslinger's Dodge.");
+        }
+
+        private static void GunslingerDodgeLoadExact()
+        {
+            Assertions.Equal(GunslingerDodgeStatus.Overloaded,
+                Dodge(GunslingerDodgeMode.MoveFiveFeet, true,
+                    GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Medium, 2).Status,
+                "Medium load activated Gunslinger's Dodge.");
+        }
+
+        private static void GunslingerDodgeInsufficientAtomic()
+        {
+            GunslingerDodgeDecision result = Dodge(GunslingerDodgeMode.DropProne,
+                true, GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light, 0);
+            Assertions.Equal(GunslingerDodgeStatus.InsufficientGrit, result.Status,
+                "Zero grit activated Gunslinger's Dodge.");
+            Assertions.Equal(0, result.GritCost, "Rejected dodge exposed a cost.");
+            Assertions.Equal(0, result.ArmorClassBonus, "Rejected dodge exposed AC.");
+        }
+
+        private static void GunslingerDodgeInvalidInput()
+        {
+            var service = new GunslingerDodgeService();
+            Assertions.Throws<ArgumentNullException>(() => service.Evaluate(null),
+                "Null dodge request was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new GunslingerDodgeRequest(true, GunslingerDodgeMode.Unknown, true,
+                    GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light, 1),
+                "Unknown dodge mode was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new GunslingerDodgeRequest(true, GunslingerDodgeMode.MoveFiveFeet, true,
+                    GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light, -1),
+                "Negative dodge grit was accepted.");
+        }
+
+        private static void GunslingerDodgeAlreadyProneRejected()
+        {
+            GunslingerDodgeDecision result = new GunslingerDodgeService().Evaluate(
+                new GunslingerDodgeRequest(true, GunslingerDodgeMode.DropProne,
+                    true, GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light,
+                    2, false));
+            Assertions.Equal(GunslingerDodgeStatus.CannotDropProne, result.Status,
+                "Already-prone defender activated the drop-prone reaction.");
+            Assertions.Equal(0, result.GritCost,
+                "Already-prone rejection exposed a grit cost.");
+        }
+
+        private static GunslingerDodgeDecision Dodge(GunslingerDodgeMode mode,
+            bool ranged, GunslingerDodgeArmor armor, GunslingerDodgeLoad load,
+            int grit)
+        {
+            return new GunslingerDodgeService().Evaluate(new GunslingerDodgeRequest(
+                true, mode, ranged, armor, load, grit));
+        }
     }
 }

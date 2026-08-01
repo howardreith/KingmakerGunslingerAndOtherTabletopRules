@@ -24,6 +24,7 @@ using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firing;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
 using UnityEngine;
 using UnityModManagerNet;
@@ -31,6 +32,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
+using Kingmaker.Blueprints.Items.Armors;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -263,6 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRecovery &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerDodge &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -357,6 +360,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye)
                 {
                     Complete(RunDisposableGunslingerDeadeye());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerDodge)
+                {
+                    Complete(RunDisposableGunslingerDodge());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3246,6 +3255,174 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerDodge()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintAbilityResource grit = gunslinger.Grit.Resource;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemArmor lightArmor = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintItemArmor>()
+                .Where(value => value.Type != null && value.Type.IsArmor &&
+                    value.Type.ProficiencyGroup == ArmorProficiencyGroup.Light)
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData defender = null;
+            object controller = null;
+            int initial = -1, afterApplied = -1, acAfter = -1,
+                acDuplicate = -1, afterRejected = -1, rejectedAc = -1;
+            bool armedBefore = false, armedAfter = true, proneAfter = false,
+                rejectedProne = true, rejectedConsumed = false, cleaned = false;
+            string stage = "construct-disposables";
+            try
+            {
+                if (lightArmor == null) throw new InvalidOperationException(
+                    "No exact native light armor blueprint was available.");
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                defender = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                defender.Descriptor.Stats.Wisdom.BaseValue = 14;
+                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                controller = start.Invoke(null,
+                    new object[] { defender.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger.CharacterClass, false }))
+                    throw new InvalidOperationException("Dodge Gunslinger selection failed.");
+                mechanics.Invoke(controller, null);
+                applyLevelup.Invoke(controller, new object[] { defender.Descriptor });
+                cancel.Invoke(controller, null); controller = null;
+
+                stage = "equip-light-armor";
+                defender.Body.Armor.InsertItem(new ItemEntityArmor(lightArmor));
+                if (!defender.Body.Armor.HasArmor ||
+                    defender.Body.Armor.Armor.Blueprint.Type.ProficiencyGroup !=
+                        ArmorProficiencyGroup.Light ||
+                    defender.Descriptor.Encumbrance != Encumbrance.Light)
+                    throw new InvalidOperationException(
+                        "Detached light-armor/light-load contract was not observable.");
+
+                stage = "apply-prone-reaction";
+                GunslingerDodgeRuntimeDiagnostics.Reset();
+                initial = defender.Descriptor.Resources.GetResourceAmount(grit);
+                defender.Descriptor.AddFact(gunslinger.Dodge.ArmedProneMarker);
+                armedBefore = defender.Descriptor.HasFact(
+                    gunslinger.Dodge.ArmedProneMarker);
+                var roll = new RuleAttackRoll(attacker, defender,
+                    new ItemEntityWeapon(pistol), 0);
+                GunslingerDodgeRuntime.BeforeAttackRoll(roll);
+                afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
+                armedAfter = defender.Descriptor.HasFact(
+                    gunslinger.Dodge.ArmedProneMarker);
+                proneAfter = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
+                var calculate = new RuleCalculateAC(attacker, defender, AttackType.Ranged);
+                SetExactProperty(calculate, "TargetAC", 20);
+                GunslingerDodgeRuntime.AfterCalculateArmorClass(calculate);
+                acAfter = calculate.TargetAC;
+                GunslingerDodgeRuntime.AfterCalculateArmorClass(calculate);
+                acDuplicate = calculate.TargetAC;
+                GunslingerDodgeRuntime.AfterAttackRoll(roll);
+
+                stage = "insufficient-rejection";
+                defender.Descriptor.State.RemoveCondition(UnitCondition.Prone);
+                defender.Descriptor.Resources.Spend(grit, afterApplied);
+                defender.Descriptor.AddFact(gunslinger.Dodge.ArmedProneMarker);
+                var rejected = new RuleAttackRoll(attacker, defender,
+                    new ItemEntityWeapon(pistol), 0);
+                GunslingerDodgeRuntime.BeforeAttackRoll(rejected);
+                afterRejected = defender.Descriptor.Resources.GetResourceAmount(grit);
+                rejectedProne = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
+                rejectedConsumed = !defender.Descriptor.HasFact(
+                    gunslinger.Dodge.ArmedProneMarker);
+                var rejectedCalculate = new RuleCalculateAC(attacker, defender,
+                    AttackType.Ranged);
+                SetExactProperty(rejectedCalculate, "TargetAC", 20);
+                GunslingerDodgeRuntime.AfterCalculateArmorClass(rejectedCalculate);
+                rejectedAc = rejectedCalculate.TargetAC;
+                GunslingerDodgeRuntime.AfterAttackRoll(rejected);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Gunslinger's Dodge failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (defender != null && defender.Body != null &&
+                    defender.Body.Armor != null && defender.Body.Armor.HasArmor)
+                    defender.Body.Armor.RemoveItem(false);
+                if (defender != null) defender.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (defender == null || !ContainsReference(allUnits, defender));
+            }
+            string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
+                ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
+                ";proneAfter=" + proneAfter + ";acAfter=" + acAfter +
+                ";acDuplicate=" + acDuplicate + ";afterRejected=" + afterRejected +
+                ";rejectedProne=" + rejectedProne + ";rejectedConsumed=" +
+                rejectedConsumed + ";rejectedAc=" + rejectedAc + ";applied=" +
+                GunslingerDodgeRuntimeDiagnostics.Applied + ";rejected=" +
+                GunslingerDodgeRuntimeDiagnostics.Rejected + ";duplicates=" +
+                GunslingerDodgeRuntimeDiagnostics.Duplicates + ";faults=" +
+                GunslingerDodgeRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("dodge-native-reaction", "armed; grit 2 -> 1; prone",
+                    observed, initial == 2 && armedBefore && afterApplied == 1 &&
+                    !armedAfter && proneAfter,
+                    "native light armor/load, persisted marker, UnitState prone"),
+                Assertion("dodge-trigger-ac", "20 -> 24; duplicate remains 24",
+                    observed, acAfter == 24 && acDuplicate == 24,
+                    "exact RuleCalculateAC TargetAC mutation"),
+                Assertion("dodge-insufficient-atomic",
+                    "grit 0; marker consumed; standing; AC remains 20", observed,
+                    afterRejected == 0 && rejectedConsumed && !rejectedProne &&
+                    rejectedAc == 20, "production fail-closed reaction adapter"),
+                Assertion("dodge-diagnostics",
+                    "applied=1;rejected=1;duplicates=1;faults=0", observed,
+                    GunslingerDodgeRuntimeDiagnostics.Applied == 1 &&
+                    GunslingerDodgeRuntimeDiagnostics.Rejected == 1 &&
+                    GunslingerDodgeRuntimeDiagnostics.Duplicates == 1 &&
+                    GunslingerDodgeRuntimeDiagnostics.Faults == 0,
+                    "production reaction diagnostics"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "armor removed and detached units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerDeadeye()

@@ -109,8 +109,7 @@ def main() -> int:
 
     dll = bin_dir / info["AssemblyName"]
     optimize = args.configuration == "Release"
-    command = [
-        str(args.dotnet), str(args.csc),
+    compiler_arguments = [
         "/noconfig", "/nostdlib+", "/langversion:7.3", "/target:library",
         "/warnaserror+", "/deterministic+", "/utf8output", "/platform:anycpu",
         "/debug:pdbonly" if optimize else "/debug:portable",
@@ -121,6 +120,14 @@ def main() -> int:
         *(str(path) for path in compile_files(project)),
         str(generated_identity),
     ]
+    response_file = output / "compile.rsp"
+    response_file.write_text(
+        "\n".join('"' + value.replace('"', '\\"') + '"'
+                  for value in compiler_arguments) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    command = [str(args.dotnet), str(args.csc), f"@{response_file}"]
     env = os.environ.copy()
     env["DOTNET_ROOT"] = str(args.dotnet.parent)
     env["DOTNET_ROLL_FORWARD"] = "Major"

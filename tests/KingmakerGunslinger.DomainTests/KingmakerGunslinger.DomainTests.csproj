@@ -47,6 +47,27 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeStatus.cs">
       <Link>Deeds\DeadeyeStatus.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeArmor.cs">
+      <Link>Deeds\GunslingerDodgeArmor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeDecision.cs">
+      <Link>Deeds\GunslingerDodgeDecision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeLoad.cs">
+      <Link>Deeds\GunslingerDodgeLoad.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeMode.cs">
+      <Link>Deeds\GunslingerDodgeMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeRequest.cs">
+      <Link>Deeds\GunslingerDodgeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeService.cs">
+      <Link>Deeds\GunslingerDodgeService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\GunslingerDodgeStatus.cs">
+      <Link>Deeds\GunslingerDodgeStatus.cs</Link>
+    </Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

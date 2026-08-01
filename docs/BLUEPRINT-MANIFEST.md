@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **34 stable identifiers: 33 active and one reserved**. Sprint 36 adds the Deadeye deed feature, personal free action, and hidden persisted armed marker without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+The append-only ledger contains **37 stable identifiers: 36 active and one reserved**. Sprint 36 adds Deadeye and the adapted drop-prone branch of Gunslinger's Dodge, each with a deed feature, personal free action, and hidden persisted armed marker, without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit initialization marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 

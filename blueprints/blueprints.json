@@ -279,6 +279,30 @@
       "status": "active",
       "milestone": "Sprint 36",
       "notes": "Hidden native persisted fact recording that Deadeye is armed."
+    },
+    {
+      "symbol": "KMG.Deeds.GunslingerDodgeFeature",
+      "guid": "f26ad67ad83b465daf688805199cd4cb",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Level-one Gunslinger's Dodge feature granting the adapted drop-prone reaction action."
+    },
+    {
+      "symbol": "KMG.Deeds.GunslingerDodgeProneAbility",
+      "guid": "9eec64400c8c47c5924552279ce45c77",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Personal free action arming the drop-prone branch for the next ranged weapon attack."
+    },
+    {
+      "symbol": "KMG.Deeds.GunslingerDodgeProneArmed",
+      "guid": "6eed08c6160d45d2abce1837de183294",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 36",
+      "notes": "Hidden native persisted fact recording an armed drop-prone reaction."
     }
   ]
 }
