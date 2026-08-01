@@ -787,3 +787,20 @@
 - Next action: checkpoint the call graph, then invoke only the exact helper on
   the disposable preview with `StartingGold` temporarily zeroed/restored and
   require unchanged player money and exact class-item deltas.
+
+## 2026-08-01 Sprint 34 class-item helper receiver gate
+
+- Two materially different save-free receivers were tested against exact
+  `LevelUpHelper.AddStartingItems`: the controller preview and the disposable
+  source after exact two-action application. Both returned safely with no item
+  additions because neither unit is the real main character or a custom
+  companion. Player money, class gold, party/global-unit snapshots, and cleanup
+  remained correct.
+- Structured FAIL evidence is
+  `20260801T1708158441657Z-f718c0f1dd60494cae934f9512e572eb` and
+  `20260801T1710226633438Z-aa873b9035364e4eabd74d27b5c3a0d6`.
+- The failed helper mutations were removed, restoring the qualified call-graph
+  source at `8e391b2`. Per the two-attempt rule, no third save-free receiver
+  variation is authorized. Next mode is a guarded `KMG_AUTOMATION_WORKING`
+  scenario using the actual main character with exact item/money snapshots,
+  explicit rollback, no save, and unchanged fingerprint evidence.

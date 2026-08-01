@@ -118,12 +118,15 @@ isolation, and observed no save write.
 
 ## Next action
 
-Exact metadata run `20260801T1704113460224Z-67a8c8fb00194ac28840c0b3d3012d39`
-resolved `LevelUpHelper.AddStartingItems(UnitDescriptor)` as the native class
-item path. Invoke only that helper on the disposable refreshed preview, with
-production `StartingGold` temporarily zeroed and restored in `finally`; require
-unchanged player money, exact pistol/powder/ball deltas, restored blueprint
-state, and unchanged player/global-unit snapshots. Do not invoke full setup.
+Exact helper receivers failed safely at
+`20260801T1708158441657Z-f718c0f1dd60494cae934f9512e572eb` and
+`20260801T1710226633438Z-aa873b9035364e4eabd74d27b5c3a0d6`: native class
+items are gated to the real main character/custom companion. Do not attempt a
+third save-free receiver. Build a guarded `KMG_AUTOMATION_WORKING` scenario that
+uses the actual main character, snapshots exact item quantities and money,
+temporarily zeroes/restores class gold, invokes only the helper, removes only
+the exact added item instances, verifies full rollback/fingerprint stability,
+and never saves.
 
 ## Safety boundaries
 
