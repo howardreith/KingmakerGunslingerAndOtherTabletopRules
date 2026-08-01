@@ -8,19 +8,20 @@ The observer opens the normal Load Game screen through the already qualified
 main-menu action, captures the complete `List<SaveInfo>`, requires exactly one
 `KMG_AUTOMATION_WORKING` descriptor, distinguishes
 `KMG_AUTOMATION_BASELINE`, and resolves exactly one active component holding
-the working descriptor by object reference. It then scopes passive hooks to
-that slot, its `ListOfSaves` and `SaveLoadWindow` owners, and active,
-interactable buttons beneath the owning window. It records selection/load
-handlers, exact selected-save fields, the complete managed caller chain at
-`MainMenu.LoadGame`, the exact load argument and receiver, the authoritative
-after-load callback, two stable fingerprint samples, and save-writing
-sentinels.
+the working descriptor by object reference. It passively inventories that
+slot, its `ListOfSaves` and `SaveLoadWindow` owners, and active, interactable
+buttons beneath the owning window without patching discovered UI methods. The
+request-scoped exact `MainMenu.LoadGame(SaveInfo)` hook records the complete
+managed caller chain before it unwinds, the first non-Harmony/non-observer
+caller, a unique compatible scoped receiver when one exists, exact selected-
+save fields, the load argument and receiver, the authoritative after-load
+callback, two stable fingerprint samples, and save-writing sentinels.
 
 It never invokes a slot, selection handler, shared button, listener, delegate,
 or `MainMenu.LoadGame`. Visible text is supporting evidence only. A baseline or
-other descriptor entering `MainMenu.LoadGame` is `FAIL`; missing unique action,
-selected-state, object-reference, callback, or fingerprint proof is
-`AMBIGUOUS`.
+other descriptor entering `MainMenu.LoadGame` is `FAIL`; missing unique caller,
+compatible receiver, selected-state, object-reference, callback, or fingerprint
+proof is `AMBIGUOUS`.
 
 Supervised command:
 
