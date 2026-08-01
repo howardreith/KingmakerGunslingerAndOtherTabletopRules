@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `e116c89` (bounded per-unit grit domain).
+- Audited HEAD: `4e543fd` (one-time native grit initialization guard).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 35 grit resource and deed framework.
@@ -17,6 +17,15 @@ definition of done or a listed genuine human-input hard stop.
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- One-time native grit initialization commit `4e543fd` passed mod load at
+  `20260801T1945287324618Z-mod-load-smoke`. Independent persistence PASS runs
+  `20260801T1946581078281Z-disposable-gunslinger-grit-persistence` and
+  `20260801T1948157306155Z-disposable-gunslinger-grit-persistence` observed
+  maximum two, spent/reconstructed current one, and current one after a later
+  exact feature reapply. Package/deployed-DLL SHA-256 are
+  `3f32686c52b0c6b21082a5966eb006032e616d15674d6eb73c2d14bf5f078421` /
+  `ca3c62f4b48abb2baba8217b78276282474c3ab5deeace7af9704fd42ce319a7`.
 
 - Native grit persistence repair commit `1949d80` passed mod load at
   `20260801T1935464087387Z-mod-load-smoke`. Independent PASS runs
@@ -238,9 +247,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Native grit persistence is runtime-qualified. Close explicit multiclass/respec
-value behavior next, then implement firearm
-critical/killing-blow recovery. Broad
+Native grit persistence, later multiclass no-refill, and the exact native
+respec resource-list transfer contract are qualified. Implement firearm
+critical/killing-blow recovery with duplicate protection next. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
 their global mutations have complete rollback proof; do not invoke them
 speculatively.

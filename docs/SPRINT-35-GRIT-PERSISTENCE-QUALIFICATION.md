@@ -2,10 +2,11 @@
 
 ## Qualified scope
 
-Commit `1949d801e465c4e31be7b4a5a3caae05b3c49760` qualifies the native
+Commit `4e543fd6c391e87754405fd575598fcff4e600eb` qualifies the native
 serialized representation of a non-maximum grit value without writing a save.
 It also fixes first-level fill ordering by using Kingmaker's exact unit-scoped
-feature-reapply lifecycle, guarded to Gunslinger class level one.
+feature-reapply lifecycle. A stable hidden per-unit marker makes that
+reconciliation one-time, including across later multiclass feature reapplies.
 
 ## Exact contracts
 
@@ -20,33 +21,35 @@ feature-reapply lifecycle, guarded to Gunslinger class level one.
 
 ## Source gates
 
-- Focused persistence checks: 5 PASS.
-- Focused grit blueprint checks: 9 PASS.
+- Focused persistence checks: 6 PASS.
+- Focused grit blueprint checks: 10 PASS.
 - Runtime scenario preflight checks: 40 PASS.
 - Complete domain/reflection suite: 703/703 PASS.
 - Repository validation, clean Release build, build-output validation, and
   strict standalone package validation: PASS.
 - Package SHA-256:
-  `519c5f99a430808895d1ea787f832088f51b2b861b19974409d6bb2a02715429`.
+  `3f32686c52b0c6b21082a5966eb006032e616d15674d6eb73c2d14bf5f078421`.
 - DLL SHA-256:
-  `0b37c7748cdca07c0015a730da3626b8a0a6a8d132c96e9ef72f64c325d60866`.
+  `ca3c62f4b48abb2baba8217b78276282474c3ab5deeace7af9704fd42ce319a7`.
 
 ## Runtime evidence
 
 Exact assembly mod load passed:
 
-- `20260801T1935464087387Z-mod-load-smoke`
+- `20260801T1945287324618Z-mod-load-smoke`
 
 Two independent fresh-process guarded runs passed:
 
-- `20260801T1937081415049Z-disposable-gunslinger-grit-persistence`
-- `20260801T1938272020280Z-disposable-gunslinger-grit-persistence`
+- `20260801T1946581078281Z-disposable-gunslinger-grit-persistence`
+- `20260801T1948157306155Z-disposable-gunslinger-grit-persistence`
 
 Both observed maximum two and partial current one on the Wisdom 14 original;
 Kingmaker's exact default persistence JSON produced a nonempty 69-character
 record, deserialized to a distinct object retaining the exact grit blueprint,
 and reconstructed exactly one grit record with current one on the fresh
-replacement descriptor. Both detached units were disposed with unchanged
+replacement descriptor. An exact later feature reapply retained current one,
+proving the persistent initialization marker prevents multiclass refill.
+Both detached units were disposed with unchanged
 party/global-unit snapshots.
 
 No save/load or save-writing API was invoked. This qualifies the exact native
@@ -63,7 +66,8 @@ actually invokes. The repaired assembly then passed twice.
 
 ## Disposition
 
-Native grit persistence serialization and reconstruction are
-`RUNTIME-QUALIFIED`. Continue with explicit multiclass/respec value behavior
-and firearm-event recovery; this report is a checkpoint, not a stopping
+Native grit persistence serialization/reconstruction and later-level
+multiclass no-refill behavior are `RUNTIME-QUALIFIED`. Native respec uses the
+same persistent resource-list transfer contract documented above. Continue
+with firearm-event recovery; this report is a checkpoint, not a stopping
 condition.

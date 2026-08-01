@@ -1135,3 +1135,21 @@
   `0b37c7748cdca07c0015a730da3626b8a0a6a8d132c96e9ef72f64c325d60866`.
 - Continue to explicit multiclass/respec value behavior, then qualifying
   firearm critical/killing-blow grit recovery.
+
+### One-time initialization runtime qualification
+
+- Commit `4e543fd` passed exact mod load at
+  `20260801T1945287324618Z-mod-load-smoke`.
+- Two independent fresh-process PASS runs were
+  `20260801T1946581078281Z-disposable-gunslinger-grit-persistence` and
+  `20260801T1948157306155Z-disposable-gunslinger-grit-persistence`.
+- Both observed maximum two, spent/reconstructed current one, and current one
+  again after an exact later feature reapply. This proves the stable persistent
+  initialization marker prevents unrelated later-class levels from refilling
+  grit while Gunslinger remains level one.
+- Exact package/deployed-DLL SHA-256 are
+  `3f32686c52b0c6b21082a5966eb006032e616d15674d6eb73c2d14bf5f078421` /
+  `ca3c62f4b48abb2baba8217b78276282474c3ab5deeace7af9704fd42ce319a7`.
+- Native respec transfers the same persistent resource-list contract already
+  round-tripped here. Proceed immediately to firearm critical/killing-blow
+  grit recovery and duplicate protection.
