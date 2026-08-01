@@ -66,6 +66,11 @@ No genuine human-input hard stop is currently established.
   runtime-qualified on `8270ade`. Bonus-feat selection is the next engineering
   gate; no human-input blocker was created.
 
+- Sprint 41 Bonus Feats is source-qualified using the exact native Fighter
+  combat-feat selection. Runtime qualification remains an engineering gate;
+  Kingmaker's lack of a native grit-feat category is documented and does not
+  block the base combat-feat progression.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

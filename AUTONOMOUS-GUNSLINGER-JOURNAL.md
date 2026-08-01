@@ -1500,3 +1500,26 @@
   `ebf4c938045e281a1c39910d53ceb8d53487a28689199e01df14d54522ad625e`.
 - Utility Shot is disposition-complete for the supported game. Continue
   immediately to level-four Bonus Feats; Sprint 40 is not a stopping condition.
+
+## 2026-08-01 Sprint 41 Bonus Feats source qualification
+
+- The authoritative base feature grants one combat or grit feat at levels
+  4/8/12/16/20. Exact installed metadata exposes the native
+  `BlueprintFeatureSelection` contract with candidate arrays, feature groups,
+  prerequisite filtering, obligatory level-up integration, and UI behavior.
+- Reused the exact installed Fighter combat-feat selection GUID
+  `41c8486641f7d6d4283ca9dae4147a9f` once at each required Gunslinger level.
+  The implementation does not clone the selection, copy candidates, bypass
+  prerequisites, or allocate a project-owned stable ID.
+- Kingmaker has no native grit-feat category and the repository's deeds are
+  class features, not feats; the slice does not mislabel them. Independently
+  authorized grit feats can be appended later without changing progression.
+- Added three focused cadence/immutability cases and a save-free guarded native
+  selection identity scenario. Sprint 41/inherited validation, 751/751 tests,
+  18 request checks, 40 preflight checks, 24 dispatch checks, exact-reference
+  Release compilation, and strict package validation pass. Candidate
+  package/DLL SHA-256 are
+  `c58407763dbadb1a59dae7bb47b6e76b1af77720607c23ec70f9221805a1c283` /
+  `f5422803cba7ea8af1ad6333a192e5038e79fa1977d4a70503d7a7c16c3f9f19`.
+- Next action: source checkpoint, exact mod load, and two independent Bonus
+  Feats PASS runs. Sprint 41 is not a stopping condition.

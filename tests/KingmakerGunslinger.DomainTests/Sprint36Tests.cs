@@ -30,6 +30,45 @@ namespace KingmakerGunslinger.DomainTests
                 "Negative grit was accepted for initiative.");
         }
 
+        private static void BonusFeatsExactLevels()
+        {
+            int[] expected = { 4, 8, 12, 16, 20 };
+            int[] observed = BonusFeatProgression.Levels;
+            Assertions.Equal(expected.Length, observed.Length,
+                "Bonus-feat cadence count changed.");
+            for (int index = 0; index < expected.Length; index++)
+            {
+                Assertions.Equal(expected[index], observed[index],
+                    "Bonus-feat level changed.");
+                Assertions.True(BonusFeatProgression.GrantsAt(expected[index]),
+                    "Required bonus-feat level was rejected.");
+            }
+        }
+
+        private static void BonusFeatsRejectOtherLevels()
+        {
+            for (int level = 0; level <= 20; level++)
+            {
+                bool expected = level >= 4 && level % 4 == 0;
+                Assertions.Equal(expected, BonusFeatProgression.GrantsAt(level),
+                    "Bonus-feat cadence changed at level " + level + ".");
+            }
+        }
+
+        private static void BonusFeatsRejectInvalidLevels()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                BonusFeatProgression.GrantsAt(-1),
+                "Negative Gunslinger level was accepted.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                BonusFeatProgression.GrantsAt(21),
+                "Post-cap Gunslinger level was accepted.");
+            int[] copy = BonusFeatProgression.Levels;
+            copy[0] = 20;
+            Assertions.Equal(4, BonusFeatProgression.Levels[0],
+                "Bonus-feat cadence exposed mutable storage.");
+        }
+
         private static void DeadeyeSecondIncrementCostsOne()
         {
             DeadeyeDecision result = Deadeye((20d * 0.3048d) + 0.001d, 1);

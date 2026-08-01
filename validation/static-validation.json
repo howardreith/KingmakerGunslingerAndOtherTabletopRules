@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.40-s40-utility-shot",
-  "version": "0.0.40",
+  "milestone": "0.0.41-s41-bonus-feats",
+  "version": "0.0.41",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 748,
+    "testCount": 751,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

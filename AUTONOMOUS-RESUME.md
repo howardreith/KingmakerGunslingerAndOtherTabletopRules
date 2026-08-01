@@ -11,11 +11,11 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `8270ade` (runtime-qualified Sprint 40 Utility Shot source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 40 Utility Shot is disposition-complete. Blast
-  Lock and Scoot Unattended Object are explicitly omitted for lack of supported
-  interactions; Stop Bleeding is runtime-qualified. Level-four Bonus Feats are
-  the next incomplete progression item.
-- Version: `0.0.40`.
+- Current checkpoint: Sprint 41 Bonus Feats is source-qualified. The exact
+  installed Fighter combat-feat selection is present once at levels
+  4/8/12/16/20 with native prerequisites; exact commit and runtime qualification
+  are next.
+- Version: `0.0.41`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -363,9 +363,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Audit the authoritative Bonus Feats rule and exact Kingmaker feature-selection
-contracts, then establish level 4/8/12/16/20 acceptance criteria before
-implementation. Preserve the Dodge movement
+Commit the reconstructable Sprint 41 source checkpoint, require exact mod load,
+and run two fresh-process `disposable-gunslinger-bonus-feats` qualifications.
+Then record evidence and advance to Gun Training. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until

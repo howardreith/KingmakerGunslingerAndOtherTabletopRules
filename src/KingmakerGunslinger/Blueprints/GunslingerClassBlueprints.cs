@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -84,6 +85,8 @@ namespace KingmakerGunslinger.Blueprints
         private const string SimpleWeaponGuid = "e70ecf1ed95ca2f40b754f1adb22bbdd";
         private const string MartialWeaponGuid = "203992ef5b35c864390b4e4a1e200629";
         private const string LightArmorGuid = "6d3728d4e9c9898458fe5e9532951132";
+        private const string FighterBonusFeatSelectionGuid =
+            "41c8486641f7d6d4283ca9dae4147a9f";
 
         internal static GunslingerClassBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry,
@@ -111,6 +114,10 @@ namespace KingmakerGunslinger.Blueprints
                 library, MartialWeaponGuid, "martial weapon proficiency");
             BlueprintFeature lightArmor = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                 library, LightArmorGuid, "light armor proficiency");
+            BlueprintFeatureSelection bonusFeats =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    library, FighterBonusFeatSelectionGuid,
+                    "native Fighter combat-feat selection");
 
             BlueprintFeature proficiencies = registry.Register<BlueprintFeature>(
                 ProficienciesSymbol, () => CreateProficiencies(simple, martial,
@@ -139,6 +146,8 @@ namespace KingmakerGunslinger.Blueprints
             progression.LevelEntries[2].Features.Add(initiative);
             progression.LevelEntries[2].Features.Add(pistolWhip.Feature);
             progression.LevelEntries[2].Features.Add(utilityShot.Feature);
+            foreach (int level in Classes.BonusFeatProgression.Levels)
+                progression.LevelEntries[level - 1].Features.Add(bonusFeats);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);

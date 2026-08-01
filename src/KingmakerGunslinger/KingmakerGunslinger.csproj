@@ -127,6 +127,7 @@
     <Compile Include="Classes\NimbleService.cs" />
     <Compile Include="Classes\GunslingerInitiativeBonus.cs" />
     <Compile Include="Classes\GunslingerInitiativeRuntime.cs" />
+    <Compile Include="Classes\BonusFeatProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />

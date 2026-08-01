@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -276,6 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerInitiative &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPistolWhip &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -405,6 +407,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding)
                 {
                     Complete(RunDisposableGunslingerStopBleeding());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats)
+                {
+                    Complete(RunDisposableGunslingerBonusFeats());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3497,6 +3505,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "facts removed and detached unit disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerBonusFeats()
+        {
+            const string selectionGuid = "41c8486641f7d6d4283ca9dae4147a9f";
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            int[] requiredLevels = Classes.BonusFeatProgression.Levels;
+            BlueprintFeatureSelection selection = gunslinger.Progression
+                .LevelEntries[requiredLevels[0] - 1].Features
+                .OfType<BlueprintFeatureSelection>().Single(feature =>
+                    feature.AssetGuid == selectionGuid);
+            var observedLevels = new List<int>();
+            int totalOccurrences = 0;
+            foreach (LevelEntry entry in gunslinger.Progression.LevelEntries)
+            {
+                int count = entry.Features.Count(feature =>
+                    ReferenceEquals(feature, selection));
+                totalOccurrences += count;
+                if (count > 0) observedLevels.Add(entry.Level);
+            }
+            string observed = "guid=" + selection.AssetGuid +
+                ";levels=" + string.Join(",", observedLevels) +
+                ";occurrences=" + totalOccurrences +
+                ";features=" + (selection.Features == null ? -1 : selection.Features.Length) +
+                ";allFeatures=" + (selection.AllFeatures == null ? -1 : selection.AllFeatures.Length) +
+                ";ignorePrerequisites=" + selection.IgnorePrerequisites;
+            bool cadence = observedLevels.SequenceEqual(requiredLevels) &&
+                totalOccurrences == requiredLevels.Length;
+            bool nativeContract = selection.AssetGuid == selectionGuid &&
+                selection.Features != null && selection.Features.Length > 0 &&
+                selection.AllFeatures != null && selection.AllFeatures.Length > 0 &&
+                !selection.IgnorePrerequisites;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("bonus-feats-cadence", "4,8,12,16,20 exactly once",
+                    observed, cadence,
+                    "production Gunslinger progression LevelEntries"),
+                Assertion("bonus-feats-native-selection",
+                    "exact Fighter selection; candidates nonempty; prerequisites enforced",
+                    observed, nativeContract,
+                    "exact installed BlueprintFeatureSelection identity"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

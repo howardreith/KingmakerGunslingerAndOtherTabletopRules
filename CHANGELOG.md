@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.41 — Sprint 41 Gunslinger bonus feats (in progress)
+
+- Began exact level 4/8/12/16/20 bonus-feat integration by reusing
+  Kingmaker's native prerequisite-respecting Fighter combat-feat selection.
+
 ## 0.0.40 — Sprint 40 Utility Shot (in progress)
 
 - Classified Blast Lock and Scoot Unattended Object as having no meaningful
