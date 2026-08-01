@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `7052be4` (Sprint 33 capacity runtime qualification evidence).
+- Audited HEAD: `81e08e6` (Sprint 34 canonical class chassis contract).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 34 Gunslinger class chassis.
@@ -118,10 +118,10 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified Sprint 34 canonical chassis/version checkpoint,
-then implement stable production class/progression blueprints and exact
-Kingmaker-supported skill/proficiency mappings. Do not claim character creation
-or level-up integration until guarded runtime evidence exists.
+Commit the qualified read-only native class-contract observer, rebuild its exact
+commit, pass mod load, and run `observe-class-blueprint-contracts`. Use only its
+exact identities to implement stable class/progression blueprints. Do not claim
+character creation or level-up integration until guarded runtime evidence exists.
 
 ## Safety boundaries
 

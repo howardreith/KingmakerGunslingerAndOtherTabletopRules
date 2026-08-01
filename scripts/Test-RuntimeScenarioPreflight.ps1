@@ -24,6 +24,7 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 
 $expected = @(
     'mod-load-smoke',
+    'observe-class-blueprint-contracts',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',

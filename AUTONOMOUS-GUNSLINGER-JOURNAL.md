@@ -448,3 +448,18 @@
   sandbox-denied validator run; it contained only copied test repository data.
 - Next action: commit this foundation, then implement stable production class
   and progression blueprints with exact supported skill/proficiency mappings.
+
+## 2026-08-01 Sprint 34 native class-contract observer
+
+- Added read-only guarded `observe-class-blueprint-contracts`. It records the
+  exact native character-class array and each class's stable identity,
+  progression, BAB/save progressions, hit die, and supported skill enum values.
+- The scenario requires no save, input, UI interaction, registry write, or
+  native blueprint mutation and runs only through the guarded Steam harness.
+- Seven focused scenario checks, repository validation, 691/691 domain tests,
+  clean Release build, and strict package validation passed.
+- Candidate package/DLL SHA-256:
+  `1a69c5baafc6e9c8d8a14274aa30cf79ed546711a72f633098ab67ff0c491c65` /
+  `ffac2365ce5414c4b218d142af5618030c6299c829b1d26c886027f53f290f93`.
+- Next action: commit, pass exact mod load, run the observer, curate the exact
+  native references, then implement class/progression blueprints.

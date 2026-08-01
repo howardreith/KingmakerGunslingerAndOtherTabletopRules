@@ -34,6 +34,10 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Sprint34Tests.cs"),
         ["ClassChassisExactRows", "ClassChassisCompleteMonotonic",
          "ClassChassisInvalidLevel"], "Sprint 34 chassis tests")
+    require_tokens(read(root, "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs"),
+        ["RunClassBlueprintContractObservation", "root.Progression.CharacterClasses",
+         "characterClass.BaseAttackBonus.AssetGuid"],
+        "Sprint 34 class-contract observation")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:

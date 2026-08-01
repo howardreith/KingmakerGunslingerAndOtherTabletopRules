@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items.Weapons;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
@@ -252,6 +254,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveClassBlueprintContracts)
+                {
+                    Complete(RunClassBlueprintContractObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -1544,6 +1552,62 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(pass ? "PASS" : "FAIL", assertions, null);
             result.RuntimeIdentity = runtimeIdentity;
             return result;
+        }
+
+        private RuntimeTestResult RunClassBlueprintContractObservation()
+        {
+            BlueprintRoot root = BlueprintRoot.Instance;
+            BlueprintCharacterClass[] classes = root == null || root.Progression == null
+                ? null : root.Progression.CharacterClasses;
+            var records = new List<string>();
+            bool complete = classes != null && classes.Length > 0;
+            if (classes != null)
+            {
+                foreach (BlueprintCharacterClass characterClass in classes)
+                {
+                    if (characterClass == null || characterClass.Progression == null ||
+                        characterClass.BaseAttackBonus == null ||
+                        characterClass.FortitudeSave == null ||
+                        characterClass.ReflexSave == null || characterClass.WillSave == null)
+                    {
+                        complete = false;
+                        continue;
+                    }
+                    records.Add(string.Join(";", new[]
+                    {
+                        "name=" + characterClass.name,
+                        "guid=" + characterClass.AssetGuid,
+                        "progression=" + characterClass.Progression.AssetGuid,
+                        "bab=" + characterClass.BaseAttackBonus.AssetGuid,
+                        "fort=" + characterClass.FortitudeSave.AssetGuid,
+                        "ref=" + characterClass.ReflexSave.AssetGuid,
+                        "will=" + characterClass.WillSave.AssetGuid,
+                        "hitDie=" + characterClass.HitDie,
+                        "skills=" + string.Join(",", (characterClass.ClassSkills ??
+                            new Kingmaker.EntitySystem.Stats.StatType[0])
+                            .Select(value => value.ToString()).ToArray())
+                    }));
+                }
+            }
+            records.Sort(StringComparer.Ordinal);
+            string observed = string.Join(" | ", records.ToArray());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-class-root", "nonempty complete native class catalog",
+                    "count=" + (classes == null ? -1 : classes.Length) + "; " + observed,
+                    complete && records.Count == classes.Length,
+                    "BlueprintRoot.Instance.Progression.CharacterClasses exact references"),
+                Assertion("observation-only", "no native blueprint mutation",
+                    "read-only field access", true,
+                    "scenario contains no registry, array assignment, save, or input call"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private void Complete(RuntimeTestResult result)
