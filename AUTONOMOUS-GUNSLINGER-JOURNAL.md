@@ -194,3 +194,24 @@
   attack-modifier, attack-roll, and damage-delivery contracts; then implement
   the pure deduplicating target-plan slice that does not depend on a guessed
   cone length.
+
+## 2026-08-01 Sprint 32 exact-reference target-plan checkpoint
+
+- Advanced active development metadata to `0.0.32` with an inherited Sprint 32
+  validator; sealed Sprint 31 remains fixed at 624 tests.
+- Added dependency-free scatter candidates with explicit Inside, Outside, and
+  Unknown geometry dispositions. Unknown geometry fails the complete plan
+  closed rather than yielding partial targets.
+- Added an immutable planner that excludes the exact wielder and outside-cone
+  candidates, deduplicates only exact unit references, preserves distinct
+  value-equal units, and sorts accepted targets by distance and stable identity.
+- Added ten focused tests. Repository/dispatch/request/preflight validation
+  passed; clean Release domain suite passed 634/634; exact private-reference
+  compile and strict standalone package validation passed.
+- Candidate package SHA-256:
+  `aedfef956e9b89812a2276eb4e69f1e606dae25742ebdba1b73fec1ec4085341`.
+  Candidate DLL SHA-256:
+  `3207707a5771162f71e8ea32cc59aff50e9cbbb64d76b5799579ca0a44bf544a`.
+- Next action: commit this source-qualified slice, inspect exact directional
+  geometry and per-target native attack contracts, and keep Blunderbuss
+  availability fail-closed.

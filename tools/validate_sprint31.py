@@ -33,13 +33,18 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
         fail(f"{label} is missing required token(s): {missing}")
 
 
-def validate(root: Path) -> None:
+def validate(
+    root: Path,
+    version: str = VERSION,
+    informational_version: str = INFORMATIONAL_VERSION,
+    test_count: int = TEST_COUNT,
+) -> None:
     root = root.resolve()
     validate_sprint30.validate(
         root,
-        version=VERSION,
-        informational_version=INFORMATIONAL_VERSION,
-        test_count=TEST_COUNT,
+        version=version,
+        informational_version=informational_version,
+        test_count=test_count,
         expected_active_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,
         expected_ledger_entries=EXPECTED_LEDGER_ENTRIES,
         expected_registered_blueprints=EXPECTED_ACTIVE_BLUEPRINTS,

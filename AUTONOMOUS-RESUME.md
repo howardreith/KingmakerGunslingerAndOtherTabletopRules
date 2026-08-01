@@ -8,11 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `1539ae9` (Sprint 31 runtime implementation; evidence docs pending commit).
+- Audited HEAD: `b1ebcaf` (Sprint 32 entry contract; target-plan source checkpoint pending commit).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 32 scatter and close-range firearm behavior.
-- Version: `0.0.31` (Sprint 31 runtime-qualified; Sprint 32 entry next).
+- Version: `0.0.32` (Sprint 32 scatter target-plan source work active).
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -51,6 +51,17 @@ definition of done or a listed genuine human-input hard stop.
   affect each legal target exactly once, consume exactly one chamber, and do
   not affect non-scatter firearms or targets outside the verified shape.
 
+## Current source evidence
+
+- Sprint 32 exact-reference target planning is implemented with 10 focused
+  cases; complete domain suite is 634/634 PASS.
+- Package candidate SHA-256:
+  `aedfef956e9b89812a2276eb4e69f1e606dae25742ebdba1b73fec1ec4085341`;
+  DLL candidate SHA-256:
+  `3207707a5771162f71e8ea32cc59aff50e9cbbb64d76b5799579ca0a44bf544a`.
+- This slice is source-qualified only. It does not establish cone length,
+  directional geometry, attack delivery, discharge, or runtime acceptance.
+
 ## Commands already run
 
 - Read mission, roadmap, Sprint 30 report/entry criteria, architecture, source
@@ -74,11 +85,11 @@ isolation, and observed no save write.
 
 ## Next action
 
-Inspect exact installed target enumeration, position/facing geometry,
-per-target attack-modifier, attack-roll, and damage-delivery contracts. Then
-implement the smallest pure deduplicating scatter target plan. The authorized
-local rules do not state a numeric Blunderbuss cone length, so keep the
-production Blunderbuss unavailable and do not invent one.
+Commit the source-qualified exact-reference target planner. Then inspect exact
+installed position/facing geometry and per-target native attack construction,
+modifier, roll, and damage contracts. The authorized local rules do not state
+a numeric Blunderbuss cone length, so keep the production Blunderbuss
+unavailable and do not invent one.
 
 ## Safety boundaries
 

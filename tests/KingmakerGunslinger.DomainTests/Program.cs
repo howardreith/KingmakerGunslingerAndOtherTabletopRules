@@ -14,6 +14,7 @@ using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Recovery;
 using KingmakerGunslinger.Persistence;
+using KingmakerGunslinger.Scatter;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -36,6 +37,16 @@ namespace KingmakerGunslinger.DomainTests
             Case("catalog.special-range-nonfireable", CatalogSpecialRangeCannotBeFireable),
             Case("catalog.handedness-rejected", CatalogHandednessMismatchRejected),
             Case("catalog.format", CatalogFormattingDeterministic),
+            Case("scatter.plan-empty", ScatterPlanEmpty),
+            Case("scatter.plan-singleton", ScatterPlanSingleton),
+            Case("scatter.plan-filter-outside-wielder", ScatterPlanFiltersOutsideAndWielder),
+            Case("scatter.plan-dedupe-reference", ScatterPlanDeduplicatesReference),
+            Case("scatter.plan-preserve-value-equal", ScatterPlanDoesNotDeduplicateValueEquality),
+            Case("scatter.plan-stable-order", ScatterPlanStableOrder),
+            Case("scatter.plan-unknown-fails-closed", ScatterPlanUnknownGeometryFailsClosed),
+            Case("scatter.plan-null-candidate", ScatterPlanNullCandidateRejected),
+            Case("scatter.candidate-value-unit", ScatterCandidateValueUnitRejected),
+            Case("scatter.candidate-invalid-distance", ScatterCandidateInvalidDistanceRejected),
             Case("valid.early-pistol", ValidEarlyPistol),
             Case("valid.early-blunderbuss", ValidEarlyBlunderbuss),
             Case("valid.advanced-pistol", ValidAdvancedPistol),

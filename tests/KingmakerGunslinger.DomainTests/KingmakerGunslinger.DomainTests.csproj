@@ -42,6 +42,7 @@
     <Compile Include="Assertions.cs" />
     <Compile Include="Sprint30Tests.cs" />
     <Compile Include="Sprint31Tests.cs" />
+    <Compile Include="Sprint32Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Actions\FirearmActionDecision.cs">
       <Link>Actions\FirearmActionDecision.cs</Link>
     </Compile>
@@ -140,6 +141,18 @@
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Explosions\FirearmExplosionTargetResult.cs">
       <Link>Explosions\FirearmExplosionTargetResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterGeometryDisposition.cs">
+      <Link>Scatter\ScatterGeometryDisposition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterTargetCandidate.cs">
+      <Link>Scatter\ScatterTargetCandidate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterTargetPlan.cs">
+      <Link>Scatter\ScatterTargetPlan.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Scatter\ScatterTargetPlanService.cs">
+      <Link>Scatter\ScatterTargetPlanService.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Misfires\FirearmMisfireConditionDecision.cs">
       <Link>Misfires\FirearmMisfireConditionDecision.cs</Link>
