@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 25,
-    "activeEntryCount": 24,
+    "entryCount": 28,
+    "activeEntryCount": 27,
     "reservedEntryCount": 1,
-    "registrationCount": 24
+    "registrationCount": 27
   },
   "sprint29": {
     "completeMaintenanceLoop": true,

@@ -24,7 +24,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path) -> None:
     root = root.resolve()
-    validate_sprint33.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT)
+    validate_sprint33.validate(root, VERSION, INFORMATIONAL_VERSION, TEST_COUNT, 27, 28)
     require_tokens(read(root, "planning/SPRINT-34-ENTRY-CRITERIA.md"),
         ["d10 hit dice", "full base attack bonus", "levels 1 through 20",
          "multiclass, level-up, respec"], "Sprint 34 entry criteria")
@@ -39,6 +39,14 @@ def validate(root: Path) -> None:
          "characterClass.BaseAttackBonus.AssetGuid", "DescribeLevelOneFeatures",
          "DescribeProficiencies", "DescribeDirectProficiency"],
         "Sprint 34 class-contract observation")
+    require_tokens(read(root, "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
+        ["KMG.Classes.GunslingerClass", "FullBaseAttackGuid",
+         "SimpleWeaponGuid", "LightArmorGuid", "CreateLevelEntries"],
+        "Sprint 34 production class blueprints")
+    require_tokens(read(root, "scripts/Test-Sprint34ProductionClass.ps1"),
+        ["exact-native-progression-identities", "level-one-grants-aggregate",
+         "twenty-exact-level-rows", "manifest-has-exact-production-symbols"],
+        "Sprint 34 production class tests")
     print("Sprint 34 source invariant validation passed with inherited Sprint 33 checks.")
 
 def main() -> int:

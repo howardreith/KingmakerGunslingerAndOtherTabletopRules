@@ -207,6 +207,30 @@
       "status": "active",
       "milestone": "Sprint 33",
       "notes": "Production Advanced Revolver item wired to its custom type and gated by Firearm Proficiency."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerClass",
+      "guid": "abca4797366d4df0831a418eee39069a",
+      "plannedType": "BlueprintCharacterClass",
+      "status": "active",
+      "milestone": "Sprint 34",
+      "notes": "Production base Gunslinger character-class chassis with exact observed BAB/save references and twenty-level progression linkage."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerProgression",
+      "guid": "c3f6b41e0f4c4526af4bbd2a3b54aba2",
+      "plannedType": "BlueprintProgression",
+      "status": "active",
+      "milestone": "Sprint 34",
+      "notes": "Production twenty-level base Gunslinger progression."
+    },
+    {
+      "symbol": "KMG.Classes.GunslingerProficiencies",
+      "guid": "b9b6769f8a654a58a6bd55e10801ea22",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 34",
+      "notes": "Exact simple, martial, firearm, and light-armor proficiency aggregate for level one."
     }
   ]
 }

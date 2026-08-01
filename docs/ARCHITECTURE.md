@@ -429,4 +429,4 @@ Availability remains read-only. Repair starts no transaction before `Deliver`, a
 
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
-The blueprint ledger contains 25 stable IDs: 24 active and one reserved. Firearm Proficiency grants Reload, Overhaul, and Repair. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
+The blueprint ledger contains 28 stable IDs: 27 active and one reserved. Firearm Proficiency grants Reload, Overhaul, and Repair. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.

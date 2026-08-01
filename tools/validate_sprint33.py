@@ -24,9 +24,12 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path, version: str = VERSION,
              informational_version: str = INFORMATIONAL_VERSION,
-             test_count: int = TEST_COUNT) -> None:
+             test_count: int = TEST_COUNT,
+             expected_active_blueprints: int = 24,
+             expected_ledger_entries: int = 25) -> None:
     root = root.resolve()
-    validate_sprint32.validate(root, version, informational_version, test_count, 24, 25)
+    validate_sprint32.validate(root, version, informational_version, test_count,
+        expected_active_blueprints, expected_ledger_entries)
     require_tokens(read(root, "planning/SPRINT-33-ENTRY-CRITERIA.md"),
         ["Advanced firearms load all chambers", "partially loaded firearm",
          "exact pre-operation snapshots", "Two consecutive fresh-process PASS runs"],

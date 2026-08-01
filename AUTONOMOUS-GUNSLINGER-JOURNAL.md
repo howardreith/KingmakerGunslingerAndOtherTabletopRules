@@ -520,3 +520,28 @@
   `accb96788a21f413d1a9ec2dfdda81b5fa5a59485a35ca58fe1407ac5a266bbd` /
   `31659470103ef2b880bcf6bea1d0304e5f7c68cf31fbf5fad30d58bcd1ca5317`.
 - Next action: commit repair, mod load, rerun observation.
+
+## 2026-08-01 Sprint 34 production class blueprint registration
+
+- Repaired observer run
+  `20260801T1523097042011Z-c1f35f9724dc43039beaf3158351d326`
+  established the exact native Fighter proficiency facts: simple weapon
+  `e70ecf1ed95ca2f40b754f1adb22bbdd`, martial weapon
+  `203992ef5b35c864390b4e4a1e200629`, and light armor
+  `6d3728d4e9c9898458fe5e9532951132`. The whole martial fact is retained because
+  it owns multiple native proficiency components.
+- Added stable class, progression, and aggregate-proficiency blueprints. The
+  class uses d10, full BAB, good Fortitude/Reflex, poor Will, four skill ranks,
+  eight supported Kingmaker class skills, and exact levels 1-20. Level one
+  grants simple, martial, light armor, and the existing firearm proficiency.
+- Seven focused production checks, repository validation, 691/691 domain tests,
+  clean Release build, build-output validation, and strict package validation
+  passed. Package/DLL SHA-256 are
+  `03a932e7a828e632e31832774c3d859b40fb9902b8b60444bf395b73605d6bb8` /
+  `d7deac56b4d245b61543ce69c4005597342da36d5f19b1ff77a58f2af5e68921`.
+- Guarded Steam `mod-load-smoke` PASS evidence:
+  `20260801T1531363590993Z-mod-load-smoke`. No save was required or mutated.
+- The class is registered but intentionally not yet appended to the native
+  character-class catalog. Next action: commit this qualified registration
+  slice, then implement fail-closed catalog publication and a read-only exact
+  Gunslinger structure observer.

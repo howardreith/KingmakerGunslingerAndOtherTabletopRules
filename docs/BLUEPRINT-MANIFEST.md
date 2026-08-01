@@ -2,7 +2,7 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **25 stable identifiers: 24 active and one reserved**. Sprint 33 adds four production advanced-firearm identities without changing any prior GUID:
+The append-only ledger contains **28 stable identifiers: 27 active and one reserved**. Sprint 34 adds the production Gunslinger class, progression, and proficiency aggregate identities without changing any prior GUID. Sprint 33 added four production advanced-firearm identities:
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 
