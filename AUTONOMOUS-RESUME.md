@@ -75,6 +75,12 @@ definition of done or a listed genuine human-input hard stop.
   `35527b3cba8d7764b3882e8910c58d43bc600741c1e13bc33ba6ff679afde94a`;
   DLL SHA-256 is
   `9ebbfaaf3dd023441c5e424b777fc04b4609ae2d5185ac8f953ff0fb11ec46ac`.
+- Save-owned-vault reconstruction, two-item count isolation, and repeated
+  canonical discharge add three cases; complete suite is 685/685 PASS. Latest
+  package SHA-256 is
+  `ea88730ad1a2aa208de081fb4e8e68000dc53e26be17b24403eeda1cd3d4d26e`;
+  DLL SHA-256 is
+  `5408f50e47c189115c42d3067250ade2491b2030b8f8b90acb60c7b2a42c82ad`.
 
 ## Commands already run
 
@@ -99,9 +105,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the source-qualified advanced definition/state slice. Then register
-stable finite-token blueprints for additional round counts and prove repeated
-discharge plus exact two-item isolation before building guarded runtime acceptance.
+Commit the source-qualified durable capacity isolation slice. Then add stable
+production Advanced Rifle/Revolver blueprints and a guarded Sprint 33 runtime
+scenario covering batch reload, repeated discharge, and exact item isolation.
 
 ## Safety boundaries
 

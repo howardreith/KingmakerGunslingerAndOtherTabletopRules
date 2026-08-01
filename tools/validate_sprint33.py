@@ -9,7 +9,7 @@ import validate_sprint32
 
 VERSION = "0.0.33"
 INFORMATIONAL_VERSION = "0.0.33-s33-capacity-advanced-firearms"
-TEST_COUNT = 682
+TEST_COUNT = 685
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -48,6 +48,10 @@ def validate(root: Path) -> None:
     require_tokens(read(root, "src/KingmakerGunslinger/Misfires/FirearmMisfireConditionService.cs"),
         ["definition.Era == FirearmEra.Advanced", "AdvancedBrokenRemainsBroken",
          "ApplyMisfireDamage(postDischargeState)"], "Sprint 33 advanced misfire policy")
+    require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Sprint33Tests.cs"),
+        ["CapacityVaultSixRoundRestart", "CapacityVaultTwoItemIsolation",
+         "CapacityRepeatedDischargeIsolated", "VaultBackedFirearmStateRepository"],
+        "Sprint 33 durable capacity tests")
     print("Sprint 33 source invariant validation passed with inherited Sprint 32 checks.")
 
 def main() -> int:

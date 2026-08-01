@@ -294,5 +294,57 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(new FirearmExplosionService().Evaluate(condition).RequiresBurstDamage,
                 "Repeated early misfire did not schedule explosion.");
         }
+
+        private static void CapacityVaultSixRoundRestart()
+        {
+            var store = new FakeFirearmStateVaultStore();
+            object item = new object();
+            FirearmState full = FirearmStateMachine.Load(FirearmState.CreateEmpty(),
+                RevolverRules(), FirearmStateTokenCatalog.DiagnosticLeadBall, 6);
+            new VaultBackedFirearmStateRepository(store, RevolverRules()).Set(item, full);
+            var reconstructed = new VaultBackedFirearmStateRepository(store, RevolverRules());
+            FirearmStateRepositorySnapshot snapshot;
+            Assertions.True(reconstructed.TryGet(item, out snapshot),
+                "A reconstructed repository did not find six-round persisted state.");
+            Assertions.Equal(full, snapshot.State, "Six-round state changed across repository reconstruction.");
+        }
+
+        private static void CapacityVaultTwoItemIsolation()
+        {
+            var store = new FakeFirearmStateVaultStore();
+            var repository = new VaultBackedFirearmStateRepository(store, RevolverRules());
+            object first = new object();
+            object second = new object();
+            FirearmState six = FirearmStateMachine.Load(FirearmState.CreateEmpty(), RevolverRules(),
+                FirearmStateTokenCatalog.DiagnosticLeadBall, 6);
+            FirearmState two = FirearmStateMachine.Load(FirearmState.CreateEmpty(), RevolverRules(),
+                FirearmStateTokenCatalog.DiagnosticLeadBall, 2);
+            repository.Set(first, six);
+            repository.Set(second, two);
+            Assertions.Equal(6, repository.GetOrCreate(first).State.LoadedRounds,
+                "First revolver lost its exact count.");
+            Assertions.Equal(2, repository.GetOrCreate(second).State.LoadedRounds,
+                "Second revolver shared the first count.");
+            Assertions.Equal(2, repository.PersistedRecordCount,
+                "Two revolvers did not retain independent persisted records.");
+        }
+
+        private static void CapacityRepeatedDischargeIsolated()
+        {
+            var store = new FakeFirearmStateVaultStore();
+            var repository = new VaultBackedFirearmStateRepository(store, RevolverRules());
+            object first = new object();
+            object second = new object();
+            FirearmState full = FirearmStateMachine.Load(FirearmState.CreateEmpty(), RevolverRules(),
+                FirearmStateTokenCatalog.DiagnosticLeadBall, 6);
+            repository.Set(first, full);
+            repository.Set(second, full);
+            repository.Transition(first, FirearmStateMachine.Fire);
+            repository.Transition(first, FirearmStateMachine.Fire);
+            Assertions.Equal(4, repository.GetOrCreate(first).State.LoadedRounds,
+                "Two valid projectiles did not consume two chambers.");
+            Assertions.Equal(6, repository.GetOrCreate(second).State.LoadedRounds,
+                "Discharging one revolver changed an identical second revolver.");
+        }
     }
 }

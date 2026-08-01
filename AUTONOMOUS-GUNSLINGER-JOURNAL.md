@@ -335,5 +335,24 @@
   `35527b3cba8d7764b3882e8910c58d43bc600741c1e13bc33ba6ff679afde94a`.
   Candidate DLL SHA-256:
   `9ebbfaaf3dd023441c5e424b777fc04b4609ae2d5185ac8f953ff0fb11ec46ac`.
-- Next action: commit this slice, register the additional finite token
-  blueprints with stable IDs, and prove repeated discharge/two-item isolation.
+- The save-owned vault remains the authoritative production carrier; expanded
+  token definitions are a bounded compatibility vocabulary and are not newly
+  registered blueprints.
+- Next action: commit this slice and prove save-owned-vault reconstruction,
+  repeated discharge, and exact two-item isolation.
+
+## 2026-08-01 Sprint 33 durable capacity isolation
+
+- Proved six-round state survives reconstruction through a new
+  `VaultBackedFirearmStateRepository` over the same save-owned store.
+- Proved two reference-distinct revolvers retain independent six- and two-round
+  records, and two repeated canonical Fire transitions on one reduce only that
+  item from six to four chambers while the identical second remains at six.
+- Added three focused tests. Repository validation and the clean Release suite
+  passed 685/685; exact compile and strict package validation passed.
+- Candidate package SHA-256:
+  `ea88730ad1a2aa208de081fb4e8e68000dc53e26be17b24403eeda1cd3d4d26e`.
+  Candidate DLL SHA-256:
+  `5408f50e47c189115c42d3067250ade2491b2030b8f8b90acb60c7b2a42c82ad`.
+- Next action: commit this persistence/isolation checkpoint, then build the
+  production advanced blueprints and guarded Sprint 33 runtime scenario.
