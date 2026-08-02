@@ -596,6 +596,12 @@
       "notes": "Full-round one-grit firearm attack with native automatic Trip rider."
     },
     {
+      "symbol": "KMG.Deeds.TargetingArmsFeature", "guid": "d9403a88ced642d595e6649a0cfafe9f", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 104", "notes": "Level-seven Targeting Arms deed grant."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingArmsAbility", "guid": "5d194f9f2c9a46fc9c1dfe5aef7972b8", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 104", "notes": "Full-round no-damage firearm attack with one-round native main-hand Disarm."
+    },
+    {
       "symbol": "KMG.Deeds.BleedingWoundFeature", "guid": "f8fc9e345ef243dd862bfaa07abccfeb", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 50", "notes": "Level-eleven Bleeding Wound feature granting all four choices."
     },
     {
@@ -735,6 +741,9 @@
     },
     {
       "symbol": "KMG.Classes.TrueGritTargetingLegs", "guid": "90759e6ea511456f9e978e42466329c1", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Targeting Legs True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritTargetingArms", "guid": "863c8bff2aaa43fc8cb98611d1b250d7", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 104", "notes": "Unit-owned Targeting Arms True Grit choice."
     },
     {
       "symbol": "KMG.Classes.TrueGritBleedingWound", "guid": "611626136df74f34a824e1b831948698", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Bleeding Wound True Grit choice."

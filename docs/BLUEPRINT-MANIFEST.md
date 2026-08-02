@@ -2,8 +2,8 @@
 
 ## Sprint 55 status
 
-Sprint 98 extends the append-only contract to 129 stable identifiers: 128 active and one reserved. The added active identity is the guarded Scatter Shot ability; Sprint 93 added the item-owned battered-origin enchantment. Firearm Proficiency owns Reload and Scatter Shot, while Gunsmithing owns Repair and Overhaul.
-Bootstrap validates and rolls back the complete one-hundred-twenty-eight-blueprint transaction.
+Sprint 104 extends the append-only contract to 132 stable identifiers: 131 active and one reserved. The three added active identities are the Targeting Arms feature, ability, and True Grit choice. Firearm Proficiency owns Reload and Scatter Shot, while Gunsmithing owns Repair and Overhaul.
+Bootstrap validates and rolls back the complete one-hundred-thirty-one-blueprint transaction.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -124,6 +124,8 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.BleedingWoundFeature` | `f8fc9e345ef243dd862bfaa07abccfeb` | `BlueprintFeature` | Active | Level-eleven four-choice deed grant |
 | `KMG.Deeds.BleedingWoundHitPointsAbility` | `0beb35e712f749abb660f593e790ab39` | `BlueprintAbility` | Active | HP bleed arming choice |
 | `KMG.Deeds.BleedingWoundStrengthAbility` | `9d8b076131364a7394aa225b4306419c` | `BlueprintAbility` | Active | Strength bleed arming choice |
+| `KMG.Deeds.TargetingArmsFeature` | `d9403a88ced642d595e6649a0cfafe9f` | `BlueprintFeature` | Active | Level-seven Targeting Arms deed grant |
+| `KMG.Deeds.TargetingArmsAbility` | `5d194f9f2c9a46fc9c1dfe5aef7972b8` | `BlueprintAbility` | Active | No-damage firearm attack and one-round main-hand Disarm |
 | `KMG.Deeds.BleedingWoundDexterityAbility` | `41fde8c96f7d468d9f9e6ad4d9b60fb0` | `BlueprintAbility` | Active | Dexterity bleed arming choice |
 | `KMG.Deeds.BleedingWoundConstitutionAbility` | `a964315c427c4421bdf24c6ccea8700e` | `BlueprintAbility` | Active | Constitution bleed arming choice |
 | `KMG.Deeds.BleedingWoundHitPointsArmed` | `e563e8cdec324c59959c4dc8b9449702` | `BlueprintBuff` | Active | Context-carrying armed marker |
@@ -168,6 +170,7 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Classes.TrueGritTargetingHead` | `d51dcac901d54b40b90864ea538693e8` | `BlueprintFeature` | Active | Targeting Head choice |
 | `KMG.Classes.TrueGritTargetingTorso` | `3e64032419174f54a3fea01957ad886c` | `BlueprintFeature` | Active | Targeting Torso choice |
 | `KMG.Classes.TrueGritTargetingLegs` | `90759e6ea511456f9e978e42466329c1` | `BlueprintFeature` | Active | Targeting Legs choice |
+| `KMG.Classes.TrueGritTargetingArms` | `863c8bff2aaa43fc8cb98611d1b250d7` | `BlueprintFeature` | Active | Targeting Arms choice |
 | `KMG.Classes.TrueGritBleedingWound` | `611626136df74f34a824e1b831948698` | `BlueprintFeature` | Active | Bleeding Wound choice |
 | `KMG.Classes.TrueGritExpertLoading` | `bd59e6f11aa3469eb610ddd47b598520` | `BlueprintFeature` | Active | Expert Loading choice |
 | `KMG.Classes.TrueGritLightningReload` | `0b2733aed049462c81ae337994ded859` | `BlueprintFeature` | Active | Lightning Reload choice |
