@@ -16,6 +16,7 @@ $checks = [ordered]@{
     'native-commit' = $runner.Contains('commit.Invoke(commitController, null)') -and
         $runner.Contains('committedLevel == 2')
     'success-callback' = $runner.Contains('Action onSuccess = () => successCallback = true') -and
+        $runner.Contains('new object[] { descriptor, false, null, onSuccess, levelUp }') -and
         $runner.Contains('"commit-success-callback"')
     'expanded-isolation' = $runner.Contains('SameReferences(remoteBefore') -and
         $runner.Contains('SameReferences(crossSceneBefore') -and

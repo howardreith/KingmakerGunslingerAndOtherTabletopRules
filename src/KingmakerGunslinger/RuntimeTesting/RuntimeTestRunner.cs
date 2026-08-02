@@ -3545,7 +3545,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "LevelUp", false);
                 Action onSuccess = () => successCallback = true;
                 commitController = start.Invoke(null,
-                    new object[] { descriptor, false, onSuccess, null, levelUp });
+                    new object[] { descriptor, false, null, onSuccess, levelUp });
                 selected = (bool)selectClass.Invoke(commitController,
                     new object[] { gunslinger, false });
                 mechanics.Invoke(commitController, null);
