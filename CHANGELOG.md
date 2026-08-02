@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.52 — Sprint 52 Lightning Reload (in progress)
+## 0.0.52 — Sprint 52 Lightning Reload
 
 - Adds the level-eleven swift-action Lightning Reload deed for one equipped
   firearm chamber once per round while grit remains, without spending grit.

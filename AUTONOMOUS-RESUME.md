@@ -440,14 +440,14 @@ Commit the curated Sprint 51 evidence and continue immediately to Lightning
 Reload.
 
 Sprint 51 evidence is committed as `8d1de74`. Sprint 52 Lightning Reload is
-source-qualified in the worktree at version `0.0.52`: the positive-grit
-swift-action ability, atomic one-chamber shared-inventory transaction,
-unit-local once-per-round marker/reset, Broken preservation, failure rollback,
-and guarded save-free scenario are complete. The inherited validator chain,
-runtime safety suites, 790/790 domain tests, exact-reference Release build,
-strict package validation, and WhatIf pass. Audit and commit the reconstructable
-checkpoint, rebuild the exact commit, require mod-load PASS, and run two fresh
-feature PASS processes. Continue immediately to Evasive afterward.
+runtime-qualified on exact source commit `df60f59` at version `0.0.52`.
+Exact mod load `20260802T0409040682597Z-mod-load-smoke` and feature runs
+`20260802T0410232157000Z-disposable-gunslinger-lightning-reload` and
+`20260802T0411425931495Z-disposable-gunslinger-lightning-reload` passed. The
+exact package/DLL hashes are
+`dd90bd94ef0d6efc72a1a1f0ffecdec1f55f824e3d6f765a97ba2abe8f43d471` /
+`902f32bc4b4c0ee0dd522f553e3cb799a6855c7a9c2af7f26d5137bebfd612fc`.
+Commit the curated Sprint 52 evidence and continue immediately to Evasive.
 
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
