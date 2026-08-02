@@ -2,6 +2,17 @@
 
 No genuine human-input hard stop is currently established.
 
+## 2026-08-02 Sprint 64 save-backed runtime permission boundary
+
+- Exact mod load passes on source `fdf54ec`.
+- The external execution policy rejected the first guarded
+  `production-firearm-catalog` request before launch because it names the
+  disposable working save. No workaround is authorized and no save was
+  accessed.
+- This is a bounded runtime-evidence gate, not an overall mission hard stop.
+  Continue save-free and source-qualified lifecycle work; retry only after the
+  external boundary explicitly permits this exact guarded scenario.
+
 ## 2026-08-02 Sprint 61 vendor reference investigation (resolved)
 
 - Direct-cast and speculative `Get()` resolver attempts failed closed because

@@ -2411,3 +2411,19 @@
   `ab541c2b01dff4d272cde383f3f13175e35294a64e90b40c73bf84a4ab710598`.
 - The fallback presentation row is `ADAPTED-ACCEPTED`. Continue immediately to
   the next incomplete independent coverage item.
+
+## 2026-08-02 Sprint 64 production critical-profile checkpoint
+
+- Roadmap audit found no special-ammunition deliverable. Alchemical cartridges
+  appear only as an explicitly absent Lightning Reload prerequisite requiring
+  separate authority; none were invented.
+- Source commit `fdf54ec` adds an explicit live assertion over all five
+  registered native weapon-type critical fields. Repository validation,
+  831/831 tests, 38 request checks, 82 preflight checks, clean exact-reference
+  Release build, and strict package validation pass.
+- Package/DLL SHA-256 are
+  `129000a03208443c33245a72bc44b4b63bbfffb2e8a433da760b8627f7ce2a14` /
+  `1bff1d974c06ce58ea0bdb231402b0c18e62da787b08bbbb8faf7dc7e335d356`.
+- Exact mod load `20260802T0957016959514Z-mod-load-smoke` passed. The first
+  save-backed catalog request was externally rejected before launch; no save
+  or game process was touched. Continue the independent lifecycle audit.

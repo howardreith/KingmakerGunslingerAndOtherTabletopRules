@@ -8,23 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `c2fd27b` (Sprint 61 acquisition runtime qualification).
+- Audited source HEAD: `fdf54ec` (Sprint 64 critical-profile source qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 61 acquisition is runtime-qualified. Sprint 62
-  reconfirmed scatter is bounded on the missing numeric Blunderbuss cone
-  distance. Continue Sprint 63 production fallback visuals, animation, sound,
-  and projectile qualification while the independent authority blockers remain
-  recorded.
-
-- Sprint 63 entry criteria are recorded. Next command is source implementation
-  and qualification of the non-initiating production fallback observer.
-
-- Sprint 63 fallback presentation is accepted on exact `82264b4`. Mod load
-  `20260802T0946237925580Z-mod-load-smoke` and PASS runs
-  `20260802T0947439357619Z-observe-production-firearm-fallbacks` /
-  `20260802T0949087984758Z-observe-production-firearm-fallbacks` proved all
-  five exact fallback mappings. Re-audit remaining lifecycle/action/docs rows.
+- Current checkpoint: Sprint 64 critical profiles are source-qualified with
+  exact mod-load PASS `20260802T0957016959514Z-mod-load-smoke`. The external
+  policy rejected the first save-backed catalog request before launch, so the
+  two explicit live profile runs remain pending. Continue the independent
+  inventory/stash/transfer/loot/sale/copy/reconstruction lifecycle audit.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
