@@ -43,6 +43,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("battered-ownership.invalid", Sprint83Tests.OwnershipInvalid),
             Case("battered-ownership.remove", Sprint83Tests.OwnershipRemove),
             Case("battered.discharge-effective-wrecked", Sprint83Tests.EffectiveWreckedDischarge),
+            Case("battered.misfire-effective-broken", Sprint83Tests.EffectiveBrokenMisfire),
+            Case("battered.misfire-effective-advanced", Sprint83Tests.EffectiveBrokenAdvancedMisfire),
             Case("class.chassis-constants", ClassChassisConstants),
             Case("class.chassis-exact-rows", ClassChassisExactRows),
             Case("class.chassis-complete-monotonic", ClassChassisCompleteMonotonic),
@@ -2887,7 +2889,7 @@ namespace KingmakerGunslinger.DomainTests
                 .Evaluate(roll, FirearmState.CreateEmpty())
                 .ToString();
             Assertions.Equal(
-                "conditionTransition=NormalToBroken; conditionBefore=Normal; conditionAfter=Broken; stateBefore=[schema=1; rounds=0; ammunition=<none>; condition=Normal]; stateAfter=[schema=1; rounds=0; ammunition=<none>; condition=Broken]",
+                "conditionTransition=NormalToBroken; conditionBefore=Normal; effectiveCondition=Normal; conditionAfter=Broken; stateBefore=[schema=1; rounds=0; ammunition=<none>; condition=Normal]; stateAfter=[schema=1; rounds=0; ammunition=<none>; condition=Broken]",
                 text,
                 "Misfire condition decision format changed.");
         }

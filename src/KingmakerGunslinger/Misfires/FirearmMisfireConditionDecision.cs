@@ -15,6 +15,18 @@ namespace KingmakerGunslinger.Misfires
             FirearmState before,
             FirearmState after,
             FirearmMisfireConditionTransition transition)
+            : this(misfire, before, after,
+                before == null ? FirearmCondition.Wrecked : before.Condition,
+                transition)
+        {
+        }
+
+        internal FirearmMisfireConditionDecision(
+            FirearmMisfireDecision misfire,
+            FirearmState before,
+            FirearmState after,
+            FirearmCondition effectiveCondition,
+            FirearmMisfireConditionTransition transition)
         {
             Misfire = misfire ?? throw new ArgumentNullException("misfire");
             Before = before ?? throw new ArgumentNullException("before");
@@ -25,7 +37,8 @@ namespace KingmakerGunslinger.Misfires
                 throw new ArgumentOutOfRangeException("transition", transition, "A defined condition transition is required.");
             }
 
-            Validate(misfire, before, after, transition);
+            Validate(misfire, before, after, effectiveCondition, transition);
+            EffectiveCondition = effectiveCondition;
             Transition = transition;
         }
 
@@ -34,6 +47,8 @@ namespace KingmakerGunslinger.Misfires
         internal FirearmState Before { get; private set; }
 
         internal FirearmState After { get; private set; }
+
+        internal FirearmCondition EffectiveCondition { get; private set; }
 
         internal FirearmMisfireConditionTransition Transition { get; private set; }
 
@@ -46,9 +61,10 @@ namespace KingmakerGunslinger.Misfires
         {
             return string.Format(
                 CultureInfo.InvariantCulture,
-                "conditionTransition={0}; conditionBefore={1}; conditionAfter={2}; stateBefore=[{3}]; stateAfter=[{4}]",
+                "conditionTransition={0}; conditionBefore={1}; effectiveCondition={2}; conditionAfter={3}; stateBefore=[{4}]; stateAfter=[{5}]",
                 Transition,
                 Before.Condition,
+                EffectiveCondition,
                 After.Condition,
                 Before,
                 After);
@@ -58,6 +74,7 @@ namespace KingmakerGunslinger.Misfires
             FirearmMisfireDecision misfire,
             FirearmState before,
             FirearmState after,
+            FirearmCondition effectiveCondition,
             FirearmMisfireConditionTransition transition)
         {
             switch (transition)
@@ -81,7 +98,8 @@ namespace KingmakerGunslinger.Misfires
 
                 case FirearmMisfireConditionTransition.NormalToBroken:
                     RequireMisfire(misfire);
-                    if (before.Condition != FirearmCondition.Normal ||
+                    if (effectiveCondition != FirearmCondition.Normal ||
+                        before.Condition != FirearmCondition.Normal ||
                         after.Condition != FirearmCondition.Broken ||
                         before.LoadedRounds != after.LoadedRounds ||
                         before.LoadedAmmunition != after.LoadedAmmunition)
@@ -94,7 +112,9 @@ namespace KingmakerGunslinger.Misfires
 
                 case FirearmMisfireConditionTransition.BrokenToWrecked:
                     RequireMisfire(misfire);
-                    if (before.Condition != FirearmCondition.Broken ||
+                    if (effectiveCondition != FirearmCondition.Broken ||
+                        (before.Condition != FirearmCondition.Normal &&
+                         before.Condition != FirearmCondition.Broken) ||
                         after.Condition != FirearmCondition.Wrecked || !after.IsEmpty)
                     {
                         throw new ArgumentException(
@@ -106,7 +126,10 @@ namespace KingmakerGunslinger.Misfires
                 case FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken:
                 case FirearmMisfireConditionTransition.ExpertLoadingBrokenRemainsBroken:
                     RequireMisfire(misfire);
-                    if (before.Condition != FirearmCondition.Broken || before != after)
+                    if (effectiveCondition != FirearmCondition.Broken ||
+                        (before.Condition != FirearmCondition.Normal &&
+                         before.Condition != FirearmCondition.Broken) ||
+                        before != after)
                     {
                         throw new ArgumentException(
                             "A remains-Broken transition requires an unchanged Broken state.");

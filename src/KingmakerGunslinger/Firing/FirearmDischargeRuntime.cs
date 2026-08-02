@@ -109,7 +109,8 @@ namespace KingmakerGunslinger.Firing
                     if (!FirearmMisfireRuntime.TryRegisterEligibleAttack(
                             attackRoll,
                             weapon,
-                            after))
+                            after,
+                            result.EffectiveCondition))
                     {
                         // The round has already discharged. Fail the unresolved attack
                         // closed rather than allowing a hit without misfire evaluation.

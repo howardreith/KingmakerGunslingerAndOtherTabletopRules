@@ -46,7 +46,8 @@ namespace KingmakerGunslinger.Misfires
         internal static bool TryRegisterEligibleAttack(
             RuleAttackRoll attackRoll,
             object firearmItem,
-            FirearmItemStateSnapshot postDischarge)
+            FirearmItemStateSnapshot postDischarge,
+            FirearmCondition effectiveCondition)
         {
             try
             {
@@ -80,7 +81,7 @@ namespace KingmakerGunslinger.Misfires
                         "postDischarge");
                 }
 
-                if (postDischargeState.Condition == FirearmCondition.Wrecked)
+                if (effectiveCondition == FirearmCondition.Wrecked)
                 {
                     throw new ArgumentException(
                         "A Wrecked firearm cannot be registered as a successfully discharged attack.",
@@ -99,10 +100,11 @@ namespace KingmakerGunslinger.Misfires
                     firearmItem,
                     wielder,
                     postDischargeState,
+                    effectiveCondition,
                     postDischarge.Repository.RepositoryIdentity,
                     Classes.GunTrainingPolicy.EffectiveMisfireValue(
                         postDischarge.Definition.MisfireValue,
-                        postDischargeState.Condition,
+                        effectiveCondition,
                         HasGunTraining(wielder, postDischarge.Definition.Kind)),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName));
@@ -270,7 +272,8 @@ namespace KingmakerGunslinger.Misfires
                 FirearmMisfireConditionDecision condition =
                     ConditionService.Evaluate(
                         decision,
-                        context.PostDischargeState);
+                        context.PostDischargeState,
+                        context.EffectiveCondition);
                 condition = ExpertLoadingRuntime.Apply(attackRoll, decision,
                     condition, firstEvaluation);
                 if (condition.ChangesCondition)
@@ -522,6 +525,7 @@ namespace KingmakerGunslinger.Misfires
                 object firearmItem,
                 UnitEntityData wielder,
                 FirearmState postDischargeState,
+                FirearmCondition effectiveCondition,
                 string repositoryIdentity,
                 int misfireValue,
                 int misfireBurstRadiusFeet,
@@ -543,7 +547,7 @@ namespace KingmakerGunslinger.Misfires
                 }
 
                 if (!postDischargeState.IsEmpty ||
-                    postDischargeState.Condition == FirearmCondition.Wrecked)
+                    effectiveCondition == FirearmCondition.Wrecked)
                 {
                     throw new ArgumentException(
                         "An eligible attack context requires an empty Normal or Broken post-discharge state.",
@@ -576,6 +580,7 @@ namespace KingmakerGunslinger.Misfires
                 FirearmItem = firearmItem;
                 Wielder = wielder;
                 PostDischargeState = postDischargeState;
+                EffectiveCondition = effectiveCondition;
                 RepositoryIdentity = repositoryIdentity.Trim();
                 MisfireValue = misfireValue;
                 MisfireBurstRadiusFeet = misfireBurstRadiusFeet;
@@ -587,6 +592,8 @@ namespace KingmakerGunslinger.Misfires
             internal UnitEntityData Wielder { get; private set; }
 
             internal FirearmState PostDischargeState { get; private set; }
+
+            internal FirearmCondition EffectiveCondition { get; private set; }
 
             internal string RepositoryIdentity { get; private set; }
 

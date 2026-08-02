@@ -26,6 +26,27 @@ namespace KingmakerGunslinger.Misfires
             FirearmMisfireDecision misfire,
             FirearmState postDischargeState)
         {
+            return Evaluate(definition, misfire, postDischargeState,
+                postDischargeState == null
+                    ? FirearmCondition.Wrecked
+                    : postDischargeState.Condition);
+        }
+
+        internal FirearmMisfireConditionDecision Evaluate(
+            FirearmMisfireDecision misfire,
+            FirearmState postDischargeState,
+            FirearmCondition effectiveCondition)
+        {
+            return Evaluate(FirearmDefinitions.CreateEarlyMusket(), misfire,
+                postDischargeState, effectiveCondition);
+        }
+
+        internal FirearmMisfireConditionDecision Evaluate(
+            FirearmDefinition definition,
+            FirearmMisfireDecision misfire,
+            FirearmState postDischargeState,
+            FirearmCondition effectiveCondition)
+        {
             if (definition == null)
                 throw new ArgumentNullException("definition");
             if (misfire == null)
@@ -38,7 +59,7 @@ namespace KingmakerGunslinger.Misfires
                 throw new ArgumentNullException("postDischargeState");
             }
 
-            if (postDischargeState.Condition == FirearmCondition.Wrecked)
+            if (effectiveCondition == FirearmCondition.Wrecked)
             {
                 throw new ArgumentException(
                     "A Wrecked firearm cannot be an eligible successfully discharged attack.",
@@ -51,12 +72,13 @@ namespace KingmakerGunslinger.Misfires
                     misfire,
                     postDischargeState,
                     postDischargeState,
+                    effectiveCondition,
                     FirearmMisfireConditionTransition.None);
             }
 
             FirearmState after;
             FirearmMisfireConditionTransition transition;
-            if (postDischargeState.Condition == FirearmCondition.Normal)
+            if (effectiveCondition == FirearmCondition.Normal)
             {
                 after = FirearmStateMachine.ApplyMisfireDamage(postDischargeState);
                 transition = FirearmMisfireConditionTransition.NormalToBroken;
@@ -68,13 +90,18 @@ namespace KingmakerGunslinger.Misfires
             }
             else
             {
-                after = FirearmStateMachine.ApplyMisfireDamage(postDischargeState);
+                after = new FirearmState(
+                    postDischargeState.SchemaVersion,
+                    0,
+                    null,
+                    FirearmCondition.Wrecked);
                 transition = FirearmMisfireConditionTransition.BrokenToWrecked;
             }
             return new FirearmMisfireConditionDecision(
                 misfire,
                 postDischargeState,
                 after,
+                effectiveCondition,
                 transition);
         }
     }

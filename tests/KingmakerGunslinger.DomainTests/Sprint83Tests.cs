@@ -2,6 +2,7 @@ using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Firing;
+using KingmakerGunslinger.Misfires;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -157,6 +158,41 @@ namespace KingmakerGunslinger.DomainTests
                 "Effective Wrecked state did not reject discharge.");
             Assertions.True(result.Before == actual && result.After == actual,
                 "Effective rejection mutated actual persisted state.");
+        }
+
+        internal static void EffectiveBrokenMisfire()
+        {
+            FirearmState actual = FirearmState.CreateEmpty();
+            FirearmMisfireDecision roll = new FirearmMisfireService().Evaluate(
+                1, 6, false);
+            FirearmMisfireConditionDecision value =
+                new FirearmMisfireConditionService().Evaluate(
+                    roll, actual, FirearmCondition.Broken);
+            Assertions.Equal(FirearmCondition.Normal, value.Before.Condition,
+                "The borrowed battered firearm's persisted input changed.");
+            Assertions.Equal(FirearmCondition.Broken, value.EffectiveCondition,
+                "The borrowed battered firearm lost effective Broken semantics.");
+            Assertions.Equal(FirearmMisfireConditionTransition.BrokenToWrecked,
+                value.Transition, "An early effective-Broken misfire did not explode.");
+            Assertions.Equal(FirearmCondition.Wrecked, value.After.Condition,
+                "An early borrowed battered misfire did not wreck the item.");
+        }
+
+        internal static void EffectiveBrokenAdvancedMisfire()
+        {
+            FirearmState actual = FirearmState.CreateEmpty();
+            FirearmMisfireDecision roll = new FirearmMisfireService().Evaluate(
+                1, 6, false);
+            FirearmMisfireConditionDecision value =
+                new FirearmMisfireConditionService().Evaluate(
+                    FirearmDefinitions.CreateAdvancedRevolver(), roll, actual,
+                    FirearmCondition.Broken);
+            Assertions.Equal(
+                FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken,
+                value.Transition,
+                "Advanced effective-Broken misfire used early-firearm damage.");
+            Assertions.True(actual == value.After,
+                "Advanced effective-Broken use mutated the persisted Normal item.");
         }
 
         private static FirearmItemId Item(int suffix)

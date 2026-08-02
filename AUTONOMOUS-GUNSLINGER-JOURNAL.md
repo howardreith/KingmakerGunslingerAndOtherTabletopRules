@@ -2878,3 +2878,18 @@
 - Exact `0410d21` guarded Steam mod-load PASS is
   `20260802T1402557908977Z-mod-load-smoke`; rebuilt package/DLL hashes are
   `51f9a32e...b39ca` / `1c9359b3...32a1c`. Sprint 89 is runtime-qualified.
+
+## 2026-08-02 Sprint 90 battered misfire overlay
+
+- Propagated effective battered condition from exact discharge into the
+  short-lived misfire context. Gun Training threshold calculation now sees the
+  effective condition rather than silently using persisted actual condition.
+- Extended the immutable condition decision to prove actual and effective
+  inputs separately. Early actual-Normal/effective-Broken misfires use the
+  existing destructive `BrokenToWrecked` and burst contract; advanced firearms
+  preserve actual state as established for advanced Broken use.
+- Focused cases plus repository validation, all 848 domain/reflection tests,
+  clean Release build, and strict package validation pass. Package/DLL hashes:
+  `bd216cb3...f73a8` / `448824f7...624f5`.
+- Next: commit/mod-load, then convert remaining deed use gates from actual to
+  effective condition while preserving maintenance-only actual semantics.
