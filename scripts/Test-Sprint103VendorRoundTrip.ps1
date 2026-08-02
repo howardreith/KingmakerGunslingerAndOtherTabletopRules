@@ -18,6 +18,7 @@ $checks=[ordered]@{
  'sale-deal'=$runner.Contains('vendor.AddForSell(batteredItem, 1)') -and $runner.Contains('vendor.Deal()')
  'repurchase'=$runner.Contains('vendor.AddForBuy(stored, 1)') -and $runner.Contains('"native-vendor-deal-roundtrip"')
  'reconstructed-origin'=$runner.Contains('BatteredFirearmOriginRuntime.TryGetOwner(item,') -and $runner.Contains('ReferenceEquals(item.Blueprint, expected[0])')
+ 'vendor-inventory'=$runner.Contains('vendorUnit.Descriptor.Inventory')
  'money-rollback'=$runner.Contains('long moneyDelta = moneyBefore - player.Money')
 }
 $failed=@($checks.GetEnumerator()|Where-Object{-not $_.Value}|ForEach-Object Key)

@@ -22,8 +22,10 @@ mutation; durable post-Deal restart remains separately tracked.
 
 After the reversible boundary is qualified, cross `Deal`: stage and sell the
 same request-created pistol and require the exact 22 gp credit. Native `Deal`
-reconstructs the sold stock instance, so require the exact pistol blueprint and
-persisted battered-owner carrier on the unique reconstructed store item, stage
+reconstructs the sold stock instance into the vendor unit's authoritative
+descriptor inventory (`StoreItems` is the generated catalog view), so require
+the exact pistol blueprint and persisted battered-owner carrier on the unique
+reconstructed vendor-inventory item, stage
 that item for player purchase, and commit the repurchase. Temporary request-local funding is allowed only when required and
 must be reversed through the native money API. The final invariant requires the
 same pistol, battered owner, store references, player inventory, money, class,

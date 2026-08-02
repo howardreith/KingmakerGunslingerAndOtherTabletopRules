@@ -1697,7 +1697,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendorPhase = "begin-trading";
                 vendor.BeginTrading(vendorUnit);
                 vendorTradingStarted = true;
-                vendorStoreBefore = EnumerateRuntimeInventory(vendor.StoreItems);
+                vendorStoreBefore = EnumerateRuntimeInventory(
+                    vendorUnit.Descriptor.Inventory);
                 vendorPhase = "add-for-sell";
                 vendor.AddForSell(batteredItem, 1);
                 ItemEntity staged = EnumerateRuntimeInventory(vendor.ItemsForSell)
@@ -1720,7 +1721,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendor.AddForSell(batteredItem, 1);
                 vendorPhase = "commit-sale-deal";
                 vendor.Deal();
-                ItemEntityWeapon stored = EnumerateRuntimeInventory(vendor.StoreItems)
+                ItemEntityWeapon stored = EnumerateRuntimeInventory(
+                    vendorUnit.Descriptor.Inventory)
                     .OfType<ItemEntityWeapon>().Single(item =>
                     {
                         Kingmaker.EntitySystem.Entities.UnitEntityData storedOwner;
@@ -1755,10 +1757,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(item.Blueprint, expected[0]) &&
                         BatteredFirearmOriginRuntime.TryGetOwner(item,
                             out repurchasedOwner) &&
-                        ReferenceEquals(repurchasedOwner, mainDescriptor.Unit));
+                    ReferenceEquals(repurchasedOwner, mainDescriptor.Unit));
                 vendorDealRoundTrip = saleCredited && repurchased != null &&
                     SameReferences(vendorStoreBefore.ToArray(),
-                        EnumerateRuntimeInventory(vendor.StoreItems).ToArray());
+                        EnumerateRuntimeInventory(
+                            vendorUnit.Descriptor.Inventory).ToArray());
                 moneyStable = player.Money == moneyBefore;
             }
             catch (Exception exception)
