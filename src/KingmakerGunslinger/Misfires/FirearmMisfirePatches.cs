@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.Misfires
             ref RulebookEvent.RollEntry value)
         {
             Deeds.DeadShotRuntime.BeforeSetRoll(__instance, ref value);
+            Scatter.ScatterVolleyRuntime.BeforeSetRoll(__instance, ref value);
             FirearmMisfireRuntime.BeforeSetRoll(__instance, ref value);
         }
     }
@@ -59,6 +60,7 @@ namespace KingmakerGunslinger.Misfires
             ref bool __result)
         {
             Deeds.DeadShotRuntime.AfterIsSuccessRoll(__instance, d20, ref __result);
+            Scatter.ScatterVolleyRuntime.AfterIsSuccessRoll(__instance, d20, ref __result);
             FirearmMisfireRuntime.AfterIsSuccessRoll(
                 __instance,
                 d20,

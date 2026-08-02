@@ -36,6 +36,9 @@ definition of done or a listed genuine human-input hard stop.
 - Sprint 94 is committed as `b9a2b6a`. Sprint 95 adds the exact native cone
   target resolver while keeping production locked. Qualify/commit it, then
   continue into the marked volley transaction.
+- Sprint 95 is committed as `9e56731`. Sprint 96 implements the request-scoped
+  native volley marker and hook integration. Qualify/commit it, then compose
+  the complete ability transaction; production remains locked.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

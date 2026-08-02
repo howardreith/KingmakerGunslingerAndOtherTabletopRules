@@ -3049,3 +3049,14 @@
   caster, and duplicate references.
 - Production remains locked. Next: compile/source-qualify this boundary, then
   implement the one-discharge independent-attack transaction.
+
+## 2026-08-02 Sprint 96 marked native scatter volley
+
+- Added a weak request-scoped marker around each native per-target weapon
+  attack. Marked attacks bypass ordinary per-attack chamber consumption while
+  retaining the native attack, AC, damage, concealment, and critical pipeline.
+- Exact natural d20 is captured once; only a roll within the effective misfire
+  threshold is forced to fail. Completed observations feed the existing
+  all-roll aggregation service and markers are removed on consume/cancel.
+- Next: qualify/commit, then compose native geometry, one discharge, marked
+  attacks, aggregate condition/explosion, and rollback in the ability runtime.

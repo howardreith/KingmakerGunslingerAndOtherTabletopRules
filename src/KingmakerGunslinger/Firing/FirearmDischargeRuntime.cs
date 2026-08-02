@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.Firing
                 return;
             }
 
-            if (Deeds.DeadShotRuntime.ShouldBypassDischarge(attackRoll))
+            if (Deeds.DeadShotRuntime.ShouldBypassDischarge(attackRoll) ||
+                Scatter.ScatterVolleyRuntime.ShouldBypassOrdinaryDischarge(attackRoll))
             {
                 return;
             }
