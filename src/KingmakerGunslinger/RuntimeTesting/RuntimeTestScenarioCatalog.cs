@@ -121,6 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
                 ObserveVendorTableContracts,
+                ObserveProductionFirearmFallbacks,
                 ObserveCharacterCreationContracts,
                 DisposableDescriptorConstruction,
                 DisposableGunslingerSelection,

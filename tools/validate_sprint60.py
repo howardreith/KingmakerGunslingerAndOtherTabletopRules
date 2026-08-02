@@ -76,6 +76,7 @@ def validate(root: Path) -> None:
          "RunGunslingerPresentationObservation",
          "RunVendorTableContractObservation",
          "RunProductionFirearmFallbackObservation",
+         "ObserveProductionFirearmFallbacks,",
          'Assertion("one-handed-firearm-fallbacks"',
          'Assertion("two-handed-firearm-fallbacks"',
          '";catalog="',

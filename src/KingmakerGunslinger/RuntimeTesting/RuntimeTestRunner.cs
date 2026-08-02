@@ -309,6 +309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
