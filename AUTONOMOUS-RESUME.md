@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `e35de17` (evaluated native hit die and skill points).
+- Audited source HEAD: `3a26059` (Startling Shot applied-fact reconciliation).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -46,6 +46,11 @@ definition of done or a listed genuine human-input hard stop.
   isolation. Combined with Sprint 72, the class-chassis row is runtime-qualified.
   Commit this curated evidence, then select the next incomplete independent
   integration or final-acceptance item; do not stop at Sprint 75.
+- Latest bounded repair: `3a26059` reconciles Startling Shot's native null
+  `AddBuff` return against exactly one installed requested-blueprint fact while
+  retaining fail-closed atomic rollback. All 831 tests and source/build/package
+  gates pass. Do not launch a third Startling Shot attempt without new runtime
+  authority; continue to an independent incomplete item.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

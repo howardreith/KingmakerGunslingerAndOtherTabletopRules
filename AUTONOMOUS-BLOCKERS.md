@@ -125,7 +125,9 @@ No genuine human-input hard stop is currently established.
   Targeting Head evidence then proved Kingmaker can return null while still
   installing the exact timed condition fact. The two-attempt limit prohibits
   another speculative Startling run; exact applied-fact reconciliation is now
-  the identified future repair contract, not a human-input hard stop.
+  implemented on `3a26059` with full source/build/package qualification. A
+  newly authorized runtime attempt is still required; this bounded evidence
+  limit is not an overall human-input hard stop.
 
 - Sprint 45 Targeting Head remains source-qualified with strong partial runtime
   evidence. Run `20260802T1039503873162Z` proved hit, grit `3->2`, chamber

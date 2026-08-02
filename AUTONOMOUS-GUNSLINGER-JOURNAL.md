@@ -2636,3 +2636,24 @@
 - The class-chassis row is runtime-qualified when combined with Sprint 72's
   reproduced level-20 BAB/saves/facts. Continue immediately to the next
   independent integration or acceptance gap.
+
+## 2026-08-02 Sprint 76 Startling Shot applied-fact reconciliation
+
+- Re-auditing normal first-level creation commit reconfirmed Sprint 70's exact
+  safety exclusion: `SetupNewCharacher` may publish a detached unit into
+  cross-scene and remote-companion collections. It was not invoked.
+- Prior guarded Startling Shot evidence and the independently qualified
+  Targeting Head contract prove native `AddBuff` can return null after installing
+  the exact requested timed fact. Source `3a26059` now reconciles exactly one
+  matching `BuffCollection.RawFacts` entry before treating delivery as failed.
+- Existing ambiguity remains fail-closed through `SingleOrDefault`; absence or
+  duplicates retain atomic firearm-state rollback. Action, grit, duration,
+  targeting, and condition policy are unchanged.
+- Inherited source validation, 831/831 tests, 26 runner checks, 84 preflight
+  checks, clean Release build, and strict packaging passed. The uncommitted
+  candidate package/DLL hashes were
+  `ade103b85c2a9bfda0dd6fb856ff2b9898ab00ce748074972decb5f8ee606fc9` /
+  `1f069a4370db57c2a940574d0bd70582b282b0eea57d9f9ebd0c9593afa55c0d`.
+- The two-attempt limit prohibits a third Startling Shot runtime launch. Keep
+  the deed source-qualified pending newly authorized runtime evidence and
+  continue immediately to an independent coverage item.
