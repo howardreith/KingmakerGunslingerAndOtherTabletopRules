@@ -62,6 +62,8 @@ def validate(root: Path) -> None:
          "observe-vendor-table-contracts",
          "RunGunslingerPresentationObservation",
          "RunVendorTableContractObservation",
+         '";catalog="',
+         ".GroupBy(value => value.GetType().FullName)",
          "gunslinger-visible-fact-presentation",
          "gunslinger-hidden-fact-exclusion",
          "gunslinger-progression-ui-groups"],

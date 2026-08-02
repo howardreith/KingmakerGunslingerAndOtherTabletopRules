@@ -2234,9 +2234,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(",", linkedLoot.ToArray()));
             }
             records.Sort(StringComparer.Ordinal);
+            string catalog = string.Join(" | ", tables.Select(value =>
+                value.name + ":" + value.AssetGuid + ":" +
+                DescribeBlueprintComponents(value)).ToArray());
             string observed = "tables=" + tables.Length + ";associations=" +
                 associations + ";invalid=" + invalidAssociations +
-                ";supplementalLoot=" + supplementalLoot + ";records=" +
+                ";supplementalLoot=" + supplementalLoot + ";catalog=" +
+                catalog + ";records=" +
                 string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -2273,8 +2277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.ComponentsArray;
             return components == null ? "none" : string.Join(",",
                 components.Where(value => value != null)
-                    .Select(value => value.GetType().FullName)
-                    .OrderBy(value => value, StringComparer.Ordinal).ToArray());
+                    .GroupBy(value => value.GetType().FullName)
+                    .OrderBy(value => value.Key, StringComparer.Ordinal)
+                    .Select(value => value.Key + "*" + value.Count()).ToArray());
         }
 
         private RuntimeTestResult RunClassBlueprintContractObservation()
