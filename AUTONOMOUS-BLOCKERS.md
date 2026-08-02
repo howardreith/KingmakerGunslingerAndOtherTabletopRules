@@ -99,6 +99,11 @@ No genuine human-input hard stop is currently established.
 
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
+- Sprint 55 Slinger's Luck runtime investigation is resolved. Exact native IL
+  showed that runtime facts clone bound components and expose them through
+  `Fact.CallComponents<T>`; handlers must validate `D20.Value`, not the
+  modifier-inclusive `BaseRollResult`. Exact `a67a930` passed mod load and two
+  fresh feature launches. Cheat Death is the next engineering gate.
 - Several deed adaptations require exact Kingmaker contract investigation.
   Existing project authority and reversible evidence gathering remain available.
 - The authoritative firearm table labels blunderbuss range `special`; the

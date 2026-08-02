@@ -8,16 +8,25 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `fbd03ae` (Sprint 55 native reroll observer).
+- Audited HEAD: `a67a930` (Sprint 55 Slinger's Luck runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 55 Slinger's Luck implementation is in source
-  qualification; finish gates, commit, and run both reroll branches twice.
+- Current checkpoint: Sprint 55 Slinger's Luck is runtime-qualified; curate and
+  commit this evidence, then begin Cheat Death entry criteria and implementation.
 - Version: `0.0.55`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Slinger's Luck exact commit `a67a930` passed mod load at
+  `20260802T0603271690563Z-mod-load-smoke`. Independent PASS runs
+  `20260802T0604472262192Z-disposable-gunslinger-slingers-luck` and
+  `20260802T0606065893610Z-disposable-gunslinger-slingers-luck` both observed
+  saving and skill native rolls `17->10`, fixed grit `4->2->1`, both markers
+  consumed, other-unit grit `4->4`, and exact cleanup. Package/DLL SHA-256 are
+  `a39c776bb026280bb92594a34b8c6e72b790dabbe0cfa5bcb01de217b837aa9b` /
+  `219d52d8e45aa0372e0300406a4a3b4e24b97b0c55a72d15ad4231c301746eae`.
 
 - Dead Shot exact mod load passed on `fdd5d7c` with run
   `20260802T0032018715336Z-6864954149b440dc9f10abfac6449d6e`.

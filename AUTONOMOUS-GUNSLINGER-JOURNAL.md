@@ -2187,3 +2187,31 @@
   gates.
 - Next: complete source/build/package gates, commit the reconstructable
   checkpoint, then require mod load and two independent feature PASS launches.
+
+## 2026-08-02 Sprint 55 Slinger's Luck runtime qualification
+
+- Initial exact-commit runs failed closed without spending grit or consuming
+  markers. The first verifier also incorrectly compared the modifier-inclusive
+  `BaseRollResult` with a natural d20.
+- Qualified native IL proved every runtime `Fact` clones and binds its blueprint
+  `GameLogicComponent` instances and exposes them through `CallComponents<T>`.
+  It also confirmed `RuleInitiatorLogicComponent<T>` uses the initiator-rulebook
+  subscriber contract rather than the ordinary unit-subscriber contract.
+- Corrected production handlers validate `rule.D20.Value`, preventing ordinary
+  skill/save modifiers from being rejected as invalid natural rolls. The
+  detached scenario invokes the actual bound marker component through native
+  `Fact.CallComponents<T>` and asserts the retained `D20.Value`.
+- Exact commit `a67a9300829602f8e17d904273a063f8266ae9b0` passed all Sprint
+  validators, 807/807 domain tests, clean exact-reference Release compilation,
+  strict packaging, and mod load run
+  `20260802T0603271690563Z-mod-load-smoke`.
+- Two independent fresh-launch feature PASS runs are
+  `20260802T0604472262192Z-disposable-gunslinger-slingers-luck` and
+  `20260802T0606065893610Z-disposable-gunslinger-slingers-luck`. Both observed
+  saving `17->10`, saving grit `4->2`, skill `17->10`, skill grit `2->1`, both
+  markers consumed, other-unit grit `4->4`, and detached cleanup.
+- Exact package SHA-256 is
+  `a39c776bb026280bb92594a34b8c6e72b790dabbe0cfa5bcb01de217b837aa9b`;
+  exact built/deployed DLL SHA-256 is
+  `219d52d8e45aa0372e0300406a4a3b4e24b97b0c55a72d15ad4231c301746eae`.
+- Sprint 55 is complete as a checkpoint. Continue immediately to Cheat Death.
