@@ -52,12 +52,13 @@ namespace KingmakerGunslinger.Deeds
             if (!saving.IsPassed)
             {
                 var kill = new ContextActionKillTarget();
+                var mechanics = new MechanicsContext(Owner.Unit, Owner,
+                    DeathEffect, null, new TargetWrapper(rule.Target));
                 typeof(ContextAction).GetProperty("Context",
                     BindingFlags.Instance | BindingFlags.Public |
-                    BindingFlags.NonPublic).SetValue(kill,
-                        new MechanicsContext(Owner.Unit, Owner, DeathEffect,
-                            null, new TargetWrapper(rule.Target)), null);
-                kill.RunAction();
+                    BindingFlags.NonPublic).SetValue(kill, mechanics, null);
+                using (mechanics.GetDataScope(new TargetWrapper(rule.Target)))
+                    kill.RunAction();
             }
         }
     }
