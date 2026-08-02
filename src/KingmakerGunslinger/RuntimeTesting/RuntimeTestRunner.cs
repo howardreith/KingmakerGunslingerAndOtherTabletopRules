@@ -298,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -511,6 +512,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot)
                 {
                     Complete(RunDisposableGunslingerMenacingShot());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls)
+                {
+                    Complete(RunObserveSlingersLuckNativeRerolls());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4901,6 +4908,105 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunObserveSlingersLuckNativeRerolls()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            int savingBefore = -1, savingAfter = -1;
+            int skillBefore = -1, skillAfter = -1;
+            bool cleaned = false;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                var saving = new RuleSavingThrow(unit,
+                    SavingThrowType.Will, 100);
+                Rulebook.Trigger(saving);
+                savingBefore = saving.BaseRollResult;
+                RulebookEvent.RollEntry replacement = 1;
+                typeof(RuleSavingThrow).GetProperty("D20",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.DeclaredOnly).GetSetMethod(true).Invoke(
+                        saving, new object[] { replacement });
+                savingAfter = saving.BaseRollResult;
+
+                var skill = new RuleSkillCheck(unit,
+                    StatType.SkillAthletics, 100);
+                Rulebook.Trigger(skill);
+                skillBefore = skill.BaseRollResult;
+                typeof(RuleSkillCheck).GetProperty("D20",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.DeclaredOnly).GetSetMethod(true).Invoke(
+                        skill, new object[] { replacement });
+                skillAfter = skill.BaseRollResult;
+            }
+            finally
+            {
+                if (unit != null) unit.Dispose();
+                cleaned = true;
+            }
+
+            PropertyInfo savingD20 = typeof(RuleSavingThrow).GetProperty("D20",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.DeclaredOnly);
+            PropertyInfo savingResult = typeof(RuleSavingThrow).GetProperty(
+                "RollResult", BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.DeclaredOnly);
+            PropertyInfo skillD20 = typeof(RuleSkillCheck).GetProperty("D20",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.DeclaredOnly);
+            PropertyInfo skillResult = typeof(RuleSkillCheck).GetProperty(
+                "RollResult", BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.DeclaredOnly);
+            PropertyInfo nativeD20 = typeof(RulebookEvent.Dice).GetProperty("D20",
+                BindingFlags.Static | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            string observed = "saving=" + savingBefore + "->" + savingAfter +
+                ";skill=" + skillBefore + "->" + skillAfter +
+                ";savingD20=" + DescribeProperty(savingD20) +
+                ";savingResult=" + DescribeProperty(savingResult) +
+                ";skillD20=" + DescribeProperty(skillD20) +
+                ";skillResult=" + DescribeProperty(skillResult) +
+                ";nativeD20=" + DescribeProperty(nativeD20) +
+                ";cleaned=" + cleaned;
+            bool exactMembers = savingD20 != null && savingD20.CanRead &&
+                savingD20.CanWrite && savingD20.GetSetMethod(true) != null &&
+                !savingD20.GetSetMethod(true).IsPublic && savingResult != null &&
+                savingResult.CanRead && !savingResult.CanWrite &&
+                skillD20 != null && skillD20.CanRead && skillD20.CanWrite &&
+                skillD20.GetSetMethod(true) != null &&
+                !skillD20.GetSetMethod(true).IsPublic &&
+                skillResult != null && skillResult.CanRead &&
+                !skillResult.CanWrite && nativeD20 != null && nativeD20.CanRead;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("slingers-luck-native-rule-contracts",
+                    "exact public D20 setters and read-only RollResult members",
+                    observed, exactMembers,
+                    "declared RuleSavingThrow and RuleSkillCheck metadata"),
+                Assertion("slingers-luck-post-trigger-replacement",
+                    "both completed rule results replaceable with mandatory 1",
+                    observed, savingAfter == 1 && skillAfter == 1,
+                    "exact D20 replacement after native Rulebook.Trigger"),
+                Assertion("external-isolation", "disposable unit cleaned",
+                    observed, cleaned, "detached descriptor disposal"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static string DescribeProperty(PropertyInfo property)
+        {
+            if (property == null) return "<missing>";
+            return property.DeclaringType.FullName + "." + property.Name +
+                ":" + property.PropertyType.FullName + ":get=" +
+                property.CanRead + ":set=" + property.CanWrite;
         }
 
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()

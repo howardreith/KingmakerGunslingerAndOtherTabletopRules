@@ -56,6 +56,11 @@ $checks = [ordered]@{
     'menacing-shot-guarded-dispatch' = $runner.Contains(
         'RunDisposableGunslingerMenacingShot()') -and $catalog.Contains(
         'DisposableGunslingerMenacingShot')
+    'slingers-luck-native-observer-is-exact' = $runner.Contains(
+        'RunObserveSlingersLuckNativeRerolls()') -and $runner.Contains(
+        'typeof(RuleSavingThrow).GetProperty("D20"') -and $runner.Contains(
+        'typeof(RuleSkillCheck).GetProperty("D20"') -and $catalog.Contains(
+        'ObserveSlingersLuckNativeRerolls')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }

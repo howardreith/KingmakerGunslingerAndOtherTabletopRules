@@ -57,6 +57,7 @@ $expected = @(
     'observe-evasive-native-features',
     'observe-menacing-shot-native-fear',
     'disposable-gunslinger-menacing-shot',
+    'observe-slingers-luck-native-rerolls',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -175,6 +176,12 @@ Assert-True (-not $menacingShot.RequiresManualInteraction) `
     'menacing-shot-is-autonomous'
 Assert-True (-not $menacingShot.RequiresSaveName) `
     'menacing-shot-is-save-free'
+$slingersLuckObserver = Get-KmgRuntimeScenarioMetadata `
+    'observe-slingers-luck-native-rerolls'
+Assert-True (-not $slingersLuckObserver.RequiresManualInteraction) `
+    'slingers-luck-observer-is-autonomous'
+Assert-True (-not $slingersLuckObserver.RequiresSaveName) `
+    'slingers-luck-observer-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'

@@ -205,6 +205,15 @@ if ($menacingRequest.scenario -cne 'disposable-gunslinger-menacing-shot' -or
     $menacingRequest.parameters.Count -ne 0) {
     $failures.Add('menacing-shot-request-valid')
 }
+$slingersLuckObserverRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-slingers-luck-native-rerolls' `
+    -ExpectedVersion '0.0.54' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($slingersLuckObserverRequest.scenario -cne
+    'observe-slingers-luck-native-rerolls' -or
+    $slingersLuckObserverRequest.parameters.Count -ne 0) {
+    $failures.Add('slingers-luck-observer-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 29'
+Write-Host 'Runtime request source tests passed: 30'
