@@ -3157,3 +3157,14 @@
   validation, 849 tests, Release build, and strict package. Package/DLL hashes:
   `8d276bca374e5c8c62400be04c20bae3bef121f3792dae286ce3efaf20d1699b` /
   `685730c0d493391b4ae0858a1edb03434c16c99e9a6f86116d735dfddfa9c529`.
+- Exact `d47fa60` mod load `20260802T1630189642880Z` and fresh Scatter
+  PASS pair `20260802T1631497040259Z` / `20260802T1633240163716Z` prove
+  registered `+2`, two native cone targets, mixed `1/2` versus all `2/2`
+  misfire, Normal/Broken results, exact pool/external cleanup, version, and no
+  save interaction.
+- Player-fireable publication now removes the qualified Blunderbuss restriction
+  and appends it to the capital vendor as the fifth firearm/eighth project
+  entry. Repository validation, 849 tests, Release build, and strict package
+  pass; package/DLL SHA-256 `1a3fbade2f4a80b5d4ce761bafed5bf77da4e17b572ea6cc5e241f9983ca16a3` /
+  `e9c25b53626917f91146e4969f89209cca1dbb6544795327a718c82fb4688544`.
+  Next: commit and runtime-qualify updated vendor publication.

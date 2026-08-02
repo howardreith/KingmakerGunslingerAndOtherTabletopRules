@@ -74,10 +74,11 @@ namespace KingmakerGunslinger.Firearms
                 throw new ArgumentOutOfRangeException("weightPounds");
             }
 
-            if (isPlayerFireable && !definition.HasFixedRangeIncrement)
+            if (isPlayerFireable && !definition.HasFixedRangeIncrement &&
+                !definition.IsScatter)
             {
                 throw new ArgumentException(
-                    "A special-range production firearm cannot be player-fireable before its range execution exists.",
+                    "Only qualified scatter content may be player-fireable without a fixed range increment.",
                     "isPlayerFireable");
             }
 

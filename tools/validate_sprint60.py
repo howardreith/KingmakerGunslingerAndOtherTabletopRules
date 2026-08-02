@@ -58,7 +58,7 @@ def validate(root: Path) -> None:
     require_tokens(acquisition,
         ["afa2c7f292b8e1c4d9c835f0e8047dd3", "WeaponCount = 1",
          "ConsumableCount = 99", "AdvancedRifle.Item",
-         "AdvancedRevolver.Item", "Blunderbuss excluded",
+         "AdvancedRevolver.Item", "Blunderbuss included",
          "VendorCatalogPublication<BlueprintComponent>.Create",
          "capital vendor contains a duplicate or partial",
          "rollback refused because the table changed"],

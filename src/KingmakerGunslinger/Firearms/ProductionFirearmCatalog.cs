@@ -47,7 +47,7 @@ namespace KingmakerGunslinger.Firearms
                 true,
                 2000,
                 8f,
-                false);
+                true);
         }
 
         internal static ProductionFirearmWeaponSpec CreateAdvancedRifle()

@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.Blueprints
             {
                 firearms.Pistol.Item,
                 firearms.Musket.Item,
+                firearms.Blunderbuss.Item,
                 firearms.AdvancedRifle.Item,
                 firearms.AdvancedRevolver.Item,
                 ammunition.BlackPowder,
@@ -46,7 +47,7 @@ namespace KingmakerGunslinger.Blueprints
             };
             int[] counts =
             {
-                WeaponCount, WeaponCount, WeaponCount, WeaponCount,
+                WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
                 ConsumableCount, ConsumableCount, ConsumableCount
             };
             BlueprintComponent[] existing = table.ComponentsArray ??
@@ -70,7 +71,7 @@ namespace KingmakerGunslinger.Blueprints
             publication.Validate();
             logger.Info("acquisition", "capital-vendor.published",
                 string.Format(CultureInfo.InvariantCulture,
-                    "Appended {0} Gunslinger entries to {1} ({2}); weapons={3}, consumables={4}; Blunderbuss excluded.",
+                    "Appended {0} Gunslinger entries to {1} ({2}); weapons={3}, consumables={4}; Blunderbuss included.",
                     items.Length, table.name, TableGuid, WeaponCount, ConsumableCount));
             return publication;
         }

@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.DomainTests
         private static void CatalogBlunderbussExact()
         {
             ProductionFirearmWeaponSpec spec = ProductionFirearmCatalog.CreateBlunderbuss();
-            AssertWeaponSpec(spec, "blunderbuss", "Blunderbuss", FirearmKind.Blunderbuss, 1, 8, 2, true, 2000, 8f, false);
+            AssertWeaponSpec(spec, "blunderbuss", "Blunderbuss", FirearmKind.Blunderbuss, 1, 8, 2, true, 2000, 8f, true);
             Assertions.False(spec.Definition.HasFixedRangeIncrement,
                 "Blunderbuss catalog entry invented a numeric range.");
         }
@@ -40,8 +40,8 @@ namespace KingmakerGunslinger.DomainTests
         private static void CatalogSpecialRangeCannotBeFireable()
         {
             ProductionFirearmWeaponSpec blunderbuss = ProductionFirearmCatalog.CreateBlunderbuss();
-            Assertions.Throws<ArgumentException>(
-                () => new ProductionFirearmWeaponSpec(
+            ProductionFirearmWeaponSpec qualified =
+                new ProductionFirearmWeaponSpec(
                     blunderbuss.Key,
                     blunderbuss.DisplayName,
                     blunderbuss.Definition,
@@ -51,8 +51,9 @@ namespace KingmakerGunslinger.DomainTests
                     blunderbuss.IsTwoHanded,
                     blunderbuss.CostGold,
                     blunderbuss.WeightPounds,
-                    true),
-                "Special-range content must remain non-fireable before scatter execution exists.");
+                    true);
+            Assertions.True(qualified.IsPlayerFireable && qualified.Definition.IsScatter,
+                "Qualified special-range scatter content remained unavailable.");
         }
 
         private static void CatalogHandednessMismatchRejected()

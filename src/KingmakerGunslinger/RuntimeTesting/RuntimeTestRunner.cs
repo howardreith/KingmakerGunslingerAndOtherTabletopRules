@@ -1371,7 +1371,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "unavailableRestrictions=" + blunderbussUnavailable,
                     catalog != null &&
                         !catalog.Blunderbuss.Spec.Definition.HasFixedRangeIncrement &&
-                        !catalog.Blunderbuss.Spec.IsPlayerFireable &&
+                        catalog.Blunderbuss.Spec.IsPlayerFireable &&
                         blunderbussUnavailable == 1,
                     "special-range definition and concrete item restriction"),
                 Assertion("production-critical-profiles",
@@ -2456,6 +2456,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     { BlueprintBootstrap.ProductionFirearms.Pistol.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.Musket.Item, 1 },
+                    { BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item, 1 },
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 99 },
@@ -2541,14 +2542,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 58 &&
+                        fixedCountField != null && capitalEntries.Count == 59 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "C11_JhodVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "seven exact entries with native quantities and no Blunderbuss",
-                    observed, projectEntries == 7 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 0,
+                    "eight exact entries with native quantities including one Blunderbuss",
+                    observed, projectEntries == 8 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 1,
                     "registered production firearms, ammunition, and repair kit"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +

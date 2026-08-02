@@ -81,6 +81,10 @@ definition of done or a listed genuine human-input hard stop.
 - Exact `41e8690` proved the complete scatter transaction and cleanup; only the
   registration counter read the external collection instead of `State.Units`.
   Repair uses authoritative pool count plus external snapshot restoration.
+- Scatter runtime-qualified on exact `d47fa60`: mod load plus PASS pair
+  `20260802T1631497040259Z` / `20260802T1633240163716Z`. Current qualified
+  source unlocks/publishes Blunderbuss; 849 tests/build/package pass. Commit and
+  run updated vendor observer twice, then continue remaining mandatory rows.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

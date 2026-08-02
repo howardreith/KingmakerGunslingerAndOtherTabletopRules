@@ -17,7 +17,7 @@ Sprint 61 runtime-qualified the supporting acquisition adaptation on `c2fd27b`:
 the exact capital Jhod shared-vendor table appends one each of the four
 player-fireable firearms and 99 each of powder, balls, and repair kits using
 observed native quantity precedents. Native entries and prices are preserved;
-Blunderbuss remains unavailable pending scatter qualification.
+Blunderbuss Scatter Shot is runtime-qualified on `d47fa60` and is player-fireable; vendor publication is the next gate.
 
 Sprint 75 runtime-qualified the base class chassis on `e35de17`. Two fresh
 save-free native `CharGen`/`LevelUp` observations reproduced d10 player-class
