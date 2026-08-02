@@ -277,6 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelTwentyProgression &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
@@ -407,6 +408,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview)
                 {
                     Complete(RunDisposableGunslingerMulticlassPreview());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassCommit)
+                {
+                    Complete(RunDisposableGunslingerMulticlassCommit());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3880,6 +3887,139 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerMulticlassCommit()
+        {
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
+                .Single(value => value != null && value.AssetGuid ==
+                    "48ac8db94d5de7645906c7d0ad3bcfbd");
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object remote = ReadExactMember(player, "RemoteCompanions");
+            object cross = ReadExactMember(ReadExactMember(player, "CrossSceneState"),
+                "AllEntityData");
+            object inventory = ReadExactMember(player, "Inventory");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] remoteBefore = SnapshotReferences(remote);
+            object[] crossBefore = SnapshotReferences(cross);
+            object[] inventoryBefore = SnapshotReferences(inventory);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            object seed = null, multiclass = null;
+            int fighterSeeded = -1, previewFighter = -1, previewGunslinger = -1;
+            int committedFighter = -1, committedGunslinger = -1;
+            bool selected = false, callback = false, proficiencies = false,
+                grit = false, cleaned = false;
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                var descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable multiclass commit source is unavailable.");
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = type.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null ||
+                    cancel == null || commit == null)
+                    throw new MissingMethodException(
+                        "An exact native multiclass commit method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seed = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seed, new object[] { fighter, false }))
+                    throw new InvalidOperationException("Fighter seed selection was rejected.");
+                mechanics.Invoke(seed, null);
+                apply.Invoke(seed, new object[] { descriptor });
+                cancel.Invoke(seed, null);
+                seed = null;
+                fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
+
+                object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "LevelUp", false);
+                Action onSuccess = () => callback = true;
+                multiclass = start.Invoke(null,
+                    new object[] { descriptor, false, null, onSuccess, levelUp });
+                selected = (bool)selectClass.Invoke(multiclass,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(multiclass, null);
+                var preview = ReadExactMember(multiclass, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                previewFighter = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(fighter);
+                previewGunslinger = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(gunslinger);
+                commit.Invoke(multiclass, null);
+                multiclass = null;
+                committedFighter = descriptor.Progression.GetClassLevel(fighter);
+                committedGunslinger = descriptor.Progression.GetClassLevel(gunslinger);
+                proficiencies = descriptor.HasFact(
+                    BlueprintBootstrap.GunslingerClass.Proficiencies);
+                grit = descriptor.HasFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (multiclass != null && cancel != null) cancel.Invoke(multiclass, null);
+                if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(remoteBefore, SnapshotReferences(remote)) &&
+                    SameReferences(crossBefore, SnapshotReferences(cross)) &&
+                    SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
+                    (entity == null || !ContainsReference(cross, entity));
+            }
+            string observed = "seedFighter=" + fighterSeeded + ";selected=" + selected +
+                ";preview=" + previewFighter + "/" + previewGunslinger +
+                ";committed=" + committedFighter + "/" + committedGunslinger +
+                ";callback=" + callback + ";proficiencies=" + proficiencies +
+                ";grit=" + grit;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-multiclass-commit",
+                    "Fighter 1/Gunslinger 0 -> Fighter 1/Gunslinger 1", observed,
+                    fighterSeeded == 1 && selected && previewFighter == 1 &&
+                        previewGunslinger == 1 && committedFighter == 1 &&
+                        committedGunslinger == 1 && callback,
+                    "LevelUp-mode native Commit and success callback"),
+                Assertion("multiclass-level-one-facts",
+                    "Gunslinger proficiencies and grit installed", observed,
+                    proficiencies && grit,
+                    "exact descriptor HasFact after native multiclass commit"),
+                Assertion("external-isolation",
+                    "unchanged party, units, cross-scene, companions, and inventory",
+                    "cleaned=" + cleaned, cleaned,
+                    "expanded reference snapshots after detached disposal"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerRespecPreview()
