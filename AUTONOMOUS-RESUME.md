@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `731ff07` (save-free corrupt token preservation repair).
+- Audited source HEAD: `7ab1a58` (production identical-firearm switching).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -63,6 +63,13 @@ definition of done or a listed genuine human-input hard stop.
   `20260802T1210579132106Z` passed reconstruction, removal, new-item isolation,
   duplicate rejection/preservation `2->2`, and no inventory/save mutation.
   Do not run a third attempt; continue independently.
+- Latest switching evidence: exact `7ab1a58` package/DLL hashes are
+  `414fefdf4536ede54b8f71693d4c198b5f4799b2f581a10f42c2cf7807c0bca0` /
+  `624e9cdde3e8df4b019de8fe7f736e3ef0885b084667a2b7479cfd4acdc904ed`.
+  Mod load `20260802T1217444779507Z` and PASS runs
+  `20260802T1219064706820Z` / `20260802T1220329632177Z` reproduced exact
+  identical-item selection, independent loaded/Normal versus empty/Broken state,
+  dual-equipped ambiguity rejection, and isolation. Continue independently.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

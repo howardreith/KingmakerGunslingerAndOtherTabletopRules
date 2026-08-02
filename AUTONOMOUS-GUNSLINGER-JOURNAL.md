@@ -2694,3 +2694,23 @@
   `746c369f8211216595c68d0a4f848e574b15a5b3b32d75c7c545dc8901754e1c`.
 - Do not run a third attempt. This is strong single-run evidence after one exact
   observer repair, not two-run reproduction. Continue independently.
+
+## 2026-08-02 Sprint 79 production identical-firearm switching
+
+- Source `7ab1a58` adds a detached save-free observer with two distinct
+  production Early Pistol instances. The first is loaded/Normal and the second
+  empty/Broken through their item-owned token repositories.
+- Eight focused checks, 84 preflight checks, inherited validation, 831/831
+  tests, clean Release, and strict packaging passed. One initial compile found
+  only a missing existing resolver namespace import; the corrected full gate
+  passed before commit.
+- Exact mod load `20260802T1217444779507Z` and fresh switching runs
+  `20260802T1219064706820Z` / `20260802T1220329632177Z` passed. Both selected
+  each exact item after native primary-hand switching, preserved independent
+  states, rejected two simultaneously equipped distinct firearms as ambiguous,
+  and cleaned up without inventory or save mutation.
+- Exact package/DLL SHA-256 are
+  `414fefdf4536ede54b8f71693d4c198b5f4799b2f581a10f42c2cf7807c0bca0` /
+  `624e9cdde3e8df4b019de8fe7f736e3ef0885b084667a2b7479cfd4acdc904ed`.
+- Production equipment switching and identical-item isolation are reproduced.
+  Continue immediately to another incomplete integration or acceptance gap.
