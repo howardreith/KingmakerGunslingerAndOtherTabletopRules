@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.59-s59-true-grit",
-  "version": "0.0.59",
+  "milestone": "0.0.60-s60-player-presentation",
+  "version": "0.0.60",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

@@ -193,6 +193,7 @@
     <Compile Include="Blueprints\NimbleBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerInitiativeBlueprints.cs" />
     <Compile Include="Blueprints\PistolWhipBlueprints.cs" />
+    <Compile Include="Blueprints\PlayerFacingPresentation.cs" />
     <Compile Include="Blueprints\UtilityShotBlueprints.cs" />
     <Compile Include="Blueprints\StartlingShotBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />

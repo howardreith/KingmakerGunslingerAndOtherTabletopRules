@@ -64,6 +64,16 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
+        internal void SetIconIfMissing(BlueprintUnitFact fact, Sprite icon)
+        {
+            if (fact == null) throw new ArgumentNullException("fact");
+            if (icon == null) throw new ArgumentNullException("icon");
+            if (fact.Icon == null) _icon.SetValue(fact, icon);
+            if (fact.Icon == null)
+                throw new InvalidOperationException(
+                    "The unit-fact icon was not readable after assignment.");
+        }
+
         private static FieldInfo Require(
             Type type,
             string name,

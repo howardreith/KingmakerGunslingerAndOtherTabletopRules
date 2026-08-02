@@ -244,6 +244,7 @@ namespace KingmakerGunslinger.Blueprints
             progression.LevelEntries[18].Features.Add(stunningShot.Feature);
             progression.LevelEntries[19].Features.Add(trueGrit.Selection);
             progression.LevelEntries[19].Features.Add(trueGrit.Selection);
+            PlayerFacingPresentation.Apply(progression, characterClass.Icon);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);

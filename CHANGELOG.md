@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.60 - Sprint 60 Player-Facing Presentation
+
+- Adds approved fallback icons to project-owned visible Gunslinger progression
+  features and granted abilities while preserving feature-specific icons.
+- Groups existing visible level-entry features for native progression display
+  without changing class mechanics or hidden implementation facts.
+
 ## 0.0.59 - Sprint 59 True Grit
 
 - Establishes the centralized True Grit cost/gate policy and stable eligible
