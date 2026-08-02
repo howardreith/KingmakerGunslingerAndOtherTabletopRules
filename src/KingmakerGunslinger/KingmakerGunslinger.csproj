@@ -362,6 +362,12 @@
     <Compile Include="Deeds\StunningShotService.cs" />
     <Compile Include="Deeds\StunningShotAbilityLogic.cs" />
     <Compile Include="Deeds\StunningShotAttackHandler.cs" />
+    <Compile Include="Deeds\TrueGritDeed.cs" />
+    <Compile Include="Deeds\TrueGritChoice.cs" />
+    <Compile Include="Deeds\TrueGritCatalog.cs" />
+    <Compile Include="Deeds\TrueGritRequest.cs" />
+    <Compile Include="Deeds\TrueGritDecision.cs" />
+    <Compile Include="Deeds\TrueGritService.cs" />
     <Compile Include="Deeds\EvasiveRuntime.cs" />
     <Compile Include="Deeds\EvasiveResourcePatches.cs" />
     <Compile Include="Blueprints\EvasiveBlueprints.cs" />

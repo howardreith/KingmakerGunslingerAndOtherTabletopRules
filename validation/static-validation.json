@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.58-s58-stunning-shot",
-  "version": "0.0.58",
+  "milestone": "0.0.59-s59-true-grit",
+  "version": "0.0.59",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 819,
+    "testCount": 827,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

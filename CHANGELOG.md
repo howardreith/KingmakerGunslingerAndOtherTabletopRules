@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.59 - Sprint 59 True Grit
+
+- Establishes the centralized True Grit cost/gate policy and stable eligible
+  deed catalog, including computed-cost, zero-cost, no-spend, Cheat Death, and
+  Slinger's Luck exclusion boundaries.
+- Adds eight focused policy cases; the complete suite is 827 tests.
+
 ## 0.0.58 - Sprint 58 Stunning Shot
 
 - Adds the level-19 pre-shot Stunning Shot deed with exact native critical-hit
