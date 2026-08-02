@@ -30,6 +30,7 @@ $expected = @(
     'observe-production-firearm-fallbacks',
     'observe-firearm-item-lifecycle-contracts',
     'disposable-production-firearm-switching',
+    'disposable-gunslinger-comprehensive-acceptance',
     'observe-character-creation-contracts',
     'disposable-descriptor-construction',
     'disposable-gunslinger-selection',

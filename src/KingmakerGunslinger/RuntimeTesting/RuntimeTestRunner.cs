@@ -318,6 +318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerComprehensiveAcceptance &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -370,6 +371,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching)
                 {
                     Complete(RunDisposableProductionFirearmSwitching());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableGunslingerComprehensiveAcceptance)
+                {
+                    Complete(RunDisposableGunslingerComprehensiveAcceptance());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2918,6 +2925,106 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerComprehensiveAcceptance()
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            int slices = 0;
+            AppendAcceptanceSlice(assertions, "level-twenty", ref slices,
+                RunDisposableGunslingerLevelTwentyProgression);
+            AppendAcceptanceSlice(assertions, "evaluated-chassis", ref slices,
+                RunDisposableGunslingerEvaluatedChassis);
+            AppendAcceptanceSlice(assertions, "levelup-commit", ref slices,
+                RunDisposableGunslingerLevelUpCommit);
+            AppendAcceptanceSlice(assertions, "multiclass-commit", ref slices,
+                RunDisposableGunslingerMulticlassCommit);
+            AppendAcceptanceSlice(assertions, "grit-resource", ref slices,
+                RunDisposableGunslingerGritResource);
+            AppendAcceptanceSlice(assertions, "grit-rest", ref slices,
+                RunDisposableGunslingerGritRest);
+            AppendAcceptanceSlice(assertions, "grit-persistence", ref slices,
+                RunDisposableGunslingerGritPersistence);
+            AppendAcceptanceSlice(assertions, "grit-recovery", ref slices,
+                RunDisposableGunslingerGritRecovery);
+            AppendAcceptanceSlice(assertions, "deadeye", ref slices,
+                RunDisposableGunslingerDeadeye);
+            AppendAcceptanceSlice(assertions, "dodge", ref slices,
+                RunDisposableGunslingerDodge);
+            AppendAcceptanceSlice(assertions, "quick-clear", ref slices,
+                RunDisposableGunslingerQuickClear);
+            AppendAcceptanceSlice(assertions, "nimble", ref slices,
+                RunDisposableGunslingerNimble);
+            AppendAcceptanceSlice(assertions, "initiative", ref slices,
+                RunDisposableGunslingerInitiative);
+            AppendAcceptanceSlice(assertions, "pistol-whip", ref slices,
+                RunDisposableGunslingerPistolWhip);
+            AppendAcceptanceSlice(assertions, "stop-bleeding", ref slices,
+                RunDisposableGunslingerStopBleeding);
+            AppendAcceptanceSlice(assertions, "bonus-feats", ref slices,
+                RunDisposableGunslingerBonusFeats);
+            AppendAcceptanceSlice(assertions, "gun-training", ref slices,
+                RunDisposableGunslingerGunTraining);
+            AppendAcceptanceSlice(assertions, "dead-shot", ref slices,
+                RunDisposableGunslingerDeadShot);
+            AppendAcceptanceSlice(assertions, "targeting-torso", ref slices,
+                RunDisposableGunslingerTargetingTorso);
+            AppendAcceptanceSlice(assertions, "targeting-legs", ref slices,
+                RunDisposableGunslingerTargetingLegs);
+            AppendAcceptanceSlice(assertions, "bleeding-wound", ref slices,
+                RunDisposableGunslingerBleedingWound);
+            AppendAcceptanceSlice(assertions, "expert-loading", ref slices,
+                RunDisposableGunslingerExpertLoading);
+            AppendAcceptanceSlice(assertions, "lightning-reload", ref slices,
+                RunDisposableGunslingerLightningReload);
+            AppendAcceptanceSlice(assertions, "evasive", ref slices,
+                RunDisposableGunslingerEvasive);
+            AppendAcceptanceSlice(assertions, "menacing-shot", ref slices,
+                RunDisposableGunslingerMenacingShot);
+            AppendAcceptanceSlice(assertions, "slingers-luck", ref slices,
+                RunDisposableGunslingerSlingersLuck);
+            AppendAcceptanceSlice(assertions, "cheat-death", ref slices,
+                RunDisposableGunslingerCheatDeath);
+            AppendAcceptanceSlice(assertions, "stunning-shot", ref slices,
+                () => RunDisposableGunslingerStunningShot(false));
+            AppendAcceptanceSlice(assertions, "true-grit", ref slices,
+                () => RunDisposableGunslingerStunningShot(true));
+            AppendAcceptanceSlice(assertions, "production-switching", ref slices,
+                RunDisposableProductionFirearmSwitching);
+            assertions.Add(Assertion("acceptance-slice-count", "30 qualified slices",
+                "slices=" + slices, slices == 30,
+                "explicit save-free comprehensive acceptance catalog"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private void AppendAcceptanceSlice(List<RuntimeTestAssertion> assertions,
+            string label, ref int slices, Func<RuntimeTestResult> execute)
+        {
+            slices++;
+            try
+            {
+                RuntimeTestResult result = execute();
+                if (result == null || result.Assertions == null)
+                    throw new InvalidOperationException("Slice returned no assertions.");
+                foreach (RuntimeTestAssertion assertion in result.Assertions)
+                    assertions.Add(new RuntimeTestAssertion
+                    {
+                        Name = label + "." + assertion.Name,
+                        Expected = assertion.Expected,
+                        Observed = assertion.Observed,
+                        Status = assertion.Status,
+                        Evidence = assertion.Evidence
+                    });
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion(label + ".execution",
+                    "qualified slice completes without exception",
+                    exception.GetType().Name + ": " + exception.Message, false,
+                    "slice-owned cleanup plus comprehensive fail-closed aggregation"));
+            }
         }
 
         private static bool ObserveFallback(string label,

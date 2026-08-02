@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-firearm-item-lifecycle-contracts";
         internal const string DisposableProductionFirearmSwitching =
             "disposable-production-firearm-switching";
+        internal const string DisposableGunslingerComprehensiveAcceptance =
+            "disposable-gunslinger-comprehensive-acceptance";
         internal const string ObserveCharacterCreationContracts =
             "observe-character-creation-contracts";
         internal const string DisposableDescriptorConstruction =
@@ -138,6 +140,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveProductionFirearmFallbacks,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableProductionFirearmSwitching,
+                DisposableGunslingerComprehensiveAcceptance,
                 ObserveCharacterCreationContracts,
                 DisposableDescriptorConstruction,
                 DisposableGunslingerSelection,
