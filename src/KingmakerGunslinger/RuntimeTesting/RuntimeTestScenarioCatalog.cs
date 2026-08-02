@@ -30,6 +30,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-levelup-commit";
         internal const string DisposableGunslingerLevelTwentyProgression =
             "disposable-gunslinger-level-twenty-progression";
+        internal const string DisposableGunslingerEvaluatedChassis =
+            "disposable-gunslinger-evaluated-chassis";
         internal const string DisposableGunslingerMulticlassPreview =
             "disposable-gunslinger-multiclass-preview";
         internal const string DisposableGunslingerMulticlassCommit =
@@ -140,6 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerLevelUpPreview,
                 DisposableGunslingerLevelUpCommit,
                 DisposableGunslingerLevelTwentyProgression,
+                DisposableGunslingerEvaluatedChassis,
                 DisposableGunslingerMulticlassPreview,
                 DisposableGunslingerMulticlassCommit,
                 DisposableGunslingerRespecPreview,

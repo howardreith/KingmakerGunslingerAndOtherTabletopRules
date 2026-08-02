@@ -276,6 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelTwentyProgression &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvaluatedChassis &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
@@ -403,6 +404,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposableGunslingerLevelTwentyProgression)
                 {
                     Complete(RunDisposableGunslingerLevelTwentyProgression());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerEvaluatedChassis)
+                {
+                    Complete(RunDisposableGunslingerEvaluatedChassis());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3739,6 +3746,118 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedFacts > 0 && observedFacts == expectedFacts &&
                         string.IsNullOrEmpty(missingFacts),
                     "native descriptor HasFact for exact progression entries"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "detached entity disposal and exact reference snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerEvaluatedChassis()
+        {
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            object controller = null;
+            int hpBefore = -1, hpLevelOne = -1, hpLevelTwo = -1;
+            int skillsLevelOne = -1, skillsLevelTwo = -1;
+            int classLevel = -1;
+            bool cleaned = false;
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                var descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable evaluated chassis source is unavailable.");
+                descriptor.Stats.Intelligence.BaseValue = 10;
+                hpBefore = descriptor.Stats.HitPoints.BaseValue;
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact evaluated chassis method is unavailable.");
+
+                for (int level = 1; level <= 2; level++)
+                {
+                    object mode = Enum.Parse(start.GetParameters()[4].ParameterType,
+                        level == 1 ? "CharGen" : "LevelUp", false);
+                    controller = start.Invoke(null,
+                        new object[] { descriptor, false, null, null, mode });
+                    if (!(bool)selectClass.Invoke(controller,
+                        new object[] { gunslinger, false }))
+                        throw new InvalidOperationException(
+                            "Evaluated chassis selection rejected level " + level + ".");
+                    mechanics.Invoke(controller, null);
+                    object levelState = ReadExactMember(controller, "State");
+                    int skillPoints = (int)ReadExactMember(levelState, "TotalSkillPoints");
+                    apply.Invoke(controller, new object[] { descriptor });
+                    cancel.Invoke(controller, null);
+                    controller = null;
+                    if (level == 1)
+                    {
+                        skillsLevelOne = skillPoints;
+                        hpLevelOne = descriptor.Stats.HitPoints.BaseValue;
+                    }
+                    else
+                    {
+                        skillsLevelTwo = skillPoints;
+                        hpLevelTwo = descriptor.Stats.HitPoints.BaseValue;
+                    }
+                }
+                classLevel = descriptor.Progression.GetClassLevel(gunslinger);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "hitDie=" + gunslinger.HitDie + ";skillBase=" +
+                gunslinger.SkillPoints + ";hp=" + hpBefore + "/" + hpLevelOne +
+                "/" + hpLevelTwo + ";skills=" + skillsLevelOne + "/" +
+                skillsLevelTwo + ";class=" + classLevel;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("evaluated-hit-die",
+                    "d10 player base-class HP 0 -> 11 -> 18", observed,
+                    gunslinger.HitDie == DiceType.D10 && hpBefore == 0 &&
+                        hpLevelOne == 11 && hpLevelTwo == 18 && classLevel == 2,
+                    "native ApplyClassMechanics.ApplyHitPoints"),
+                Assertion("evaluated-skill-points",
+                    "class base 4; Intelligence 10 yields 4 points at levels 1 and 2",
+                    observed, gunslinger.SkillPoints == 4 && skillsLevelOne == 4 &&
+                        skillsLevelTwo == 4,
+                    "native LevelUpState.TotalSkillPoints after class mechanics"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "detached entity disposal and exact reference snapshots"),
