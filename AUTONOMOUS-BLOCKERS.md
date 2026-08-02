@@ -209,3 +209,8 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
 - Resolution: the user authorized both save-free scenarios. Exact `8609ebd`
   passed two fresh Startling Shot runs and two fresh Targeting Head runs. Both
   deed runtime gates are closed; `HUMAN-INPUT-REQUIRED.md` is removed.
+- Current hard stop: production Blunderbuss scatter requires a numeric cone
+  distance, but every authorized source supplies only `special`. Native cone
+  geometry and volley semantics are already qualified. The player-facing
+  balance choice and conservative 15-foot recommendation are recorded in
+  `HUMAN-INPUT-REQUIRED.md`.

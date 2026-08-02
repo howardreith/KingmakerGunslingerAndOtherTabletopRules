@@ -3015,3 +3015,15 @@
   and complete cleanup/isolation.
 - Both repaired deeds are runtime-qualified. Remove the resolved permission
   file, commit curated evidence, then continue the remaining-row audit.
+
+## 2026-08-02 post-deed remaining-row audit
+
+- Curated repaired-deed evidence committed as `8c77e8d`; working tree was
+  clean and the mission continued.
+- All remaining incomplete rows cross explicit hard boundaries. The
+  highest-dependency content blocker is the production Blunderbuss: exact
+  native geometry/delivery contracts are qualified, but authorized sources
+  provide only `special` range where Kingmaker requires a numeric distance.
+- Created `HUMAN-INPUT-REQUIRED.md` with the one player-facing balance decision.
+  Recommended 15 feet as the conservative adaptation; no scatter source change
+  is permitted until the project supplies that authority.

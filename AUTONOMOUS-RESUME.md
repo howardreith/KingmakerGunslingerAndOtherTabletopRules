@@ -26,6 +26,10 @@ definition of done or a listed genuine human-input hard stop.
   `20260802T1454137455208Z` / `20260802T1455368086818Z`. Both are now
   runtime-qualified. Commit the curated records and continue the remaining-row
   audit; the permission file is resolved and removed.
+- Repaired-deed evidence is committed as `8c77e8d`. The next highest-dependency
+  blocker is the missing numeric production Blunderbuss cone distance. Exact
+  choices and the recommended 15-foot conservative adaptation are recorded in
+  `HUMAN-INPUT-REQUIRED.md`. Do not implement a distance until authorized.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through
