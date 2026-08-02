@@ -8,15 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `087e11a` (Sprint 66 production firearm actions).
+- Audited source HEAD: `cb6ffd7` (Sprint 67 release documentation/package).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 66 passed exact mod load
-  `20260802T1020144242399Z-mod-load-smoke` and independent presentation runs
-  `20260802T1021336705231Z` / `20260802T1022571370114Z`. All three stable
-  Firearm Proficiency actions now present generically and the player-actions
-  row is runtime-qualified. Re-audit the matrix and select the next independent
-  incomplete final-integration row; do not stop at this checkpoint.
+- Current checkpoint: Sprint 67 packages and enforces bounded installation,
+  update, removal, and compatibility guidance in an exact nine-file standalone
+  package. Exact `cb6ffd7` clean Release/package qualification passed with
+  831/831 tests. Re-audit the remaining RUNTIME-PARTIAL/SOURCE-QUALIFIED rows
+  and select the next independent final-integration item; do not stop here.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

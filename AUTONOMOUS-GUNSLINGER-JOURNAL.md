@@ -2467,3 +2467,23 @@
   `b79daa5d57d411a0bdcd190b8f58b88dd54dc6636c37ddcaf339e30535bb0490`.
 - Player actions and diagnostics are runtime-qualified. Continue immediately
   to the next independent incomplete final-integration row.
+
+## 2026-08-02 Sprint 67 release documentation and package contract
+
+- Replaced the disposable Sprint-era installation paragraph with a packaged
+  installation/update/removal/compatibility guide. It requires backups and
+  complete-folder replacement, warns that custom serialized references make
+  uninstall safety unqualified, and bounds runtime/dependency/mod-compatibility
+  claims.
+- Source checkpoint `cb6ffd7` advances both ordinary and deterministic package
+  enforcement to an exact nine-file allowlist containing the guide. Historical
+  version-specific eight-file archive evidence remains historical.
+- Six focused checks, 38 request checks, 84 preflight checks, inherited source
+  validation, and the complete 831/831 suite pass. Clean exact-reference
+  Release build and both strict package paths pass before and after commit.
+- Exact committed-tree package/DLL SHA-256 are
+  `1a350b6deab0855abeaaa967c4e3cd09dbac55d0ec7bb097413ca5253f86ed3a` /
+  `902fda0ecbb0853f3217f1bf8065d6304fc5e07fe4a4c1464ede49aebb85de09`.
+- This mandatory documentation row is COMPLETE. No runtime launch was needed
+  because no assembly source, blueprint, or runtime input changed. Continue to
+  the next incomplete mandatory row.
