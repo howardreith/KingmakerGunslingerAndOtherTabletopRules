@@ -41,7 +41,8 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["PlayerFacingPresentation.Apply(progression, characterClass.Icon)",
          "fighter.Progression.Icon",
-         "native Fighter class and progression exposed no presentation icon",
+         "presentationIcon = startingPistol.Icon",
+         "approved native class and crossbow-compatible firearm sources",
          "result.m_Icon = presentationIcon"],
         "Sprint 60 bootstrap integration")
     bootstrap = read(root,

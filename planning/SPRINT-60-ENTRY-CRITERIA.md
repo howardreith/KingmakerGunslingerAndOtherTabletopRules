@@ -10,7 +10,9 @@ replaceable. This sprint changes presentation metadata only.
 ## Observable contract
 
 - The Gunslinger class and progression retain nonblank localized names and
-  descriptions and the approved native class fallback icon.
+  descriptions and an approved native fallback icon. Prefer the native Fighter
+  class/progression icon when available; the ADR-0007 crossbow-compatible Early
+  Pistol icon is the fail-closed fallback when Kingmaker exposes neither.
 - Every project-owned, non-hidden feature or ability reachable from the
   20-level progression has a nonblank localized name and description and a
   nonnull approved fallback icon.

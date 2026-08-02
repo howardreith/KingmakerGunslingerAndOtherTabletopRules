@@ -317,8 +317,10 @@ namespace KingmakerGunslinger.Blueprints
             if (presentationIcon == null && fighter.Progression != null)
                 presentationIcon = fighter.Progression.Icon;
             if (presentationIcon == null)
+                presentationIcon = startingPistol.Icon;
+            if (presentationIcon == null)
                 throw new InvalidOperationException(
-                    "The native Fighter class and progression exposed no presentation icon.");
+                    "The approved native class and crossbow-compatible firearm sources exposed no presentation icon.");
             var result = ScriptableObject.CreateInstance<BlueprintCharacterClass>();
             result.name = "KMG_Gunslinger_Class";
             result.LocalizedName = LocalizationService.Create("KMG.Gunslinger.Class.Name", "Gunslinger");
