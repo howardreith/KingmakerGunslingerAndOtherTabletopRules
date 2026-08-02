@@ -93,6 +93,12 @@ No genuine human-input hard stop is currently established.
 
 ## Active gates (not hard stops)
 
+- Sprint 80 comprehensive acceptance exposed one probabilistic observer
+  assumption: a -100 Will modifier does not defeat Kingmaker's natural-20 save
+  success. Sprint 81 corrected only the fixture with exact native d20 seeds.
+  Exact `58baf84` mod load and two comprehensive fresh-process runs passed all
+  30 slices; this issue is resolved and is not an active blocker.
+
 - Sprint 62 scatter completion is bounded on a player-facing balance decision.
   Installed native cone geometry requires a numeric distance, but every
   authoritative local source describes Blunderbuss range only as `special`.

@@ -2714,3 +2714,29 @@
   `624e9cdde3e8df4b019de8fe7f736e3ef0885b084667a2b7479cfd4acdc904ed`.
 - Production equipment switching and identical-item isolation are reproduced.
   Continue immediately to another incomplete integration or acceptance gap.
+
+## 2026-08-02 Sprint 80/81 comprehensive acceptance qualification
+
+- Sprint 80 source commit `b3bd907` composed 30 already-qualified synchronous
+  save-free slices under one guarded comprehensive scenario. Focused checks,
+  runner safety 26/26, preflight 84/84, the complete 831-test suite, clean
+  Release build, and strict package validation passed.
+- Exact `b3bd907` mod load `20260802T1227366658010Z-mod-load-smoke` passed. The
+  first comprehensive run `20260802T1228585887731Z` passed; the independent
+  run `20260802T1230268400100Z` failed only Menacing Shot's forced-failure
+  branch because its uncontrolled native d20 produced a natural 20. The other
+  169 assertions passed. No third launch of that artifact was attempted.
+- Sprint 81 commit `58baf84` made only the observer deterministic by selecting
+  already-qualified native d20 seeds immediately before the native Fear saves:
+  natural 1 for failure and natural 20 for success. Production Menacing Shot
+  logic and balance are unchanged.
+- Exact committed package SHA-256 is
+  `2fd4229ceadaa2f2b59133bccff053dd2e05589b01cfd65eefa630cb0cc6a8b7`;
+  DLL SHA-256 is
+  `27d42233c2b464431f858c8d36b695fdeefab2c2f156de9b822450e5624b5dbc`.
+  Mod load `20260802T1234452818737Z-mod-load-smoke` and independent
+  comprehensive runs `20260802T1236067944023Z` and
+  `20260802T1237355810113Z` all passed.
+- Continue immediately with the remaining matrix audit. Comprehensive
+  acceptance is a checkpoint, not mission completion; creation/respec,
+  scatter, blocked deed decisions, and save-backed lifecycle remain separate.

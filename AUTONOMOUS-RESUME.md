@@ -515,6 +515,17 @@ isolation, and observed no save write.
 
 ## Next action
 
+Sprint 81 comprehensive acceptance is runtime-qualified on exact commit
+`58baf84`. Exact mod load `20260802T1234452818737Z-mod-load-smoke` and fresh
+comprehensive runs `20260802T1236067944023Z` and `20260802T1237355810113Z`
+passed all 30 composed slices. Exact package/DLL hashes are
+`2fd4229ceadaa2f2b59133bccff053dd2e05589b01cfd65eefa630cb0cc6a8b7` /
+`27d42233c2b464431f858c8d36b695fdeefab2c2f156de9b822450e5624b5dbc`.
+Commit this curated evidence, then audit every remaining non-final matrix row
+against the mission hard-stop contract. Do not rerun bounded Startling Shot,
+Targeting Head, detached respec commit, or lifecycle corruption attempts.
+Do not stop merely at the comprehensive checkpoint.
+
 Sprint 47 Targeting Legs is runtime-qualified on exact repair commit `1a2f29c`.
 Mod-load run `20260802T0231549132685Z-mod-load-smoke` and independent feature
 runs `20260802T0233121188720Z-7ef51e849a88459591847b21e4d7466e` and
