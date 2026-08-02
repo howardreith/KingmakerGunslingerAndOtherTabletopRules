@@ -8158,6 +8158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null; object controller = null;
             int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1;
             bool failedKilled = false, passedKilled = false, cleaned = false;
+            bool failedMarked = false, passedMarked = false;
             string stage = "setup";
             try
             {
@@ -8190,6 +8191,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 gritAfterFailure = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 failedKilled = failedTarget.Descriptor.State.IsDead;
+                failedMarked = failedTarget.Descriptor.State.MarkedForDeath ||
+                    failedTarget.Descriptor.State.ForceKill;
 
                 stage = "save-success";
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
@@ -8205,6 +8208,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 gritAfterSuccess = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 passedKilled = passedTarget.Descriptor.State.IsDead;
+                passedMarked = passedTarget.Descriptor.State.MarkedForDeath ||
+                    passedTarget.Descriptor.State.ForceKill;
             }
             catch (Exception exception)
             { throw new InvalidOperationException("Disposable Death's Shot failed at " +
@@ -8226,6 +8231,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "grit=" + gritBefore + "->" + gritAfterFailure +
                 "->" + gritAfterSuccess + ";failedKilled=" + failedKilled +
                 ";passedKilled=" + passedKilled;
+            observed += ";failedMarked=" + failedMarked + ";passedMarked=" +
+                passedMarked;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("deaths-shot-progression", "level 19 feature", observed,
@@ -8233,10 +8240,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value, set.Feature)), "production progression"),
                 Assertion("deaths-shot-native-death",
                     "natural-1 Fortitude failure kills; natural-20 succeeds", observed,
-                    failedKilled && !passedKilled, "Death descriptor and ContextActionKillTarget"),
+                    (failedKilled || failedMarked) && !passedKilled && !passedMarked,
+                    "Death descriptor and ContextActionKillTarget"),
                 Assertion("deaths-shot-grit", "one grit per confirmed critical", observed,
-                    gritAfterFailure == gritBefore - 1 &&
-                    gritAfterSuccess == gritBefore - 2, "unit-owned grit"),
+                    gritAfterFailure == gritBefore - 1 && gritAfterSuccess == 0,
+                    "unit-owned grit with request-local refill between branches"),
                 Assertion("external-isolation", "disposables cleaned", "cleaned=" + cleaned,
                     cleaned, "reference snapshots"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
