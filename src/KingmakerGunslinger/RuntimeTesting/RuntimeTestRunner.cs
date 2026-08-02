@@ -301,6 +301,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -532,6 +533,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath)
                 {
                     Complete(RunDisposableGunslingerCheatDeath());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath)
+                {
+                    Complete(RunObserveDeathsShotNativeDeath());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4914,6 +4921,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "declared delivery, save, descriptors, duration, conditions",
                     observed, contract,
                     "exact installed component types and declared scalar fields"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunObserveDeathsShotNativeDeath()
+        {
+            BlueprintAbility[] candidates = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintAbility>()
+                .Where(value => value.name == "Destruction").ToArray();
+            if (candidates.Length != 1)
+                throw new InvalidOperationException(
+                    "Expected exactly one installed BlueprintAbility named Destruction; observed " +
+                    candidates.Length + ".");
+            BlueprintAbility destruction = candidates[0];
+            SpellDescriptorComponent descriptor = destruction.ComponentsArray
+                .OfType<SpellDescriptorComponent>().Single();
+            BlueprintComponent effect = destruction.ComponentsArray.Single(value =>
+                value.GetType().FullName ==
+                    "Kingmaker.UnitLogic.Abilities.Components.AbilityEffectRunAction");
+            string nested = DescribeNestedObject(effect, 14);
+            string observed = destruction.AssetGuid + "|" + destruction.name +
+                "|" + destruction.Name + "|action=" + destruction.ActionType +
+                "|range=" + destruction.Range + "|descriptor=" +
+                DescribeNestedObject(descriptor.Descriptor, 4) + "|" +
+                DescribeComponents(destruction.ComponentsArray) + "|nested=" + nested;
+            bool deathDescriptor = descriptor.Descriptor.HasAnyFlag(
+                SpellDescriptor.Death);
+            bool saveAndKill = nested.Contains("ContextActionSavingThrow") &&
+                nested.Contains("ContextActionKillTarget");
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("deaths-shot-native-death-identity",
+                    "one exact installed BlueprintAbility named Destruction",
+                    observed, candidates.Length == 1,
+                    "exact library identity and declared ability fields"),
+                Assertion("deaths-shot-native-death-descriptor",
+                    "native Death descriptor", observed, deathDescriptor,
+                    "exact installed SpellDescriptorComponent"),
+                Assertion("deaths-shot-native-save-kill-actions",
+                    "native saving-throw and kill actions", observed, saveAndKill,
+                    "exact installed nested action graph"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

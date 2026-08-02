@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.57 - Sprint 57 Death's Shot contract observer
+
+- Adds a guarded save-free observer for the installed native Death descriptor,
+  Fortitude-saving-throw, and kill-action graph required by Death's Shot.
+
 ## 0.0.56 - Sprint 56 Cheat Death
 
 - Adds the level-19 Cheat Death deed using the completed native damage event.

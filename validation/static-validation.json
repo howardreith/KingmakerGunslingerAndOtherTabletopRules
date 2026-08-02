@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.56-s56-cheat-death",
-  "version": "0.0.56",
+  "milestone": "0.0.57-s57-deaths-shot-observer",
+  "version": "0.0.57",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

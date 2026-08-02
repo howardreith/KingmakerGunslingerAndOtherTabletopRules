@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <KmgVersion>0.0.56</KmgVersion>
-    <KmgInformationalVersion>0.0.56-s56-cheat-death</KmgInformationalVersion>
+    <KmgVersion>0.0.57</KmgVersion>
+    <KmgInformationalVersion>0.0.57-s57-deaths-shot-observer</KmgInformationalVersion>
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>

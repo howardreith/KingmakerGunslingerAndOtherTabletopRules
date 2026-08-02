@@ -60,6 +60,7 @@ $expected = @(
     'observe-slingers-luck-native-rerolls',
     'disposable-gunslinger-slingers-luck',
     'disposable-gunslinger-cheat-death',
+    'observe-deaths-shot-native-death',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -196,10 +197,16 @@ Assert-True (-not $cheatDeath.RequiresManualInteraction) `
     'cheat-death-is-autonomous'
 Assert-True (-not $cheatDeath.RequiresSaveName) `
     'cheat-death-is-save-free'
+$deathsShotObserver = Get-KmgRuntimeScenarioMetadata `
+    'observe-deaths-shot-native-death'
+Assert-True (-not $deathsShotObserver.RequiresManualInteraction) `
+    'deaths-shot-observer-is-autonomous'
+Assert-True (-not $deathsShotObserver.RequiresSaveName) `
+    'deaths-shot-observer-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.56'
+    ExpectedVersion = '0.0.57'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -232,7 +239,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.56' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.57' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -287,7 +294,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.56' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.57' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {
