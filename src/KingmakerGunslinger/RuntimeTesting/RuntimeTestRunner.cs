@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -4669,11 +4670,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Expected exactly one installed BlueprintAbility named Fear; observed " +
                     candidates.Length + ".");
             BlueprintAbility fear = candidates[0];
+            SpellDescriptorComponent descriptor = fear.ComponentsArray
+                .OfType<SpellDescriptorComponent>().Single();
+            BlueprintComponent effect = fear.ComponentsArray.Single(value =>
+                value.GetType().FullName ==
+                "Kingmaker.UnitLogic.Abilities.Components.AbilityEffectRunAction");
             string observed = fear.AssetGuid + "|" + fear.name + "|" + fear.Name +
                 "|action=" + fear.ActionType + "|range=" + fear.Range +
                 "|enemies=" + fear.CanTargetEnemies + "|friends=" +
                 fear.CanTargetFriends + "|self=" + fear.CanTargetSelf + "|" +
-                DescribeComponents(fear.ComponentsArray);
+                "|descriptor=" + descriptor.Descriptor + "|" +
+                DescribeComponents(fear.ComponentsArray) + "|nested=" +
+                DescribeNestedObject(effect, 5);
             bool contract = fear.ComponentsArray != null &&
                 fear.ComponentsArray.Length > 0;
             var assertions = new List<RuntimeTestAssertion>
@@ -4769,6 +4777,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(",", fields.ToArray()) + "}");
             }
             return string.Join(";", components.ToArray());
+        }
+
+        private static string DescribeNestedObject(object value, int depth)
+        {
+            if (value == null) return "<null>";
+            Type type = value.GetType();
+            if (value is string || value is bool || value is int ||
+                value is float || value is double || value is decimal ||
+                value is Enum) return value.ToString();
+            BlueprintScriptableObject blueprint = value as BlueprintScriptableObject;
+            if (blueprint != null)
+                return blueprint.name + "@" + blueprint.AssetGuid;
+            if (depth <= 0) return type.FullName;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable != null)
+            {
+                var items = new List<string>();
+                foreach (object item in enumerable)
+                {
+                    if (items.Count == 32) { items.Add("<truncated>"); break; }
+                    items.Add(DescribeNestedObject(item, depth - 1));
+                }
+                return "[" + string.Join(",", items.ToArray()) + "]";
+            }
+            var members = new List<string>();
+            foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.DeclaredOnly).OrderBy(item => item.Name,
+                    StringComparer.Ordinal))
+            {
+                if (field.Name.Contains("k__BackingField")) continue;
+                members.Add(field.Name + "=" + DescribeNestedObject(
+                    field.GetValue(value), depth - 1));
+            }
+            foreach (PropertyInfo property in type.GetProperties(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.DeclaredOnly).OrderBy(item => item.Name,
+                    StringComparer.Ordinal))
+            {
+                if (!property.CanRead || property.GetIndexParameters().Length != 0)
+                    continue;
+                try
+                {
+                    members.Add(property.Name + "=" + DescribeNestedObject(
+                        property.GetValue(value, null), depth - 1));
+                }
+                catch (Exception exception)
+                {
+                    members.Add(property.Name + "=<" + exception.GetType().Name + ">");
+                }
+            }
+            return type.FullName + "{" + string.Join(",", members.ToArray()) + "}";
         }
 
         private RuntimeTestResult RunDisposableGunslingerBleedingWound()
