@@ -117,6 +117,10 @@ No genuine human-input hard stop is currently established.
   Two fresh-process PASS runs prove both native Fortitude branches, native
   critical immunity, exact grit/chamber behavior, one-round Stunned, damage,
   isolation, and cleanup. It is no longer an active engineering blocker.
+- Sprint 59 True Grit is resolved and runtime-qualified on `1d7c5b6`. Two
+  fresh-process PASS runs prove the production selection shape, selected native
+  deed cost reduction, zero-grit edge rules, variable costs, fixed Slinger's
+  Luck exclusion, isolation, and cleanup. It is not an active blocker.
 - The authoritative firearm table labels blunderbuss range `special`; the
   immutable definition and marker vocabulary now represent that fact without a
   numeric value and ordinary-AC selection fails closed. Concrete scatter range

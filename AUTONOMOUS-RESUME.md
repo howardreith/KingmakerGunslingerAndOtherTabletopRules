@@ -515,6 +515,16 @@ Full first-level `Commit` remains
 deferred until its global rest/entity/remote-companion/view mutations have a
 complete rollback proof; do not invoke it speculatively.
 
+Sprint 59 True Grit is runtime-qualified on exact commit `1d7c5b6` and version
+`0.0.59`. Mod load `20260802T0801211781568Z-mod-load-smoke` and independent
+feature runs `20260802T0802418511488Z-disposable-gunslinger-true-grit` and
+`20260802T0804057434013Z-disposable-gunslinger-true-grit` passed. The exact
+package/DLL hashes are
+`4135fcfe0df73990c9a3cdac246462d64124638f7550cdf5939e87f51b84a144` /
+`ad0beec416f6a4f79b06203a7a664c566e04a3d34bb2e6814bb535a6bc41ec90`.
+Commit the curated Sprint 59 evidence and continue immediately to the next
+incomplete independent coverage item; Sprint 59 is not a stopping boundary.
+
 ## Safety boundaries
 
 Launch only through Steam App ID 640820 and the guarded request mechanism. Use

@@ -2279,3 +2279,26 @@
   `dd0b46951c3d8c963b5705c1a6ad999b379dbe75f81ee8467cc796cc7d7ef777` /
   `58377a40be8084968bf1e7471875b80d47f1abfe8af41a79c8a1044f78ca045b`.
 - Sprint 58 is complete as a checkpoint. Continue immediately with True Grit.
+
+## 2026-08-02 Sprint 59 True Grit runtime qualification
+
+- Entry criteria fixed 18 eligible choices, two distinct selections, a
+  one-grit reduction to minimum zero, the remaining positive-grit floor for a
+  positive cost reduced to zero, removal of pre-existing no-spend gates, and
+  Slinger's Luck's fixed exclusion.
+- Commits `188f345`, `649d3c1`, and `ec9e9c0` added the central policy,
+  selection blueprints/stable IDs, and adapters for every offered deed.
+- Runtime harness commit `1d7c5b6fac06c9342ffd88895551e62af991eee9`
+  passed 827/827 tests, 76 preflight checks, 36 request checks, clean Release
+  build, and strict package validation.
+- Mod load passed at `20260802T0801211781568Z-mod-load-smoke`. Independent
+  PASS runs `20260802T0802418511488Z-disposable-gunslinger-true-grit` and
+  `20260802T0804057434013Z-disposable-gunslinger-true-grit` both observed
+  grit `4->3->2->4`, one chamber, native damage, deterministic native save
+  branches, two selections/18 choices, zero-grit policy edges, variable cost,
+  fixed exclusion, and detached cleanup.
+- Exact package/DLL SHA-256 are
+  `4135fcfe0df73990c9a3cdac246462d64124638f7550cdf5939e87f51b84a144` /
+  `ad0beec416f6a4f79b06203a7a664c566e04a3d34bb2e6814bb535a6bc41ec90`.
+- Sprint 59 is complete as a checkpoint. Continue immediately to the next
+  incomplete independent coverage item.
