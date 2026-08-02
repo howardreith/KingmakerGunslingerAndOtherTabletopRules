@@ -2607,6 +2607,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
             ItemEntityWeapon source = null;
             ItemEntityWeapon created = null;
+            ItemEntityWeapon corrupt = null;
+            var corruptEnchantments = new List<object>();
             FirearmState loaded = new FirearmState(FirearmState.CurrentSchemaVersion,
                 1, FirearmStateTokenCatalog.DiagnosticLeadBall,
                 FirearmCondition.Normal);
@@ -2617,7 +2619,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int sourceTokensAfterApply = -1;
             int sourceTokensAfterRemove = -1;
             int createdTokens = -1;
+            int corruptTokensBefore = -1;
+            int corruptTokensAfter = -1;
             bool removed = false;
+            bool corruptRejected = false;
             string stage = "native-contracts";
 
             Type collectionType = typeof(ItemEntity).Assembly.GetType(
@@ -2677,6 +2682,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Repository.State;
                 createdTokens = FirearmRuntimeState.ReadStateTokenIds(created).Count;
 
+                stage = "duplicate-token-corruption";
+                corrupt = new ItemEntityWeapon(pistol);
+                corruptEnchantments.Add(corrupt.AddEnchantment(
+                    BlueprintBootstrap.FirearmStateTokens.RequireBlueprint(
+                        FirearmStateTokenCatalog.LoadedNormalTokenId), null, null));
+                corruptEnchantments.Add(corrupt.AddEnchantment(
+                    BlueprintBootstrap.FirearmStateTokens.RequireBlueprint(
+                        FirearmStateTokenCatalog.BrokenEmptyTokenId), null, null));
+                corruptTokensBefore = FirearmRuntimeState.ReadStateTokenIds(corrupt).Count;
+                try
+                {
+                    FirearmRuntimeState.Service.GetOrCreate(corrupt);
+                }
+                catch (InvalidOperationException)
+                {
+                    corruptRejected = true;
+                }
+                corruptTokensAfter = FirearmRuntimeState.ReadStateTokenIds(corrupt).Count;
+
                 stage = "exact-item-removal";
                 removed = FirearmRuntimeState.Repository.Remove(source);
                 sourceTokensAfterRemove = FirearmRuntimeState.ReadStateTokenIds(source).Count;
@@ -2701,6 +2725,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     catch { }
                     created.Dispose();
                 }
+                if (corrupt != null)
+                {
+                    foreach (object enchantment in corruptEnchantments)
+                    {
+                        object ignored;
+                        string method;
+                        ReflectionAccess.TryInvokeAny(corrupt,
+                            new[] { "RemoveEnchantment" },
+                            new[] { new[] { enchantment } },
+                            out ignored, out method);
+                    }
+                    corrupt.Dispose();
+                }
             }
 
             string observed = "remove=" + removeContract +
@@ -2710,6 +2747,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";sourceTokens=" + sourceTokensBeforeApply + "->" +
                     sourceTokensAfterApply + "->" + sourceTokensAfterRemove +
                 ";createdTokens=" + createdTokens +
+                ";corrupt=" + corruptTokensBefore + "->" + corruptTokensAfter +
+                ";corruptRejected=" + corruptRejected +
                 ";sourceState=" + sourceBeforeApply + "->" + sourceAfterApply +
                 ";createdState=" + createdState + ";removed=" + removed;
             var assertions = new List<RuntimeTestAssertion>
@@ -2736,6 +2775,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         FirearmState.CreateEmpty().Equals(createdState) &&
                         createdTokens == 0,
                     "exact repository removal and distinct item isolation"),
+                Assertion("duplicate-token-corruption-fails-closed",
+                    "two registered tokens rejected and preserved for diagnosis",
+                    observed, corruptRejected && corruptTokensBefore == 2 &&
+                        corruptTokensAfter == 2,
+                    "detached production item with two native token enchantments"),
                 Assertion("lifecycle-observation-isolation",
                     "detached items only; no unit, collection, inventory, vendor, or save mutation",
                     "detached production ItemEntityWeapon fixtures disposed", true,

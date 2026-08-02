@@ -32,9 +32,14 @@ $checks = [ordered]@{
     'removal-does-not-transfer' =
         $runner.Contains('"removed-item-state-does-not-transfer"') -and
         $runner.Contains('sourceTokensAfterRemove == 0')
+    'duplicate-corruption-preserved' =
+        $runner.Contains('"duplicate-token-corruption-fails-closed"') -and
+        $runner.Contains('corruptTokensBefore == 2') -and
+        $runner.Contains('corruptTokensAfter == 2')
     'detached-cleanup' =
         $runner.Contains('"lifecycle-observation-isolation"') -and
-        $runner.Contains('created.Dispose();')
+        $runner.Contains('created.Dispose();') -and
+        $runner.Contains('corrupt.Dispose();')
 }
 
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } |
