@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("battered-ownership.isolation", Sprint83Tests.OwnershipIsolation),
             Case("battered-ownership.snapshot", Sprint83Tests.OwnershipSnapshot),
             Case("battered-ownership.invalid", Sprint83Tests.OwnershipInvalid),
+            Case("battered-ownership.remove", Sprint83Tests.OwnershipRemove),
             Case("class.chassis-constants", ClassChassisConstants),
             Case("class.chassis-exact-rows", ClassChassisExactRows),
             Case("class.chassis-complete-monotonic", ClassChassisCompleteMonotonic),

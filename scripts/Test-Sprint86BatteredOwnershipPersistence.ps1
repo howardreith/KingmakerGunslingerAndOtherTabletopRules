@@ -12,5 +12,6 @@ Require ($part.Contains('[JsonProperty] public string ItemId') -and $part.Contai
 Require (-not $part.Contains('ItemEntity') -and -not $part.Contains('UnitEntityData')) 'no-runtime-references'
 Require ($part.Contains('persisted battered firearm cannot be rebound')) 'immutable-origin'
 Require ($part.Contains('contains duplicate item identities')) 'duplicate-rejection'
+Require ($part.Contains('Persisted ownership removal requires the exact originating unit.')) 'owner-checked-removal'
 Require ($provider.Contains('TryResolveMainCharacter') -and $provider.Contains('Ensure<UnitPartBatteredFirearmOwnership>')) 'shared-player-host'
 'Sprint 86 battered ownership persistence source contract passed.'

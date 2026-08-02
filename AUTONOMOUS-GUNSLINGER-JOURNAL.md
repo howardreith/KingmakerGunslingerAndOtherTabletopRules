@@ -2829,3 +2829,20 @@
 - Package/DLL hashes: `8608b007...d22e7` / `ef2ba51d...f5c61`.
 - Next: commit, then patch exact `LevelUpHelper.AddStartingItems` with before/
   after item-reference correlation and bind only one newly granted Early Pistol.
+
+## 2026-08-02 Sprint 87 exact starting-firearm binder
+
+- Added an exact Harmony prefix/postfix for native
+  `LevelUpHelper.AddStartingItems(UnitDescriptor)`. It activates only for the
+  registered Gunslinger maximum class, snapshots inventory references, and
+  requires exactly one newly created exact production Early Pistol.
+- The postfix reads the engine-issued item GUID and attached descriptor unit ID,
+  then writes the immutable save-owned binding. It never uses the wielder,
+  inventory order, value equality, or a pre-existing pistol.
+- Added exact-owner removal for item lifecycle/test rollback. Wrong-owner
+  removal fails without mutation; the domain suite is now 845 tests.
+- Focused contracts, repository validation, clean Release build, and strict
+  package validation passed. Package/DLL hashes are `690967f5...fbdb61` /
+  `2bf60b7d...b15068`.
+- Next: commit, exact mod-load qualify the patch target, then integrate the
+  effective-condition overlay into firearm action/attack resolution.

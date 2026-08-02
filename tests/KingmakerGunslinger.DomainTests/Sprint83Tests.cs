@@ -131,6 +131,20 @@ namespace KingmakerGunslinger.DomainTests
                 new OriginatingUnitId("unit-a")), "Null item identity was accepted.");
         }
 
+        internal static void OwnershipRemove()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            FirearmItemId item = Item(1);
+            ledger.Bind(item, new OriginatingUnitId("unit-a"));
+            Assertions.Throws<InvalidOperationException>(() => ledger.Remove(item,
+                new OriginatingUnitId("unit-b")), "Wrong-owner removal was accepted.");
+            Assertions.Equal(1, ledger.Count, "Wrong-owner removal mutated the ledger.");
+            Assertions.True(ledger.Remove(item, new OriginatingUnitId("unit-a")),
+                "Exact-owner removal failed.");
+            Assertions.False(ledger.Remove(item, new OriginatingUnitId("unit-a")),
+                "Missing record removal was not idempotent.");
+        }
+
         private static FirearmItemId Item(int suffix)
         {
             return new FirearmItemId(string.Format(

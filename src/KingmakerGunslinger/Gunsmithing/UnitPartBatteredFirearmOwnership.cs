@@ -59,6 +59,27 @@ namespace KingmakerGunslinger.Gunsmithing
             }
         }
 
+        internal bool Remove(FirearmItemId itemId, OriginatingUnitId ownerId)
+        {
+            if (itemId == null) throw new ArgumentNullException("itemId");
+            if (ownerId == null) throw new ArgumentNullException("ownerId");
+            lock (this)
+            {
+                EnsureValid();
+                BatteredFirearmOwnershipData existing = Find(itemId);
+                if (existing == null) return false;
+                if (!string.Equals(existing.OwnerId, ownerId.Value,
+                    StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        "Persisted ownership removal requires the exact originating unit.");
+                var target = _records.Where(record => !ReferenceEquals(
+                    record, existing)).ToList();
+                Validate(target);
+                _records = target;
+                return true;
+            }
+        }
+
         private BatteredFirearmOwnershipData Find(FirearmItemId itemId)
         {
             return _records.SingleOrDefault(record => string.Equals(
