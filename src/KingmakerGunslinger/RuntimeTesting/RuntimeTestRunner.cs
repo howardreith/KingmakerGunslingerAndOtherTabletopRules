@@ -4723,7 +4723,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                target.Descriptor.State.Immortality.ReleaseAll();
+                // An unlevelled detached chargen fixture has no positive HP pool.
+                // Retain its native immortality so Kingmaker does not classify it
+                // as dead and reject the non-StayOnDeath flat-footed buff.
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
                 attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
@@ -4871,7 +4873,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                target.Descriptor.State.Immortality.ReleaseAll();
+                // Keep the unlevelled detached target alive without publishing it
+                // to game state; otherwise native timed buffs reject the dead unit.
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
                 attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
