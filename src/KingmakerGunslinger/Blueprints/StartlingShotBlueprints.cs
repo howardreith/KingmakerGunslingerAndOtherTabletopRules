@@ -53,7 +53,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_StartlingShot_FlatFooted_Buff";
-            result.IsClassFeature = true;
+            result.IsClassFeature = false;
             result.Stacking = StackingType.Replace;
             var condition = ScriptableObject.CreateInstance<AddCondition>();
             condition.name = "$KMG_StartlingShot_LoseDexterityToAC";
@@ -129,6 +129,7 @@ namespace KingmakerGunslinger.Blueprints
             if (ability.ActionType != UnitCommand.CommandType.Standard ||
                 ability.Range != AbilityRange.Weapon ||
                 !ability.CanTargetEnemies || ability.CanTargetFriends ||
+                buff.IsClassFeature ||
                 grant.Facts.Length != 1 || !ReferenceEquals(grant.Facts[0], ability) ||
                 !ReferenceEquals(logic.FlatFootedBuff, buff) ||
                 condition.Condition != UnitCondition.LoseDexterityToAC)

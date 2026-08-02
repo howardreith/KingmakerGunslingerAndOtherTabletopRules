@@ -1690,3 +1690,16 @@
   `AddBuff` returned null. Exact installed constructor inspection established
   the production-shaped `AbilityData`, `AbilityParams`, and
   `AbilityExecutionContext` path now used by the detached scenario.
+- Production-shaped context commit `e487a99` passed guarded Steam mod load in
+  run `20260802T0109149299896Z-f71377fa0cc54c3babc042a9eee22c95`, package
+  SHA-256 `071eddd0ceece27bc07bda729311ca6398d23e58815ee7fc25af8093217f8779`
+  and DLL SHA-256
+  `64e29ac1e2eab40d2c2374c419a10fba006b36f46a307c7d8e8cb9ce37980049`.
+- Guarded feature run
+  `20260802T0111206331676Z-d7699f4644d14bee8bae8268671a4350` still returned
+  null from native `AddBuff` with that production-shaped context. Per the
+  two-repair rule, fixture variation stopped. Repository-wide blueprint
+  comparison then isolated a production contract mismatch: the temporary
+  hostile buff was marked `IsClassFeature`, while every other true use is a
+  permanent feature. The narrow correction classifies the timed debuff as a
+  non-class-feature buff and validates that invariant.
