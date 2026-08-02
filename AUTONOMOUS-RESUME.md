@@ -397,6 +397,15 @@ isolation, and observed no save write.
 
 ## Next action
 
+Sprint 47 Targeting Legs is source-qualified in the worktree at version
+`0.0.47`: inherited validators, 776 domain/reflection tests, clean Release
+build, strict package checks, all focused harness safety suites, validator
+dispatch, and guarded WhatIf pass. Stage only the explicit reconstructable
+checkpoint files, audit and commit them, rebuild the exact clean commit, then
+require exact mod-load plus two independent save-free Legs feature PASS runs
+before changing its runtime status. Continue immediately to the next incomplete
+coverage item after recording that evidence.
+
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
 and independent feature runs

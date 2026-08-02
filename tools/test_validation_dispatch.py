@@ -40,15 +40,15 @@ def main() -> int:
     sprint41 = source / "tools" / "validate_sprint41.py"
     sprint42 = source / "tools" / "validate_sprint42.py"
     sprint43 = source / "tools" / "validate_sprint43.py"
-    sprint44 = source / "tools" / "validate_sprint46.py"
+    sprint44 = source / "tools" / "validate_sprint47.py"
 
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.46 to validate_sprint46.py",
+        "dispatched version 0.0.47 to validate_sprint47.py",
     )
     run([python, "-B", str(sprint44)], 0,
-        "Sprint 46 source invariant validation passed")
+        "Sprint 47 source invariant validation passed")
     run([python, "-B", str(sprint42)], 1,
         "Info.json does not declare version 0.0.42")
     run(
@@ -179,12 +179,12 @@ def main() -> int:
         )
         report44.write_bytes(saved_report44)
 
-        info["Version"] = "0.0.47"
+        info["Version"] = "0.0.48"
         info_path.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
         run(
             [python, "-B", str(dispatcher), "--root", str(fixture)],
             1,
-            "Unsupported repository version: '0.0.47'",
+            "Unsupported repository version: '0.0.48'",
         )
 
         info["Version"] = "0.0.29"

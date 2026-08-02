@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.46-s46-targeting-torso",
-  "version": "0.0.46",
+  "milestone": "0.0.47-s47-targeting-legs",
+  "version": "0.0.47",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 70,
-    "activeEntryCount": 69,
+    "entryCount": 72,
+    "activeEntryCount": 71,
     "reservedEntryCount": 1,
-    "registrationCount": 69
+    "registrationCount": 71
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 773,
+    "testCount": 776,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

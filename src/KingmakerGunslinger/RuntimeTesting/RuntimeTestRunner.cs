@@ -284,6 +284,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -449,6 +450,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso)
                 {
                     Complete(RunDisposableGunslingerTargetingTorso());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs)
+                {
+                    Complete(RunDisposableGunslingerTargetingLegs());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4169,6 +4176,156 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerTargetingLegs()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            TargetingLegsResult eligible = null, immune = null;
+            int gritBefore = -1, gritAfter = -1, roundsEligible = -1,
+                roundsImmune = -1;
+            bool proneBefore = false, proneAfter = false, immuneProne = false,
+                cleaned = false;
+            string stage = "blueprint-contract";
+            int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
+                .Count(value => ReferenceEquals(value,
+                    gunslinger.TargetingLegs.Feature));
+            bool blueprintContract = levelSevenCount == 1 &&
+                gunslinger.TargetingLegs.Ability.IsFullRoundAction &&
+                gunslinger.TargetingLegs.Ability.Range == AbilityRange.Weapon;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.ReleaseAll();
+                target.Descriptor.Stats.Constitution.BaseValue = 20;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+
+                stage = "eligible-trip";
+                proneBefore = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(18);
+                eligible = TargetingLegsRuntime.ExecuteForRuntimeTest(attacker,
+                    target);
+                roundsEligible = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                proneAfter = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone);
+                if (proneAfter)
+                    target.Descriptor.State.RemoveCondition(UnitCondition.Prone);
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                target.Descriptor.State.AddCondition(
+                    UnitCondition.ImmuneToCombatManeuvers, null);
+                stage = "immune-trip";
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(18);
+                immune = TargetingLegsRuntime.ExecuteForRuntimeTest(attacker,
+                    target);
+                roundsImmune = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                immuneProne = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone);
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Targeting Legs failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (target != null)
+                {
+                    target.Descriptor.State.RemoveCondition(
+                        UnitCondition.ImmuneToCombatManeuvers);
+                    target.Descriptor.State.RemoveCondition(UnitCondition.Prone);
+                }
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            int eligibleDamage = eligible == null || eligible.Damage == null ? -1 :
+                eligible.Damage.Damage;
+            int immuneDamage = immune == null || immune.Damage == null ? -1 :
+                immune.Damage.Damage;
+            string observed = "grit=" + gritBefore + "->" + gritAfter +
+                ";rounds=" + roundsEligible + "," + roundsImmune +
+                ";eligibleDamage=" + eligibleDamage + ";prone=" + proneBefore +
+                "->" + proneAfter + ";tripSuccess=" + (eligible != null &&
+                    eligible.Trip != null && eligible.Trip.Success) +
+                ";immuneDamage=" + immuneDamage + ";immuneTrip=" +
+                (immune != null && immune.Trip != null) + ";immuneProne=" +
+                immuneProne;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("targeting-legs-progression",
+                    "level 7 full-round weapon ability", observed,
+                    blueprintContract, "production blueprint contracts"),
+                Assertion("targeting-legs-damage",
+                    "two hits, positive native damage, one chamber each", observed,
+                    eligible != null && eligible.Hit && eligibleDamage > 0 &&
+                    immune != null && immune.Hit && immuneDamage > 0 &&
+                    roundsEligible == 0 && roundsImmune == 0,
+                    "native attack and damage rules"),
+                Assertion("targeting-legs-trip",
+                    "eligible native Trip succeeds and applies prone", observed,
+                    eligible != null && eligible.Rider.ShouldTrip &&
+                    eligible.Trip != null && eligible.Trip.Success &&
+                    !proneBefore && proneAfter, "native Trip maneuver"),
+                Assertion("targeting-legs-immunity",
+                    "native maneuver immunity suppresses Trip and prone", observed,
+                    immune != null && !immune.Rider.ShouldTrip &&
+                    immune.Trip == null && !immuneProne,
+                    "native ImmuneToCombatManeuvers condition"),
+                Assertion("targeting-legs-grit", "exactly two grit spent", observed,
+                    gritAfter == gritBefore - 2, "unit-owned grit resource"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "conditions/item state removed and disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerTargetingTorso()

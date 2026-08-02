@@ -567,6 +567,22 @@
       "status": "active",
       "milestone": "Sprint 46",
       "notes": "Full-round one-grit firearm attack with a deed-local 19-20 threat range."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingLegsFeature",
+      "guid": "8e41ad7e0fa546408fb8b01c2dfae693",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 47",
+      "notes": "Level-seven Targeting Legs feature granting the production full-round deed."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingLegsAbility",
+      "guid": "c9685e2bbebd4dfd89d27a67d184c7ad",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 47",
+      "notes": "Full-round one-grit firearm attack with native automatic Trip rider."
     }
   ]
 }

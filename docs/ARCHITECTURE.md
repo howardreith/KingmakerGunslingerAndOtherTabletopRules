@@ -425,7 +425,7 @@ FirearmRepairTransactionService
 item-owned state token + Firearm Repair Kit stack
 ```
 
-Sprint 46 extends the ledger to 70 stable IDs: 69 active and one reserved.
+Sprint 47 extends the ledger to 72 stable IDs: 71 active and one reserved.
 Targeting Head uses one ordinary native firearm attack and a one-round
 mind-affecting Confusion buff gated by the native sneak-immunity result.
 

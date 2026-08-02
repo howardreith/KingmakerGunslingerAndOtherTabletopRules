@@ -2,9 +2,9 @@
 
 ## Sprint 29 status
 
-Sprint 46 extends the append-only contract to **70 stable identifiers: 69 active
+Sprint 47 extends the append-only contract to **72 stable identifiers: 71 active
 and one reserved** with Targeting Head's feature, ability, and Confusion buff.
-The ledger has 70 stable identifiers: 69 active and one reserved. Gunslinger
+The ledger has 72 stable identifiers: 71 active and one reserved. Gunslinger
 class registration remains a complete twenty-four-blueprint transaction.
 
 Sprint 45 adds Targeting Head's level-seven feature, full-round ability, and

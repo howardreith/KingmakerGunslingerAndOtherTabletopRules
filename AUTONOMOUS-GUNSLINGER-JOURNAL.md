@@ -1814,3 +1814,24 @@
   loaded and the save-free scenario exposed no save-writing path.
 - Targeting Torso is runtime-qualified. Continue immediately to Targeting Legs,
   whose normal-damage/prone mapping is independently authoritative.
+
+## 2026-08-01 Sprint 47 Targeting Legs implementation in progress
+
+- Entry criteria record the authoritative automatic knockdown plus a narrow
+  Kingmaker adaptation: one native Trip event receives guaranteed attack
+  strength after an eligible firearm hit, while native maneuver immunity
+  remains authoritative and anatomy is never guessed from names.
+- Added rider policy, stable feature/ability blueprints, level-seven
+  progression, ordinary firearm attack and explicit native damage dispatch,
+  sneak/trip-immunity gates, and the native Trip rider.
+- Three focused cases bring the directly compiled suite to 776/776 PASS.
+  Version `0.0.47` now passes inherited validators through Sprint 47, all
+  776 domain/reflection tests, clean Release compilation, strict build-output
+  and standalone-package validation, request 22, preflight 48, result 2,
+  runner 19, deployment 16, Steam launch 47, validator dispatch 29, and the
+  guarded dirty-tree WhatIf.
+- The reconstructable dirty-tree package/DLL SHA-256 values are
+  `132ee6ae9688784cea89dae2b03794b7d11774e8152645d17a8f6cd8a694a91d` /
+  `f9d77ae0350ccae84722ee84b6749d1aaf5b83e0eac105a3271fcee6c4995792`.
+  Commit the source-qualified checkpoint, rebuild the exact clean commit,
+  require mod-load PASS, then run two independent Legs qualifications.

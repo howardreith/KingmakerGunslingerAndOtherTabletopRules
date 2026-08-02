@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.0.46 — Sprint 46 Targeting Torso (in progress)
+## 0.0.47 — Sprint 47 Targeting Legs (in progress)
+
+- Adds the level-seven full-round Targeting — Legs deed with normal firearm
+  damage and a native automatic-strength Trip rider that preserves native
+  sneak/trip immunity.
+- Adds three focused rider-policy cases; the complete suite is 776 tests.
+
+## 0.0.46 — Sprint 46 Targeting Torso
 
 - Adds the level-seven full-round Targeting — Torso deed with a reference-scoped
   19–20 threat range, native confirmation and multiplier, and sneak-immunity

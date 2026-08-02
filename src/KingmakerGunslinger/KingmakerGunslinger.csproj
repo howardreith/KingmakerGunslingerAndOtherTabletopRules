@@ -303,6 +303,12 @@
     <Compile Include="Deeds\TargetingTorsoRuntime.cs" />
     <Compile Include="Deeds\TargetingTorsoAbilityLogic.cs" />
     <Compile Include="Blueprints\TargetingTorsoBlueprints.cs" />
+    <Compile Include="Deeds\TargetingLegsRiderDecision.cs" />
+    <Compile Include="Deeds\TargetingLegsRiderService.cs" />
+    <Compile Include="Deeds\TargetingLegsResult.cs" />
+    <Compile Include="Deeds\TargetingLegsRuntime.cs" />
+    <Compile Include="Deeds\TargetingLegsAbilityLogic.cs" />
+    <Compile Include="Blueprints\TargetingLegsBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

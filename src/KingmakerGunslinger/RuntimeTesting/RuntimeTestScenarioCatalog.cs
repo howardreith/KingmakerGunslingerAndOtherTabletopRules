@@ -56,6 +56,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-targeting-head";
         internal const string DisposableGunslingerTargetingTorso =
             "disposable-gunslinger-targeting-torso";
+        internal const string DisposableGunslingerTargetingLegs =
+            "disposable-gunslinger-targeting-legs";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -107,6 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerStartlingShot,
                 DisposableGunslingerTargetingHead,
                 DisposableGunslingerTargetingTorso,
+                DisposableGunslingerTargetingLegs,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,
