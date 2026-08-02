@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.51-s51-expert-loading",
-  "version": "0.0.51",
+  "milestone": "0.0.52-s52-lightning-reload",
+  "version": "0.0.52",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 88,
-    "activeEntryCount": 87,
+    "entryCount": 91,
+    "activeEntryCount": 90,
     "reservedEntryCount": 1,
-    "registrationCount": 87
+    "registrationCount": 90
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 784,
+    "testCount": 790,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

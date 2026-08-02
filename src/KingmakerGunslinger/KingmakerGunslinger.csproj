@@ -323,6 +323,15 @@
     <Compile Include="Deeds\ExpertLoadingAbilityLogic.cs" />
     <Compile Include="Deeds\ExpertLoadingRuntime.cs" />
     <Compile Include="Blueprints\ExpertLoadingBlueprints.cs" />
+    <Compile Include="Deeds\LightningReloadRequest.cs" />
+    <Compile Include="Deeds\LightningReloadStatus.cs" />
+    <Compile Include="Deeds\LightningReloadDecision.cs" />
+    <Compile Include="Deeds\LightningReloadService.cs" />
+    <Compile Include="Deeds\LightningReloadAvailability.cs" />
+    <Compile Include="Deeds\LightningReloadRoundMarker.cs" />
+    <Compile Include="Deeds\LightningReloadRuntime.cs" />
+    <Compile Include="Deeds\LightningReloadAbilityLogic.cs" />
+    <Compile Include="Blueprints\LightningReloadBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

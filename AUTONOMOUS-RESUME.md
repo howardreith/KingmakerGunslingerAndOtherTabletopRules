@@ -439,6 +439,16 @@ exact package/DLL hashes are
 Commit the curated Sprint 51 evidence and continue immediately to Lightning
 Reload.
 
+Sprint 51 evidence is committed as `8d1de74`. Sprint 52 Lightning Reload is
+source-qualified in the worktree at version `0.0.52`: the positive-grit
+swift-action ability, atomic one-chamber shared-inventory transaction,
+unit-local once-per-round marker/reset, Broken preservation, failure rollback,
+and guarded save-free scenario are complete. The inherited validator chain,
+runtime safety suites, 790/790 domain tests, exact-reference Release build,
+strict package validation, and WhatIf pass. Audit and commit the reconstructable
+checkpoint, rebuild the exact commit, require mod-load PASS, and run two fresh
+feature PASS processes. Continue immediately to Evasive afterward.
+
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
 and independent feature runs

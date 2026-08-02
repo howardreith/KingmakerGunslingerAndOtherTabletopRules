@@ -1995,3 +1995,44 @@
   mutated.
 - Continue immediately to Lightning Reload. Sprint 51 is a checkpoint, not a
   stopping condition.
+
+## 2026-08-01 Sprint 52 Lightning Reload entry audit
+
+- The authoritative level-11 deed requires positive grit without spending it,
+  reloads one barrel as a non-provoking swift action once per round, and makes
+  that action free only with Rapid Reload or an alchemical cartridge.
+- The existing generic transaction already loads one chamber atomically and
+  preserves Broken condition. The only player-facing reload blueprint remains
+  the diagnostic full-round Test Musket ability, so Sprint 52 requires a new
+  production equipped-firearm deed rather than altering that diagnostic.
+- No qualified Rapid Reload feature or alchemical-cartridge ammunition exists
+  in the current catalog. The reachable swift route will be implemented now;
+  the free route stays fail-closed until one of its prerequisites is separately
+  implemented and qualified. Entry criteria are recorded in
+  `planning/SPRINT-52-ENTRY-CRITERIA.md`.
+- Next: add the pure availability/use policy and focused tests before binding
+  native per-unit round reset or the production ability.
+
+## 2026-08-01 Sprint 52 Lightning Reload source qualification
+
+- Added a pure availability decision with six focused cases covering positive
+  grit/no-spend, same-round gating, unit isolation, Broken eligibility,
+  firearm/state/ammunition rejection, and invalid input.
+- Added one level-11 feature, a personal extraordinary swift-action production
+  ability, and a unit-local use marker whose bound `ITickEachRound` component
+  removes it at the next native round callback.
+- Delivery uses the existing exact equipped-firearm resolver and atomic shared-
+  inventory reload transaction. It loads one chamber, preserves condition, and
+  removes the use marker on any exception or late transaction rejection.
+- Added guarded save-free scenario
+  `disposable-gunslinger-lightning-reload`, proving progression, no grit spend,
+  one-chamber loading, same-round rejection, bound round reset, Broken
+  preservation, zero-grit rejection, exact inventory restoration, and external
+  isolation.
+- Repository validation, runtime request/preflight/runner/result/deployment/
+  Steam safety suites, 790 domain tests, exact-reference Release build, strict
+  package validation, and dirty-source WhatIf pass. The generated validator
+  fixture `artifacts/tmp/KmgValidatorTests-otrmpjdp` left by a sandbox-denied
+  run was removed by exact verified path; the elevated rerun passed 29 checks.
+- Next: finish the reconstructable source audit and commit, rebuild the exact
+  commit, require mod-load PASS, and run two fresh feature PASS processes.

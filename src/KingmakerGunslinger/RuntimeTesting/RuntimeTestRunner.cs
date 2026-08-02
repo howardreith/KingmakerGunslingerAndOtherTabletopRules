@@ -289,6 +289,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -472,6 +473,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading)
                 {
                     Complete(RunDisposableGunslingerExpertLoading());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload)
+                {
+                    Complete(RunDisposableGunslingerLightningReload());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4325,6 +4332,157 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation",
                     "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
                     cleaned, "item state forgotten and disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerLightningReload()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            LightningReloadBlueprintSet set = gunslinger.LightningReload;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            ItemEntityWeapon weapon = null;
+            KingmakerBasicAmmunitionInventory inventory = null;
+            BasicAmmunitionInventorySnapshot inventoryBefore = null;
+            int gritBefore = -1, gritAfter = -1, normalRounds = -1,
+                brokenRounds = -1;
+            bool marked = false, sameRoundRejected = false,
+                roundReset = false, noGritRejected = false, cleaned = false;
+            FirearmCondition brokenCondition = FirearmCondition.Normal;
+            string stage = "blueprint-contract";
+            bool blueprintContract = gunslinger.Progression.LevelEntries[10]
+                .Features.Count(value => ReferenceEquals(value, set.Feature)) == 1 &&
+                set.Ability.ActionType == UnitCommand.CommandType.Swift &&
+                set.UsedMarker.GetComponent<LightningReloadRoundMarker>() != null;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                inventory = new KingmakerBasicAmmunitionInventory(
+                    Kingmaker.Game.Instance.Player.Inventory,
+                    ammunition.BlackPowder, ammunition.LeadBall);
+                inventoryBefore = BasicAmmunitionInventorySnapshot.Capture(inventory);
+                inventory.Add(BasicAmmunitionComponent.BlackPowderCharge, 2);
+                inventory.Add(BasicAmmunitionComponent.LeadBall, 2);
+                var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    set.Ability, attacker.Descriptor);
+                var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    abilityData, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(attacker), null);
+
+                stage = "first-swift-reload";
+                LightningReloadRuntime.Execute(attacker.Descriptor, execution,
+                    ammunition.BlackPowder, ammunition.LeadBall, set.UsedMarker);
+                normalRounds = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                Buff marker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint,
+                        set.UsedMarker));
+                marked = marker != null;
+                sameRoundRejected = LightningReloadRuntime.Evaluate(
+                    attacker.Descriptor, ammunition.BlackPowder,
+                    ammunition.LeadBall, set.UsedMarker).Decision.Status ==
+                    LightningReloadStatus.UsedThisRound;
+
+                stage = "native-round-reset";
+                LightningReloadRoundMarker reset = marker == null ? null :
+                    marker.Get<LightningReloadRoundMarker>();
+                if (reset != null) reset.OnNewRound();
+                roundReset = !attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+                LightningReloadRuntime.Execute(attacker.Descriptor, execution,
+                    ammunition.BlackPowder, ammunition.LeadBall, set.UsedMarker);
+                FirearmState broken = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State;
+                brokenRounds = broken.LoadedRounds;
+                brokenCondition = broken.Condition;
+
+                stage = "zero-grit-gate";
+                Buff second = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
+                second.Get<LightningReloadRoundMarker>().OnNewRound();
+                attacker.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    gritAfter);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                noGritRejected = LightningReloadRuntime.Evaluate(
+                    attacker.Descriptor, ammunition.BlackPowder,
+                    ammunition.LeadBall, set.UsedMarker).Decision.Status ==
+                    LightningReloadStatus.NoGrit;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Lightning Reload failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (inventory != null && inventoryBefore != null)
+                    new BasicAmmunitionTransactionService().RestoreExact(
+                        inventory, inventoryBefore);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker));
+            }
+            string observed = "grit=" + gritBefore + "->" + gritAfter +
+                ";rounds=" + normalRounds + "," + brokenRounds +
+                ";broken=" + brokenCondition + ";marked=" + marked +
+                ";sameRoundRejected=" + sameRoundRejected +
+                ";roundReset=" + roundReset + ";noGrit=" + noGritRejected;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("lightning-reload-progression",
+                    "level 11 feature and swift-action ability", observed,
+                    blueprintContract, "production blueprint contracts"),
+                Assertion("lightning-reload-first-use",
+                    "one chamber; no grit spend; unit marked", observed,
+                    normalRounds == 1 && gritAfter == gritBefore && marked,
+                    "atomic production reload transaction"),
+                Assertion("lightning-reload-round-gate",
+                    "same-round rejection and next-round reset", observed,
+                    sameRoundRejected && roundReset,
+                    "bound ITickEachRound marker component"),
+                Assertion("lightning-reload-broken-and-grit",
+                    "Broken preserved; zero grit rejected", observed,
+                    brokenRounds == 1 && brokenCondition == FirearmCondition.Broken &&
+                        noGritRejected, "second atomic reload and policy gate"),
+                Assertion("external-isolation",
+                    "unchanged inventory, party, and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "inventory restored, item state forgotten, disposable disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

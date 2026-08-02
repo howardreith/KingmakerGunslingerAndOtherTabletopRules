@@ -631,6 +631,15 @@
     },
     {
       "symbol": "KMG.Deeds.ExpertLoadingArmed", "guid": "5a21b3ff5940476f97fe5f7844fa4509", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 51", "notes": "Unit-owned next-firearm-attack Expert Loading marker."
+    },
+    {
+      "symbol": "KMG.Deeds.LightningReloadFeature", "guid": "7e6a1185097a4e64a1c1f409d006cf22", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 52", "notes": "Level-eleven Lightning Reload deed grant."
+    },
+    {
+      "symbol": "KMG.Deeds.LightningReloadAbility", "guid": "13626eb6f20248b5934172c3270d167f", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 52", "notes": "Swift-action equipped-firearm Lightning Reload ability."
+    },
+    {
+      "symbol": "KMG.Deeds.LightningReloadUsed", "guid": "b35b22a49a4c4645a1b730698d35837d", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 52", "notes": "Unit-owned once-per-round use marker."
     }
   ]
 }

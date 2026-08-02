@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.52 — Sprint 52 Lightning Reload (in progress)
+
+- Adds the level-eleven swift-action Lightning Reload deed for one equipped
+  firearm chamber once per round while grit remains, without spending grit.
+- Uses the existing atomic inventory-backed reload transaction, preserves
+  Broken condition, and rolls back its unit-local round marker on failure.
+- Adds six focused policy cases; the complete suite is 790 tests.
+
 ## 0.0.51 — Sprint 51 Expert Loading
 
 - Adds the level-eleven free-action pre-shot Expert Loading adaptation.

@@ -39,6 +39,9 @@ $checks = [ordered]@{
         $main.IndexOf('RuntimeTestRunner.TryAttach(context);', [StringComparison]::Ordinal)
     'non-save-scenario-isolated' = $runner.Contains(
         'if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)')
+    'lightning-reload-guarded-dispatch' = $runner.Contains(
+        'RunDisposableGunslingerLightningReload()') -and $catalog.Contains(
+        'DisposableGunslingerLightningReload')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }

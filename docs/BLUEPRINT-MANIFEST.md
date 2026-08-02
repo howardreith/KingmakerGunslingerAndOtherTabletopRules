@@ -1,8 +1,8 @@
 # Blueprint manifest and registration contract
 
-## Sprint 51 status
+## Sprint 52 status
 
-Sprint 51 extends the append-only contract to 88 stable identifiers: 87 active and one reserved.
+Sprint 52 extends the append-only contract to 91 stable identifiers: 90 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete eighty-seven-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -136,6 +136,9 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.ExpertLoadingFeature` | `38c1d90d421b41f7aa94f06e199d2021` | `BlueprintFeature` | Active | Level-eleven Expert Loading deed grant |
 | `KMG.Deeds.ExpertLoadingAbility` | `d981c72e9df94d1989530453669ea3b5` | `BlueprintAbility` | Active | Free-action pre-shot arming ability |
 | `KMG.Deeds.ExpertLoadingArmed` | `5a21b3ff5940476f97fe5f7844fa4509` | `BlueprintBuff` | Active | Unit-owned next-firearm marker |
+| `KMG.Deeds.LightningReloadFeature` | `7e6a1185097a4e64a1c1f409d006cf22` | `BlueprintFeature` | Active | Level-eleven Lightning Reload deed grant |
+| `KMG.Deeds.LightningReloadAbility` | `13626eb6f20248b5934172c3270d167f` | `BlueprintAbility` | Active | Swift-action equipped-firearm reload |
+| `KMG.Deeds.LightningReloadUsed` | `b35b22a49a4c4645a1b730698d35837d` | `BlueprintBuff` | Active | Unit-owned once-per-round marker |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 
