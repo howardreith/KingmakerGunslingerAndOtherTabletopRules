@@ -113,6 +113,10 @@ No genuine human-input hard stop is currently established.
   (`c3d2294a...`). Selecting one after the two-attempt limit requires human
   authority; direct HP/state death remains prohibited. Stunning Shot is
   independently actionable.
+- Sprint 58 Stunning Shot is resolved and runtime-qualified on `f5dc6bb`.
+  Two fresh-process PASS runs prove both native Fortitude branches, native
+  critical immunity, exact grit/chamber behavior, one-round Stunned, damage,
+  isolation, and cleanup. It is no longer an active engineering blocker.
 - The authoritative firearm table labels blunderbuss range `special`; the
   immutable definition and marker vocabulary now represent that fact without a
   numeric value and ordinary-AC selection fails closed. Concrete scatter range

@@ -2254,3 +2254,28 @@
 - The two-attempt fail-closed limit is reached. Death's Shot is temporarily
   blocked pending authority to select a native graph; continue independently
   to Stunning Shot.
+
+## 2026-08-02 Sprint 58 Stunning Shot runtime qualification
+
+- Source checkpoint `9ddb210` added the level-19 free-action marker, exact
+  native Stunned clone, 2-grit policy, native critical-immunity gate, and six
+  focused domain cases; the complete suite is 819/819 PASS.
+- Native Stunned observer passed at
+  `20260802T0658067764449Z-observe-stunning-shot-native-stunned` after proving
+  GUID `09d39b38bb7c6014394b6daced9bacd3` and `AddCondition(Stunned)`.
+- Runtime harness checkpoint `0e00284` was narrowed after exact evidence: the
+  installed hit result is read-only, and detached attacks require the existing
+  native `CreateRuleDealDamage(false)` pattern to materialize damage.
+- Final exact commit `f5dc6bbc8f2443c54b1294b1815c000288b4ccea`
+  passed mod load at `20260802T0726286857532Z-mod-load-smoke`.
+- Independent PASS runs
+  `20260802T0727464837674Z-disposable-gunslinger-stunning-shot` and
+  `20260802T0729102463349Z-disposable-gunslinger-stunning-shot` both observed
+  availability at level 19, chamber `1->0`, native damage `0->3`, grit
+  `4->2->0->2`, deterministic natural-1/native Stunned and natural-20/no-buff
+  Fortitude branches, critical-immunity no-spend, all markers consumed, and
+  exact detached cleanup.
+- Exact package/DLL SHA-256 are
+  `dd0b46951c3d8c963b5705c1a6ad999b379dbe75f81ee8467cc796cc7d7ef777` /
+  `58377a40be8084968bf1e7471875b80d47f1abfe8af41a79c8a1044f78ca045b`.
+- Sprint 58 is complete as a checkpoint. Continue immediately with True Grit.

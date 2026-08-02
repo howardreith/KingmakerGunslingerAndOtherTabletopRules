@@ -8,16 +8,27 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `10a4274` (Sprint 56 Cheat Death runtime qualification).
+- Audited HEAD: `f5dc6bb` (Sprint 58 Stunning Shot runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 57 Death's Shot exact-contract observation reached
-  its two-attempt ambiguity stop; continue independently with Stunning Shot.
-- Version: `0.0.57`.
+- Current checkpoint: Sprint 58 Stunning Shot is runtime-qualified; begin the
+  next independent level-20 True Grit checkpoint while Death's Shot remains a
+  separately recorded human-authority blocker.
+- Version: `0.0.58`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Stunning Shot exact commit `f5dc6bb` passed mod load at
+  `20260802T0726286857532Z-mod-load-smoke`. Independent PASS runs
+  `20260802T0727464837674Z-disposable-gunslinger-stunning-shot` and
+  `20260802T0729102463349Z-disposable-gunslinger-stunning-shot` both observed
+  chamber `1->0`, native damage `0->3`, grit `4->2->0->2`, natural-1 and
+  natural-20 Fortitude branches, exact six-second Stunned, critical-immunity
+  rejection, marker consumption, and detached cleanup. Package/DLL SHA-256 are
+  `dd0b46951c3d8c963b5705c1a6ad999b379dbe75f81ee8467cc796cc7d7ef777` /
+  `58377a40be8084968bf1e7471875b80d47f1abfe8af41a79c8a1044f78ca045b`.
 
 - Death's Shot observer commit `c1305fc` passed mod load at
   `20260802T0642181684393Z-mod-load-smoke`. Observer runs
