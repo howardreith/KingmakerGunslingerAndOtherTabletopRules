@@ -1696,7 +1696,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendor.BeginTrading(vendorUnit);
                 vendorTradingStarted = true;
                 vendorPhase = "add-for-buy";
-                ItemEntity staged = vendor.AddForBuy(batteredItem, 1);
+                vendor.AddForBuy(batteredItem, 1);
+                ItemEntity staged = EnumerateRuntimeInventory(vendor.ItemsForBuy)
+                    .OfType<ItemEntity>().Single(item =>
+                        ReferenceEquals(item, batteredItem));
                 vendorPhase = "remove-from-buy";
                 ItemEntity returned = vendor.RemoveFromBuy(staged, 1);
                 Kingmaker.EntitySystem.Entities.UnitEntityData vendorOwner;

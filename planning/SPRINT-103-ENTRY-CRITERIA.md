@@ -13,7 +13,9 @@ shared by fifteen variants, so select exact native `Capital_Jhod`
 (`c8d4913edee594749b706de35924617e`) and validate its unique association before
 constructing that receiver as a detached request-local unit. Extend the
 working-save transaction to stage and return
-the exact request-created pistol. Require reference identity and origin
+the exact request-created pistol. Native observation proves `AddForBuy` does not
+return the staged non-stackable item; resolve the exact reference from
+`ItemsForBuy` before passing it to `RemoveFromBuy`. Require reference identity and origin
 retention, then invoke `ReturnItems`, `EndTraiding`, and dispose the receiver in
 `finally`. This qualifies native vendor staging without money, store, or save
 mutation; durable post-Deal restart remains separately tracked.
