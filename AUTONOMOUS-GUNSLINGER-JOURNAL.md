@@ -1771,3 +1771,28 @@
   Head repair. Change mode to exact damage-dispatch and timed-buff contract
   inspection. Continue independently with Targeting Torso, whose deed-local
   threat-range behavior does not depend on a timed rider.
+
+## 2026-08-01 Sprint 46 Targeting Torso source qualification
+
+- Local authority defines Torso exactly: the level-seven full-round, one-grit
+  Targeting firearm attack threatens a critical on natural 19–20, while
+  creatures immune to sneak attacks are immune to the effect.
+- Version `0.0.46` adds stable feature/ability IDs, level-seven progression,
+  and a reference-scoped weak marker. The marked attack adjusts only its
+  calculated `RuleCalculateWeaponStats.CriticalEdgeBonus`; no weapon blueprint
+  or persisted item state is mutated. Native confirmation and multiplier remain
+  authoritative.
+- Successful delivery explicitly follows the installed native contract by
+  triggering `RuleAttackWithWeapon.CreateRuleDealDamage(false)` after the hit.
+  This avoids the direct-roll/no-damage gap exposed by Sprint 45 without
+  broadening any global patch.
+- Three focused policy cases bring the complete suite to 773/773 PASS.
+  Repository validation, exact private-reference Release compilation, strict
+  package validation, request 21, preflight 46, result 2, runner 19,
+  deployment 16, Steam launch 47, validator dispatch 29, all 74 PowerShell
+  parsers, and guarded WhatIf pass.
+- Latest dirty-tree package/DLL SHA-256 are
+  `10836a02ce37457b2d539799fd059e0a291526f6a880070fcae377e7c5ffcf6d` /
+  `3ffa48ca1860659e60cc3e567e306e84194072630c46842a812c60c2ba18423c`.
+  Commit the reconstructable source checkpoint, rebuild the exact clean commit,
+  require mod-load PASS, then run two independent Torso qualifications.

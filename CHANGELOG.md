@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.0.45 — Sprint 45 Targeting Head (in progress)
+## 0.0.46 — Sprint 46 Targeting Torso (in progress)
+
+- Adds the level-seven full-round Targeting — Torso deed with a reference-scoped
+  19–20 threat range, native confirmation and multiplier, and sneak-immunity
+  suppression.
+- Adds three focused threat-policy cases; the complete suite is 773 tests.
+
+## 0.0.45 — Sprint 45 Targeting Head
 
 - Adds the level-seven full-round Targeting — Head ability.
 - Spends one grit and makes one ordinary native firearm attack.

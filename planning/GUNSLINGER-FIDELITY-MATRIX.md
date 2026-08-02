@@ -27,7 +27,7 @@ and qualifies its exact Kingmaker mapping.
 | 7 | Targeting: arms | ADAPTED | Not implemented | Debuff replacing unavailable item-drop interaction where required |
 | 7 | Targeting: head | EXACT | Source-qualified full-round one-grit ordinary firearm attack; a hit applies a one-round mind-affecting native Confusion buff only when the native attack is not sneak-attack-immune | Require exact mod load plus two guarded hit/miss/immunity PASS runs |
 | 7 | Targeting: legs | ADAPTED | Not implemented | Prone mapping; flying/non-locomotion immunity |
-| 7 | Targeting: torso | EXACT | Not implemented | Threat range 19-20 for the deed attack only |
+| 7 | Targeting: torso | EXACT | Source-qualified full-round one-grit ordinary firearm attack; only its reference-marked non-sneak-immune attack lowers the per-rule native critical edge to 19, retaining native confirmation, multiplier, damage, misfire, and chamber behavior | Require exact mod load plus two guarded natural-18/natural-19 PASS runs |
 | 7 | Targeting: wings | OMITTED-NO-MEANINGFUL-INTERACTION | Not implemented | Kingmaker has no general winged-flight maneuver interaction; verify creature support |
 | 11 | Bleeding Wound | ADAPTED | Not implemented | Pre-shot selection for HP bleed; ability-score bleed support requires contract review |
 | 11 | Expert Loading | ADAPTED | Not implemented | Pre-shot grit spend/toggle prevents broken-firearm explosion |

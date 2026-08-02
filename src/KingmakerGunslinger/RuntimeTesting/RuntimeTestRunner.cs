@@ -283,6 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -442,6 +443,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead)
                 {
                     Complete(RunDisposableGunslingerTargetingHead());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso)
+                {
+                    Complete(RunDisposableGunslingerTargetingTorso());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4162,6 +4169,134 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerTargetingTorso()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            TargetingTorsoResult roll18 = null, roll19 = null;
+            int gritBefore = -1, gritAfter = -1, roundsAfter18 = -1,
+                roundsAfter19 = -1;
+            bool cleaned = false;
+            string stage = "blueprint-contract";
+            int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
+                .Count(value => ReferenceEquals(value,
+                    gunslinger.TargetingTorso.Feature));
+            bool blueprintContract = levelSevenCount == 1 &&
+                gunslinger.TargetingTorso.Ability.IsFullRoundAction &&
+                gunslinger.TargetingTorso.Ability.Range == AbilityRange.Weapon;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.ReleaseAll();
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+
+                stage = "natural-18";
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(18);
+                roll18 = TargetingTorsoRuntime.ExecuteForRuntimeTest(attacker,
+                    target);
+                roundsAfter18 = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                stage = "natural-19";
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+                roll19 = TargetingTorsoRuntime.ExecuteForRuntimeTest(attacker,
+                    target);
+                roundsAfter19 = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Targeting Torso failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            bool eighteenHit = roll18 != null && roll18.Hit;
+            bool nineteenHit = roll19 != null && roll19.Hit;
+            bool eighteenThreat = eighteenHit &&
+                roll18.Attack.AttackRoll.IsCriticalRoll;
+            bool nineteenThreat = nineteenHit &&
+                roll19.Attack.AttackRoll.IsCriticalRoll;
+            int damage18 = roll18 == null || roll18.Damage == null ? -1 :
+                roll18.Damage.Damage;
+            int damage19 = roll19 == null || roll19.Damage == null ? -1 :
+                roll19.Damage.Damage;
+            string observed = "grit=" + gritBefore + "->" + gritAfter +
+                ";rounds18=" + roundsAfter18 + ";rounds19=" + roundsAfter19 +
+                ";hit18=" + eighteenHit + ";threat18=" + eighteenThreat +
+                ";damage18=" + damage18 + ";hit19=" + nineteenHit +
+                ";threat19=" + nineteenThreat + ";damage19=" + damage19;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("targeting-torso-progression",
+                    "level 7 full-round weapon ability", observed,
+                    blueprintContract, "production blueprint contracts"),
+                Assertion("targeting-torso-natural-18",
+                    "hit, ordinary non-threat, native damage, one chamber",
+                    observed, eighteenHit && !eighteenThreat && damage18 > 0 &&
+                    roundsAfter18 == 0, "marked native attack and damage rules"),
+                Assertion("targeting-torso-natural-19",
+                    "hit, deed-local threat, native damage, one chamber",
+                    observed, nineteenHit && nineteenThreat && damage19 > 0 &&
+                    roundsAfter19 == 0, "marked native attack and damage rules"),
+                Assertion("targeting-torso-grit",
+                    "exactly two grit spent", observed,
+                    gritAfter == gritBefore - 2, "unit-owned grit resource"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "item state removed and disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerStopBleeding()

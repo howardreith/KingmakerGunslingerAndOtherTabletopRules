@@ -297,6 +297,12 @@
     <Compile Include="Deeds\TargetingHeadRuntime.cs" />
     <Compile Include="Deeds\TargetingHeadAbilityLogic.cs" />
     <Compile Include="Blueprints\TargetingHeadBlueprints.cs" />
+    <Compile Include="Deeds\TargetingTorsoThreatDecision.cs" />
+    <Compile Include="Deeds\TargetingTorsoThreatService.cs" />
+    <Compile Include="Deeds\TargetingTorsoResult.cs" />
+    <Compile Include="Deeds\TargetingTorsoRuntime.cs" />
+    <Compile Include="Deeds\TargetingTorsoAbilityLogic.cs" />
+    <Compile Include="Blueprints\TargetingTorsoBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.Diagnostics
 
         private static void Prefix(object __instance)
         {
+            TargetingTorsoRuntime.ConfigureAttackRoll(
+                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
             DeadShotRuntime.ConfigureDelivery(
                 __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
             GunslingerDodgeRuntime.BeforeAttackRoll(

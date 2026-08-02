@@ -38,6 +38,7 @@
     <Compile Include="Sprint43Tests.cs" />
     <Compile Include="Sprint44Tests.cs" />
     <Compile Include="Sprint45Tests.cs" />
+    <Compile Include="Sprint46Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotDecision.cs"><Link>Deeds\DeadShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcome.cs"><Link>Deeds\DeadShotOutcome.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcomeService.cs"><Link>Deeds\DeadShotOutcomeService.cs</Link></Compile>
@@ -54,6 +55,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadDecision.cs"><Link>Deeds\TargetingHeadDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadRiderDecision.cs"><Link>Deeds\TargetingHeadRiderDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadService.cs"><Link>Deeds\TargetingHeadService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingTorsoThreatDecision.cs"><Link>Deeds\TargetingTorsoThreatDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingTorsoThreatService.cs"><Link>Deeds\TargetingTorsoThreatService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeDecision.cs">
       <Link>Deeds\DeadeyeDecision.cs</Link>
     </Compile>
