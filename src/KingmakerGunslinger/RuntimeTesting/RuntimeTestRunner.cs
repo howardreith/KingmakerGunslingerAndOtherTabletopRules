@@ -2271,8 +2271,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     object count = fixedCountField.GetValue(component);
                     Type referenceType = itemReference == null ? null :
                         itemReference.GetType();
-                    capitalEntries.Add("reference=" + (referenceType == null ?
-                        "<null>" : referenceType.FullName) + ":count=" + count);
+                    PropertyInfo itemProperty = referenceType == null ? null :
+                        referenceType.GetProperty("Item", Flags);
+                    var item = itemProperty == null ? null :
+                        itemProperty.GetValue(itemReference, null) as BlueprintItem;
+                    capitalEntries.Add("item=" + (item == null ? "<null>" :
+                        item.name + ":" + item.AssetGuid + ":cost=" + item.Cost +
+                        ":stackable=" + item.IsActuallyStackable) + ":reference=" +
+                        (referenceType == null ? "<null>" : referenceType.FullName) +
+                        ":count=" + count);
                     if (referenceType != null)
                     {
                         capitalReferenceContracts.Add("declared=" +
