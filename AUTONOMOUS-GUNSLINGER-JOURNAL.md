@@ -2215,3 +2215,22 @@
   exact built/deployed DLL SHA-256 is
   `219d52d8e45aa0372e0300406a4a3b4e24b97b0c55a72d15ad4231c301746eae`.
 - Sprint 55 is complete as a checkpoint. Continue immediately to Cheat Death.
+
+## 2026-08-02 Sprint 56 Cheat Death runtime qualification
+
+- Entry criteria fixed the exact post-damage contract: level 19, completed
+  owned `RuleDealDamage`, final HP at or below zero, and at least one grit.
+- The production target handler rejects zero-damage observations, spends all
+  remaining grit atomically, and changes native damage to leave exactly 1 HP.
+- Commit `10a42747ad500d1bf7bf9593a12c31b9ed828c97` passed the full validator
+  chain, 813/813 tests, clean exact-reference Release build, and strict package
+  validation.
+- Mod load passed at `20260802T0626527728449Z-mod-load-smoke`. Independent
+  feature runs `20260802T0629237809884Z-disposable-gunslinger-cheat-death` and
+  `20260802T0630482940232Z-disposable-gunslinger-cheat-death` both observed
+  `maxHp=137`, grit `1->0`, final HP 1, zero-grit control HP -10, level-19
+  progression, and detached cleanup.
+- Exact package/DLL SHA-256 are `3877860c6d2f955afd991740b4b38ad2cf86bc8d1f3521b204bff87624c7c161` /
+  `42f5122584447f195f3a66dbe2fbce5737a7d432acae35049f28a207503064b9`.
+- Sprint 56 is complete as a checkpoint. Continue immediately to the next
+  incomplete coverage item.

@@ -8,16 +8,24 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `a67a930` (Sprint 55 Slinger's Luck runtime qualification).
+- Audited HEAD: `10a4274` (Sprint 56 Cheat Death runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 55 Slinger's Luck is runtime-qualified; curate and
-  commit this evidence, then begin Cheat Death entry criteria and implementation.
-- Version: `0.0.55`.
+- Current checkpoint: Sprint 56 Cheat Death is runtime-qualified; curate and
+  commit this evidence, then begin the next incomplete coverage item.
+- Version: `0.0.56`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Cheat Death exact commit `10a4274` passed mod load at
+  `20260802T0626527728449Z-mod-load-smoke`. Independent PASS runs
+  `20260802T0629237809884Z-disposable-gunslinger-cheat-death` and
+  `20260802T0630482940232Z-disposable-gunslinger-cheat-death` both observed
+  maximum HP 137, grit `1->0`, final HP 1, zero-grit control HP -10, level-19
+  progression, and cleanup. Package/DLL SHA-256 are `3877860c6d2f955afd991740b4b38ad2cf86bc8d1f3521b204bff87624c7c161` /
+  `42f5122584447f195f3a66dbe2fbce5737a7d432acae35049f28a207503064b9`.
 
 - Slinger's Luck exact commit `a67a930` passed mod load at
   `20260802T0603271690563Z-mod-load-smoke`. Independent PASS runs
