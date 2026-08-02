@@ -2815,3 +2815,17 @@
 - Package/DLL hashes are `5a55e919...9839a` / `4521c532...04fff`.
 - Next: commit this core, host it in a save-owned UnitPart with primitive JSON
   records, then bind only the exact newly granted starting firearm.
+
+## 2026-08-02 Sprint 86 battered ownership persistence carrier
+
+- Added `UnitPartBatteredFirearmOwnership` on the same player-owned save graph
+  as firearm state. Its versioned records serialize only primitive item GUID
+  and originating-unit identity strings; no runtime item or unit references.
+- The carrier validates every read/write, rejects unsupported/null/duplicate
+  records and immutable-owner conflicts, and atomically publishes new records.
+- The provider reuses the exact established main-character resolver and creates
+  the part only for writes. Focused contract, repository validation, 844 tests,
+  clean Release build, and strict packaging passed.
+- Package/DLL hashes: `8608b007...d22e7` / `ef2ba51d...f5c61`.
+- Next: commit, then patch exact `LevelUpHelper.AddStartingItems` with before/
+  after item-reference correlation and bind only one newly granted Early Pistol.

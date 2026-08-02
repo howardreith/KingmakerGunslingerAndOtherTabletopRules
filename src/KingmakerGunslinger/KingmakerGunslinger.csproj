@@ -230,6 +230,8 @@
     <Compile Include="Gunsmithing\OriginatingUnitId.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOwnershipRecord.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOwnershipLedger.cs" />
+    <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
+    <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Firearms\FirearmDefinition.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />

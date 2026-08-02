@@ -8,10 +8,10 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `ad0bc0c`; Sprint 85 exact ownership-ledger core is source-qualified and awaiting commit.
+- Audited source HEAD: `59a0735`; Sprint 86 primitive UnitPart persistence carrier is source-qualified and awaiting commit.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 85 adds the exact-item/exact-origin immutable ledger. Six focused cases, repository validation, 844 tests, clean Release build, and strict packaging pass. Commit it, then add primitive JSON UnitPart hosting and the narrow starting-item binder. Sprint 84 runtime evidence remains `20260802T1312212200554Z`, `20260802T1313522632011Z`, and `20260802T1315168298512Z`. Historical Sprint 70 evidence follows.
+- Current checkpoint: Sprint 86 adds the primitive JSON `UnitPartBatteredFirearmOwnership` and exact main-character provider. Focused validation, repository validation, 844 tests, clean Release build, and strict packaging pass. Commit it, then implement the exact before/after starting-item binder. Sprint 84 runtime evidence remains `20260802T1312212200554Z`, `20260802T1313522632011Z`, and `20260802T1315168298512Z`. Historical Sprint 70 evidence follows.
 - Historical checkpoint: Sprint 70 exact mod load and the corrected final guarded
   level-up commit observation passed on `d0b15f6`, proving detached Gunslinger
   level `0->1->2`, native success callback, and unchanged external collections.

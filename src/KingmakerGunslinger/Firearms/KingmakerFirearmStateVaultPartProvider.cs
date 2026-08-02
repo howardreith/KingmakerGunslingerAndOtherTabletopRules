@@ -63,7 +63,7 @@ namespace KingmakerGunslinger.Firearms
             return vault;
         }
 
-        private static bool TryResolveMainCharacter(out UnitEntityData entity)
+        internal static bool TryResolveMainCharacter(out UnitEntityData entity)
         {
             Type gameType = typeof(BlueprintScriptableObject).Assembly.GetType(
                 "Kingmaker.Game",
