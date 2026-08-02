@@ -22,8 +22,7 @@ twice.
 a null body while `Destroyed` remains false; such a transferred shell is not a
 valid `Dispose` receiver and is accepted only when all external snapshots prove
 it is unregistered.
-The broad success callback rebinds the original entity reference to the emitted
-replacement descriptor. Acceptance therefore requires reference-identical
-rebinding and Gunslinger one through both source and replacement views; retaining
-Fighter on the source is only the detached-controller behavior, not the broad
-native callback contract.
+The broad success callback transforms the original entity to the committed
+replacement state while retaining a distinct descriptor object. Acceptance
+requires Gunslinger one through both source and replacement views; descriptor
+aliasing is recorded diagnostically but is not the native replacement contract.

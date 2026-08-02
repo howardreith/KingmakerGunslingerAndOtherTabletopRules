@@ -5052,7 +5052,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SelectedClass = gunslinger
             };
             bool subscribed = false, callback = false, facts = false,
-                sourceRebound = false, cleaned = false;
+                descriptorsAlias = false, cleaned = false;
             int sourceFighter = -1, sourceGunslinger = -1,
                 replacementFighter = -1, replacementGunslinger = -1;
             try
@@ -5107,7 +5107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     handler.Replacement.Progression.GetClassLevel(fighter);
                 replacementGunslinger = handler.Replacement == null ? -1 :
                     handler.Replacement.Progression.GetClassLevel(gunslinger);
-                sourceRebound = handler.Replacement != null &&
+                descriptorsAlias = handler.Replacement != null &&
                     ReferenceEquals(source.Descriptor, handler.Replacement);
                 facts = handler.Replacement != null &&
                     handler.Replacement.HasFact(
@@ -5159,13 +5159,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 handler.Selected + ";callback=" + callback + ";source=" +
                 sourceFighter + "/" + sourceGunslinger + ";replacement=" +
                 replacementFighter + "/" + replacementGunslinger +
-                ";rebound=" + sourceRebound + ";facts=" + facts;
+                ";alias=" + descriptorsAlias + ";facts=" + facts;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("broad-native-replacement",
-                    "handler/callback; source rebound to replacement Gunslinger 1",
+                    "handler/callback; source and replacement both Gunslinger 1",
                     observed, handler.Invoked && handler.Selected && callback &&
-                        sourceRebound && sourceFighter == 0 && sourceGunslinger == 1 &&
+                        sourceFighter == 0 && sourceGunslinger == 1 &&
                         replacementFighter == 0 && replacementGunslinger == 1,
                     "Player.RespecCompanion plus exact initiation handler and Commit"),
                 Assertion("broad-replacement-facts",

@@ -3246,3 +3246,12 @@
   Corrected gates pass; package/DLL hashes are
   `52cd1d523aeecf7f86de395512599958cefa04fd84567ad1711ff16698e27356` /
   `33e7eeb8f97eca62efa46699d2a2addd46a3ba54dfab662e9fb207b931c83a12`.
+- Exact `5e29976` mod load passed as `20260802T1722533270310Z`; run
+  `20260802T1724137284012Z` again passed callback, both Gunslinger-one views,
+  facts, and cleanup. It proved the native callback transforms the original
+  entity while its descriptor remains distinct from the emitted replacement.
+  The mechanical assertion now requires both transformed states and records
+  aliasing diagnostically rather than inventing a reference-identity contract.
+  Corrected full gates pass; package/DLL hashes are
+  `c6175beeff90bc6cce6ca26dde6227cadeac9bc53247f21a67604f14733fcd62` /
+  `af4d04ed898a85e959773d08af72c2266ef6f9fccb2ac793e73b9ec8b739864c`.
