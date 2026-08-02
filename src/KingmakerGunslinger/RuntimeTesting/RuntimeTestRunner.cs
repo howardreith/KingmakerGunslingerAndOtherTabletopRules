@@ -2202,8 +2202,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OfType<BlueprintUnit>().OrderBy(value => value.AssetGuid,
                     StringComparer.Ordinal))
             {
-                BlueprintComponent[] components = unit.ComponentsArray ??
-                    Array.Empty<BlueprintComponent>();
+                BlueprintComponent[] components =
+                    (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .Concat((unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                        .Where(value => value != null)
+                        .SelectMany(value => value.ComponentsArray ??
+                            Array.Empty<BlueprintComponent>())).ToArray();
                 AddSharedVendor[] shared = components.OfType<AddSharedVendor>().ToArray();
                 if (shared.Length == 0) continue;
                 var linkedTables = new List<string>();

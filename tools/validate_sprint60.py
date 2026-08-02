@@ -63,6 +63,7 @@ def validate(root: Path) -> None:
          "RunGunslingerPresentationObservation",
          "RunVendorTableContractObservation",
          '";catalog="',
+         "unit.AddFacts ?? Array.Empty<BlueprintUnitFact>()",
          ".GroupBy(value => value.GetType().FullName)",
          "gunslinger-visible-fact-presentation",
          "gunslinger-hidden-fact-exclusion",
