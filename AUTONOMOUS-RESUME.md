@@ -8,14 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `fdf54ec` (Sprint 64 critical-profile source qualification).
+- Audited source HEAD: `1e206d1` (Sprint 65 lifecycle Stage A runtime source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 64 critical profiles are source-qualified with
-  exact mod-load PASS `20260802T0957016959514Z-mod-load-smoke`. The external
-  policy rejected the first save-backed catalog request before launch, so the
-  two explicit live profile runs remain pending. Continue the independent
-  inventory/stash/transfer/loot/sale/copy/reconstruction lifecycle audit.
+- Current checkpoint: Sprint 65 save-free lifecycle Stage A passed exact mod
+  load `20260802T1005415884560Z-mod-load-smoke` and independent runs
+  `20260802T1007011584387Z` / `20260802T1008259836323Z`. Live collection,
+  vendor, and save-backed paths remain pending. Re-audit the player actions and
+  diagnostics row as the next independent source-qualified integration gap.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

@@ -2427,3 +2427,21 @@
 - Exact mod load `20260802T0957016959514Z-mod-load-smoke` passed. The first
   save-backed catalog request was externally rejected before launch; no save
   or game process was touched. Continue the independent lifecycle audit.
+
+## 2026-08-02 Sprint 65 save-free firearm lifecycle Stage A
+
+- Source checkpoint `1e206d1` adds a save-free detached-item observer for the
+  exact native collection/factory surfaces, same-item token reconstruction,
+  same-blueprint new-item isolation, and repository removal isolation.
+- Complete gates pass: 831/831 tests, 38 request checks, 84 preflight checks,
+  seven focused checks, clean exact-reference Release build, and strict
+  packaging. Package/DLL SHA-256 are
+  `528d22fff0516528afdb9112c0775a837304761bc9055659bfcb72fadb68ffdd` /
+  `c6322627269e8503f57d3c2c2fcaf03ceab503eecbdd198cd7b3fdd056942fea`.
+- Exact mod load `20260802T1005415884560Z-mod-load-smoke` and independent
+  lifecycle PASS runs `20260802T1007011584387Z` / `20260802T1008259836323Z`
+  observed native contracts true, source tokens `1->1->0`, created tokens zero,
+  exact loaded reconstruction, and canonical empty created state.
+- Live inventory/stash/vendor and durable sale/restart paths remain pending;
+  Stage A is not overstated as full runtime qualification. Continue to the next
+  independent source-qualified coverage row.
