@@ -12,6 +12,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-gunslinger-presentation";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
+        internal const string ObserveProductionFirearmFallbacks =
+            "observe-production-firearm-fallbacks";
         internal const string ObserveCharacterCreationContracts =
             "observe-character-creation-contracts";
         internal const string DisposableDescriptorConstruction =

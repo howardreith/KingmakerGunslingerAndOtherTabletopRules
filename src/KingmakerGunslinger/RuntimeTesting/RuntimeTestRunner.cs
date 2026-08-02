@@ -346,6 +346,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
+                {
+                    Complete(RunProductionFirearmFallbackObservation());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts)
                 {
                     Complete(RunCharacterCreationContractObservation());
@@ -2416,6 +2422,147 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunProductionFirearmFallbackObservation()
+        {
+            BlueprintWeaponType lightType = BlueprintLibraryLookup
+                .RequireExact<BlueprintWeaponType>(BlueprintBootstrap.Library,
+                    ProductionFirearmBlueprints.NativeLightCrossbowWeaponTypeGuid,
+                    "native Light Crossbow weapon type");
+            BlueprintItemWeapon lightItem = BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                    ProductionFirearmBlueprints.NativeStandardLightCrossbowItemGuid,
+                    "native Standard Light Crossbow item");
+            BlueprintWeaponType heavyType = BlueprintLibraryLookup
+                .RequireExact<BlueprintWeaponType>(BlueprintBootstrap.Library,
+                    TestMusketBlueprints.NativeHeavyCrossbowWeaponTypeGuid,
+                    "native Heavy Crossbow weapon type");
+            BlueprintItemWeapon heavyItem = BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                    TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid,
+                    "native Standard Heavy Crossbow item");
+            ProductionFirearmBlueprintCatalog catalog =
+                BlueprintBootstrap.ProductionFirearms;
+            var records = new List<string>();
+            bool pistol = ObserveFallback("Pistol", catalog.Pistol,
+                lightType, lightItem, records);
+            bool revolver = ObserveFallback("AdvancedRevolver",
+                catalog.AdvancedRevolver, lightType, lightItem, records);
+            bool musket = ObserveFallback("Musket", catalog.Musket,
+                heavyType, heavyItem, records);
+            bool blunderbuss = ObserveFallback("Blunderbuss",
+                catalog.Blunderbuss, heavyType, heavyItem, records);
+            bool rifle = ObserveFallback("AdvancedRifle",
+                catalog.AdvancedRifle, heavyType, heavyItem, records);
+            string observed = string.Join(" | ", records.ToArray());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("one-handed-firearm-fallbacks",
+                    "Pistol and Advanced Revolver exactly retain Light Crossbow presentation",
+                    observed, pistol && revolver,
+                    "item/icon/equipment and WeaponVisualParameters fields"),
+                Assertion("two-handed-firearm-fallbacks",
+                    "Musket, Blunderbuss, and Advanced Rifle exactly retain Heavy Crossbow presentation",
+                    observed, musket && blunderbuss && rifle,
+                    "item/icon/equipment and WeaponVisualParameters fields"),
+                Assertion("fallback-projectiles-and-icons",
+                    "all five firearms have inherited icons and nonempty projectile sequences",
+                    observed, catalog.Entries.All(value => value.Item.Icon != null &&
+                        GetProjectileCount(value.WeaponType) > 0),
+                    "registered firearm public icon and visual projectile fields"),
+                Assertion("fallback-observation-only",
+                    "no blueprint, asset, unit, inventory, or save mutation",
+                    "read-only exact field comparison", true,
+                    "scenario performs only blueprint lookup and member reads"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static bool ObserveFallback(string label,
+            ProductionFirearmBlueprintEntry firearm, BlueprintWeaponType sourceType,
+            BlueprintItemWeapon sourceItem, List<string> records)
+        {
+            string[] itemFields = { "m_Icon",
+                "m_EquipmentEntity", "m_EquipmentEntityAlternatives",
+                "m_InventoryPutSound", "m_InventoryTakeSound" };
+            bool itemMatch = itemFields.All(name => EquivalentPresentationValue(
+                ReadField(firearm.Item, name), ReadField(sourceItem, name)));
+            itemMatch = itemMatch && VisualParametersEqual(
+                ReadField(firearm.Item, "m_VisualParameters"),
+                ReadField(sourceItem, "m_VisualParameters"));
+            bool typeIcon = EquivalentPresentationValue(
+                ReadField(firearm.WeaponType, "m_Icon"),
+                ReadField(sourceType, "m_Icon"));
+            bool typeVisual = VisualParametersEqual(
+                ReadField(firearm.WeaponType, "m_VisualParameters"),
+                ReadField(sourceType, "m_VisualParameters"));
+            int projectiles = GetProjectileCount(firearm.WeaponType);
+            records.Add("entry=" + label + ";item=" + itemMatch +
+                ";typeIcon=" + typeIcon + ";typeVisual=" + typeVisual +
+                ";projectiles=" + projectiles + ";icon=" +
+                (firearm.Item.Icon != null));
+            return itemMatch && typeIcon && typeVisual;
+        }
+
+        private static bool VisualParametersEqual(object left, object right)
+        {
+            if (left == null || right == null) return ReferenceEquals(left, right);
+            string[] fields = { "m_Projectiles", "m_WeaponAnimationStyle",
+                "m_SpecialAnimation", "m_WeaponModel", "m_WeaponBeltModel",
+                "m_WeaponSheathModel", "m_OverrideAttachSlots",
+                "m_PossibleAttachSlots", "m_ReachFXThresholdBonus",
+                "m_SoundSize", "m_SoundType", "m_WhooshSound",
+                "m_MissSoundType", "m_EquipSound", "m_UnequipSound",
+                "m_InventoryEquipSound", "m_InventoryPutSound",
+                "m_InventoryTakeSound" };
+            return fields.All(name => EquivalentPresentationValue(
+                ReadField(left, name), ReadField(right, name)));
+        }
+
+        private static int GetProjectileCount(BlueprintWeaponType type)
+        {
+            object visual = ReadField(type, "m_VisualParameters");
+            Array projectiles = visual == null ? null :
+                ReadField(visual, "m_Projectiles") as Array;
+            return projectiles == null ? 0 : projectiles.Length;
+        }
+
+        private static object ReadField(object instance, string name)
+        {
+            if (instance == null) return null;
+            for (Type type = instance.GetType(); type != null; type = type.BaseType)
+            {
+                FieldInfo field = type.GetField(name, BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly);
+                if (field != null) return field.GetValue(instance);
+            }
+            throw new MissingFieldException(instance.GetType().FullName, name);
+        }
+
+        private static bool EquivalentPresentationValue(object left, object right)
+        {
+            if (left == null || right == null) return ReferenceEquals(left, right);
+            Array leftArray = left as Array, rightArray = right as Array;
+            if (leftArray != null || rightArray != null)
+            {
+                if (leftArray == null || rightArray == null ||
+                    leftArray.Length != rightArray.Length) return false;
+                for (int index = 0; index < leftArray.Length; index++)
+                    if (!EquivalentPresentationValue(leftArray.GetValue(index),
+                        rightArray.GetValue(index))) return false;
+                return true;
+            }
+            Type type = left.GetType();
+            if (type.IsValueType || left is string) return left.Equals(right);
+            return ReferenceEquals(left, right);
         }
 
         private static string DescribeBlueprintComponents(

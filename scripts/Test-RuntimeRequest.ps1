@@ -32,6 +32,13 @@ if ($vendorRequest.scenario -cne 'observe-vendor-table-contracts' -or
     $vendorRequest.parameters.Count -ne 0) {
     $failures.Add('vendor-table-request-valid')
 }
+$fallbackRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-production-firearm-fallbacks' -ExpectedVersion '0.0.60' `
+    -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
+if ($fallbackRequest.scenario -cne 'observe-production-firearm-fallbacks' -or
+    $fallbackRequest.parameters.Count -ne 0) {
+    $failures.Add('fallback-presentation-request-valid')
+}
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'unknown' -ExpectedVersion '0.0.60' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'unknown-scenario'
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '' `
