@@ -397,9 +397,13 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the reconstructable Sprint 44 source checkpoint, require exact mod load,
-and run two fresh-process `disposable-gunslinger-startling-shot` qualifications.
-Then record evidence and advance to Targeting. Preserve the Dodge movement
+Sprint 44 source and successive evidence-driven fixture checkpoints are
+committed through `e34e40c`. Exact mod load passes, but the disposable
+`DefaultPlayerCharacter` target retains an unidentified `RuleApplyBuff` veto
+after the exact immortality rejection branch was removed. Do not launch another
+Startling Shot variation until a narrower handler observation identifies the
+veto. Advance independently to Targeting and return to the bounded fixture gate
+before declaring Startling Shot runtime-qualified. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until

@@ -80,8 +80,13 @@ No genuine human-input hard stop is currently established.
   Startling Shot is the next engineering gate, not a human-input blocker.
 
 - Sprint 44 Startling Shot is source-qualified at version `0.0.44`. Exact mod
-  load and two independent guarded native-flat-footed runs remain an
-  engineering gate, not a human-input blocker.
+  load passes, but the disposable `DefaultPlayerCharacter` target still has a
+  native `RuleApplyBuff` veto after its immortality flag is cleared. Runs
+  `20260802T0116128177162Z-97dc5c3ac58f43618bbfc3d01feafaf7` and
+  `20260802T0121202660495Z-19a9d9d2d2304733a70145d5dd1b79b5` retain the exact
+  null-delivery evidence. This is a bounded runtime-fixture engineering gate,
+  not a human-input hard stop; proceed with independent Targeting work while a
+  narrower hostile-target fixture/handler observation is designed.
 
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.

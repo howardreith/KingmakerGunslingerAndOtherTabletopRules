@@ -1711,3 +1711,10 @@
   target was cloned from `DefaultPlayerCharacter` and therefore immortal,
   unlike the enemy contract it represents. The disposable fixture now clears
   that flag before delivery; production buff behavior is not weakened.
+- Exact lifecycle-fixture commit `e34e40c` passed guarded mod load at evidence
+  directory `20260802T0119594190278Z-mod-load-smoke`, but guarded feature run
+  `20260802T0121202660495Z-19a9d9d2d2304733a70145d5dd1b79b5` still returned
+  null from `RuleApplyBuff`. The immortality hypothesis was necessary but not
+  sufficient, so additional feature launches stop pending a narrower handler
+  observation. Startling Shot remains source-qualified; Targeting is the next
+  independent completion item.
