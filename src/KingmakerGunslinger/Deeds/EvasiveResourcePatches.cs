@@ -22,10 +22,10 @@ namespace KingmakerGunslinger.Deeds
                     typeof(BlueprintScriptableObject));
         }
 
-        private static void Postfix(BlueprintScriptableObject resource,
+        private static void Postfix(BlueprintScriptableObject blueprint,
             UnitDescriptor ___m_Owner)
         {
-            EvasiveRuntime.Refresh(___m_Owner, resource);
+            EvasiveRuntime.Refresh(___m_Owner, blueprint);
         }
     }
 }

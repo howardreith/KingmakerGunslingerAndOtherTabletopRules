@@ -54,7 +54,9 @@ def validate(root: Path) -> None:
     require_tokens(read(root,
         "src/KingmakerGunslinger/Deeds/EvasiveResourcePatches.cs"),
         ["UnitAbilityResourceCollection", "Spend", "Restore",
-         "EvasiveRuntime.Refresh"], "Sprint 53 resource refresh")
+         "Postfix(BlueprintScriptableObject blueprint",
+         "EvasiveRuntime.Refresh(___m_Owner, blueprint)"],
+        "Sprint 53 resource refresh")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["EvasiveBlueprints.Register", "evasive.Feature"],
