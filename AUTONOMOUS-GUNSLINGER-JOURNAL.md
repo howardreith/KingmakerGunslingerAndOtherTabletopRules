@@ -2798,3 +2798,9 @@
   hashes are `b6c60c1a...3918` / `2d24750a...b05`.
 - Next: commit the source-qualified tree, run exact mod load and two fresh
   save-free presentation observations, then implement origin persistence.
+- Source commit `8f320a3` passed exact mod load
+  `20260802T1312212200554Z` and fresh presentation PASS runs
+  `20260802T1313522632011Z` / `20260802T1315168298512Z`. Both observed 20
+  levels, 76 visible reachable facts, one hidden, zero incomplete, six groups,
+  22 grouped facts, and Reload/Overhaul/Repair. Gunsmithing is runtime-qualified;
+  continue exact-item origin persistence immediately.

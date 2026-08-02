@@ -18,3 +18,12 @@ Qualification on the pre-runtime tree:
 Runtime qualification follows from the exact clean source commit. Persistent
 item-owner binding and the fixed battered value are intentionally the next
 checkpoint, not claims of this one.
+
+## Runtime qualification
+
+Exact source commit `8f320a3b386b65c214e04dd66d51800e4367f710` passed
+mod-load-smoke `20260802T1312212200554Z`. Fresh save-free presentation runs
+`20260802T1313522632011Z` and `20260802T1315168298512Z` both passed with 20
+levels, 76 visible reachable project facts (the prior 75 plus Gunsmithing), one
+hidden fact, zero incomplete facts, six UI groups containing 22 facts, and all
+three production actions reachable. No save was loaded or written.
