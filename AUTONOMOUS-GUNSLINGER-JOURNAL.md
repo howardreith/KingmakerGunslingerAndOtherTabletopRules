@@ -3193,3 +3193,9 @@
   repaired package/DLL hashes are
   `a9ede41deda0716d8ab6f8bf173e9e748c9dda758369f0f3c4f5602060a084d7` /
   `a72dbaf990ede8f907b27927661e5c6815b575c16d81db25a38e94f05be0949f`.
+- Exact repair `75563e8` passed mod load as `20260802T1653068423255Z` and
+  two fresh creation commits as `20260802T1654290642019Z` and
+  `20260802T1655490400235Z`. Both proved native CharGen preview/commit level
+  one, success callback, proficiency/grit facts, exact external restoration,
+  loaded version, and no save interaction. Starting access is now fully
+  runtime-qualified; continue to the broad native player replacement callback.

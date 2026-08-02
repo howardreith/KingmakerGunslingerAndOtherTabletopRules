@@ -96,6 +96,10 @@ definition of done or a listed genuine human-input hard stop.
   contract. The repaired ownership observer no-ops only for zero observed
   pistols and remains fail-closed for multiple pistols; all source gates pass.
   Commit the repair and resume exact runtime qualification.
+- Native creation commit is runtime-qualified on exact `75563e8`: mod load
+  `20260802T1653068423255Z` and PASS pair `20260802T1654290642019Z` /
+  `20260802T1655490400235Z`. Commit curated evidence and continue the remaining
+  broad native player replacement callback.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through
