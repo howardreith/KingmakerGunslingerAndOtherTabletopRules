@@ -8,14 +8,15 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `cb6ffd7` (Sprint 67 release documentation/package).
+- Audited source HEAD: `1928bba` (Targeting Head native delivery repair).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 67 packages and enforces bounded installation,
-  update, removal, and compatibility guidance in an exact nine-file standalone
-  package. Exact `cb6ffd7` clean Release/package qualification passed with
-  831/831 tests. Re-audit the remaining RUNTIME-PARTIAL/SOURCE-QUALIFIED rows
-  and select the next independent final-integration item; do not stop here.
+- Current checkpoint: Sprint 68 deed requalification reached the two-attempt
+  limit for Startling Shot and Targeting Head. Latest Targeting Head evidence
+  proves damage `0->5`, grit `3->2`, chamber `1->0`, six-second Confusion, and
+  cleanup; only stale `Attack.MeleeDamage` observer bookkeeping failed. Do not
+  rerun either scenario speculatively. Select the next independent incomplete
+  coverage row and continue.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

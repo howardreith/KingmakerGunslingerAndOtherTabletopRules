@@ -2487,3 +2487,25 @@
 - This mandatory documentation row is COMPLETE. No runtime launch was needed
   because no assembly source, blueprint, or runtime input changed. Continue to
   the next incomplete mandatory row.
+
+## 2026-08-02 Sprint 68 deed runtime requalification audit
+
+- Exact mod load `20260802T1031471777161Z-mod-load-smoke` passed.
+- Startling Shot runs `20260802T1033081927669Z` and
+  `20260802T1038097680536Z` failed closed at native timed-buff return. Detached
+  liveness repair `b7eeaa9` passed 831/831 tests and packaging but did not alter
+  the result, so the two-attempt rule ended further Startling probing.
+- Targeting Head run `20260802T1039503873162Z` proved native hit, grit `3->2`,
+  chamber `1->0`, and active Confusion while `AddBuff` returned null. Exact
+  repair `1928bba` reconciles the installed fact and explicitly dispatches the
+  detached hit's damage rule; complete 831-test/build/package gates pass.
+- Repaired run `20260802T1042345480789Z` proved damage `0->5`, grit `3->2`,
+  chamber `1->0`, exact six-second nonpermanent Confusion, and cleanup. Its only
+  FAIL is the observer reading `Attack.MeleeDamage`, which remains null because
+  the explicitly triggered native damage rule is separate. The two-attempt
+  limit ends further assertion-only retries.
+- Exact `1928bba` package/DLL SHA-256 are
+  `566063eea17b61b6b5e04e594113a471815a27db180a418f95b085d2eeb34b8c` /
+  `cb0c5abd017c0d6d8894d62a1b9c4a8481185dbae19daa8cefa8bd20e1cae9d4`.
+- Both are bounded engineering evidence gates, not overall mission stops.
+  Continue the next independent coverage item.

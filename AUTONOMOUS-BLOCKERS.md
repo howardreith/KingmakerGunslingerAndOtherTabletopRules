@@ -106,23 +106,26 @@ No genuine human-input hard stop is currently established.
   Exact mod load and two independent guarded mixed/all-misfire runs passed.
   Startling Shot is the next engineering gate, not a human-input blocker.
 
-- Sprint 44 Startling Shot is source-qualified at version `0.0.44`. Exact mod
-  load passes, but the disposable `DefaultPlayerCharacter` target still has a
-  native `RuleApplyBuff` veto after its immortality flag is cleared. Runs
-  `20260802T0116128177162Z-97dc5c3ac58f43618bbfc3d01feafaf7` and
-  `20260802T0121202660495Z-19a9d9d2d2304733a70145d5dd1b79b5` retain the exact
-  null-delivery evidence. This is a bounded runtime-fixture engineering gate,
-  not a human-input hard stop; proceed with independent Targeting work while a
-  narrower hostile-target fixture/handler observation is designed.
+- Sprint 44 Startling Shot remains source-qualified. Current exact mod load
+  `20260802T1031471777161Z-mod-load-smoke` passed. Fresh runs
+  `20260802T1033081927669Z` on `4cb5251` and `20260802T1038097680536Z` on
+  `b7eeaa9` both failed closed because native `AddBuff` returned null. Retaining
+  detached chargen immortality did not change that result. Independent
+  Targeting Head evidence then proved Kingmaker can return null while still
+  installing the exact timed condition fact. The two-attempt limit prohibits
+  another speculative Startling run; exact applied-fact reconciliation is now
+  the identified future repair contract, not a human-input hard stop.
 
-- Sprint 45 Targeting Head is source-qualified at version `0.0.45`. Exact mod
-  load passes, and both guarded runs prove grit spend, chamber consumption,
-  native hit/immunity correlation, and Confusion state. The second run proves
-  direct `RuleAttackWithWeapon` did not dispatch `MeleeDamage` and the detached
-  timed buff was permanent. After two materially different verifier theories,
-  further speculative repair is suspended pending exact native contract
-  inspection. This is an engineering gate, not a human-input hard stop;
-  Targeting Torso is independently actionable.
+- Sprint 45 Targeting Head remains source-qualified with strong partial runtime
+  evidence. Run `20260802T1039503873162Z` proved hit, grit `3->2`, chamber
+  `1->0`, and active Confusion while native `AddBuff` returned null. Repair
+  `1928bba` reconciles the exact applied fact and explicitly dispatches detached
+  hit damage. Run `20260802T1042345480789Z` then proved damage `0->5`, exact
+  six-second nonpermanent Confusion, grit/chamber behavior, and cleanup. Its
+  sole FAIL is stale observer bookkeeping (`Attack.MeleeDamage` remains null
+  because the explicitly triggered `RuleDealDamage` is a separate rule) despite
+  the authoritative damage delta. The two-attempt limit prohibits a third
+  assertion-only rerun; this is not a human-input hard stop.
 
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
