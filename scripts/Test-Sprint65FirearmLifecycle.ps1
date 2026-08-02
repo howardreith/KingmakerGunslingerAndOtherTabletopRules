@@ -34,6 +34,7 @@ $checks = [ordered]@{
         $runner.Contains('sourceTokensAfterRemove == 0')
     'duplicate-corruption-preserved' =
         $runner.Contains('"duplicate-token-corruption-fails-closed"') -and
+        $runner.Contains('catch (InvalidDataException)') -and
         $runner.Contains('corruptTokensBefore == 2') -and
         $runner.Contains('corruptTokensAfter == 2')
     'detached-cleanup' =

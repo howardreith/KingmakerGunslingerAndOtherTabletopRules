@@ -2695,7 +2695,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     FirearmRuntimeState.Service.GetOrCreate(corrupt);
                 }
-                catch (InvalidOperationException)
+                catch (InvalidDataException)
                 {
                     corruptRejected = true;
                 }
