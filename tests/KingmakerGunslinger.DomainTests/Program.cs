@@ -24,6 +24,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("vendor-publication.append", VendorPublicationAppendsExactReferences),
+            Case("vendor-publication.idempotent", VendorPublicationIsIdempotent),
+            Case("vendor-publication.ambiguity", VendorPublicationRejectsAmbiguity),
+            Case("vendor-publication.rollback", VendorPublicationRollbackRestoresNativeReferences),
             Case("class.chassis-constants", ClassChassisConstants),
             Case("class.chassis-exact-rows", ClassChassisExactRows),
             Case("class.chassis-complete-monotonic", ClassChassisCompleteMonotonic),
