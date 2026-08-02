@@ -8,19 +8,30 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `1e206d1` (Sprint 65 lifecycle Stage A runtime source).
+- Audited source HEAD: `087e11a` (Sprint 66 production firearm actions).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 65 save-free lifecycle Stage A passed exact mod
-  load `20260802T1005415884560Z-mod-load-smoke` and independent runs
-  `20260802T1007011584387Z` / `20260802T1008259836323Z`. Live collection,
-  vendor, and save-backed paths remain pending. Re-audit the player actions and
-  diagnostics row as the next independent source-qualified integration gap.
+- Current checkpoint: Sprint 66 passed exact mod load
+  `20260802T1020144242399Z-mod-load-smoke` and independent presentation runs
+  `20260802T1021336705231Z` / `20260802T1022571370114Z`. All three stable
+  Firearm Proficiency actions now present generically and the player-actions
+  row is runtime-qualified. Re-audit the matrix and select the next independent
+  incomplete final-integration row; do not stop at this checkpoint.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Production firearm actions exact source `087e11a` passed mod load at
+  `20260802T1020144242399Z-mod-load-smoke`. Independent PASS runs
+  `20260802T1021336705231Z-observe-gunslinger-presentation` and
+  `20260802T1022571370114Z-observe-gunslinger-presentation` observed 20 levels,
+  75 visible facts, zero incomplete visible facts, and exact production names
+  `Reload Firearm,Overhaul Firearm,Repair Firearm` with no Test Musket
+  descriptions. Package/DLL SHA-256 are
+  `cf8ff7859a5b5fe9373524af4310c05c66d2ea96714aace83189e17c99d352d0` /
+  `b79daa5d57d411a0bdcd190b8f58b88dd54dc6636c37ddcaf339e30535bb0490`.
 
 - Acquisition exact source `c2fd27b` passed mod load at
   `20260802T0931384431105Z-mod-load-smoke`. Independent PASS runs

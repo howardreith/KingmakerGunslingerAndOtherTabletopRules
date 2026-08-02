@@ -2445,3 +2445,25 @@
 - Live inventory/stash/vendor and durable sale/restart paths remain pending;
   Stage A is not overstated as full runtime qualification. Continue to the next
   independent source-qualified coverage row.
+
+## 2026-08-02 Sprint 66 production firearm actions
+
+- Audit proved Reload, Repair, and Overhaul mechanics were already generic and
+  definition-driven, while their player-visible names and diagnostics still
+  exposed the development-only Test Musket label.
+- Source checkpoint `087e11a` changes only presentation and diagnostics while
+  retaining stable symbols, GUIDs, compatibility types, action economy,
+  targeting, and transaction behavior.
+- Complete qualification passed: five focused checks, 38 request checks, 84
+  preflight checks, repository validation, 831/831 domain/reflection tests,
+  clean exact-reference Release build, and strict package validation.
+- Exact mod load `20260802T1020144242399Z-mod-load-smoke` passed. Independent
+  presentation runs `20260802T1021336705231Z` and `20260802T1022571370114Z`
+  passed with 20 levels, 75 visible facts, zero incomplete facts, and exact
+  actions `Reload Firearm,Overhaul Firearm,Repair Firearm` with no Test Musket
+  descriptions.
+- Runtime package/DLL SHA-256 are
+  `cf8ff7859a5b5fe9373524af4310c05c66d2ea96714aace83189e17c99d352d0` /
+  `b79daa5d57d411a0bdcd190b8f58b88dd54dc6636c37ddcaf339e30535bb0490`.
+- Player actions and diagnostics are runtime-qualified. Continue immediately
+  to the next independent incomplete final-integration row.
