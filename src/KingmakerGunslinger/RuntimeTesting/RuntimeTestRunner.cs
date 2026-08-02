@@ -275,6 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelTwentyProgression &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
@@ -394,6 +395,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit)
                 {
                     Complete(RunDisposableGunslingerLevelUpCommit());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableGunslingerLevelTwentyProgression)
+                {
+                    Complete(RunDisposableGunslingerLevelTwentyProgression());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3599,6 +3606,136 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerLevelTwentyProgression()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            object controller = null;
+            int completedLevels = 0;
+            int classLevel = -1;
+            int characterLevel = -1;
+            int bab = -1, fortitude = -1, reflex = -1, will = -1;
+            int expectedFacts = -1, observedFacts = -1;
+            string missingFacts = "";
+            bool cleaned = false;
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                Kingmaker.UnitLogic.UnitDescriptor descriptor = entity == null ? null :
+                    entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable level-twenty source is unavailable.");
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native progression method is unavailable.");
+
+                for (int level = 1; level <= 20; level++)
+                {
+                    object mode = Enum.Parse(start.GetParameters()[4].ParameterType,
+                        level == 1 ? "CharGen" : "LevelUp", false);
+                    controller = start.Invoke(null,
+                        new object[] { descriptor, false, null, null, mode });
+                    if (!(bool)selectClass.Invoke(controller,
+                        new object[] { set.CharacterClass, false }))
+                        throw new InvalidOperationException(
+                            "Native Gunslinger selection rejected level " + level + ".");
+                    mechanics.Invoke(controller, null);
+                    apply.Invoke(controller, new object[] { descriptor });
+                    cancel.Invoke(controller, null);
+                    controller = null;
+                    int applied = descriptor.Progression.GetClassLevel(set.CharacterClass);
+                    if (applied != level)
+                        throw new InvalidOperationException("Native progression reached " +
+                            applied + " after requested level " + level + ".");
+                    completedLevels = level;
+                }
+
+                classLevel = descriptor.Progression.GetClassLevel(set.CharacterClass);
+                characterLevel = descriptor.Progression.CharacterLevel;
+                bab = descriptor.Stats.BaseAttackBonus.BaseValue;
+                fortitude = descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue;
+                reflex = descriptor.Stats.GetStat(StatType.SaveReflex).BaseValue;
+                will = descriptor.Stats.GetStat(StatType.SaveWill).BaseValue;
+                BlueprintFeatureBase[] progressionFacts = set.Progression.LevelEntries
+                    .Where(entry => entry.Level <= 20)
+                    .SelectMany(entry => entry.Features ??
+                        new List<BlueprintFeatureBase>())
+                    .Where(feature => feature != null).Distinct().ToArray();
+                expectedFacts = progressionFacts.Length;
+                BlueprintFeatureBase[] missing = progressionFacts.Where(feature =>
+                    !descriptor.HasFact(feature)).ToArray();
+                observedFacts = expectedFacts - missing.Length;
+                missingFacts = string.Join(",", missing.Select(feature =>
+                    feature.AssetGuid).OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray());
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null)
+                    cancel.Invoke(controller, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity));
+            }
+            string observed = "completed=" + completedLevels + ";class=" + classLevel +
+                ";character=" + characterLevel + ";bab=" + bab + ";saves=" +
+                fortitude + "/" + reflex + "/" + will + ";facts=" +
+                observedFacts + "/" + expectedFacts + ";missing=" + missingFacts;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-level-twenty-progression",
+                    "twenty exact native Gunslinger level applications", observed,
+                    completedLevels == 20 && classLevel == 20 && characterLevel == 20,
+                    "CharGen then nineteen LevelUp-mode ApplyLevelup operations"),
+                Assertion("evaluated-level-twenty-chassis",
+                    "BAB=20;Fortitude=12;Reflex=12;Will=6", observed,
+                    bab == 20 && fortitude == 12 && reflex == 12 && will == 6,
+                    "native descriptor CharacterStats base values"),
+                Assertion("level-twenty-progression-facts",
+                    "every distinct direct level-entry fact installed", observed,
+                    expectedFacts > 0 && observedFacts == expectedFacts &&
+                        string.IsNullOrEmpty(missingFacts),
+                    "native descriptor HasFact for exact progression entries"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "detached entity disposal and exact reference snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerMulticlassPreview()
