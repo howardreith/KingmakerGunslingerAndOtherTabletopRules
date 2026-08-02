@@ -5002,8 +5002,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DescribeComponents(value.ComponentsArray) + "|nested=" +
                 DescribeNestedObject(value, 10)).ToArray());
             bool unique = candidates.Length == 1;
-            bool nativeCondition = unique &&
-                observed.Contains("UnitCondition.Stunned");
+            bool nativeCondition = unique && observed.Contains(
+                "Kingmaker.UnitLogic.FactLogic.AddCondition{Condition=Stunned}");
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("stunning-shot-native-stunned-identity",

@@ -33,7 +33,7 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs")
     require_tokens(runner,
         ["RunObserveStunningShotNativeStunned", "name == \"Stunned\"",
-         "UnitCondition.Stunned", "ImmuneToCriticalHit",
+         "AddCondition{Condition=Stunned}", "ImmuneToCriticalHit",
          "stunning-shot-native-stunned-condition"],
         "Sprint 58 native Stunned observer")
     require_tokens(read(root,
