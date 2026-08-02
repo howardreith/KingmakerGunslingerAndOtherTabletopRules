@@ -397,12 +397,14 @@ isolation, and observed no save write.
 
 ## Next action
 
-Sprint 46 Targeting Torso is source-qualified at version `0.0.46` with 773/773
-tests and all source/build/package/harness gates. Commit the current explicit
-checkpoint, rebuild the exact clean commit, require guarded mod load, and run
-two independent `disposable-gunslinger-targeting-torso` processes. The scenario
-forces natural 18 then 19, proves deed-local threat isolation, native damage,
-two grit/chambers, cleanup, and no save APIs.
+Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
+Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
+and independent feature runs
+`20260802T0210250762420Z-13a22fcb19dc4c328a56adbca72e666f` and
+`20260802T0211456711945Z-392586b512d546f2a37db9da41a8568c` passed. Both
+feature runs proved natural-18 isolation, natural-19 threat, native damage, two
+grit/chambers, cleanup, and no save-backed interaction. Commit this curated
+evidence and begin Targeting Legs immediately.
 
 Sprint 45 Targeting Head is source-qualified through clean commits `e543356`
 and `6b29536` at version `0.0.45`. Exact mod load passed, but fresh feature runs

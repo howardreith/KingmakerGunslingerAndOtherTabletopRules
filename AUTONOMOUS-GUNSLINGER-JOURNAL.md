@@ -1796,3 +1796,21 @@
   `3ffa48ca1860659e60cc3e567e306e84194072630c46842a812c60c2ba18423c`.
   Commit the reconstructable source checkpoint, rebuild the exact clean commit,
   require mod-load PASS, then run two independent Torso qualifications.
+
+## 2026-08-01 Sprint 46 Targeting Torso runtime qualification
+
+- Exact clean commit `cc629a5` rebuilt with package SHA-256
+  `dd867f0d8dd8ac89b02596e5a627e48c1a81272d7906dccfab4f32b7ff3dbfe7`
+  and DLL SHA-256
+  `546ab30b3186136a09d2aded32e9e815336a15299f3f96292aa791f0e86014c7`.
+- Guarded Steam mod load passed in run
+  `20260802T0209076152067Z-14117474bdfb443a988299a617157502`.
+- Independent feature runs
+  `20260802T0210250762420Z-13a22fcb19dc4c328a56adbca72e666f`
+  and `20260802T0211456711945Z-392586b512d546f2a37db9da41a8568c`
+  both passed identically: grit `3->1`, both chambers `1->0`, natural 18 hit
+  without threatening and dealt 8 damage, natural 19 hit/threatened and dealt
+  6 damage, and detached party/global-unit cleanup passed. No save was named or
+  loaded and the save-free scenario exposed no save-writing path.
+- Targeting Torso is runtime-qualified. Continue immediately to Targeting Legs,
+  whose normal-damage/prone mapping is independently authoritative.
