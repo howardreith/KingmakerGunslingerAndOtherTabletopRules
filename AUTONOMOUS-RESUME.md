@@ -515,6 +515,15 @@ isolation, and observed no save write.
 
 ## Next action
 
+Sprint 82 native weapon-pipeline preservation is runtime-qualified on exact
+commit `a3243c9`. Package/DLL hashes are
+`7e873edd2bd0f54da09de789e7f15dd0200bb2e095484578804df0b2855b2388` /
+`510ea8061af01a696b0f8b44dd186a798a65a6a3e9b94f08e41ac65dc6775696`.
+Mod load `20260802T1245266307096Z-mod-load-smoke` and comprehensive runs
+`20260802T1247085787494Z` / `20260802T1248346969150Z` passed. Commit this
+curated evidence and audit the remaining character-creation/Gunsmith boundary
+without invoking the explicitly unsafe broad first-level commit path.
+
 Sprint 81 comprehensive acceptance is runtime-qualified on exact commit
 `58baf84`. Exact mod load `20260802T1234452818737Z-mod-load-smoke` and fresh
 comprehensive runs `20260802T1236067944023Z` and `20260802T1237355810113Z`

@@ -2740,3 +2740,25 @@
 - Continue immediately with the remaining matrix audit. Comprehensive
   acceptance is a checkpoint, not mission completion; creation/respec,
   scatter, blocked deed decisions, and save-backed lifecycle remain separate.
+
+## 2026-08-02 Sprint 82 native weapon-pipeline qualification
+
+- Audited the mandatory native concealment, mirror-image, cover, LOS, range,
+  critical, and damage row against ADR-0005 and current implementation. These
+  mechanics remain Kingmaker-owned; the mod must prove preservation rather
+  than duplicate them.
+- Added seven focused compositional invariants proving production weapon-event
+  bracketing, postfix-only misfire narrowing, contextual post-native AC delta,
+  cover/flat-footed domain regressions, native damage/critical runtime paths,
+  and comprehensive composition. No shipped gameplay source changed.
+- Focused checks 7/7, runner safety 26/26, isolated preflight 84/84 after the
+  known first-run race, repository validation, 831/831 tests, clean Release
+  build, and strict package validation passed.
+- Exact source commit is `a3243c9`. Package SHA-256 is
+  `7e873edd2bd0f54da09de789e7f15dd0200bb2e095484578804df0b2855b2388`;
+  DLL SHA-256 is
+  `510ea8061af01a696b0f8b44dd186a798a65a6a3e9b94f08e41ac65dc6775696`.
+- Exact mod load `20260802T1245266307096Z-mod-load-smoke` and comprehensive
+  runs `20260802T1247085787494Z` and `20260802T1248346969150Z` passed.
+  Native pipeline preservation is runtime-qualified; continue to the remaining
+  creation/respec, Gunsmith, deed-design, scatter, and lifecycle gates.
