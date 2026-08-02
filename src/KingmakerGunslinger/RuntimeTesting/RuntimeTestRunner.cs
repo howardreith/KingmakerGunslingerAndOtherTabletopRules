@@ -2270,6 +2270,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
+            ProductionFirearmBlueprintCatalog production =
+                BlueprintBootstrap.ProductionFirearms;
+            string criticalProfiles = production == null ? "catalog-unavailable" :
+                DescribeCriticalProfile("pistol", production.Pistol.WeaponType) + ";" +
+                DescribeCriticalProfile("musket", production.Musket.WeaponType) + ";" +
+                DescribeCriticalProfile("blunderbuss",
+                    production.Blunderbuss.WeaponType) + ";" +
+                DescribeCriticalProfile("rifle",
+                    production.AdvancedRifle.WeaponType) + ";" +
+                DescribeCriticalProfile("revolver",
+                    production.AdvancedRevolver.WeaponType);
             foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null))
             {
@@ -2421,8 +2432,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
-                ";blunderbussEntries=" + blunderbussEntries + ";catalog=" +
-                catalog + ";owners=" + string.Join(" | ",
+                ";blunderbussEntries=" + blunderbussEntries +
+                ";criticalProfiles=" + criticalProfiles + ";catalog=" + catalog +
+                ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
                     capitalEntries.ToArray()) + ";capitalReferenceContracts=" +
                     string.Join(" | ", capitalReferenceContracts.OrderBy(value => value,
@@ -2461,6 +2473,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, projectEntries == 7 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 0,
                     "registered production firearms, ammunition, and repair kit"),
+                Assertion("production-critical-profiles",
+                    "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
+                        "rifle=20/x4;revolver=20/x4",
+                    criticalProfiles,
+                    production != null &&
+                        HasCriticalProfile(production.Pistol.WeaponType, 20, 4) &&
+                        HasCriticalProfile(production.Musket.WeaponType, 20, 4) &&
+                        HasCriticalProfile(production.Blunderbuss.WeaponType, 20, 2) &&
+                        HasCriticalProfile(production.AdvancedRifle.WeaponType, 20, 4) &&
+                        HasCriticalProfile(production.AdvancedRevolver.WeaponType, 20, 4),
+                    "registered BlueprintWeaponType native critical fields"),
                 Assertion("vendor-fixed-entry-quantity-precedent",
                     "resolved native stackable and non-stackable count patterns",
                     observed, fixedEntryPatterns.Keys.Any(value =>
