@@ -7921,7 +7921,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TrueGritDeed.StunningShot));
                     attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
                         TrueGritDeed.StopBleeding));
-                    selectionShape = gunslinger.TrueGrit.Choices.Length == 18 &&
+                    selectionShape = gunslinger.TrueGrit.Choices.Length == 20 &&
                         gunslinger.Progression.LevelEntries[19].Features.Count(
                             value => ReferenceEquals(value,
                                 gunslinger.TrueGrit.Selection)) == 2;
@@ -8125,7 +8125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !immunityStunned,
                     "RuleAttackRoll.ImmuneToCriticalHit"),
                 Assertion("true-grit-selection-and-policy",
-                    qualifyTrueGrit ? "two level-20 selections, eighteen choices, selected cost reduction, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
+                    qualifyTrueGrit ? "two level-20 selections, twenty choices, selected cost reduction, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
                     observed, !qualifyTrueGrit || (selectionShape &&
                         positiveGateAtZero && zeroCostRequiresPositive &&
                         variableCost && slingersLuckExcluded),
