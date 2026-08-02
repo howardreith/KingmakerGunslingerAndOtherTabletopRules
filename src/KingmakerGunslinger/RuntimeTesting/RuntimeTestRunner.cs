@@ -6518,6 +6518,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (failedDelivery.MoveNext()) failedTargets++;
                 dc = failedContext.Params.DC;
                 casterLevel = failedContext.Params.CasterLevel;
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
                 effect.Apply(failedContext, new TargetWrapper(failed));
                 frightenedApplied = failed.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value.Blueprint, frightened));
@@ -6536,6 +6537,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 IEnumerator<AbilityDeliveryTarget> passedDelivery = logic.Deliver(
                     passedContext, new TargetWrapper(passed));
                 while (passedDelivery.MoveNext()) passedTargets++;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 effect.Apply(passedContext, new TargetWrapper(passed));
                 shakenApplied = passed.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value.Blueprint, shaken));
