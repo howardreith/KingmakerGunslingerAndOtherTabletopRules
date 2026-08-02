@@ -92,6 +92,10 @@ definition of done or a listed genuine human-input hard stop.
   observer and rollback contract pass all 849 tests/build/package gates. Commit
   the source checkpoint, run exact mod load and two fresh scenario passes, then
   continue the mandatory matrix without pausing.
+- First exact creation run exposed and narrowed a detached-CharGen zero-grant
+  contract. The repaired ownership observer no-ops only for zero observed
+  pistols and remains fail-closed for multiple pistols; all source gates pass.
+  Commit the repair and resume exact runtime qualification.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

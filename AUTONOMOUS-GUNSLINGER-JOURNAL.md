@@ -3183,3 +3183,13 @@
   `c3bd2cf07680245d40351ccaf60b2e8eb304e16166f5262d1247cb78651cf787`.
   Commit this source-qualified checkpoint, then run exact mod load and two fresh
   creation-commit processes.
+- Exact `6a5cded` mod load passed as `20260802T1648213932293Z`. The first
+  creation run `20260802T1649430175253Z` reached native `Commit` but exposed
+  that detached CharGen invokes `AddStartingItems` without creating a shared
+  inventory grant. The battered-origin Harmony observer incorrectly converted
+  that valid absence into an exception. It now binds one observed pistol,
+  ignores zero, and still rejects ambiguity. Focused checks, preflight 84,
+  repository validation, 849 tests, Release build, and strict package pass;
+  repaired package/DLL hashes are
+  `a9ede41deda0716d8ab6f8bf173e9e748c9dda758369f0f3c4f5602060a084d7` /
+  `a72dbaf990ede8f907b27927661e5c6815b575c16d81db25a38e94f05be0949f`.

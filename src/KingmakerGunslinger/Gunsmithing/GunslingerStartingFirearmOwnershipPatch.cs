@@ -57,9 +57,13 @@ namespace KingmakerGunslinger.Gunsmithing
                 .OfType<ItemEntityWeapon>()
                 .Where(item => ReferenceEquals(item.Blueprint, pistol))
                 .ToArray();
+            // Native detached CharGen work can invoke this method without creating
+            // a shared-inventory grant. This patch observes and binds a grant; it
+            // must not turn an absent native grant into a commit failure.
+            if (addedPistols.Length == 0) return;
             if (addedPistols.Length != 1)
                 throw new InvalidOperationException(
-                    "The native Gunslinger starting grant did not create exactly one new production Early Pistol.");
+                    "The native Gunslinger starting grant created multiple new production Early Pistols.");
 
             BatteredFirearmOriginRuntime.Bind(
                 addedPistols[0], __state.Descriptor.Unit);

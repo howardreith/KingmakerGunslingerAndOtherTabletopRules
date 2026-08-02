@@ -6,6 +6,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $catalog = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs')
 $runner = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs')
 $common = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
+$binder = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs')
 $start = $runner.IndexOf('private RuntimeTestResult RunDisposableGunslingerCreationCommit()')
 $end = $runner.IndexOf('private RuntimeTestResult RunDisposableGunslingerRespecCommit()', $start)
 if ($start -lt 0 -or $end -le $start) { throw 'Creation commit method is unavailable.' }
@@ -28,6 +29,8 @@ $checks = [ordered]@{
     'no-save-or-ui' = -not $method.Contains('SaveGame') -and
         -not $method.Contains('Game.Instance.SaveGame') -and
         -not $method.Contains('StartNewGame')
+    'absent-detached-grant-safe' = $binder.Contains('if (addedPistols.Length == 0) return;') -and
+        $binder.Contains('if (addedPistols.Length != 1)')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) { throw "Sprint 100 creation commit tests failed: $($failed -join ', ')" }
