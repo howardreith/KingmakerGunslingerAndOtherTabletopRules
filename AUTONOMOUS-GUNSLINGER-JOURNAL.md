@@ -3092,3 +3092,16 @@
   `3278619b8cc687eb5cab791ede3d38454c59aa6ff1de903f1145f241e692a724`.
   Next: commit, add the save-free guarded scatter transaction scenario, and
   obtain mod-load plus two fresh-process PASS runs before unlocking the item.
+
+## 2026-08-02 Sprint 99 Scatter Shot runtime harness
+
+- Added guarded `disposable-gunslinger-scatter-shot`: three disposable units
+  are placed at an isolated coordinate, native geometry must resolve exactly
+  two cone targets, and forced mixed/all-misfire transactions prove aggregate
+  condition behavior and cleanup without loading or writing a save.
+- Runtime preflight reports 84 checks. Repository validation, 849 tests, clean
+  Release build, and strict package pass with package/DLL SHA-256
+  `d04b5bb89215c1d94f46379e5a23d89d599fb5434dd85e66609eda67e5ac37db` /
+  `bc3f0dd0779da5ded8a557514d7713c1b22fa84fd83128a3214c007fe47d517c`.
+  Next: commit the harness, run exact mod load and two fresh PASS attempts, then
+  curate evidence and unlock/publish the Blunderbuss only if unambiguous.

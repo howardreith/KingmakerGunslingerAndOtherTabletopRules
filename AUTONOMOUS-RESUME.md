@@ -51,6 +51,11 @@ definition of done or a listed genuine human-input hard stop.
   849 tests, Release build, and strict package pass with package/DLL hashes
   `f8c31f26...` / `3278619b...`. Commit it, then implement and run the save-free
   guarded scatter acceptance before unlocking the Blunderbuss.
+- Sprint 98 is committed as `1a9d1fb`. Sprint 99 adds the guarded save-free
+  `disposable-gunslinger-scatter-shot` transaction scenario; preflight 84,
+  repository validation, 849 tests, Release build, and strict package pass.
+  Commit it, then run exact mod load plus two fresh-process PASS runs before
+  changing the production Blunderbuss restriction or vendor publication.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

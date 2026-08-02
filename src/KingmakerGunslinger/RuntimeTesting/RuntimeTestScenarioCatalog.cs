@@ -72,6 +72,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-gun-training";
         internal const string DisposableGunslingerDeadShot =
             "disposable-gunslinger-dead-shot";
+        internal const string DisposableGunslingerScatterShot =
+            "disposable-gunslinger-scatter-shot";
         internal const string DisposableGunslingerStartlingShot =
             "disposable-gunslinger-startling-shot";
         internal const string DisposableGunslingerTargetingHead =
@@ -167,6 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerBonusFeats,
                 DisposableGunslingerGunTraining,
                 DisposableGunslingerDeadShot,
+                DisposableGunslingerScatterShot,
                 DisposableGunslingerStartlingShot,
                 DisposableGunslingerTargetingHead,
                 DisposableGunslingerTargetingTorso,

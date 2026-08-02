@@ -536,6 +536,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerScatterShot)
+                {
+                    Complete(RunDisposableGunslingerScatterShot());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot)
                 {
                     Complete(RunDisposableGunslingerStartlingShot());
@@ -5721,6 +5727,105 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "item state forgotten and detached units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerScatterShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintItemWeapon blunderbuss =
+                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData first = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData second = null;
+            ItemEntityWeapon weapon = null;
+            Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
+            int targetCount = -1;
+            bool cleaned = false;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                first = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                second = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                Vector3 origin = new Vector3(10000f, 0f, 10000f);
+                SetExactProperty(attacker, "Position", origin);
+                SetExactProperty(first, "Position", origin + new Vector3(2f, 0f, 0.3f));
+                SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
+                weapon = new ItemEntityWeapon(blunderbuss);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
+                    new Scatter.NativeScatterConeTargetResolver().Resolve(attacker, first);
+                targetCount = targets.Length;
+                if (targetCount != 2) throw new InvalidOperationException(
+                    "Expected exactly two isolated native scatter targets; observed " +
+                    targetCount + ".");
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                mixed = Scatter.ScatterShotRuntime.ExecuteForRuntimeTest(
+                    attacker, first, 10, 1);
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                allMisfire = Scatter.ScatterShotRuntime.ExecuteForRuntimeTest(
+                    attacker, first, 1, 1);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Scatter Shot transaction failed.", exception);
+            }
+            finally
+            {
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (second != null) second.Dispose();
+                if (first != null) first.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+            }
+            string observed = mixed == null || allMisfire == null ? "missing" :
+                "targets=" + targetCount + ";mixedMisfires=" +
+                mixed.Volley.MisfireRollCount +
+                ";mixedCondition=" + mixed.After.Condition +
+                ";allMisfires=" + allMisfire.Volley.MisfireRollCount +
+                ";allCondition=" + allMisfire.After.Condition;
+            bool transaction = mixed != null && allMisfire != null &&
+                mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
+                mixed.After.Condition == FirearmCondition.Normal &&
+                mixed.Volley.MisfireRollCount == 1 &&
+                !mixed.Volley.AllRollsMisfire && allMisfire.After.IsEmpty &&
+                allMisfire.After.Condition == FirearmCondition.Broken &&
+                allMisfire.Volley.MisfireRollCount == 2 &&
+                allMisfire.Volley.AllRollsMisfire;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("scatter-native-transaction",
+                    "two native cone targets; rolls 10,1 preserve Normal; rolls 1,1 produce Broken",
+                    observed, transaction, "registered Scatter Shot native delivery"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
