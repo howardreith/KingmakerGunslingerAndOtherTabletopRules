@@ -1757,10 +1757,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 vendorPhase = "commit-repurchase-deal";
                 vendor.Deal();
-                ItemEntityWeapon acquired =
-                    EnumerateRuntimeInventory(player.Inventory)
-                    .OfType<ItemEntityWeapon>().Single(item =>
-                        ReferenceEquals(item.Blueprint, expected[0]) &&
+                ItemEntityWeapon[] sharedPistols = EnumerateRuntimeInventory(
+                    player.Inventory).OfType<ItemEntityWeapon>().Where(item =>
+                        ReferenceEquals(item.Blueprint, expected[0])).ToArray();
+                ItemEntityWeapon[] personalPistols = EnumerateRuntimeInventory(
+                    mainDescriptor.Inventory).OfType<ItemEntityWeapon>().Where(item =>
+                        ReferenceEquals(item.Blueprint, expected[0])).ToArray();
+                diagnostics.Add("postPurchase:moneyDelta=" +
+                    (player.Money - moneyBefore) + ";sharedPistols=" +
+                    sharedPistols.Length + ";personalPistols=" +
+                    personalPistols.Length + ";vendorPistols=" +
+                    EnumerateRuntimeInventory(vendorUnit.Descriptor.Inventory)
+                        .OfType<ItemEntityWeapon>().Count(item =>
+                            ReferenceEquals(item.Blueprint, expected[0])) +
+                    ";storePistols=" + EnumerateRuntimeInventory(vendor.StoreItems)
+                        .OfType<ItemEntityWeapon>().Count(item =>
+                            ReferenceEquals(item.Blueprint, expected[0])) +
+                    ";sellStage=" +
+                    EnumerateRuntimeInventory(vendor.ItemsForSell).Count +
+                    ";buyStage=" +
+                    EnumerateRuntimeInventory(vendor.ItemsForBuy).Count);
+                ItemEntityWeapon acquired = sharedPistols.Concat(personalPistols)
+                    .Distinct().Single(item =>
                         !BatteredFirearmOriginRuntime.IsBattered(item));
                 vendorDealRoundTrip = saleCredited && acquired != null;
                 moneyStable = player.Money == moneyBefore;
