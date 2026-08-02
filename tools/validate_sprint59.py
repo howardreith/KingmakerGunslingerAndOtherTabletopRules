@@ -25,7 +25,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 def validate(root: Path) -> None:
     root = root.resolve()
     validate_sprint58.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 106, 107)
+                               TEST_COUNT, 125, 126)
     require_tokens(read(root, "planning/SPRINT-59-ENTRY-CRITERIA.md"),
         ["select two deeds", "minimum 0", "positive-grit/no-spend",
          "Slinger's Luck", "Cheat Death"], "Sprint 59 criteria")
@@ -40,6 +40,12 @@ def validate(root: Path) -> None:
         ["TrueGritCatalogExact", "TrueGritPairUniqueness",
          "TrueGritPositiveGateRemoval", "TrueGritVariableAndCheatDeath"],
         "Sprint 59 tests")
+    require_tokens(read(root,
+        "src/KingmakerGunslinger/Blueprints/TrueGritBlueprints.cs") + read(root,
+        "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
+        ["KMG.Classes.TrueGritSelection", "ChoiceSymbols",
+         "LevelEntries[19].Features.Add(trueGrit.Selection)"],
+        "Sprint 59 selection blueprints")
     print("Sprint 59 source validation passed with inherited Sprint 58 checks.")
 
 def main() -> int:

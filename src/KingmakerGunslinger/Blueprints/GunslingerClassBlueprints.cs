@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.Blueprints
             LightningReloadBlueprintSet lightningReload,
             EvasiveBlueprintSet evasive, MenacingShotBlueprintSet menacingShot,
             SlingersLuckBlueprintSet slingersLuck, BlueprintFeature cheatDeath,
-            StunningShotBlueprintSet stunningShot)
+            StunningShotBlueprintSet stunningShot, TrueGritBlueprintSet trueGrit)
         {
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
@@ -69,6 +69,7 @@ namespace KingmakerGunslinger.Blueprints
             CheatDeath = cheatDeath ?? throw new ArgumentNullException("cheatDeath");
             StunningShot = stunningShot ??
                 throw new ArgumentNullException("stunningShot");
+            TrueGrit = trueGrit ?? throw new ArgumentNullException("trueGrit");
         }
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
@@ -95,7 +96,8 @@ namespace KingmakerGunslinger.Blueprints
         internal SlingersLuckBlueprintSet SlingersLuck { get; private set; }
         internal BlueprintFeature CheatDeath { get; private set; }
         internal StunningShotBlueprintSet StunningShot { get; private set; }
-        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + StunningShot.Count; } }
+        internal TrueGritBlueprintSet TrueGrit { get; private set; }
+        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + StunningShot.Count + TrueGrit.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -212,6 +214,7 @@ namespace KingmakerGunslinger.Blueprints
                 grit.Resource, characterClass);
             StunningShotBlueprintSet stunningShot = StunningShotBlueprints.Register(
                 library, registry, grit.Resource, characterClass);
+            TrueGritBlueprintSet trueGrit = TrueGritBlueprints.Register(registry);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
@@ -239,6 +242,8 @@ namespace KingmakerGunslinger.Blueprints
             progression.LevelEntries[14].Features.Add(slingersLuck.Feature);
             progression.LevelEntries[18].Features.Add(cheatDeath);
             progression.LevelEntries[18].Features.Add(stunningShot.Feature);
+            progression.LevelEntries[19].Features.Add(trueGrit.Selection);
+            progression.LevelEntries[19].Features.Add(trueGrit.Selection);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
@@ -247,7 +252,7 @@ namespace KingmakerGunslinger.Blueprints
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
                 targetingHead, targetingTorso, targetingLegs, bleedingWound,
                 expertLoading, lightningReload, evasive, menacingShot,
-                slingersLuck, cheatDeath, stunningShot);
+                slingersLuck, cheatDeath, stunningShot, trueGrit);
         }
 
         internal static GunslingerClassCatalogPublication Publish(

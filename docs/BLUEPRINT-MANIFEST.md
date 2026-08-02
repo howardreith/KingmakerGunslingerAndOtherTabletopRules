@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-Sprint 58 extends the append-only contract to 107 stable identifiers: 106 active and one reserved.
+Sprint 59 extends the append-only contract to 126 stable identifiers: 125 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete one-hundred-six-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete one-hundred-twenty-five-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -155,6 +155,25 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.StunningShotAbility` | `b1a5e61437714bd19ee84b10bead70a2` | `BlueprintAbility` | Active | Free-action arming ability |
 | `KMG.Deeds.StunningShotArmed` | `c2b6f72548824ce2aff95c21cfbe81b3` | `BlueprintBuff` | Active | Unit-owned next-shot marker |
 | `KMG.Deeds.StunningShotStunned` | `d3c7073659934df3b00a6d32d0cf92c4` | `BlueprintBuff` | Active | Exact native Stunned clone |
+| `KMG.Classes.TrueGritSelection` | `249734aff917457face92dd836a94236` | `BlueprintFeatureSelection` | Active | Level-20 selection granted twice |
+| `KMG.Classes.TrueGritDeadeye` | `f66bbe9a3c77448d94672e14ba7621af` | `BlueprintFeature` | Active | Deadeye choice |
+| `KMG.Classes.TrueGritGunslingersDodge` | `d5aa091bc3df428188e708777492c48c` | `BlueprintFeature` | Active | Gunslinger's Dodge choice |
+| `KMG.Classes.TrueGritQuickClear` | `0437dc9a96fa4ef285df30af04061e86` | `BlueprintFeature` | Active | Quick Clear choice |
+| `KMG.Classes.TrueGritGunslingerInitiative` | `cd087a10328646f99de79c580966af4e` | `BlueprintFeature` | Active | Gunslinger Initiative choice |
+| `KMG.Classes.TrueGritPistolWhip` | `5735ce8815a4416e86562ca81a3694b2` | `BlueprintFeature` | Active | Pistol-Whip choice |
+| `KMG.Classes.TrueGritStopBleeding` | `f854458726034c4f8a0e677a6e335854` | `BlueprintFeature` | Active | Stop Bleeding choice |
+| `KMG.Classes.TrueGritDeadShot` | `01cfee9aff4a48dbb68e00897f7ba3a5` | `BlueprintFeature` | Active | Dead Shot choice |
+| `KMG.Classes.TrueGritStartlingShot` | `e41c7a2a27f441b0a20e26e49a2bdaf3` | `BlueprintFeature` | Active | Startling Shot choice |
+| `KMG.Classes.TrueGritTargetingHead` | `d51dcac901d54b40b90864ea538693e8` | `BlueprintFeature` | Active | Targeting Head choice |
+| `KMG.Classes.TrueGritTargetingTorso` | `3e64032419174f54a3fea01957ad886c` | `BlueprintFeature` | Active | Targeting Torso choice |
+| `KMG.Classes.TrueGritTargetingLegs` | `90759e6ea511456f9e978e42466329c1` | `BlueprintFeature` | Active | Targeting Legs choice |
+| `KMG.Classes.TrueGritBleedingWound` | `611626136df74f34a824e1b831948698` | `BlueprintFeature` | Active | Bleeding Wound choice |
+| `KMG.Classes.TrueGritExpertLoading` | `bd59e6f11aa3469eb610ddd47b598520` | `BlueprintFeature` | Active | Expert Loading choice |
+| `KMG.Classes.TrueGritLightningReload` | `0b2733aed049462c81ae337994ded859` | `BlueprintFeature` | Active | Lightning Reload choice |
+| `KMG.Classes.TrueGritEvasive` | `778520ce40ab47d7a2cbfecf2d59fb6c` | `BlueprintFeature` | Active | Evasive choice |
+| `KMG.Classes.TrueGritMenacingShot` | `6b31edab150745e69b9b7fb70cad7eab` | `BlueprintFeature` | Active | Menacing Shot choice |
+| `KMG.Classes.TrueGritCheatDeath` | `bb9cf569190e458daf720d95264380d4` | `BlueprintFeature` | Active | Cheat Death choice |
+| `KMG.Classes.TrueGritStunningShot` | `0d8c89f38b6d4bdcbef25a63d8bf4ef4` | `BlueprintFeature` | Active | Stunning Shot choice |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

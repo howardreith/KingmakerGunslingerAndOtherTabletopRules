@@ -368,6 +368,7 @@
     <Compile Include="Deeds\TrueGritRequest.cs" />
     <Compile Include="Deeds\TrueGritDecision.cs" />
     <Compile Include="Deeds\TrueGritService.cs" />
+    <Compile Include="Deeds\TrueGritRuntime.cs" />
     <Compile Include="Deeds\EvasiveRuntime.cs" />
     <Compile Include="Deeds\EvasiveResourcePatches.cs" />
     <Compile Include="Blueprints\EvasiveBlueprints.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="Blueprints\SlingersLuckBlueprints.cs" />
     <Compile Include="Blueprints\CheatDeathBlueprints.cs" />
     <Compile Include="Blueprints\StunningShotBlueprints.cs" />
+    <Compile Include="Blueprints\TrueGritBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

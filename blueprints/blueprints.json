@@ -688,6 +688,63 @@
     },
     {
       "symbol": "KMG.Deeds.StunningShotStunned", "guid": "d3c7073659934df3b00a6d32d0cf92c4", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 58", "notes": "Exact native Stunned mechanics clone."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritSelection", "guid": "249734aff917457face92dd836a94236", "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Sprint 59", "notes": "Level-twenty selection granted exactly twice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritDeadeye", "guid": "f66bbe9a3c77448d94672e14ba7621af", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Deadeye True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritGunslingersDodge", "guid": "d5aa091bc3df428188e708777492c48c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Gunslinger's Dodge True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritQuickClear", "guid": "0437dc9a96fa4ef285df30af04061e86", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Quick Clear True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritGunslingerInitiative", "guid": "cd087a10328646f99de79c580966af4e", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Gunslinger Initiative True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritPistolWhip", "guid": "5735ce8815a4416e86562ca81a3694b2", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Pistol-Whip True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritStopBleeding", "guid": "f854458726034c4f8a0e677a6e335854", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Stop Bleeding True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritDeadShot", "guid": "01cfee9aff4a48dbb68e00897f7ba3a5", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Dead Shot True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritStartlingShot", "guid": "e41c7a2a27f441b0a20e26e49a2bdaf3", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Startling Shot True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritTargetingHead", "guid": "d51dcac901d54b40b90864ea538693e8", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Targeting Head True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritTargetingTorso", "guid": "3e64032419174f54a3fea01957ad886c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Targeting Torso True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritTargetingLegs", "guid": "90759e6ea511456f9e978e42466329c1", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Targeting Legs True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritBleedingWound", "guid": "611626136df74f34a824e1b831948698", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Bleeding Wound True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritExpertLoading", "guid": "bd59e6f11aa3469eb610ddd47b598520", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Expert Loading True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritLightningReload", "guid": "0b2733aed049462c81ae337994ded859", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Lightning Reload True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritEvasive", "guid": "778520ce40ab47d7a2cbfecf2d59fb6c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Evasive True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritMenacingShot", "guid": "6b31edab150745e69b9b7fb70cad7eab", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Menacing Shot True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritCheatDeath", "guid": "bb9cf569190e458daf720d95264380d4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Cheat Death True Grit choice."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritStunningShot", "guid": "0d8c89f38b6d4bdcbef25a63d8bf4ef4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Stunning Shot True Grit choice."
     }
   ]
 }
