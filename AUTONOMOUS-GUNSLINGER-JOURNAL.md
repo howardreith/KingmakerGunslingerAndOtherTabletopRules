@@ -2875,3 +2875,6 @@
   passed. Package/DLL hashes: `71261278...38eb0` / `e50d6a39...604b4`.
 - Next: commit/mod-load, then propagate effective Broken into misfire threshold
   and remaining deed use gates without changing maintenance semantics.
+- Exact `0410d21` guarded Steam mod-load PASS is
+  `20260802T1402557908977Z-mod-load-smoke`; rebuilt package/DLL hashes are
+  `51f9a32e...b39ca` / `1c9359b3...32a1c`. Sprint 89 is runtime-qualified.

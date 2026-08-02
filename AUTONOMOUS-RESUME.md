@@ -8,15 +8,18 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `a3b6335`; Sprint 89 discharge/reload effective-condition boundaries pass repository validation, 846 tests, clean Release build, and strict packaging. Commit/mod-load, then continue misfire and deed propagation. Prior binder mod-load PASS is `20260802T1349030296324Z`.
+- Audited source HEAD: `0410d21`; Sprint 89 discharge/reload
+  effective-condition boundaries pass repository validation, 846 tests, clean
+  Release build, strict packaging, and guarded Steam mod load
+  `20260802T1402557908977Z`. Continue misfire and deed propagation.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through
   shared equipped-firearm resolution, native discharge, and reload without
   mutating persisted actual condition. Focused contracts, repository
   validation, 846 tests, clean Release build, and strict packaging pass.
-  Commit and run exact mod load, then continue into misfire and deed
-  propagation. Sprint 84 runtime evidence remains
+  Exact `0410d21` mod load passed as `20260802T1402557908977Z`; continue into
+  misfire and deed propagation. Sprint 84 runtime evidence remains
   `20260802T1312212200554Z`, `20260802T1313522632011Z`, and
   `20260802T1315168298512Z`. Historical Sprint 70 evidence follows.
 - Historical checkpoint: Sprint 70 exact mod load and the corrected final guarded
