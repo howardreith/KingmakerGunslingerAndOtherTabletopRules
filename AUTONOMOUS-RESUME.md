@@ -7,6 +7,12 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Repository state
 
+- Targeting Arms is runtime-qualified on exact `98a2a59`: mod load
+  `20260802T1932466249834Z` and fresh PASS pair
+  `20260802T1934063083002Z` / `20260802T1935297321491Z` proved one chamber,
+  one grit, no damage, exact six-second native main-hand Disarm, and cleanup.
+  Implement and qualify Death's Shot next; do not stop at this checkpoint.
+
 - Branch: `codex/complete-gunslinger`
 - Audited source HEAD: `6b1e413`. Sprint 93 item-owned battered origin repair
   passed exact mod load `20260802T1440278862789Z` and two fresh guarded

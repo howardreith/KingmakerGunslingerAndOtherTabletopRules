@@ -3314,3 +3314,15 @@
   plus save-write sentinels restore exactly. Combined with the already-qualified
   token reconstruction/restart suite, the mandatory supported lifecycle is
   complete. Continue immediately to Targeting Arms and Death's Shot.
+# Sprint 104 Targeting Arms runtime qualification (2026-08-02)
+
+- Exact source `98a2a59` passed guarded mod load
+  `20260802T1932466249834Z` and save-free fresh-process Targeting Arms runs
+  `20260802T1934063083002Z` / `20260802T1935297321491Z`.
+- Both feature runs observed `rounds=1->0`, `grit=2->1`, `damage=0->0`, a
+  nonpermanent exact `DisarmMainHandBuff` with `durationSeconds=6.000`, and
+  unchanged party/global-unit reference snapshots after cleanup.
+- The first launch exposed the missing append-only manifest identities and
+  failed before mechanics. The distinct repair registered three stable IDs
+  and updated the authoritative bootstrap count; no failed run was retained as
+  acceptance evidence.
