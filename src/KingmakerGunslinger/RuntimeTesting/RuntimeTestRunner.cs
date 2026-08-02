@@ -29,6 +29,7 @@ using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Grit;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firing;
+using KingmakerGunslinger.Gunsmithing;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
@@ -1498,6 +1499,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int pistolCount = -1;
             int powderCount = -1;
             int ballCount = -1;
+            long batteredSaleValue = -1;
+            long ordinarySaleValue = -1;
+            bool exactOwnership = false;
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1569,6 +1573,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 exactGrant = added.All(item => expected.Any(blueprint =>
                         ItemUsesRuntimeBlueprint(item, blueprint))) &&
                     pistolCount == 1 && powderCount == 1 && ballCount == 1;
+                ItemEntityWeapon battered = added.OfType<ItemEntityWeapon>()
+                    .Single(item => ReferenceEquals(item.Blueprint, expected[0]));
+                FirearmItemId batteredId;
+                string identityReason;
+                if (!new KingmakerFirearmItemIdentityProvider().TryGetIdentity(
+                        battered, out batteredId, out identityReason) ||
+                    batteredId == null)
+                    throw new InvalidOperationException(identityReason ??
+                        "The exact granted pistol identity is unavailable.");
+                UnitPartBatteredFirearmOwnership ownership;
+                OriginatingUnitId owner;
+                exactOwnership = new KingmakerBatteredFirearmOwnershipPartProvider()
+                        .TryGetExisting(out ownership) && ownership != null &&
+                    ownership.TryGetOwner(batteredId, out owner) &&
+                    owner.Value == descriptor.Unit.UniqueId.Trim();
+                var vendor = new VendorLogic();
+                batteredSaleValue = vendor.GetItemBuyPrice(battered);
+                var ordinary = new ItemEntityWeapon(
+                    (BlueprintItemWeapon)expected[0]);
+                ordinarySaleValue = vendor.GetItemBuyPrice(ordinary);
                 moneyStable = player.Money == moneyBefore;
             }
             catch (Exception exception)
@@ -1660,6 +1684,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";powder=" + powderCount + ";ball=" + ballCount,
                     exactGrant,
                     "LevelUpHelper.AddStartingItems on the exact main descriptor"),
+                Assertion("battered-origin-and-sale-value",
+                    "owner=exact;bound=22gp;ordinary=native-non22",
+                    "owner=" + exactOwnership + ";bound=" +
+                        batteredSaleValue + ";ordinary=" + ordinarySaleValue,
+                    exactOwnership && batteredSaleValue == 22 &&
+                        ordinarySaleValue != 22,
+                    "persisted origin carrier plus patched VendorLogic.GetItemBuyPrice"),
                 Assertion("exact-in-memory-rollback",
                     "inventory references, class identity, gold, and money restored",
                     "inventory=" + exactRollback + ";class=" + classRestored +

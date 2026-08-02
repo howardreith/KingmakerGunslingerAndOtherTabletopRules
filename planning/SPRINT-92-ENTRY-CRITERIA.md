@@ -19,3 +19,9 @@ Exact source commit `123f623` passed guarded Steam mod load as
 `be26f742d89771cf8e6cafe8a6443ddda664b04ed527c70c0bfa18a6dd2cb747` and
 `db60a26b73cb09970daad42bf4c8bd35a61cfb0dd8c7f76b52a50d43aa31000f`.
 Feature-specific runtime value/isolation evidence remains required.
+
+The existing guarded `gunslinger-starting-items` scenario is extended rather
+than creating a duplicate save path. After the exact native grant and origin
+binding, it invokes the patched native vendor method on the bound pistol and a
+fresh unbound production-pistol control, requires `22` only for the bound item,
+then performs its existing exact inventory/class/gold rollback without saving.

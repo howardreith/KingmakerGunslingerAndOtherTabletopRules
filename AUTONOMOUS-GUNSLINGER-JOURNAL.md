@@ -2933,3 +2933,11 @@
 - Matrix re-audit marks the authorized option source-complete but correctly
   retains `RUNTIME-PARTIAL` until a live bound-value and ordinary-item
   isolation scenario passes.
+- Extended the already-guarded `gunslinger-starting-items` working-save
+  scenario to prove exact origin binding, bound sale value 22, ordinary
+  production-pistol non-22 isolation, and its existing no-save rollback.
+- Extended scenario source passes the focused contract, repository validation,
+  all 848 tests, clean Release build, and strict package validation.
+  Package/DLL hashes: `3305d787...5c64bd` / `2baadbeb...0a3ae`.
+- Next: commit/mod-load, then run the canonical guarded scenario against
+  `KMG_AUTOMATION_WORKING`; stop on any ambiguous save or rollback evidence.
