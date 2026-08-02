@@ -764,6 +764,13 @@ complete rollback and no save writes. Commit this curated evidence, then
 implement and qualify the durable `Deal`, repurchase, and restart lifecycle.
 Do not stop at the pre-deal boundary.
 
+Latest checkpoint: exact `4956175` actual sale/purchase transaction passed fresh
+working-save runs `20260802T1912168233390Z` and `20260802T1913544926139Z`.
+Production now patches exact `GetItemSellPrice`; the battered pistol credits 22
+gp, the acquired catalog pistol is ordinary, all temporary funding and
+inventory mutations roll back, and no save API occurs. Commit curated evidence
+and proceed directly to Targeting Arms, then Death's Shot.
+
 Launch only through Steam App ID 640820 and the guarded request mechanism. Use
 only `KMG_AUTOMATION_WORKING`; never load or mutate
 `KMG_AUTOMATION_BASELINE`. Never save, quicksave, send UI input, or infer a save

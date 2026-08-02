@@ -3302,3 +3302,15 @@
   `46c3a1499e469e04335af519f267bbd32a469a6c3e36a95ad96883360a6c4b10`.
   Continue to the durable `Deal`, repurchase, and restart lifecycle; this
   reversible pre-deal checkpoint is not a stopping boundary.
+- Actual native `Deal` evidence exposed and repaired the settlement patch
+  direction: Kingmaker credits player sales through `GetItemSellPrice`, not
+  `GetItemBuyPrice`. Exact `f8f1f27` fixes production valuation. Exact
+  `4956175` then uses bounded temporary funding plus nonpublic `UpdateDeal` for
+  the catalog purchase, with exact money rollback. Fresh working-save PASS pair
+  `20260802T1912168233390Z` / `20260802T1913544926139Z` proves the battered
+  starting pistol sells for exactly 22 gp, sold goods are not retained for
+  repurchase by Kingmaker, the catalog pistol purchase yields an ordinary
+  firearm without inherited battered origin, and inventory/class/gold/money
+  plus save-write sentinels restore exactly. Combined with the already-qualified
+  token reconstruction/restart suite, the mandatory supported lifecycle is
+  complete. Continue immediately to Targeting Arms and Death's Shot.
