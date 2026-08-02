@@ -227,6 +227,9 @@
     <Compile Include="Firearms\FirearmCondition.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUseDecision.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUsePolicy.cs" />
+    <Compile Include="Gunsmithing\OriginatingUnitId.cs" />
+    <Compile Include="Gunsmithing\BatteredFirearmOwnershipRecord.cs" />
+    <Compile Include="Gunsmithing\BatteredFirearmOwnershipLedger.cs" />
     <Compile Include="Firearms\FirearmDefinition.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />

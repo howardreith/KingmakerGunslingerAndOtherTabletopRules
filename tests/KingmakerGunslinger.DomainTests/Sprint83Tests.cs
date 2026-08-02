@@ -71,5 +71,71 @@ namespace KingmakerGunslinger.DomainTests
                 BatteredFirearmUsePolicy.Evaluate(true, true,
                     FirearmCondition.Normal, -1), "Negative sale value was accepted.");
         }
+
+        internal static void OwnershipBind()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            FirearmItemId item = Item(1); OriginatingUnitId owner = new OriginatingUnitId("unit-a");
+            Assertions.True(ledger.Bind(item, owner), "First exact binding was not created.");
+            OriginatingUnitId observed;
+            Assertions.True(ledger.TryGetOwner(item, out observed), "Binding was not readable.");
+            Assertions.Equal("unit-a", observed.Value, "Originating owner changed.");
+        }
+
+        internal static void OwnershipIdempotent()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            Assertions.True(ledger.Bind(Item(1), new OriginatingUnitId("unit-a")), "First bind failed.");
+            Assertions.False(ledger.Bind(Item(1), new OriginatingUnitId("unit-a")), "Same binding was duplicated.");
+            Assertions.Equal(1, ledger.Count, "Idempotent bind changed count.");
+        }
+
+        internal static void OwnershipConflict()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            ledger.Bind(Item(1), new OriginatingUnitId("unit-a"));
+            Assertions.Throws<InvalidOperationException>(() =>
+                ledger.Bind(Item(1), new OriginatingUnitId("unit-b")),
+                "Originating owner rebinding was accepted.");
+            Assertions.Equal(1, ledger.Count, "Conflict mutated the ledger.");
+        }
+
+        internal static void OwnershipIsolation()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            ledger.Bind(Item(1), new OriginatingUnitId("unit-a"));
+            ledger.Bind(Item(2), new OriginatingUnitId("unit-b"));
+            OriginatingUnitId first, second;
+            ledger.TryGetOwner(Item(1), out first); ledger.TryGetOwner(Item(2), out second);
+            Assertions.Equal("unit-a", first.Value, "First item owner drifted.");
+            Assertions.Equal("unit-b", second.Value, "Second item owner drifted.");
+        }
+
+        internal static void OwnershipSnapshot()
+        {
+            var ledger = new BatteredFirearmOwnershipLedger();
+            ledger.Bind(Item(1), new OriginatingUnitId("unit-a"));
+            BatteredFirearmOwnershipRecord[] snapshot = ledger.Snapshot();
+            Assertions.Equal(1, snapshot.Length, "Snapshot count mismatch.");
+            Assertions.Equal("unit-a", snapshot[0].OwnerId, "Snapshot owner mismatch.");
+        }
+
+        internal static void OwnershipInvalid()
+        {
+            Assertions.Throws<ArgumentException>(() => new OriginatingUnitId(" unit-a"),
+                "Padded unit identity was accepted.");
+            Assertions.Throws<ArgumentException>(() => new OriginatingUnitId(""),
+                "Empty unit identity was accepted.");
+            var ledger = new BatteredFirearmOwnershipLedger();
+            Assertions.Throws<ArgumentNullException>(() => ledger.Bind(null,
+                new OriginatingUnitId("unit-a")), "Null item identity was accepted.");
+        }
+
+        private static FirearmItemId Item(int suffix)
+        {
+            return new FirearmItemId(string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                "00000000-0000-0000-0000-{0:D12}", suffix));
+        }
     }
 }

@@ -42,6 +42,9 @@
     <Compile Include="Sprint83Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipRecord.cs"><Link>Gunsmithing\BatteredFirearmOwnershipRecord.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipLedger.cs"><Link>Gunsmithing\BatteredFirearmOwnershipLedger.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\VendorCatalogPublication.cs"><Link>Acquisition\VendorCatalogPublication.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotStatus.cs"><Link>Deeds\StunningShotStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>

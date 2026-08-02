@@ -2804,3 +2804,14 @@
   levels, 76 visible reachable facts, one hidden, zero incomplete, six groups,
   22 grouped facts, and Reload/Overhaul/Repair. Gunsmithing is runtime-qualified;
   continue exact-item origin persistence immediately.
+
+## 2026-08-02 Sprint 85 battered origin ledger core
+
+- Added a dependency-free immutable exact-item to exact-origin-unit ledger.
+  Same-owner reconstruction is idempotent; different-owner rebinding fails
+  without mutation; multiple items remain isolated; snapshots are defensive.
+- Added six focused ownership cases. Repository validation and all 844 tests
+  passed, followed by clean Release build and strict package validation.
+- Package/DLL hashes are `5a55e919...9839a` / `4521c532...04fff`.
+- Next: commit this core, host it in a save-owned UnitPart with primitive JSON
+  records, then bind only the exact newly granted starting firearm.
