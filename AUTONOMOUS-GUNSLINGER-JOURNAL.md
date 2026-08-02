@@ -2509,3 +2509,22 @@
   `cb0c5abd017c0d6d8894d62a1b9c4a8481185dbae19daa8cefa8bd20e1cae9d4`.
 - Both are bounded engineering evidence gates, not overall mission stops.
   Continue the next independent coverage item.
+
+## 2026-08-02 Sprint 69 save-free production critical profiles
+
+- Source checkpoint `7f3a721` extends the existing read-only vendor/catalog
+  observer with the exact five registered native critical profiles, avoiding
+  the externally denied save-backed catalog path.
+- Four focused checks, 38 request checks, 84 preflight checks, inherited source
+  validation, 831/831 tests, clean exact-reference Release build, and strict
+  nine-file packaging pass.
+- Exact mod load `20260802T1049001530168Z-mod-load-smoke` passed. Independent
+  save-free observations `20260802T1050199707554Z` and
+  `20260802T1051400747562Z` both reported
+  `pistol=20/x4;musket=20/x4;blunderbuss=20/x2;rifle=20/x4;revolver=20/x4`
+  while all vendor-publication and observation-only assertions remained PASS.
+- Package/DLL SHA-256 are
+  `2ebec0739a9d04e994a7e2ae1ee82b26fac98ae4306fbd0fe34aecdaab69ac35` /
+  `383e9fd6c92da6c243df6ddd7f7a9f8957c574b9231bcf4d2aa4e8c6fa81c77e`.
+- The critical-profile/special-ammunition row is runtime-qualified; no absent
+  special-ammunition feature was invented. Continue immediately.
