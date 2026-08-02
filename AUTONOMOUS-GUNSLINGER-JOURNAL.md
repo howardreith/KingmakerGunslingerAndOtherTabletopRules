@@ -2927,3 +2927,9 @@
   `a07775c5...457fe` / `4f15f985...1ed04`.
 - Next: commit/mod-load, then update the Gunsmith/battered matrix row and audit
   the next mission gap.
+- Exact `123f623` guarded Steam mod-load PASS is
+  `20260802T1418228589307Z-mod-load-smoke`; rebuilt package/DLL hashes are
+  `be26f742...cb747` / `db60a26b...1000f`. Patch installation is qualified.
+- Matrix re-audit marks the authorized option source-complete but correctly
+  retains `RUNTIME-PARTIAL` until a live bound-value and ordinary-item
+  isolation scenario passes.

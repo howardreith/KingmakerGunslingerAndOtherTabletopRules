@@ -8,11 +8,10 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `0e3347a`; Sprint 92 implements the remaining fixed
-  22 gp per-item battered sale overlay at exact native
-  `VendorLogic.GetItemBuyPrice(ItemEntity)`. Qualify, commit/mod-load, then
-  update matrices and continue mission audit. Source qualification passes 848
-  tests with package/DLL hashes `a07775c5...457fe` / `4f15f985...1ed04`.
+- Audited source HEAD: `123f623`; Sprint 92 fixed 22 gp per-item battered sale
+  overlay passes 848 tests, clean build/package validation, and mod load
+  `20260802T1418228589307Z`. Matrices are updated; implement and qualify a
+  deterministic live bound-value/ordinary-isolation scenario next.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

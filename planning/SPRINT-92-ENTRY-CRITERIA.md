@@ -13,3 +13,9 @@ expected value of 4d10, not a new balance decision.
 Qualification requires exact patch-target reflection, focused source/domain
 contracts, repository validation, all domain/reflection tests, clean Release
 build, strict package validation, and post-commit guarded mod load.
+
+Exact source commit `123f623` passed guarded Steam mod load as
+`20260802T1418228589307Z-mod-load-smoke`. The rebuilt package/DLL hashes were
+`be26f742d89771cf8e6cafe8a6443ddda664b04ed527c70c0bfa18a6dd2cb747` and
+`db60a26b73cb09970daad42bf4c8bd35a61cfb0dd8c7f76b52a50d43aa31000f`.
+Feature-specific runtime value/isolation evidence remains required.
