@@ -53,9 +53,11 @@ namespace KingmakerGunslinger.Deeds
                 attack.Initiator.Descriptor.Resources.Spend(
                     BlueprintBootstrap.GunslingerClass.Grit.Resource,
                     decision.GritCost);
-                Buff applied = attack.Target.Descriptor.Buffs.AddBuff(
-                    set.GetBleed(kind), marker.Context, null);
-                if (applied == null)
+                var bleed = set.GetBleed(kind);
+                attack.Target.Descriptor.Buffs.AddBuff(
+                    bleed, marker.Context, null);
+                if (!attack.Target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, bleed)))
                     throw new InvalidOperationException(
                         "Bleeding Wound native Bleed fact was rejected.");
             }
