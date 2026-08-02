@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `3a26059` (Startling Shot applied-fact reconciliation).
+- Audited source HEAD: `4485dba` (Targeting Head damage-evidence correction).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -51,6 +51,11 @@ definition of done or a listed genuine human-input hard stop.
   retaining fail-closed atomic rollback. All 831 tests and source/build/package
   gates pass. Do not launch a third Startling Shot attempt without new runtime
   authority; continue to an independent incomplete item.
+- Latest observer correction: `4485dba` measures Targeting Head's separately
+  dispatched native damage by authoritative target delta. Retained final runtime
+  evidence proved `0 -> 5` damage plus hit, grit/chamber, Confusion, and cleanup.
+  All source/build/package gates pass. Do not launch a third Targeting Head
+  attempt without new authority; continue independently.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

@@ -135,10 +135,11 @@ No genuine human-input hard stop is currently established.
   `1928bba` reconciles the exact applied fact and explicitly dispatches detached
   hit damage. Run `20260802T1042345480789Z` then proved damage `0->5`, exact
   six-second nonpermanent Confusion, grit/chamber behavior, and cleanup. Its
-  sole FAIL is stale observer bookkeeping (`Attack.MeleeDamage` remains null
+  sole FAIL was stale observer bookkeeping (`Attack.MeleeDamage` remains null
   because the explicitly triggered `RuleDealDamage` is a separate rule) despite
-  the authoritative damage delta. The two-attempt limit prohibits a third
-  assertion-only rerun; this is not a human-input hard stop.
+  the authoritative damage delta. `4485dba` now uses that exact target delta.
+  The two-attempt limit prohibits a third assertion-only rerun; this is not an
+  overall human-input hard stop.
 
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.

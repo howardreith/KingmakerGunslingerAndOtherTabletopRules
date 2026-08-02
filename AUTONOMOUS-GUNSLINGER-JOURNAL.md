@@ -2657,3 +2657,21 @@
 - The two-attempt limit prohibits a third Startling Shot runtime launch. Keep
   the deed source-qualified pending newly authorized runtime evidence and
   continue immediately to an independent coverage item.
+
+## 2026-08-02 Sprint 77 Targeting Head native-damage evidence correction
+
+- Retained final guarded evidence already proved a hit, grit `3 -> 2`, chamber
+  `1 -> 0`, target damage `0 -> 5`, exact six-second Confusion, and cleanup.
+  Its sole failed assertion consulted `Attack.MeleeDamage`, although the adapter
+  intentionally dispatches the native `RuleDealDamage` as a separate rule.
+- Source `4485dba` corrects only the observer to use the authoritative target
+  damage delta. Production deed mechanics and native damage delivery are
+  unchanged.
+- Inherited validation, 831/831 tests, 26 runner checks, 84 preflight checks,
+  clean Release build, and strict packaging passed. The source candidate
+  package/DLL SHA-256 were
+  `bc943da3b9f271439f36d8c54134bced34cb6e34cf0a16daf340b11808134cee` /
+  `8d5f0ec51a41d869729df815d60664ef20171e7ece74f80f23f6656f7743c2f2`.
+- The two-attempt limit still prohibits a third Targeting Head launch. Preserve
+  the strong retained runtime evidence, keep the corrected observer
+  source-qualified, and continue to an independent coverage item.
