@@ -1879,3 +1879,15 @@
   remain forbidden.
 - Continue immediately to Targeting Arms and resolve its missing item-drop
   interaction without inventing an autonomous balance replacement.
+
+## 2026-08-01 Sprint 49 Targeting Arms contract audit
+
+- Private rules authority requires no hit damage and a gunslinger-chosen carried
+  item drop. Installed Kingmaker does contain `CombatManeuver.Disarm`, but exact
+  `RuleCombatManeuver.OnTrigger` IL applies margin-scaled main/off-hand disarm
+  buffs rather than dropping or unequipping a chosen item.
+- Automatic-strength Disarm would arbitrarily enlarge duration. No local source
+  authorizes a fixed duration, item-selection policy, or replacement debuff, so
+  Arms is temporarily `BLOCKED` on that narrow player-facing balance choice.
+- Continue independently to level-11 Bleeding Wound. Do not let the Arms row
+  stop progress on separately authoritative deeds.

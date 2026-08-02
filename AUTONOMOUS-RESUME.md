@@ -413,6 +413,14 @@ not a general flight state or flight-loss rule. Commit the curated disposition
 and proceed directly to Targeting Arms; do not substitute prone or infer wings
 from creature names.
 
+Targeting Arms is temporarily `BLOCKED`: native Kingmaker Disarm applies
+margin-scaled main/off-hand buffs and cannot perform the tabletop chosen-item
+drop. Automatic success would arbitrarily alter duration, and no local authority
+selects a replacement. Preserve the audit in
+`planning/SPRINT-49-TARGETING-ARMS-CONTRACT-AUDIT.md` and continue immediately
+to Bleeding Wound; do not stop the overall mission on this independent design
+question.
+
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
 and independent feature runs
