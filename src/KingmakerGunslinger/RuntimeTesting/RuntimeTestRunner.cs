@@ -5061,7 +5061,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         set.SavingMarker));
                 if (saving.BaseRollResult != savingSecond)
                     throw new InvalidOperationException(
-                        "Saving throw did not retain the lower second d20.");
+                        "Saving throw did not retain the lower second d20: expected " +
+                        savingSecond + ", observed " + saving.BaseRollResult +
+                        ", grit " + savingGritBefore + "->" + savingGritAfter +
+                        ", markerConsumed=" + savingConsumed + ".");
 
                 var skillContext = new MechanicsContext(unit, unit.Descriptor,
                     set.SkillAbility, null, new TargetWrapper(unit));

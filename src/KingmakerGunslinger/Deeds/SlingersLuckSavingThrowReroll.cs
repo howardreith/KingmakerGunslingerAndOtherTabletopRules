@@ -4,6 +4,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using KingmakerGunslinger.Firing;
+using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Deeds
 {
@@ -49,11 +50,16 @@ namespace KingmakerGunslinger.Deeds
                     throw new InvalidOperationException("Fixed grit spend failed.");
                 Owner.Buffs.RemoveFact(Fact);
             }
-            catch
+            catch (Exception exception)
             {
                 SlingersLuckRollAccess.Replace(rule, first);
                 int after = Owner.Resources.GetResourceAmount(Grit);
                 if (after < grit) Owner.Resources.Restore(Grit, grit - after);
+                ModContext context;
+                if (ModContext.TryGet(out context))
+                    context.Logger.Failure("slingers-luck",
+                        "saving-reroll.failed",
+                        "Saving-throw reroll rolled back atomically.", exception);
             }
         }
     }
