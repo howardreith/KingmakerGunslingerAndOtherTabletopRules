@@ -79,7 +79,7 @@ namespace KingmakerGunslinger.Reloading
 
         public string GetReason()
         {
-            return "Requires exactly one equipped empty firearm with a full-round reload profile, plus one Black Powder Charge and one Lead Ball.";
+            return "Requires one unambiguous equipped firearm that is not full or Wrecked, plus compatible Black Powder Charges and Lead Balls.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(

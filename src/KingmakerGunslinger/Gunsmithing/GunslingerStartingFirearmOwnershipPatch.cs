@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.Gunsmithing
         {
             internal UnitDescriptor Descriptor;
             internal HashSet<object> Before;
+            internal int PowderBefore;
+            internal int BallBefore;
         }
 
         private static void Prefix(UnitDescriptor unit, ref Snapshot __state)
@@ -28,10 +30,16 @@ namespace KingmakerGunslinger.Gunsmithing
                 Game.Instance.Player.Inventory == null)
                 throw new InvalidOperationException(
                     "The exact player inventory is unavailable before the Gunslinger starting-item grant.");
+            var ammunition = BlueprintBootstrap.BasicAmmunition;
+            if (ammunition == null)
+                throw new InvalidOperationException(
+                    "Production basic ammunition is unavailable before the Gunslinger starting-item grant.");
             __state = new Snapshot
             {
                 Descriptor = unit,
-                Before = Enumerate(Game.Instance.Player.Inventory)
+                Before = Enumerate(Game.Instance.Player.Inventory),
+                PowderBefore = Game.Instance.Player.Inventory.Count(ammunition.BlackPowder),
+                BallBefore = Game.Instance.Player.Inventory.Count(ammunition.LeadBall)
             };
         }
 
@@ -65,8 +73,39 @@ namespace KingmakerGunslinger.Gunsmithing
                 throw new InvalidOperationException(
                     "The native Gunslinger starting grant created multiple new production Early Pistols.");
 
-            BatteredFirearmOriginRuntime.Bind(
-                addedPistols[0], __state.Descriptor.Unit);
+            var basic = BlueprintBootstrap.BasicAmmunition;
+            int powderDelta = Game.Instance.Player.Inventory.Count(basic.BlackPowder) -
+                __state.PowderBefore;
+            int ballDelta = Game.Instance.Player.Inventory.Count(basic.LeadBall) -
+                __state.BallBefore;
+            if (powderDelta != 1 || ballDelta != 1)
+                throw new InvalidOperationException(
+                    "The native Gunslinger starting grant did not create exactly one of each basic ammunition component.");
+            try
+            {
+                Game.Instance.Player.Inventory.Add(basic.BlackPowder, 19);
+                Game.Instance.Player.Inventory.Add(basic.LeadBall, 19);
+                if (Game.Instance.Player.Inventory.Count(basic.BlackPowder) -
+                        __state.PowderBefore != 20 ||
+                    Game.Instance.Player.Inventory.Count(basic.LeadBall) -
+                        __state.BallBefore != 20)
+                    throw new InvalidOperationException(
+                        "The Gunslinger starting ammunition stacks did not reach 20/20.");
+                BatteredFirearmOriginRuntime.Bind(
+                    addedPistols[0], __state.Descriptor.Unit);
+            }
+            catch
+            {
+                int extraPowder = Game.Instance.Player.Inventory.Count(basic.BlackPowder) -
+                    __state.PowderBefore - 1;
+                int extraBall = Game.Instance.Player.Inventory.Count(basic.LeadBall) -
+                    __state.BallBefore - 1;
+                if (extraPowder > 0)
+                    Game.Instance.Player.Inventory.Remove(basic.BlackPowder, extraPowder);
+                if (extraBall > 0)
+                    Game.Instance.Player.Inventory.Remove(basic.LeadBall, extraBall);
+                throw;
+            }
         }
 
         private static bool IsExactGunslingerReceiver(UnitDescriptor unit)

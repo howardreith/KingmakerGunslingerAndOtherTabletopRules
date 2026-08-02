@@ -452,6 +452,7 @@
     <Compile Include="Reloading\IFirearmReloadStateStore.cs" />
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
+    <Compile Include="Reloading\ReloadActionEconomy.cs" />
     <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
     <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
     <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />

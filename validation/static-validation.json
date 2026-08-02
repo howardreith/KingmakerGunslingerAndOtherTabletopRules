@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.60-s60-player-presentation",
-  "version": "0.0.60",
+  "milestone": "0.0.61-first-playtest-repair",
+  "version": "0.0.61",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 837,
+    "testCount": 841,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

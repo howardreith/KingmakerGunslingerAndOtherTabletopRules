@@ -79,23 +79,14 @@ namespace KingmakerGunslinger.Reloading
                 return Rejected(action.Reason, weapon, firearm, inventory);
             }
 
-            if (firearm.Definition.Reload.BaseAction != ReloadActionType.FullRound)
-            {
-                return Rejected(
-                    "The equipped firearm does not use the full-round reload profile implemented by this ability.",
-                    weapon,
-                    firearm,
-                    inventory);
-            }
-
             if (state.Condition == FirearmCondition.Wrecked)
             {
                 return Rejected("The equipped firearm is Wrecked and cannot be reloaded.", weapon, firearm, inventory);
             }
 
-            if (!state.IsEmpty)
+            if (state.LoadedRounds >= firearm.Definition.Capacity)
             {
-                return Rejected("The equipped firearm is already loaded.", weapon, firearm, inventory);
+                return Rejected("The equipped firearm is already full.", weapon, firearm, inventory);
             }
 
             if (inventory.BlackPowderCharges == 0)
@@ -108,11 +99,13 @@ namespace KingmakerGunslinger.Reloading
                 return Rejected("A Lead Ball is required.", weapon, firearm, inventory);
             }
 
+            int rounds = Math.Min(firearm.Definition.Reload.RoundsPerAction,
+                firearm.Definition.Capacity - state.LoadedRounds);
             return new ReloadTestMusketAvailability(
                 true,
                 state.Condition == FirearmCondition.Broken
-                    ? "Ready to load one Lead Ball with one Black Powder Charge; the firearm will remain Broken."
-                    : "Ready to load one Lead Ball with one Black Powder Charge.",
+                    ? "Ready to reload " + rounds + " round(s); the firearm will remain Broken."
+                    : "Ready to reload " + rounds + " round(s).",
                 weapon,
                 firearm,
                 inventory);
@@ -145,11 +138,12 @@ namespace KingmakerGunslinger.Reloading
                 availability.Firearm.Definition.Capacity,
                 new[] { availability.Firearm.Definition.Reload.Ammunition });
 
-            return new FirearmReloadTransactionService().TryReloadOneBasicRound(
+            return new FirearmReloadTransactionService().TryReloadBasicRounds(
                 stateStore,
                 inventory,
                 rules,
-                availability.Firearm.Definition.Reload.Ammunition);
+                availability.Firearm.Definition.Reload.Ammunition,
+                availability.Firearm.Definition.Reload.RoundsPerAction);
         }
 
         private static bool TryResolveSingleEquippedTestMusket(

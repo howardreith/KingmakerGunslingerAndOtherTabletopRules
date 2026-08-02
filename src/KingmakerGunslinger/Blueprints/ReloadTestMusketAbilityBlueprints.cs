@@ -26,8 +26,8 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_ReloadTestMusketLogic";
 
         private const string Description =
-            "Load the exact equipped firearm with one Black Powder Charge and one Lead Ball. " +
-            "This is a full-round extraordinary action and requires a firearm with a full-round reload profile.";
+            "Reload the exact equipped firearm with compatible Black Powder Charges and Lead Balls. " +
+            "The required action is determined by the firearm and a matching Rapid Reload feat.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
