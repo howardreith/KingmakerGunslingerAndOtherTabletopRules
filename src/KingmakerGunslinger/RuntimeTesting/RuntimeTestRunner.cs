@@ -3229,7 +3229,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Kingmaker.UnitLogic.UnitDescriptor",
                 "Kingmaker.UnitLogic.UnitProgressionData",
                 "Kingmaker.UnitLogic.ClassData",
-                "Kingmaker.EntitySystem.Entities.UnitEntityData"
+                "Kingmaker.EntitySystem.Entities.UnitEntityData",
+                "Kingmaker.PubSubSystem.ILevelUpInitiateUIHandler"
             };
             Assembly assembly = typeof(Kingmaker.UnitLogic.UnitDescriptor).Assembly;
             var records = new List<string>();

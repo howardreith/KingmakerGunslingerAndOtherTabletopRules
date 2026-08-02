@@ -8,6 +8,7 @@ $catalog = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunsling
 $runner = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs')
 $common = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 $checks = [ordered]@{
+    'levelup-handler-contract' = $runner.Contains('Kingmaker.PubSubSystem.ILevelUpInitiateUIHandler')
     'scenario-allowlisted' = $catalog.Contains('ObserveCharacterCreationContracts') -and
         $catalog.Contains('"observe-character-creation-contracts"')
     'save-free-autonomous' = $common.Contains("'observe-character-creation-contracts' = [pscustomobject]") -and

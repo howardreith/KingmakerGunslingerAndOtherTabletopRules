@@ -3207,3 +3207,8 @@
   `a2396b812fa645093d0e961744a136b0b09528789b7446bb12ca2a049a257ef9`.
   Commit and run the metadata observer before constructing the reversible broad
   callback fixture.
+- Sprint 101 observer now also emits the exact installed
+  `ILevelUpInitiateUIHandler` method contract required to intercept the native
+  replacement initiation without UI input. All 849 tests/build/package gates
+  pass; package/DLL hashes are `3359344cb3447f48ae99f44df4756df9e49d3e81cfd8d9f1581d9e21901a546f` /
+  `e3d50ecb58d6fbe453ae076358570571b477744dfbfa6ec821095fb8f24ef802`.
