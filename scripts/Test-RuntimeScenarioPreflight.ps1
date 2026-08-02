@@ -25,6 +25,7 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 $expected = @(
     'mod-load-smoke',
     'observe-class-blueprint-contracts',
+    'observe-gunslinger-presentation',
     'observe-character-creation-contracts',
     'disposable-descriptor-construction',
     'disposable-gunslinger-selection',
@@ -85,6 +86,11 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+$presentation = Get-KmgRuntimeScenarioMetadata 'observe-gunslinger-presentation'
+Assert-True (-not $presentation.RequiresManualInteraction) `
+    'presentation-is-autonomous'
+Assert-True (-not $presentation.RequiresSaveName) `
+    'presentation-is-save-free'
 
 $entry = Get-KmgRuntimeScenarioMetadata 'observe-working-save-entry-action'
 Assert-True $entry.RequiresManualInteraction 'entry-requires-manual-interaction'

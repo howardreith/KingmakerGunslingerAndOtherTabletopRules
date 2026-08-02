@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (progression == null) throw new ArgumentNullException("progression");
             if (fallbackIcon == null) throw new ArgumentNullException("fallbackIcon");
+            BlueprintUnitFactAccess.Resolve().SetIconIfMissing(progression,
+                fallbackIcon);
             var visited = new HashSet<BlueprintUnitFact>();
             foreach (LevelEntry entry in progression.LevelEntries)
                 foreach (BlueprintFeatureBase feature in entry.Features)

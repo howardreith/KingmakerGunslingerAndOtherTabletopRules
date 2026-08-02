@@ -10,6 +10,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -305,6 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -327,6 +329,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveClassBlueprintContracts)
                 {
                     Complete(RunClassBlueprintContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveGunslingerPresentation)
+                {
+                    Complete(RunGunslingerPresentationObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2084,6 +2092,90 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(pass ? "PASS" : "FAIL", assertions, null);
             result.RuntimeIdentity = runtimeIdentity;
             return result;
+        }
+
+        private RuntimeTestResult RunGunslingerPresentationObservation()
+        {
+            GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
+            BlueprintCharacterClass characterClass = set.CharacterClass;
+            BlueprintProgression progression = set.Progression;
+            var visited = new HashSet<BlueprintUnitFact>();
+            var pending = new Stack<BlueprintUnitFact>();
+            foreach (LevelEntry entry in progression.LevelEntries)
+                foreach (BlueprintFeatureBase feature in entry.Features)
+                    if (feature != null) pending.Push(feature);
+            int visible = 0, hidden = 0, incomplete = 0;
+            while (pending.Count > 0)
+            {
+                BlueprintUnitFact fact = pending.Pop();
+                if (fact == null || !visited.Add(fact)) continue;
+                var feature = fact as BlueprintFeature;
+                var ability = fact as BlueprintAbility;
+                bool isHidden = (feature != null && feature.HideInUI) ||
+                    (ability != null && ability.Hidden);
+                bool project = fact.name != null && fact.name.StartsWith("KMG_",
+                    StringComparison.Ordinal);
+                if (project && isHidden) hidden++;
+                if (project && !isHidden)
+                {
+                    visible++;
+                    if (string.IsNullOrWhiteSpace(fact.Name) ||
+                        string.IsNullOrWhiteSpace(fact.Description) ||
+                        fact.Icon == null) incomplete++;
+                }
+                var selection = fact as BlueprintFeatureSelection;
+                if (selection != null && selection.AllFeatures != null)
+                    foreach (BlueprintFeature child in selection.AllFeatures)
+                        if (child != null) pending.Push(child);
+                if (fact.ComponentsArray == null) continue;
+                foreach (AddFacts grant in fact.ComponentsArray.OfType<AddFacts>())
+                    if (grant.Facts != null)
+                        foreach (BlueprintUnitFact child in grant.Facts)
+                            if (child != null) pending.Push(child);
+            }
+            bool classMetadata = !string.IsNullOrWhiteSpace(characterClass.Name) &&
+                !string.IsNullOrWhiteSpace(characterClass.Description) &&
+                characterClass.Icon != null;
+            bool progressionMetadata = !string.IsNullOrWhiteSpace(progression.Name) &&
+                !string.IsNullOrWhiteSpace(progression.Description) &&
+                progression.Icon != null;
+            int grouped = progression.UIGroups == null ? 0 :
+                progression.UIGroups.Sum(group => group == null ||
+                    group.Features == null ? 0 : group.Features.Count);
+            string observed = "levels=" + progression.LevelEntries.Length +
+                ";visible=" + visible + ";hidden=" + hidden +
+                ";incomplete=" + incomplete + ";groups=" +
+                (progression.UIGroups == null ? 0 : progression.UIGroups.Length) +
+                ";grouped=" + grouped + ";class=" + classMetadata +
+                ";progression=" + progressionMetadata;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("gunslinger-class-presentation",
+                    "readable class and progression metadata with icons", observed,
+                    classMetadata && progressionMetadata,
+                    "registered BlueprintCharacterClass and BlueprintProgression"),
+                Assertion("gunslinger-visible-fact-presentation",
+                    "all reachable visible project facts have name, description, and icon",
+                    observed, visible > 0 && incomplete == 0,
+                    "registered progression, selections, and AddFacts graph"),
+                Assertion("gunslinger-hidden-fact-exclusion",
+                    "hidden implementation facts remain reachable but excluded from visible count",
+                    observed, hidden > 0,
+                    "HideInUI and Hidden flags"),
+                Assertion("gunslinger-progression-ui-groups",
+                    "twenty unchanged level entries and nonempty native UI groups",
+                    observed, progression.LevelEntries.Length == 20 &&
+                        progression.UIGroups != null &&
+                        progression.UIGroups.Length > 0 && grouped > 0,
+                    "LevelEntries and UIGroups"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunClassBlueprintContractObservation()

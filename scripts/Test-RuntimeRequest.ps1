@@ -18,6 +18,13 @@ if ($request.schemaVersion -ne 1 -or -not $request.enabled -or
     $request.startupTimeoutSeconds -ne 180) {
     $failures.Add('valid-request-schema')
 }
+$presentationRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-gunslinger-presentation' -ExpectedVersion '0.0.60' `
+    -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
+if ($presentationRequest.scenario -cne 'observe-gunslinger-presentation' -or
+    $presentationRequest.parameters.Count -ne 0) {
+    $failures.Add('presentation-request-valid')
+}
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'unknown' -ExpectedVersion '0.0.60' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'unknown-scenario'
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '' `
@@ -270,4 +277,4 @@ if ($trueGritRequest.scenario -cne
 }
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 36'
+Write-Host 'Runtime request source tests passed: 37'

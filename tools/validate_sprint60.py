@@ -41,6 +41,15 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["PlayerFacingPresentation.Apply(progression, characterClass.Icon)"],
         "Sprint 60 bootstrap integration")
+    require_tokens(read(root,
+        "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs") + read(root,
+        "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
+        ["observe-gunslinger-presentation",
+         "RunGunslingerPresentationObservation",
+         "gunslinger-visible-fact-presentation",
+         "gunslinger-hidden-fact-exclusion",
+         "gunslinger-progression-ui-groups"],
+        "Sprint 60 guarded presentation observation")
     print("Sprint 60 source validation passed with inherited Sprint 59 checks.")
 
 def main() -> int:
