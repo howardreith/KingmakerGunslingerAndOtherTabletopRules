@@ -15,6 +15,7 @@ namespace KingmakerGunslinger.Deeds
             Choice(TrueGritDeed.StopBleeding, "Utility Shot: Stop Bleeding"),
             Choice(TrueGritDeed.DeadShot, "Dead Shot"),
             Choice(TrueGritDeed.StartlingShot, "Startling Shot"),
+            Choice(TrueGritDeed.TargetingArms, "Targeting: Arms"),
             Choice(TrueGritDeed.TargetingHead, "Targeting: Head"),
             Choice(TrueGritDeed.TargetingTorso, "Targeting: Torso"),
             Choice(TrueGritDeed.TargetingLegs, "Targeting: Legs"),

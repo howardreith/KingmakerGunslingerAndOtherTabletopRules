@@ -40,6 +40,7 @@
     <Compile Include="Sprint59Tests.cs" />
     <Compile Include="Sprint61Tests.cs" />
     <Compile Include="Sprint83Tests.cs" />
+    <Compile Include="Sprint104Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>
@@ -96,6 +97,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingTorsoThreatService.cs"><Link>Deeds\TargetingTorsoThreatService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingLegsRiderDecision.cs"><Link>Deeds\TargetingLegsRiderDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingLegsRiderService.cs"><Link>Deeds\TargetingLegsRiderService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingArmsRiderDecision.cs"><Link>Deeds\TargetingArmsRiderDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingArmsRiderService.cs"><Link>Deeds\TargetingArmsRiderService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundKind.cs"><Link>Deeds\BleedingWoundKind.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundRequest.cs"><Link>Deeds\BleedingWoundRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundDecision.cs"><Link>Deeds\BleedingWoundDecision.cs</Link></Compile>

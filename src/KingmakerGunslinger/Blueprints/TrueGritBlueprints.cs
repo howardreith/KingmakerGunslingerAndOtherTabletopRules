@@ -45,6 +45,7 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Classes.TrueGritStopBleeding",
             "KMG.Classes.TrueGritDeadShot",
             "KMG.Classes.TrueGritStartlingShot",
+            "KMG.Classes.TrueGritTargetingArms",
             "KMG.Classes.TrueGritTargetingHead",
             "KMG.Classes.TrueGritTargetingTorso",
             "KMG.Classes.TrueGritTargetingLegs",

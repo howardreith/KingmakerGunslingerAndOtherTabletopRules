@@ -10,6 +10,7 @@ namespace KingmakerGunslinger.Deeds
         StopBleeding,
         DeadShot,
         StartlingShot,
+        TargetingArms,
         TargetingHead,
         TargetingTorso,
         TargetingLegs,

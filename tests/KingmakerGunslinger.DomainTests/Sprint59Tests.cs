@@ -9,7 +9,10 @@ namespace KingmakerGunslinger.DomainTests
         private static void TrueGritCatalogExact()
         {
             TrueGritChoice[] values = TrueGritCatalog.Choices;
-            Assertions.Equal(18, values.Length, "True Grit catalog count changed.");
+            Assertions.Equal(19, values.Length, "True Grit catalog count changed.");
+            Assertions.True(values.Any(value =>
+                    value.Deed == TrueGritDeed.TargetingArms),
+                "Targeting Arms is missing from the True Grit catalog.");
             Assertions.Equal(values.Length, values.Select(value => value.Deed)
                 .Distinct().Count(), "True Grit catalog contains duplicates.");
             Assertions.True(!values.Any(value => value.DisplayName.Contains("Luck")),

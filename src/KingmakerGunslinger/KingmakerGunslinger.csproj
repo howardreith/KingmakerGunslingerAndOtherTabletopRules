@@ -307,6 +307,12 @@
     <Compile Include="Deeds\DeadShotAbilityLogic.cs" />
     <Compile Include="Blueprints\DeadShotBlueprints.cs" />
     <Compile Include="Deeds\TargetingHeadStatus.cs" />
+    <Compile Include="Deeds\TargetingArmsRiderDecision.cs" />
+    <Compile Include="Deeds\TargetingArmsRiderService.cs" />
+    <Compile Include="Deeds\TargetingArmsResult.cs" />
+    <Compile Include="Deeds\TargetingArmsRuntime.cs" />
+    <Compile Include="Deeds\TargetingArmsAbilityLogic.cs" />
+    <Compile Include="Blueprints\TargetingArmsBlueprints.cs" />
     <Compile Include="Deeds\TargetingHeadRequest.cs" />
     <Compile Include="Deeds\TargetingHeadDecision.cs" />
     <Compile Include="Deeds\TargetingHeadRiderDecision.cs" />

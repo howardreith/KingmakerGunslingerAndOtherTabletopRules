@@ -124,6 +124,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("targeting-torso.threat-gates", TargetingTorsoThreatGates),
             Case("targeting-torso.threat-invalid", TargetingTorsoThreatInvalid),
             Case("targeting-legs.eligible-rider", TargetingLegsEligibleRider),
+            Case("targeting-arms.eligible-rider", TargetingArmsEligibleRider),
+            Case("targeting-arms.rider-gates", TargetingArmsRiderGates),
             Case("targeting-legs.rider-gates", TargetingLegsRiderGates),
             Case("targeting-legs.rider-observations", TargetingLegsRiderObservations),
             Case("bleeding-wound.all-choices", BleedingWoundAllChoices),

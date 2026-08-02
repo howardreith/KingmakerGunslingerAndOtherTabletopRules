@@ -86,6 +86,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-targeting-torso";
         internal const string DisposableGunslingerTargetingLegs =
             "disposable-gunslinger-targeting-legs";
+        internal const string DisposableGunslingerTargetingArms =
+            "disposable-gunslinger-targeting-arms";
         internal const string DisposableGunslingerBleedingWound =
             "disposable-gunslinger-bleeding-wound";
         internal const string DisposableGunslingerExpertLoading =
@@ -180,6 +182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerTargetingHead,
                 DisposableGunslingerTargetingTorso,
                 DisposableGunslingerTargetingLegs,
+                DisposableGunslingerTargetingArms,
                 DisposableGunslingerBleedingWound,
                 DisposableGunslingerExpertLoading,
                 DisposableGunslingerLightningReload,

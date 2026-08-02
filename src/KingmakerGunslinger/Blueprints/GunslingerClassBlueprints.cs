@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.Blueprints
             PistolWhipBlueprintSet pistolWhip, UtilityShotBlueprintSet utilityShot,
             GunTrainingBlueprintSet gunTraining, DeadShotBlueprintSet deadShot,
             StartlingShotBlueprintSet startlingShot,
+            TargetingArmsBlueprintSet targetingArms,
             TargetingHeadBlueprintSet targetingHead,
             TargetingTorsoBlueprintSet targetingTorso,
             TargetingLegsBlueprintSet targetingLegs,
@@ -51,6 +52,8 @@ namespace KingmakerGunslinger.Blueprints
             DeadShot = deadShot ?? throw new ArgumentNullException("deadShot");
             StartlingShot = startlingShot ??
                 throw new ArgumentNullException("startlingShot");
+            TargetingArms = targetingArms ??
+                throw new ArgumentNullException("targetingArms");
             TargetingHead = targetingHead ??
                 throw new ArgumentNullException("targetingHead");
             TargetingTorso = targetingTorso ??
@@ -88,6 +91,7 @@ namespace KingmakerGunslinger.Blueprints
         internal GunTrainingBlueprintSet GunTraining { get; private set; }
         internal DeadShotBlueprintSet DeadShot { get; private set; }
         internal StartlingShotBlueprintSet StartlingShot { get; private set; }
+        internal TargetingArmsBlueprintSet TargetingArms { get; private set; }
         internal TargetingHeadBlueprintSet TargetingHead { get; private set; }
         internal TargetingTorsoBlueprintSet TargetingTorso { get; private set; }
         internal TargetingLegsBlueprintSet TargetingLegs { get; private set; }
@@ -100,7 +104,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature CheatDeath { get; private set; }
         internal StunningShotBlueprintSet StunningShot { get; private set; }
         internal TrueGritBlueprintSet TrueGrit { get; private set; }
-        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + StunningShot.Count + TrueGrit.Count; } }
+        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + StunningShot.Count + TrueGrit.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -196,6 +200,8 @@ namespace KingmakerGunslinger.Blueprints
             DeadShotBlueprintSet deadShot = DeadShotBlueprints.Register(registry);
             StartlingShotBlueprintSet startlingShot =
                 StartlingShotBlueprints.Register(registry);
+            TargetingArmsBlueprintSet targetingArms =
+                TargetingArmsBlueprints.Register(registry);
             TargetingHeadBlueprintSet targetingHead =
                 TargetingHeadBlueprints.Register(registry);
             TargetingTorsoBlueprintSet targetingTorso =
@@ -236,6 +242,7 @@ namespace KingmakerGunslinger.Blueprints
                 progression.LevelEntries[level - 1].Features.Add(gunTraining.Selection);
             progression.LevelEntries[6].Features.Add(deadShot.Feature);
             progression.LevelEntries[6].Features.Add(startlingShot.Feature);
+            progression.LevelEntries[6].Features.Add(targetingArms.Feature);
             progression.LevelEntries[6].Features.Add(targetingHead.Feature);
             progression.LevelEntries[6].Features.Add(targetingTorso.Feature);
             progression.LevelEntries[6].Features.Add(targetingLegs.Feature);
@@ -256,7 +263,7 @@ namespace KingmakerGunslinger.Blueprints
             return new GunslingerClassBlueprintSet(characterClass, progression,
                 proficiencies, gunsmithing, grit, deadeye, dodge, quickClear, nimble, initiative,
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
-                targetingHead, targetingTorso, targetingLegs, bleedingWound,
+                targetingArms, targetingHead, targetingTorso, targetingLegs, bleedingWound,
                 expertLoading, lightningReload, evasive, menacingShot,
                 slingersLuck, cheatDeath, stunningShot, trueGrit);
         }

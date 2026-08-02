@@ -73,6 +73,7 @@ $expected = @(
     'disposable-gunslinger-targeting-head',
     'disposable-gunslinger-targeting-torso',
     'disposable-gunslinger-targeting-legs',
+    'disposable-gunslinger-targeting-arms',
     'disposable-gunslinger-bleeding-wound',
     'disposable-gunslinger-expert-loading',
     'disposable-gunslinger-lightning-reload',
@@ -183,6 +184,12 @@ Assert-True (-not $targetingLegs.RequiresManualInteraction) `
     'targeting-legs-is-autonomous'
 Assert-True (-not $targetingLegs.RequiresSaveName) `
     'targeting-legs-is-save-free'
+$targetingArms = Get-KmgRuntimeScenarioMetadata `
+    'disposable-gunslinger-targeting-arms'
+Assert-True (-not $targetingArms.RequiresManualInteraction) `
+    'targeting-arms-is-autonomous'
+Assert-True (-not $targetingArms.RequiresSaveName) `
+    'targeting-arms-is-save-free'
 $bleedingWound = Get-KmgRuntimeScenarioMetadata `
     'disposable-gunslinger-bleeding-wound'
 Assert-True (-not $bleedingWound.RequiresManualInteraction) `
