@@ -10,6 +10,7 @@ using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Misfires
 {
@@ -270,6 +271,8 @@ namespace KingmakerGunslinger.Misfires
                     ConditionService.Evaluate(
                         decision,
                         context.PostDischargeState);
+                condition = ExpertLoadingRuntime.Apply(attackRoll, decision,
+                    condition, firstEvaluation);
                 if (condition.ChangesCondition)
                 {
                     CommitConditionTransition(context, condition);

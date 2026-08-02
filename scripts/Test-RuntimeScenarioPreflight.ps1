@@ -51,6 +51,7 @@ $expected = @(
     'disposable-gunslinger-targeting-torso',
     'disposable-gunslinger-targeting-legs',
     'disposable-gunslinger-bleeding-wound',
+    'disposable-gunslinger-expert-loading',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -135,10 +136,16 @@ Assert-True (-not $bleedingWound.RequiresManualInteraction) `
     'bleeding-wound-is-autonomous'
 Assert-True (-not $bleedingWound.RequiresSaveName) `
     'bleeding-wound-is-save-free'
+$expertLoading = Get-KmgRuntimeScenarioMetadata `
+    'disposable-gunslinger-expert-loading'
+Assert-True (-not $expertLoading.RequiresManualInteraction) `
+    'expert-loading-is-autonomous'
+Assert-True (-not $expertLoading.RequiresSaveName) `
+    'expert-loading-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.50'
+    ExpectedVersion = '0.0.51'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -171,7 +178,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.50' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.51' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -226,7 +233,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.50' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.51' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

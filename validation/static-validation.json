@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.50-s50-bleeding-wound",
-  "version": "0.0.50",
+  "milestone": "0.0.51-s51-expert-loading",
+  "version": "0.0.51",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 85,
-    "activeEntryCount": 84,
+    "entryCount": 88,
+    "activeEntryCount": 87,
     "reservedEntryCount": 1,
-    "registrationCount": 84
+    "registrationCount": 87
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 780,
+    "testCount": 784,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

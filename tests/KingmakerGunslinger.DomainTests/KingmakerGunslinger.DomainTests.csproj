@@ -41,6 +41,7 @@
     <Compile Include="Sprint46Tests.cs" />
     <Compile Include="Sprint47Tests.cs" />
     <Compile Include="Sprint50Tests.cs" />
+    <Compile Include="Sprint51Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotDecision.cs"><Link>Deeds\DeadShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcome.cs"><Link>Deeds\DeadShotOutcome.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcomeService.cs"><Link>Deeds\DeadShotOutcomeService.cs</Link></Compile>
@@ -65,6 +66,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundRequest.cs"><Link>Deeds\BleedingWoundRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundDecision.cs"><Link>Deeds\BleedingWoundDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\BleedingWoundService.cs"><Link>Deeds\BleedingWoundService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingRequest.cs"><Link>Deeds\ExpertLoadingRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingDecision.cs"><Link>Deeds\ExpertLoadingDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingService.cs"><Link>Deeds\ExpertLoadingService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeDecision.cs">
       <Link>Deeds\DeadeyeDecision.cs</Link>
     </Compile>

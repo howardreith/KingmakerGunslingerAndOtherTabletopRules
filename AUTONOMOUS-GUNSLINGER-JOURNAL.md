@@ -1935,3 +1935,45 @@
   cleanup, and no save-backed interaction.
 - Continue immediately to Expert Loading. Sprint 50 is a checkpoint, not a
   stopping condition.
+
+## 2026-08-01 Sprint 51 Expert Loading entry audit
+
+- The authoritative level-11 rule spends 1 grit after a Broken-gun misfire to
+  prevent its explosion while retaining Broken condition.
+- The existing exact pipeline commits Broken-to-Wrecked and schedules its burst
+  inside the first `IsSuccessRoll` evaluation, before `FinishAttack` delivers
+  the burst. Sprint 51 will insert a narrow deed decision before that mutation;
+  it will not broaden Harmony targets or change ordinary misfire behavior.
+- Because Kingmaker cannot pause after the roll, the documented adaptation is a
+  personal free-action pre-shot marker consumed by the next exact firearm
+  attack, spending only when it suppresses the exact Broken-to-Wrecked event.
+- Entry criteria are recorded in `planning/SPRINT-51-ENTRY-CRITERIA.md`. Next:
+  implement the pure suppression decision and focused tests before touching the
+  native adapter.
+
+## 2026-08-01 Sprint 51 Expert Loading source qualification
+
+- Added the pure suppression policy, four focused tests, one level-11 feature,
+  one personal free-action ability, one unit-owned armed marker, and the exact
+  `ExpertLoadingBrokenRemainsBroken` condition result.
+- The existing misfire adapter invokes Expert Loading only during the first
+  exact eligible natural-roll evaluation, before item mutation and explosion
+  scheduling. Marker consumption is unit-local; grit is verified exactly; any
+  spend/verification fault restores grit when possible and returns the ordinary
+  Broken-to-Wrecked result.
+- Added a guarded save-free scenario proving progression, one-grit suppression,
+  empty/Broken retention, no burst scheduling, no-grit Wrecked/burst behavior,
+  chamber consumption, cleanup, and external isolation.
+- Source gates pass: full Sprint 29-51 invariant chain, 29 dispatch checks, 24
+  request checks, 52 preflight checks, all runtime safety suites, 784/784 domain
+  tests, clean Release compilation, strict package validation, and scenario
+  WhatIf with no deployment or launch.
+- Candidate package SHA-256:
+  `4e2f6f566bbfb356bf1058e810487046e72546ce3629afd05e553a4eef8e1516`.
+  Candidate DLL SHA-256:
+  `8e02b7dafc71d892ea07d3453329543f88ca009f24a89f63bb40dd760fe6e77f`.
+- Removed the exact generated `artifacts/tmp/KmgValidatorTests-4ct3zhh3`
+  fixture left by an earlier sandbox-denied validator run; it was not tracked
+  and is not recoverable.
+- Next: commit the reconstructable source checkpoint, rebuild the exact commit,
+  require mod-load PASS, and run two independent Expert Loading PASS processes.

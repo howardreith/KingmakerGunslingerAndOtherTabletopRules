@@ -622,6 +622,15 @@
     },
     {
       "symbol": "KMG.Deeds.BleedingWoundConstitutionBuff", "guid": "de789d99a1a742b5a7ac3da9c666a804", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Persistent native-descriptor recurring Constitution damage."
+    },
+    {
+      "symbol": "KMG.Deeds.ExpertLoadingFeature", "guid": "38c1d90d421b41f7aa94f06e199d2021", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 51", "notes": "Level-eleven Expert Loading deed grant."
+    },
+    {
+      "symbol": "KMG.Deeds.ExpertLoadingAbility", "guid": "d981c72e9df94d1989530453669ea3b5", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 51", "notes": "Free-action pre-shot Expert Loading arming ability."
+    },
+    {
+      "symbol": "KMG.Deeds.ExpertLoadingArmed", "guid": "5a21b3ff5940476f97fe5f7844fa4509", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 51", "notes": "Unit-owned next-firearm-attack Expert Loading marker."
     }
   ]
 }

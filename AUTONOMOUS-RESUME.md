@@ -428,8 +428,15 @@ runs `20260802T0322528218163Z-disposable-gunslinger-bleeding-wound` and
 mechanical/isolation assertions. The exact package/DLL hashes are
 `412fa07d8831d5d07a5ac009278ad845460f7a5327ee421df2a26e5ea6cb620e` /
 `05859c0ef58adc52e67bbb05eea3faebed389c016c8ceb4f6c203c3f83f72622`.
-Commit curated evidence and begin Expert Loading immediately; Sprint 50 is not
-a stopping condition.
+Curated Sprint 50 evidence is committed as `b84063f`. Sprint 51 Expert Loading
+is source-qualified in the worktree at version `0.0.51`: the level-11 feature,
+free-action pre-shot ability, unit marker, exact first-evaluation suppression,
+fail-closed ordinary explosion path, and guarded save-free scenario are
+complete. The full validator chain, 29 dispatch checks, PowerShell safety
+suites, 784/784 domain tests, clean Release build, strict package validation,
+and WhatIf pass. Audit and commit the reconstructable checkpoint, rebuild the
+exact commit, require mod-load PASS, and run two fresh-process feature PASS
+runs. Continue immediately to Lightning Reload afterward.
 
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`

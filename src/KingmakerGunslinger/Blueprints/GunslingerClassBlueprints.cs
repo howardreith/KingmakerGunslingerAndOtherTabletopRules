@@ -27,7 +27,8 @@ namespace KingmakerGunslinger.Blueprints
             TargetingHeadBlueprintSet targetingHead,
             TargetingTorsoBlueprintSet targetingTorso,
             TargetingLegsBlueprintSet targetingLegs,
-            BleedingWoundBlueprintSet bleedingWound)
+            BleedingWoundBlueprintSet bleedingWound,
+            ExpertLoadingBlueprintSet expertLoading)
         {
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
@@ -52,6 +53,8 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("targetingLegs");
             BleedingWound = bleedingWound ??
                 throw new ArgumentNullException("bleedingWound");
+            ExpertLoading = expertLoading ??
+                throw new ArgumentNullException("expertLoading");
         }
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
@@ -71,7 +74,8 @@ namespace KingmakerGunslinger.Blueprints
         internal TargetingTorsoBlueprintSet TargetingTorso { get; private set; }
         internal TargetingLegsBlueprintSet TargetingLegs { get; private set; }
         internal BleedingWoundBlueprintSet BleedingWound { get; private set; }
-        internal int Count { get { return 4 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count; } }
+        internal ExpertLoadingBlueprintSet ExpertLoading { get; private set; }
+        internal int Count { get { return 4 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -173,6 +177,8 @@ namespace KingmakerGunslinger.Blueprints
                 TargetingLegsBlueprints.Register(registry);
             BleedingWoundBlueprintSet bleedingWound =
                 BleedingWoundBlueprints.Register(registry);
+            ExpertLoadingBlueprintSet expertLoading =
+                ExpertLoadingBlueprints.Register(registry);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
@@ -193,13 +199,15 @@ namespace KingmakerGunslinger.Blueprints
             progression.LevelEntries[6].Features.Add(targetingTorso.Feature);
             progression.LevelEntries[6].Features.Add(targetingLegs.Feature);
             progression.LevelEntries[10].Features.Add(bleedingWound.Feature);
+            progression.LevelEntries[10].Features.Add(expertLoading.Feature);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression,
                 proficiencies, grit, deadeye, dodge, quickClear, nimble, initiative,
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
-                targetingHead, targetingTorso, targetingLegs, bleedingWound);
+                targetingHead, targetingTorso, targetingLegs, bleedingWound,
+                expertLoading);
         }
 
         internal static GunslingerClassCatalogPublication Publish(

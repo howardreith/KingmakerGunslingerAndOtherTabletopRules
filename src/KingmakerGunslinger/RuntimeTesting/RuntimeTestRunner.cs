@@ -288,6 +288,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -465,6 +466,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound)
                 {
                     Complete(RunDisposableGunslingerBleedingWound());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading)
+                {
+                    Complete(RunDisposableGunslingerExpertLoading());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4185,6 +4192,147 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerExpertLoading()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            ExpertLoadingBlueprintSet set = gunslinger.ExpertLoading;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            int gritBefore = -1, gritSuppressed = -1, gritAfter = -1;
+            int suppressedRounds = -1, ordinaryRounds = -1;
+            FirearmCondition suppressedCondition = FirearmCondition.Normal;
+            FirearmCondition ordinaryCondition = FirearmCondition.Normal;
+            long scheduledBefore = -1, scheduledSuppressed = -1,
+                scheduledAfter = -1;
+            bool markerConsumed = false, cleaned = false;
+            string stage = "blueprint-contract";
+            bool blueprintContract = gunslinger.Progression.LevelEntries[10]
+                .Features.Count(value => ReferenceEquals(value, set.Feature)) == 1 &&
+                set.Ability.ActionType == UnitCommand.CommandType.Free;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.State.Immortality.Retain();
+                attacker.Descriptor.Stats.Constitution.BaseValue = 30;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                scheduledBefore = FirearmExplosionRuntimeDiagnostics.Scheduled;
+
+                stage = "armed-suppression";
+                var context = new MechanicsContext(attacker,
+                    attacker.Descriptor, set.Ability, null,
+                    new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(1);
+                Rulebook.Trigger(new RuleAttackWithWeapon(attacker, target,
+                    weapon, 0));
+                FirearmItemStateSnapshot suppressed =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                suppressedCondition = suppressed.Repository.State.Condition;
+                suppressedRounds = suppressed.Repository.State.LoadedRounds;
+                gritSuppressed = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                scheduledSuppressed = FirearmExplosionRuntimeDiagnostics.Scheduled;
+                markerConsumed = !attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+
+                stage = "ordinary-explosion";
+                attacker.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    gritSuppressed);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(1);
+                Rulebook.Trigger(new RuleAttackWithWeapon(attacker, target,
+                    weapon, 0));
+                FirearmItemStateSnapshot ordinary =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                ordinaryCondition = ordinary.Repository.State.Condition;
+                ordinaryRounds = ordinary.Repository.State.LoadedRounds;
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                scheduledAfter = FirearmExplosionRuntimeDiagnostics.Scheduled;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Expert Loading failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "grit=" + gritBefore + "->" + gritSuppressed +
+                "->" + gritAfter + ";conditions=" + suppressedCondition +
+                "," + ordinaryCondition + ";rounds=" + suppressedRounds +
+                "," + ordinaryRounds + ";scheduled=" + scheduledBefore +
+                "->" + scheduledSuppressed + "->" + scheduledAfter +
+                ";markerConsumed=" + markerConsumed;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expert-loading-progression",
+                    "level 11 feature and free-action ability", observed,
+                    blueprintContract, "production blueprint contracts"),
+                Assertion("expert-loading-suppression",
+                    "one grit; empty Broken; no scheduled burst; marker consumed",
+                    observed, gritSuppressed == gritBefore - 1 &&
+                        suppressedCondition == FirearmCondition.Broken &&
+                        suppressedRounds == 0 &&
+                        scheduledSuppressed == scheduledBefore && markerConsumed,
+                    "exact first misfire evaluation"),
+                Assertion("expert-loading-fail-closed",
+                    "no grit: empty Wrecked and one scheduled burst", observed,
+                    gritAfter == 0 && ordinaryCondition == FirearmCondition.Wrecked &&
+                        ordinaryRounds == 0 &&
+                        scheduledAfter == scheduledSuppressed + 1,
+                    "ordinary Broken-to-Wrecked explosion pipeline"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
+                    cleaned, "item state forgotten and disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerBleedingWound()

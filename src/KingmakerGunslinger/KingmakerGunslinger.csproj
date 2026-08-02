@@ -317,6 +317,12 @@
     <Compile Include="Deeds\BleedingWoundTick.cs" />
     <Compile Include="Deeds\BleedingWoundRuntime.cs" />
     <Compile Include="Blueprints\BleedingWoundBlueprints.cs" />
+    <Compile Include="Deeds\ExpertLoadingRequest.cs" />
+    <Compile Include="Deeds\ExpertLoadingDecision.cs" />
+    <Compile Include="Deeds\ExpertLoadingService.cs" />
+    <Compile Include="Deeds\ExpertLoadingAbilityLogic.cs" />
+    <Compile Include="Deeds\ExpertLoadingRuntime.cs" />
+    <Compile Include="Blueprints\ExpertLoadingBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

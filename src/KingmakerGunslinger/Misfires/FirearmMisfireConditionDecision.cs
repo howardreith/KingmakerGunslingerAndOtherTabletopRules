@@ -104,11 +104,12 @@ namespace KingmakerGunslinger.Misfires
                     return;
 
                 case FirearmMisfireConditionTransition.AdvancedBrokenRemainsBroken:
+                case FirearmMisfireConditionTransition.ExpertLoadingBrokenRemainsBroken:
                     RequireMisfire(misfire);
                     if (before.Condition != FirearmCondition.Broken || before != after)
                     {
                         throw new ArgumentException(
-                            "AdvancedBrokenRemainsBroken requires an unchanged Broken state.");
+                            "A remains-Broken transition requires an unchanged Broken state.");
                     }
                     return;
 

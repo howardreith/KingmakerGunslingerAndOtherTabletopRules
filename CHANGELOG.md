@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.51 — Sprint 51 Expert Loading (in progress)
+
+- Adds the level-eleven free-action pre-shot Expert Loading adaptation.
+- An armed Broken early-firearm misfire spends exactly 1 grit, remains Broken,
+  and suppresses the otherwise native Broken-to-Wrecked burst.
+- Adds four focused policy cases; the complete suite is 784 tests.
+
 ## 0.0.50 — Sprint 50 Bleeding Wound
 
 - Adds the level-eleven four-choice Bleeding Wound deed with free-action

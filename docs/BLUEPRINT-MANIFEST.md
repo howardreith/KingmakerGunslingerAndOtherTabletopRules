@@ -1,10 +1,10 @@
 # Blueprint manifest and registration contract
 
-## Sprint 50 status
+## Sprint 51 status
 
-Sprint 50 extends the append-only contract to 85 stable identifiers: 84 active and one reserved.
-Bleeding Wound adds one feature, four free-action choices,
-four context-carrying armed markers, and four persistent Bleed facts.
+Sprint 51 extends the append-only contract to 88 stable identifiers: 87 active and one reserved.
+Expert Loading adds one feature, one free-action pre-shot ability, and one
+unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
 Sprint 45 adds Targeting Head's level-seven feature, full-round ability, and
 one-round mind-affecting Confusion buff. Earlier additions remain append-only:
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete eighty-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete eighty-seven-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -133,6 +133,9 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.BleedingWoundStrengthBuff` | `fe07b11676904019b1471905708764eb` | `BlueprintBuff` | Active | Recurring Strength Bleed fact |
 | `KMG.Deeds.BleedingWoundDexterityBuff` | `9252d6155b3e4c258cbc7a1e794b8a5a` | `BlueprintBuff` | Active | Recurring Dexterity Bleed fact |
 | `KMG.Deeds.BleedingWoundConstitutionBuff` | `de789d99a1a742b5a7ac3da9c666a804` | `BlueprintBuff` | Active | Recurring Constitution Bleed fact |
+| `KMG.Deeds.ExpertLoadingFeature` | `38c1d90d421b41f7aa94f06e199d2021` | `BlueprintFeature` | Active | Level-eleven Expert Loading deed grant |
+| `KMG.Deeds.ExpertLoadingAbility` | `d981c72e9df94d1989530453669ea3b5` | `BlueprintAbility` | Active | Free-action pre-shot arming ability |
+| `KMG.Deeds.ExpertLoadingArmed` | `5a21b3ff5940476f97fe5f7844fa4509` | `BlueprintBuff` | Active | Unit-owned next-firearm marker |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 
