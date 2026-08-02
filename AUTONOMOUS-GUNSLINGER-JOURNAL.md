@@ -2913,3 +2913,17 @@
 - Exact `8d2e5b6` guarded Steam mod-load PASS is
   `20260802T1412373661267Z-mod-load-smoke`; rebuilt package/DLL hashes are
   `7c416c64...54588` / `6ac5c281...caadd`. Sprint 91 is runtime-qualified.
+
+## 2026-08-02 Sprint 92 battered sale value
+
+- Re-audited installed item/vendor metadata and selected exact
+  `VendorLogic.GetItemBuyPrice(ItemEntity)`, the player-to-vendor instance sale
+  calculation. Vendor-to-player and blueprint prices remain native.
+- Added a per-item postfix that returns the authorized fixed 22 gp only for an
+  exact GUID present in the persisted battered ownership carrier. Missing or
+  ordinary identity preserves the native result.
+- Focused contract/parser checks, repository validation, all 848 tests, clean
+  Release build, and strict package validation pass. Package/DLL hashes:
+  `a07775c5...457fe` / `4f15f985...1ed04`.
+- Next: commit/mod-load, then update the Gunsmith/battered matrix row and audit
+  the next mission gap.
