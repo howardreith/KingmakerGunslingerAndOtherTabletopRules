@@ -17,7 +17,7 @@ $checks = [ordered]@{
   'handler-lifetime' = $method.Contains('EventBus.Subscribe(handler)') -and $method.Contains('EventBus.Unsubscribe(handler)')
   'native-commit' = $runner.Contains('commit.Invoke(Controller, null)')
   'facts' = $method.Contains('replacementFighter == 0 && replacementGunslinger == 1') -and $method.Contains('facts')
-  'guaranteed-cleanup' = $method.Contains('replacementEntity.Dispose()') -and $method.Contains('SameReferences(crossBefore')
+  'guaranteed-cleanup' = $method.Contains('!replacementEntity.Destroyed') -and $method.Contains('!source.Destroyed') -and $method.Contains('SameReferences(crossBefore')
   'no-save' = -not $method.Contains('SaveGame')
 }
 $failed=@($checks.GetEnumerator() | Where-Object {-not $_.Value} | ForEach-Object Key)

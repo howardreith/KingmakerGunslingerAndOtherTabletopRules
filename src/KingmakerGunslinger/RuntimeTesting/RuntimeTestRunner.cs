@@ -5140,9 +5140,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         player.Inventory.Remove(startingItems[index], excess);
                 }
                 if (replacementEntity != null &&
-                    !ReferenceEquals(replacementEntity, source))
+                    !ReferenceEquals(replacementEntity, source) &&
+                    !replacementEntity.Destroyed)
                     replacementEntity.Dispose();
-                if (source != null) source.Dispose();
+                if (source != null && !source.Destroyed) source.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     SameReferences(remoteBefore, SnapshotReferences(remote)) &&

@@ -3220,3 +3220,12 @@
   and strict package pass. Package/DLL SHA-256 are
   `149f3ff2833e40e3a7adfb79064070b22b90e7a25ad98367ec264199acf98850` /
   `d0a8432c067ea311b8f15c5537fe97a8f3f0f0898035dd541adeca4b28f0b8f0`.
+- Exact `b3eeb19` mod load passed as `20260802T1710135019905Z`. First broad
+  run `20260802T1711351947780Z` reached the native callback but cleanup invoked
+  non-idempotent `Dispose` on an entity already destroyed by replacement. The
+  repair checks exact `Destroyed` state before each request-local disposal;
+  external reference restoration remains mandatory.
+  Repaired focused checks, repository validation, 849 tests, Release build, and
+  strict package pass; package/DLL hashes are
+  `47361c30533da90f3b3fc069f1c5295c2bb58ca2b8bdd8aea52bca84ec6b27c2` /
+  `7b79e4d096f7915157056b9dcb0bc4bad5fef1024be9a08a56fa0d2d77a24a24`.

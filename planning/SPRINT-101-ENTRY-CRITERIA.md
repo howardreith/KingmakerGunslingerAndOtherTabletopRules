@@ -15,3 +15,6 @@ Fighter-one source, and commits the emitted replacement to Gunslinger one. It
 must unsubscribe under `finally`, dispose both request-local entities, roll back
 starting grants, and restore party, global-unit, remote-companion, cross-scene,
 inventory, and money snapshots exactly.
+Native replacement may destroy its source during the success callback; cleanup
+must honor authoritative `EntityDataBase.Destroyed` and never dispose an entity
+twice.
