@@ -50,6 +50,7 @@ using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Classes;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -8251,6 +8252,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             observed += ";failedMarked=" + failedMarked + ";passedMarked=" +
                 passedMarked;
             observed += ";hp=" + failedHp + "," + passedHp;
+            MethodInfo nativeKill = typeof(ContextActionKillTarget).GetMethod(
+                "RunAction", BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            observed += ";killCalls=" + DescribeCalledMethods(nativeKill);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("deaths-shot-progression", "level 19 feature", observed,
