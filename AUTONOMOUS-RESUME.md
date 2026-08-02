@@ -16,6 +16,9 @@ definition of done or a listed genuine human-input hard stop.
   distance. Continue Sprint 63 production fallback visuals, animation, sound,
   and projectile qualification while the independent authority blockers remain
   recorded.
+
+- Sprint 63 entry criteria are recorded. Next command is source implementation
+  and qualification of the non-initiating production fallback observer.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

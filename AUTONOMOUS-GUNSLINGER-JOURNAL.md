@@ -2380,3 +2380,15 @@
 - Scatter remains fail-closed and temporarily `BLOCKED` pending that one
   player-facing choice. Independent next action: production fallback visuals,
   animation, sound, and projectile qualification.
+
+## 2026-08-02 Sprint 63 fallback presentation entry audit
+
+- ADR-0007 authorizes crossbow-compatible core-mod presentation and makes
+  custom models, sounds, icons, projectiles, and animations independently
+  replaceable. Installed metadata localizes the exact contract in
+  `WeaponVisualParameters`, item equipment/model fields, item icon, and
+  inventory sound fields.
+- `planning/SPRINT-63-ENTRY-CRITERIA.md` requires exact Light Crossbow
+  inheritance for Pistol/Revolver and Heavy Crossbow inheritance for
+  Musket/Blunderbuss/Rifle, with no mechanical or packaged-asset change.
+- Next action: implement the save-free exact fallback observer.
