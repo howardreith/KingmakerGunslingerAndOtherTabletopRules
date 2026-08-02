@@ -1575,6 +1575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             VendorLogic vendor = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnit = null;
             bool vendorTradingStarted = false;
+            string vendorPhase = "not-started";
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1685,14 +1686,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintUnit capitalVendor = FindVendorUnit(
                     CapitalVendorBlueprints.TableGuid,
                     "c8d4913edee594749b706de35924617e");
+                vendorPhase = "construct-receiver";
                 vendorUnit = new Kingmaker.UI.LevelUp.ChargenUnit(capitalVendor).Unit;
                 if (vendorUnit == null)
                     throw new InvalidOperationException(
                         "The detached capital-vendor receiver is unavailable.");
                 vendor = new VendorLogic();
+                vendorPhase = "begin-trading";
                 vendor.BeginTrading(vendorUnit);
                 vendorTradingStarted = true;
+                vendorPhase = "add-for-buy";
                 ItemEntity staged = vendor.AddForBuy(batteredItem, 1);
+                vendorPhase = "remove-from-buy";
                 ItemEntity returned = vendor.RemoveFromBuy(staged, 1);
                 Kingmaker.EntitySystem.Entities.UnitEntityData vendorOwner;
                 vendorRoundTrip = ReferenceEquals(staged, batteredItem) &&
@@ -1700,6 +1705,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BatteredFirearmOriginRuntime.TryGetOwner(
                         batteredItem, out vendorOwner) &&
                     ReferenceEquals(vendorOwner, mainDescriptor.Unit);
+                vendorPhase = "sale-prices";
                 batteredSaleValue = vendor.GetItemBuyPrice(batteredItem);
                 var ordinary = new ItemEntityWeapon(
                     (BlueprintItemWeapon)expected[0]);
@@ -1708,7 +1714,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                diagnostics.Add(exception.GetType().Name + ": " + exception.Message);
+                diagnostics.Add("vendorPhase=" + vendorPhase + ";" +
+                    exception.GetType().Name + ": " + exception.Message);
             }
             finally
             {
