@@ -406,6 +406,13 @@ maneuver-immunity suppression, exact grit/chambers, and cleanup. Commit this
 curated evidence and inspect exact installed support for Targeting Wings next;
 do not stop at the Sprint 47 boundary.
 
+Targeting Wings is now disposition-complete as
+`OMITTED-NO-MEANINGFUL-INTERACTION`. Exact installed 2.1.7b metadata exposes
+only a visual Wing animation selector and a Wings activatable-ability grouping,
+not a general flight state or flight-loss rule. Commit the curated disposition
+and proceed directly to Targeting Arms; do not substitute prone or infer wings
+from creature names.
+
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
 and independent feature runs

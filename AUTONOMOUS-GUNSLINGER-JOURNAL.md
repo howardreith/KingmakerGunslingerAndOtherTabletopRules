@@ -1866,3 +1866,16 @@
   positive damage without Trip or prone, and cleanup/external isolation passed.
 - Targeting Legs is runtime-qualified. Continue immediately with the remaining
   Targeting dispositions, beginning with exact Wings interaction support.
+
+## 2026-08-01 Sprint 48 Targeting Wings disposition
+
+- Read-only exact-word IL metadata inspection of installed Kingmaker 2.1.7b
+  found only the visual `UnitAnimationSpecialAttackType.Wing` value and the
+  `ActivatableAbilityGroup.Wings` grouping after controller-library names were
+  excluded.
+- No general flying, airborne, grounded, altitude, falling, or flight-loss rule
+  contract exists. Targeting Wings is therefore confirmed
+  `OMITTED-NO-MEANINGFUL-INTERACTION`; anatomy/name guesses and prone substitution
+  remain forbidden.
+- Continue immediately to Targeting Arms and resolve its missing item-drop
+  interaction without inventing an autonomous balance replacement.
