@@ -2302,3 +2302,29 @@
   `ad0beec416f6a4f79b06203a7a664c566e04a3d34bb2e6814bb535a6bc41ec90`.
 - Sprint 59 is complete as a checkpoint. Continue immediately to the next
   incomplete independent coverage item.
+
+## 2026-08-02 Sprint 60 player-facing presentation qualification
+
+- Entry criteria and implementation added stable localized presentation,
+  recursive progression/selection/AddFacts traversal, hidden-fact exclusion,
+  icon preservation/fallback, and native progression UI groups.
+- Initial guarded launches failed closed after 125 registrations because the
+  installed Fighter icon was null. Root-cause diagnostic commit `c9b4790`
+  exposed the exact exception; `42041ef` then proved the Fighter progression
+  icon was also null. ADR-0007 inspection changed the architecture to the
+  inherited production Early Pistol/Light Crossbow icon on `adcb030`.
+- Exact source `adcb0300b67de86c2a4b7ea80cf573778fb43e36` passed the complete
+  validator chain, 827/827 tests, 37 request checks, 78 preflight checks, clean
+  exact-reference Release build, strict packaging, and mod load run
+  `20260802T0838152303512Z-mod-load-smoke`.
+- Independent fresh-process PASS runs
+  `20260802T0839341612816Z-observe-gunslinger-presentation` and
+  `20260802T0840534291165Z-observe-gunslinger-presentation` both observed 20
+  levels, 75 visible project facts, one hidden fact, zero incomplete facts,
+  six UI groups with 21 grouped features, and readable class/progression
+  presentation. No save was loaded or written.
+- Exact package/DLL SHA-256 are
+  `94e3c83c32600abf3f12a18da55f693a91b7174866735add5aff3cefb7a52d0d` /
+  `9989c449b4859c24a59990bb9e46732e38b009e25e9332461f1439e08a827a53`.
+- Sprint 60 is complete as a checkpoint. Continue immediately with Sprint 61
+  later equipment acquisition and economy.

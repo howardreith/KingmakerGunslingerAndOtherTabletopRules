@@ -121,6 +121,12 @@ No genuine human-input hard stop is currently established.
   fresh-process PASS runs prove the production selection shape, selected native
   deed cost reduction, zero-grit edge rules, variable costs, fixed Slinger's
   Luck exclusion, isolation, and cleanup. It is not an active blocker.
+- Sprint 60 presentation is resolved and runtime-qualified on `adcb030`.
+  Installed Fighter class/progression icons were both null; ADR-0007's
+  crossbow-compatible production Early Pistol icon is the qualified fallback.
+  Two fresh-process observations proved 75 visible facts, one excluded hidden
+  fact, zero incomplete facts, and six native UI groups. This is no longer an
+  active blocker; later equipment acquisition is the next engineering gate.
 - The authoritative firearm table labels blunderbuss range `special`; the
   immutable definition and marker vocabulary now represent that fact without a
   numeric value and ordinary-AC selection fails closed. Concrete scatter range

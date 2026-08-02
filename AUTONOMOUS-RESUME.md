@@ -8,17 +8,27 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `f5dc6bb` (Sprint 58 Stunning Shot runtime qualification).
+- Audited source HEAD: `adcb030` (Sprint 60 presentation runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 58 Stunning Shot is runtime-qualified; begin the
-  next independent level-20 True Grit checkpoint while Death's Shot remains a
-  separately recorded human-authority blocker.
-- Version: `0.0.58`.
+- Current checkpoint: Sprint 60 presentation is runtime-qualified; begin Sprint
+  61 later equipment acquisition/economy while the independent Death's Shot and
+  Targeting Arms authority blockers remain recorded.
+- Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Presentation exact source `adcb030` passed mod load at
+  `20260802T0838152303512Z-mod-load-smoke`. Independent PASS runs
+  `20260802T0839341612816Z-observe-gunslinger-presentation` and
+  `20260802T0840534291165Z-observe-gunslinger-presentation` both observed 20
+  levels, 75 visible facts, one excluded hidden fact, zero incomplete facts,
+  six UI groups/21 grouped features, and readable class/progression metadata.
+  Package/DLL SHA-256 are
+  `94e3c83c32600abf3f12a18da55f693a91b7174866735add5aff3cefb7a52d0d` /
+  `9989c449b4859c24a59990bb9e46732e38b009e25e9332461f1439e08a827a53`.
 
 - Stunning Shot exact commit `f5dc6bb` passed mod load at
   `20260802T0726286857532Z-mod-load-smoke`. Independent PASS runs

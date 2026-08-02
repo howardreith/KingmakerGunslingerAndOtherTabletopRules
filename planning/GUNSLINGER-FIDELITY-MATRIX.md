@@ -6,6 +6,13 @@ deeds and archetype replacements are excluded from the base-class matrix.
 Classifications are provisional until the implementation checkpoint records
 and qualifies its exact Kingmaker mapping.
 
+Sprint 60 runtime-qualified the cross-cutting presentation graph on `adcb030`:
+all 75 visible project-owned facts reachable from the progression have stable
+localized names, descriptions, and icons; one hidden implementation fact stays
+excluded; and the unchanged 20-level progression is organized into six native
+UI groups. ADR-0007's inherited Early Pistol/Light Crossbow icon is the
+fail-closed fallback because installed Fighter class/progression icons are null.
+
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
 | 1 | Weapon/armor/firearm proficiencies | EXACT | Native level-one preview contains exactly one production aggregate plus exact simple, martial, light-armor, and firearm proficiency facts; source isolation and cleanup reproduced twice | Preserve through creation commit, level-up, multiclass, and respec |
