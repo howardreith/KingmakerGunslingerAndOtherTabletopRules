@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Stats;
@@ -8,8 +7,6 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
-using Kingmaker.UnitLogic.Mechanics.Actions;
-using Kingmaker.Utility;
 using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Firing;
 
@@ -50,16 +47,7 @@ namespace KingmakerGunslinger.Deeds
                 SavingThrowType.Fortitude, decision.DifficultyClass);
             Rulebook.Trigger(saving);
             if (!saving.IsPassed)
-            {
-                var kill = new ContextActionKillTarget();
-                var mechanics = new MechanicsContext(Owner.Unit, Owner,
-                    DeathEffect, null, new TargetWrapper(rule.Target));
-                typeof(ContextAction).GetProperty("Context",
-                    BindingFlags.Instance | BindingFlags.Public |
-                    BindingFlags.NonPublic).SetValue(kill, mechanics, null);
-                using (mechanics.GetDataScope(new TargetWrapper(rule.Target)))
-                    kill.RunAction();
-            }
+                rule.Target.Descriptor.State.MarkedForDeath = true;
         }
     }
 }
