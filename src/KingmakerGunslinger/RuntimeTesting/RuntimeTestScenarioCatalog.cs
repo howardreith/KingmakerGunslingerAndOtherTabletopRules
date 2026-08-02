@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string ObserveVendorTableContracts =
+            "observe-vendor-table-contracts";
         internal const string ObserveCharacterCreationContracts =
             "observe-character-creation-contracts";
         internal const string DisposableDescriptorConstruction =
@@ -116,6 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModLoadSmoke,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                ObserveVendorTableContracts,
                 ObserveCharacterCreationContracts,
                 DisposableDescriptorConstruction,
                 DisposableGunslingerSelection,

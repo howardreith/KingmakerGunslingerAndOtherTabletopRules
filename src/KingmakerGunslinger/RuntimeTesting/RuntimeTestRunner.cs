@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
 using Newtonsoft.Json;
@@ -307,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -335,6 +337,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveGunslingerPresentation)
                 {
                     Complete(RunGunslingerPresentationObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
+                {
+                    Complete(RunVendorTableContractObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2176,6 +2184,97 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunVendorTableContractObservation()
+        {
+            const BindingFlags Flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", Flags);
+            FieldInfo lootField = typeof(AddVendorItems).GetField("m_Loot", Flags);
+            BlueprintSharedVendorTable[] tables = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintSharedVendorTable>()
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            var tableSet = new HashSet<BlueprintSharedVendorTable>(tables);
+            var records = new List<string>();
+            int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
+            foreach (BlueprintUnit unit in BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintUnit>().OrderBy(value => value.AssetGuid,
+                    StringComparer.Ordinal))
+            {
+                BlueprintComponent[] components = unit.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>();
+                AddSharedVendor[] shared = components.OfType<AddSharedVendor>().ToArray();
+                if (shared.Length == 0) continue;
+                var linkedTables = new List<string>();
+                foreach (AddSharedVendor component in shared)
+                {
+                    var table = tableField == null ? null :
+                        tableField.GetValue(component) as BlueprintSharedVendorTable;
+                    associations++;
+                    if (table == null || !tableSet.Contains(table))
+                        invalidAssociations++;
+                    linkedTables.Add(table == null ? "<null>" :
+                        table.name + ":" + table.AssetGuid + ":" +
+                        DescribeBlueprintComponents(table));
+                }
+                var linkedLoot = new List<string>();
+                foreach (AddVendorItems component in components.OfType<AddVendorItems>())
+                {
+                    var loot = lootField == null ? null :
+                        lootField.GetValue(component) as BlueprintUnitLoot;
+                    supplementalLoot++;
+                    linkedLoot.Add(loot == null ? "<null>" :
+                        loot.name + ":" + loot.AssetGuid + ":" +
+                        DescribeBlueprintComponents(loot));
+                }
+                records.Add("unit=" + unit.name + ";display=" +
+                    unit.CharacterName + ";guid=" + unit.AssetGuid + ";tables=" +
+                    string.Join(",", linkedTables.ToArray()) + ";loot=" +
+                    string.Join(",", linkedLoot.ToArray()));
+            }
+            records.Sort(StringComparer.Ordinal);
+            string observed = "tables=" + tables.Length + ";associations=" +
+                associations + ";invalid=" + invalidAssociations +
+                ";supplementalLoot=" + supplementalLoot + ";records=" +
+                string.Join(" | ", records.ToArray());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("vendor-table-catalog",
+                    "nonempty stable shared-vendor table catalog", observed,
+                    tableField != null && lootField != null && tables.Length > 0 &&
+                        tables.All(value => value != null &&
+                            !string.IsNullOrWhiteSpace(value.AssetGuid) &&
+                            !string.IsNullOrWhiteSpace(value.name)),
+                    "BlueprintSharedVendorTable catalog and exact component fields"),
+                Assertion("vendor-unit-associations",
+                    "every observed vendor unit references an exact catalog table",
+                    observed, associations > 0 && records.Count > 0 &&
+                        invalidAssociations == 0,
+                    "BlueprintUnit ComponentsArray AddSharedVendor graph"),
+                Assertion("vendor-observation-only",
+                    "no vendor, table, loot, inventory, or save mutation",
+                    "read-only blueprint enumeration", true,
+                    "scenario contains no assignment, AddLoot, GetTable, shop, or save call"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static string DescribeBlueprintComponents(
+            BlueprintScriptableObject blueprint)
+        {
+            BlueprintComponent[] components = blueprint == null ? null :
+                blueprint.ComponentsArray;
+            return components == null ? "none" : string.Join(",",
+                components.Where(value => value != null)
+                    .Select(value => value.GetType().FullName)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray());
         }
 
         private RuntimeTestResult RunClassBlueprintContractObservation()

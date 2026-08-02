@@ -26,6 +26,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
+    'observe-vendor-table-contracts',
     'observe-character-creation-contracts',
     'disposable-descriptor-construction',
     'disposable-gunslinger-selection',
@@ -91,6 +92,11 @@ Assert-True (-not $presentation.RequiresManualInteraction) `
     'presentation-is-autonomous'
 Assert-True (-not $presentation.RequiresSaveName) `
     'presentation-is-save-free'
+$vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
+Assert-True (-not $vendorContracts.RequiresManualInteraction) `
+    'vendor-contracts-is-autonomous'
+Assert-True (-not $vendorContracts.RequiresSaveName) `
+    'vendor-contracts-is-save-free'
 
 $entry = Get-KmgRuntimeScenarioMetadata 'observe-working-save-entry-action'
 Assert-True $entry.RequiresManualInteraction 'entry-requires-manual-interaction'
