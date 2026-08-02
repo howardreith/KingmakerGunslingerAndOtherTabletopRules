@@ -2597,3 +2597,21 @@
   `bd45166466a4146463892081527486648251f1af9d539f2f90a901094c7c1928`.
 - Multiclass commit is qualified. Continue to the next safe class-integration
   gap; creation commit and broad respec replacement remain separate.
+
+## 2026-08-02 Sprint 74 detached respec replacement commit
+
+- Source `163320d` committed a detached `Respec` replacement candidate without
+  invoking the globally mutating `Player.RespecCompanion` callback.
+- First run `20260802T1136179100890Z` passed source/replacement/fact assertions
+  but exposed native first-level starting-inventory leakage in isolation.
+- Repair `2eb0090` adds exact reference/quantity rollback plus starting-gold and
+  shared-money stability. Seven focused checks, 84 preflight checks, repository
+  validation, 831/831 tests, clean Release build, and packaging pass.
+- Exact mod load `20260802T1140330341524Z` and corrected final run
+  `20260802T1141509870468Z` passed source Fighter `1/0`, replacement `0/1`,
+  callback, proficiency/grit facts, inventory/gold rollback, and isolation.
+- Exact package/DLL SHA-256 are
+  `412c258fc4af0bb86041a3b525a074f6abdedf0842b587cf8f4acde3340fec59` /
+  `e3c7f7eccc23b82c8e23c54e41a481152fcd7aa7f1327d75451345216845f281`.
+- Do not run a third respec replacement attempt. Continue to an independent
+  save-free gap; broad player replacement remains separate.
