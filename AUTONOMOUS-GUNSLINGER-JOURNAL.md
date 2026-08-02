@@ -1703,3 +1703,11 @@
   hostile buff was marked `IsClassFeature`, while every other true use is a
   permanent feature. The narrow correction classifies the timed debuff as a
   non-class-feature buff and validates that invariant.
+- Exact commit `1a818d0` passed mod load, but feature run
+  `20260802T0116128177162Z-97dc5c3ac58f43618bbfc3d01feafaf7` falsified buff
+  classification as the null-return cause. Retained exact-runtime IL then
+  identified the decisive `RuleApplyBuff` branch: a `RemoveOnResurrect` buff
+  is rejected while the target has `UnitState.Immortality`. The scenario's
+  target was cloned from `DefaultPlayerCharacter` and therefore immortal,
+  unlike the enemy contract it represents. The disposable fixture now clears
+  that flag before delivery; production buff behavior is not weakened.

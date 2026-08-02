@@ -3901,6 +3901,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.ReleaseAll();
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
                 attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
