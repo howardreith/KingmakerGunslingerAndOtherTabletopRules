@@ -20,6 +20,9 @@ $checks = [ordered]@{
         $method.Contains('replacementFighter == 0 && replacementGunslinger == 1')
     'facts-and-isolation' = $method.Contains('proficiencies && grit') -and
         $method.Contains('SameReferences(inventoryBefore')
+    'starting-inventory-rollback' = $method.Contains('addedInventory.AddRange') -and
+        $method.Contains('runtimePlayer.Inventory.Remove(startingItems[index], excess)') -and
+        $method.Contains('gunslinger.StartingGold = originalStartingGold')
     'broad-callback-excluded' = -not $method.Contains('RespecCompanion(') -and
         -not $method.Contains('PrepareRespec(')
 }

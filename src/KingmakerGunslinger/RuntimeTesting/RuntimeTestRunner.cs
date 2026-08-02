@@ -4219,6 +4219,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             int replacementFighter = -1, replacementGunslinger = -1;
             bool selected = false, callback = false, proficiencies = false,
                 grit = false, cleaned = false;
+            Player runtimePlayer = player as Player;
+            BlueprintItem[] startingItems = null;
+            int[] startingCounts = null;
+            int originalStartingGold = 0;
+            long moneyBefore = 0;
+            var addedInventory = new List<object>();
             try
             {
                 BlueprintUnit blueprint = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -4230,6 +4236,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (sourceDescriptor == null || replacement == null)
                     throw new InvalidOperationException(
                         "Detached respec source or replacement is unavailable.");
+                if (runtimePlayer == null || runtimePlayer.Inventory == null)
+                    throw new InvalidOperationException(
+                        "Exact shared inventory is unavailable for rollback.");
+                startingItems = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
+                startingCounts = startingItems.Select(item =>
+                    runtimePlayer.Inventory.Count(item)).ToArray();
+                originalStartingGold = gunslinger.StartingGold;
+                moneyBefore = runtimePlayer.Money;
+                gunslinger.StartingGold = 0;
                 Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
                 MethodInfo start = type.GetMethods(BindingFlags.Public |
                     BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
@@ -4278,6 +4293,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     preview.Progression.GetClassLevel(gunslinger);
                 commit.Invoke(respecController, null);
                 respecController = null;
+                addedInventory.AddRange(EnumerateRuntimeInventory(runtimePlayer.Inventory)
+                    .Where(item => !inventoryBefore.Any(existing =>
+                        ReferenceEquals(existing, item))));
                 sourceFighter = sourceDescriptor.Progression.GetClassLevel(fighter);
                 sourceGunslinger = sourceDescriptor.Progression.GetClassLevel(gunslinger);
                 replacementFighter = replacement.Progression.GetClassLevel(fighter);
@@ -4293,6 +4311,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (respecController != null && cancel != null)
                     cancel.Invoke(respecController, null);
                 if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                gunslinger.StartingGold = originalStartingGold;
+                if (runtimePlayer != null && runtimePlayer.Inventory != null)
+                {
+                    foreach (object item in addedInventory)
+                    {
+                        object ignored;
+                        string method;
+                        ReflectionAccess.TryInvokeAny(runtimePlayer.Inventory,
+                            new[] { "Remove", "RemoveItem" },
+                            new[] { new object[] { item, 1, false },
+                                new object[] { item, 1 }, new object[] { item } },
+                            out ignored, out method);
+                    }
+                    if (startingItems != null && startingCounts != null)
+                        for (int index = 0; index < startingItems.Length; index++)
+                        {
+                            int excess = runtimePlayer.Inventory.Count(startingItems[index]) -
+                                startingCounts[index];
+                            if (excess > 0)
+                                runtimePlayer.Inventory.Remove(startingItems[index], excess);
+                        }
+                }
                 if (replacementEntity != null) replacementEntity.Dispose();
                 if (sourceEntity != null) sourceEntity.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
@@ -4300,6 +4340,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(remoteBefore, SnapshotReferences(remote)) &&
                     SameReferences(crossBefore, SnapshotReferences(cross)) &&
                     SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
+                    (runtimePlayer == null || runtimePlayer.Money == moneyBefore) &&
                     (sourceEntity == null || !ContainsReference(cross, sourceEntity)) &&
                     (replacementEntity == null || !ContainsReference(cross,
                         replacementEntity));
