@@ -60,6 +60,11 @@ definition of done or a listed genuine human-input hard stop.
   `20260802T1558563329150Z` failed closed because the native cone predicate is
   an instance method. The repair now invokes it on an inert exact component.
   Source-qualify and commit, then use only one materially different attempt.
+- Repaired exact `ac5c520` mod load passed (`20260802T1602457684816Z`), but the
+  final allowed scatter run `20260802T1604090773661Z` proved detached fixtures
+  are absent from the native live-area query. Stop under the two-attempt rule.
+  Production remains locked. `HUMAN-INPUT-REQUIRED.md` requests one renewed,
+  save-free attempt using exact reversible live-area fixture registration.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

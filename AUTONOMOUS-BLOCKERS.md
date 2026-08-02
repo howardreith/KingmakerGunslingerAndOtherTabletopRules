@@ -217,3 +217,12 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
 - Resolution: the user directed the project to follow PnP, authorizing the
   15-foot pellet cone (and distinct 10-foot bullet range). Sprint 94 encodes
   that authority. Scatter is now an active engineering gate, not a blocker.
+- Current hard stop: the guarded Scatter Shot runtime gate exhausted its two
+  materially different attempts. Exact `07407d4` failed before mutation because
+  the installed native cone predicate is an instance method. Repaired exact
+  `ac5c520` passed mod load `20260802T1602457684816Z` but scenario
+  `20260802T1604090773661Z` failed before mutation because detached
+  `ChargenUnit` fixtures are absent from `GameHelper.GetTargetsAround`.
+  Production remains restricted and vendor-excluded. A third runtime attempt,
+  using a reversible live-area registration fixture or a human-positioned
+  supervised fixture, requires renewed human authority.

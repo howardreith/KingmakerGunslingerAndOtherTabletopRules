@@ -3112,3 +3112,9 @@
   previously documented static method. Repair binds an inert component
   instance and invokes the exact method on it. Qualify/commit before the one
   remaining materially different runtime attempt.
+- Repaired exact `ac5c520` passed mod load `20260802T1602457684816Z`. Its final
+  allowed run `20260802T1604090773661Z` failed closed before mutation because
+  detached `ChargenUnit` targets are not returned by the live-area native
+  query. The two-attempt rule is now a hard stop. Production remains locked;
+  see `HUMAN-INPUT-REQUIRED.md` for the recommended reversible registration
+  fixture and exact renewed authority requested.
