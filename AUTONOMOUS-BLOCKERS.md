@@ -200,3 +200,9 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   passed mod load and two fresh guarded runs
   `20260802T1441506873456Z` / `20260802T1445126858809Z`. Native grant, exact
   origin, 22/1000 gp isolation, rollback, and no-save behavior all passed.
+- Post-Sprint-93 re-audit found renewed runtime permission is the narrowest
+  remaining gate. The repaired save-free Startling Shot and Targeting Head
+  scenarios reached their prior attempt limits before their current
+  evidence-supported fixes. Exact commands and the single authorization
+  question are recorded in `HUMAN-INPUT-REQUIRED.md`. No attempt is permitted
+  until the user renews authority.

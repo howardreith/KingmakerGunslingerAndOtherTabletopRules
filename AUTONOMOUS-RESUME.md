@@ -16,6 +16,11 @@ definition of done or a listed genuine human-input hard stop.
 - Gunsmith/starting equipment is runtime-qualified. Commit this curated
   evidence, re-audit mandatory coverage, and continue the highest-priority
   independently actionable gap; do not stop at Sprint 93.
+- Sprint 93 evidence is committed as `95d6fb3`. The full remaining-row audit
+  found no routine source slice. The next narrow dependency is renewed runtime
+  permission for the existing save-free `disposable-gunslinger-startling-shot`
+  and `disposable-gunslinger-targeting-head` commands. See
+  `HUMAN-INPUT-REQUIRED.md`; do not run either until authorized.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

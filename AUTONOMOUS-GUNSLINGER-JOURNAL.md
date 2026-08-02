@@ -2987,3 +2987,17 @@
   values `22/1000`, exact rollback, no save-writing API, and version `0.0.60`.
 - The Gunsmith/starting-equipment row is runtime-qualified. Continue the
   mission re-audit; this checkpoint is not a stopping boundary.
+
+## 2026-08-02 post-Sprint-93 mission re-audit
+
+- Curated Sprint 93 evidence committed as `95d6fb3`; the checkpoint closed
+  cleanly and the mission continued.
+- Re-audited every incomplete coverage and fidelity row. Broad normal creation
+  Commit/replacement callbacks still lack complete rollback authority; scatter,
+  Targeting Arms, and Death's Shot require player-facing design decisions;
+  lifecycle sale/restart remains a separate save-backed boundary.
+- The highest-priority narrow continuation is renewed permission for the
+  already-guarded, save-free repaired Startling Shot and Targeting Head
+  scenarios. Created `HUMAN-INPUT-REQUIRED.md` with one precise authorization
+  question and exact commands. No speculative source change is justified while
+  this boundary remains closed.
