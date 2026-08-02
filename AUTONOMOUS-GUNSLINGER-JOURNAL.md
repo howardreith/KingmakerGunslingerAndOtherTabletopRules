@@ -2762,3 +2762,23 @@
   runs `20260802T1247085787494Z` and `20260802T1248346969150Z` passed.
   Native pipeline preservation is runtime-qualified; continue to the remaining
   creation/respec, Gunsmith, deed-design, scatter, and lifecycle gates.
+
+## 2026-08-02 Sprint 83 Gunsmith/battered contract audit
+
+- Read the authorized local base-class and Gunsmithing feat rules. The starting
+  firearm is origin-bound, has nonowner Broken/unusable behavior, is scrap-only
+  at 4d10 gp, and can be upgraded by its Gunslinger; Gunsmithing also covers
+  crafting and rest-period restoration.
+- Current architecture has exact starting-item grants, persistent item-owned
+  condition, and atomic kit-based Repair/Overhaul, but no accepted originating
+  owner, per-item sale value, crafting, or rest-work contract.
+- Persistent owner binding, a class-bound Battered Pistol, and a
+  maintenance-only adaptation are all feasible but materially differ in
+  transfer, equipment, economy, save schema, and feat value. No local decision
+  selects one, so autonomous implementation would violate the design-authority
+  boundary.
+- Recorded the full audit in
+  `planning/SPRINT-83-GUNSMITH-BATTERED-CONTRACT-AUDIT.md` and the smallest
+  precise decision in `HUMAN-INPUT-REQUIRED.md`. Persistent origin binding is
+  recommended for fidelity. Broad first-level creation Commit remains
+  prohibited independently.

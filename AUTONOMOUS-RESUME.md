@@ -515,6 +515,13 @@ isolation, and observed no save write.
 
 ## Next action
 
+Sprint 83 is paused at a genuine player-facing design gate documented in
+`planning/SPRINT-83-GUNSMITH-BATTERED-CONTRACT-AUDIT.md` and
+`HUMAN-INPUT-REQUIRED.md`. Await authorization for persistent owner-bound,
+class-bound, or maintenance-only Gunsmith/battered behavior. The recommended
+choice is persistent originating-owner behavior. After authority is supplied,
+implement it without invoking broad first-level creation Commit.
+
 Sprint 82 native weapon-pipeline preservation is runtime-qualified on exact
 commit `a3243c9`. Package/DLL hashes are
 `7e873edd2bd0f54da09de789e7f15dd0200bb2e095484578804df0b2855b2388` /

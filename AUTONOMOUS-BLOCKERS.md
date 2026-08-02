@@ -1,6 +1,8 @@
 # Autonomous Gunslinger blockers
 
-No genuine human-input hard stop is currently established.
+A genuine human-input hard stop is established for Sprint 83 below. Other
+bounded gates remain independently documented and must not be conflated with
+that design-authority decision.
 
 ## 2026-08-02 save-backed feature-scenario permission boundary
 
@@ -91,7 +93,14 @@ No genuine human-input hard stop is currently established.
   investigation is resolved; broad replacement commit remains an engineering
   boundary, not a human-input hard stop.
 
-## Active gates (not hard stops)
+## Active gates
+
+- Sprint 83 established a genuine human-input gate for Gunsmith and the
+  battered starting firearm. Local authority defines the tabletop behavior but
+  no project decision selects persistent origin binding, a class-bound
+  approximation, or a maintenance-only omission. These outcomes materially
+  change transfer, equipment, economy, save schema, and feat value. The exact
+  question and recommended option are in `HUMAN-INPUT-REQUIRED.md`.
 
 - Sprint 80 comprehensive acceptance exposed one probabilistic observer
   assumption: a -100 Will modifier does not defeat Kingmaker's natural-20 save
