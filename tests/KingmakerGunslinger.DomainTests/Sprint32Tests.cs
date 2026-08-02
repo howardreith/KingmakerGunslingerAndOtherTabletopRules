@@ -22,6 +22,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(4.572f, decision.DistanceMeters, "Native meter conversion changed.");
         }
 
+        private static void ScatterDistancePnPBlunderbussAuthority()
+        {
+            ScatterConeDistanceDecision decision =
+                new ScatterConeDistanceService().ResolveBlunderbuss(
+                    FirearmDefinitions.CreateEarlyBlunderbuss());
+            Assertions.Equal(15, ScatterConeDistanceService.BlunderbussConeDistanceFeet,
+                "The authorized PnP Blunderbuss cone distance changed.");
+            Assertions.Equal(15, decision.DistanceFeet,
+                "The PnP Blunderbuss cone did not resolve to 15 feet.");
+            Assertions.Equal(4.572f, decision.DistanceMeters,
+                "The PnP Blunderbuss cone native conversion changed.");
+            Assertions.Throws<ArgumentException>(() =>
+                new ScatterConeDistanceService().ResolveBlunderbuss(
+                    FirearmDefinitions.CreateEarlyMusket()),
+                "PnP Blunderbuss cone authority leaked to another firearm.");
+        }
+
         private static void ScatterDistanceNonScatterRejected()
         {
             Assertions.Throws<ArgumentException>(() => new ScatterConeDistanceService().Resolve(

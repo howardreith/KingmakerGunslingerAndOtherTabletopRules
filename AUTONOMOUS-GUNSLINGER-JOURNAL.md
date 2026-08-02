@@ -3027,3 +3027,14 @@
 - Created `HUMAN-INPUT-REQUIRED.md` with the one player-facing balance decision.
   Recommended 15 feet as the conservative adaptation; no scatter source change
   is permitted until the project supplies that authority.
+
+## 2026-08-02 Sprint 94 PnP scatter authority
+
+- User directed the project to use the PnP rule. Recorded the Blunderbuss
+  pellet mode as a 15-foot cone and its distinct bullet mode as a 10-foot
+  range increment; the immutable definition remains `special`.
+- Added an exact-Blunderbuss resolver producing 4.572 native meters and a
+  focused isolation test. Production remains unavailable until the native
+  delivery checkpoint passes.
+- Removed the resolved human-input file. Next: source-qualify and commit this
+  authority slice, then implement the native scatter adapter.

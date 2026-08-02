@@ -6,7 +6,18 @@ namespace KingmakerGunslinger.Scatter
     /// <summary>Fail-closed boundary for the native cone API's caller-supplied distance.</summary>
     internal sealed class ScatterConeDistanceService
     {
+        internal const int BlunderbussConeDistanceFeet = 15;
         private const float MetersPerFoot = 0.3048f;
+
+        internal ScatterConeDistanceDecision ResolveBlunderbuss(FirearmDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException("definition");
+            if (definition.Kind != FirearmKind.Blunderbuss || !definition.IsScatter)
+                throw new ArgumentException(
+                    "The tabletop 15-foot cone authority applies only to a scatter Blunderbuss.",
+                    "definition");
+            return Resolve(definition, BlunderbussConeDistanceFeet);
+        }
 
         internal ScatterConeDistanceDecision Resolve(FirearmDefinition definition, int? authorizedDistanceFeet)
         {

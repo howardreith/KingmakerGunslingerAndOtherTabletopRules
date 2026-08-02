@@ -203,6 +203,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("scatter.plan-empty", ScatterPlanEmpty),
             Case("scatter.distance-missing-rejected", ScatterDistanceMissingRejected),
             Case("scatter.distance-exact-conversion", ScatterDistanceExactConversion),
+            Case("scatter.distance-pnp-blunderbuss-authority", ScatterDistancePnPBlunderbussAuthority),
             Case("scatter.distance-nonscatter-rejected", ScatterDistanceNonScatterRejected),
             Case("scatter.distance-step-rejected", ScatterDistanceStepRejected),
             Case("scatter.distance-bounds-rejected", ScatterDistanceBoundsRejected),

@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted for Sprint 32 source development. Numeric Blunderbuss cone distance
-remains unresolved and fail-closed.
+Accepted. The production adapter remains fail-closed until its native delivery
+checkpoint is complete.
 
 ## Installed contract evidence
 
@@ -28,6 +28,12 @@ Read-only reflection and narrow IL disassembly of Kingmaker 2.1.7b established:
 
 ## Decision
 
+The user directed the project to follow the PnP rule. A Blunderbuss firing
+pellets therefore uses the tabletop 15-foot cone; its distinct single-bullet
+mode retains the tabletop 10-foot range increment. This explicit direction
+resolves the numeric content authority that was absent from the extracted
+local table.
+
 Reuse the exact native enumeration and cone geometry semantics through a narrow
 adapter. Do not manually substitute transform-center Euclidean geometry.
 
@@ -43,10 +49,10 @@ target-specific.
 
 ## Fail-closed boundary
 
-The authorized local rules identify Blunderbuss range as `special` but do not
-state a numeric cone distance. Neither the 90-degree engine shape nor a caller-
-supplied `distance` proves that missing content value. The production
-Blunderbuss remains unavailable and the runtime adapter must reject an absent
-distance until explicit project authority resolves it.
+The immutable firearm definition continues to label Blunderbuss range
+`special`; cone distance is a scatter-mode rule, not a fabricated ordinary
+range increment. Production remains unavailable until the native adapter uses
+the exact 15-foot decision and completes the attack, discharge, misfire,
+explosion, rollback, and runtime gates.
 
 No proprietary IL, assembly, or machine-local inspection artifact is committed.

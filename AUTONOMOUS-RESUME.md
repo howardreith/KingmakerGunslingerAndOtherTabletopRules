@@ -30,6 +30,9 @@ definition of done or a listed genuine human-input hard stop.
   blocker is the missing numeric production Blunderbuss cone distance. Exact
   choices and the recommended 15-foot conservative adaptation are recorded in
   `HUMAN-INPUT-REQUIRED.md`. Do not implement a distance until authorized.
+- User directed PnP fidelity, resolving pellet mode to a 15-foot cone and
+  bullet mode to a 10-foot range increment. Sprint 94 encodes the exact
+  distance boundary; qualify/commit it, then continue into native delivery.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

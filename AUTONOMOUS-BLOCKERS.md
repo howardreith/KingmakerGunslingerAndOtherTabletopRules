@@ -214,3 +214,6 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   geometry and volley semantics are already qualified. The player-facing
   balance choice and conservative 15-foot recommendation are recorded in
   `HUMAN-INPUT-REQUIRED.md`.
+- Resolution: the user directed the project to follow PnP, authorizing the
+  15-foot pellet cone (and distinct 10-foot bullet range). Sprint 94 encodes
+  that authority. Scatter is now an active engineering gate, not a blocker.

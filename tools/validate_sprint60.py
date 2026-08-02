@@ -9,7 +9,7 @@ import validate_sprint59
 
 VERSION = "0.0.60"
 INFORMATIONAL_VERSION = "0.0.60-s60-player-presentation"
-TEST_COUNT = 831
+TEST_COUNT = 832
 
 def read(root: Path, relative: str) -> str:
     path = root / relative

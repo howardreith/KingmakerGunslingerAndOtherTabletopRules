@@ -28,3 +28,12 @@ No third-party value or inferred crossbow range may substitute for authority.
 
 This bounded blocker does not stop independent mission work. Continue with
 production fallback presentation and final lifecycle/compatibility coverage.
+
+## Resolution
+
+The user explicitly directed the implementation to follow PnP. The PnP
+Blunderbuss pellet mode is a 15-foot cone, while its bullet mode uses a
+10-foot range increment. ADR-0037 now records this project authority. The
+domain distance boundary resolves exactly 15 feet to 4.572 native meters and
+rejects applying that authority to another firearm. Native delivery remains
+the next engineering gate; the production item stays unavailable until then.
