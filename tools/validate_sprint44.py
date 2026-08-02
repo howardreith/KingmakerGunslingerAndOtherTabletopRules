@@ -40,7 +40,7 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(read(root,
         "src/KingmakerGunslinger/Deeds/StartlingShotRuntime.cs"),
         ["FirearmDischargeService", "TimeSpan.FromSeconds(6d",
-         "AddBuff", "RemoveFact", "current => before"],
+         "AddBuff", "RawFacts.OfType<Buff>()", "RemoveFact", "current => before"],
         "Sprint 44 runtime")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/StartlingShotBlueprints.cs"),

@@ -4,6 +4,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using System.Linq;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -65,6 +66,10 @@ namespace KingmakerGunslinger.Deeds
                 discharged = true;
                 applied = target.Descriptor.Buffs.AddBuff(flatFootedBuff, context,
                     TimeSpan.FromSeconds(6d * decision.DurationRounds));
+                if (applied == null)
+                    applied = target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .SingleOrDefault(value => ReferenceEquals(
+                            value.Blueprint, flatFootedBuff));
                 if (applied == null)
                     throw new InvalidOperationException(
                         "Startling Shot flat-footed buff was not created.");
