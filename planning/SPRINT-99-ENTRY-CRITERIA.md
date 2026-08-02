@@ -6,9 +6,10 @@ the registered transaction with forced mixed rolls (one misfire, condition
 unchanged) and all-misfire rolls (Normal to Broken), one discharged chamber,
 exact cleanup, loaded version, and no save interaction.
 
-Detached targets are registered request-locally through the current
-`AreaPersistentState.AddEntityData` contract and unregistered in `finally`
-before disposal. Both targets retain immortality during the transaction. The
+Installed iterator IL proves `GameHelper.GetTargetsAround` enumerates the exact
+`Game.Instance.State.Units` pool. Detached targets are inserted request-locally
+into its public `All` set and removed under boolean ownership in `finally`
+before disposal; no loaded area is required. Both targets retain immortality during the transaction. The
 scenario requires exact `AllUnits` delta `+2` and reference-identical restoration
 to the pre-request snapshot; it grants no faction, quest, loot, dialogue,
 kingdom, or experience state.

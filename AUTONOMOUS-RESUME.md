@@ -74,6 +74,10 @@ definition of done or a listed genuine human-input hard stop.
   immortality retention, `finally` unregistration/disposal, exact `+2` count,
   and reference-snapshot restoration. Preflight 84, 849 tests, Release build,
   and strict package pass. Commit and run exact mod load plus Scatter Shot.
+- Exact `253e825` mod load passed; runtime proved `LoadedAreaState` is null at
+  main menu. Installed `GetTargetsAround` IL enumerates `State.Units` directly.
+  The current repair uses owned `Units.All` additions/removals; qualify, commit,
+  and retry without changing the production lock.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

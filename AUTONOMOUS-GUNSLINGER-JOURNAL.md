@@ -3137,3 +3137,12 @@
   84, repository validation, 849 tests, Release build, and strict package pass;
   package/DLL SHA-256 `638f5f454e7dd259fb322efb44efd8841c5f49d5e385c8dcc5f9a2eabd994566` /
   `1809538f821299b7dbe7d2e85b696fe0c5f2d7d49b88d64231bf43ba8a3227d8`.
+- Exact `253e825` mod load passed as `20260802T1619509455637Z`; scatter run
+  `20260802T1621388941785Z` failed before registration because main-menu
+  `LoadedAreaState` is null. Read-only installed iterator IL proves the native
+  query enumerates `PersistentState.Units`. The revised fixture owns exact
+  reversible additions to `Units.All`, with no area dependency.
+- Revised unit-pool fixture passes preflight 84, repository validation, all 849
+  tests, clean Release build, and strict package validation. Package/DLL
+  SHA-256: `11cc619e1e3ebdc6a51163a323f721582822c8c0faaf40bf48d004767376b7a3` /
+  `201c82b155d965777d792e2177139965266e23e23722bcea198b16c3d98561f2`.

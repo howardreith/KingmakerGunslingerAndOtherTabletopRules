@@ -5745,8 +5745,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
             object allUnits = ReadExactMember(state, "AllUnits");
-            Kingmaker.EntitySystem.AreaPersistentState area =
-                Kingmaker.Game.Instance.State.LoadedAreaState;
             object[] partyBefore = SnapshotReferences(party);
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
@@ -5770,10 +5768,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
                 weapon = new ItemEntityWeapon(blunderbuss);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
-                area.AddEntityData(first);
-                firstRegistered = true;
-                area.AddEntityData(second);
-                secondRegistered = true;
+                firstRegistered = Kingmaker.Game.Instance.State.Units.All.Add(first);
+                if (!firstRegistered) throw new InvalidOperationException(
+                    "First disposable scatter target was already registered.");
+                secondRegistered = Kingmaker.Game.Instance.State.Units.All.Add(second);
+                if (!secondRegistered) throw new InvalidOperationException(
+                    "Second disposable scatter target was already registered.");
                 registeredCount = SnapshotReferences(allUnits).Length -
                     unitsBefore.Length;
                 Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
@@ -5810,8 +5810,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
-                if (secondRegistered) area.RemoveEntityData(second);
-                if (firstRegistered) area.RemoveEntityData(first);
+                if (secondRegistered &&
+                    !Kingmaker.Game.Instance.State.Units.All.Remove(second))
+                    throw new InvalidOperationException(
+                        "Second disposable scatter target cleanup failed.");
+                if (firstRegistered &&
+                    !Kingmaker.Game.Instance.State.Units.All.Remove(first))
+                    throw new InvalidOperationException(
+                        "First disposable scatter target cleanup failed.");
                 if (second != null) second.Descriptor.State.Immortality.ReleaseAll();
                 if (first != null) first.Descriptor.State.Immortality.ReleaseAll();
                 if (second != null) second.Dispose();

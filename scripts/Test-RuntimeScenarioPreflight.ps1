@@ -14,8 +14,8 @@ $runnerPath = Join-Path $root `
 . $commonPath
 
 $runnerSource = Get-Content -Raw -LiteralPath $runnerPath
-if (-not $runnerSource.Contains('area.AddEntityData(first);') -or
-    -not $runnerSource.Contains('area.RemoveEntityData(first);') -or
+if (-not $runnerSource.Contains('State.Units.All.Add(first)') -or
+    -not $runnerSource.Contains('State.Units.All.Remove(first)') -or
     -not $runnerSource.Contains('first.Descriptor.State.Immortality.Retain();')) {
     throw 'Scatter live-area fixture registration/cleanup contract is incomplete.'
 }
