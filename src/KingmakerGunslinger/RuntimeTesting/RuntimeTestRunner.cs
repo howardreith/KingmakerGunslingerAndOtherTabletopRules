@@ -8159,6 +8159,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1;
             bool failedKilled = false, passedKilled = false, cleaned = false;
             bool failedMarked = false, passedMarked = false;
+            bool failedRegistered = false, passedRegistered = false;
+            int unitPoolBefore = Kingmaker.Game.Instance.State.Units.Count;
             string stage = "setup";
             try
             {
@@ -8167,6 +8169,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 passedTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 failedTarget.Descriptor.State.Immortality.ReleaseAll();
                 passedTarget.Descriptor.State.Immortality.ReleaseAll();
+                failedRegistered = Kingmaker.Game.Instance.State.Units.All
+                    .Add(failedTarget);
+                passedRegistered = Kingmaker.Game.Instance.State.Units.All
+                    .Add(passedTarget);
+                if (!failedRegistered || !passedRegistered)
+                    throw new InvalidOperationException(
+                        "Disposable death targets could not be registered.");
                 attacker.Descriptor.Stats.Dexterity.BaseValue = 20;
                 AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger, 19,
                     ref controller);
@@ -8222,11 +8231,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
+                if (passedRegistered && passedTarget != null)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(passedTarget);
+                if (failedRegistered && failedTarget != null)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(failedTarget);
                 if (failedTarget != null) failedTarget.Dispose();
                 if (passedTarget != null) passedTarget.Dispose();
                 if (attacker != null) attacker.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
-                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    Kingmaker.Game.Instance.State.Units.Count == unitPoolBefore;
             }
             string observed = "grit=" + gritBefore + "->" + gritAfterFailure +
                 "->" + gritAfterSuccess + ";failedKilled=" + failedKilled +
