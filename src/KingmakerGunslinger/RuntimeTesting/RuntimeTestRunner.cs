@@ -5583,9 +5583,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var roll = new RuleAttackRoll(attacker, target, weapon, 0);
             roll.RuleAttackWithWeapon = attack;
             roll.AutoHit = true;
-            roll.ImmuneToCriticalHit = immuneToCritical;
             SetExactProperty(attack, "AttackRoll", roll);
-            SetExactProperty(roll, "IsHit", true);
+            FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                FirearmState.CurrentSchemaVersion, 1,
+                FirearmStateTokenCatalog.DiagnosticLeadBall,
+                FirearmCondition.Normal));
+            FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+            try { Rulebook.Trigger(roll); }
+            finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
+            if (!roll.IsHit)
+                throw new InvalidOperationException(
+                    "Native AutoHit attack-roll resolution did not hit.");
+            roll.ImmuneToCriticalHit = immuneToCritical;
             return attack;
         }
 
