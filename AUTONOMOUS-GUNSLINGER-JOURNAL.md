@@ -2328,3 +2328,17 @@
   `9989c449b4859c24a59990bb9e46732e38b009e25e9332461f1439e08a827a53`.
 - Sprint 60 is complete as a checkpoint. Continue immediately with Sprint 61
   later equipment acquisition and economy.
+
+## 2026-08-02 Sprint 61 acquisition entry audit
+
+- Mission 4.5, the Sprint 38 roadmap, and ADR-0035 require a normal later
+  acquisition route, with vendor or loot distribution explicitly assigned.
+- Existing firearm, ammunition, and repair-kit item costs provide local economy
+  authority; no new price or balance decision is necessary.
+- `docs/research/blueprint-candidates.csv` still marks Oleg and capital vendor
+  table IDs unresolved. Production mutation therefore cannot be selected from
+  narrative names alone.
+- `planning/SPRINT-61-ENTRY-CRITERIA.md` requires a guarded, save-free,
+  non-initiating installed-contract observer to prove exact table identities,
+  content shape, duplicate/restock behavior, and rollback before implementation.
+- Next action: implement and source-qualify that exact vendor-table observer.
