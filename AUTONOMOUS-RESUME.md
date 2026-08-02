@@ -8,14 +8,15 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `7f3a721` (save-free production critical profiles).
+- Audited source HEAD: `d0b15f6` (safely reversible level-up commit observer).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 69 exact mod load and two independent save-free
-  catalog observations passed all five production critical profiles on
-  `7f3a721`; the row is runtime-qualified. Sprint 68's two-attempt boundary for
-  Startling Shot/Targeting Head remains in force. Select the next independent
-  incomplete coverage row and continue.
+- Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
+  level-up commit observation passed on `d0b15f6`, proving detached Gunslinger
+  level `0->1->2`, native success callback, and unchanged external collections.
+  Only one PASS is available because the first of two allowed attempts exposed
+  the corrected argument-order defect. Do not run a third. Select the next
+  independent incomplete coverage row and continue.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

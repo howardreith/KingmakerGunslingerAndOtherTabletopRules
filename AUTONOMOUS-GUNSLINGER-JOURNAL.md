@@ -2528,3 +2528,24 @@
   `383e9fd6c92da6c243df6ddd7f7a9f8957c574b9231bcf4d2aa4e8c6fa81c77e`.
 - The critical-profile/special-ammunition row is runtime-qualified; no absent
   special-ammunition feature was invented. Continue immediately.
+
+## 2026-08-02 Sprint 70 safely reversible level-up commit
+
+- Installed IL proved first-level native commit is unsafe for a detached
+  autonomous fixture because it can publish custom companions into cross-scene
+  state and remote companions. The observer therefore commits only level two
+  in exact `LevelUp` mode on a disposable native unit.
+- Source `73e4b20` and callback-order correction `d0b15f6` pass six focused
+  checks, 84 preflight checks, repository validation, 831/831 tests, clean
+  exact-reference Release build, and strict nine-file package validation.
+- Exact mod load `20260802T1100483093512Z-mod-load-smoke` passed. First commit
+  run `20260802T1102097358773Z` failed before commit on a reflected argument-
+  order defect. The corrected second/final materially different run
+  `20260802T1105339180432Z` passed Gunslinger `0->1->2`, preview level two,
+  native success callback, and exact external-state isolation.
+- Exact `d0b15f6` package/DLL SHA-256 are
+  `50526cb1c6d5b4c82661717a9e6cac9ca7d9a4e9c644ba3e1beb9fba673941da` /
+  `5bf4bd967aab6131fdbbcceb22d0f4dc0ddc0dd8608371de304ab71733e9e012`.
+- This closes the safely reversible level-up commit gap with strong single-run
+  evidence. It is not overstated as two-run reproduction. Continue immediately
+  to the next independent final-integration gap.
