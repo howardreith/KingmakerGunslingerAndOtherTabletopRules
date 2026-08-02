@@ -1835,3 +1835,19 @@
   `f9d77ae0350ccae84722ee84b6749d1aaf5b83e0eac105a3271fcee6c4995792`.
   Commit the source-qualified checkpoint, rebuild the exact clean commit,
   require mod-load PASS, then run two independent Legs qualifications.
+
+## 2026-08-01 Sprint 47 first runtime observation
+
+- Exact source checkpoint `3a7738f` rebuilt with package/DLL SHA-256
+  `c2724fcb316bc785fdd159933bfb910a7a56363481f6d7a43db9663bd0e5d2d3` /
+  `2a4afd1344f15427dd16c0c61dd71b81c50f5eea306236d2aba94ebbb157cacf`;
+  mod-load run `20260802T0227021781653Z-mod-load-smoke` passed.
+- Feature run `20260802T0228235373097Z-dcee01225e0e438f80c0aab6f6b70060`
+  failed one exact assertion. Both forced hits dealt positive native damage,
+  grit changed `3->1`, both chambers changed `1->0`, native maneuver immunity
+  suppressed the second Trip, and cleanup passed. The eligible native Trip
+  reported success but the detached target remained non-prone.
+- One narrow repair preserves the authoritative native Trip and immunity gate,
+  then ensures its successful result owns the same native `UnitCondition.Prone`
+  state when detached event aftermath did not install it. Requalify all source
+  gates and checkpoint this evidence-driven repair before another runtime run.

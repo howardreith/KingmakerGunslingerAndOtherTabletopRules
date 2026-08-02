@@ -406,6 +406,13 @@ require exact mod-load plus two independent save-free Legs feature PASS runs
 before changing its runtime status. Continue immediately to the next incomplete
 coverage item after recording that evidence.
 
+The first exact Legs feature run on `3a7738f` proved damage, grit, chambers,
+immunity, and cleanup but observed a successful native Trip without the prone
+condition on its detached target. A narrow worktree repair now ensures native
+`UnitCondition.Prone` after successful Trip. Re-run the complete source/build/
+package/harness gates, commit the repair, then repeat exact mod load and require
+two independent feature PASS runs.
+
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
 and independent feature runs

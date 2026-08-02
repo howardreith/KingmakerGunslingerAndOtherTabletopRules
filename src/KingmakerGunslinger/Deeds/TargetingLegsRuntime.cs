@@ -102,6 +102,10 @@ namespace KingmakerGunslinger.Deeds
                         IgnoreConcealment = true
                     };
                     triggerTrip(trip);
+                    if (trip.Success && !target.Descriptor.State.HasCondition(
+                            UnitCondition.Prone))
+                        target.Descriptor.State.AddCondition(UnitCondition.Prone,
+                            null);
                 }
                 return new TargetingLegsResult(decision, attack, damage, rider,
                     trip);

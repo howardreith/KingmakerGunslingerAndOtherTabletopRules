@@ -41,7 +41,8 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Deeds/TargetingLegsRuntime.cs"),
         ["CreateRuleDealDamage(false)", "CombatManeuver.Trip",
          "ReplaceAttackBonus = 1000", "ImmuneToCombatManeuvers",
-         "ImmuneToSneakAttack"], "Sprint 47 runtime")
+         "ImmuneToSneakAttack", "trip.Success", "UnitCondition.Prone"],
+        "Sprint 47 runtime")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/TargetingLegsBlueprints.cs"),
         ["SetIsFullRoundAction(true)", "AbilityRange.Weapon",
