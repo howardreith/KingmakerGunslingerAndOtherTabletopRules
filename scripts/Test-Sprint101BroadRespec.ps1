@@ -16,7 +16,7 @@ $checks = [ordered]@{
   'exact-handler' = $runner.Contains('ILevelUpInitiateUIHandler') -and $runner.Contains('HandleLevelUpStart(UnitDescriptor unit')
   'handler-lifetime' = $method.Contains('EventBus.Subscribe(handler)') -and $method.Contains('EventBus.Unsubscribe(handler)')
   'native-commit' = $runner.Contains('commit.Invoke(Controller, null)')
-  'facts' = $method.Contains('replacementFighter == 0 && replacementGunslinger == 1') -and $method.Contains('facts')
+  'facts' = $method.Contains('sourceRebound') -and $method.Contains('sourceFighter == 0 && sourceGunslinger == 1') -and $method.Contains('replacementFighter == 0 && replacementGunslinger == 1')
   'guaranteed-cleanup' = $method.Contains('replacementEntity.Descriptor.Body != null') -and $method.Contains('source.Descriptor.Body != null') -and $method.Contains('SameReferences(crossBefore')
   'no-save' = -not $method.Contains('SaveGame')
 }

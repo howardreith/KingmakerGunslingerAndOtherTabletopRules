@@ -3237,3 +3237,12 @@
   Full repaired gates pass; package/DLL hashes are
   `46f1a0e9774c1c1dff5ffb2b4640823ece41606310b7ad59512c5eff36580cd4` /
   `88db502a7bbbe3f82dc1b95361f63659ce0f5222dc02cb83e41e2426ec2c6abc`.
+- Exact `6dda767` mod load passed as `20260802T1718364994257Z`. Run
+  `20260802T1719575950479Z` completed mechanically and restored every snapshot;
+  its sole FAIL proved the broad callback rebinds `source.Descriptor` to the
+  replacement, so both views correctly report Gunslinger 1. The assertion now
+  requires reference-identical rebinding rather than the detached-model Fighter
+  source expectation.
+  Corrected gates pass; package/DLL hashes are
+  `52cd1d523aeecf7f86de395512599958cefa04fd84567ad1711ff16698e27356` /
+  `33e7eeb8f97eca62efa46699d2a2addd46a3ba54dfab662e9fb207b931c83a12`.
