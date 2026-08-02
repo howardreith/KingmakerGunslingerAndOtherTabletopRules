@@ -1573,6 +1573,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon batteredItem = null;
             bool transferredAway = false;
             VendorLogic vendor = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnit = null;
+            bool vendorTradingStarted = false;
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1680,7 +1682,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Exact native transfer rollback to the source inventory failed.");
                 transferredAway = false;
+                BlueprintUnit capitalVendor = FindVendorUnit(
+                    CapitalVendorBlueprints.TableGuid);
+                vendorUnit = new Kingmaker.UI.LevelUp.ChargenUnit(capitalVendor).Unit;
+                if (vendorUnit == null)
+                    throw new InvalidOperationException(
+                        "The detached capital-vendor receiver is unavailable.");
                 vendor = new VendorLogic();
+                vendor.BeginTrading(vendorUnit);
+                vendorTradingStarted = true;
                 ItemEntity staged = vendor.AddForBuy(batteredItem, 1);
                 ItemEntity returned = vendor.RemoveFromBuy(staged, 1);
                 Kingmaker.EntitySystem.Entities.UnitEntityData vendorOwner;
@@ -1708,7 +1718,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReflectionAccess.TryInvokeAny(vendor,
                         new[] { "ReturnItems" }, new[] { Array.Empty<object>() },
                         out ignored, out method);
+                    if (vendorTradingStarted)
+                    {
+                        try
+                        {
+                            vendor.EndTraiding();
+                        }
+                        catch (Exception exception)
+                        {
+                            diagnostics.Add("Exact vendor cleanup failed: " +
+                                exception.GetType().Name + ".");
+                        }
+                    }
                 }
+                if (vendorUnit != null) vendorUnit.Dispose();
                 if (transferredAway && transferUnit != null && batteredItem != null &&
                     mainDescriptor != null)
                 {
@@ -1853,6 +1876,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new MissingMemberException(
                     "The exact shared inventory is not enumerable.");
             return ReflectionAccess.Enumerate(inventory).ToList();
+        }
+
+        private static BlueprintUnit FindVendorUnit(string tableGuid)
+        {
+            const BindingFlags Flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", Flags);
+            if (tableField == null)
+                throw new MissingFieldException(typeof(AddSharedVendor).FullName,
+                    "m_Table");
+            BlueprintUnit[] matches = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintUnit>().Where(unit =>
+                {
+                    BlueprintComponent[] components =
+                        (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Concat((unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                            .Where(fact => fact != null)
+                            .SelectMany(fact => fact.ComponentsArray ??
+                                Array.Empty<BlueprintComponent>())).ToArray();
+                    return components.OfType<AddSharedVendor>().Any(component =>
+                    {
+                        var table = tableField.GetValue(component) as
+                            BlueprintSharedVendorTable;
+                        return table != null && string.Equals(table.AssetGuid,
+                            tableGuid, StringComparison.Ordinal);
+                    });
+                }).ToArray();
+            if (matches.Length != 1)
+                throw new InvalidOperationException(
+                    "Expected one exact capital-vendor unit but observed " +
+                    matches.Length + ".");
+            return matches[0];
         }
 
         private static bool ItemUsesRuntimeBlueprint(object item,

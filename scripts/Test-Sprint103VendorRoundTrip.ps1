@@ -9,7 +9,10 @@ $checks=[ordered]@{
  'exact-return'=$runner.Contains('vendor.RemoveFromBuy(staged, 1)')
  'same-reference'=$runner.Contains('ReferenceEquals(staged, batteredItem)') -and $runner.Contains('ReferenceEquals(returned, batteredItem)')
  'origin'=$runner.Contains('ReferenceEquals(vendorOwner, mainDescriptor.Unit)')
+ 'exact-vendor'=$runner.Contains('FindVendorUnit(') -and $runner.Contains('CapitalVendorBlueprints.TableGuid')
+ 'begin-trading'=$runner.Contains('vendor.BeginTrading(vendorUnit)')
  'finally'=$runner.Contains('new[] { "ReturnItems" }')
+ 'end-trading'=$runner.Contains('vendor.EndTraiding()')
  'assertion'=$runner.Contains('"native-vendor-staging-roundtrip"')
 }
 $failed=@($checks.GetEnumerator()|Where-Object{-not $_.Value}|ForEach-Object Key)
