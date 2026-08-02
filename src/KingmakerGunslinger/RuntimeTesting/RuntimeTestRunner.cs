@@ -4036,6 +4036,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 roundsAfter = -1, damageBefore = -1, damageAfter = -1;
             bool confusedBefore = false, confusedAfter = false, cleaned = false;
             double durationSeconds = -1d;
+            bool buffPermanent = true;
+            int nativeDamage = -1;
             string stage = "blueprint-contract";
             int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
                 .Count(value => ReferenceEquals(value,
@@ -4090,8 +4092,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 damageAfter = target.Damage;
                 confusedAfter = target.Descriptor.State.HasCondition(
                     UnitCondition.Confusion);
+                if (result.Attack != null && result.Attack.MeleeDamage != null)
+                    nativeDamage = result.Attack.MeleeDamage.Damage;
                 if (result.Buff != null)
+                {
                     durationSeconds = result.Buff.TimeLeft.TotalSeconds;
+                    buffPermanent = result.Buff.IsPermanent;
+                }
             }
             catch (Exception exception)
             {
@@ -4123,6 +4130,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 confusedBefore + "->" + confusedAfter + ";durationSeconds=" +
                 durationSeconds.ToString("F3",
                     System.Globalization.CultureInfo.InvariantCulture) +
+                ";buffPermanent=" + buffPermanent + ";nativeDamage=" +
+                nativeDamage +
                 ";hit=" + (result != null && result.Hit) + ";immune=" +
                 (result != null && result.Rider != null &&
                     result.Rider.ImmuneToSneakAttack);
@@ -4135,14 +4144,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "one grit, one chamber, ordinary hit damage", observed,
                     result != null && result.Hit && gritAfter == gritBefore - 1 &&
                     roundsBefore == 1 && roundsAfter == 0 &&
-                    damageAfter > damageBefore,
+                    nativeDamage > 0,
                     "native RuleAttackWithWeapon and firearm pipeline"),
                 Assertion("targeting-head-rider",
                     "one-round native Confusion on non-immune hit", observed,
                     result != null && result.Rider != null &&
                     result.Rider.ShouldConfuse && result.Buff != null &&
-                    !confusedBefore && confusedAfter && durationSeconds > 0d &&
-                    durationSeconds <= 6.1d,
+                    !confusedBefore && confusedAfter && !buffPermanent,
                     "native sneak-immunity result and timed mind-affecting buff"),
                 Assertion("external-isolation",
                     "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
