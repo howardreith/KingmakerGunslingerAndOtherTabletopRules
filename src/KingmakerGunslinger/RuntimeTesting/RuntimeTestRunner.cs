@@ -1721,9 +1721,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendor.AddForSell(batteredItem, 1);
                 vendorPhase = "commit-sale-deal";
                 vendor.Deal();
-                ItemEntityWeapon stored = EnumerateRuntimeInventory(
-                    vendorUnit.Descriptor.Inventory)
-                    .OfType<ItemEntityWeapon>().Single(item =>
+                ItemEntityWeapon[] vendorPistols = EnumerateRuntimeInventory(
+                    vendorUnit.Descriptor.Inventory).OfType<ItemEntityWeapon>()
+                    .Where(item => ReferenceEquals(item.Blueprint, expected[0]))
+                    .ToArray();
+                ItemEntityWeapon[] storePistols = EnumerateRuntimeInventory(
+                    vendor.StoreItems).OfType<ItemEntityWeapon>()
+                    .Where(item => ReferenceEquals(item.Blueprint, expected[0]))
+                    .ToArray();
+                diagnostics.Add("postSale:moneyDelta=" +
+                    (player.Money - moneyBefore) + ";vendorPistols=" +
+                    vendorPistols.Length + ";storePistols=" +
+                    storePistols.Length + ";sellStage=" +
+                    EnumerateRuntimeInventory(vendor.ItemsForSell).Count +
+                    ";buyStage=" +
+                    EnumerateRuntimeInventory(vendor.ItemsForBuy).Count);
+                ItemEntityWeapon stored = vendorPistols.Concat(storePistols)
+                    .Single(item =>
                     {
                         Kingmaker.EntitySystem.Entities.UnitEntityData storedOwner;
                         return ReferenceEquals(item.Blueprint, expected[0]) &&
