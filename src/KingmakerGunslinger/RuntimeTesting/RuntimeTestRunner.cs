@@ -302,6 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -539,6 +540,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath)
                 {
                     Complete(RunObserveDeathsShotNativeDeath());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned)
+                {
+                    Complete(RunObserveStunningShotNativeStunned());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4975,6 +4982,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exactly one native Fortitude-save and kill-action graph",
                     observed, unique,
                     "exact installed nested action graph"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunObserveStunningShotNativeStunned()
+        {
+            BlueprintBuff[] candidates = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintBuff>()
+                .Where(value => value.name == "Stunned").ToArray();
+            string observed = string.Join("###", candidates.Select(value =>
+                value.AssetGuid + "|" + value.name + "|" + value.Name + "|" +
+                DescribeComponents(value.ComponentsArray) + "|nested=" +
+                DescribeNestedObject(value, 10)).ToArray());
+            bool unique = candidates.Length == 1;
+            bool nativeCondition = unique &&
+                observed.Contains("UnitCondition.Stunned");
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("stunning-shot-native-stunned-identity",
+                    "one exact installed BlueprintBuff named Stunned", observed,
+                    unique, "exact library identity and stable GUID"),
+                Assertion("stunning-shot-native-stunned-condition",
+                    "native UnitCondition.Stunned mechanics", observed,
+                    nativeCondition, "exact installed components and fields"),
+                Assertion("stunning-shot-native-critical-immunity-rule",
+                    "RuleAttackRoll.ImmuneToCriticalHit is readable",
+                    DescribeProperty(typeof(RuleAttackRoll).GetProperty(
+                        "ImmuneToCriticalHit")),
+                    typeof(RuleAttackRoll).GetProperty("ImmuneToCriticalHit") != null,
+                    "exact declared native attack result"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

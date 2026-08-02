@@ -22,10 +22,13 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
     if missing:
         raise RuntimeError(f"{label} is missing required token(s): {missing}")
 
-def validate(root: Path) -> None:
+def validate(root: Path, version: str = VERSION,
+             informational_version: str = INFORMATIONAL_VERSION,
+             test_count: int = TEST_COUNT, active_count: int = 102,
+             total_count: int = 103) -> None:
     root = root.resolve()
-    validate_sprint56.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 102, 103)
+    validate_sprint56.validate(root, version, informational_version,
+                               test_count, active_count, total_count)
     require_tokens(read(root, "planning/SPRINT-57-ENTRY-CRITERIA.md"),
         ["normal damage", "Fortitude", "Death descriptor",
          "cannot restore grit", "True Grit"], "Sprint 57 criteria")

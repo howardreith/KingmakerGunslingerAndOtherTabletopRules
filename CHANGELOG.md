@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.58 - Sprint 58 Stunning Shot contract observer
+
+- Adds a guarded save-free observer for the installed native Stunned condition
+  and resolved critical-hit-immunity attack flag required by Stunning Shot.
+
 ## 0.0.57 - Sprint 57 Death's Shot contract observer
 
 - Adds a guarded save-free observer for the installed native Death descriptor,

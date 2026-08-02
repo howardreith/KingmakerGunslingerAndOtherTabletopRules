@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.57-s57-deaths-shot-observer",
-  "version": "0.0.57",
+  "milestone": "0.0.58-s58-stunning-shot-observer",
+  "version": "0.0.58",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
