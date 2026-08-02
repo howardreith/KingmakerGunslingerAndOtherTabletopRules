@@ -13,7 +13,7 @@ The save-backed `working-save-smoke` scenario is specified in
 
 1. Run `scripts\Build-Local.ps1`. It validates the repository, runs all domain
    tests, compiles Release against the preserved qualified references, creates
-   the strict eight-file package, and writes an adjacent Build-Local manifest.
+   the strict nine-file package, and writes an adjacent Build-Local manifest.
 2. Run `scripts\Check-Test-Environment.ps1 -PackagePath <zip>`.
 3. Preview backup with `scripts\Backup-Live-Mod.ps1 -WhatIf`; run without
    `-WhatIf` only when live deployment is explicitly authorized.

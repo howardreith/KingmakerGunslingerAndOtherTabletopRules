@@ -38,6 +38,7 @@ $copies = @(
     [ordered]@{ Source = (Join-Path $repositoryRoot 'CHANGELOG.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'LICENSE'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'README.md'); Destination = $modDirectory },
+    [ordered]@{ Source = (Join-Path $repositoryRoot 'INSTALLATION-COMPATIBILITY.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'SMOKE-TEST-GUIDE.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'blueprints\blueprints.json'); Destination = (Join-Path $modDirectory 'blueprints') },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'blueprints\blueprints.schema.json'); Destination = (Join-Path $modDirectory 'blueprints') }

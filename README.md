@@ -50,7 +50,11 @@ The item-owned inert `BlueprintWeaponEnchantment` token remains the authoritativ
 
 Install only the standalone Unity Mod Manager ZIP. Do not install the source archive, complete milestone archive, private reference bundle, compiler package, or framework reference assemblies.
 
-This remains a disposable-save smoke-test candidate rather than a general gameplay release. Follow `SMOKE-TEST-GUIDE.md` exactly.
+Read `INSTALLATION-COMPATIBILITY.md` before installing, updating, removing, or
+using this mod with other gameplay mods. In particular, back up saves before
+updates and do not remove the mod from a campaign that has used its content;
+there is no uninstall-safe-save claim. `SMOKE-TEST-GUIDE.md` remains the
+mechanical diagnostic guide.
 
 ## Production equipment and fallback presentation
 

@@ -8,7 +8,8 @@ only through Steam App ID 640820. See `docs\WORKING-SAVE-SMOKE.md`.
 
 - `qualify-runtime-candidate.ps1` is the Windows source-to-candidate path. For 0.0.29 it requires 599 tests three times, two same-output-path Release compiles, and strict package validation.
 - `build.ps1` compiles the mod against the exact installed private Kingmaker, Unity, UMM, Harmony, and Newtonsoft references.
-- `package.ps1` produces the strict standalone eight-file UMM ZIP.
+- `package.ps1` produces the strict standalone nine-file UMM ZIP, including
+  the installation/update/removal/compatibility guide.
 - `inspect-runtime-contracts.ps1` records the retained attack, natural-roll, save, damage, item, inventory, and state contracts from the supplied installation.
 - `export-private-build-references.ps1` creates the narrow private compiler-input archive. Never include that archive or its DLLs in a UMM package.
 - `package-source.ps1` creates the source archive without loose binaries or private references.

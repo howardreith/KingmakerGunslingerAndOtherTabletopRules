@@ -29,6 +29,7 @@ try {
     $expected = @(
         'CHANGELOG.md',
         'Info.json',
+        'INSTALLATION-COMPATIBILITY.md',
         'KingmakerGunslinger.dll',
         'LICENSE',
         'README.md',
@@ -43,7 +44,7 @@ try {
     )
     $expectedSorted = @($expected | Sort-Object)
     if (($actual -join "`n") -ne ($expectedSorted -join "`n")) {
-        throw "Package entries do not match the strict eight-file allowlist.`nExpected:`n$($expectedSorted -join [Environment]::NewLine)`nActual:`n$($actual -join [Environment]::NewLine)"
+        throw "Package entries do not match the strict nine-file allowlist.`nExpected:`n$($expectedSorted -join [Environment]::NewLine)`nActual:`n$($actual -join [Environment]::NewLine)"
     }
 
     $packagedInfo = Get-Content -LiteralPath (Join-Path $modDirectory 'Info.json') -Raw | ConvertFrom-Json

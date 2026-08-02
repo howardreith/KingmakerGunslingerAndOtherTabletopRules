@@ -238,8 +238,9 @@ def main() -> int:
         "CHANGELOG.md",
         "LICENSE",
         "README.md",
+        "INSTALLATION-COMPATIBILITY.md",
         "SMOKE-TEST-GUIDE.md",
-        "strict eight-file standalone UMM archive",
+        "strict standalone nine-file UMM ZIP",
         "PDB symbols must not be included",
     ):
         if required not in package_script and required not in read("scripts/README.md"):
@@ -248,7 +249,8 @@ def main() -> int:
     package_validator = read("scripts/validate-package.ps1")
     for required in (
         "The standalone UMM package must contain exactly one binary",
-        "Package entries do not match the strict eight-file allowlist",
+        "Package entries do not match the strict nine-file allowlist",
+        "INSTALLATION-COMPATIBILITY.md",
         "SMOKE-TEST-GUIDE.md",
     ):
         if required not in package_validator:
