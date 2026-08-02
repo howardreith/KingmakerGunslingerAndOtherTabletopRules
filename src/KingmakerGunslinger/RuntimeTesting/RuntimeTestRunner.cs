@@ -1575,19 +1575,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pistolCount == 1 && powderCount == 1 && ballCount == 1;
                 ItemEntityWeapon battered = added.OfType<ItemEntityWeapon>()
                     .Single(item => ReferenceEquals(item.Blueprint, expected[0]));
-                FirearmItemId batteredId;
-                string identityReason;
-                if (!new KingmakerFirearmItemIdentityProvider().TryGetIdentity(
-                        battered, out batteredId, out identityReason) ||
-                    batteredId == null)
-                    throw new InvalidOperationException(identityReason ??
-                        "The exact granted pistol identity is unavailable.");
-                UnitPartBatteredFirearmOwnership ownership;
-                OriginatingUnitId owner;
-                exactOwnership = new KingmakerBatteredFirearmOwnershipPartProvider()
-                        .TryGetExisting(out ownership) && ownership != null &&
-                    ownership.TryGetOwner(batteredId, out owner) &&
-                    owner.Value == descriptor.Unit.UniqueId.Trim();
+                Kingmaker.EntitySystem.Entities.UnitEntityData owner;
+                exactOwnership = BatteredFirearmOriginRuntime.TryGetOwner(
+                    battered, out owner) && ReferenceEquals(owner, descriptor.Unit);
                 var vendor = new VendorLogic();
                 batteredSaleValue = vendor.GetItemBuyPrice(battered);
                 var ordinary = new ItemEntityWeapon(

@@ -17,6 +17,12 @@ definition of done or a listed genuine human-input hard stop.
   broad creation/replacement commits lack global rollback proof; remaining
   deed/scatter rows require renewed-attempt or design authority. The next exact
   action is the single authorization question in `HUMAN-INPUT-REQUIRED.md`.
+- Authorization received. First exact scenario run
+  `20260802T1430156234274Z-gunslinger-starting-items` failed safely because the
+  prior binder assumed nonexistent `ItemEntityWeapon.UniqueId`; no save write
+  occurred and exact rollback passed. Sprint 93 replaces production ownership
+  with an item-owned origin enchantment/context. Source qualification passes;
+  commit/mod-load, then make the single repaired scenario attempt.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

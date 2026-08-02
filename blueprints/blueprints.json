@@ -9,6 +9,9 @@
   },
   "entries": [
     {
+      "symbol": "KMG.Gunsmithing.BatteredOrigin", "guid": "2c01fc0e7f7c4f3bb8f493875cb489a0", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Sprint 93", "notes": "Item-owned inert battered-firearm origin token whose serialized parent context identifies the originating unit."
+    },
+    {
       "symbol": "KMG.Diagnostic.InitializedFeature",
       "guid": "6294cc6964914ea7bf450d5ef82fadde",
       "plannedType": "BlueprintFeature",

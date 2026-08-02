@@ -5,6 +5,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
@@ -19,7 +20,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 126;
+        internal const int ExpectedRegisteredBlueprintCount = 127;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -34,6 +35,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintItemWeapon _testMusketItem;
         private static BlueprintWeaponType _nativeHeavyCrossbowWeaponType;
         private static FirearmStateTokenBlueprintSet _firearmStateTokens;
+        private static BlueprintWeaponEnchantment _batteredOrigin;
         private static BasicAmmunitionBlueprintSet _basicAmmunition;
         private static ProductionFirearmBlueprintCatalog _productionFirearms;
         private static GunslingerClassBlueprintSet _gunslingerClassBlueprints;
@@ -171,6 +173,11 @@ namespace KingmakerGunslinger.Bootstrap
                     return _firearmStateTokens;
                 }
             }
+        }
+
+        internal static BlueprintWeaponEnchantment BatteredOrigin
+        {
+            get { lock (Gate) { return _batteredOrigin; } }
         }
 
         internal static BasicAmmunitionBlueprintSet BasicAmmunition
@@ -416,6 +423,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _nativeHeavyCrossbowWeaponType =
                         result.TestMusket.NativeWeaponType;
                     _firearmStateTokens = result.FirearmStateTokens;
+                    _batteredOrigin = result.BatteredOrigin;
                     _basicAmmunition = result.BasicAmmunition;
                     _productionFirearms = result.ProductionFirearms;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
@@ -518,6 +526,8 @@ namespace KingmakerGunslinger.Bootstrap
 
                 FirearmStateTokenBlueprintSet firearmStateTokens =
                     FirearmStateTokenBlueprints.Register(registry, context.Logger);
+                BlueprintWeaponEnchantment batteredOrigin =
+                    BatteredFirearmOriginBlueprints.Register(registry);
 
                 BasicAmmunitionBlueprintSet basicAmmunition =
                     BasicAmmunitionBlueprints.Register(
@@ -599,6 +609,7 @@ namespace KingmakerGunslinger.Bootstrap
                     testMusket,
                     productionFirearms,
                     firearmStateTokens,
+                    batteredOrigin,
                     basicAmmunition,
                     gunslingerClassBlueprints);
             }
@@ -697,6 +708,7 @@ namespace KingmakerGunslinger.Bootstrap
                 TestMusketBlueprintSet testMusket,
                 ProductionFirearmBlueprintCatalog productionFirearms,
                 FirearmStateTokenBlueprintSet firearmStateTokens,
+                BlueprintWeaponEnchantment batteredOrigin,
                 BasicAmmunitionBlueprintSet basicAmmunition,
                 GunslingerClassBlueprintSet gunslingerClassBlueprints)
             {
@@ -709,6 +721,7 @@ namespace KingmakerGunslinger.Bootstrap
                 TestMusket = testMusket ?? throw new ArgumentNullException("testMusket");
                 ProductionFirearms = productionFirearms ?? throw new ArgumentNullException("productionFirearms");
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
+                BatteredOrigin = batteredOrigin ?? throw new ArgumentNullException("batteredOrigin");
                 BasicAmmunition = basicAmmunition ?? throw new ArgumentNullException("basicAmmunition");
                 GunslingerClassBlueprints = gunslingerClassBlueprints ??
                     throw new ArgumentNullException("gunslingerClassBlueprints");
@@ -731,6 +744,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal ProductionFirearmBlueprintCatalog ProductionFirearms { get; private set; }
 
             internal FirearmStateTokenBlueprintSet FirearmStateTokens { get; private set; }
+
+            internal BlueprintWeaponEnchantment BatteredOrigin { get; private set; }
 
             internal BasicAmmunitionBlueprintSet BasicAmmunition { get; private set; }
 

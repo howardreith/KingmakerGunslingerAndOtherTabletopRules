@@ -61,16 +61,8 @@ namespace KingmakerGunslinger.Gunsmithing
                 throw new InvalidOperationException(
                     "The native Gunslinger starting grant did not create exactly one new production Early Pistol.");
 
-            FirearmItemId itemId;
-            string reason;
-            if (!new KingmakerFirearmItemIdentityProvider().TryGetIdentity(
-                addedPistols[0], out itemId, out reason) || itemId == null)
-                throw new InvalidOperationException(reason ??
-                    "The new Gunslinger starting firearm exposes no exact engine identity.");
-            var ownerId = new OriginatingUnitId(
-                __state.Descriptor.Unit.UniqueId.Trim());
-            new KingmakerBatteredFirearmOwnershipPartProvider()
-                .RequireForWrite().Bind(itemId, ownerId);
+            BatteredFirearmOriginRuntime.Bind(
+                addedPistols[0], __state.Descriptor.Unit);
         }
 
         private static bool IsExactGunslingerReceiver(UnitDescriptor unit)

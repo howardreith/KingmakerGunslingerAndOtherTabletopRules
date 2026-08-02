@@ -202,3 +202,7 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   scenarios are not authorized. Do not retry or circumvent this boundary.
   Source, patch installation, exact origin binding, and no-save scenario
   rollback contracts remain qualified; continue independent mandatory rows.
+- Resolution: the user explicitly authorized the exact named scenario. The
+  permission blocker is closed. Its first run failed safely on the invalid
+  `UniqueId` assumption and is under the bounded Sprint 93 item-owned carrier
+  repair; this is an engineering failure, not a new human-input blocker.

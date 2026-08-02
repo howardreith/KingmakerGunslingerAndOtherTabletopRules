@@ -8,7 +8,7 @@ $project = Get-Content (Join-Path $root 'src\KingmakerGunslinger\KingmakerGunsli
 $runner = Get-Content (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs') -Raw
 Require ($source.Contains('typeof(VendorLogic), "GetItemBuyPrice"')) 'exact-sale-target'
 Require ($source.Contains('new Type[] { typeof(ItemEntity) }')) 'exact-signature'
-Require ($source.Contains('TryGetOwner(itemId, out owner)')) 'persisted-item-identity-gate'
+Require ($source.Contains('BatteredFirearmOriginRuntime.IsBattered')) 'persisted-item-origin-gate'
 Require ($source.Contains('FixedExpectedScrapValueGold') -and $source.Contains('__result = fixedValue')) 'fixed-result'
 Require ($project.Contains('Gunsmithing\BatteredFirearmSaleValueRuntime.cs')) 'project-inclusion'
 Require ($runner.Contains('battered-origin-and-sale-value') -and $runner.Contains('ordinarySaleValue != 22')) 'live-value-isolation'

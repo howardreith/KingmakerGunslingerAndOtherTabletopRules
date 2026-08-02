@@ -2960,3 +2960,21 @@
 - The highest-priority actionable external gate remains permission for the
   exact guarded `gunslinger-starting-items` command. Created
   `HUMAN-INPUT-REQUIRED.md` with one precise authorization question.
+
+## 2026-08-02 Sprint 93 item-owned battered origin repair
+
+- User authorized the exact guarded `gunslinger-starting-items` command. First
+  run `20260802T1430156234274Z-gunslinger-starting-items` reached the exact
+  working save and failed with no save write; rollback, version, and save
+  identity passed. First failure: native `ItemEntityWeapon` has no non-null
+  `UniqueId`, so the GUID/UnitPart binder could not complete the native grant.
+- Replaced that invalid production authority with one inert item-owned origin
+  enchantment. Its serialized parent mechanics context retains the exact
+  originating unit reference, matching the accepted item-token persistence
+  architecture without inventing an item ID.
+- Starting grant, runtime effective-condition resolution, and sale overlay now
+  share the exact marker/context carrier. Added stable blueprint identity
+  `KMG.Gunsmithing.BatteredOrigin`; registry is 127 active/one reserved.
+- Repository validation, 848 tests, clean Release build, and strict packaging
+  pass. Package/DLL hashes: `2b29d984...37470` / `321fc6c1...4e8e2`.
+- Next: commit, exact mod load, then retry the authorized scenario once.

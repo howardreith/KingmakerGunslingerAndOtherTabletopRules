@@ -13,17 +13,7 @@ namespace KingmakerGunslinger.Gunsmithing
             ItemEntityWeapon weapon = item as ItemEntityWeapon;
             if (weapon == null) return false;
 
-            FirearmItemId itemId;
-            string reason;
-            if (!new KingmakerFirearmItemIdentityProvider().TryGetIdentity(
-                    weapon, out itemId, out reason) || itemId == null)
-                return false;
-
-            UnitPartBatteredFirearmOwnership part;
-            OriginatingUnitId owner;
-            if (!new KingmakerBatteredFirearmOwnershipPartProvider()
-                    .TryGetExisting(out part) || part == null ||
-                !part.TryGetOwner(itemId, out owner))
+            if (!BatteredFirearmOriginRuntime.IsBattered(weapon))
                 return false;
 
             value = BatteredFirearmUsePolicy.FixedExpectedScrapValueGold;

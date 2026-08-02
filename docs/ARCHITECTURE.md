@@ -429,7 +429,7 @@ Sprint 51 extends the ledger to 88 stable IDs: 87 active and one reserved.
 Sprint 52 extends the ledger to 91 stable IDs: 90 active and one reserved.
 The current registry contains ninety active blueprints.
 Sprint 84 extends the ledger to 127 stable IDs: 126 active and one reserved.
-Bootstrap now registers one-hundred-twenty-six active blueprints atomically.
+Bootstrap now registers one-hundred-twenty-seven active blueprints atomically.
 The current registry contains one-hundred-one active blueprints.
 Expert Loading inserts a unit-owned pre-shot marker decision into the first
 exact firearm misfire evaluation before Broken-to-Wrecked mutation and burst
@@ -443,4 +443,4 @@ Availability remains read-only. Repair starts no transaction before `Deliver`, a
 
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
-The blueprint ledger contains 127 stable IDs: 126 active and one reserved, for one-hundred-twenty-six active blueprints. Sprint 84 adds the visible level-one Gunsmithing feature. Firearm Proficiency grants Reload only; Gunsmithing grants Repair and Overhaul. The Gunslinger level-one progression grants Gunsmithing automatically alongside its other level-one features. Earlier stable feature, deed, item, state, and progression identities remain append-only. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
+The blueprint ledger contains 128 stable IDs: 127 active and one reserved, for one-hundred-twenty-seven active blueprints. Sprint 84 adds the visible level-one Gunsmithing feature. Firearm Proficiency grants Reload only; Gunsmithing grants Repair and Overhaul. The Gunslinger level-one progression grants Gunsmithing automatically alongside its other level-one features. Earlier stable feature, deed, item, state, and progression identities remain append-only. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
