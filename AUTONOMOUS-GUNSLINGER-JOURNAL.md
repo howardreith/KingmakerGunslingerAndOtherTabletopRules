@@ -2392,3 +2392,22 @@
   inheritance for Pistol/Revolver and Heavy Crossbow inheritance for
   Musket/Blunderbuss/Rifle, with no mechanical or packaged-asset change.
 - Next action: implement the save-free exact fallback observer.
+
+## 2026-08-02 Sprint 63 fallback presentation qualification
+
+- Observer checkpoint `02d26a4` added exact item/type/nested visual comparison.
+  The first launch failed closed at scenario allowlisting and left one exact
+  harness-owned Kingmaker process; PID 37780 was verified by path and stopped
+  without save interaction. Repair `82264b4` added the missing C# allowlist and
+  timeout exemption and strengthened static validation.
+- Exact mod load `20260802T0946237925580Z-mod-load-smoke` passed. Independent
+  PASS runs `20260802T0947439357619Z-observe-production-firearm-fallbacks` and
+  `20260802T0949087984758Z-observe-production-firearm-fallbacks` proved exact
+  Light/Heavy source mapping for all five firearms, one projectile each, and
+  non-null icons with no blueprint/gameplay/save mutation.
+- Complete validation passes 831/831 tests, 38 request checks, 82 preflight
+  checks, clean Release build, and strict packaging. Package/DLL hashes are
+  `99dc424e24ecf853a1cc24ec87f938a11ff30cc433d02bf49089bc2391d79908` /
+  `ab541c2b01dff4d272cde383f3f13175e35294a64e90b40c73bf84a4ab710598`.
+- The fallback presentation row is `ADAPTED-ACCEPTED`. Continue immediately to
+  the next incomplete independent coverage item.

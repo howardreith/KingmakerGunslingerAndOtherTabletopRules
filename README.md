@@ -42,10 +42,26 @@ Install only the standalone Unity Mod Manager ZIP. Do not install the source arc
 
 This remains a disposable-save smoke-test candidate rather than a general gameplay release. Follow `SMOKE-TEST-GUIDE.md` exactly.
 
+## Production equipment and fallback presentation
+
+The production Pistol, Musket, Advanced Rifle, and Advanced Revolver are
+available from the qualified capital vendor route alongside powder, lead balls,
+and repair kits. Blunderbuss remains unavailable until its numeric scatter-cone
+distance is authorized and runtime-qualified.
+
+The core package intentionally uses installed crossbow-compatible fallback
+assets under ADR-0007. Pistol/Revolver use Light Crossbow presentation;
+Musket/Blunderbuss/Rifle use Heavy Crossbow presentation. Their icons, models,
+animations, sounds, equipment attachment behavior, and projectiles therefore
+look and sound like crossbows. No custom firearm art, audio, animation, model,
+or projectile asset is bundled.
+
 ## Direction after Sprint 29
 
 Sprint 30 now generalizes Reload, Overhaul, and Repair through one marker-first exact-equipped-firearm context and definition-driven policy. The existing Test Musket abilities remain compatibility adapters. The larger vertical-slice roadmap remains in `planning/ROADMAP-SPRINTS-29-38.md`.
 
 ## Deliberate deferrals
 
-This version does not add generic multi-firearm maintenance, Quick Clear, grit, deeds, Gunslinger class progression, Rapid Reload, scatter triple damage, production firearm art/animation/audio, vendors, crafting, magical firearms, or firearm-using enemies.
+Custom firearm assets, authorized numeric scatter delivery, crafting, magical
+firearms, firearm-using enemies, and dual-wield presentation polish remain
+outside the current qualified build.

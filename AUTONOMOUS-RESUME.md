@@ -19,6 +19,12 @@ definition of done or a listed genuine human-input hard stop.
 
 - Sprint 63 entry criteria are recorded. Next command is source implementation
   and qualification of the non-initiating production fallback observer.
+
+- Sprint 63 fallback presentation is accepted on exact `82264b4`. Mod load
+  `20260802T0946237925580Z-mod-load-smoke` and PASS runs
+  `20260802T0947439357619Z-observe-production-firearm-fallbacks` /
+  `20260802T0949087984758Z-observe-production-firearm-fallbacks` proved all
+  five exact fallback mappings. Re-audit remaining lifecycle/action/docs rows.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
