@@ -8,10 +8,17 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `ff2f8c5`; exact mod-load PASS is `20260802T1349030296324Z`. Sprint 88 runtime-use resolver passes focused validation, repository validation, 845 tests, clean Release build, and strict packaging; commit it, then integrate effective condition into action/firing boundaries.
+- Audited source HEAD: `a3b6335`; Sprint 89 discharge/reload effective-condition boundaries pass repository validation, 846 tests, clean Release build, and strict packaging. Commit/mod-load, then continue misfire and deed propagation. Prior binder mod-load PASS is `20260802T1349030296324Z`.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 87 patches exact native `AddStartingItems`, correlates new inventory objects by reference, requires one exact production pistol, and persists its item GUID/origin unit ID. Focused contracts, repository validation, 845 tests, clean Release build, and strict packaging pass. Commit, run mod-load, then integrate effective condition. Sprint 84 runtime evidence remains `20260802T1312212200554Z`, `20260802T1313522632011Z`, and `20260802T1315168298512Z`. Historical Sprint 70 evidence follows.
+- Current checkpoint: Sprint 89 carries battered effective condition through
+  shared equipped-firearm resolution, native discharge, and reload without
+  mutating persisted actual condition. Focused contracts, repository
+  validation, 846 tests, clean Release build, and strict packaging pass.
+  Commit and run exact mod load, then continue into misfire and deed
+  propagation. Sprint 84 runtime evidence remains
+  `20260802T1312212200554Z`, `20260802T1313522632011Z`, and
+  `20260802T1315168298512Z`. Historical Sprint 70 evidence follows.
 - Historical checkpoint: Sprint 70 exact mod load and the corrected final guarded
   level-up commit observation passed on `d0b15f6`, proving detached Gunslinger
   level `0->1->2`, native success callback, and unchanged external collections.

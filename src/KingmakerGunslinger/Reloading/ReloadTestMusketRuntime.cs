@@ -63,7 +63,12 @@ namespace KingmakerGunslinger.Reloading
 
             BasicAmmunitionInventorySnapshot inventory =
                 BasicAmmunitionInventorySnapshot.Capture(inventoryAdapter);
-            FirearmState state = firearm.Repository.State;
+            FirearmState actualState = firearm.Repository.State;
+            FirearmState state = actualState.Condition == context.EffectiveCondition
+                ? actualState
+                : new FirearmState(actualState.SchemaVersion,
+                    actualState.LoadedRounds, actualState.LoadedAmmunition,
+                    context.EffectiveCondition);
             FirearmActionDecision action = FirearmActionPolicy.Evaluate(
                 FirearmActionKind.Reload,
                 firearm.Definition,

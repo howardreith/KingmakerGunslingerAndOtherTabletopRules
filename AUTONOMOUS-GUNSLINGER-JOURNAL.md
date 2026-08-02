@@ -2861,3 +2861,17 @@
 - Focused contract, repository validation, 845 tests, clean Release build, and
   strict package validation passed. Package/DLL hashes are
   `b3ecebf5...ef3a3` / `743e9ba2...618c4`.
+
+## 2026-08-02 Sprint 89 battered use boundaries
+
+- Shared equipped-firearm resolution now carries the battered effective
+  condition separately from actual item state. Reload evaluates a transient
+  effective copy; maintenance continues to use actual persisted condition.
+- Native discharge resolves exact item/user ownership and rejects effective
+  Wrecked use without consuming a chamber or mutating actual state.
+- Extended discharge results with explicit effective condition and added a
+  regression for actual Broken/effective Wrecked preservation.
+- Repository validation, 846 tests, clean Release build, and strict packaging
+  passed. Package/DLL hashes: `71261278...38eb0` / `e50d6a39...604b4`.
+- Next: commit/mod-load, then propagate effective Broken into misfire threshold
+  and remaining deed use gates without changing maintenance semantics.

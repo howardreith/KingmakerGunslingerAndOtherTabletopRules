@@ -16,6 +16,18 @@ namespace KingmakerGunslinger.Firing
             FirearmState after,
             int roundsConsumed,
             bool shouldForceMiss)
+            : this(status, before, after, roundsConsumed, shouldForceMiss,
+                before == null ? FirearmCondition.Unknown : before.Condition)
+        {
+        }
+
+        internal FirearmDischargeResult(
+            FirearmDischargeStatus status,
+            FirearmState before,
+            FirearmState after,
+            int roundsConsumed,
+            bool shouldForceMiss,
+            FirearmCondition effectiveCondition)
         {
             if (!Enum.IsDefined(typeof(FirearmDischargeStatus), status))
             {
@@ -24,6 +36,9 @@ namespace KingmakerGunslinger.Firing
 
             Before = before ?? throw new ArgumentNullException("before");
             After = after ?? throw new ArgumentNullException("after");
+            if (!Enum.IsDefined(typeof(FirearmCondition), effectiveCondition) ||
+                effectiveCondition == FirearmCondition.Unknown)
+                throw new ArgumentOutOfRangeException("effectiveCondition");
             if (roundsConsumed < 0 || roundsConsumed > 1)
             {
                 throw new ArgumentOutOfRangeException(
@@ -35,6 +50,7 @@ namespace KingmakerGunslinger.Firing
             Status = status;
             RoundsConsumed = roundsConsumed;
             ShouldForceMiss = shouldForceMiss;
+            EffectiveCondition = effectiveCondition;
             Validate();
         }
 
@@ -47,13 +63,15 @@ namespace KingmakerGunslinger.Firing
         internal int RoundsConsumed { get; private set; }
 
         internal bool ShouldForceMiss { get; private set; }
+        internal FirearmCondition EffectiveCondition { get; private set; }
 
         public override string ToString()
         {
             return string.Format(
                 CultureInfo.InvariantCulture,
-                "status={0}; roundsConsumed={1}; forceMiss={2}; before=[{3}]; after=[{4}]",
+                "status={0}; effectiveCondition={1}; roundsConsumed={2}; forceMiss={3}; before=[{4}]; after=[{5}]",
                 Status,
+                EffectiveCondition,
                 RoundsConsumed,
                 ShouldForceMiss,
                 Before,
@@ -65,7 +83,8 @@ namespace KingmakerGunslinger.Firing
             switch (Status)
             {
                 case FirearmDischargeStatus.Fired:
-                    if (ShouldForceMiss || RoundsConsumed != 1 || Before.IsEmpty)
+                    if (EffectiveCondition == FirearmCondition.Wrecked ||
+                        ShouldForceMiss || RoundsConsumed != 1 || Before.IsEmpty)
                     {
                         throw new ArgumentException(
                             "A fired result must consume exactly one loaded round and must not force a miss.");
@@ -82,7 +101,7 @@ namespace KingmakerGunslinger.Firing
 
                 case FirearmDischargeStatus.Empty:
                     if (!ShouldForceMiss || RoundsConsumed != 0 || !Before.IsEmpty ||
-                        Before.Condition == FirearmCondition.Wrecked || After != Before)
+                        EffectiveCondition == FirearmCondition.Wrecked || After != Before)
                     {
                         throw new ArgumentException(
                             "An empty result must preserve an empty non-wrecked state and force a miss.");
@@ -92,7 +111,7 @@ namespace KingmakerGunslinger.Firing
 
                 case FirearmDischargeStatus.Wrecked:
                     if (!ShouldForceMiss || RoundsConsumed != 0 ||
-                        Before.Condition != FirearmCondition.Wrecked || After != Before)
+                        EffectiveCondition != FirearmCondition.Wrecked || After != Before)
                     {
                         throw new ArgumentException(
                             "A wrecked result must preserve wrecked state and force a miss.");

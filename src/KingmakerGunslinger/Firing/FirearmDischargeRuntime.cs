@@ -4,6 +4,8 @@ using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.Gunsmithing;
+using Kingmaker.Items;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -74,7 +76,16 @@ namespace KingmakerGunslinger.Firing
                     throw new InvalidOperationException(rejection);
                 }
 
-                FirearmDischargeResult result = Service.Evaluate(before.Repository.State);
+                ItemEntityWeapon exactWeapon = weapon as ItemEntityWeapon;
+                if (exactWeapon == null)
+                    throw new InvalidOperationException(
+                        "The exact marked firearm was not an ItemEntityWeapon.");
+                BatteredFirearmUseDecision use =
+                    new BatteredFirearmRuntimeUseResolver().Evaluate(
+                        exactWeapon, attackRoll.Initiator,
+                        before.Repository.State.Condition, 0);
+                FirearmDischargeResult result = Service.Evaluate(
+                    before.Repository.State, use.EffectiveCondition);
                 if (result.Status == FirearmDischargeStatus.Fired)
                 {
                     FirearmItemStateSnapshot after = FirearmRuntimeState.Service.Transition(

@@ -11,19 +11,31 @@ namespace KingmakerGunslinger.Firing
     {
         internal FirearmDischargeResult Evaluate(FirearmState state)
         {
+            return Evaluate(state, state == null ? FirearmCondition.Unknown :
+                state.Condition);
+        }
+
+        internal FirearmDischargeResult Evaluate(FirearmState state,
+            FirearmCondition effectiveCondition)
+        {
             if (state == null)
             {
                 throw new ArgumentNullException("state");
             }
 
-            if (state.Condition == FirearmCondition.Wrecked)
+            if (effectiveCondition == FirearmCondition.Unknown ||
+                !Enum.IsDefined(typeof(FirearmCondition), effectiveCondition))
+                throw new ArgumentOutOfRangeException("effectiveCondition");
+
+            if (effectiveCondition == FirearmCondition.Wrecked)
             {
                 return new FirearmDischargeResult(
                     FirearmDischargeStatus.Wrecked,
                     state,
                     state,
                     0,
-                    true);
+                    true,
+                    effectiveCondition);
             }
 
             if (state.IsEmpty)
@@ -33,7 +45,8 @@ namespace KingmakerGunslinger.Firing
                     state,
                     state,
                     0,
-                    true);
+                    true,
+                    effectiveCondition);
             }
 
             return new FirearmDischargeResult(
@@ -41,7 +54,8 @@ namespace KingmakerGunslinger.Firing
                 state,
                 FirearmStateMachine.Fire(state),
                 1,
-                false);
+                false,
+                effectiveCondition);
         }
     }
 }

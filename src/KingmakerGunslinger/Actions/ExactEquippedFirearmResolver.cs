@@ -7,6 +7,7 @@ using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Gunsmithing;
 
 namespace KingmakerGunslinger.Actions
 {
@@ -78,10 +79,15 @@ namespace KingmakerGunslinger.Actions
                 return false;
             }
 
+            BatteredFirearmUseDecision use =
+                new BatteredFirearmRuntimeUseResolver().Evaluate(
+                    marked[0].Weapon, caster.Unit,
+                    firearm.Repository.State.Condition, 0);
             context = new ExactEquippedFirearmContext(
                 marked[0].Weapon,
                 marked[0].Definition,
-                firearm);
+                firearm,
+                use.EffectiveCondition);
             return true;
         }
 

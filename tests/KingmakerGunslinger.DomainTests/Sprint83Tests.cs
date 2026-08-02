@@ -1,6 +1,7 @@
 using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Firing;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -143,6 +144,19 @@ namespace KingmakerGunslinger.DomainTests
                 "Exact-owner removal failed.");
             Assertions.False(ledger.Remove(item, new OriginatingUnitId("unit-a")),
                 "Missing record removal was not idempotent.");
+        }
+
+        internal static void EffectiveWreckedDischarge()
+        {
+            var actual = new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                new AmmunitionId("kmg.ammunition.lead-ball"),
+                FirearmCondition.Broken);
+            FirearmDischargeResult result = new FirearmDischargeService().Evaluate(
+                actual, FirearmCondition.Wrecked);
+            Assertions.Equal(FirearmDischargeStatus.Wrecked, result.Status,
+                "Effective Wrecked state did not reject discharge.");
+            Assertions.True(result.Before == actual && result.After == actual,
+                "Effective rejection mutated actual persisted state.");
         }
 
         private static FirearmItemId Item(int suffix)
