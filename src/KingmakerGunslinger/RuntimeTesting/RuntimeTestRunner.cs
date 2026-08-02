@@ -274,6 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
@@ -387,6 +388,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview)
                 {
                     Complete(RunDisposableGunslingerLevelUpPreview());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit)
+                {
+                    Complete(RunDisposableGunslingerLevelUpCommit());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3455,6 +3462,135 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "both controllers canceled and disposable entity disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            bool pass = assertions.TrueForAll(value => value.Status == "PASS");
+            return CreateResult(pass ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerLevelUpCommit()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object remoteCompanions = ReadExactMember(player, "RemoteCompanions");
+            object crossSceneState = ReadExactMember(player, "CrossSceneState");
+            object crossSceneEntities = ReadExactMember(crossSceneState, "AllEntityData");
+            object inventory = ReadExactMember(player, "Inventory");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] remoteBefore = SnapshotReferences(remoteCompanions);
+            object[] crossSceneBefore = SnapshotReferences(crossSceneEntities);
+            object[] inventoryBefore = SnapshotReferences(inventory);
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            object seedController = null;
+            object commitController = null;
+            int initialLevel = -1;
+            int seededLevel = -1;
+            int previewLevel = -1;
+            int committedLevel = -1;
+            bool selected = false;
+            bool successCallback = false;
+            bool cleaned = false;
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                Kingmaker.UnitLogic.UnitDescriptor descriptor = entity == null ? null : entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Disposable level-up commit source is unavailable.");
+                initialLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = type.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = type.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || applyLevelup == null ||
+                    cancel == null || commit == null)
+                    throw new MissingMethodException(
+                        "An exact native commit-path method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seedController = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seedController,
+                    new object[] { gunslinger, false }))
+                    throw new InvalidOperationException("Level-one seed selection was rejected.");
+                mechanics.Invoke(seedController, null);
+                applyLevelup.Invoke(seedController, new object[] { descriptor });
+                cancel.Invoke(seedController, null);
+                seedController = null;
+                seededLevel = descriptor.Progression.GetClassLevel(gunslinger);
+
+                object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "LevelUp", false);
+                Action onSuccess = () => successCallback = true;
+                commitController = start.Invoke(null,
+                    new object[] { descriptor, false, onSuccess, null, levelUp });
+                selected = (bool)selectClass.Invoke(commitController,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(commitController, null);
+                var preview = ReadExactMember(commitController, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                previewLevel = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(gunslinger);
+                commit.Invoke(commitController, null);
+                commitController = null;
+                committedLevel = descriptor.Progression.GetClassLevel(gunslinger);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (commitController != null && cancel != null)
+                    cancel.Invoke(commitController, null);
+                if (seedController != null && cancel != null)
+                    cancel.Invoke(seedController, null);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(remoteBefore, SnapshotReferences(remoteCompanions)) &&
+                    SameReferences(crossSceneBefore, SnapshotReferences(crossSceneEntities)) &&
+                    SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
+                    (entity == null || !ContainsReference(party, entity)) &&
+                    (entity == null || !ContainsReference(allUnits, entity)) &&
+                    (entity == null || !ContainsReference(crossSceneEntities, entity));
+            }
+            string observed = "initial=" + initialLevel + ";seeded=" + seededLevel +
+                ";selected=" + selected + ";preview=" + previewLevel +
+                ";committed=" + committedLevel + ";callback=" + successCallback;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("levelup-commit", "disposable Gunslinger 1 -> 2 through Commit",
+                    observed, initialLevel == 0 && seededLevel == 1 && selected &&
+                        previewLevel == 2 && committedLevel == 2,
+                    "LevelUp-mode native Commit and exact GetClassLevel"),
+                Assertion("commit-success-callback", "native success callback invoked once",
+                    "callback=" + successCallback, successCallback,
+                    "LevelUpController Commit m_OnSuccess callback"),
+                Assertion("external-isolation",
+                    "unchanged party, units, cross-scene, companions, and inventory",
+                    "cleaned=" + cleaned, cleaned,
+                    "reference snapshots after disposable entity disposal"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
