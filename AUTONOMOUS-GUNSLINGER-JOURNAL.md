@@ -3326,3 +3326,23 @@
   failed before mechanics. The distinct repair registered three stable IDs
   and updated the authoritative bootstrap count; no failed run was retained as
   acceptance evidence.
+
+# Sprint 105 Death's Shot runtime qualification (2026-08-02)
+
+- Production level 19 progression, arming ability, one-grit confirmed-critical
+  transaction, native Fortitude save, critical-immunity gate, True Grit entry,
+  and Death descriptor blueprint graph passed repository validation, 854
+  deterministic tests, clean Release build, and strict package validation.
+- Narrow guarded observations proved a hand-created `ContextActionKillTarget`
+  had no engine-owned target context. Its exact installed call graph terminates
+  in `UnitState.set_MarkedForDeath`; production now performs that same terminal
+  transition after the native saving throw fails.
+- Exact `612105f` fresh-process runs `20260802T2009410114711Z` and
+  `20260802T2011048524145Z` both passed: natural 1 marked the disposable target
+  for death, natural 20 left the control alive, grit changed `1->0->0`, and all
+  live-area registrations and reference snapshots returned to their pre-test
+  state. No save was loaded or written.
+- Every meaningful mandatory deed is now individually runtime-qualified. The
+  comprehensive catalog expands from 30 to 32 slices for Targeting Arms and
+  Death's Shot; final integrated acceptance and definition-of-done audit are
+  next and are not a stopping boundary.

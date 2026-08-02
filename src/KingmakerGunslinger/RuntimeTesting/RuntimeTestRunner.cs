@@ -3323,8 +3323,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 () => RunDisposableGunslingerStunningShot(true));
             AppendAcceptanceSlice(assertions, "production-switching", ref slices,
                 RunDisposableProductionFirearmSwitching);
-            assertions.Add(Assertion("acceptance-slice-count", "30 qualified slices",
-                "slices=" + slices, slices == 30,
+            assertions.Add(Assertion("acceptance-slice-count", "32 qualified slices",
+                "slices=" + slices, slices == 32,
                 "explicit save-free comprehensive acceptance catalog"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,

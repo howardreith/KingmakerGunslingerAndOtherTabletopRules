@@ -7,6 +7,14 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Repository state
 
+- Death's Shot is runtime-qualified on exact `612105f` with fresh guarded PASS
+  pair `20260802T2009410114711Z` / `20260802T2011048524145Z`. Installed
+  `ContextActionKillTarget` IL proved its terminal effect is
+  `UnitState.MarkedForDeath`; the production deed now uses that exact terminal
+  transition after its native Fortitude failure. Run the expanded 32-slice
+  comprehensive acceptance twice, then perform the final definition-of-done
+  audit; do not stop at this deed checkpoint.
+
 - Targeting Arms is runtime-qualified on exact `98a2a59`: mod load
   `20260802T1932466249834Z` and fresh PASS pair
   `20260802T1934063083002Z` / `20260802T1935297321491Z` proved one chamber,
