@@ -32,8 +32,8 @@ def validate(root: Path) -> None:
     runner = read(root,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs")
     require_tokens(runner,
-        ["RunObserveDeathsShotNativeDeath", "name == \"Destruction\"",
-         "SpellDescriptor.Death", "ContextActionSavingThrow",
+        ["RunObserveDeathsShotNativeDeath", "deathAbilities",
+         "SpellDescriptor.Death", "SavingThrowType=Fortitude",
          "ContextActionKillTarget", "deaths-shot-native-save-kill-actions"],
         "Sprint 57 native death observer")
     require_tokens(read(root,

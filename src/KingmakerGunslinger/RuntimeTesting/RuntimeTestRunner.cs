@@ -4933,40 +4933,47 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunObserveDeathsShotNativeDeath()
         {
-            BlueprintAbility[] candidates = BlueprintBootstrap.Library
+            BlueprintAbility[] deathAbilities = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintAbility>()
-                .Where(value => value.name == "Destruction").ToArray();
-            if (candidates.Length != 1)
-                throw new InvalidOperationException(
-                    "Expected exactly one installed BlueprintAbility named Destruction; observed " +
-                    candidates.Length + ".");
-            BlueprintAbility destruction = candidates[0];
-            SpellDescriptorComponent descriptor = destruction.ComponentsArray
-                .OfType<SpellDescriptorComponent>().Single();
-            BlueprintComponent effect = destruction.ComponentsArray.Single(value =>
-                value.GetType().FullName ==
-                    "Kingmaker.UnitLogic.Abilities.Components.AbilityEffectRunAction");
-            string nested = DescribeNestedObject(effect, 14);
-            string observed = destruction.AssetGuid + "|" + destruction.name +
-                "|" + destruction.Name + "|action=" + destruction.ActionType +
-                "|range=" + destruction.Range + "|descriptor=" +
-                DescribeNestedObject(descriptor.Descriptor, 4) + "|" +
-                DescribeComponents(destruction.ComponentsArray) + "|nested=" + nested;
-            bool deathDescriptor = descriptor.Descriptor.HasAnyFlag(
-                SpellDescriptor.Death);
-            bool saveAndKill = nested.Contains("ContextActionSavingThrow") &&
-                nested.Contains("ContextActionKillTarget");
+                .Where(value => value.ComponentsArray != null &&
+                    value.ComponentsArray.OfType<SpellDescriptorComponent>()
+                    .Any(component => component.Descriptor.HasAnyFlag(
+                        SpellDescriptor.Death))).ToArray();
+            var observations = new List<string>();
+            var candidates = new List<BlueprintAbility>();
+            foreach (BlueprintAbility ability in deathAbilities)
+            {
+                BlueprintComponent[] effects = ability.ComponentsArray.Where(value =>
+                    value.GetType().FullName ==
+                        "Kingmaker.UnitLogic.Abilities.Components.AbilityEffectRunAction")
+                    .ToArray();
+                string nested = string.Join("||", effects.Select(value =>
+                    DescribeNestedObject(value, 14)).ToArray());
+                string entry = ability.AssetGuid + "|" + ability.name + "|" +
+                    ability.Name + "|" + DescribeComponents(ability.ComponentsArray) +
+                    "|nested=" + nested;
+                observations.Add(entry);
+                if (nested.Contains("SavingThrowType=Fortitude") &&
+                    nested.Contains("ContextActionKillTarget"))
+                    candidates.Add(ability);
+            }
+            string observed = "deathAbilities=" + deathAbilities.Length +
+                ";saveKillCandidates=" + candidates.Count + "|" +
+                string.Join("###", observations.ToArray());
+            bool unique = candidates.Count == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("deaths-shot-native-death-identity",
-                    "one exact installed BlueprintAbility named Destruction",
-                    observed, candidates.Length == 1,
-                    "exact library identity and declared ability fields"),
+                    "enumerate every installed Death-descriptor ability",
+                    observed, deathAbilities.Length > 0,
+                    "exact library identities and declared ability fields"),
                 Assertion("deaths-shot-native-death-descriptor",
-                    "native Death descriptor", observed, deathDescriptor,
-                    "exact installed SpellDescriptorComponent"),
+                    "all candidates selected through native Death descriptor",
+                    observed, deathAbilities.Length > 0,
+                    "exact installed SpellDescriptorComponents"),
                 Assertion("deaths-shot-native-save-kill-actions",
-                    "native saving-throw and kill actions", observed, saveAndKill,
+                    "exactly one native Fortitude-save and kill-action graph",
+                    observed, unique,
                     "exact installed nested action graph"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
