@@ -1568,6 +1568,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool exactOwnership = false;
             bool transferRetained = false;
             bool vendorRoundTrip = false;
+            bool vendorDealRoundTrip = false;
             Kingmaker.EntitySystem.Entities.UnitEntityData transferUnit = null;
             UnitDescriptor mainDescriptor = null;
             ItemEntityWeapon batteredItem = null;
@@ -1576,6 +1577,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnit = null;
             bool vendorTradingStarted = false;
             string vendorPhase = "not-started";
+            List<object> vendorStoreBefore = null;
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1695,6 +1697,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendorPhase = "begin-trading";
                 vendor.BeginTrading(vendorUnit);
                 vendorTradingStarted = true;
+                vendorStoreBefore = EnumerateRuntimeInventory(vendor.StoreItems);
                 vendorPhase = "add-for-sell";
                 vendor.AddForSell(batteredItem, 1);
                 ItemEntity staged = EnumerateRuntimeInventory(vendor.ItemsForSell)
@@ -1713,6 +1716,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ordinary = new ItemEntityWeapon(
                     (BlueprintItemWeapon)expected[0]);
                 ordinarySaleValue = vendor.GetItemBuyPrice(ordinary);
+                vendorPhase = "stage-sale-deal";
+                vendor.AddForSell(batteredItem, 1);
+                vendorPhase = "commit-sale-deal";
+                vendor.Deal();
+                ItemEntity stored = EnumerateRuntimeInventory(vendor.StoreItems)
+                    .OfType<ItemEntity>().Single(item =>
+                        ReferenceEquals(item, batteredItem));
+                bool saleCredited = player.Money == moneyBefore + 22;
+                vendorPhase = "stage-repurchase-deal";
+                vendor.AddForBuy(stored, 1);
+                long purchaseCost = Convert.ToInt64(vendor.DealPrice,
+                    System.Globalization.CultureInfo.InvariantCulture);
+                if (player.Money < purchaseCost)
+                {
+                    object ignoredMoney;
+                    string moneyMethod;
+                    long grant = purchaseCost - player.Money;
+                    if (!ReflectionAccess.TryInvokeAny(player,
+                        new[] { "GainMoney" },
+                        new[] { new object[] { grant } }, out ignoredMoney,
+                        out moneyMethod))
+                        throw new InvalidOperationException(
+                            "Exact temporary repurchase funding failed.");
+                }
+                vendorPhase = "commit-repurchase-deal";
+                vendor.Deal();
+                Kingmaker.EntitySystem.Entities.UnitEntityData repurchasedOwner;
+                vendorDealRoundTrip = saleCredited &&
+                    EnumerateRuntimeInventory(mainDescriptor.Inventory).Any(item =>
+                        ReferenceEquals(item, batteredItem)) &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(batteredItem,
+                        out repurchasedOwner) &&
+                    ReferenceEquals(repurchasedOwner, mainDescriptor.Unit) &&
+                    SameReferences(vendorStoreBefore.ToArray(),
+                        EnumerateRuntimeInventory(vendor.StoreItems).ToArray());
                 moneyStable = player.Money == moneyBefore;
             }
             catch (Exception exception)
@@ -1811,7 +1849,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 startingGoldRestored = gunslinger == null ||
                     gunslinger.StartingGold == originalStartingGold;
                 if (player != null)
+                {
+                    long moneyDelta = moneyBefore - player.Money;
+                    if (moneyDelta != 0)
+                    {
+                        object ignored;
+                        string method;
+                        if (!ReflectionAccess.TryInvokeAny(player,
+                            new[] { "GainMoney" },
+                            new[] { new object[] { moneyDelta } },
+                            out ignored, out method))
+                            diagnostics.Add("Exact money rollback failed.");
+                    }
                     moneyStable = player.Money == moneyBefore;
+                }
                 if (before != null && player != null && player.Inventory != null)
                 {
                     List<object> afterRollback =
@@ -1854,6 +1905,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "same item and battered origin survive AddForSell/RemoveFromSell",
                     "retained=" + vendorRoundTrip, vendorRoundTrip,
                     "exact VendorLogic reversible pre-deal transaction"),
+                Assertion("native-vendor-deal-roundtrip",
+                    "same item is sold for 22 gp and repurchased with store restoration",
+                    "retained=" + vendorDealRoundTrip, vendorDealRoundTrip,
+                    "exact VendorLogic Deal sale and repurchase transactions"),
                 Assertion("exact-in-memory-rollback",
                     "inventory references, class identity, gold, and money restored",
                     "inventory=" + exactRollback + ";class=" + classRestored +

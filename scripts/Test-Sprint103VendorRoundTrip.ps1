@@ -15,6 +15,9 @@ $checks=[ordered]@{
  'finally'=$runner.Contains('new[] { "ReturnItems" }')
  'end-trading'=$runner.Contains('vendor.EndTraiding()')
  'assertion'=$runner.Contains('"native-vendor-staging-roundtrip"')
+ 'sale-deal'=$runner.Contains('vendor.AddForSell(batteredItem, 1)') -and $runner.Contains('vendor.Deal()')
+ 'repurchase'=$runner.Contains('vendor.AddForBuy(stored, 1)') -and $runner.Contains('"native-vendor-deal-roundtrip"')
+ 'money-rollback'=$runner.Contains('long moneyDelta = moneyBefore - player.Money')
 }
 $failed=@($checks.GetEnumerator()|Where-Object{-not $_.Value}|ForEach-Object Key)
 if($failed.Count){throw "Sprint 103 vendor roundtrip failed: $($failed -join ', ')"}
