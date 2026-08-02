@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.54 - Sprint 54 Menacing Shot
+
+- Adds the level-fifteen Menacing Shot deed as a self-centered 30-foot burst
+  affecting living creatures, including the Gunslinger and allies.
+- Atomically spends one grit and one loaded firearm chamber, then applies an
+  exact native-Fear-derived Will-save effect at the Gunslinger deed DC.
+- Adds six focused policy cases; the complete suite is 801 tests.
+
 ## 0.0.53 - Sprint 53 Evasive
 
 - Adds the level-fifteen Evasive feature, conditionally granting project-owned

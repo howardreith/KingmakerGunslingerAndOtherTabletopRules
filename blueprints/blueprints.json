@@ -652,6 +652,12 @@
     },
     {
       "symbol": "KMG.Deeds.EvasiveImprovedUncannyDodgeBenefit", "guid": "59dcfeea8ce443778ff784138646116c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 53", "notes": "Project-owned clone of exact native CannotBeFlanked mechanics."
+    },
+    {
+      "symbol": "KMG.Deeds.MenacingShotFeature", "guid": "6b08a7d17d564f35a8157044240499ce", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 54", "notes": "Level-fifteen Menacing Shot deed grant."
+    },
+    {
+      "symbol": "KMG.Deeds.MenacingShotAbility", "guid": "3107264a6fdf4cebb70e20f593327eee", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 54", "notes": "Self-centered 30-foot exact native Fear delivery with one-grit one-chamber transaction."
     }
   ]
 }

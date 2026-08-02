@@ -336,9 +336,16 @@
     <Compile Include="Deeds\EvasiveDecision.cs" />
     <Compile Include="Deeds\EvasiveService.cs" />
     <Compile Include="Deeds\EvasiveGrantController.cs" />
+    <Compile Include="Deeds\MenacingShotStatus.cs" />
+    <Compile Include="Deeds\MenacingShotRequest.cs" />
+    <Compile Include="Deeds\MenacingShotDecision.cs" />
+    <Compile Include="Deeds\MenacingShotTargetDecision.cs" />
+    <Compile Include="Deeds\MenacingShotService.cs" />
+    <Compile Include="Deeds\MenacingShotAbilityLogic.cs" />
     <Compile Include="Deeds\EvasiveRuntime.cs" />
     <Compile Include="Deeds\EvasiveResourcePatches.cs" />
     <Compile Include="Blueprints\EvasiveBlueprints.cs" />
+    <Compile Include="Blueprints\MenacingShotBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

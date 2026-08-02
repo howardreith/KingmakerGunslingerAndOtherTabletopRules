@@ -2115,3 +2115,26 @@
   self-centered burst. Sprint 54 therefore begins with a save-free exact
   contract observer; no behavior will be inferred from display names.
 - Entry criteria are recorded in `planning/SPRINT-54-ENTRY-CRITERIA.md`.
+
+## 2026-08-02 Sprint 54 Menacing Shot source qualification
+
+- The native Fear observer identified ability
+  `d2aeac47450c76347aebbc02e4f463e0`: Will save with MindAffecting, Fear, and
+  Emotion descriptors. Failure applies native Frightened
+  `f08a7239aa961f34c8301518e71d4cdf` for caster-level rounds; success applies
+  native Shaken `25ec6cb6ab1845c48a95f9c20b034220` for one round.
+- Added a level-fifteen feature and self-activated standard-action ability. Its
+  custom delivery selects living creatures within 30 feet, including self and
+  allies, and atomically consumes one grit plus one loaded firearm chamber.
+  The retained native Fear action applies the exact observed save outcomes at
+  DC `10 + floor(Gunslinger level / 2) + Wisdom modifier`.
+- Added six focused policy cases and guarded save-free scenario
+  `disposable-gunslinger-menacing-shot`. Repository/Sprint validation, request,
+  preflight and runner checks, all 801 domain tests, clean Release build, output
+  validation, and strict package validation pass.
+- Compile-candidate package SHA-256 is
+  `7f68b580c249d6202c1d9a501876fd9d9871fdb92ba445bc60b5904fcddf6a1a`;
+  DLL SHA-256 is
+  `01bf2d015c7aa1642407cb64fdd9596bba98f6b6f805afd7051ac3364f697205`.
+- Next: commit this reconstructable source checkpoint, rebuild the exact commit,
+  require exact mod-load PASS, and run two independent feature launches.

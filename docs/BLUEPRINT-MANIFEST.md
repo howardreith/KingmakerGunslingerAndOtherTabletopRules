@@ -1,8 +1,8 @@
 # Blueprint manifest and registration contract
 
-## Sprint 53 status
+## Sprint 54 status
 
-Sprint 53 extends the append-only contract to 95 stable identifiers: 94 active and one reserved.
+Sprint 54 extends the append-only contract to 97 stable identifiers: 96 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-six-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -143,6 +143,8 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.EvasiveEvasionBenefit` | `7e71a4a7c40f432f85904280752321a9` | `BlueprintFeature` | Active | Exact native Reflex Evasion mechanics clone |
 | `KMG.Deeds.EvasiveUncannyDodgeBenefit` | `ecf97be86d97489d9041dcff2d784570` | `BlueprintFeature` | Active | Exact native Uncanny Dodge mechanics clone |
 | `KMG.Deeds.EvasiveImprovedUncannyDodgeBenefit` | `59dcfeea8ce443778ff784138646116c` | `BlueprintFeature` | Active | Exact native CannotBeFlanked mechanics clone |
+| `KMG.Deeds.MenacingShotFeature` | `6b08a7d17d564f35a8157044240499ce` | `BlueprintFeature` | Active | Level-fifteen Menacing Shot deed grant |
+| `KMG.Deeds.MenacingShotAbility` | `3107264a6fdf4cebb70e20f593327eee` | `BlueprintAbility` | Active | 30-foot exact native Fear-derived delivery |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

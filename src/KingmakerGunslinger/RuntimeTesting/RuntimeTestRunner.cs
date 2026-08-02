@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.EntitySystem.Stats;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -36,6 +37,8 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
@@ -294,6 +297,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvasive &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -501,6 +505,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear)
                 {
                     Complete(RunObserveMenacingShotNativeFear());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot)
+                {
+                    Complete(RunDisposableGunslingerMenacingShot());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4658,6 +4668,196 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return owner.HasFact(set.Evasion) || owner.HasFact(set.UncannyDodge) ||
                 owner.HasFact(set.ImprovedUncannyDodge);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerMenacingShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            MenacingShotBlueprintSet set = gunslinger.MenacingShot;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintBuff frightened = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                BlueprintBootstrap.Library, "f08a7239aa961f34c8301518e71d4cdf",
+                "native Frightened buff");
+            BlueprintBuff shaken = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                BlueprintBootstrap.Library, "25ec6cb6ab1845c48a95f9c20b034220",
+                "native Shaken buff");
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData failed = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData passed = null;
+            ItemEntityWeapon failedWeapon = null, passedWeapon = null;
+            object controller = null;
+            int failedGritBefore = -1, failedGritAfter = -1,
+                passedGritBefore = -1, passedGritAfter = -1;
+            int failedRounds = -1, passedRounds = -1, failedTargets = -1,
+                passedTargets = -1, dc = -1, casterLevel = -1;
+            bool frightenedApplied = false, shakenApplied = false,
+                nativeContract = false, cleaned = false;
+            string stage = "blueprint-contract";
+            try
+            {
+                failed = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                passed = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                failed.Descriptor.Stats.Wisdom.BaseValue = 18;
+                passed.Descriptor.Stats.Wisdom.BaseValue = 18;
+                AdvanceDisposableGunslinger(failed.Descriptor, gunslinger, 15,
+                    ref controller);
+                AdvanceDisposableGunslinger(passed.Descriptor, gunslinger, 15,
+                    ref controller);
+                SetExactProperty(failed.Descriptor.Stats.GetStat(StatType.SaveWill),
+                    "BaseValue", -100);
+                SetExactProperty(passed.Descriptor.Stats.GetStat(StatType.SaveWill),
+                    "BaseValue", 100);
+                failedWeapon = new ItemEntityWeapon(pistol);
+                passedWeapon = new ItemEntityWeapon(pistol);
+                failed.Body.PrimaryHand.InsertItem(failedWeapon);
+                passed.Body.PrimaryHand.InsertItem(passedWeapon);
+                SetRuntimeLoadedRound(failedWeapon);
+                SetRuntimeLoadedRound(passedWeapon);
+                failedGritBefore = failed.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                passedGritBefore = passed.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                AbilityEffectRunAction effect = set.Ability.ComponentsArray
+                    .OfType<AbilityEffectRunAction>().Single();
+                MenacingShotAbilityLogic logic = set.Ability.ComponentsArray
+                    .OfType<MenacingShotAbilityLogic>().Single();
+                string nested = DescribeNestedObject(effect, 10);
+                nativeContract = nested.Contains(
+                    "f08a7239aa961f34c8301518e71d4cdf") && nested.Contains(
+                    "25ec6cb6ab1845c48a95f9c20b034220") && nested.Contains(
+                    "SavingThrowType=Will");
+
+                stage = "failed-save-delivery";
+                var failedData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    set.Ability, failed.Descriptor);
+                var failedContext = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    failedData, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(failed), null);
+                failedTargets = 0;
+                IEnumerator<AbilityDeliveryTarget> failedDelivery = logic.Deliver(
+                    failedContext, new TargetWrapper(failed));
+                while (failedDelivery.MoveNext()) failedTargets++;
+                dc = failedContext.Params.DC;
+                casterLevel = failedContext.Params.CasterLevel;
+                effect.Apply(failedContext, new TargetWrapper(failed));
+                frightenedApplied = failed.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, frightened));
+                failedGritAfter = failed.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                failedRounds = FirearmRuntimeState.Service.GetOrCreate(failedWeapon)
+                    .Repository.State.LoadedRounds;
+
+                stage = "successful-save-delivery";
+                var passedData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    set.Ability, passed.Descriptor);
+                var passedContext = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    passedData, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(passed), null);
+                passedTargets = 0;
+                IEnumerator<AbilityDeliveryTarget> passedDelivery = logic.Deliver(
+                    passedContext, new TargetWrapper(passed));
+                while (passedDelivery.MoveNext()) passedTargets++;
+                effect.Apply(passedContext, new TargetWrapper(passed));
+                shakenApplied = passed.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, shaken));
+                passedGritAfter = passed.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                passedRounds = FirearmRuntimeState.Service.GetOrCreate(passedWeapon)
+                    .Repository.State.LoadedRounds;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Menacing Shot failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
+                foreach (ItemEntityWeapon weapon in new[] { failedWeapon, passedWeapon })
+                    if (weapon != null) FirearmRuntimeState.Service.Forget(weapon);
+                if (failed != null) failed.Dispose();
+                if (passed != null) passed.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+            }
+            string observed = "grit=" + failedGritBefore + "->" + failedGritAfter +
+                "," + passedGritBefore + "->" + passedGritAfter + ";rounds=" +
+                failedRounds + "," + passedRounds + ";targets=" + failedTargets +
+                "," + passedTargets + ";dc=" + dc + ";casterLevel=" + casterLevel +
+                ";fear=" + frightenedApplied + ";shaken=" + shakenApplied;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("menacing-shot-native-contract",
+                    "Will; Frightened failure; Shaken success", observed,
+                    nativeContract && frightenedApplied && shakenApplied,
+                    "exact cloned AbilityEffectRunAction"),
+                Assertion("menacing-shot-transaction",
+                    "one grit and one chamber for each delivery", observed,
+                    failedGritAfter == failedGritBefore - 1 &&
+                    passedGritAfter == passedGritBefore - 1 && failedRounds == 0 &&
+                    passedRounds == 0, "item-owned discharge and exact grit spend"),
+                Assertion("menacing-shot-params",
+                    "DC 21; caster level 15; self included", observed,
+                    dc == 21 && casterLevel == 15 && failedTargets == 1 &&
+                    passedTargets == 1, "custom self-burst delivery parameters"),
+                Assertion("external-isolation", "unchanged party/global units",
+                    "cleaned=" + cleaned, cleaned, "disposable units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static void AdvanceDisposableGunslinger(UnitDescriptor owner,
+            GunslingerClassBlueprintSet gunslinger, int levels,
+            ref object activeController)
+        {
+            Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+            MethodInfo start = type.GetMethods(BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                    value.Name == "StartWithoutAssigningStaticInstance" &&
+                    value.GetParameters().Length == 5);
+            MethodInfo select = type.GetMethod("SelectClass", BindingFlags.Public |
+                BindingFlags.Instance, null,
+                new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+            MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo cancel = type.GetMethod("Cancel", BindingFlags.Public |
+                BindingFlags.Instance);
+            object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                "CharGen", false);
+            for (int index = 0; index < levels; index++)
+            {
+                activeController = start.Invoke(null,
+                    new object[] { owner, false, null, null, charGen });
+                if (!(bool)select.Invoke(activeController,
+                    new object[] { gunslinger.CharacterClass, false }))
+                    throw new InvalidOperationException(
+                        "Disposable Gunslinger selection failed at level " +
+                        (index + 1) + ".");
+                mechanics.Invoke(activeController, null);
+                apply.Invoke(activeController, new object[] { owner });
+                cancel.Invoke(activeController, null);
+                activeController = null;
+            }
         }
 
         private RuntimeTestResult RunObserveMenacingShotNativeFear()

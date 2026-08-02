@@ -44,6 +44,7 @@
     <Compile Include="Sprint51Tests.cs" />
     <Compile Include="Sprint52Tests.cs" />
     <Compile Include="Sprint53Tests.cs" />
+    <Compile Include="Sprint54Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotDecision.cs"><Link>Deeds\DeadShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcome.cs"><Link>Deeds\DeadShotOutcome.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcomeService.cs"><Link>Deeds\DeadShotOutcomeService.cs</Link></Compile>
@@ -78,6 +79,11 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\EvasiveRequest.cs"><Link>Deeds\EvasiveRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\EvasiveDecision.cs"><Link>Deeds\EvasiveDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\EvasiveService.cs"><Link>Deeds\EvasiveService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\MenacingShotStatus.cs"><Link>Deeds\MenacingShotStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\MenacingShotRequest.cs"><Link>Deeds\MenacingShotRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\MenacingShotDecision.cs"><Link>Deeds\MenacingShotDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\MenacingShotTargetDecision.cs"><Link>Deeds\MenacingShotTargetDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\MenacingShotService.cs"><Link>Deeds\MenacingShotService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeDecision.cs">
       <Link>Deeds\DeadeyeDecision.cs</Link>
     </Compile>
