@@ -2910,3 +2910,6 @@
   `4b8e94f4...415f6` / `2e10d064...03938`.
 - Next: commit/mod-load, re-audit all battered/economy coverage, and continue
   the highest-priority incomplete mandatory row.
+- Exact `8d2e5b6` guarded Steam mod-load PASS is
+  `20260802T1412373661267Z-mod-load-smoke`; rebuilt package/DLL hashes are
+  `7c416c64...54588` / `6ac5c281...caadd`. Sprint 91 is runtime-qualified.

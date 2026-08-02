@@ -8,11 +8,10 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `45e507a`; Sprint 91 deed use-gate propagation is in
-  fully source-qualified with 848 tests and package/DLL hashes
-  `4b8e94f4...415f6` / `2e10d064...03938`. Pistol-Whip, Lightning Reload, and
-  Dead Shot use effective condition; Quick Clear intentionally retains actual
-  maintenance condition. Commit/mod-load, then re-audit mission coverage.
+- Audited source HEAD: `8d2e5b6`; Sprint 91 deed use-gate propagation passes
+  848 tests, clean build/package validation, and guarded Steam mod load
+  `20260802T1412373661267Z`. Re-audit mission coverage and continue the next
+  incomplete mandatory row.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through
