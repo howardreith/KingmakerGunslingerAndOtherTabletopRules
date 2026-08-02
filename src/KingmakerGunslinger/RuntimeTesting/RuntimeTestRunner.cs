@@ -8159,6 +8159,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1;
             bool failedKilled = false, passedKilled = false, cleaned = false;
             bool failedMarked = false, passedMarked = false;
+            int failedHp = int.MaxValue, passedHp = int.MaxValue;
             bool failedRegistered = false, passedRegistered = false;
             int unitPoolBefore = Kingmaker.Game.Instance.State.Units.Count;
             string stage = "setup";
@@ -8202,6 +8203,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failedKilled = failedTarget.Descriptor.State.IsDead;
                 failedMarked = failedTarget.Descriptor.State.MarkedForDeath ||
                     failedTarget.Descriptor.State.ForceKill;
+                failedHp = failedTarget.HPLeft;
 
                 stage = "save-success";
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
@@ -8219,6 +8221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 passedKilled = passedTarget.Descriptor.State.IsDead;
                 passedMarked = passedTarget.Descriptor.State.MarkedForDeath ||
                     passedTarget.Descriptor.State.ForceKill;
+                passedHp = passedTarget.HPLeft;
             }
             catch (Exception exception)
             { throw new InvalidOperationException("Disposable Death's Shot failed at " +
@@ -8247,6 +8250,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";passedKilled=" + passedKilled;
             observed += ";failedMarked=" + failedMarked + ";passedMarked=" +
                 passedMarked;
+            observed += ";hp=" + failedHp + "," + passedHp;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("deaths-shot-progression", "level 19 feature", observed,
@@ -8254,7 +8258,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value, set.Feature)), "production progression"),
                 Assertion("deaths-shot-native-death",
                     "natural-1 Fortitude failure kills; natural-20 succeeds", observed,
-                    (failedKilled || failedMarked) && !passedKilled && !passedMarked,
+                    (failedKilled || failedMarked || failedHp <= 0) &&
+                    !passedKilled && !passedMarked && passedHp > 0,
                     "Death descriptor and ContextActionKillTarget"),
                 Assertion("deaths-shot-grit", "one grit per confirmed critical", observed,
                     gritAfterFailure == gritBefore - 1 && gritAfterSuccess == 0,
