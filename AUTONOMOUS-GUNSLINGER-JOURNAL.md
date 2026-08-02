@@ -2947,3 +2947,16 @@
 - The external boundary rejected `gunslinger-starting-items` as an unauthorized
   feature-specific save-backed scenario despite the exact disposable save.
   No retry or workaround is permitted. Continue independent coverage.
+
+## 2026-08-02 remaining-independent-work audit
+
+- Broad normal-creation Commit and native replacement callbacks still lack a
+  complete rollback proof for global party/entity/remote/view/rest mutations;
+  invoking them speculatively would violate the documented safety boundary.
+- Deed audit confirms all independently authorized implementations are done.
+  Remaining deed work is limited to renewed runtime-attempt authority for two
+  repaired source checkpoints and explicit design decisions for Targeting Arms
+  and Death's Shot. Scatter still requires its numeric special-range decision.
+- The highest-priority actionable external gate remains permission for the
+  exact guarded `gunslinger-starting-items` command. Created
+  `HUMAN-INPUT-REQUIRED.md` with one precise authorization question.
