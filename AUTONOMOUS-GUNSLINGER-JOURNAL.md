@@ -2234,3 +2234,23 @@
   `42f5122584447f195f3a66dbe2fbce5737a7d432acae35049f28a207503064b9`.
 - Sprint 56 is complete as a checkpoint. Continue immediately to the next
   incomplete coverage item.
+
+## 2026-08-02 Sprint 57 Death's Shot native-contract investigation
+
+- Entry criteria commit `b975f49` requires normal firearm damage, exact
+  Fortitude DC, native Death immunity, and suppression of both grit-recovery
+  routes; synthetic HP/state death is forbidden.
+- Observer commit `c1305fc` passed mod load at
+  `20260802T0642181684393Z-mod-load-smoke`.
+- First observer `20260802T0643380649281Z-observe-deaths-shot-native-death`
+  failed because exact Destruction GUID `3b646e1db3403b940bf620e01d2ce0c7`
+  uses divine damage on both save branches and contains no kill action.
+- A broader catalog observer on `362a17b` found 16 Death-descriptor abilities
+  and three Fortitude/kill candidates: Scaled Fist Quivering Palm
+  `749e77f7014cb4e4487400e508e70a59`, Monk Quivering Palm
+  `4de518e69f9b8094fb996b1599d00314`, and conditional Death Clutch
+  `c3d2294a6740bc147870fff652f3ced5`. Run
+  `20260802T0646499769488Z-observe-deaths-shot-native-death` failed uniqueness.
+- The two-attempt fail-closed limit is reached. Death's Shot is temporarily
+  blocked pending authority to select a native graph; continue independently
+  to Stunning Shot.

@@ -105,6 +105,14 @@ No genuine human-input hard stop is currently established.
   lethally damaged. The next incomplete coverage item is an engineering gate.
 - Several deed adaptations require exact Kingmaker contract investigation.
   Existing project authority and reversible evidence gathering remain available.
+- Sprint 57 Death's Shot is temporarily blocked after two materially different
+  guarded observers. Destruction (`3b646e1d...`) is Death-descriptor divine
+  damage, not a kill action. The complete Death-descriptor catalog contains
+  three Fortitude/kill authorities: Scaled Fist Quivering Palm (`749e77f7...`),
+  Monk Quivering Palm (`4de518e6...`), and conditional Death Clutch
+  (`c3d2294a...`). Selecting one after the two-attempt limit requires human
+  authority; direct HP/state death remains prohibited. Stunning Shot is
+  independently actionable.
 - The authoritative firearm table labels blunderbuss range `special`; the
   immutable definition and marker vocabulary now represent that fact without a
   numeric value and ordinary-AC selection fails closed. Concrete scatter range

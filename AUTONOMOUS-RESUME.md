@@ -11,13 +11,20 @@ definition of done or a listed genuine human-input hard stop.
 - Audited HEAD: `10a4274` (Sprint 56 Cheat Death runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 56 Cheat Death is runtime-qualified; curate and
-  commit this evidence, then begin the next incomplete coverage item.
-- Version: `0.0.56`.
+- Current checkpoint: Sprint 57 Death's Shot exact-contract observation reached
+  its two-attempt ambiguity stop; continue independently with Stunning Shot.
+- Version: `0.0.57`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Death's Shot observer commit `c1305fc` passed mod load at
+  `20260802T0642181684393Z-mod-load-smoke`. Observer runs
+  `20260802T0643380649281Z-observe-deaths-shot-native-death` and
+  `20260802T0646499769488Z-observe-deaths-shot-native-death` failed closed:
+  Destruction is damage-only, while the full catalog exposes three distinct
+  Fortitude/kill authorities. See the blocker ledger; continue Stunning Shot.
 
 - Cheat Death exact commit `10a4274` passed mod load at
   `20260802T0626527728449Z-mod-load-smoke`. Independent PASS runs
