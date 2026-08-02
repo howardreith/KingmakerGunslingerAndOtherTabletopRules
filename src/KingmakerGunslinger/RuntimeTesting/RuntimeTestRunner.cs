@@ -292,6 +292,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvasive &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -493,6 +494,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures)
                 {
                     Complete(RunObserveEvasiveNativeFeatures());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear)
+                {
+                    Complete(RunObserveMenacingShotNativeFear());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4652,6 +4659,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.HasFact(set.ImprovedUncannyDodge);
         }
 
+        private RuntimeTestResult RunObserveMenacingShotNativeFear()
+        {
+            BlueprintAbility[] candidates = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintAbility>()
+                .Where(value => value.name == "Fear").ToArray();
+            if (candidates.Length != 1)
+                throw new InvalidOperationException(
+                    "Expected exactly one installed BlueprintAbility named Fear; observed " +
+                    candidates.Length + ".");
+            BlueprintAbility fear = candidates[0];
+            string observed = fear.AssetGuid + "|" + fear.name + "|" + fear.Name +
+                "|action=" + fear.ActionType + "|range=" + fear.Range +
+                "|enemies=" + fear.CanTargetEnemies + "|friends=" +
+                fear.CanTargetFriends + "|self=" + fear.CanTargetSelf + "|" +
+                DescribeComponents(fear.ComponentsArray);
+            bool contract = fear.ComponentsArray != null &&
+                fear.ComponentsArray.Length > 0;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("menacing-native-fear-identity",
+                    "one exact installed BlueprintAbility named Fear", observed,
+                    contract, "exact library identity and declared ability fields"),
+                Assertion("menacing-native-fear-components",
+                    "declared delivery, save, descriptors, duration, conditions",
+                    observed, contract,
+                    "exact installed component types and declared scalar fields"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()
         {
             const string EvasionGuid = "576933720c440aa4d8d42b0c54b77e80";
@@ -4698,8 +4741,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string DescribeExactFeature(BlueprintFeature feature)
         {
+            return feature.name + "|" + feature.Name + "|" +
+                DescribeComponents(feature.ComponentsArray);
+        }
+
+        private static string DescribeComponents(BlueprintComponent[] source)
+        {
             var components = new List<string>();
-            foreach (BlueprintComponent component in feature.ComponentsArray ??
+            foreach (BlueprintComponent component in source ??
                 Array.Empty<BlueprintComponent>())
             {
                 Type type = component.GetType();
@@ -4719,8 +4768,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 components.Add(type.FullName + "{" +
                     string.Join(",", fields.ToArray()) + "}");
             }
-            return feature.name + "|" + feature.Name + "|" +
-                string.Join(";", components.ToArray());
+            return string.Join(";", components.ToArray());
         }
 
         private RuntimeTestResult RunDisposableGunslingerBleedingWound()

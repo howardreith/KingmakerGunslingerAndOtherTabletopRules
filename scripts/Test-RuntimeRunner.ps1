@@ -49,6 +49,10 @@ $checks = [ordered]@{
     'evasive-guarded-dispatch' = $runner.Contains(
         'RunDisposableGunslingerEvasive()') -and $catalog.Contains(
         'DisposableGunslingerEvasive')
+    'menacing-native-observer-is-exact' = $runner.Contains(
+        'RunObserveMenacingShotNativeFear()') -and $runner.Contains(
+        'value.name == "Fear"') -and $catalog.Contains(
+        'ObserveMenacingShotNativeFear')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }

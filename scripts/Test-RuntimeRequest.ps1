@@ -189,6 +189,14 @@ if ($evasiveObserverRequest.scenario -cne 'observe-evasive-native-features' -or
     $evasiveObserverRequest.parameters.Count -ne 0) {
     $failures.Add('evasive-observer-request-valid')
 }
+$menacingObserverRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-menacing-shot-native-fear' `
+    -ExpectedVersion '0.0.53' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($menacingObserverRequest.scenario -cne 'observe-menacing-shot-native-fear' -or
+    $menacingObserverRequest.parameters.Count -ne 0) {
+    $failures.Add('menacing-observer-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 27'
+Write-Host 'Runtime request source tests passed: 28'

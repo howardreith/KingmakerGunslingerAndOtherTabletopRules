@@ -2101,3 +2101,17 @@
 - Both runs observed level 15, grit `4->0->1`, all benefits
   `True,False,True`, other-unit isolation, exact disposal, and no save use.
 - Continue immediately to Menacing Shot; Sprint 53 is a checkpoint only.
+
+## 2026-08-01 Sprint 54 Menacing Shot entry audit
+
+- The authoritative rule requires level 15, exactly 1 grit, a firearm shot into
+  the air, all living creatures in a 30-foot-radius burst, native fear-spell
+  treatment, and DC `10 + floor(Gunslinger level / 2) + Wisdom modifier`.
+- The shot has no target attack roll or damage. The established no-roll
+  discharge boundary can consume one loaded chamber while preserving firearm
+  condition, but grit and chamber rollback must be one atomic delivery.
+- No current checkpoint qualifies Kingmaker's exact Fear spell components,
+  immunity handling, duration, living filter, ally/self inclusion, or a native
+  self-centered burst. Sprint 54 therefore begins with a save-free exact
+  contract observer; no behavior will be inferred from display names.
+- Entry criteria are recorded in `planning/SPRINT-54-ENTRY-CRITERIA.md`.

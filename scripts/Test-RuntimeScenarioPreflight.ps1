@@ -55,6 +55,7 @@ $expected = @(
     'disposable-gunslinger-lightning-reload',
     'disposable-gunslinger-evasive',
     'observe-evasive-native-features',
+    'observe-menacing-shot-native-fear',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -161,6 +162,12 @@ Assert-True (-not $evasiveObserver.RequiresManualInteraction) `
     'evasive-observer-is-autonomous'
 Assert-True (-not $evasiveObserver.RequiresSaveName) `
     'evasive-observer-is-save-free'
+$menacingObserver = Get-KmgRuntimeScenarioMetadata `
+    'observe-menacing-shot-native-fear'
+Assert-True (-not $menacingObserver.RequiresManualInteraction) `
+    'menacing-observer-is-autonomous'
+Assert-True (-not $menacingObserver.RequiresSaveName) `
+    'menacing-observer-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
