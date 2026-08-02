@@ -16,10 +16,10 @@ namespace KingmakerGunslinger.Deeds
         private static readonly BleedingWoundService Service =
             new BleedingWoundService();
 
-        internal static void AfterAttack(RuleAttackWithWeapon attack)
+        internal static void AfterAttack(RuleAttackRoll attack)
         {
-            if (attack == null || attack.Initiator == null || attack.Target == null ||
-                attack.AttackRoll == null) return;
+            if (attack == null || attack.Initiator == null || attack.Target == null)
+                return;
             BleedingWoundBlueprintSet set = BlueprintBootstrap.GunslingerClass == null ?
                 null : BlueprintBootstrap.GunslingerClass.BleedingWound;
             if (set == null) return;
@@ -36,12 +36,11 @@ namespace KingmakerGunslinger.Deeds
             BleedingWoundKind kind = set.TryGetKind(marker.Blueprint).Value;
             FirearmMarkerSnapshot firearm =
                 FirearmMarkerLookup.ReadFromRuleEvent(attack);
-            bool eligible = FirearmMisfireRuntime.IsEligibleAttack(
-                attack.AttackRoll);
+            bool eligible = FirearmMisfireRuntime.IsEligibleAttack(attack);
             var request = new BleedingWoundRequest(kind,
-                firearm.IsExactFirearm, eligible, attack.AttackRoll.IsHit,
+                firearm.IsExactFirearm, eligible, attack.IsHit,
                 !attack.Target.Descriptor.IsUndead,
-                attack.AttackRoll.ImmuneToSneakAttack,
+                attack.ImmuneToSneakAttack,
                 attack.Initiator.Descriptor.Resources.GetResourceAmount(
                     BlueprintBootstrap.GunslingerClass.Grit.Resource),
                 attack.Initiator.Stats.Dexterity.Bonus);
