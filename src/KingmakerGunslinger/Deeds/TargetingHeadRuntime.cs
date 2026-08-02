@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -53,7 +54,12 @@ namespace KingmakerGunslinger.Deeds
             if (caster == null || target == null) throw new ArgumentNullException("caster");
             return Execute(caster.Descriptor, caster, target, confusionBuff,
                 context, delegate(RuleAttackWithWeapon rule)
-                { Rulebook.Trigger(rule); }, forceHit);
+                {
+                    Rulebook.Trigger(rule);
+                    if (rule.MeleeDamage == null && rule.AttackRoll != null &&
+                        rule.AttackRoll.IsHit)
+                        Rulebook.Trigger(rule.CreateRuleDealDamage(false));
+                }, forceHit);
         }
 
         private static TargetingHeadResult Execute(UnitDescriptor caster,
@@ -87,6 +93,13 @@ namespace KingmakerGunslinger.Deeds
                 TargetingHeadRiderDecision rider = Policy.EvaluateRider(hit, immune);
                 Buff buff = rider.ShouldConfuse ? target.Descriptor.Buffs.AddBuff(
                     confusionBuff, context, TimeSpan.FromSeconds(6d)) : null;
+                if (rider.ShouldConfuse && buff == null)
+                    buff = target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .SingleOrDefault(value => ReferenceEquals(
+                            value.Blueprint, confusionBuff));
+                if (rider.ShouldConfuse && buff == null)
+                    throw new InvalidOperationException(
+                        "Targeting Head Confusion buff was not created.");
                 return new TargetingHeadResult(decision, attack, rider, buff);
             }
             catch
