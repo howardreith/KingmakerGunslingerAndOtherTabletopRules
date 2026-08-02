@@ -2549,3 +2549,16 @@
 - This closes the safely reversible level-up commit gap with strong single-run
   evidence. It is not overstated as two-run reproduction. Continue immediately
   to the next independent final-integration gap.
+
+## 2026-08-02 Sprint 71 current-build working-save regression
+
+- The exact `d0b15f6` package passed the canonical guarded Steam
+  `working-save-smoke` twice on named disposable save
+  `KMG_AUTOMATION_WORKING`: `20260802T1108448693251Z` and
+  `20260802T1110221239004Z`.
+- Both fresh launches passed readiness, exact save identity, load correlation,
+  completion, fingerprint, and save-write evidence without touching the
+  protected baseline save.
+- This advances final acceptance to runtime-partial but is not comprehensive
+  mechanical acceptance. Remaining design-authority and integrated feature
+  gates are preserved; continue to an independent actionable item.

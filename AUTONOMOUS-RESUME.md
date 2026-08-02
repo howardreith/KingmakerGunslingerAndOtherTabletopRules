@@ -17,6 +17,10 @@ definition of done or a listed genuine human-input hard stop.
   Only one PASS is available because the first of two allowed attempts exposed
   the corrected argument-order defect. Do not run a third. Select the next
   independent incomplete coverage row and continue.
+- Current-build integration: exact `d0b15f6` passed canonical working-save
+  smoke runs `20260802T1108448693251Z` and `20260802T1110221239004Z` on
+  `KMG_AUTOMATION_WORKING`. This is a save/load regression checkpoint, not the
+  still-pending comprehensive mechanical acceptance scenario.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
