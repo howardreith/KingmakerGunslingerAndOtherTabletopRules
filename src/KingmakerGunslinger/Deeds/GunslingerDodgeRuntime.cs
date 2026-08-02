@@ -37,16 +37,19 @@ namespace KingmakerGunslinger.Deeds
                     if (ranged)
                     {
                         int grit = descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+                        TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(descriptor,
+                            TrueGritDeed.GunslingersDodge, 1, false);
+                        int evaluationGrit = trueGrit.Available ? Math.Max(1, grit) : grit;
                         GunslingerDodgeDecision decision = Service.Evaluate(
                             new GunslingerDodgeRequest(true,
                                 GunslingerDodgeMode.DropProne, true,
-                                ReadArmor(descriptor), ReadLoad(descriptor), grit,
+                                ReadArmor(descriptor), ReadLoad(descriptor), evaluationGrit,
                                 !descriptor.State.HasCondition(UnitCondition.Prone)));
                         descriptor.RemoveFact(dodge.ArmedProneMarker);
                         if (decision.ShouldApply)
                         {
                             descriptor.Resources.Spend(gunslinger.Grit.Resource,
-                                decision.GritCost);
+                                trueGrit.EffectiveCost);
                             try
                             {
                                 descriptor.State.AddCondition(UnitCondition.Prone, null);
@@ -54,7 +57,7 @@ namespace KingmakerGunslinger.Deeds
                             catch
                             {
                                 descriptor.Resources.Restore(gunslinger.Grit.Resource,
-                                    decision.GritCost);
+                                    trueGrit.EffectiveCost);
                                 descriptor.AddFact(dodge.ArmedProneMarker);
                                 throw;
                             }

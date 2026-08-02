@@ -22,6 +22,8 @@ namespace KingmakerGunslinger.Deeds
             Validate();
             int level = Owner.Progression.GetClassLevel(GunslingerClass);
             int grit = Owner.Resources.GetResourceAmount(Grit);
+            if (TrueGritRuntime.Evaluate(Owner, TrueGritDeed.Evasive, 0, true)
+                .Available) grit = Math.Max(1, grit);
             bool active = Has(EvasionBenefit) && Has(UncannyDodgeBenefit) &&
                 Has(ImprovedUncannyDodgeBenefit);
             EvasiveDecision decision = new EvasiveService().Evaluate(

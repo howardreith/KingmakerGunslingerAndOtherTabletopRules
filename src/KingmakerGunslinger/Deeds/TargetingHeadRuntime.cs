@@ -28,7 +28,8 @@ namespace KingmakerGunslinger.Deeds
                     FirearmCondition.Normal, 0, ReadGrit(caster), validTarget));
             FirearmState state = firearm.Firearm.Repository.State;
             TargetingHeadDecision decision = Policy.Evaluate(new TargetingHeadRequest(
-                true, state.Condition, state.LoadedRounds, ReadGrit(caster),
+                true, state.Condition, state.LoadedRounds,
+                ReadGrit(caster, TrueGritDeed.TargetingHead, 1),
                 validTarget));
             reason = decision.Status.ToString();
             return decision;
@@ -68,10 +69,13 @@ namespace KingmakerGunslinger.Deeds
             if (!decision.ShouldAttack)
                 return new TargetingHeadResult(decision, null, null, null);
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(caster,
+                TrueGritDeed.TargetingHead, decision.GritCost, false);
             bool spent = false, attackStarted = false;
             try
             {
-                caster.Resources.Spend(gunslinger.Grit.Resource, decision.GritCost);
+                caster.Resources.Spend(gunslinger.Grit.Resource,
+                    trueGrit.EffectiveCost);
                 spent = true;
                 var attack = new RuleAttackWithWeapon(casterEntity, target,
                     firearm.Weapon, 0) { AutoHit = forceHit };
@@ -89,7 +93,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 if (spent && !attackStarted)
                     caster.Resources.Restore(gunslinger.Grit.Resource,
-                        decision.GritCost);
+                        trueGrit.EffectiveCost);
                 throw;
             }
         }
@@ -99,6 +103,14 @@ namespace KingmakerGunslinger.Deeds
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             return caster == null || gunslinger == null ? 0 :
                 caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+        }
+
+        private static int ReadGrit(UnitDescriptor caster, TrueGritDeed deed,
+            int ordinaryCost)
+        {
+            int current = ReadGrit(caster);
+            return TrueGritRuntime.Evaluate(caster, deed, ordinaryCost, false)
+                .Available ? Math.Max(ordinaryCost, current) : current;
         }
     }
 }

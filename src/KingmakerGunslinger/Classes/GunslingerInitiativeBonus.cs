@@ -6,6 +6,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Classes
 {
@@ -24,8 +25,11 @@ namespace KingmakerGunslinger.Classes
                 if (GritResource == null || Owner.Resources == null)
                     throw new InvalidOperationException(
                         "Gunslinger Initiative grit resource is unavailable.");
-                GunslingerInitiativeRuntime.Apply(rule,
-                    Owner.Resources.GetResourceAmount(GritResource));
+                int grit = Owner.Resources.GetResourceAmount(GritResource);
+                if (TrueGritRuntime.Evaluate(Owner,
+                    TrueGritDeed.GunslingerInitiative, 0, true).Available)
+                    grit = Math.Max(1, grit);
+                GunslingerInitiativeRuntime.Apply(rule, grit);
             }
             catch
             {

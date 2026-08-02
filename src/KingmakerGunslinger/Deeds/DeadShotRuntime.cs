@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.Deeds
             FirearmState state = firearm.Firearm.Repository.State;
             DeadShotDecision decision = Policy.Evaluate(new DeadShotRequest(true,
                 firearm.Definition.IsScatter, state.Condition, state.LoadedRounds,
-                ReadGrit(caster), ReadBab(caster)));
+                ReadGrit(caster, TrueGritDeed.DeadShot, 1), ReadBab(caster)));
             reason = decision.Status.ToString();
             return decision;
         }
@@ -91,12 +91,15 @@ namespace KingmakerGunslinger.Deeds
                     "forcedRolls");
 
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(caster,
+                TrueGritDeed.DeadShot, decision.GritCost, false);
             FirearmState before = firearm.Firearm.Repository.State;
             FirearmState expectedCurrent = before;
             bool spent = false;
             try
             {
-                caster.Resources.Spend(gunslinger.Grit.Resource, decision.GritCost);
+                caster.Resources.Spend(gunslinger.Grit.Resource,
+                    trueGrit.EffectiveCost);
                 spent = true;
                 FirearmDischargeResult discharge = Discharge.Evaluate(before);
                 if (discharge.Status != FirearmDischargeStatus.Fired)
@@ -169,7 +172,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 TryRollback(firearm, expectedCurrent, before);
                 if (spent) caster.Resources.Restore(gunslinger.Grit.Resource,
-                    decision.GritCost);
+                    trueGrit.EffectiveCost);
                 throw;
             }
         }
@@ -198,6 +201,14 @@ namespace KingmakerGunslinger.Deeds
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             return caster == null || gunslinger == null ? 0 :
                 caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+        }
+
+        private static int ReadGrit(UnitDescriptor caster, TrueGritDeed deed,
+            int ordinaryCost)
+        {
+            int current = ReadGrit(caster);
+            return TrueGritRuntime.Evaluate(caster, deed, ordinaryCost, false)
+                .Available ? Math.Max(ordinaryCost, current) : current;
         }
 
         private static int ReadBab(UnitDescriptor caster)

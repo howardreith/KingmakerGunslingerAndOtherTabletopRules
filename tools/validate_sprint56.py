@@ -41,7 +41,7 @@ def validate(root: Path, version: str = VERSION,
         "src/KingmakerGunslinger/Deeds/CheatDeathDamageHandler.cs"),
         ["RuleTargetLogicComponent<RuleDealDamage>", "Owner.Unit.HPLeft",
          "Owner.Unit.MaxHP - 1", "Events.TryMark(rule)",
-         "Owner.Resources.Spend(Grit, decision.GritCost)"],
+         "Owner.Resources.Spend(Grit, trueGrit.EffectiveCost)"],
         "Sprint 56 exact damage handler")
     require_tokens(read(root,
         "tests/KingmakerGunslinger.DomainTests/Sprint56Tests.cs"),

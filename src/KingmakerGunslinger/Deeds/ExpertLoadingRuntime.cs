@@ -26,18 +26,21 @@ namespace KingmakerGunslinger.Deeds
                     set.ArmedMarker)).ToArray();
             if (markers.Length != 1) return condition;
             Buff marker = markers[0];
+            int currentGrit = attack.Initiator.Descriptor.Resources.GetResourceAmount(
+                BlueprintBootstrap.GunslingerClass.Grit.Resource);
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(
+                attack.Initiator.Descriptor, TrueGritDeed.ExpertLoading, 1, false);
             var request = new ExpertLoadingRequest(true, true, firstEvaluation,
                 misfire.IsMisfire,
                 condition.Transition ==
                     FirearmMisfireConditionTransition.BrokenToWrecked,
-                attack.Initiator.Descriptor.Resources.GetResourceAmount(
-                    BlueprintBootstrap.GunslingerClass.Grit.Resource));
+                trueGrit.Available ? Math.Max(1, currentGrit) : currentGrit);
             ExpertLoadingDecision decision = Service.Evaluate(request);
             if (!decision.ConsumeMarker) return condition;
             attack.Initiator.Descriptor.Buffs.RemoveFact(marker);
             if (!decision.SuppressExplosion) return condition;
 
-            int before = request.CurrentGrit;
+            int before = currentGrit;
             try
             {
                 var replacement = new FirearmMisfireConditionDecision(misfire,
@@ -45,10 +48,11 @@ namespace KingmakerGunslinger.Deeds
                     FirearmMisfireConditionTransition
                         .ExpertLoadingBrokenRemainsBroken);
                 attack.Initiator.Descriptor.Resources.Spend(
-                    BlueprintBootstrap.GunslingerClass.Grit.Resource, 1);
+                    BlueprintBootstrap.GunslingerClass.Grit.Resource,
+                    trueGrit.EffectiveCost);
                 int after = attack.Initiator.Descriptor.Resources.GetResourceAmount(
                     BlueprintBootstrap.GunslingerClass.Grit.Resource);
-                if (after != before - 1)
+                if (after != before - trueGrit.EffectiveCost)
                     throw new InvalidOperationException(
                         "Expert Loading grit spend was not exact.");
                 return replacement;

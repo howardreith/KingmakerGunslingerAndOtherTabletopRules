@@ -28,12 +28,17 @@ namespace KingmakerGunslinger.Deeds
                 Owner.Progression.GetClassLevel(GunslingerClass), grit,
                 Owner.Unit.HPLeft, rule.Damage, ownsTarget, Events.TryMark(rule)));
             if (!decision.Applied) return;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(Owner,
+                TrueGritDeed.CheatDeath, decision.GritCost, false);
+            if (!trueGrit.Available) return;
             int damage = Owner.Unit.Damage;
             try
             {
-                Owner.Resources.Spend(Grit, decision.GritCost);
-                if (Owner.Resources.GetResourceAmount(Grit) != 0)
-                    throw new InvalidOperationException("All remaining grit was not spent.");
+                Owner.Resources.Spend(Grit, trueGrit.EffectiveCost);
+                if (Owner.Resources.GetResourceAmount(Grit) !=
+                    grit - trueGrit.EffectiveCost)
+                    throw new InvalidOperationException(
+                        "The computed Cheat Death grit cost was not spent.");
                 Owner.Unit.Damage = Math.Max(0, Owner.Unit.MaxHP - 1);
                 if (Owner.Unit.HPLeft != decision.FinalHitPoints)
                     throw new InvalidOperationException("Cheat Death did not leave exactly 1 HP.");

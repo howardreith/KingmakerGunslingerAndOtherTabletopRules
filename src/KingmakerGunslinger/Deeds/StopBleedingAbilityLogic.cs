@@ -28,8 +28,8 @@ namespace KingmakerGunslinger.Deeds
                 Bootstrap.BlueprintBootstrap.GunslingerClass;
             return state.Condition != Firearms.FirearmCondition.Wrecked &&
                 state.LoadedRounds > 0 && gunslinger != null &&
-                ability.Caster.Resources.GetResourceAmount(
-                    gunslinger.Grit.Resource) > 0;
+                TrueGritRuntime.Evaluate(ability.Caster,
+                    TrueGritDeed.StopBleeding, 0, true).Available;
         }
 
         public string GetReason()

@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Deeds
             // misfire transition. Other damage sources never write this token.
             QuickClearDecision decision = Policy.Evaluate(new QuickClearRequest(mode,
                 true, firearm.Firearm.Repository.State.Condition, true,
-                ReadGrit(caster)));
+                ReadGrit(caster, mode)));
             reason = decision.Status.ToString();
             return decision;
         }
@@ -37,13 +37,17 @@ namespace KingmakerGunslinger.Deeds
             QuickClearDecision decision = Evaluate(caster, mode, out firearm, out reason);
             if (!decision.ShouldRepair) { QuickClearRuntimeDiagnostics.Record(decision); return decision; }
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(caster,
+                TrueGritDeed.QuickClear, decision.GritCost,
+                mode == QuickClearMode.Standard);
             bool spent = false;
             FirearmState before = null;
             try
             {
                 if (decision.GritCost > 0)
                 {
-                    caster.Resources.Spend(gunslinger.Grit.Resource, decision.GritCost);
+                    caster.Resources.Spend(gunslinger.Grit.Resource,
+                        trueGrit.EffectiveCost);
                     spent = true;
                 }
                 var store = new FirearmItemRepairStateStore(FirearmRuntimeState.Service,
@@ -63,7 +67,7 @@ namespace KingmakerGunslinger.Deeds
                         FirearmRuntimeState.Service.Set(firearm.Weapon, before);
                 }
                 if (spent) caster.Resources.Restore(gunslinger.Grit.Resource,
-                    decision.GritCost);
+                    trueGrit.EffectiveCost);
                 QuickClearRuntimeDiagnostics.RecordFault();
                 throw;
             }
@@ -74,6 +78,15 @@ namespace KingmakerGunslinger.Deeds
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             return caster == null || gunslinger == null ? 0 :
                 caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+        }
+
+        private static int ReadGrit(UnitDescriptor caster, QuickClearMode mode)
+        {
+            int current = ReadGrit(caster);
+            int ordinaryCost = mode == QuickClearMode.Move ? 1 : 0;
+            return TrueGritRuntime.Evaluate(caster, TrueGritDeed.QuickClear,
+                ordinaryCost, mode == QuickClearMode.Standard).Available ?
+                Math.Max(1, current) : current;
         }
     }
 }

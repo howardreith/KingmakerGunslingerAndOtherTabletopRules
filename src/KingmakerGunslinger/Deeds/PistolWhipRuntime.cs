@@ -28,7 +28,8 @@ namespace KingmakerGunslinger.Deeds
                 true, firearm.Definition.Kind == Firearms.FirearmKind.Musket ||
                     firearm.Definition.Kind == Firearms.FirearmKind.Blunderbuss ||
                     firearm.Definition.Kind == Firearms.FirearmKind.Rifle,
-                firearm.Firearm.Repository.State.Condition, ReadGrit(caster)));
+                firearm.Firearm.Repository.State.Condition,
+                ReadGrit(caster, TrueGritDeed.PistolWhip, 1)));
             reason = decision.Status.ToString();
             return decision;
         }
@@ -80,10 +81,13 @@ namespace KingmakerGunslinger.Deeds
             if (surrogateBlueprint == null)
                 throw new InvalidOperationException("Pistol-Whip surrogate is unavailable.");
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(caster,
+                TrueGritDeed.PistolWhip, decision.GritCost, false);
             bool spent = false;
             try
             {
-                caster.Resources.Spend(gunslinger.Grit.Resource, decision.GritCost);
+                caster.Resources.Spend(gunslinger.Grit.Resource,
+                    trueGrit.EffectiveCost);
                 spent = true;
                 int enhancement = GameHelper.GetItemEnhancementBonus(firearm.Weapon);
                 var surrogate = new ItemEntityWeapon(surrogateBlueprint);
@@ -109,7 +113,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 if (spent)
                     caster.Resources.Restore(gunslinger.Grit.Resource,
-                        decision.GritCost);
+                        trueGrit.EffectiveCost);
                 PistolWhipRuntimeDiagnostics.RecordFault();
                 throw;
             }
@@ -120,6 +124,14 @@ namespace KingmakerGunslinger.Deeds
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             return caster == null || gunslinger == null ? 0 :
                 caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+        }
+
+        private static int ReadGrit(UnitDescriptor caster, TrueGritDeed deed,
+            int ordinaryCost)
+        {
+            int current = ReadGrit(caster);
+            return TrueGritRuntime.Evaluate(caster, deed, ordinaryCost, false)
+                .Available ? Math.Max(ordinaryCost, current) : current;
         }
     }
 }

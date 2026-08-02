@@ -41,10 +41,20 @@ namespace KingmakerGunslinger.Deeds
                 firearm.IsExactFirearm, eligible, attack.IsHit,
                 !attack.Target.Descriptor.IsUndead,
                 attack.ImmuneToSneakAttack,
-                attack.Initiator.Descriptor.Resources.GetResourceAmount(
-                    BlueprintBootstrap.GunslingerClass.Grit.Resource),
+                int.MaxValue,
                 attack.Initiator.Stats.Dexterity.Bonus);
             BleedingWoundDecision decision = Service.Evaluate(request);
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(
+                attack.Initiator.Descriptor, TrueGritDeed.BleedingWound,
+                decision.GritCost, false);
+            if (!trueGrit.Available)
+                decision = Service.Evaluate(new BleedingWoundRequest(kind,
+                    firearm.IsExactFirearm, eligible, attack.IsHit,
+                    !attack.Target.Descriptor.IsUndead,
+                    attack.ImmuneToSneakAttack,
+                    attack.Initiator.Descriptor.Resources.GetResourceAmount(
+                        BlueprintBootstrap.GunslingerClass.Grit.Resource),
+                    attack.Initiator.Stats.Dexterity.Bonus));
             if (!decision.ConsumeMarker) return;
             attack.Initiator.Descriptor.Buffs.RemoveFact(marker);
             if (!decision.Apply) return;
@@ -52,7 +62,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 attack.Initiator.Descriptor.Resources.Spend(
                     BlueprintBootstrap.GunslingerClass.Grit.Resource,
-                    decision.GritCost);
+                    trueGrit.EffectiveCost);
                 var bleed = set.GetBleed(kind);
                 attack.Target.Descriptor.Buffs.AddBuff(
                     bleed, marker.Context, null);
@@ -65,7 +75,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 attack.Initiator.Descriptor.Resources.Restore(
                     BlueprintBootstrap.GunslingerClass.Grit.Resource,
-                    decision.GritCost);
+                    trueGrit.EffectiveCost);
                 ModContext context;
                 if (ModContext.TryGet(out context))
                     context.Logger.Failure("bleeding-wound", "delivery.failed",

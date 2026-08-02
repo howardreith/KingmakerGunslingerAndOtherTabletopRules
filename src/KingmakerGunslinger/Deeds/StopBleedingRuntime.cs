@@ -112,8 +112,10 @@ namespace KingmakerGunslinger.Deeds
         private static int ReadGrit(UnitDescriptor caster)
         {
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            return caster == null || gunslinger == null ? 0 :
-                caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+            if (caster == null || gunslinger == null) return 0;
+            int current = caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+            return TrueGritRuntime.Evaluate(caster, TrueGritDeed.StopBleeding,
+                0, true).Available ? Math.Max(1, current) : current;
         }
     }
 }

@@ -46,6 +46,34 @@ def validate(root: Path) -> None:
         ["KMG.Classes.TrueGritSelection", "ChoiceSymbols",
          "LevelEntries[19].Features.Add(trueGrit.Selection)"],
         "Sprint 59 selection blueprints")
+    adapters = {
+        "Deeds/DeadeyeRuntime.cs": "TrueGritDeed.Deadeye",
+        "Deeds/GunslingerDodgeRuntime.cs": "TrueGritDeed.GunslingersDodge",
+        "Deeds/QuickClearRuntime.cs": "TrueGritDeed.QuickClear",
+        "Classes/GunslingerInitiativeBonus.cs": "TrueGritDeed.GunslingerInitiative",
+        "Deeds/PistolWhipRuntime.cs": "TrueGritDeed.PistolWhip",
+        "Deeds/StopBleedingRuntime.cs": "TrueGritDeed.StopBleeding",
+        "Deeds/DeadShotRuntime.cs": "TrueGritDeed.DeadShot",
+        "Deeds/StartlingShotRuntime.cs": "TrueGritDeed.StartlingShot",
+        "Deeds/TargetingHeadRuntime.cs": "TrueGritDeed.TargetingHead",
+        "Deeds/TargetingTorsoRuntime.cs": "TrueGritDeed.TargetingTorso",
+        "Deeds/TargetingLegsRuntime.cs": "TrueGritDeed.TargetingLegs",
+        "Deeds/BleedingWoundRuntime.cs": "TrueGritDeed.BleedingWound",
+        "Deeds/ExpertLoadingRuntime.cs": "TrueGritDeed.ExpertLoading",
+        "Deeds/LightningReloadRuntime.cs": "TrueGritDeed.LightningReload",
+        "Deeds/EvasiveGrantController.cs": "TrueGritDeed.Evasive",
+        "Deeds/MenacingShotAbilityLogic.cs": "TrueGritDeed.MenacingShot",
+        "Deeds/CheatDeathDamageHandler.cs": "TrueGritDeed.CheatDeath",
+        "Deeds/StunningShotAttackHandler.cs": "TrueGritDeed.StunningShot",
+    }
+    for relative, token in adapters.items():
+        require_tokens(read(root, "src/KingmakerGunslinger/" + relative),
+                       ["TrueGritRuntime.Evaluate", token],
+                       "Sprint 59 deed adapter " + relative)
+    luck = read(root, "src/KingmakerGunslinger/Deeds/SlingersLuckSavingThrowReroll.cs") + read(
+        root, "src/KingmakerGunslinger/Deeds/SlingersLuckSkillCheckReroll.cs")
+    if "TrueGritRuntime" in luck:
+        raise RuntimeError("Slinger's Luck must retain its fixed grit cost")
     print("Sprint 59 source validation passed with inherited Sprint 58 checks.")
 
 def main() -> int:

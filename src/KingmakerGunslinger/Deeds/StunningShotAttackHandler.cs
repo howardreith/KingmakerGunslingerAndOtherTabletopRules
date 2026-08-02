@@ -35,9 +35,14 @@ namespace KingmakerGunslinger.Deeds
             bool owned = ReferenceEquals(rule.Initiator, Owner.Unit);
             bool exact = attack != null &&
                 FirearmMarkerLookup.ReadFromRuleEvent(attack).IsExactFirearm;
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(Owner,
+                TrueGritDeed.StunningShot, 2, false);
+            int currentGrit = Owner.Resources.GetResourceAmount(Grit);
+            int evaluationGrit = trueGrit.Available ?
+                Math.Max(currentGrit, 2) : currentGrit;
             StunningShotDecision decision = _service.Evaluate(new StunningShotRequest(
                 Owner.Progression.GetClassLevel(GunslingerClass),
-                Owner.Stats.Wisdom.Bonus, Owner.Resources.GetResourceAmount(Grit),
+                Owner.Stats.Wisdom.Bonus, evaluationGrit,
                 exact, owned, attack != null && attack.IsHit,
                 attack != null && attack.ImmuneToCriticalHit,
                 Events.TryMark(rule)));
@@ -50,7 +55,7 @@ namespace KingmakerGunslinger.Deeds
             {
                 Owner.Buffs.RemoveFact(Fact);
                 if (!decision.ShouldSave) return;
-                Owner.Resources.Spend(Grit, decision.GritCost);
+                Owner.Resources.Spend(Grit, trueGrit.EffectiveCost);
                 var saving = new RuleSavingThrow(rule.Target,
                     SavingThrowType.Fortitude, decision.DifficultyClass);
                 Rulebook.Trigger(saving);

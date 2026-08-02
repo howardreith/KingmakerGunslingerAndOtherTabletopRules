@@ -57,6 +57,8 @@ namespace KingmakerGunslinger.Deeds
 
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             int gritBefore = owner.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(owner,
+                TrueGritDeed.MenacingShot, decision.GritCost, false);
             FirearmState before = firearm.Firearm.Repository.State;
             bool discharged = false, spent = false, completed = false;
             try
@@ -73,9 +75,10 @@ namespace KingmakerGunslinger.Deeds
                     return discharge.After;
                 });
                 discharged = true;
-                owner.Resources.Spend(gunslinger.Grit.Resource, 1);
+                owner.Resources.Spend(gunslinger.Grit.Resource,
+                    trueGrit.EffectiveCost);
                 if (owner.Resources.GetResourceAmount(gunslinger.Grit.Resource) !=
-                    gritBefore - 1)
+                    gritBefore - trueGrit.EffectiveCost)
                     throw new InvalidOperationException(
                         "Menacing Shot grit spend was not exact.");
                 spent = true;
@@ -91,7 +94,8 @@ namespace KingmakerGunslinger.Deeds
                 if (!completed)
                 {
                     if (spent)
-                        owner.Resources.Restore(gunslinger.Grit.Resource, 1);
+                        owner.Resources.Restore(gunslinger.Grit.Resource,
+                            trueGrit.EffectiveCost);
                     if (discharged)
                         FirearmRuntimeState.Service.Transition(firearm.Weapon,
                             current => before);
@@ -116,6 +120,9 @@ namespace KingmakerGunslinger.Deeds
             int wisdom = owner == null ? 0 : owner.Stats.Wisdom.Bonus;
             int grit = owner == null || gunslinger == null ? 0 :
                 owner.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+            if (owner != null && gunslinger != null &&
+                TrueGritRuntime.Evaluate(owner, TrueGritDeed.MenacingShot,
+                    1, false).Available) grit = Math.Max(1, grit);
             return Policy.Evaluate(new MenacingShotRequest(level, wisdom, exact,
                 state.Condition, state.LoadedRounds, grit));
         }

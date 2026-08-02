@@ -30,8 +30,10 @@ namespace KingmakerGunslinger.Deeds
             if (!ExactEquippedFirearmResolver.TryResolve(ability.Caster,
                 out firearm, out reason)) return false;
             FirearmState state = firearm.Firearm.Repository.State;
+            TrueGritDecision grit = TrueGritRuntime.Evaluate(ability.Caster,
+                TrueGritDeed.StunningShot, 2, false);
             return ability.Caster.Progression.GetClassLevel(GunslingerClass) >= 19 &&
-                ability.Caster.Resources.GetResourceAmount(Grit) >= 2 &&
+                grit.Available &&
                 state.Condition != FirearmCondition.Wrecked && state.LoadedRounds >= 1 &&
                 !ability.Caster.Buffs.RawFacts.OfType<Buff>().Any(value =>
                     ReferenceEquals(value.Blueprint, ArmedMarker));
