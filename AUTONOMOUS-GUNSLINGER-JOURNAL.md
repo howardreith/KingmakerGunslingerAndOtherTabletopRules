@@ -2782,3 +2782,19 @@
   precise decision in `HUMAN-INPUT-REQUIRED.md`. Persistent origin binding is
   recommended for fidelity. Broad first-level creation Commit remains
   prohibited independently.
+
+## 2026-08-02 Sprint 84 Gunsmithing source qualification
+
+- The user authorized Sprint 83 option 1: persistent originating owner, exact
+  owner-bound effective condition, fixed 22 gp value, and a real automatically
+  granted Gunsmithing feature gating Repair/Overhaul.
+- Added the visible localized `KMG.Classes.Gunsmithing` blueprint at Gunslinger
+  level one. Firearm Proficiency now grants Reload only; Gunsmithing exclusively
+  grants Overhaul and Repair through native `AddFacts` ownership.
+- Extended the append-only ledger to 127 identities (126 active, one reserved)
+  and updated inherited validators to assert the new authority split.
+- Focused contract, repository validation, 838/838 domain tests, clean Release
+  build, output validation, and strict package validation passed. Package/DLL
+  hashes are `b6c60c1a...3918` / `2d24750a...b05`.
+- Next: commit the source-qualified tree, run exact mod load and two fresh
+  save-free presentation observations, then implement origin persistence.

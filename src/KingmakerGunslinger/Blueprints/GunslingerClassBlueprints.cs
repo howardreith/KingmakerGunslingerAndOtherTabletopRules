@@ -18,6 +18,7 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal GunslingerClassBlueprintSet(BlueprintCharacterClass characterClass,
             BlueprintProgression progression, BlueprintFeature proficiencies,
+            BlueprintFeature gunsmithing,
             GritBlueprintSet grit, DeadeyeBlueprintSet deadeye,
             GunslingerDodgeBlueprintSet dodge, QuickClearBlueprintSet quickClear,
             NimbleBlueprintSet nimble, BlueprintFeature initiative,
@@ -37,6 +38,7 @@ namespace KingmakerGunslinger.Blueprints
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
             Proficiencies = proficiencies ?? throw new ArgumentNullException("proficiencies");
+            Gunsmithing = gunsmithing ?? throw new ArgumentNullException("gunsmithing");
             Grit = grit ?? throw new ArgumentNullException("grit");
             Deadeye = deadeye ?? throw new ArgumentNullException("deadeye");
             Dodge = dodge ?? throw new ArgumentNullException("dodge");
@@ -74,6 +76,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
         internal BlueprintFeature Proficiencies { get; private set; }
+        internal BlueprintFeature Gunsmithing { get; private set; }
         internal GritBlueprintSet Grit { get; private set; }
         internal DeadeyeBlueprintSet Deadeye { get; private set; }
         internal GunslingerDodgeBlueprintSet Dodge { get; private set; }
@@ -141,12 +144,14 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static GunslingerClassBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry,
-            BlueprintFeature firearmProficiency, BlueprintItemWeapon startingPistol,
+            BlueprintFeature firearmProficiency, BlueprintFeature gunsmithing,
+            BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
             if (firearmProficiency == null) throw new ArgumentNullException("firearmProficiency");
+            if (gunsmithing == null) throw new ArgumentNullException("gunsmithing");
             if (startingPistol == null) throw new ArgumentNullException("startingPistol");
             if (blackPowder == null) throw new ArgumentNullException("blackPowder");
             if (leadBall == null) throw new ArgumentNullException("leadBall");
@@ -220,7 +225,7 @@ namespace KingmakerGunslinger.Blueprints
 
             characterClass.Progression = progression;
             progression.Classes = new[] { characterClass };
-            progression.LevelEntries = CreateLevelEntries(proficiencies, grit.Feature,
+            progression.LevelEntries = CreateLevelEntries(proficiencies, gunsmithing, grit.Feature,
                 deadeye.Feature, dodge.Feature, quickClear.Feature, nimble.Features);
             progression.LevelEntries[2].Features.Add(initiative);
             progression.LevelEntries[2].Features.Add(pistolWhip.Feature);
@@ -249,7 +254,7 @@ namespace KingmakerGunslinger.Blueprints
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression,
-                proficiencies, grit, deadeye, dodge, quickClear, nimble, initiative,
+                proficiencies, gunsmithing, grit, deadeye, dodge, quickClear, nimble, initiative,
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
                 targetingHead, targetingTorso, targetingLegs, bleedingWound,
                 expertLoading, lightningReload, evasive, menacingShot,
@@ -367,7 +372,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static LevelEntry[] CreateLevelEntries(BlueprintFeature proficiencies,
-            BlueprintFeature grit, BlueprintFeature deadeye,
+            BlueprintFeature gunsmithing, BlueprintFeature grit, BlueprintFeature deadeye,
             BlueprintFeature dodge, BlueprintFeature quickClear,
             BlueprintFeature[] nimble)
         {
@@ -375,7 +380,7 @@ namespace KingmakerGunslinger.Blueprints
             for (int level = 1; level <= 20; level++)
             {
                 var features = level == 1 ? new List<BlueprintFeatureBase>
-                    { proficiencies, grit, deadeye, dodge, quickClear } :
+                    { proficiencies, gunsmithing, grit, deadeye, dodge, quickClear } :
                     new List<BlueprintFeatureBase>();
                 int nimbleIndex = level < 2 || (level - 2) % 4 != 0 ? -1 :
                     (level - 2) / 4;

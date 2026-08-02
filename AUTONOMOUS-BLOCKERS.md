@@ -1,8 +1,7 @@
 # Autonomous Gunslinger blockers
 
-A genuine human-input hard stop is established for Sprint 83 below. Other
-bounded gates remain independently documented and must not be conflated with
-that design-authority decision.
+The Sprint 83 human-input gate is resolved by explicit authorization of option
+1. Other bounded gates remain independently documented.
 
 ## 2026-08-02 save-backed feature-scenario permission boundary
 
@@ -95,12 +94,11 @@ that design-authority decision.
 
 ## Active gates
 
-- Sprint 83 established a genuine human-input gate for Gunsmith and the
-  battered starting firearm. Local authority defines the tabletop behavior but
-  no project decision selects persistent origin binding, a class-bound
-  approximation, or a maintenance-only omission. These outcomes materially
-  change transfer, equipment, economy, save schema, and feat value. The exact
-  question and recommended option are in `HUMAN-INPUT-REQUIRED.md`.
+- Sprint 83 is resolved: the user authorized persistent originating-owner
+  binding, exact owner-bound effective condition, fixed 22 gp value, and a real
+  automatically granted Gunsmithing feature gating Repair/Overhaul. Sprint 84
+  source-qualifies the feature split; item-owner persistence remains active
+  engineering work, not a human-input blocker.
 
 - Sprint 80 comprehensive acceptance exposed one probabilistic observer
   assumption: a -100 Will modifier does not defeat Kingmaker's natural-20 save

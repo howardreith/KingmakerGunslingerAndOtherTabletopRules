@@ -8,10 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `7ab1a58` (production identical-firearm switching).
+- Audited source HEAD: `6d701f4`; Sprint 84 Gunsmithing changes are source-qualified and awaiting their clean checkpoint commit.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
+- Current checkpoint: Sprint 84 implements the authorized real Gunsmithing feature. Firearm Proficiency grants Reload only; visible level-one Gunsmithing grants Repair/Overhaul. Focused validation, repository validation, 838 tests, clean Release build, and strict packaging passed. Commit this tree, run mod-load plus two save-free presentation observations, then continue exact-item origin persistence. Historical Sprint 70 evidence follows.
+- Historical checkpoint: Sprint 70 exact mod load and the corrected final guarded
   level-up commit observation passed on `d0b15f6`, proving detached Gunslinger
   level `0->1->2`, native success callback, and unchanged external collections.
   Only one PASS is available because the first of two allowed attempts exposed

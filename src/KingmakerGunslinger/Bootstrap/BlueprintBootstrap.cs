@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 125;
+        internal const int ExpectedRegisteredBlueprintCount = 126;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -426,7 +426,7 @@ namespace KingmakerGunslinger.Bootstrap
                 context.Logger.Info(
                     "blueprints",
                     "initialize.complete",
-                    "Blueprint lifecycle initialization completed exactly once; the firearm domain probe passed, twenty custom blueprints were registered transactionally, the production early-firearm catalog and item-token state carrier were configured, basic ammunition and Firearm Repair Kit items were published, and Reload, Overhaul, and Repair were attached to Firearm Proficiency.");
+                    "Blueprint lifecycle initialization completed exactly once; all active custom blueprints were registered transactionally, the production firearm catalog and item-token state carrier were configured, basic ammunition and Firearm Repair Kit items were published, Firearm Proficiency granted Reload, and Gunsmithing granted Overhaul and Repair.");
                 return true;
             }
             catch (Exception exception)
@@ -553,15 +553,16 @@ namespace KingmakerGunslinger.Bootstrap
                         testMusket.Item,
                         firearmRepairKit);
 
-                FirearmProficiencyBlueprints.AttachAbilities(
+                FirearmProficiencyBlueprints.AttachReload(
                     firearmProficiency,
-                    reloadTestMusketAbility,
-                    overhaulTestMusketAbility,
-                    repairTestMusketAbility);
+                    reloadTestMusketAbility);
+
+                BlueprintFeature gunsmithing = GunsmithingBlueprints.Register(
+                    registry, overhaulTestMusketAbility, repairTestMusketAbility);
 
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
-                        library, registry, firearmProficiency,
+                        library, registry, firearmProficiency, gunsmithing,
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall);

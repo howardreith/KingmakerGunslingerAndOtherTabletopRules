@@ -11,15 +11,14 @@ namespace KingmakerGunslinger.Blueprints
 {
     /// <summary>
     /// Registers the shared firearm-proficiency fact used by firearm equipment
-    /// restrictions and future class progression. The fact currently grants the three
-    /// player-facing exact-firearm actions: Reload, Wrecked-to-Broken Overhaul, and
-    /// Broken-to-Normal Repair.
+    /// restrictions and class progression. The fact grants Reload; Gunsmithing owns
+    /// the separate maintenance actions.
     /// </summary>
     internal static class FirearmProficiencyBlueprints
     {
         internal const string Symbol = "KMG.Firearms.FirearmProficiency";
         internal const string InternalName = "KMG_FirearmProficiency_Feature";
-        internal const string AbilityGrantComponentName = "$KMG_GrantFirearmAbilities";
+        internal const string AbilityGrantComponentName = "$KMG_GrantFirearmReload";
 
         internal static BlueprintFeature Register(BlueprintRegistry registry)
         {
@@ -35,34 +34,14 @@ namespace KingmakerGunslinger.Blueprints
             return feature;
         }
 
-        internal static void AttachAbilities(
+        internal static void AttachReload(
             BlueprintFeature feature,
-            BlueprintAbility reloadAbility,
-            BlueprintAbility overhaulAbility,
-            BlueprintAbility repairAbility)
+            BlueprintAbility reloadAbility)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
             {
                 throw new ArgumentNullException("reloadAbility");
-            }
-
-            if (overhaulAbility == null)
-            {
-                throw new ArgumentNullException("overhaulAbility");
-            }
-
-            if (repairAbility == null)
-            {
-                throw new ArgumentNullException("repairAbility");
-            }
-
-            if (ReferenceEquals(reloadAbility, overhaulAbility) ||
-                ReferenceEquals(reloadAbility, repairAbility) ||
-                ReferenceEquals(overhaulAbility, repairAbility))
-            {
-                throw new ArgumentException(
-                    "Firearm Proficiency requires distinct Reload, Overhaul, and Repair abilities.");
             }
 
             if (feature.ComponentsArray.Length != 0)
@@ -75,13 +54,11 @@ namespace KingmakerGunslinger.Blueprints
             addFacts.name = AbilityGrantComponentName;
             addFacts.Facts = new BlueprintUnitFact[]
             {
-                reloadAbility,
-                overhaulAbility,
-                repairAbility
+                reloadAbility
             };
             addFacts.DoNotRestoreMissingFacts = false;
             feature.ComponentsArray = new BlueprintComponent[] { addFacts };
-            Validate(feature, reloadAbility, overhaulAbility, repairAbility);
+            Validate(feature, reloadAbility);
         }
 
         internal static void ValidateBase(BlueprintFeature feature)
@@ -118,24 +95,12 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static void Validate(
             BlueprintFeature feature,
-            BlueprintAbility reloadAbility,
-            BlueprintAbility overhaulAbility,
-            BlueprintAbility repairAbility)
+            BlueprintAbility reloadAbility)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
             {
                 throw new ArgumentNullException("reloadAbility");
-            }
-
-            if (overhaulAbility == null)
-            {
-                throw new ArgumentNullException("overhaulAbility");
-            }
-
-            if (repairAbility == null)
-            {
-                throw new ArgumentNullException("repairAbility");
             }
 
             AddFacts[] grants = feature.ComponentsArray.OfType<AddFacts>().ToArray();
@@ -152,13 +117,11 @@ namespace KingmakerGunslinger.Blueprints
                     StringComparison.Ordinal) ||
                 grant.DoNotRestoreMissingFacts ||
                 grant.Facts == null ||
-                grant.Facts.Length != 3 ||
-                !ReferenceEquals(grant.Facts[0], reloadAbility) ||
-                !ReferenceEquals(grant.Facts[1], overhaulAbility) ||
-                !ReferenceEquals(grant.Facts[2], repairAbility))
+                grant.Facts.Length != 1 ||
+                !ReferenceEquals(grant.Facts[0], reloadAbility))
             {
                 throw new InvalidOperationException(
-                    "The Firearm Proficiency ability grant has incorrect identity, restore policy, order, or target abilities.");
+                    "The Firearm Proficiency Reload grant has incorrect identity, restore policy, or target ability.");
             }
         }
 

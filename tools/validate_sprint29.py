@@ -164,24 +164,24 @@ def validate(
             f"ExpectedRegisteredBlueprintCount = {expected_registered_blueprints}",
             "RepairTestMusketAbilityBlueprints.Register",
             "repairTestMusketAbility",
-            "AttachAbilities",
+            "AttachReload",
+            "GunsmithingBlueprints.Register",
             "_repairTestMusketAbility",
         ],
         "Blueprint bootstrap",
     )
 
-    proficiency = read(root, "src/KingmakerGunslinger/Blueprints/FirearmProficiencyBlueprints.cs")
+    proficiency = read(root, "src/KingmakerGunslinger/Blueprints/GunsmithingBlueprints.cs")
     require_tokens(
         proficiency,
         [
             "BlueprintAbility repairAbility",
-            "grant.Facts.Length != 3",
-            "grant.Facts[0], reloadAbility",
-            "grant.Facts[1], overhaulAbility",
-            "grant.Facts[2], repairAbility",
+            "grants[0].Facts.Length != 2",
+            "grants[0].Facts[0], overhaulAbility",
+            "grants[0].Facts[1], repairAbility",
             "DoNotRestoreMissingFacts = false",
         ],
-        "Firearm Proficiency three-ability grant",
+        "Gunsmithing maintenance grant",
     )
 
     transaction = read(root, "src/KingmakerGunslinger/Recovery/FirearmRepairTransactionService.cs")
@@ -353,7 +353,8 @@ def validate(
                      87: "eighty-seven", 90: "ninety",
                      94: "ninety-four", 96: "ninety-six",
                      101: "one-hundred-one", 102: "one-hundred-two",
-                     106: "one-hundred-six", 125: "one-hundred-twenty-five"}
+                     106: "one-hundred-six", 125: "one-hundred-twenty-five",
+                     126: "one-hundred-twenty-six"}
                     .get(expected_active_blueprints, "twenty-four"))
     ledger_summary = (f"{expected_ledger_entries} stable IDs: "
                       f"{expected_active_blueprints} active and one reserved")

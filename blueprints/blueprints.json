@@ -233,6 +233,14 @@
       "notes": "Exact simple, martial, firearm, and light-armor proficiency aggregate for level one."
     },
     {
+      "symbol": "KMG.Classes.Gunsmithing",
+      "guid": "a8d93e64a1694e689bce70b910ed5a83",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 84",
+      "notes": "Visible level-one Gunsmithing feature that exclusively grants firearm Repair and Overhaul."
+    },
+    {
       "symbol": "KMG.Classes.GunslingerGritResource",
       "guid": "9876b3e744dd422b9c259d19861ad222",
       "plannedType": "BlueprintAbilityResource",

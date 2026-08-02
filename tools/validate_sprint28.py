@@ -129,7 +129,8 @@ def validate(final: bool) -> None:
             "ExpectedRegisteredBlueprintCount = 13",
             "FirearmRepairKitBlueprints.Register",
             "OverhaulTestMusketAbilityBlueprints.Register",
-            "AttachAbilities",
+            "AttachReload",
+            "GunsmithingBlueprints.Register",
             "_firearmRepairKit",
             "_overhaulTestMusketAbility",
         ],
@@ -140,11 +141,10 @@ def validate(final: bool) -> None:
     require_tokens(
         proficiency,
         [
-            "AttachAbilities",
+            "AttachReload",
             "new BlueprintUnitFact[]",
             "reloadAbility,",
-            "overhaulAbility",
-            "Facts.Length != 2",
+            "Facts.Length != 1",
             "DoNotRestoreMissingFacts = false",
         ],
         "Firearm Proficiency ability grant",
