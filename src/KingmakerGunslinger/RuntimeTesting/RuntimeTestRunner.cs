@@ -1567,10 +1567,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             long ordinarySaleValue = -1;
             bool exactOwnership = false;
             bool transferRetained = false;
+            bool vendorRoundTrip = false;
             Kingmaker.EntitySystem.Entities.UnitEntityData transferUnit = null;
             UnitDescriptor mainDescriptor = null;
             ItemEntityWeapon batteredItem = null;
             bool transferredAway = false;
+            VendorLogic vendor = null;
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1678,7 +1680,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Exact native transfer rollback to the source inventory failed.");
                 transferredAway = false;
-                var vendor = new VendorLogic();
+                vendor = new VendorLogic();
+                ItemEntity staged = vendor.AddForBuy(batteredItem, 1);
+                ItemEntity returned = vendor.RemoveFromBuy(staged, 1);
+                Kingmaker.EntitySystem.Entities.UnitEntityData vendorOwner;
+                vendorRoundTrip = ReferenceEquals(staged, batteredItem) &&
+                    ReferenceEquals(returned, batteredItem) &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(
+                        batteredItem, out vendorOwner) &&
+                    ReferenceEquals(vendorOwner, mainDescriptor.Unit);
                 batteredSaleValue = vendor.GetItemBuyPrice(batteredItem);
                 var ordinary = new ItemEntityWeapon(
                     (BlueprintItemWeapon)expected[0]);
@@ -1691,6 +1701,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (vendor != null)
+                {
+                    object ignored;
+                    string method;
+                    ReflectionAccess.TryInvokeAny(vendor,
+                        new[] { "ReturnItems" }, new[] { Array.Empty<object>() },
+                        out ignored, out method);
+                }
                 if (transferredAway && transferUnit != null && batteredItem != null &&
                     mainDescriptor != null)
                 {
@@ -1798,6 +1816,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "same item and battered origin survive transfer and return",
                     "retained=" + transferRetained, transferRetained,
                     "exact ItemsCollection Extract/Add across main and detached inventories"),
+                Assertion("native-vendor-staging-roundtrip",
+                    "same item and battered origin survive AddForBuy/RemoveFromBuy",
+                    "retained=" + vendorRoundTrip, vendorRoundTrip,
+                    "exact VendorLogic reversible pre-deal transaction"),
                 Assertion("exact-in-memory-rollback",
                     "inventory references, class identity, gold, and money restored",
                     "inventory=" + exactRollback + ";class=" + classRestored +

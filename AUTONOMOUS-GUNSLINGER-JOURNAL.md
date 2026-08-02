@@ -3280,3 +3280,11 @@
   Repository validation, 849 tests, Release build, and strict package pass;
   package/DLL hashes are `9c85c69b1a81f955c57e344c8ed279153312d860bf1a80ea810cd544a9ac0608` /
   `33695ba4b518a6555a7a3a9897558dd2cb7e07015e7ea8cb967e718757233379`.
+- Exact read-only vendor observer `20260802T1742189038234Z` on `b0287aa`
+  exposed `AddForBuy`, `RemoveFromBuy`, `ReturnItems`, and the separate mutating
+  `Deal` boundary. The next fixture performs an exact reversible pre-Deal
+  same-item staging roundtrip inside the existing working-save transaction.
+  The installed `ReturnItems` method is nonpublic, so guaranteed cleanup uses
+  the existing exact reflection boundary. Full gates pass; package/DLL hashes
+  are `cdc06158f2d209ab3740d122e3c286f0b5b6b27ebc7d2b0db2a5d208c9b56448` /
+  `6fa1ed9d75628307230e4879748a8fbe77fbb5cf9e7a8ca3d5fecf25667a4572`.
