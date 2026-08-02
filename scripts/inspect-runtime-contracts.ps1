@@ -319,6 +319,7 @@ try {
     $rulebookRollEntryType = $gameAssembly.GetType('Kingmaker.RuleSystem.RulebookEvent+RollEntry', $false, $false)
     $ruleAttackWithWeaponType = $gameAssembly.GetType('Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon', $false, $false)
     $ruleAttackRollType = $gameAssembly.GetType('Kingmaker.RuleSystem.Rules.RuleAttackRoll', $false, $false)
+    $ruleCalculateWeaponStatsType = $gameAssembly.GetType('Kingmaker.RuleSystem.Rules.RuleCalculateWeaponStats', $false, $false)
     $ruleCalculateAcType = $gameAssembly.GetType('Kingmaker.RuleSystem.Rules.RuleCalculateAC', $false, $false)
     $unitEntityDataType = $gameAssembly.GetType('Kingmaker.EntitySystem.Entities.UnitEntityData', $false, $false)
     $itemEntityType = $gameAssembly.GetType('Kingmaker.Items.ItemEntity', $false, $false)
@@ -727,11 +728,23 @@ try {
     }
     else { @() }
     $weaponAttackMembers = if ($ruleAttackWithWeaponType) {
-        @(Get-KmgNamedMembers -Type $ruleAttackWithWeaponType -Names @('Weapon', 'm_Weapon', 'Initiator', 'Target', 'IsFullAttack', 'IsFirstAttack', 'IsAttackOfOpportunity', 'AttackNumber') -BindingFlags $bindingFlags)
+        @(Get-KmgNamedMembers -Type $ruleAttackWithWeaponType -Names @('Weapon', 'm_Weapon', 'Initiator', 'Target', 'IsFullAttack', 'IsFirstAttack', 'IsAttackOfOpportunity', 'AttackNumber', 'AttackBonusPenalty', 'AttackRoll', 'MeleeDamage', 'AutoHit', 'AutoCriticalThreat', 'AutoCriticalConfirmation') -BindingFlags $bindingFlags)
     }
     else { @() }
     $attackRollMembers = if ($ruleAttackRollType) {
-        @(Get-KmgNamedMembers -Type $ruleAttackRollType -Names @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon', 'D20', 'RollResult', 'NaturalRoll', 'AttackBonus', 'AttackRoll', 'Result', 'IsHit', 'TargetAC') -BindingFlags $bindingFlags)
+        @(Get-KmgNamedMembers -Type $ruleAttackRollType -Names @('Weapon', 'm_Weapon', 'RuleAttackWithWeapon', 'D20', 'Roll', 'RollResult', 'NaturalRoll', 'AttackBonus', 'AttackBonusPenalty', 'AttackRoll', 'Result', 'IsHit', 'TargetAC', 'IsCriticalThreat', 'IsCriticalConfirmed', 'CriticalConfirmationRoll', 'AutoHit', 'AutoCriticalThreat', 'AutoCriticalConfirmation') -BindingFlags $bindingFlags)
+    }
+    else { @() }
+    $attackRollAllDataMembers = if ($ruleAttackRollType) {
+        @($ruleAttackRollType.GetMembers($bindingFlags) | Where-Object {
+            $_ -is [Reflection.FieldInfo] -or $_ -is [Reflection.PropertyInfo]
+        })
+    }
+    else { @() }
+    $weaponStatsMethods = if ($ruleCalculateWeaponStatsType) {
+        @($ruleCalculateWeaponStatsType.GetMethods($bindingFlags) | Where-Object {
+            $_.DeclaringType.FullName -eq $ruleCalculateWeaponStatsType.FullName
+        })
     }
     else { @() }
     $calculateAcMembers = if ($ruleCalculateAcType) {
@@ -1142,6 +1155,9 @@ try {
                 ruleAttackRollType = if ($ruleAttackRollType) { $ruleAttackRollType.FullName } else { $null }
                 ruleAttackRollOnTriggerMethods = @($ruleAttackRollOnTriggerMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
                 ruleAttackRollMembers = @($attackRollMembers | ForEach-Object { Convert-KmgMemberDescription -Member $_ })
+                ruleAttackRollAllDataMembers = @($attackRollAllDataMembers | ForEach-Object { Convert-KmgMemberDescription -Member $_ })
+                ruleCalculateWeaponStatsType = if ($ruleCalculateWeaponStatsType) { $ruleCalculateWeaponStatsType.FullName } else { $null }
+                ruleCalculateWeaponStatsMethods = @($weaponStatsMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
                 ruleCalculateAcType = if ($ruleCalculateAcType) { $ruleCalculateAcType.FullName } else { $null }
                 ruleCalculateAcOnTriggerMethods = @($ruleCalculateAcOnTriggerMethods | ForEach-Object { Convert-KmgMethodDescription -Method $_ })
                 ruleCalculateAcMembers = @($calculateAcMembers | ForEach-Object { Convert-KmgMemberDescription -Member $_ })

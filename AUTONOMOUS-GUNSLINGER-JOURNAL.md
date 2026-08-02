@@ -1602,3 +1602,30 @@
   `593477e79f303c8207574ae511961d7bd003db01ca433e92d1d0b43c9cc5c5db`.
 - Sprint 42 is complete. Continue immediately to the next incomplete base-class
   or deed row; this checkpoint is not a stopping condition.
+
+## 2026-08-01 Sprint 43 Dead Shot source qualification
+
+- The authoritative level-seven deed spends 1 grit and one chamber for a
+  full-round shot, rolls the BAB iteratives against one target, adds only one
+  base-dice packet per hit after the first, confirms at most one critical at
+  highest BAB -5 adjusted by extra threats, and misfires only when every roll
+  misfires.
+- Added two stable production blueprints and the level-seven progression grant.
+  Short-lived weak contexts distinguish native probe rolls from the one
+  item-owned discharge, preventing multiple chamber consumption, multiple
+  condition transitions, or probe critical grit recovery. The final native
+  weapon delivery overrides only `WeaponDamageDiceOverride`; ordinary damage
+  modifiers, target handling, and critical confirmation remain native.
+- Added six deterministic policy/outcome cases. All 762 tests pass. Sprint 43
+  plus inherited validation, 18 request checks, 40 preflight checks, 28
+  validation-dispatch checks, clean exact-reference Release compilation, and
+  strict package validation pass. Source-only scenario WhatIf also passes.
+- The guarded save-free scenario observes the level-seven full-round blueprint,
+  forces BAB 11 rolls `19,2,19` to prove two hits/two base-dice packets with no
+  aggregate misfire, then forces `1,1,1` to prove exactly one chamber/grit cost
+  and one Normal-to-Broken transition. Detached state is cleaned without saving.
+- Candidate package/DLL SHA-256 are
+  `85c574e881c58f7e2f15a49a855cfc40d85efb3ce51174021d1558b5ba61b27d` /
+  `c477bb009ecd47cc880e4525ad7a6f1425cebbef1074f75420810854091f7870`.
+- Next action: commit the source checkpoint, require exact mod load, and run two
+  independent Dead Shot PASS processes. Sprint 43 is not a stopping condition.

@@ -18,6 +18,7 @@ namespace KingmakerGunslinger.Deeds
 
         internal static void BeforeAttackRoll(RuleAttackRoll attackRoll)
         {
+            if (DeadShotRuntime.IsProbe(attackRoll)) return;
             if (attackRoll == null) return;
             try
             {

@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.Grit
 
         internal static void AfterAttackRoll(RuleAttackRoll attackRoll)
         {
+            if (Deeds.DeadShotRuntime.IsProbe(attackRoll)) return;
             if (attackRoll == null)
                 return;
 

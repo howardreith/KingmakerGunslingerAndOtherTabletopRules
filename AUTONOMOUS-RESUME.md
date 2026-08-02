@@ -8,15 +8,15 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `76ae9f9` (runtime-qualified Sprint 42 Gun Training source and
-  natural-roll fixture correction).
+- Audited HEAD: `efbd5bd` (Sprint 42 runtime qualification evidence).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 42 Gun Training is runtime-qualified. Cumulative
-  exact-kind choices are present at 5/9/13/17, matching firearms add Dexterity
-  through native weapon stats, and Broken misfire uses ordinary +4 or trained
-  +2. Select the next incomplete fidelity/coverage row immediately.
-- Version: `0.0.42`.
+- Current checkpoint: Sprint 43 Dead Shot is source-qualified. The level-seven
+  full-round ability uses BAB-native probes, one item-owned discharge/damage
+  delivery, base-dice-only hit aggregation, one adjusted native critical
+  confirmation, and all-roll aggregate misfire. Commit the source checkpoint,
+  then run exact mod load and two guarded feature runs.
+- Version: `0.0.43`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 

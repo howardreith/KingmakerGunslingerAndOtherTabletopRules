@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.42-s42-gun-training",
-  "version": "0.0.42",
+  "milestone": "0.0.43-s43-dead-shot",
+  "version": "0.0.43",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 756,
+    "testCount": 762,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

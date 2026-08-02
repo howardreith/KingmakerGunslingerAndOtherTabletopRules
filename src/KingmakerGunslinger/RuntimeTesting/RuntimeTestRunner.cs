@@ -34,6 +34,8 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 using Kingmaker.Blueprints.Items.Armors;
@@ -420,6 +422,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining)
                 {
                     Complete(RunDisposableGunslingerGunTraining());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerDeadShot)
+                {
+                    Complete(RunDisposableGunslingerDeadShot());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3698,6 +3706,146 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "facts removed, item state forgotten, disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerDeadShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            Deeds.DeadShotExecutionResult mixed = null;
+            Deeds.DeadShotExecutionResult allMisfire = null;
+            int gritBefore = -1, gritAfterMixed = -1, gritAfterMisfire = -1;
+            bool cleaned = false;
+            int targetDamageBefore = 0;
+            string stage = "blueprint-contract";
+            int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
+                .Count(value => ReferenceEquals(value, gunslinger.DeadShot.Feature));
+            bool blueprintContract = levelSevenCount == 1 &&
+                gunslinger.DeadShot.Ability.IsFullRoundAction &&
+                gunslinger.DeadShot.Ability.ActionType == UnitCommand.CommandType.Standard &&
+                gunslinger.DeadShot.Ability.Range == AbilityRange.Weapon;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                targetDamageBefore = target.Damage;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+
+                stage = "mixed-volley";
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                mixed = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(attacker,
+                    target, 19, 2, 19);
+                gritAfterMixed = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                stage = "all-misfire-volley";
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                allMisfire = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(attacker,
+                    target, 1, 1, 1);
+                gritAfterMisfire = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Dead Shot failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Damage = targetDamageBefore;
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = mixed == null || allMisfire == null ? "missing" :
+                "probes=" + mixed.Probes.Length +
+                ";bonuses=" + string.Join(",", mixed.Decision.AttackBonuses) +
+                ";rolls=" + string.Join(",", mixed.Probes.Select(value =>
+                    value.Roll.Value)) + ";hits=" + mixed.Outcome.HitCount +
+                ";threats=" + mixed.Outcome.ThreatCount +
+                ";packets=" + mixed.Outcome.BaseDamageDicePackets +
+                ";mixedCondition=" + mixed.After.Condition +
+                ";allMisfire=" + allMisfire.Outcome.Misfires +
+                ";misfireCondition=" + allMisfire.After.Condition +
+                ";grit=" + gritBefore + "->" + gritAfterMixed +
+                "->" + gritAfterMisfire;
+            bool mixedContract = mixed != null && mixed.Probes.Length == 3 &&
+                mixed.Decision.AttackBonuses.SequenceEqual(new[] { 11, 6, 1 }) &&
+                mixed.Probes.Select(value => value.Roll.Value)
+                    .SequenceEqual(new[] { 19, 2, 19 }) &&
+                mixed.Outcome.HitCount == 2 && mixed.Outcome.ThreatCount == 0 &&
+                mixed.Outcome.BaseDamageDicePackets == 2 &&
+                !mixed.Outcome.Misfires && mixed.After.IsEmpty &&
+                mixed.After.Condition == FirearmCondition.Normal &&
+                mixed.Delivery.WeaponStats.WeaponDamageDiceOverride.HasValue &&
+                mixed.Delivery.WeaponStats.WeaponDamageDiceOverride.Value.Equals(
+                    new DiceFormula(2, mixed.Delivery.Weapon.Damage.Dice));
+            bool misfireContract = allMisfire != null &&
+                allMisfire.Probes.Select(value => value.Roll.Value)
+                    .SequenceEqual(new[] { 1, 1, 1 }) &&
+                allMisfire.Outcome.Misfires && !allMisfire.Outcome.IsHit &&
+                allMisfire.After.IsEmpty &&
+                allMisfire.After.Condition == FirearmCondition.Broken;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("dead-shot-progression", "level 7 full-round weapon ability",
+                    observed, blueprintContract,
+                    "production progression and BlueprintAbility contract"),
+                Assertion("dead-shot-mixed-volley",
+                    "BAB 11 rolls 19,2,19; two hits; two base-dice packets; no misfire",
+                    observed, mixedContract,
+                    "native probe rolls plus one primary weapon delivery"),
+                Assertion("dead-shot-all-misfire",
+                    "three natural 1 rolls; one chamber; Normal -> Broken",
+                    observed, misfireContract,
+                    "aggregate misfire and exact item-state transition"),
+                Assertion("dead-shot-cost", "one grit per accepted delivery",
+                    observed, gritBefore > 0 && gritAfterMixed == gritBefore - 1 &&
+                    gritAfterMisfire == gritAfterMixed,
+                    "native per-unit grit resource"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "item state forgotten and detached units disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

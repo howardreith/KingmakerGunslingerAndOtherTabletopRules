@@ -268,6 +268,17 @@
     <Compile Include="Firing\FirearmDischargeService.cs" />
     <Compile Include="Firing\FirearmDischargeStatus.cs" />
     <Compile Include="Firing\ReferenceEventGate.cs" />
+    <Compile Include="Deeds\DeadShotDecision.cs" />
+    <Compile Include="Deeds\DeadShotOutcome.cs" />
+    <Compile Include="Deeds\DeadShotOutcomeService.cs" />
+    <Compile Include="Deeds\DeadShotRequest.cs" />
+    <Compile Include="Deeds\DeadShotRollObservation.cs" />
+    <Compile Include="Deeds\DeadShotService.cs" />
+    <Compile Include="Deeds\DeadShotStatus.cs" />
+    <Compile Include="Deeds\DeadShotRuntime.cs" />
+    <Compile Include="Deeds\DeadShotExecutionResult.cs" />
+    <Compile Include="Deeds\DeadShotAbilityLogic.cs" />
+    <Compile Include="Blueprints\DeadShotBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

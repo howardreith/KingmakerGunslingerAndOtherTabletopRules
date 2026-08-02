@@ -32,6 +32,11 @@ namespace KingmakerGunslinger.Firing
                 return;
             }
 
+            if (Deeds.DeadShotRuntime.ShouldBypassDischarge(attackRoll))
+            {
+                return;
+            }
+
             if (!EventGate.TryMark(ruleEvent))
             {
                 FirearmDischargeRuntimeDiagnostics.RecordDuplicate();

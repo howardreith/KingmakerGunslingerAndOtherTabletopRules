@@ -75,6 +75,10 @@ No genuine human-input hard stop is currently established.
   The next incomplete base-class/deed row is an engineering gate, not a
   human-input blocker.
 
+- Sprint 43 Dead Shot is source-qualified at version `0.0.43`. Exact mod load
+  and two independent guarded mixed/all-misfire runs remain an engineering
+  gate, not a human-input blocker.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

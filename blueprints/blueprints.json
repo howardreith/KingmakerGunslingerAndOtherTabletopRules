@@ -487,6 +487,22 @@
       "status": "active",
       "milestone": "Sprint 42",
       "notes": "Revolver Gun Training choice with exact-kind Dexterity damage and trained Broken misfire policy."
+    },
+    {
+      "symbol": "KMG.Deeds.DeadShotFeature",
+      "guid": "4f3a81c6d2754ec6920b7d14aa2e6c39",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 43",
+      "notes": "Level-seven Dead Shot feature granting the production full-round deed."
+    },
+    {
+      "symbol": "KMG.Deeds.DeadShotAbility",
+      "guid": "c6e2147ab3f84aa9812d37c9650be421",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 43",
+      "notes": "Full-round BAB-iterative Dead Shot with one discharge and aggregate damage, critical, and misfire resolution."
     }
   ]
 }

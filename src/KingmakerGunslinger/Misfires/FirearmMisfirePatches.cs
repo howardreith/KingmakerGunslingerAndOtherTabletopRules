@@ -28,6 +28,7 @@ namespace KingmakerGunslinger.Misfires
             RuleAttackRoll __instance,
             ref RulebookEvent.RollEntry value)
         {
+            Deeds.DeadShotRuntime.BeforeSetRoll(__instance, ref value);
             FirearmMisfireRuntime.BeforeSetRoll(__instance, ref value);
         }
     }
@@ -57,6 +58,7 @@ namespace KingmakerGunslinger.Misfires
             int d20,
             ref bool __result)
         {
+            Deeds.DeadShotRuntime.AfterIsSuccessRoll(__instance, d20, ref __result);
             FirearmMisfireRuntime.AfterIsSuccessRoll(
                 __instance,
                 d20,
