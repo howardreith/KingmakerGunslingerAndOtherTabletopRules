@@ -233,6 +233,7 @@
     <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
     <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs" />
+    <Compile Include="Gunsmithing\BatteredFirearmRuntimeUseResolver.cs" />
     <Compile Include="Firearms\FirearmDefinition.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />

@@ -2846,3 +2846,18 @@
   `2bf60b7d...b15068`.
 - Next: commit, exact mod-load qualify the patch target, then integrate the
   effective-condition overlay into firearm action/attack resolution.
+- Exact `ff2f8c5` mod-load PASS `20260802T1349030296324Z` proves the installed
+  `AddStartingItems` Harmony target resolves and all patches install.
+
+## 2026-08-02 Sprint 88 runtime-use resolver
+
+- Added the read-only runtime adapter from exact item GUID plus exact user unit
+  ID to the qualified battered-use policy. Unbound items remain ordinary;
+  bound items use only persisted origin ownership.
+- The adapter does not create a UnitPart during evaluation and fails closed on
+  missing exact item/user identity. Next: qualify and commit, then inject its
+  effective condition into firing/action boundaries without mutating actual
+  item condition.
+- Focused contract, repository validation, 845 tests, clean Release build, and
+  strict package validation passed. Package/DLL hashes are
+  `b3ecebf5...ef3a3` / `743e9ba2...618c4`.
