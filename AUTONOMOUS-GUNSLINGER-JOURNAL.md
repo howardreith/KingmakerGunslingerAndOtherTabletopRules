@@ -3146,3 +3146,14 @@
   tests, clean Release build, and strict package validation. Package/DLL
   SHA-256: `11cc619e1e3ebdc6a51163a323f721582822c8c0faaf40bf48d004767376b7a3` /
   `201c82b155d965777d792e2177139965266e23e23722bcea198b16c3d98561f2`.
+- Exact `41e8690` mod load `20260802T1625345542011Z` passed. Run
+  `20260802T1626592628423Z` mechanically passed two native targets, mixed
+  `1/2` misfire with Normal retained, all `2/2` misfire with Broken, and full
+  cleanup. Its sole FAIL was measuring registration against external
+  `AllUnits`; the authoritative native query uses `State.Units`. The observer
+  now measures exact pool count delta/restoration and also retains the external
+  reference-snapshot assertion.
+- Authoritative pool-count observer repair passes preflight 84, repository
+  validation, 849 tests, Release build, and strict package. Package/DLL hashes:
+  `8d276bca374e5c8c62400be04c20bae3bef121f3792dae286ce3efaf20d1699b` /
+  `685730c0d493391b4ae0858a1edb03434c16c99e9a6f86116d735dfddfa9c529`.

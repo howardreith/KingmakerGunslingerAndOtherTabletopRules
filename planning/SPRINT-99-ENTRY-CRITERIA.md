@@ -10,8 +10,8 @@ Installed iterator IL proves `GameHelper.GetTargetsAround` enumerates the exact
 `Game.Instance.State.Units` pool. Detached targets are inserted request-locally
 into its public `All` set and removed under boolean ownership in `finally`
 before disposal; no loaded area is required. Both targets retain immortality during the transaction. The
-scenario requires exact `AllUnits` delta `+2` and reference-identical restoration
-to the pre-request snapshot; it grants no faction, quest, loot, dialogue,
+scenario requires exact `State.Units.Count` delta `+2`, exact pool restoration,
+and reference-identical external `AllUnits` restoration to the pre-request snapshot; it grants no faction, quest, loot, dialogue,
 kingdom, or experience state.
 
 Qualification requires an exact-commit mod-load smoke and two consecutive

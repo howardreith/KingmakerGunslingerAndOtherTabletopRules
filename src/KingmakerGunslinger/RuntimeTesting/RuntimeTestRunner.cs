@@ -5747,6 +5747,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object allUnits = ReadExactMember(state, "AllUnits");
             object[] partyBefore = SnapshotReferences(party);
             object[] unitsBefore = SnapshotReferences(allUnits);
+            int unitPoolBefore = Kingmaker.Game.Instance.State.Units.Count;
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData first = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData second = null;
@@ -5774,8 +5775,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 secondRegistered = Kingmaker.Game.Instance.State.Units.All.Add(second);
                 if (!secondRegistered) throw new InvalidOperationException(
                     "Second disposable scatter target was already registered.");
-                registeredCount = SnapshotReferences(allUnits).Length -
-                    unitsBefore.Length;
+                registeredCount = Kingmaker.Game.Instance.State.Units.Count -
+                    unitPoolBefore;
                 Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
                     new Scatter.NativeScatterConeTargetResolver().Resolve(attacker, first);
                 targetCount = targets.Length;
@@ -5824,7 +5825,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (first != null) first.Dispose();
                 if (attacker != null) attacker.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
-                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    Kingmaker.Game.Instance.State.Units.Count == unitPoolBefore &&
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(first) &&
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(second);
             }
             string observed = mixed == null || allMisfire == null ? "missing" :
                 "registered=" + registeredCount + ";targets=" + targetCount +

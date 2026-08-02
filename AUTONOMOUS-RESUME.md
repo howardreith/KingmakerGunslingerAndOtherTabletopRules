@@ -78,6 +78,9 @@ definition of done or a listed genuine human-input hard stop.
   main menu. Installed `GetTargetsAround` IL enumerates `State.Units` directly.
   The current repair uses owned `Units.All` additions/removals; qualify, commit,
   and retry without changing the production lock.
+- Exact `41e8690` proved the complete scatter transaction and cleanup; only the
+  registration counter read the external collection instead of `State.Units`.
+  Repair uses authoritative pool count plus external snapshot restoration.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through
