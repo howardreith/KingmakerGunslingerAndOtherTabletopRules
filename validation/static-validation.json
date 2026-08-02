@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.47-s47-targeting-legs",
-  "version": "0.0.47",
+  "milestone": "0.0.50-s50-bleeding-wound",
+  "version": "0.0.50",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 72,
-    "activeEntryCount": 71,
+    "entryCount": 85,
+    "activeEntryCount": 84,
     "reservedEntryCount": 1,
-    "registrationCount": 71
+    "registrationCount": 84
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 776,
+    "testCount": 780,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

@@ -309,6 +309,14 @@
     <Compile Include="Deeds\TargetingLegsRuntime.cs" />
     <Compile Include="Deeds\TargetingLegsAbilityLogic.cs" />
     <Compile Include="Blueprints\TargetingLegsBlueprints.cs" />
+    <Compile Include="Deeds\BleedingWoundKind.cs" />
+    <Compile Include="Deeds\BleedingWoundRequest.cs" />
+    <Compile Include="Deeds\BleedingWoundDecision.cs" />
+    <Compile Include="Deeds\BleedingWoundService.cs" />
+    <Compile Include="Deeds\BleedingWoundAbilityLogic.cs" />
+    <Compile Include="Deeds\BleedingWoundTick.cs" />
+    <Compile Include="Deeds\BleedingWoundRuntime.cs" />
+    <Compile Include="Blueprints\BleedingWoundBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

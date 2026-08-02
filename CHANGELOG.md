@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.50 — Sprint 50 Bleeding Wound (in progress)
+
+- Adds the level-eleven four-choice Bleeding Wound deed with free-action
+  pre-shot selection, exact post-hit grit costs, ordinary firearm damage, and
+  persistent native-descriptor HP or ability-score bleed.
+- Adds four focused policy cases; the complete suite is 780 tests.
+
 ## 0.0.47 — Sprint 47 Targeting Legs
 
 - Adds the level-seven full-round Targeting — Legs deed with normal firearm

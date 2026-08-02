@@ -583,6 +583,45 @@
       "status": "active",
       "milestone": "Sprint 47",
       "notes": "Full-round one-grit firearm attack with native automatic Trip rider."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundFeature", "guid": "f8fc9e345ef243dd862bfaa07abccfeb", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 50", "notes": "Level-eleven Bleeding Wound feature granting all four choices."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundHitPointsAbility", "guid": "0beb35e712f749abb660f593e790ab39", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 50", "notes": "Free-action HP bleed arming choice."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundStrengthAbility", "guid": "9d8b076131364a7394aa225b4306419c", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 50", "notes": "Free-action Strength bleed arming choice."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundDexterityAbility", "guid": "41fde8c96f7d468d9f9e6ad4d9b60fb0", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 50", "notes": "Free-action Dexterity bleed arming choice."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundConstitutionAbility", "guid": "a964315c427c4421bdf24c6ccea8700e", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 50", "notes": "Free-action Constitution bleed arming choice."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundHitPointsArmed", "guid": "e563e8cdec324c59959c4dc8b9449702", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Context-carrying HP bleed armed marker."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundStrengthArmed", "guid": "74749a03f92e4fabaec2830bd66f7731", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Context-carrying Strength bleed armed marker."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundDexterityArmed", "guid": "cd51a3e250094365b54929490a1d64b6", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Context-carrying Dexterity bleed armed marker."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundConstitutionArmed", "guid": "479e8f2c4dc7480cac9664ac10232e21", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Context-carrying Constitution bleed armed marker."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundHitPointsBuff", "guid": "7fcfa24d2dcb4044bc2fbe23a1937626", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Persistent native-descriptor recurring HP bleed."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundStrengthBuff", "guid": "fe07b11676904019b1471905708764eb", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Persistent native-descriptor recurring Strength damage."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundDexterityBuff", "guid": "9252d6155b3e4c258cbc7a1e794b8a5a", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Persistent native-descriptor recurring Dexterity damage."
+    },
+    {
+      "symbol": "KMG.Deeds.BleedingWoundConstitutionBuff", "guid": "de789d99a1a742b5a7ac3da9c666a804", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 50", "notes": "Persistent native-descriptor recurring Constitution damage."
     }
   ]
 }

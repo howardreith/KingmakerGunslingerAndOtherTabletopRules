@@ -1,11 +1,10 @@
 # Blueprint manifest and registration contract
 
-## Sprint 29 status
+## Sprint 50 status
 
-Sprint 47 extends the append-only contract to **72 stable identifiers: 71 active
-and one reserved** with Targeting Head's feature, ability, and Confusion buff.
-The ledger has 72 stable identifiers: 71 active and one reserved. Gunslinger
-class registration remains a complete twenty-four-blueprint transaction.
+Sprint 50 extends the append-only contract to 85 stable identifiers: 84 active and one reserved.
+Bleeding Wound adds one feature, four free-action choices,
+four context-carrying armed markers, and four persistent Bleed facts.
 
 Sprint 45 adds Targeting Head's level-seven feature, full-round ability, and
 one-round mind-affecting Confusion buff. Earlier additions remain append-only:
@@ -82,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete sixty-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete eighty-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -121,6 +120,19 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Classes.GunTrainingRevolver` | `aa7e85bead1044018285c579b9417691` | `BlueprintFeature` | Active | Revolver Gun Training |
 | `KMG.Deeds.DeadShotFeature` | `4f3a81c6d2754ec6920b7d14aa2e6c39` | `BlueprintFeature` | Active | Level-seven Dead Shot feature |
 | `KMG.Deeds.DeadShotAbility` | `c6e2147ab3f84aa9812d37c9650be421` | `BlueprintAbility` | Active | Full-round BAB-iterative Dead Shot delivery |
+| `KMG.Deeds.BleedingWoundFeature` | `f8fc9e345ef243dd862bfaa07abccfeb` | `BlueprintFeature` | Active | Level-eleven four-choice deed grant |
+| `KMG.Deeds.BleedingWoundHitPointsAbility` | `0beb35e712f749abb660f593e790ab39` | `BlueprintAbility` | Active | HP bleed arming choice |
+| `KMG.Deeds.BleedingWoundStrengthAbility` | `9d8b076131364a7394aa225b4306419c` | `BlueprintAbility` | Active | Strength bleed arming choice |
+| `KMG.Deeds.BleedingWoundDexterityAbility` | `41fde8c96f7d468d9f9e6ad4d9b60fb0` | `BlueprintAbility` | Active | Dexterity bleed arming choice |
+| `KMG.Deeds.BleedingWoundConstitutionAbility` | `a964315c427c4421bdf24c6ccea8700e` | `BlueprintAbility` | Active | Constitution bleed arming choice |
+| `KMG.Deeds.BleedingWoundHitPointsArmed` | `e563e8cdec324c59959c4dc8b9449702` | `BlueprintBuff` | Active | Context-carrying armed marker |
+| `KMG.Deeds.BleedingWoundStrengthArmed` | `74749a03f92e4fabaec2830bd66f7731` | `BlueprintBuff` | Active | Context-carrying armed marker |
+| `KMG.Deeds.BleedingWoundDexterityArmed` | `cd51a3e250094365b54929490a1d64b6` | `BlueprintBuff` | Active | Context-carrying armed marker |
+| `KMG.Deeds.BleedingWoundConstitutionArmed` | `479e8f2c4dc7480cac9664ac10232e21` | `BlueprintBuff` | Active | Context-carrying armed marker |
+| `KMG.Deeds.BleedingWoundHitPointsBuff` | `7fcfa24d2dcb4044bc2fbe23a1937626` | `BlueprintBuff` | Active | Recurring HP Bleed fact |
+| `KMG.Deeds.BleedingWoundStrengthBuff` | `fe07b11676904019b1471905708764eb` | `BlueprintBuff` | Active | Recurring Strength Bleed fact |
+| `KMG.Deeds.BleedingWoundDexterityBuff` | `9252d6155b3e4c258cbc7a1e794b8a5a` | `BlueprintBuff` | Active | Recurring Dexterity Bleed fact |
+| `KMG.Deeds.BleedingWoundConstitutionBuff` | `de789d99a1a742b5a7ac3da9c666a804` | `BlueprintBuff` | Active | Recurring Constitution Bleed fact |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

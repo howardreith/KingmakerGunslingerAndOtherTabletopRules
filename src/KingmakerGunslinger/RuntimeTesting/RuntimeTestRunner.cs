@@ -41,6 +41,8 @@ using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Classes;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -285,6 +287,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingTorso &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -456,6 +459,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerTargetingLegs)
                 {
                     Complete(RunDisposableGunslingerTargetingLegs());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound)
+                {
+                    Complete(RunDisposableGunslingerBleedingWound());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4176,6 +4185,173 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerBleedingWound()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BleedingWoundBlueprintSet set = gunslinger.BleedingWound;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            int gritBefore = -1, gritAfter = -1, hpTick = -1,
+                strengthBefore = -1, strengthAfter = -1, missRounds = -1;
+            int hpShotDamage = -1, statShotDamage = -1;
+            bool hpRemoved = false, missApplied = false, cleaned = false;
+            string stage = "blueprint-contract";
+            bool blueprintContract = gunslinger.Progression.LevelEntries[10]
+                .Features.Count(value => ReferenceEquals(value, set.Feature)) == 1 &&
+                set.Abilities.Length == 4 && set.Markers.Length == 4 &&
+                set.Bleeds.Length == 4 && set.Abilities.All(value =>
+                    value.ActionType == UnitCommand.CommandType.Free);
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.ReleaseAll();
+                target.Descriptor.Stats.Constitution.BaseValue = 20;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 18;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+
+                stage = "hit-point-bleed";
+                var hpContext = new MechanicsContext(attacker,
+                    attacker.Descriptor, set.Abilities[0], null,
+                    new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(set.Markers[0], hpContext, null);
+                SetRuntimeLoadedRound(weapon);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(18);
+                var hpAttack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+                Rulebook.Trigger(hpAttack);
+                var hpDamage = hpAttack.CreateRuleDealDamage(false);
+                Rulebook.Trigger(hpDamage);
+                hpShotDamage = hpDamage.Damage;
+                Buff hpBleed = target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint,
+                        set.Bleeds[0]));
+                if (hpBleed == null)
+                    throw new InvalidOperationException("HP bleed fact was absent.");
+                int hpBefore = target.HPLeft;
+                hpBleed.TickMechanics();
+                hpTick = hpBefore - target.HPLeft;
+                target.Descriptor.Buffs.RemoveFact(hpBleed);
+                hpRemoved = !target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, set.Bleeds[0]));
+
+                stage = "strength-bleed";
+                var statContext = new MechanicsContext(attacker,
+                    attacker.Descriptor, set.Abilities[1], null,
+                    new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(set.Markers[1], statContext,
+                    null);
+                SetRuntimeLoadedRound(weapon);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(18);
+                var statAttack = new RuleAttackWithWeapon(attacker, target,
+                    weapon, 0);
+                Rulebook.Trigger(statAttack);
+                var statDamage = statAttack.CreateRuleDealDamage(false);
+                Rulebook.Trigger(statDamage);
+                statShotDamage = statDamage.Damage;
+                Buff statBleed = target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint,
+                        set.Bleeds[1]));
+                if (statBleed == null)
+                    throw new InvalidOperationException(
+                        "Strength bleed fact was absent.");
+                strengthBefore = target.Stats.Strength.Damage;
+                statBleed.TickMechanics();
+                strengthAfter = target.Stats.Strength.Damage;
+                target.Descriptor.Buffs.RemoveFact(statBleed);
+
+                stage = "miss-rejection";
+                var missContext = new MechanicsContext(attacker,
+                    attacker.Descriptor, set.Abilities[2], null,
+                    new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(set.Markers[2], missContext,
+                    null);
+                SetRuntimeLoadedRound(weapon);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(1);
+                Rulebook.Trigger(new RuleAttackWithWeapon(attacker, target,
+                    weapon, 0));
+                missRounds = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                missApplied = target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, set.Bleeds[2]));
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Bleeding Wound failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "grit=" + gritBefore + "->" + gritAfter +
+                ";shotDamage=" + hpShotDamage + "," + statShotDamage +
+                ";hpTick=" + hpTick + ";hpRemoved=" + hpRemoved +
+                ";strength=" + strengthBefore + "->" + strengthAfter +
+                ";missRounds=" + missRounds + ";missApplied=" + missApplied;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("bleeding-wound-progression",
+                    "level 11 feature and four free-action choices", observed,
+                    blueprintContract, "production blueprint contracts"),
+                Assertion("bleeding-wound-hit-points",
+                    "ordinary damage plus Dexterity-modifier recurring HP bleed",
+                    observed, hpShotDamage > 0 && hpTick == 4 && hpRemoved,
+                    "native weapon/direct damage and Bleed removal"),
+                Assertion("bleeding-wound-ability-damage",
+                    "ordinary damage plus one recurring Strength damage", observed,
+                    statShotDamage > 0 && strengthAfter == strengthBefore + 1,
+                    "native weapon and RuleDealStatDamage"),
+                Assertion("bleeding-wound-costs",
+                    "one plus two grit spent; miss spends none", observed,
+                    gritAfter == gritBefore - 3,
+                    "unit-owned grit resource"),
+                Assertion("bleeding-wound-miss",
+                    "miss consumes chamber and marker without bleed", observed,
+                    missRounds == 0 && !missApplied,
+                    "forced natural-one firearm attack"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
+                    cleaned, "items/facts removed and disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerTargetingLegs()

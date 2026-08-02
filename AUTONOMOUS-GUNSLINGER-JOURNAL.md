@@ -1891,3 +1891,27 @@
   Arms is temporarily `BLOCKED` on that narrow player-facing balance choice.
 - Continue independently to level-11 Bleeding Wound. Do not let the Arms row
   stop progress on separately authoritative deeds.
+
+## 2026-08-01 Sprint 50 Bleeding Wound source qualification
+
+- Exact installed-contract inspection confirmed per-round fact callbacks through
+  `ITickEachRound`, native ability damage through `RuleDealStatDamage`, and no
+  built-in Bleed delivery component beyond `SpellDescriptor.Bleed`.
+- Entry criteria cover all four pre-shot choices, marker consumption, one/two
+  grit costs, living/sneak-immunity gates, ordinary hit damage, persistent native
+  Bleed facts, native HP/stat damage, removal, isolation, and qualification.
+- Added the pure four-choice policy, four mutually exclusive free-action marker
+  abilities, exact next-firearm-attack correlation, post-hit grit spending,
+  persistent Bleed facts, native recurring HP/stat damage, level-11 progression,
+  and a save-free guarded runtime scenario.
+- Source qualification passes the full Sprint 29-50 invariant chain, 29
+  validation-dispatch checks, 23 request checks, 50 preflight checks, all
+  runtime safety suites, and 780/780 domain/reflection tests. The clean Release
+  build and strict standalone package validation pass.
+- Candidate package SHA-256:
+  `9a2aa52a121b4a02dc2f77ce735f7778aaa147dbb96b57a8296e0b0ac4e5575e`.
+  Candidate DLL SHA-256:
+  `3e420639a04cd967d42732f0d18747a426648722a97fb5015887473e73c42967`.
+- Next action: audit and commit the reconstructable source checkpoint, rebuild
+  the exact commit, require guarded mod load, then run two independent
+  Bleeding Wound PASS processes. Sprint 50 is not a stopping condition.

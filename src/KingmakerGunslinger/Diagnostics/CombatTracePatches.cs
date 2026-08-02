@@ -42,6 +42,8 @@ namespace KingmakerGunslinger.Diagnostics
 
         private static void Postfix(object __instance)
         {
+            BleedingWoundRuntime.AfterAttack(
+                __instance as Kingmaker.RuleSystem.Rules.RuleAttackWithWeapon);
             CombatTraceRuntime.After(CombatTraceStage.WeaponAttack, __instance);
         }
     }
