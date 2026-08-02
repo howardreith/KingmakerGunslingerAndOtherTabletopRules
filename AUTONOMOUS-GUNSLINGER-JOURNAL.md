@@ -3105,3 +3105,10 @@
   `bc3f0dd0779da5ded8a557514d7713c1b22fa84fd83128a3214c007fe47d517c`.
   Next: commit the harness, run exact mod load and two fresh PASS attempts, then
   curate evidence and unlock/publish the Blunderbuss only if unambiguous.
+
+- Exact `07407d4` mod load passed as `20260802T1557206558978Z`. First scatter
+  attempt `20260802T1558563329150Z` failed closed before mutation: runtime
+  reflection proved `WouldTargetUnitCone` is a private instance method, not the
+  previously documented static method. Repair binds an inert component
+  instance and invokes the exact method on it. Qualify/commit before the one
+  remaining materially different runtime attempt.

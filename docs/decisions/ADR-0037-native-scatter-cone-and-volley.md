@@ -15,7 +15,7 @@ Read-only reflection and narrow IL disassembly of Kingmaker 2.1.7b established:
   Boolean)` provides the already-qualified native candidate enumeration path.
 - `AbilityDeliverProjectile.WouldTargetUnitCone(UnitEntityData caster,
   UnitEntityData unit, Vector3 launchPos, Vector2 castDir, Single distance)`
-  excludes the caster and delegates to the point-cone test using target eye
+  is a private instance method; it excludes the caster and delegates to the point-cone test using target eye
   position and view corpulence.
 - `WouldTargetPointCone` rejects line-of-sight obstacles, limits center distance
   to `distance + targetRadius`, uses a fixed 45-degree half-angle, and includes

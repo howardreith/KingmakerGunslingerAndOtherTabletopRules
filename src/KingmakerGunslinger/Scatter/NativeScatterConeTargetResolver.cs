@@ -17,6 +17,8 @@ namespace KingmakerGunslinger.Scatter
     {
         private static readonly ScatterConeDistanceService Distance =
             new ScatterConeDistanceService();
+        private static readonly AbilityDeliverProjectile NativeConeAdapter =
+            ScriptableObject.CreateInstance<AbilityDeliverProjectile>();
         private static readonly MethodInfo NativeConePredicate =
             ResolveNativeConePredicate();
 
@@ -46,7 +48,7 @@ namespace KingmakerGunslinger.Scatter
             {
                 if (candidate == null || ReferenceEquals(candidate, caster) ||
                     !seen.Add(candidate)) continue;
-                object native = NativeConePredicate.Invoke(null, new object[]
+                object native = NativeConePredicate.Invoke(NativeConeAdapter, new object[]
                 {
                     caster, candidate, caster.EyePosition, direction,
                     distance.DistanceMeters
@@ -62,7 +64,7 @@ namespace KingmakerGunslinger.Scatter
         private static MethodInfo ResolveNativeConePredicate()
         {
             MethodInfo method = typeof(AbilityDeliverProjectile).GetMethod(
-                "WouldTargetUnitCone", BindingFlags.Static | BindingFlags.NonPublic,
+                "WouldTargetUnitCone", BindingFlags.Instance | BindingFlags.NonPublic,
                 null, new[] { typeof(UnitEntityData), typeof(UnitEntityData),
                     typeof(Vector3), typeof(Vector2), typeof(float) }, null);
             if (method == null || method.ReturnType != typeof(bool))

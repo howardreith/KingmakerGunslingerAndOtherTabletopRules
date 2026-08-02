@@ -8,7 +8,8 @@ $source = Get-Content -Raw -LiteralPath $path
 $required = @(
     'Distance.ResolveBlunderbuss(',
     'new Feet(distance.DistanceFeet)',
-    '"WouldTargetUnitCone", BindingFlags.Static | BindingFlags.NonPublic',
+    '"WouldTargetUnitCone", BindingFlags.Instance | BindingFlags.NonPublic',
+    'NativeConePredicate.Invoke(NativeConeAdapter',
     'caster.EyePosition, direction,',
     'distance.DistanceMeters',
     'ReferenceEquals(candidate, caster)',
