@@ -202,9 +202,9 @@ def validate(
         runtime,
         [
             "TryResolveSingleEquippedTestMusket",
-            "More than one distinct Test Musket is equipped",
+            "More than one distinct firearm is equipped",
             "FirearmCondition.Broken",
-            "A Wrecked Test Musket must be Overhauled",
+            "A Wrecked firearm must be Overhauled",
             "One Firearm Repair Kit is required",
             "FirearmRepairRuntimeResult",
         ],

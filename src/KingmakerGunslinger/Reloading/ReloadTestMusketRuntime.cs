@@ -13,8 +13,8 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Reloading
 {
     /// <summary>
-    /// Typed Kingmaker adapter for the Test Musket reload ability. It resolves one exact
-    /// equipped Test Musket, reads the proven item-token state, and coordinates the
+    /// Stable compatibility adapter for the production reload ability. It resolves one exact
+    /// equipped firearm, reads the proven item-token state, and coordinates the
     /// cross-resource transaction with the player's shared inventory.
     /// </summary>
     internal static class ReloadTestMusketRuntime
@@ -85,12 +85,12 @@ namespace KingmakerGunslinger.Reloading
 
             if (state.Condition == FirearmCondition.Wrecked)
             {
-                return Rejected("The equipped Test Musket is wrecked and cannot be reloaded.", weapon, firearm, inventory);
+                return Rejected("The equipped firearm is Wrecked and cannot be reloaded.", weapon, firearm, inventory);
             }
 
             if (!state.IsEmpty)
             {
-                return Rejected("The equipped Test Musket is already loaded.", weapon, firearm, inventory);
+                return Rejected("The equipped firearm is already loaded.", weapon, firearm, inventory);
             }
 
             if (inventory.BlackPowderCharges == 0)
@@ -175,13 +175,13 @@ namespace KingmakerGunslinger.Reloading
                 .ToArray();
             if (matches.Length == 0)
             {
-                reason = "Equip exactly one Test Musket before reloading.";
+                reason = "Equip exactly one firearm before reloading.";
                 return false;
             }
 
             if (matches.Length != 1)
             {
-                reason = "More than one distinct Test Musket is equipped; reload is ambiguous.";
+                reason = "More than one distinct firearm is equipped; reload is ambiguous.";
                 return false;
             }
 

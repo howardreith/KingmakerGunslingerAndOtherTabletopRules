@@ -79,7 +79,7 @@ namespace KingmakerGunslinger.Reloading
 
         public string GetReason()
         {
-            return "Requires one equipped empty, undamaged Test Musket plus one Black Powder Charge and one Lead Ball.";
+            return "Requires exactly one equipped empty firearm with a full-round reload profile, plus one Black Powder Charge and one Lead Ball.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.Reloading
                     modContext.Logger.Failure(
                         "reload",
                         "ability.failed",
-                        "Reload Test Musket failed during delivery. The transaction attempted to restore both firearm state and ammunition.",
+                        "Reload Firearm failed during delivery. The transaction attempted to restore both firearm state and ammunition.",
                         exception);
                 }
             }
@@ -138,13 +138,13 @@ namespace KingmakerGunslinger.Reloading
             if (m_TestMusket == null || m_BlackPowder == null || m_LeadBall == null)
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket has incomplete blueprint dependencies.");
+                    "Reload Firearm has incomplete blueprint dependencies.");
             }
 
             if (ReferenceEquals(m_BlackPowder, m_LeadBall))
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket requires distinct powder and projectile blueprints.");
+                    "Reload Firearm requires distinct powder and projectile blueprints.");
             }
         }
     }

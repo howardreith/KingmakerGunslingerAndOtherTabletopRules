@@ -13,7 +13,7 @@ namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
     /// Typed Kingmaker adapter for player-facing ordinary repair. It resolves one exact
-    /// equipped Test Musket, requires empty/Broken state and one repair kit, and executes
+    /// equipped firearm, requires empty/Broken state and one repair kit, and executes
     /// the atomic same-item Broken-to-Normal transaction only during ability delivery.
     /// </summary>
     internal static class RepairTestMusketRuntime
@@ -75,8 +75,8 @@ namespace KingmakerGunslinger.Recovery
             {
                 return Rejected(
                     state.Condition == FirearmCondition.Wrecked
-                        ? "A Wrecked Test Musket must be Overhauled to Broken before ordinary repair."
-                        : "Only an equipped Broken Test Musket can use ordinary repair.",
+                        ? "A Wrecked firearm must be Overhauled to Broken before ordinary repair."
+                        : "Only an equipped Broken firearm can use ordinary repair.",
                     weapon,
                     firearm,
                     inventory);
@@ -85,7 +85,7 @@ namespace KingmakerGunslinger.Recovery
             if (!state.IsEmpty)
             {
                 return Rejected(
-                    "Unload or fire the Test Musket before ordinary repair; Repair Test Musket requires an empty Broken firearm.",
+                    "Unload or fire the firearm before ordinary repair; Repair Firearm requires an empty Broken firearm.",
                     weapon,
                     firearm,
                     inventory);
@@ -102,7 +102,7 @@ namespace KingmakerGunslinger.Recovery
 
             return new FirearmRepairAvailability(
                 true,
-                "Ready to consume one Firearm Repair Kit and repair this exact empty/Broken Test Musket to empty/Normal. The item will not be replaced or loaded.",
+                "Ready to consume one Firearm Repair Kit and repair this exact empty/Broken firearm to empty/Normal. The item will not be replaced or loaded.",
                 weapon,
                 firearm,
                 inventory);
@@ -178,13 +178,13 @@ namespace KingmakerGunslinger.Recovery
                 .ToArray();
             if (matches.Length == 0)
             {
-                reason = "Equip exactly one empty/Broken Test Musket before repairing.";
+                reason = "Equip exactly one empty/Broken firearm before repairing.";
                 return false;
             }
 
             if (matches.Length != 1)
             {
-                reason = "More than one distinct Test Musket is equipped; repair target selection is ambiguous.";
+                reason = "More than one distinct firearm is equipped; repair target selection is ambiguous.";
                 return false;
             }
 

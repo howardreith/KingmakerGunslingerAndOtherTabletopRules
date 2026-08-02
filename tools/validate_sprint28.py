@@ -178,7 +178,7 @@ def validate(final: bool) -> None:
         runtime,
         [
             "TryResolveSingleEquippedTestMusket",
-            "More than one distinct Test Musket is equipped",
+            "More than one distinct firearm is equipped",
             "FirearmCondition.Wrecked",
             "One Firearm Repair Kit is required",
             "FirearmOverhaulRuntimeResult",

@@ -22,11 +22,11 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal const string Symbol = "KMG.Test.RepairAbility";
         internal const string InternalName = "KMG_RepairTestMusket_Ability";
-        internal const string DisplayName = "Repair Test Musket";
+        internal const string DisplayName = "Repair Firearm";
         internal const string ComponentName = "$KMG_RepairTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action and consume one Firearm Repair Kit to repair the exact equipped empty Broken Test Musket to empty Normal. A Wrecked firearm must be Overhauled first; this action does not load ammunition or replace the item.";
+            "Spend a full-round action and consume one Firearm Repair Kit to repair the exact equipped empty Broken firearm to empty Normal. A Wrecked firearm must be Overhauled first; this action does not load ammunition or replace the item.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
@@ -109,7 +109,7 @@ namespace KingmakerGunslinger.Blueprints
                 "repair-ability.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered full-round Repair Test Musket ability guid={0}; item={1}; repairKit={2}.",
+                    "Registered full-round Repair Firearm ability guid={0}; compatibilityItem={1}; repairKit={2}.",
                     registry.ResolveGuid(Symbol),
                     testMusket.name,
                     repairKit.name));
@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(ability.Name, DisplayName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Repair Test Musket has incorrect identity or localization.");
+                    "Repair Firearm has incorrect identity or localization.");
             }
 
             if (ability.Type != AbilityType.Extraordinary ||
@@ -146,7 +146,7 @@ namespace KingmakerGunslinger.Blueprints
                 !ability.NeedEquipWeapons)
             {
                 throw new InvalidOperationException(
-                    "Repair Test Musket has incorrect action, target, or ability-type settings.");
+                    "Repair Firearm has incorrect action, target, or ability-type settings.");
             }
 
             RepairTestMusketAbilityLogic[] components =
@@ -158,14 +158,14 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(components[0].name, ComponentName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Repair Test Musket must contain exactly one stable repair-logic component.");
+                    "Repair Firearm must contain exactly one stable repair-logic component.");
             }
 
             components[0].ValidateConfiguration();
             if (testMusket == null || repairKit == null)
             {
                 throw new InvalidOperationException(
-                    "Repair Test Musket validation received incomplete dependencies.");
+                    "Repair Firearm validation received incomplete dependencies.");
             }
         }
     }

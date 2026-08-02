@@ -2198,12 +2198,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             int grouped = progression.UIGroups == null ? 0 :
                 progression.UIGroups.Sum(group => group == null ||
                     group.Features == null ? 0 : group.Features.Count);
+            BlueprintAbility reload = BlueprintBootstrap.ReloadTestMusketAbility;
+            BlueprintAbility overhaul = BlueprintBootstrap.OverhaulTestMusketAbility;
+            BlueprintAbility repair = BlueprintBootstrap.RepairTestMusketAbility;
+            bool productionActions = reload != null && overhaul != null && repair != null &&
+                reload.Name == "Reload Firearm" &&
+                overhaul.Name == "Overhaul Firearm" &&
+                repair.Name == "Repair Firearm" &&
+                !reload.Description.Contains("Test Musket") &&
+                !overhaul.Description.Contains("Test Musket") &&
+                !repair.Description.Contains("Test Musket");
             string observed = "levels=" + progression.LevelEntries.Length +
                 ";visible=" + visible + ";hidden=" + hidden +
                 ";incomplete=" + incomplete + ";groups=" +
                 (progression.UIGroups == null ? 0 : progression.UIGroups.Length) +
                 ";grouped=" + grouped + ";class=" + classMetadata +
-                ";progression=" + progressionMetadata;
+                ";progression=" + progressionMetadata +
+                ";actions=" + (reload == null ? "<null>" : reload.Name) + "," +
+                    (overhaul == null ? "<null>" : overhaul.Name) + "," +
+                    (repair == null ? "<null>" : repair.Name);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("gunslinger-class-presentation",
@@ -2224,6 +2237,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         progression.UIGroups != null &&
                         progression.UIGroups.Length > 0 && grouped > 0,
                     "LevelEntries and UIGroups"),
+                Assertion("production-firearm-actions-presentation",
+                    "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
+                    observed, productionActions,
+                    "Firearm Proficiency AddFacts reachable stable ability blueprints"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

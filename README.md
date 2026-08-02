@@ -4,9 +4,15 @@ Version `0.0.31-s31-early-firearm-catalog` develops the first production early-f
 
 ## Current vertical slice
 
-The build provides Firearm Proficiency, an early Test Musket, stackable Black Powder Charges and Lead Balls, atomic component consumption, full-round reload, range-limited touch AC, exact item-owned firearm state, save/restart persistence, loaded-round enforcement, deterministic natural-d20 diagnostics, misfire condition transitions, a native five-foot second-misfire burst, and same-item recovery.
+The build provides the complete base Gunslinger progression, production early
+and advanced firearms, stackable Black Powder Charges and Lead Balls, atomic
+component consumption, range-limited touch AC, exact item-owned firearm state,
+loaded-round enforcement, misfire condition transitions, and same-item
+maintenance. Historical Test Musket fixtures remain development-only.
 
-The Test Musket has one round, a 40-foot range increment, natural 1–2 misfire, full-round reload requiring a free hand, and a 5-foot misfire burst. It still reuses Heavy Crossbow presentation and placeholder native-item artwork.
+The retained Test Musket diagnostic fixture has one round, a 40-foot range
+increment, natural 1–2 misfire, full-round reload requiring a free hand, and a
+5-foot misfire burst. It is not distributed as production equipment.
 
 A first misfire consumes the loaded round, forces a miss, and changes only the exact firearm from Normal to Broken. A second misfire from Broken changes the exact firearm to Wrecked and resolves a native Reflex DC 12 plus base weapon-damage burst against every unique qualified unit in five feet, with the exact wielder included once and last.
 
@@ -15,12 +21,16 @@ A first misfire consumes the loaded round, forces a miss, and changes only the e
 Firearm Proficiency now grants three separate full-round abilities:
 
 ```text
-Overhaul Test Musket: empty/Wrecked + one Repair Kit → empty/Broken
-Repair Test Musket:   empty/Broken + one Repair Kit → empty/Normal
-Reload Test Musket:   empty/Normal + powder + Lead Ball → loaded/Normal
+Overhaul Firearm: empty/Wrecked + one Repair Kit → empty/Broken
+Repair Firearm:   empty/Broken + one Repair Kit → empty/Normal
+Reload Firearm:   empty + powder + Lead Ball → loaded
 ```
 
-Overhaul and Repair are distinct personal extraordinary actions. Each mutates only during completed delivery, consumes exactly one Firearm Repair Kit, preserves the same exact runtime item and item-owned state token, advances its state revision once, creates no ammunition, and leaves a second blueprint-identical Test Musket unchanged. Repair rejects Wrecked, Normal, or loaded Broken firearms without mutation.
+Overhaul and Repair are distinct personal extraordinary actions. Each mutates
+only during completed delivery, consumes exactly one Firearm Repair Kit,
+preserves the same exact runtime item and item-owned state token, and creates no
+ammunition. Repair rejects Wrecked, Normal, or loaded Broken firearms without
+mutation.
 
 Reload remains a separate full-round operation and is the only maintenance-loop step that consumes Black Powder and a Lead Ball.
 
@@ -58,7 +68,10 @@ or projectile asset is bundled.
 
 ## Direction after Sprint 29
 
-Sprint 30 now generalizes Reload, Overhaul, and Repair through one marker-first exact-equipped-firearm context and definition-driven policy. The existing Test Musket abilities remain compatibility adapters. The larger vertical-slice roadmap remains in `planning/ROADMAP-SPRINTS-29-38.md`.
+Reload, Overhaul, and Repair use one marker-first exact-equipped-firearm context
+and definition-driven policy. Stable historical symbols and compatibility
+adapter type names are retained for save and code compatibility; their visible
+abilities are production-generic.
 
 ## Deliberate deferrals
 

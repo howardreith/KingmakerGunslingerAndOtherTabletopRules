@@ -22,11 +22,11 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal const string Symbol = "KMG.Test.OverhaulAbility";
         internal const string InternalName = "KMG_OverhaulTestMusket_Ability";
-        internal const string DisplayName = "Overhaul Test Musket";
+        internal const string DisplayName = "Overhaul Firearm";
         internal const string ComponentName = "$KMG_OverhaulTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action and consume one Firearm Repair Kit to overhaul the exact equipped Wrecked Test Musket into an empty Broken firearm. This preserves the same item and does not perform ordinary Broken-to-Normal repair.";
+            "Spend a full-round action and consume one Firearm Repair Kit to overhaul the exact equipped Wrecked firearm into an empty Broken firearm. This preserves the same item and does not perform ordinary Broken-to-Normal repair.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
@@ -109,7 +109,7 @@ namespace KingmakerGunslinger.Blueprints
                 "overhaul-ability.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered full-round Overhaul Test Musket ability guid={0}; item={1}; repairKit={2}.",
+                    "Registered full-round Overhaul Firearm ability guid={0}; compatibilityItem={1}; repairKit={2}.",
                     registry.ResolveGuid(Symbol),
                     testMusket.name,
                     repairKit.name));
@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(ability.Name, DisplayName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Overhaul Test Musket has incorrect identity or localization.");
+                    "Overhaul Firearm has incorrect identity or localization.");
             }
 
             if (ability.Type != AbilityType.Extraordinary ||
@@ -146,7 +146,7 @@ namespace KingmakerGunslinger.Blueprints
                 !ability.NeedEquipWeapons)
             {
                 throw new InvalidOperationException(
-                    "Overhaul Test Musket has incorrect action, target, or ability-type settings.");
+                    "Overhaul Firearm has incorrect action, target, or ability-type settings.");
             }
 
             OverhaulTestMusketAbilityLogic[] components =
@@ -158,14 +158,14 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(components[0].name, ComponentName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Overhaul Test Musket must contain exactly one stable overhaul-logic component.");
+                    "Overhaul Firearm must contain exactly one stable overhaul-logic component.");
             }
 
             components[0].ValidateConfiguration();
             if (testMusket == null || repairKit == null)
             {
                 throw new InvalidOperationException(
-                    "Overhaul Test Musket validation received incomplete dependencies.");
+                    "Overhaul Firearm validation received incomplete dependencies.");
             }
         }
     }

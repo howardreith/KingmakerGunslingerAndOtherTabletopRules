@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped Wrecked Test Musket and one Firearm Repair Kit.";
+            return "Requires exactly one equipped Wrecked firearm and one Firearm Repair Kit.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -112,7 +112,7 @@ namespace KingmakerGunslinger.Recovery
                     modContext.Logger.Failure(
                         "recovery",
                         "overhaul.failed",
-                        "Overhaul Test Musket failed during delivery. The transaction attempted to restore both the exact item-owned state and the Firearm Repair Kit count.",
+                        "Overhaul Firearm failed during delivery. The transaction attempted to restore both the exact item-owned state and the Firearm Repair Kit count.",
                         exception);
                 }
             }
@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.Recovery
             if (m_TestMusket == null || m_RepairKit == null)
             {
                 throw new InvalidOperationException(
-                    "Overhaul Test Musket has incomplete blueprint dependencies.");
+                    "Overhaul Firearm has incomplete blueprint dependencies.");
             }
         }
     }

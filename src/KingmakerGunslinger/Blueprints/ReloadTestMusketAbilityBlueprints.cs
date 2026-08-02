@@ -22,12 +22,12 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal const string Symbol = "KMG.Test.ReloadAbility";
         internal const string InternalName = "KMG_ReloadTestMusket_Ability";
-        internal const string DisplayName = "Reload Test Musket";
+        internal const string DisplayName = "Reload Firearm";
         internal const string ComponentName = "$KMG_ReloadTestMusketLogic";
 
         private const string Description =
-            "Load the equipped Test Musket with one Black Powder Charge and one Lead Ball. " +
-            "This is a full-round extraordinary action. The firearm must be empty and undamaged.";
+            "Load the exact equipped firearm with one Black Powder Charge and one Lead Ball. " +
+            "This is a full-round extraordinary action and requires a firearm with a full-round reload profile.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
@@ -112,7 +112,7 @@ namespace KingmakerGunslinger.Blueprints
                 "ability.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered full-round Reload Test Musket ability guid={0}; item={1}; powder={2}; projectile={3}.",
+                    "Registered full-round Reload Firearm ability guid={0}; compatibilityItem={1}; powder={2}; projectile={3}.",
                     registry.ResolveGuid(Symbol),
                     testMusket.name,
                     blackPowder.name,
@@ -135,7 +135,7 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(ability.Name, DisplayName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket has incorrect identity or localization.");
+                    "Reload Firearm has incorrect identity or localization.");
             }
 
             if (ability.Type != AbilityType.Extraordinary ||
@@ -151,7 +151,7 @@ namespace KingmakerGunslinger.Blueprints
                 !ability.NeedEquipWeapons)
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket has incorrect action, target, or ability-type settings.");
+                    "Reload Firearm has incorrect action, target, or ability-type settings.");
             }
 
             ReloadTestMusketAbilityLogic[] components =
@@ -163,14 +163,14 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(components[0].name, ComponentName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket must contain exactly one stable reload-logic component.");
+                    "Reload Firearm must contain exactly one stable reload-logic component.");
             }
 
             components[0].ValidateConfiguration();
             if (testMusket == null || blackPowder == null || leadBall == null)
             {
                 throw new InvalidOperationException(
-                    "Reload Test Musket validation received incomplete dependencies.");
+                    "Reload Firearm validation received incomplete dependencies.");
             }
         }
     }

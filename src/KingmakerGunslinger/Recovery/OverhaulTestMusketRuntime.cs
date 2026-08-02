@@ -13,7 +13,7 @@ namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
     /// Typed Kingmaker adapter for the player-facing overhaul ability. It resolves one
-    /// exact equipped Test Musket, requires Wrecked state and one repair kit, and executes
+    /// exact equipped firearm, requires Wrecked state and one repair kit, and executes
     /// the atomic same-item Wrecked-to-Broken transaction only during ability delivery.
     /// </summary>
     internal static class OverhaulTestMusketRuntime
@@ -75,7 +75,7 @@ namespace KingmakerGunslinger.Recovery
             if (state.Condition != FirearmCondition.Wrecked)
             {
                 return Rejected(
-                    "Only an equipped Wrecked Test Musket can be overhauled. Broken-to-Normal repair remains a separate operation.",
+                    "Only an equipped Wrecked firearm can be overhauled. Broken-to-Normal repair remains a separate operation.",
                     weapon,
                     firearm,
                     inventory);
@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.Recovery
 
             return new FirearmOverhaulAvailability(
                 true,
-                "Ready to consume one Firearm Repair Kit and overhaul this exact Wrecked Test Musket to empty/Broken. The item will not be replaced and will not become Normal.",
+                "Ready to consume one Firearm Repair Kit and overhaul this exact Wrecked firearm to empty/Broken. The item will not be replaced and will not become Normal.",
                 weapon,
                 firearm,
                 inventory);
@@ -168,13 +168,13 @@ namespace KingmakerGunslinger.Recovery
                 .ToArray();
             if (matches.Length == 0)
             {
-                reason = "Equip exactly one Wrecked Test Musket before overhauling.";
+                reason = "Equip exactly one Wrecked firearm before overhauling.";
                 return false;
             }
 
             if (matches.Length != 1)
             {
-                reason = "More than one distinct Test Musket is equipped; overhaul target selection is ambiguous.";
+                reason = "More than one distinct firearm is equipped; overhaul target selection is ambiguous.";
                 return false;
             }
 
