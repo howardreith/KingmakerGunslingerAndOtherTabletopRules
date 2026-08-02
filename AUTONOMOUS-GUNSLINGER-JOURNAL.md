@@ -3168,3 +3168,8 @@
   pass; package/DLL SHA-256 `1a3fbade2f4a80b5d4ce761bafed5bf77da4e17b572ea6cc5e241f9983ca16a3` /
   `e9c25b53626917f91146e4969f89209cca1dbb6544795327a718c82fb4688544`.
   Next: commit and runtime-qualify updated vendor publication.
+- Exact `ea1faaa` mod load `20260802T1638009552145Z` and vendor PASS pair
+  `20260802T1639246998795Z` / `20260802T1640487811206Z` prove 59 capital
+  entries, eight exact project entries, one Blunderbuss, native quantities,
+  critical profiles, and no inventory/save mutation. Re-audit remaining rows
+  and continue the highest-priority incomplete mandatory integration.
