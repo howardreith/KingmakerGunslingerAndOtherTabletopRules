@@ -1758,7 +1758,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendorPhase = "commit-repurchase-deal";
                 vendor.Deal();
                 ItemEntityWeapon acquired =
-                    EnumerateRuntimeInventory(mainDescriptor.Inventory)
+                    EnumerateRuntimeInventory(player.Inventory)
                     .OfType<ItemEntityWeapon>().Single(item =>
                         ReferenceEquals(item.Blueprint, expected[0]) &&
                         !BatteredFirearmOriginRuntime.IsBattered(item));
