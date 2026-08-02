@@ -61,6 +61,9 @@ $checks = [ordered]@{
         'typeof(RuleSavingThrow).GetProperty("D20"') -and $runner.Contains(
         'typeof(RuleSkillCheck).GetProperty("D20"') -and $catalog.Contains(
         'ObserveSlingersLuckNativeRerolls')
+    'slingers-luck-guarded-dispatch' = $runner.Contains(
+        'RunDisposableGunslingerSlingersLuck()') -and $catalog.Contains(
+        'DisposableGunslingerSlingersLuck')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }

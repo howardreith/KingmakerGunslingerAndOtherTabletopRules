@@ -8,12 +8,12 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `24a735e` (Sprint 54 Menacing Shot implementation).
+- Audited HEAD: `fbd03ae` (Sprint 55 native reroll observer).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 54 Menacing Shot is runtime-qualified. Commit the
-  curated evidence and continue immediately with Slinger's Luck entry audit.
-- Version: `0.0.54`.
+- Current checkpoint: Sprint 55 Slinger's Luck implementation is in source
+  qualification; finish gates, commit, and run both reroll branches twice.
+- Version: `0.0.55`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 

@@ -658,6 +658,21 @@
     },
     {
       "symbol": "KMG.Deeds.MenacingShotAbility", "guid": "3107264a6fdf4cebb70e20f593327eee", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 54", "notes": "Self-centered 30-foot exact native Fear delivery with one-grit one-chamber transaction."
+    },
+    {
+      "symbol": "KMG.Deeds.SlingersLuckFeature", "guid": "6b1cda2114444ea09d9aad132c974f5a", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 55", "notes": "Level-fifteen Slinger's Luck deed grant."
+    },
+    {
+      "symbol": "KMG.Deeds.SlingersLuckSavingThrowAbility", "guid": "f0305fc5463f4068a19d96e6f4e02c67", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 55", "notes": "Arms the next saving-throw reroll for a fixed two-grit cost."
+    },
+    {
+      "symbol": "KMG.Deeds.SlingersLuckSkillCheckAbility", "guid": "f759c4b6fba246f4bb9f34b2c30ab7b5", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 55", "notes": "Arms the next skill-check reroll for a fixed one-grit cost."
+    },
+    {
+      "symbol": "KMG.Deeds.SlingersLuckSavingThrowArmed", "guid": "841a2ca5e4994da48fadcc4f3a3c3579", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 55", "notes": "Unit-owned saving-throw reroll marker."
+    },
+    {
+      "symbol": "KMG.Deeds.SlingersLuckSkillCheckArmed", "guid": "e553eb5c573b4b178f4b973850f5a0e3", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 55", "notes": "Unit-owned skill-check reroll marker."
     }
   ]
 }

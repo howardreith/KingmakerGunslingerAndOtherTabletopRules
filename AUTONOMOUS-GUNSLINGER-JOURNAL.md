@@ -2170,3 +2170,20 @@
   rule types, result members, or safe replacement phase. Sprint 55 therefore
   begins with a save-free contract observer before gameplay implementation.
 - Entry criteria are recorded in `planning/SPRINT-55-ENTRY-CRITERIA.md`.
+
+## 2026-08-02 Sprint 55 native reroll observation and source implementation
+
+- Exact observer commit `fbd03ae` passed mod load at
+  `20260802T0520533425683Z-mod-load-smoke` and save-free observation at
+  `20260802T0522131721778Z-observe-slingers-luck-native-rerolls`.
+- Installed `RuleSavingThrow` and `RuleSkillCheck` expose read-only computed
+  `RollResult` and exact non-public `D20` setters. Post-trigger replacement
+  changed completed native rolls `9->1` and `14->1`; native `Dice.D20` is a
+  readable `RulebookEvent.RollEntry`. The observer disposed its detached unit.
+- Added separate fixed-cost arming abilities and unit-owned markers. Their exact
+  initiator rule handlers draw one native second d20, replace the completed rule
+  result, spend exactly 2 or 1 grit, always keep the second roll, and roll back
+  both result and grit on failure. Six policy cases cover costs and fail-closed
+  gates.
+- Next: complete source/build/package gates, commit the reconstructable
+  checkpoint, then require mod load and two independent feature PASS launches.

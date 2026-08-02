@@ -299,6 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -518,6 +519,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls)
                 {
                     Complete(RunObserveSlingersLuckNativeRerolls());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck)
+                {
+                    Complete(RunDisposableGunslingerSlingersLuck());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4982,7 +4989,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("slingers-luck-native-rule-contracts",
-                    "exact public D20 setters and read-only RollResult members",
+                    "exact non-public D20 setters and read-only RollResult members",
                     observed, exactMembers,
                     "declared RuleSavingThrow and RuleSkillCheck metadata"),
                 Assertion("slingers-luck-post-trigger-replacement",
@@ -5007,6 +5014,135 @@ namespace KingmakerGunslinger.RuntimeTesting
             return property.DeclaringType.FullName + "." + property.Name +
                 ":" + property.PropertyType.FullName + ":get=" +
                 property.CanRead + ":set=" + property.CanWrite;
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerSlingersLuck()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            SlingersLuckBlueprintSet set = gunslinger.SlingersLuck;
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData other = null;
+            object controller = null;
+            int savingFirst = -1, savingSecond = -1, savingGritBefore = -1,
+                savingGritAfter = -1, skillFirst = -1, skillSecond = -1,
+                skillGritBefore = -1, skillGritAfter = -1,
+                otherGritBefore = -1, otherGritAfter = -1;
+            bool savingConsumed = false, skillConsumed = false, cleaned = false;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                other = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.Wisdom.BaseValue = 18;
+                other.Descriptor.Stats.Wisdom.BaseValue = 18;
+                AdvanceDisposableGunslinger(unit.Descriptor, gunslinger, 15,
+                    ref controller);
+                AdvanceDisposableGunslinger(other.Descriptor, gunslinger, 15,
+                    ref controller);
+                unit.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                other.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                otherGritBefore = other.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+
+                var savingContext = new MechanicsContext(unit, unit.Descriptor,
+                    set.SavingAbility, null, new TargetWrapper(unit));
+                unit.Descriptor.Buffs.AddBuff(set.SavingMarker, savingContext, null);
+                int savingSeed = FindDescendingNativeD20Seed(out savingFirst,
+                    out savingSecond);
+                UnityEngine.Random.InitState(savingSeed);
+                savingGritBefore = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                var saving = new RuleSavingThrow(unit, SavingThrowType.Will, 100);
+                Rulebook.Trigger(saving);
+                savingGritAfter = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                savingConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint,
+                        set.SavingMarker));
+                if (saving.BaseRollResult != savingSecond)
+                    throw new InvalidOperationException(
+                        "Saving throw did not retain the lower second d20.");
+
+                var skillContext = new MechanicsContext(unit, unit.Descriptor,
+                    set.SkillAbility, null, new TargetWrapper(unit));
+                unit.Descriptor.Buffs.AddBuff(set.SkillMarker, skillContext, null);
+                int skillSeed = FindDescendingNativeD20Seed(out skillFirst,
+                    out skillSecond);
+                UnityEngine.Random.InitState(skillSeed);
+                skillGritBefore = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                var skill = new RuleSkillCheck(unit, StatType.SkillAthletics, 100);
+                Rulebook.Trigger(skill);
+                skillGritAfter = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                skillConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint,
+                        set.SkillMarker));
+                if (skill.BaseRollResult != skillSecond)
+                    throw new InvalidOperationException(
+                        "Skill check did not retain the lower second d20.");
+                otherGritAfter = other.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            finally
+            {
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
+                if (unit != null) unit.Dispose();
+                if (other != null) other.Dispose();
+                cleaned = true;
+            }
+            string observed = "saving=" + savingFirst + "->" + savingSecond +
+                ";savingGrit=" + savingGritBefore + "->" + savingGritAfter +
+                ";savingConsumed=" + savingConsumed + ";skill=" + skillFirst +
+                "->" + skillSecond + ";skillGrit=" + skillGritBefore + "->" +
+                skillGritAfter + ";skillConsumed=" + skillConsumed +
+                ";otherGrit=" + otherGritBefore + "->" + otherGritAfter +
+                ";cleaned=" + cleaned;
+            bool progression = gunslinger.Progression.LevelEntries[14].Features
+                .Count(value => ReferenceEquals(value, set.Feature)) == 1;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("slingers-luck-saving-reroll",
+                    "lower native second d20; fixed grit cost 2; marker consumed",
+                    observed, savingFirst > savingSecond &&
+                        savingGritAfter == savingGritBefore - 2 && savingConsumed,
+                    "RuleSavingThrow initiator handler"),
+                Assertion("slingers-luck-skill-reroll",
+                    "lower native second d20; fixed grit cost 1; marker consumed",
+                    observed, skillFirst > skillSecond &&
+                        skillGritAfter == skillGritBefore - 1 && skillConsumed,
+                    "RuleSkillCheck initiator handler"),
+                Assertion("slingers-luck-level-and-isolation",
+                    "level 15 grant; other unit unchanged; disposal",
+                    observed, progression && otherGritBefore == otherGritAfter &&
+                        cleaned, "production progression and detached units"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static int FindDescendingNativeD20Seed(out int first,
+            out int second)
+        {
+            for (int seed = 1; seed <= 10000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                first = RulebookEvent.Dice.D20.Value;
+                second = RulebookEvent.Dice.D20.Value;
+                if (first > second) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic descending native d20 seed was found.");
         }
 
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()

@@ -34,6 +34,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Sprint55Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\SlingersLuckRollKind.cs"><Link>Deeds\SlingersLuckRollKind.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\SlingersLuckStatus.cs"><Link>Deeds\SlingersLuckStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\SlingersLuckRequest.cs"><Link>Deeds\SlingersLuckRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\SlingersLuckDecision.cs"><Link>Deeds\SlingersLuckDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\SlingersLuckService.cs"><Link>Deeds\SlingersLuckService.cs</Link></Compile>
     <Compile Include="Sprint36Tests.cs" />
     <Compile Include="Sprint43Tests.cs" />
     <Compile Include="Sprint44Tests.cs" />

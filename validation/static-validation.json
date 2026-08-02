@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.54-s54-menacing-shot",
-  "version": "0.0.54",
+  "milestone": "0.0.55-s55-slingers-luck",
+  "version": "0.0.55",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 97,
-    "activeEntryCount": 96,
+    "entryCount": 102,
+    "activeEntryCount": 101,
     "reservedEntryCount": 1,
-    "registrationCount": 96
+    "registrationCount": 101
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 801,
+    "testCount": 807,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

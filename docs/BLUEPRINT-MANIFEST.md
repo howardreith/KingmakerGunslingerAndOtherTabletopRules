@@ -1,8 +1,8 @@
 # Blueprint manifest and registration contract
 
-## Sprint 54 status
+## Sprint 55 status
 
-Sprint 54 extends the append-only contract to 97 stable identifiers: 96 active and one reserved.
+Sprint 55 extends the append-only contract to 102 stable identifiers: 101 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-six-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete one-hundred-one-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -145,6 +145,11 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.EvasiveImprovedUncannyDodgeBenefit` | `59dcfeea8ce443778ff784138646116c` | `BlueprintFeature` | Active | Exact native CannotBeFlanked mechanics clone |
 | `KMG.Deeds.MenacingShotFeature` | `6b08a7d17d564f35a8157044240499ce` | `BlueprintFeature` | Active | Level-fifteen Menacing Shot deed grant |
 | `KMG.Deeds.MenacingShotAbility` | `3107264a6fdf4cebb70e20f593327eee` | `BlueprintAbility` | Active | 30-foot exact native Fear-derived delivery |
+| `KMG.Deeds.SlingersLuckFeature` | `6b1cda2114444ea09d9aad132c974f5a` | `BlueprintFeature` | Active | Level-fifteen Slinger's Luck deed grant |
+| `KMG.Deeds.SlingersLuckSavingThrowAbility` | `f0305fc5463f4068a19d96e6f4e02c67` | `BlueprintAbility` | Active | Fixed two-grit saving-throw reroll arming action |
+| `KMG.Deeds.SlingersLuckSkillCheckAbility` | `f759c4b6fba246f4bb9f34b2c30ab7b5` | `BlueprintAbility` | Active | Fixed one-grit skill-check reroll arming action |
+| `KMG.Deeds.SlingersLuckSavingThrowArmed` | `841a2ca5e4994da48fadcc4f3a3c3579` | `BlueprintBuff` | Active | Unit-owned next-saving-throw marker |
+| `KMG.Deeds.SlingersLuckSkillCheckArmed` | `e553eb5c573b4b178f4b973850f5a0e3` | `BlueprintBuff` | Active | Unit-owned next-skill-check marker |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

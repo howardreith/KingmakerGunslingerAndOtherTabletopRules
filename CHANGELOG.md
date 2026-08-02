@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.55 - Sprint 55 Slinger's Luck
+
+- Adds separate level-fifteen saving-throw and skill-check reroll arming actions.
+- Uses the exact native d20 source and completed-rule replacement contract,
+  always retaining the second roll for fixed, non-reducible costs of 2 or 1 grit.
+- Adds six focused policy cases; the complete suite is 807 tests.
+
 ## 0.0.54 - Sprint 54 Menacing Shot
 
 - Adds the level-fifteen Menacing Shot deed as a self-centered 30-foot burst

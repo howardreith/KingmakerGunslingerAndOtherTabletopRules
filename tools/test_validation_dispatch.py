@@ -40,15 +40,15 @@ def main() -> int:
     sprint41 = source / "tools" / "validate_sprint41.py"
     sprint42 = source / "tools" / "validate_sprint42.py"
     sprint43 = source / "tools" / "validate_sprint43.py"
-    sprint44 = source / "tools" / "validate_sprint54.py"
+    sprint44 = source / "tools" / "validate_sprint55.py"
 
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.54 to validate_sprint54.py",
+        "dispatched version 0.0.55 to validate_sprint55.py",
     )
     run([python, "-B", str(sprint44)], 0,
-        "Sprint 54 source invariant validation passed")
+        "Sprint 55 source invariant validation passed")
     run([python, "-B", str(sprint42)], 1,
         "Info.json does not declare version 0.0.42")
     run(
