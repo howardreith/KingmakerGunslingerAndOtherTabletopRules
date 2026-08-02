@@ -3173,3 +3173,13 @@
   entries, eight exact project entries, one Blunderbuss, native quantities,
   critical profiles, and no inventory/save mutation. Re-audit remaining rows
   and continue the highest-priority incomplete mandatory integration.
+- Sprint 100 adds the missing save-free native character-creation commit
+  observer. It commits one detached player unit through exact `CharGen` mode,
+  verifies Gunslinger level one, callback, proficiency, and grit, and rolls back
+  native starting grants plus every external snapshot. Focused checks, runtime
+  preflight 84, repository validation, all 849 tests, clean Release build, and
+  strict package validation pass. Package/DLL SHA-256 are
+  `54ef543d317bb7ad5cfc0154661f56f70bba3f736998ec9732b977d8272fb7a9` /
+  `c3bd2cf07680245d40351ccaf60b2e8eb304e16166f5262d1247cb78651cf787`.
+  Commit this source-qualified checkpoint, then run exact mod load and two fresh
+  creation-commit processes.

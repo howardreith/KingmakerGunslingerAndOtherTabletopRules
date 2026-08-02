@@ -88,6 +88,10 @@ definition of done or a listed genuine human-input hard stop.
 - Published Blunderbuss runtime-qualified on exact `ea1faaa`: mod load plus
   vendor PASS pair `20260802T1639246998795Z` / `20260802T1640487811206Z`.
   Commit curated evidence, re-audit mandatory rows, and continue immediately.
+- Current active checkpoint is Sprint 100 native creation commit. The save-free
+  observer and rollback contract pass all 849 tests/build/package gates. Commit
+  the source checkpoint, run exact mod load and two fresh scenario passes, then
+  continue the mandatory matrix without pausing.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

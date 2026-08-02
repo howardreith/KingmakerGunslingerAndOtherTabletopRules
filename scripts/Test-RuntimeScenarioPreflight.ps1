@@ -46,6 +46,7 @@ $expected = @(
     'disposable-gunslinger-preview-application',
     'disposable-gunslinger-levelup-preview',
     'disposable-gunslinger-levelup-commit',
+    'disposable-gunslinger-creation-commit',
     'disposable-gunslinger-level-twenty-progression',
     'disposable-gunslinger-evaluated-chassis',
     'disposable-gunslinger-multiclass-preview',

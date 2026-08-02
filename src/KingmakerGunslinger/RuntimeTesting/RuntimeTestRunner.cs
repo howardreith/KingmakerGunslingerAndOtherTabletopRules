@@ -277,6 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerPreviewApplication &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerCreationCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLevelTwentyProgression &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvaluatedChassis &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
@@ -414,6 +415,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLevelUpCommit)
                 {
                     Complete(RunDisposableGunslingerLevelUpCommit());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerCreationCommit)
+                {
+                    Complete(RunDisposableGunslingerCreationCommit());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -4614,6 +4621,156 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerCreationCommit()
+        {
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object remote = ReadExactMember(player, "RemoteCompanions");
+            object cross = ReadExactMember(ReadExactMember(player, "CrossSceneState"),
+                "AllEntityData");
+            object inventory = ReadExactMember(player, "Inventory");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] remoteBefore = SnapshotReferences(remote);
+            object[] crossBefore = SnapshotReferences(cross);
+            object[] inventoryBefore = SnapshotReferences(inventory);
+            Player runtimePlayer = player as Player;
+            Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            object controller = null;
+            BlueprintItem[] startingItems = null;
+            int[] startingCounts = null;
+            int originalStartingGold = 0;
+            long moneyBefore = 0;
+            int previewLevel = -1, committedLevel = -1;
+            bool selected = false, callback = false, proficiencies = false,
+                grit = false, cleaned = false;
+            var addedInventory = new List<object>();
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                Kingmaker.UnitLogic.UnitDescriptor descriptor = entity == null ? null :
+                    entity.Descriptor;
+                if (descriptor == null || descriptor.Progression == null)
+                    throw new InvalidOperationException(
+                        "Detached character-creation unit is unavailable.");
+                if (runtimePlayer == null || runtimePlayer.Inventory == null)
+                    throw new InvalidOperationException(
+                        "Exact shared inventory is unavailable for rollback.");
+                startingItems = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
+                startingCounts = startingItems.Select(item =>
+                    runtimePlayer.Inventory.Count(item)).ToArray();
+                originalStartingGold = gunslinger.StartingGold;
+                moneyBefore = runtimePlayer.Money;
+                gunslinger.StartingGold = 0;
+
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = type.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || cancel == null ||
+                    commit == null)
+                    throw new MissingMethodException(
+                        "An exact native character-creation commit method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                Action onSuccess = () => callback = true;
+                controller = start.Invoke(null,
+                    new object[] { descriptor, false, null, onSuccess, charGen });
+                selected = (bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(controller, null);
+                var preview = ReadExactMember(controller, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                previewLevel = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(gunslinger);
+                commit.Invoke(controller, null);
+                controller = null;
+                addedInventory.AddRange(EnumerateRuntimeInventory(runtimePlayer.Inventory)
+                    .Where(item => !inventoryBefore.Any(existing =>
+                        ReferenceEquals(existing, item))));
+                committedLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                proficiencies = descriptor.HasFact(
+                    BlueprintBootstrap.GunslingerClass.Proficiencies);
+                grit = descriptor.HasFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null) cancel.Invoke(controller, null);
+                gunslinger.StartingGold = originalStartingGold;
+                if (runtimePlayer != null && runtimePlayer.Inventory != null)
+                {
+                    foreach (object item in addedInventory)
+                    {
+                        object ignored;
+                        string method;
+                        ReflectionAccess.TryInvokeAny(runtimePlayer.Inventory,
+                            new[] { "Remove", "RemoveItem" },
+                            new[] { new object[] { item, 1, false },
+                                new object[] { item, 1 }, new object[] { item } },
+                            out ignored, out method);
+                    }
+                    if (startingItems != null && startingCounts != null)
+                        for (int index = 0; index < startingItems.Length; index++)
+                        {
+                            int excess = runtimePlayer.Inventory.Count(startingItems[index]) -
+                                startingCounts[index];
+                            if (excess > 0)
+                                runtimePlayer.Inventory.Remove(startingItems[index], excess);
+                        }
+                }
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(remoteBefore, SnapshotReferences(remote)) &&
+                    SameReferences(crossBefore, SnapshotReferences(cross)) &&
+                    SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
+                    (runtimePlayer == null || runtimePlayer.Money == moneyBefore) &&
+                    (entity == null || !ContainsReference(cross, entity));
+            }
+            string observed = "selected=" + selected + ";preview=" + previewLevel +
+                ";committed=" + committedLevel + ";callback=" + callback +
+                ";proficiencies=" + proficiencies + ";grit=" + grit;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-character-creation-commit",
+                    "preview and committed Gunslinger level one with success callback",
+                    observed, selected && previewLevel == 1 && committedLevel == 1 &&
+                        callback, "CharGen-mode native Commit on detached player unit"),
+                Assertion("creation-level-one-facts",
+                    "Gunslinger proficiencies and grit installed", observed,
+                    proficiencies && grit,
+                    "exact committed descriptor HasFact after native Commit"),
+                Assertion("external-isolation",
+                    "unchanged party, units, cross-scene, companions, inventory, and money",
+                    "cleaned=" + cleaned, cleaned,
+                    "starting grants rolled back and detached entity disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerRespecCommit()
