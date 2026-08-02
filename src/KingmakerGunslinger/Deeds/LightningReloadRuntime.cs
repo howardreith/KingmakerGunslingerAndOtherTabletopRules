@@ -48,7 +48,8 @@ namespace KingmakerGunslinger.Deeds
                 caster.Buffs.RawFacts.OfType<Buff>().Any(value =>
                     ReferenceEquals(value.Blueprint, usedMarker));
             LightningReloadDecision decision = Policy.Evaluate(
-                new LightningReloadRequest(exact, state.Condition,
+                new LightningReloadRequest(exact,
+                    exact ? firearm.EffectiveCondition : state.Condition,
                     state.LoadedRounds, capacity, ReadGrit(caster), ammunition,
                     used));
             return new LightningReloadAvailability(decision,

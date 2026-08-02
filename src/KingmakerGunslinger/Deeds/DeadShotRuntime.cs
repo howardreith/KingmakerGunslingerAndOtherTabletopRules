@@ -43,7 +43,8 @@ namespace KingmakerGunslinger.Deeds
                     FirearmCondition.Normal, 0, ReadGrit(caster), ReadBab(caster)));
             FirearmState state = firearm.Firearm.Repository.State;
             DeadShotDecision decision = Policy.Evaluate(new DeadShotRequest(true,
-                firearm.Definition.IsScatter, state.Condition, state.LoadedRounds,
+                firearm.Definition.IsScatter, firearm.EffectiveCondition,
+                state.LoadedRounds,
                 ReadGrit(caster, TrueGritDeed.DeadShot, 1), ReadBab(caster)));
             reason = decision.Status.ToString();
             return decision;
@@ -101,7 +102,8 @@ namespace KingmakerGunslinger.Deeds
                 caster.Resources.Spend(gunslinger.Grit.Resource,
                     trueGrit.EffectiveCost);
                 spent = true;
-                FirearmDischargeResult discharge = Discharge.Evaluate(before);
+                FirearmDischargeResult discharge = Discharge.Evaluate(
+                    before, firearm.EffectiveCondition);
                 if (discharge.Status != FirearmDischargeStatus.Fired)
                     throw new InvalidOperationException("Accepted Dead Shot did not discharge.");
                 FirearmItemStateSnapshot postDischarge = Transition(firearm,
@@ -109,7 +111,7 @@ namespace KingmakerGunslinger.Deeds
                 expectedCurrent = postDischarge.Repository.State;
 
                 int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
-                    firearm.Definition.MisfireValue, expectedCurrent.Condition,
+                    firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                     HasGunTraining(casterEntity, firearm.Definition.Kind));
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
@@ -129,7 +131,7 @@ namespace KingmakerGunslinger.Deeds
                 if (outcome.Misfires)
                 {
                     condition = Conditions.Evaluate(Misfires.Evaluate(1, threshold,
-                        false), expectedCurrent);
+                        false), expectedCurrent, firearm.EffectiveCondition);
                     if (condition.ChangesCondition)
                     {
                         FirearmItemStateSnapshot changed = Transition(firearm,

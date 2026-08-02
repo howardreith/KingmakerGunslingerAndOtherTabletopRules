@@ -2896,3 +2896,17 @@
 - Exact `b0fa6ad` guarded Steam mod-load PASS is
   `20260802T1408301519777Z-mod-load-smoke`; rebuilt package/DLL hashes are
   `5b59b009...2d5de` / `de62f372...118967`. Sprint 90 is runtime-qualified.
+
+## 2026-08-02 Sprint 91 battered deed use gates
+
+- Audited every deed path using the shared exact equipped-firearm resolver.
+  Pistol-Whip, Lightning Reload, and all four Dead Shot condition boundaries
+  now use the shared effective battered condition.
+- Preserved actual repository state for all atomic commits. Quick Clear remains
+  actual-condition maintenance by design and cannot repair an ownership-only
+  effective Broken overlay.
+- Focused contract, parser validation, repository validation, all 848 tests,
+  clean Release build, and strict package validation pass. Package/DLL hashes:
+  `4b8e94f4...415f6` / `2e10d064...03938`.
+- Next: commit/mod-load, re-audit all battered/economy coverage, and continue
+  the highest-priority incomplete mandatory row.

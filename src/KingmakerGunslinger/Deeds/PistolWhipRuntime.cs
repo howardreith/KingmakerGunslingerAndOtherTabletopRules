@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.Deeds
                 true, firearm.Definition.Kind == Firearms.FirearmKind.Musket ||
                     firearm.Definition.Kind == Firearms.FirearmKind.Blunderbuss ||
                     firearm.Definition.Kind == Firearms.FirearmKind.Rifle,
-                firearm.Firearm.Repository.State.Condition,
+                firearm.EffectiveCondition,
                 ReadGrit(caster, TrueGritDeed.PistolWhip, 1)));
             reason = decision.Status.ToString();
             return decision;

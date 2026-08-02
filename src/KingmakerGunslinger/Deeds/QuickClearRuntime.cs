@@ -22,6 +22,8 @@ namespace KingmakerGunslinger.Deeds
                     FirearmCondition.Normal, false, ReadGrit(caster)));
             // In the current item-state architecture Broken is written only by the
             // misfire transition. Other damage sources never write this token.
+            // Quick Clear mutates that actual condition; an ownership-only
+            // effective Broken overlay is not a repairable item state.
             QuickClearDecision decision = Policy.Evaluate(new QuickClearRequest(mode,
                 true, firearm.Firearm.Repository.State.Condition, true,
                 ReadGrit(caster, mode)));
