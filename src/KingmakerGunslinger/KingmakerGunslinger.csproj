@@ -332,6 +332,13 @@
     <Compile Include="Deeds\LightningReloadRuntime.cs" />
     <Compile Include="Deeds\LightningReloadAbilityLogic.cs" />
     <Compile Include="Blueprints\LightningReloadBlueprints.cs" />
+    <Compile Include="Deeds\EvasiveRequest.cs" />
+    <Compile Include="Deeds\EvasiveDecision.cs" />
+    <Compile Include="Deeds\EvasiveService.cs" />
+    <Compile Include="Deeds\EvasiveGrantController.cs" />
+    <Compile Include="Deeds\EvasiveRuntime.cs" />
+    <Compile Include="Deeds\EvasiveResourcePatches.cs" />
+    <Compile Include="Blueprints\EvasiveBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

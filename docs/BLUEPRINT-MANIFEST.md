@@ -1,8 +1,8 @@
 # Blueprint manifest and registration contract
 
-## Sprint 52 status
+## Sprint 53 status
 
-Sprint 52 extends the append-only contract to 91 stable identifiers: 90 active and one reserved.
+Sprint 53 extends the append-only contract to 95 stable identifiers: 94 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete ninety-four-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -139,6 +139,10 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.LightningReloadFeature` | `7e6a1185097a4e64a1c1f409d006cf22` | `BlueprintFeature` | Active | Level-eleven Lightning Reload deed grant |
 | `KMG.Deeds.LightningReloadAbility` | `13626eb6f20248b5934172c3270d167f` | `BlueprintAbility` | Active | Swift-action equipped-firearm reload |
 | `KMG.Deeds.LightningReloadUsed` | `b35b22a49a4c4645a1b730698d35837d` | `BlueprintBuff` | Active | Unit-owned once-per-round marker |
+| `KMG.Deeds.EvasiveFeature` | `cce09209a18542c887dfb682b53c11a4` | `BlueprintFeature` | Active | Level-fifteen positive-grit controller |
+| `KMG.Deeds.EvasiveEvasionBenefit` | `7e71a4a7c40f432f85904280752321a9` | `BlueprintFeature` | Active | Exact native Reflex Evasion mechanics clone |
+| `KMG.Deeds.EvasiveUncannyDodgeBenefit` | `ecf97be86d97489d9041dcff2d784570` | `BlueprintFeature` | Active | Exact native Uncanny Dodge mechanics clone |
+| `KMG.Deeds.EvasiveImprovedUncannyDodgeBenefit` | `59dcfeea8ce443778ff784138646116c` | `BlueprintFeature` | Active | Exact native CannotBeFlanked mechanics clone |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 

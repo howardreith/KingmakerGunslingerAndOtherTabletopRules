@@ -8,15 +8,13 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `c4683ba` (Sprint 43 runtime qualification evidence).
+- Audited HEAD: `d8eaf4d` (Sprint 53 exact native-contract observer).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 44 Startling Shot is source-qualified. The
-  level-seven standard-action weapon ability requires positive grit without
-  spending it, consumes one item-owned chamber, intentionally emits no attack
-  or damage event, and applies a one-round native flat-footed condition. Commit
-  the source checkpoint, then run exact mod load and two guarded feature runs.
-- Version: `0.0.44`.
+- Current checkpoint: Sprint 53 Evasive is source-qualified. Commit the
+  reconstructable 0.0.53 source checkpoint, rebuild the exact commit, then run
+  exact mod load and two guarded `disposable-gunslinger-evasive` launches.
+- Version: `0.0.53`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 

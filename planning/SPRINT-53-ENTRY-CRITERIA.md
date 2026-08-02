@@ -24,8 +24,9 @@ counts Gunslinger levels.
   native benefits for that unit; returning to zero removes or suppresses them.
 - Evasion preserves the native Reflex-save/no-damage behavior.
 - Uncanny Dodge preserves the native cannot-be-caught-flat-footed behavior.
-- Improved Uncanny Dodge uses Gunslinger level in its attacker-level comparison
-  without changing the native feature for Rogues or other classes.
+- Improved Uncanny Dodge uses the exact installed native `CannotBeFlanked`
+  mechanic. Kingmaker 2.1.7b exposes no attacker-level comparison, so the
+  tabletop Gunslinger-level substitution has no remaining engine interaction.
 - Resource updates, level changes, load reconstruction, and respec refresh the
   unit-local state without sharing facts between units.
 - Failures remove only project-owned Evasive grants and fail closed to no

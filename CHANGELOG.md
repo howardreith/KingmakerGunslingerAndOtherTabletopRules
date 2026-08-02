@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.53 - Sprint 53 Evasive
+
+- Adds the level-fifteen Evasive feature, conditionally granting project-owned
+  clones of Kingmaker's exact Evasion, Uncanny Dodge, and Improved Uncanny
+  Dodge mechanics while the Gunslinger has positive grit.
+- Refreshes the grants on exact grit Spend/Restore transitions without
+  disturbing native facts from other classes.
+- Adds five focused policy cases; the complete suite is 795 tests.
+
 ## 0.0.52 — Sprint 52 Lightning Reload
 
 - Adds the level-eleven swift-action Lightning Reload deed for one equipped

@@ -640,6 +640,18 @@
     },
     {
       "symbol": "KMG.Deeds.LightningReloadUsed", "guid": "b35b22a49a4c4645a1b730698d35837d", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 52", "notes": "Unit-owned once-per-round use marker."
+    },
+    {
+      "symbol": "KMG.Deeds.EvasiveFeature", "guid": "cce09209a18542c887dfb682b53c11a4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 53", "notes": "Level-fifteen positive-grit Evasive controller."
+    },
+    {
+      "symbol": "KMG.Deeds.EvasiveEvasionBenefit", "guid": "7e71a4a7c40f432f85904280752321a9", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 53", "notes": "Project-owned clone of exact native Reflex Evasion mechanics."
+    },
+    {
+      "symbol": "KMG.Deeds.EvasiveUncannyDodgeBenefit", "guid": "ecf97be86d97489d9041dcff2d784570", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 53", "notes": "Project-owned clone of exact native Uncanny Dodge mechanics."
+    },
+    {
+      "symbol": "KMG.Deeds.EvasiveImprovedUncannyDodgeBenefit", "guid": "59dcfeea8ce443778ff784138646116c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 53", "notes": "Project-owned clone of exact native CannotBeFlanked mechanics."
     }
   ]
 }

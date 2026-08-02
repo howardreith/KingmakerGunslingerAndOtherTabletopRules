@@ -53,6 +53,7 @@ $expected = @(
     'disposable-gunslinger-bleeding-wound',
     'disposable-gunslinger-expert-loading',
     'disposable-gunslinger-lightning-reload',
+    'disposable-gunslinger-evasive',
     'observe-evasive-native-features',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
@@ -150,6 +151,10 @@ Assert-True (-not $lightningReload.RequiresManualInteraction) `
     'lightning-reload-is-autonomous'
 Assert-True (-not $lightningReload.RequiresSaveName) `
     'lightning-reload-is-save-free'
+$evasive = Get-KmgRuntimeScenarioMetadata 'disposable-gunslinger-evasive'
+Assert-True (-not $evasive.RequiresManualInteraction) `
+    'evasive-is-autonomous'
+Assert-True (-not $evasive.RequiresSaveName) 'evasive-is-save-free'
 $evasiveObserver = Get-KmgRuntimeScenarioMetadata `
     'observe-evasive-native-features'
 Assert-True (-not $evasiveObserver.RequiresManualInteraction) `
@@ -159,7 +164,7 @@ Assert-True (-not $evasiveObserver.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.52'
+    ExpectedVersion = '0.0.53'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -192,7 +197,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.52' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.53' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -247,7 +252,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.52' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.53' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

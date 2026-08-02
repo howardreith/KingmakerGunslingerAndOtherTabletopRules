@@ -2065,3 +2065,20 @@
 - Entry criteria are recorded in `planning/SPRINT-53-ENTRY-CRITERIA.md`. Next:
   commit and run the exact native-feature observer; do not infer scaling from
   display names or another Owlcat game.
+
+## 2026-08-01 Sprint 53 Evasive source qualification
+
+- Exact observer `20260802T0418217104942Z-observe-evasive-native-features`
+  confirmed native Evasion uses the Reflex Evasion component, Uncanny Dodge
+  uses FlatFootedIgnore plus its pre-initiative condition, and Improved
+  Uncanny Dodge uses CannotBeFlanked with no attacker-level comparison.
+- Added a level-fifteen wrapper and three hidden project-owned native clones.
+  Positive grit installs all three benefits; exact grit Spend/Restore postfixes
+  refresh only the owning unit and exact grit resource. Zero grit removes only
+  the project-owned clones, preserving facts granted by other classes.
+- Added five focused policy cases and guarded save-free scenario
+  `disposable-gunslinger-evasive`. Repository validation, focused runtime
+  request/preflight/runner checks, all 795 domain tests, Release build, and
+  strict standalone package validation pass.
+- Next: complete the reconstructable source audit and commit, rebuild the exact
+  commit, require mod-load PASS, and run two independent feature PASS launches.

@@ -290,6 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvasive &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
@@ -480,6 +481,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload)
                 {
                     Complete(RunDisposableGunslingerLightningReload());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerEvasive)
+                {
+                    Complete(RunDisposableGunslingerEvasive());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4498,6 +4505,151 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerEvasive()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            EvasiveBlueprintSet set = gunslinger.Evasive;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData other = null;
+            object controller = null;
+            int level = -1, initialGrit = -1, zeroGrit = -1, restoredGrit = -1;
+            bool initialBenefits = false, zeroBenefits = false,
+                restoredBenefits = false, otherIsolated = false, cleaned = false;
+            string stage = "blueprint-contract";
+            bool blueprintContract = gunslinger.Progression.LevelEntries[14]
+                .Features.Count(value => ReferenceEquals(value, set.Feature)) == 1 &&
+                set.Evasion.ComponentsArray.Length == 1 &&
+                set.UncannyDodge.ComponentsArray.Length == 2 &&
+                set.ImprovedUncannyDodge.ComponentsArray.Length == 1;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                other = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.Wisdom.BaseValue = 18;
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel", BindingFlags.Public |
+                    BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null || cancel == null)
+                    throw new MissingMethodException(
+                        "An exact native Evasive level-up method is unavailable.");
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                stage = "native-level-fifteen";
+                for (int index = 0; index < 15; index++)
+                {
+                    controller = start.Invoke(null,
+                        new object[] { unit.Descriptor, false, null, null, charGen });
+                    if (!(bool)selectClass.Invoke(controller,
+                        new object[] { gunslinger.CharacterClass, false }))
+                        throw new InvalidOperationException(
+                            "Disposable Evasive Gunslinger selection was rejected at level " +
+                            (index + 1) + ".");
+                    mechanics.Invoke(controller, null);
+                    apply.Invoke(controller, new object[] { unit.Descriptor });
+                    cancel.Invoke(controller, null);
+                    controller = null;
+                }
+                level = unit.Descriptor.Progression.GetClassLevel(
+                    gunslinger.CharacterClass);
+                initialGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                initialBenefits = HasAllEvasiveBenefits(unit.Descriptor, set);
+
+                stage = "zero-grit-removal";
+                unit.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    initialGrit);
+                zeroGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                zeroBenefits = HasAnyEvasiveBenefit(unit.Descriptor, set);
+
+                stage = "positive-grit-restoration";
+                unit.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                restoredGrit = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                restoredBenefits = HasAllEvasiveBenefits(unit.Descriptor, set);
+                otherIsolated = !HasAnyEvasiveBenefit(other.Descriptor, set);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Evasive failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
+                if (unit != null) unit.Dispose();
+                if (other != null) other.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit)) &&
+                    (other == null || !ContainsReference(allUnits, other));
+            }
+            string observed = "level=" + level + ";grit=" + initialGrit + "->" +
+                zeroGrit + "->" + restoredGrit + ";benefits=" + initialBenefits +
+                "," + zeroBenefits + "," + restoredBenefits +
+                ";otherIsolated=" + otherIsolated;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("evasive-progression", "level 15 exact native clones",
+                    observed, blueprintContract && level == 15,
+                    "production progression and cloned component contracts"),
+                Assertion("evasive-positive-grit", "all three benefits active",
+                    observed, initialGrit > 0 && initialBenefits,
+                    "native level-up and conditional grant controller"),
+                Assertion("evasive-grit-transitions", "zero removes; restore adds",
+                    observed, zeroGrit == 0 && !zeroBenefits && restoredGrit == 1 &&
+                        restoredBenefits, "exact grit Spend/Restore Harmony refresh"),
+                Assertion("evasive-unit-isolation", "other unit has no benefits",
+                    observed, otherIsolated, "project-owned benefit identities"),
+                Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned, "disposable units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static bool HasAllEvasiveBenefits(UnitDescriptor owner,
+            EvasiveBlueprintSet set)
+        {
+            return owner.HasFact(set.Evasion) && owner.HasFact(set.UncannyDodge) &&
+                owner.HasFact(set.ImprovedUncannyDodge);
+        }
+
+        private static bool HasAnyEvasiveBenefit(UnitDescriptor owner,
+            EvasiveBlueprintSet set)
+        {
+            return owner.HasFact(set.Evasion) || owner.HasFact(set.UncannyDodge) ||
+                owner.HasFact(set.ImprovedUncannyDodge);
         }
 
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()
