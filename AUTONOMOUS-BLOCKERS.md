@@ -226,3 +226,8 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   Production remains restricted and vendor-excluded. A third runtime attempt,
   using a reversible live-area registration fixture or a human-positioned
   supervised fixture, requires renewed human authority.
+- Resolution and policy supersession: standing authorization now explicitly
+  covers repeated materially distinct runtime work and reversible request-local
+  live-area registration. All historical retry-count ceilings in this ledger,
+  the journal, resume notes, and qualification records are evidence-history
+  only and impose no current stop. Scatter is an active engineering gate.

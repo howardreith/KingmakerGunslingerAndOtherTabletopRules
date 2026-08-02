@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "mission": "complete-base-gunslinger",
+  "status": "continue",
+  "branch": "codex/complete-gunslinger",
+  "resumeCommit": "924692533ab8cb9cb4e40e2f05b69224041a0e63",
+  "standingAuthorization": true,
+  "attemptCeiling": null,
+  "currentWork": "reversible live-area Scatter Shot fixture registration",
+  "updatedUtc": "2026-08-02T16:10:00Z"
+}

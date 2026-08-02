@@ -95,9 +95,17 @@ Stop rather than guessing when:
 - Test prerequisites are missing.
 - Steam shows credentials, purchases, cloud conflicts, updates, or unexpected dialogs.
 - The observed result is ambiguous.
-- Two materially different attempts at the same implementation or UI interaction fail.
+- The evidence shows a genuine hard stop defined by the active mission after
+  safe strategy changes, narrower instrumentation, and reversible alternatives
+  have been exhausted.
 
 An ambiguous runtime result counts as a failure.
+
+Runtime failures and retry counts are not permission boundaries. After repeated
+failures, inspect structured evidence and change engineering strategy: narrow
+the observation, improve instrumentation, reduce the fixture, register a more
+realistic request-local disposable fixture, or reassess the implementation.
+Continue while a safe reversible evidence-supported path remains.
 
 ## Git safety
 

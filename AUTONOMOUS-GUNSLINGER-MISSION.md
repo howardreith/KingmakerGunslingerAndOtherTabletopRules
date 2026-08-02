@@ -423,8 +423,8 @@ On ERROR, FAIL, TIMEOUT, or AMBIGUOUS:
 7. Commit the repair.
 8. Retry autonomously.
 
-After two materially different failed repairs, do not blindly attempt a third
-variation of the same theory. Change mode:
+After repeated failed repairs, do not blindly repeat the same theory. Change
+engineering strategy:
 
 - gather narrower evidence;
 - implement a non-initiating observation;
@@ -433,6 +433,12 @@ variation of the same theory. Change mode:
 - reassess the architecture.
 
 Continue if a safe evidence-acquisition path remains.
+
+There is no arbitrary retry, repair-cycle, sprint, commit, or runtime-attempt
+ceiling. Retry counts are diagnostic evidence, not authorization or safety
+boundaries. Standing authorization covers non-destructive reversible work in
+the repository, Gunslinger lab, backed-up live-mod deployment, Steam App ID
+640820, generated evidence, and disposable KMG_AUTOMATION_WORKING environment.
 
 Do not manufacture proof. A previous observation, call stack, visible label, or
 reflection candidate is not by itself proof of one safe callable receiver.
@@ -473,21 +479,25 @@ well-tested implementation.
 
 Human input is absolutely necessary only when one of these is true:
 
-1. A player-facing rules decision has multiple materially different outcomes,
+1. A proposed action could irreversibly destroy or corrupt data outside the
+   Git-recoverable repository, generated lab artifacts, disposable runtime
+   fixtures, or backed-up live-mod deployment.
+2. KMG_AUTOMATION_BASELINE or another non-disposable save would need to be
+   loaded, modified, renamed, deleted, overwritten, migrated, or accessed as a
+   raw save.
+3. A system-wide destructive operation, disk operation, broad unrelated-file
+   deletion, operating-system modification, or similarly dangerous privileged
+   action is genuinely necessary.
+4. A required secret, credential, paid account, license, or legally restricted
+   asset is unavailable.
+5. A player-facing rules decision has multiple materially different outcomes,
    no authoritative local source or existing project decision resolves it, and
    choosing incorrectly would alter class balance or compatibility.
-2. A legal or licensing decision is required.
-3. A required credential, proprietary asset, or external file does not exist
-   locally and cannot be generated or replaced lawfully.
-4. A destructive or irreversible action outside the authorized repository,
-   lab, live-mod, and disposable working-save boundaries is genuinely required.
-5. A necessary test requires physical human perception or interaction and no
+6. A necessary test requires physical human perception or interaction and no
    safe deterministic or in-process observation can establish the result.
-6. The execution platform or sandbox prevents required authorized operations
+7. The execution platform or sandbox prevents required authorized operations
    and no safer local alternative exists.
-7. Continuing would risk KMG_AUTOMATION_BASELINE, a non-disposable save, user
-   data, credentials, or unrelated files.
-8. The active Codex usage allowance is exhausted.
+8. The finite in-scope mission is complete.
 
 Before stopping for human input:
 

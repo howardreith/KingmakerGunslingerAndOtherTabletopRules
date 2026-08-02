@@ -3118,3 +3118,22 @@
   query. The two-attempt rule is now a hard stop. Production remains locked;
   see `HUMAN-INPUT-REQUIRED.md` for the recommended reversible registration
   fixture and exact renewed authority requested.
+
+## 2026-08-02 standing continuous authorization
+
+- User explicitly authorized continuous non-destructive, reversible execution
+  across the Gunslinger repository, lab, backed-up live mod, guarded Steam
+  runtime, generated evidence, and disposable working environment.
+- Retry counts and repair cycles are no longer permission or stopping
+  boundaries. Historical notes saying “final attempt,” “do not run a third,”
+  or requiring renewed runtime authority are superseded as policy while their
+  factual evidence remains intact.
+- `AUTONOMOUS-GUNSLINGER-STATE.json` now records `continue`; the Scatter
+  permission file is resolved and removed. Next: implement guaranteed-cleanup
+  request-local live-area target registration and continue runtime diagnosis.
+- Implemented exact current-area `AddEntityData`/`RemoveEntityData` registration
+  for two immortal disposable targets, guarded by per-target registration flags
+  and reference-identical `AllUnits` restoration in `finally`. Runtime preflight
+  84, repository validation, 849 tests, Release build, and strict package pass;
+  package/DLL SHA-256 `638f5f454e7dd259fb322efb44efd8841c5f49d5e385c8dcc5f9a2eabd994566` /
+  `1809538f821299b7dbe7d2e85b696fe0c5f2d7d49b88d64231bf43ba8a3227d8`.

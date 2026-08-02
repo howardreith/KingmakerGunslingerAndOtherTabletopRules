@@ -5745,6 +5745,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
             object allUnits = ReadExactMember(state, "AllUnits");
+            Kingmaker.EntitySystem.AreaPersistentState area =
+                Kingmaker.Game.Instance.State.LoadedAreaState;
             object[] partyBefore = SnapshotReferences(party);
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
@@ -5752,19 +5754,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData second = null;
             ItemEntityWeapon weapon = null;
             Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
-            int targetCount = -1;
-            bool cleaned = false;
+            int targetCount = -1, registeredCount = -1;
+            bool firstRegistered = false, secondRegistered = false,
+                cleaned = false;
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 first = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 second = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                first.Descriptor.State.Immortality.Retain();
+                second.Descriptor.State.Immortality.Retain();
                 Vector3 origin = new Vector3(10000f, 0f, 10000f);
                 SetExactProperty(attacker, "Position", origin);
                 SetExactProperty(first, "Position", origin + new Vector3(2f, 0f, 0.3f));
                 SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
                 weapon = new ItemEntityWeapon(blunderbuss);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
+                area.AddEntityData(first);
+                firstRegistered = true;
+                area.AddEntityData(second);
+                secondRegistered = true;
+                registeredCount = SnapshotReferences(allUnits).Length -
+                    unitsBefore.Length;
                 Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
                     new Scatter.NativeScatterConeTargetResolver().Resolve(attacker, first);
                 targetCount = targets.Length;
@@ -5799,6 +5810,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
+                if (secondRegistered) area.RemoveEntityData(second);
+                if (firstRegistered) area.RemoveEntityData(first);
+                if (second != null) second.Descriptor.State.Immortality.ReleaseAll();
+                if (first != null) first.Descriptor.State.Immortality.ReleaseAll();
                 if (second != null) second.Dispose();
                 if (first != null) first.Dispose();
                 if (attacker != null) attacker.Dispose();
@@ -5806,12 +5821,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(unitsBefore, SnapshotReferences(allUnits));
             }
             string observed = mixed == null || allMisfire == null ? "missing" :
-                "targets=" + targetCount + ";mixedMisfires=" +
+                "registered=" + registeredCount + ";targets=" + targetCount +
+                ";mixedMisfires=" +
                 mixed.Volley.MisfireRollCount +
                 ";mixedCondition=" + mixed.After.Condition +
                 ";allMisfires=" + allMisfire.Volley.MisfireRollCount +
                 ";allCondition=" + allMisfire.After.Condition;
-            bool transaction = mixed != null && allMisfire != null &&
+            bool transaction = registeredCount == 2 && mixed != null &&
+                allMisfire != null &&
                 mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
                 mixed.After.Condition == FirearmCondition.Normal &&
                 mixed.Volley.MisfireRollCount == 1 &&

@@ -65,6 +65,15 @@ definition of done or a listed genuine human-input hard stop.
   are absent from the native live-area query. Stop under the two-attempt rule.
   Production remains locked. `HUMAN-INPUT-REQUIRED.md` requests one renewed,
   save-free attempt using exact reversible live-area fixture registration.
+- Standing continuous authorization supersedes every historical attempt-limit
+  stop. Mission state is `continue`; `HUMAN-INPUT-REQUIRED.md` is resolved and
+  removed. Implement reversible request-local live-area registration with
+  guaranteed cleanup and re-run Scatter Shot until qualified or a genuine
+  mission hard stop is proven.
+- Live-area fixture registration is implemented with per-target flags,
+  immortality retention, `finally` unregistration/disposal, exact `+2` count,
+  and reference-snapshot restoration. Preflight 84, 849 tests, Release build,
+  and strict package pass. Commit and run exact mod load plus Scatter Shot.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

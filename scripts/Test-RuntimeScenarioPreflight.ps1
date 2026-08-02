@@ -9,7 +9,16 @@ $commonPath = Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1'
 $orchestratorPath = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $catalogPath = Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs'
+$runnerPath = Join-Path $root `
+    'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs'
 . $commonPath
+
+$runnerSource = Get-Content -Raw -LiteralPath $runnerPath
+if (-not $runnerSource.Contains('area.AddEntityData(first);') -or
+    -not $runnerSource.Contains('area.RemoveEntityData(first);') -or
+    -not $runnerSource.Contains('first.Descriptor.State.Immortality.Retain();')) {
+    throw 'Scatter live-area fixture registration/cleanup contract is incomplete.'
+}
 
 $failures = [Collections.Generic.List[string]]::new()
 $checks = 0

@@ -6,6 +6,13 @@ the registered transaction with forced mixed rolls (one misfire, condition
 unchanged) and all-misfire rolls (Normal to Broken), one discharged chamber,
 exact cleanup, loaded version, and no save interaction.
 
+Detached targets are registered request-locally through the current
+`AreaPersistentState.AddEntityData` contract and unregistered in `finally`
+before disposal. Both targets retain immortality during the transaction. The
+scenario requires exact `AllUnits` delta `+2` and reference-identical restoration
+to the pre-request snapshot; it grants no faction, quest, loot, dialogue,
+kingdom, or experience state.
+
 Qualification requires an exact-commit mod-load smoke and two consecutive
 fresh-process scenario PASS runs before the production item restriction or
 vendor exclusion may be removed.
