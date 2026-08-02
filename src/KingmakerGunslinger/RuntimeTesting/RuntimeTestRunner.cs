@@ -2197,7 +2197,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
             var tableSet = new HashSet<BlueprintSharedVendorTable>(tables);
             var records = new List<string>();
+            var ownerRecords = new List<string>();
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
+            foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null))
+            {
+                foreach (AddSharedVendor component in (owner.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddSharedVendor>())
+                {
+                    var table = tableField == null ? null :
+                        tableField.GetValue(component) as BlueprintSharedVendorTable;
+                    ownerRecords.Add("owner=" + owner.GetType().FullName + ":" +
+                        owner.name + ":" + owner.AssetGuid + ";table=" +
+                        (table == null ? "<null>" : table.name + ":" +
+                            table.AssetGuid));
+                }
+            }
             foreach (BlueprintUnit unit in BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintUnit>().OrderBy(value => value.AssetGuid,
                     StringComparer.Ordinal))
@@ -2238,14 +2253,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(",", linkedLoot.ToArray()));
             }
             records.Sort(StringComparer.Ordinal);
+            ownerRecords.Sort(StringComparer.Ordinal);
             string catalog = string.Join(" | ", tables.Select(value =>
                 value.name + ":" + value.AssetGuid + ":" +
                 DescribeBlueprintComponents(value)).ToArray());
             string observed = "tables=" + tables.Length + ";associations=" +
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";catalog=" +
-                catalog + ";records=" +
-                string.Join(" | ", records.ToArray());
+                catalog + ";owners=" + string.Join(" | ",
+                    ownerRecords.ToArray()) + ";records=" + string.Join(" | ",
+                    records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("vendor-table-catalog",
@@ -2260,6 +2277,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, associations > 0 && records.Count > 0 &&
                         invalidAssociations == 0,
                     "BlueprintUnit ComponentsArray AddSharedVendor graph"),
+                Assertion("vendor-component-owners",
+                    "nonempty exact AddSharedVendor component owner catalog",
+                    observed, ownerRecords.Count > 0,
+                    "all registered BlueprintScriptableObject component arrays"),
                 Assertion("vendor-observation-only",
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,
