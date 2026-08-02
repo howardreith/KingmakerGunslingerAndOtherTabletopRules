@@ -8192,6 +8192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failedKilled = failedTarget.Descriptor.State.IsDead;
 
                 stage = "save-success";
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
                 attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
                 marker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Single(value => ReferenceEquals(value.Blueprint, set.ArmedMarker));
