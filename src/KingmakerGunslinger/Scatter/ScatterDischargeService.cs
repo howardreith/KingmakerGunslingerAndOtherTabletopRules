@@ -18,6 +18,18 @@ namespace KingmakerGunslinger.Scatter
             ScatterTargetPlan plan,
             bool deliveryPrerequisitesSatisfied)
         {
+            return Evaluate(definition, state, state == null
+                ? FirearmCondition.Wrecked : state.Condition, plan,
+                deliveryPrerequisitesSatisfied);
+        }
+
+        internal ScatterDischargeDecision Evaluate(
+            FirearmDefinition definition,
+            FirearmState state,
+            FirearmCondition effectiveCondition,
+            ScatterTargetPlan plan,
+            bool deliveryPrerequisitesSatisfied)
+        {
             if (definition == null) throw new ArgumentNullException("definition");
             if (!definition.IsScatter)
                 throw new ArgumentException("Only a scatter firearm can use scatter discharge.", "definition");
@@ -31,7 +43,8 @@ namespace KingmakerGunslinger.Scatter
                     state, state, plan.TargetCount, 0, false);
             }
 
-            FirearmDischargeResult result = _discharge.Evaluate(state);
+            FirearmDischargeResult result = _discharge.Evaluate(state,
+                effectiveCondition);
             ScatterDischargeStatus status = result.Status == FirearmDischargeStatus.Fired
                 ? ScatterDischargeStatus.Fired
                 : result.Status == FirearmDischargeStatus.Empty

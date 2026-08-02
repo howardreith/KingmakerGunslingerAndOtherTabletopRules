@@ -136,7 +136,9 @@ namespace KingmakerGunslinger.Diagnostics
 
         private static void Prefix(object __instance)
         {
-            FirearmGritRecoveryRuntime.BeforeDamage(__instance as RuleDealDamage);
+            RuleDealDamage damage = __instance as RuleDealDamage;
+            Scatter.ScatterVolleyRuntime.SuppressPrecisionDamage(damage);
+            FirearmGritRecoveryRuntime.BeforeDamage(damage);
         }
 
         private static void Postfix(object __instance)

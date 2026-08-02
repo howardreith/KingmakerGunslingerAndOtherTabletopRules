@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 
 namespace KingmakerGunslinger.Scatter
 {
@@ -40,6 +41,14 @@ namespace KingmakerGunslinger.Scatter
         {
             Marker ignored;
             return TryGet(roll, out ignored);
+        }
+
+        internal static void SuppressPrecisionDamage(RuleDealDamage damage)
+        {
+            if (damage == null) return;
+            Marker ignored;
+            if (TryGet(damage.AttackRoll, out ignored))
+                damage.DisablePrecisionDamage = true;
         }
 
         internal static void BeforeSetRoll(RuleAttackRoll roll,

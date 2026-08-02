@@ -80,7 +80,8 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(
         read(root, "src/KingmakerGunslinger/Scatter/ScatterDischargeService.cs"),
         ["deliveryPrerequisitesSatisfied", "RejectedBeforeDelivery",
-         "_discharge.Evaluate(state)", "result.RoundsConsumed"],
+         "_discharge.Evaluate(state,", "effectiveCondition",
+         "result.RoundsConsumed"],
         "Sprint 32 one-discharge boundary",
     )
     require_tokens(

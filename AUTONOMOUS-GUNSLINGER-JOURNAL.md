@@ -3060,3 +3060,21 @@
   all-roll aggregation service and markers are removed on consume/cancel.
 - Next: qualify/commit, then compose native geometry, one discharge, marked
   attacks, aggregate condition/explosion, and rollback in the ability runtime.
+
+## 2026-08-02 Sprint 97 atomic Scatter Shot transaction
+
+- Composed exact native cone targets, one canonical item-owned discharge, one
+  marked native `RuleAttackWithWeapon` per target at -2, and the existing
+  all-roll volley policy.
+- Only an all-roll misfire changes condition. Broken-to-Wrecked uses the
+  existing native Reflex-half burst with tabletop triple base weapon dice.
+  Item state restores on delivery faults and no partial native effect is retried.
+- Production remains locked until the player-facing ability and guarded runtime
+  acceptance complete. Marked damage explicitly disables precision additions;
+  the custom transaction never invokes a Vital Strike ability.
+- Focused contract, repository validation, all 849 domain/reflection tests,
+  clean Release compilation, and strict packaging pass. Package/DLL SHA-256:
+  `b4d21431d64db90236d0309926a21f86ca6c6020f1b930fafa2224056a273b9f` /
+  `af48d19994631119c8855b3c896c62cda39770347ca4e496b84d9e2fafc22cab`.
+  Next: commit this transaction core, then register the guarded ability and
+  save-free runtime acceptance while keeping player content locked.

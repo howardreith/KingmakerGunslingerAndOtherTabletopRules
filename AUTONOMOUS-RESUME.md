@@ -39,6 +39,13 @@ definition of done or a listed genuine human-input hard stop.
 - Sprint 95 is committed as `9e56731`. Sprint 96 implements the request-scoped
   native volley marker and hook integration. Qualify/commit it, then compose
   the complete ability transaction; production remains locked.
+- Sprint 96 is committed as `284b3e2`. Sprint 97 composes the atomic native
+  Scatter Shot runtime transaction including one discharge, independent -2
+  attacks with precision suppression, aggregate misfire, triple burst, and
+  item-state rollback. Focused contract, repository validation, 849 tests,
+  clean Release build, and strict package pass with package/DLL hashes
+  `b4d21431...` / `af48d199...`. Commit it before registering the guarded
+  ability/runtime acceptance or unlocking player content.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

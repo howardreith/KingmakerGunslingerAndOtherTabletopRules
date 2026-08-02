@@ -499,6 +499,8 @@
     <Compile Include="Scatter\ScatterConeDistanceService.cs" />
     <Compile Include="Scatter\NativeScatterConeTargetResolver.cs" />
     <Compile Include="Scatter\ScatterVolleyRuntime.cs" />
+    <Compile Include="Scatter\ScatterShotExecutionResult.cs" />
+    <Compile Include="Scatter\ScatterShotRuntime.cs" />
     <Compile Include="Scatter\ScatterAttackRollObservation.cs" />
     <Compile Include="Scatter\ScatterAttackVolleyDecision.cs" />
     <Compile Include="Scatter\ScatterAttackVolleyService.cs" />

@@ -39,7 +39,8 @@ namespace KingmakerGunslinger.Explosions
             UnitEntityData wielder,
             string repositoryIdentity,
             int burstRadiusFeet,
-            string firearm)
+            string firearm,
+            int baseDamageMultiplier = 1)
         {
             if (attackRoll == null)
             {
@@ -58,6 +59,10 @@ namespace KingmakerGunslinger.Explosions
             try
             {
                 ValidateBurstRadius(burstRadiusFeet);
+                if (baseDamageMultiplier != 1 && baseDamageMultiplier != 3)
+                    throw new ArgumentOutOfRangeException(
+                        "baseDamageMultiplier",
+                        "Only ordinary or tabletop scatter-triple burst damage is valid.");
 
                 string rejection;
                 ItemEntityWeapon weapon = ValidateAndResolveWeapon(
@@ -127,7 +132,7 @@ namespace KingmakerGunslinger.Explosions
                         }
 
                         DamageBundle damage = CreateBaseWeaponDamageBundle(
-                            weapon,
+                            weapon, baseDamageMultiplier,
                             out rejection);
                         if (damage == null)
                         {
@@ -318,6 +323,7 @@ namespace KingmakerGunslinger.Explosions
 
         private static DamageBundle CreateBaseWeaponDamageBundle(
             ItemEntityWeapon weapon,
+            int baseDamageMultiplier,
             out string rejection)
         {
             if (weapon.Blueprint == null)
@@ -332,8 +338,12 @@ namespace KingmakerGunslinger.Explosions
                 return null;
             }
 
+            DiceFormula damageDice = weapon.Damage;
+            if (baseDamageMultiplier == 3)
+                damageDice = new DiceFormula(damageDice.Rolls * 3,
+                    damageDice.Dice);
             BaseDamage baseDamage = weapon.Blueprint.DamageType.CreateDamage(
-                weapon.Damage,
+                damageDice,
                 0);
             if (baseDamage == null)
             {
