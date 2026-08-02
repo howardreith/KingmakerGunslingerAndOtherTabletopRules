@@ -8,13 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `123f623`; Sprint 92 fixed 22 gp per-item battered sale
-  overlay passes 848 tests, clean build/package validation, and mod load
-  `20260802T1418228589307Z`. Matrices are updated; implement and qualify a
-  deterministic live bound-value/ordinary-isolation scenario next. That proof
-  is now added to guarded `gunslinger-starting-items`; source-qualify, commit,
-  then run the canonical working-save command. Qualification passes 848 tests
-  with package/DLL hashes `3305d787...5c64bd` / `2baadbeb...0a3ae`.
+- Audited source HEAD: `4c8c8d7`; extended bound-value scenario passes source
+  qualification and exact mod load `20260802T1422559268495Z`. Its guarded
+  `gunslinger-starting-items` run was externally rejected as unauthorized
+  feature-specific save-backed testing; do not retry or circumvent. Continue
+  the next independent mandatory row.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

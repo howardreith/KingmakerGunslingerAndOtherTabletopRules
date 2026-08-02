@@ -195,3 +195,10 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   numeric value and ordinary-AC selection fails closed. Concrete scatter range
   execution remains assigned to Sprint 32 and is engineering work, not a
   human-input hard stop.
+- Sprint 92 bound-value runtime proof is externally permission-blocked. Exact
+  `4c8c8d7` mod load passed as `20260802T1422559268495Z-mod-load-smoke`, but
+  the canonical guarded `gunslinger-starting-items` request naming only
+  `KMG_AUTOMATION_WORKING` was rejected because feature-specific save-backed
+  scenarios are not authorized. Do not retry or circumvent this boundary.
+  Source, patch installation, exact origin binding, and no-save scenario
+  rollback contracts remain qualified; continue independent mandatory rows.

@@ -2941,3 +2941,9 @@
   Package/DLL hashes: `3305d787...5c64bd` / `2baadbeb...0a3ae`.
 - Next: commit/mod-load, then run the canonical guarded scenario against
   `KMG_AUTOMATION_WORKING`; stop on any ambiguous save or rollback evidence.
+- Exact `4c8c8d7` mod load passed as
+  `20260802T1422559268495Z-mod-load-smoke`; package/DLL hashes are
+  `d24df047...6a5f9` / `d61db278...5097d`.
+- The external boundary rejected `gunslinger-starting-items` as an unauthorized
+  feature-specific save-backed scenario despite the exact disposable save.
+  No retry or workaround is permitted. Continue independent coverage.
