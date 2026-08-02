@@ -32,13 +32,13 @@ namespace KingmakerGunslinger.Deeds
                     GunslingerClass), grit, true,
                     SlingersLuckRollKind.SavingThrow,
                     SlingersLuckRollKind.SavingThrow, firstEvaluation,
-                    rule.BaseRollResult, rule.BaseRollResult));
+                    rule.D20.Value, rule.D20.Value));
             if (!preflight.Applied) return;
             RulebookEvent.RollEntry second = SlingersLuckRollAccess.RollNative();
             SlingersLuckDecision decision = _service.Evaluate(new SlingersLuckRequest(
                 Owner.Progression.GetClassLevel(GunslingerClass), grit, true,
                 SlingersLuckRollKind.SavingThrow,
-                SlingersLuckRollKind.SavingThrow, true, rule.BaseRollResult,
+                SlingersLuckRollKind.SavingThrow, true, rule.D20.Value,
                 second.Value));
             RulebookEvent.RollEntry first = rule.D20;
             try

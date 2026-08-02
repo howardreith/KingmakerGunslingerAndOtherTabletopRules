@@ -44,6 +44,14 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Deeds/SlingersLuckRollAccess.cs"),
         ["RulebookEvent.Dice.D20", "GetSetMethod(true)", "setter.IsPublic",
          "RuleSavingThrow", "RuleSkillCheck"], "Sprint 55 exact roll access")
+    reroll_handlers = read(root,
+        "src/KingmakerGunslinger/Deeds/SlingersLuckSavingThrowReroll.cs") + read(
+        root, "src/KingmakerGunslinger/Deeds/SlingersLuckSkillCheckReroll.cs")
+    require_tokens(reroll_handlers, ["rule.D20.Value", "second.Value"],
+                   "Sprint 55 natural-roll handlers")
+    if "BaseRollResult" in reroll_handlers:
+        raise RuntimeError(
+            "Sprint 55 handlers must not validate modifier-inclusive roll totals")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/SlingersLuckBlueprints.cs"),
         ["Cost = cost", "fixed costs cannot be reduced",
@@ -59,6 +67,7 @@ def validate(root: Path) -> None:
          "slingers-luck-native-rule-contracts",
          "slingers-luck-post-trigger-replacement",
          "RunDisposableGunslingerSlingersLuck",
+         "CallComponents<IInitiatorRulebookHandler<",
          "slingers-luck-saving-reroll", "slingers-luck-skill-reroll"],
         "Sprint 55 guarded observer and feature scenario")
     print("Sprint 55 source invariant validation passed with inherited Sprint 54 checks.")

@@ -5046,7 +5046,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var savingContext = new MechanicsContext(unit, unit.Descriptor,
                     set.SavingAbility, null, new TargetWrapper(unit));
-                unit.Descriptor.Buffs.AddBuff(set.SavingMarker, savingContext, null);
+                Buff savingMarker = unit.Descriptor.Buffs.AddBuff(
+                    set.SavingMarker, savingContext, null);
                 int savingSeed = FindDescendingNativeD20Seed(out savingFirst,
                     out savingSecond);
                 UnityEngine.Random.InitState(savingSeed);
@@ -5054,12 +5055,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 var saving = new RuleSavingThrow(unit, SavingThrowType.Will, 100);
                 Rulebook.Trigger(saving);
-                EventBus.RaiseEvent<IUnitSubscriber>(unit, subscriber =>
-                {
-                    var handler = subscriber as IInitiatorRulebookHandler<
-                        RuleSavingThrow>;
-                    if (handler != null) handler.OnEventDidTrigger(saving);
-                });
+                savingMarker.CallComponents<IInitiatorRulebookHandler<
+                    RuleSavingThrow>>(handler => handler.OnEventDidTrigger(saving));
                 savingGritAfter = unit.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 savingConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
@@ -5074,7 +5071,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var skillContext = new MechanicsContext(unit, unit.Descriptor,
                     set.SkillAbility, null, new TargetWrapper(unit));
-                unit.Descriptor.Buffs.AddBuff(set.SkillMarker, skillContext, null);
+                Buff skillMarker = unit.Descriptor.Buffs.AddBuff(
+                    set.SkillMarker, skillContext, null);
                 int skillSeed = FindDescendingNativeD20Seed(out skillFirst,
                     out skillSecond);
                 UnityEngine.Random.InitState(skillSeed);
@@ -5082,12 +5080,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 var skill = new RuleSkillCheck(unit, StatType.SkillAthletics, 100);
                 Rulebook.Trigger(skill);
-                EventBus.RaiseEvent<IUnitSubscriber>(unit, subscriber =>
-                {
-                    var handler = subscriber as IInitiatorRulebookHandler<
-                        RuleSkillCheck>;
-                    if (handler != null) handler.OnEventDidTrigger(skill);
-                });
+                skillMarker.CallComponents<IInitiatorRulebookHandler<
+                    RuleSkillCheck>>(handler => handler.OnEventDidTrigger(skill));
                 skillGritAfter = unit.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 skillConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
