@@ -2441,6 +2441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunVendorTableContractObservation()
         {
+            string vendorLogicContract = DescribeCreationType(typeof(VendorLogic));
             const BindingFlags Flags = BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic;
             FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", Flags);
@@ -2617,7 +2618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string catalog = string.Join(" | ", tables.Select(value =>
                 value.name + ":" + value.AssetGuid + ":" +
                 DescribeBlueprintComponents(value)).ToArray());
-            string observed = "tables=" + tables.Length + ";associations=" +
+            string observed = vendorLogicContract + ";tables=" + tables.Length + ";associations=" +
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +

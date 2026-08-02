@@ -3273,3 +3273,10 @@
   item-owned battered origin across native live inventory transfer and return,
   with complete rollback and no save-writing API. Continue shared stash and
   vendor sale/repurchase lifecycle paths.
+- Sprint 103 begins vendor lifecycle qualification by adding exact installed
+  `VendorLogic` metadata to the existing read-only vendor observer. Use its
+  runtime output to select the reversible sale/repurchase call graph without
+  guessing.
+  Repository validation, 849 tests, Release build, and strict package pass;
+  package/DLL hashes are `9c85c69b1a81f955c57e344c8ed279153312d860bf1a80ea810cd544a9ac0608` /
+  `33695ba4b518a6555a7a3a9897558dd2cb7e07015e7ea8cb967e718757233379`.
