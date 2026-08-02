@@ -206,3 +206,6 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   evidence-supported fixes. Exact commands and the single authorization
   question are recorded in `HUMAN-INPUT-REQUIRED.md`. No attempt is permitted
   until the user renews authority.
+- Resolution: the user authorized both save-free scenarios. Exact `8609ebd`
+  passed two fresh Startling Shot runs and two fresh Targeting Head runs. Both
+  deed runtime gates are closed; `HUMAN-INPUT-REQUIRED.md` is removed.

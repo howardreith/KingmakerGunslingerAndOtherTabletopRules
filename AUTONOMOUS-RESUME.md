@@ -21,6 +21,11 @@ definition of done or a listed genuine human-input hard stop.
   permission for the existing save-free `disposable-gunslinger-startling-shot`
   and `disposable-gunslinger-targeting-head` commands. See
   `HUMAN-INPUT-REQUIRED.md`; do not run either until authorized.
+- Authorization received. Exact `8609ebd` passed Startling Shot pair
+  `20260802T1451324004693Z` / `20260802T1452540172188Z` and Targeting Head pair
+  `20260802T1454137455208Z` / `20260802T1455368086818Z`. Both are now
+  runtime-qualified. Commit the curated records and continue the remaining-row
+  audit; the permission file is resolved and removed.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

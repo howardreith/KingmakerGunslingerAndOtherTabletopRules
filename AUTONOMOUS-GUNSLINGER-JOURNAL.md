@@ -3001,3 +3001,17 @@
   scenarios. Created `HUMAN-INPUT-REQUIRED.md` with one precise authorization
   question and exact commands. No speculative source change is justified while
   this boundary remains closed.
+
+## 2026-08-02 repaired deed runtime qualification
+
+- User authorized both existing save-free guarded scenarios. Exact checkpoint
+  `8609ebd` passed fresh-process Startling Shot runs
+  `20260802T1451324004693Z` / `20260802T1452540172188Z`: chamber `1->0`, grit
+  `3->3`, damage `0->0`, one exact six-second native flat-footed fact, and
+  complete cleanup/isolation.
+- The same checkpoint passed fresh-process Targeting Head runs
+  `20260802T1454137455208Z` / `20260802T1455368086818Z`: chamber `1->0`, grit
+  `3->2`, native damage `3/4`, one exact six-second nonpermanent Confusion fact,
+  and complete cleanup/isolation.
+- Both repaired deeds are runtime-qualified. Remove the resolved permission
+  file, commit curated evidence, then continue the remaining-row audit.
