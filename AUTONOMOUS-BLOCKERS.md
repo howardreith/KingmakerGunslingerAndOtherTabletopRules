@@ -71,6 +71,13 @@ No genuine human-input hard stop is currently established.
 
 ## Active gates (not hard stops)
 
+- Sprint 62 scatter completion is bounded on a player-facing balance decision.
+  Installed native cone geometry requires a numeric distance, but every
+  authoritative local source describes Blunderbuss range only as `special`.
+  Choosing a distance would alter balance without authority. Preserve the
+  fail-closed unavailable restriction and continue independent production
+  presentation/lifecycle work.
+
 - Sprint 40 Utility Shot is disposition-complete and Stop Bleeding is
   runtime-qualified on `8270ade`. Bonus-feat selection is the next engineering
   gate; no human-input blocker was created.

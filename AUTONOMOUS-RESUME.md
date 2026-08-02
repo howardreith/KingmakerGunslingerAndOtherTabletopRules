@@ -11,10 +11,11 @@ definition of done or a listed genuine human-input hard stop.
 - Audited source HEAD: `c2fd27b` (Sprint 61 acquisition runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 61 later equipment acquisition is runtime-qualified;
-  re-audit the coverage matrix and select the highest-dependency incomplete
-  independent row while Death's Shot and Targeting Arms authority blockers
-  remain recorded.
+- Current checkpoint: Sprint 61 acquisition is runtime-qualified. Sprint 62
+  reconfirmed scatter is bounded on the missing numeric Blunderbuss cone
+  distance. Continue Sprint 63 production fallback visuals, animation, sound,
+  and projectile qualification while the independent authority blockers remain
+  recorded.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

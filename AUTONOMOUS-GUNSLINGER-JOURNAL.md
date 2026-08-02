@@ -2369,3 +2369,14 @@
   `e31962312cc583eb83cdb5e27645816f90c1acf409360243adfa687654288169`.
 - Sprint 61 is runtime-qualified. Next action: re-audit the coverage matrix and
   select the highest-dependency incomplete independent row.
+
+## 2026-08-02 Sprint 62 scatter completion authority audit
+
+- Reconciled ADR-0037, Sprint 32 criteria, current scatter source/tests,
+  production Blunderbuss definition, installed 90-degree cone API, and the
+  authorized local firearm table/rules.
+- The native API requires a numeric distance; all local authority retains only
+  `special`. Any autonomous distance would materially change balance.
+- Scatter remains fail-closed and temporarily `BLOCKED` pending that one
+  player-facing choice. Independent next action: production fallback visuals,
+  animation, sound, and projectile qualification.
