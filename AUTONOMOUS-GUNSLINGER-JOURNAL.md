@@ -2082,3 +2082,22 @@
   strict standalone package validation pass.
 - Next: complete the reconstructable source audit and commit, rebuild the exact
   commit, require mod-load PASS, and run two independent feature PASS launches.
+
+## 2026-08-01 Sprint 53 Evasive runtime qualification
+
+- Source checkpoint `a79f4b2` exposed one exact Harmony binding fault during
+  guarded mod load: native Restore names its first parameter `blueprint`, not
+  `resource`. The mod failed closed before initialization and no save interaction
+  occurred. Correction `28b8b83` binds the installed name and pins it in the
+  Sprint validator.
+- Exact corrected package SHA-256 is
+  `803895664337cb5716d3de931856b45e50bdef78a2c1b992befb19f92ca25e0b`;
+  DLL SHA-256 is
+  `a3c9b64f85e0c803e4c335249d3e859affa8d9ba00e9addabd613bb733a3a523`.
+- Corrected mod load passed in `20260802T0436563082877Z-mod-load-smoke`.
+  Independent feature runs
+  `20260802T0438185768148Z-disposable-gunslinger-evasive` and
+  `20260802T0439372742098Z-disposable-gunslinger-evasive` both passed.
+- Both runs observed level 15, grit `4->0->1`, all benefits
+  `True,False,True`, other-unit isolation, exact disposal, and no save use.
+- Continue immediately to Menacing Shot; Sprint 53 is a checkpoint only.

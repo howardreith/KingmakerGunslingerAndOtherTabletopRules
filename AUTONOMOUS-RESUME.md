@@ -8,12 +8,11 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `d8eaf4d` (Sprint 53 exact native-contract observer).
+- Audited HEAD: `28b8b83` (Sprint 53 Evasive runtime-qualified source).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 53 Evasive is source-qualified. Commit the
-  reconstructable 0.0.53 source checkpoint, rebuild the exact commit, then run
-  exact mod load and two guarded `disposable-gunslinger-evasive` launches.
+- Current checkpoint: Sprint 53 Evasive is runtime-qualified. Curate and commit
+  the exact evidence, then continue immediately with Menacing Shot entry audit.
 - Version: `0.0.53`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
