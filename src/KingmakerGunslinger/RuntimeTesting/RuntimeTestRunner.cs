@@ -2201,6 +2201,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var records = new List<string>();
             var ownerRecords = new List<string>();
             var capitalEntries = new List<string>();
+            var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null))
@@ -2267,15 +2268,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<LootItemsPackFixed>())
                 {
                     object itemReference = fixedItemField.GetValue(component);
-                    MethodInfo getItem = itemReference == null ? null :
-                        itemReference.GetType().GetMethod("Get", Flags, null,
-                            Type.EmptyTypes, null);
-                    var item = getItem == null ? null :
-                        getItem.Invoke(itemReference, null) as BlueprintItem;
                     object count = fixedCountField.GetValue(component);
-                    capitalEntries.Add("item=" + (item == null ? "<null>" :
-                        item.name + ":" + item.AssetGuid + ":cost=" + item.Cost +
-                        ":stackable=" + item.IsActuallyStackable) + ":count=" + count);
+                    Type referenceType = itemReference == null ? null :
+                        itemReference.GetType();
+                    capitalEntries.Add("reference=" + (referenceType == null ?
+                        "<null>" : referenceType.FullName) + ":count=" + count);
+                    if (referenceType != null)
+                    {
+                        capitalReferenceContracts.Add("declared=" +
+                            fixedItemField.FieldType.FullName + ";runtime=" +
+                            referenceType.FullName + ";properties=" + string.Join(",",
+                                referenceType.GetProperties(Flags)
+                                    .OrderBy(value => value.Name, StringComparer.Ordinal)
+                                    .Select(value => value.Name + ":" +
+                                        value.PropertyType.FullName).ToArray()) +
+                            ";methods=" + string.Join(",",
+                                referenceType.GetMethods(Flags)
+                                    .Where(value => value.GetParameters().Length == 0)
+                                    .OrderBy(value => value.Name, StringComparer.Ordinal)
+                                    .Select(value => value.Name + ":" +
+                                        value.ReturnType.FullName).ToArray()));
+                    }
                 }
             }
             string catalog = string.Join(" | ", tables.Select(value =>
@@ -2286,8 +2299,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";supplementalLoot=" + supplementalLoot + ";catalog=" +
                 catalog + ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
-                    capitalEntries.ToArray()) + ";records=" + string.Join(" | ",
-                    records.ToArray());
+                    capitalEntries.ToArray()) + ";capitalReferenceContracts=" +
+                    string.Join(" | ", capitalReferenceContracts.OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray()) + ";records=" +
+                    string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("vendor-table-catalog",
@@ -2310,6 +2325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
                         fixedCountField != null && capitalEntries.Count == 51 &&
+                        capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "C11_JhodVendorTable LootItemsPackFixed fields"),
                 Assertion("vendor-observation-only",

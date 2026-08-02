@@ -65,6 +65,7 @@ def validate(root: Path) -> None:
          '";catalog="',
          '";owners="',
          '";capitalEntries="',
+         '";capitalReferenceContracts="',
          'Assertion("capital-vendor-fixed-entry-contract"',
          'Assertion("vendor-component-owners"',
          "unit.AddFacts ?? Array.Empty<BlueprintUnitFact>()",
