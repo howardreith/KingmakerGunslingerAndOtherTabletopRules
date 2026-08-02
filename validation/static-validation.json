@@ -1,5 +1,5 @@
 {
-  "milestone": "0.0.58-s58-stunning-shot-observer",
+  "milestone": "0.0.58-s58-stunning-shot",
   "version": "0.0.58",
   "requiredFiles": {
     "Info.json": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 103,
-    "activeEntryCount": 102,
+    "entryCount": 107,
+    "activeEntryCount": 106,
     "reservedEntryCount": 1,
-    "registrationCount": 102
+    "registrationCount": 106
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 813,
+    "testCount": 819,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

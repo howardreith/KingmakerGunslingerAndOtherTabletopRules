@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.0.58 - Sprint 58 Stunning Shot contract observer
+## 0.0.58 - Sprint 58 Stunning Shot
 
-- Adds a guarded save-free observer for the installed native Stunned condition
-  and resolved critical-hit-immunity attack flag required by Stunning Shot.
+- Adds the level-19 pre-shot Stunning Shot deed with exact native critical-hit
+  immunity, Fortitude save, and one-round Stunned mechanics.
+- Adds six focused policy cases; the complete suite is 819 tests.
 
 ## 0.0.57 - Sprint 57 Death's Shot contract observer
 

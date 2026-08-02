@@ -36,6 +36,11 @@
   <ItemGroup>
     <Compile Include="Sprint55Tests.cs" />
     <Compile Include="Sprint56Tests.cs" />
+    <Compile Include="Sprint58Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotStatus.cs"><Link>Deeds\StunningShotStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotDecision.cs"><Link>Deeds\StunningShotDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotService.cs"><Link>Deeds\StunningShotService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathStatus.cs"><Link>Deeds\CheatDeathStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathRequest.cs"><Link>Deeds\CheatDeathRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathDecision.cs"><Link>Deeds\CheatDeathDecision.cs</Link></Compile>

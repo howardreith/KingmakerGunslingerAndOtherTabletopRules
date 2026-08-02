@@ -676,6 +676,18 @@
     },
     {
       "symbol": "KMG.Deeds.CheatDeathFeature", "guid": "a8a316812d244e3498daf29ecf2be115", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 56", "notes": "Level-nineteen all-grit Cheat Death damage handler."
+    },
+    {
+      "symbol": "KMG.Deeds.StunningShotFeature", "guid": "4e6f09ec942d4b8aa5fac53b35bc2171", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 58", "notes": "Level-nineteen Stunning Shot feature."
+    },
+    {
+      "symbol": "KMG.Deeds.StunningShotAbility", "guid": "b1a5e61437714bd19ee84b10bead70a2", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 58", "notes": "Free-action Stunning Shot arming ability."
+    },
+    {
+      "symbol": "KMG.Deeds.StunningShotArmed", "guid": "c2b6f72548824ce2aff95c21cfbe81b3", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 58", "notes": "Unit-owned next-firearm-attack marker."
+    },
+    {
+      "symbol": "KMG.Deeds.StunningShotStunned", "guid": "d3c7073659934df3b00a6d32d0cf92c4", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 58", "notes": "Exact native Stunned mechanics clone."
     }
   ]
 }

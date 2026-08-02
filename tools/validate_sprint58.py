@@ -8,8 +8,8 @@ sys.dont_write_bytecode = True
 import validate_sprint57
 
 VERSION = "0.0.58"
-INFORMATIONAL_VERSION = "0.0.58-s58-stunning-shot-observer"
-TEST_COUNT = 813
+INFORMATIONAL_VERSION = "0.0.58-s58-stunning-shot"
+TEST_COUNT = 819
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -25,7 +25,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 def validate(root: Path) -> None:
     root = root.resolve()
     validate_sprint57.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 102, 103)
+                               TEST_COUNT, 106, 107)
     require_tokens(read(root, "planning/SPRINT-58-ENTRY-CRITERIA.md"),
         ["ImmuneToCriticalHit", "exact installed Stunned", "Fortitude",
          "exactly 2 grit", "True Grit"], "Sprint 58 criteria")
@@ -41,7 +41,24 @@ def validate(root: Path) -> None:
         read(root, "scripts/RuntimeAutomation.Common.ps1"),
         ["observe-stunning-shot-native-stunned"],
         "Sprint 58 observer allowlists")
-    print("Sprint 58 observer source validation passed with inherited Sprint 57 checks.")
+    require_tokens(read(root,
+        "src/KingmakerGunslinger/Deeds/StunningShotService.cs") + read(root,
+        "src/KingmakerGunslinger/Deeds/StunningShotAttackHandler.cs"),
+        ["10 + request.Level / 2 + request.WisdomModifier",
+         "attack.ImmuneToCriticalHit", "SavingThrowType.Fortitude",
+         "TimeSpan.FromSeconds(6d)", "Owner.Resources.Spend"],
+        "Sprint 58 policy and native attack handler")
+    require_tokens(read(root,
+        "src/KingmakerGunslinger/Blueprints/StunningShotBlueprints.cs"),
+        ["09d39b38bb7c6014394b6daced9bacd3",
+         "BlueprintCloneService.Clone", "UnitCommand.CommandType.Free"],
+        "Sprint 58 blueprints")
+    require_tokens(read(root,
+        "tests/KingmakerGunslinger.DomainTests/Sprint58Tests.cs"),
+        ["StunningShotEligibleHit", "StunningShotMissAndImmunity",
+         "StunningShotDuplicateGate", "StunningShotInvalidInput"],
+        "Sprint 58 tests")
+    print("Sprint 58 source validation passed with inherited Sprint 57 checks.")
 
 def main() -> int:
     parser = argparse.ArgumentParser()
