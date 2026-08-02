@@ -49,8 +49,20 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs")
     require_tokens(bootstrap,
         ['"initialize.root-cause"', "initializationException",
+         "CapitalVendorBlueprints.Publish(",
+         "capitalVendorPublication.Rollback()",
          "registry.RollbackAll()"],
         "Sprint 60 pre-rollback root-cause diagnostic")
+    acquisition = read(root,
+        "src/KingmakerGunslinger/Blueprints/CapitalVendorBlueprints.cs")
+    require_tokens(acquisition,
+        ["afa2c7f292b8e1c4d9c835f0e8047dd3", "WeaponCount = 1",
+         "ConsumableCount = 99", "AdvancedRifle.Item",
+         "AdvancedRevolver.Item", "Blunderbuss excluded",
+         "VendorCatalogPublication<BlueprintComponent>.Create",
+         "capital vendor contains a duplicate or partial",
+         "rollback refused because the table changed"],
+        "Sprint 61 capital vendor publication")
     if bootstrap.index('"initialize.root-cause"') > bootstrap.index(
             "registry.RollbackAll()"):
         raise RuntimeError(
@@ -68,6 +80,8 @@ def validate(root: Path) -> None:
          '";capitalReferenceContracts="',
          '";fixedEntryPatterns="',
          'Assertion("vendor-fixed-entry-quantity-precedent"',
+         'Assertion("gunslinger-capital-vendor-publication"',
+         '";blunderbussEntries="',
          'Assertion("capital-vendor-fixed-entry-contract"',
          'Assertion("vendor-component-owners"',
          "unit.AddFacts ?? Array.Empty<BlueprintUnitFact>()",

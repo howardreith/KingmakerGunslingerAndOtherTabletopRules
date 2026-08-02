@@ -2203,6 +2203,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var capitalEntries = new List<string>();
             var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
             var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
+            int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null))
@@ -2298,6 +2299,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         value.ReturnType.FullName).ToArray()));
                     }
                 }
+                var expectedProjectItems = new Dictionary<BlueprintItem, int>
+                {
+                    { BlueprintBootstrap.ProductionFirearms.Pistol.Item, 1 },
+                    { BlueprintBootstrap.ProductionFirearms.Musket.Item, 1 },
+                    { BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item, 1 },
+                    { BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item, 1 },
+                    { BlueprintBootstrap.BasicAmmunition.BlackPowder, 99 },
+                    { BlueprintBootstrap.BasicAmmunition.LeadBall, 99 },
+                    { BlueprintBootstrap.FirearmRepairKit, 99 }
+                };
+                foreach (LootItemsPackFixed component in
+                    (capitalTable.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>())
+                {
+                    BlueprintItem item = CapitalVendorBlueprints.ReadItem(component);
+                    int expectedCount;
+                    if (item != null && expectedProjectItems.TryGetValue(item,
+                        out expectedCount))
+                    {
+                        projectEntries++;
+                        if (CapitalVendorBlueprints.ReadCount(component) != expectedCount)
+                            invalidProjectCounts++;
+                    }
+                    if (ReferenceEquals(item,
+                        BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item))
+                        blunderbussEntries++;
+                }
             }
             if (fixedItemField != null && fixedCountField != null)
             {
@@ -2326,7 +2354,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DescribeBlueprintComponents(value)).ToArray());
             string observed = "tables=" + tables.Length + ";associations=" +
                 associations + ";invalid=" + invalidAssociations +
-                ";supplementalLoot=" + supplementalLoot + ";catalog=" +
+                ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
+                projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
+                ";blunderbussEntries=" + blunderbussEntries + ";catalog=" +
                 catalog + ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
                     capitalEntries.ToArray()) + ";capitalReferenceContracts=" +
@@ -2357,10 +2387,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 51 &&
+                        fixedCountField != null && capitalEntries.Count == 58 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "C11_JhodVendorTable LootItemsPackFixed fields"),
+                Assertion("gunslinger-capital-vendor-publication",
+                    "seven exact entries with native quantities and no Blunderbuss",
+                    observed, projectEntries == 7 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 0,
+                    "registered production firearms, ammunition, and repair kit"),
                 Assertion("vendor-fixed-entry-quantity-precedent",
                     "resolved native stackable and non-stackable count patterns",
                     observed, fixedEntryPatterns.Keys.Any(value =>

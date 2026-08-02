@@ -493,6 +493,7 @@ namespace KingmakerGunslinger.Bootstrap
 
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
             GunslingerClassCatalogPublication classPublication = null;
+            CapitalVendorPublication capitalVendorPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -567,6 +568,10 @@ namespace KingmakerGunslinger.Bootstrap
                 classPublication = GunslingerClassBlueprints.Publish(
                     gunslingerClassBlueprints.CharacterClass);
 
+                capitalVendorPublication = CapitalVendorBlueprints.Publish(
+                    library, productionFirearms, basicAmmunition,
+                    firearmRepairKit, context.Logger);
+
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {
                     throw new InvalidOperationException(
@@ -603,6 +608,20 @@ namespace KingmakerGunslinger.Bootstrap
                     "initialize.root-cause",
                     "Blueprint initialization reached a failing owned operation before rollback.",
                     initializationException);
+                if (capitalVendorPublication != null)
+                {
+                    try
+                    {
+                        capitalVendorPublication.Rollback();
+                    }
+                    catch (Exception vendorRollbackException)
+                    {
+                        context.Logger.Failure(
+                            "blueprints", "capital-vendor.rollback-failed",
+                            "Blueprint initialization failed and capital vendor rollback was refused.",
+                            vendorRollbackException);
+                    }
+                }
                 if (classPublication != null)
                 {
                     try
