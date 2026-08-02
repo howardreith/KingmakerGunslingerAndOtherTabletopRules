@@ -1683,7 +1683,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Exact native transfer rollback to the source inventory failed.");
                 transferredAway = false;
                 BlueprintUnit capitalVendor = FindVendorUnit(
-                    CapitalVendorBlueprints.TableGuid);
+                    CapitalVendorBlueprints.TableGuid,
+                    "c8d4913edee594749b706de35924617e");
                 vendorUnit = new Kingmaker.UI.LevelUp.ChargenUnit(capitalVendor).Unit;
                 if (vendorUnit == null)
                     throw new InvalidOperationException(
@@ -1878,7 +1879,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ReflectionAccess.Enumerate(inventory).ToList();
         }
 
-        private static BlueprintUnit FindVendorUnit(string tableGuid)
+        private static BlueprintUnit FindVendorUnit(string tableGuid, string unitGuid)
         {
             const BindingFlags Flags = BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic;
@@ -1886,28 +1887,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (tableField == null)
                 throw new MissingFieldException(typeof(AddSharedVendor).FullName,
                     "m_Table");
-            BlueprintUnit[] matches = BlueprintBootstrap.Library.GetAllBlueprints()
-                .OfType<BlueprintUnit>().Where(unit =>
-                {
-                    BlueprintComponent[] components =
-                        (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                        .Concat((unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
-                            .Where(fact => fact != null)
-                            .SelectMany(fact => fact.ComponentsArray ??
-                                Array.Empty<BlueprintComponent>())).ToArray();
-                    return components.OfType<AddSharedVendor>().Any(component =>
-                    {
-                        var table = tableField.GetValue(component) as
-                            BlueprintSharedVendorTable;
-                        return table != null && string.Equals(table.AssetGuid,
-                            tableGuid, StringComparison.Ordinal);
-                    });
-                }).ToArray();
-            if (matches.Length != 1)
+            BlueprintUnit unit = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                BlueprintBootstrap.Library, unitGuid, "native Capital_Jhod vendor");
+            BlueprintComponent[] components =
+                (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Concat((unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                    .Where(fact => fact != null)
+                    .SelectMany(fact => fact.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>())).ToArray();
+            int matches = components.OfType<AddSharedVendor>().Count(component =>
+            {
+                var table = tableField.GetValue(component) as
+                    BlueprintSharedVendorTable;
+                return table != null && string.Equals(table.AssetGuid,
+                    tableGuid, StringComparison.Ordinal);
+            });
+            if (matches != 1)
                 throw new InvalidOperationException(
-                    "Expected one exact capital-vendor unit but observed " +
-                    matches.Length + ".");
-            return matches[0];
+                    "The exact Capital_Jhod unit does not own one capital table; " +
+                    "observed " + matches + ".");
+            return unit;
         }
 
         private static bool ItemUsesRuntimeBlueprint(object item,

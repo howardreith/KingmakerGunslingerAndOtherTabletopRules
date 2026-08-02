@@ -10,6 +10,7 @@ $checks=[ordered]@{
  'same-reference'=$runner.Contains('ReferenceEquals(staged, batteredItem)') -and $runner.Contains('ReferenceEquals(returned, batteredItem)')
  'origin'=$runner.Contains('ReferenceEquals(vendorOwner, mainDescriptor.Unit)')
  'exact-vendor'=$runner.Contains('FindVendorUnit(') -and $runner.Contains('CapitalVendorBlueprints.TableGuid')
+ 'capital-jhod'=$runner.Contains('c8d4913edee594749b706de35924617e')
  'begin-trading'=$runner.Contains('vendor.BeginTrading(vendorUnit)')
  'finally'=$runner.Contains('new[] { "ReturnItems" }')
  'end-trading'=$runner.Contains('vendor.EndTraiding()')
