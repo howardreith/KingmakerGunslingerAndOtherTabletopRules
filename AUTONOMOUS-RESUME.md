@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `2eb0090` (detached respec commit with inventory rollback).
+- Audited source HEAD: `e35de17` (evaluated native hit die and skill points).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -37,6 +37,15 @@ definition of done or a listed genuine human-input hard stop.
   isolation; repair `2eb0090` passed mod load `20260802T1140330341524Z` and
   final run `20260802T1141509870468Z`, proving source `1/0`, replacement `0/1`,
   callback/facts, exact rollback, and isolation. Do not run a third attempt.
+- Latest chassis evidence: exact `e35de17` package/DLL hashes are
+  `86c3ad51eb2ad54bdaebc6f77a1a3b592893ee578d14b61d9386bbd04ff797b7` /
+  `c92ee42f8662459bc4d588a093ad87d31dff3e1c760bb9f31fd4225e1dade908`.
+  Mod load `20260802T1149510654742Z` and fresh save-free runs
+  `20260802T1151111616673Z` / `20260802T1152385768115Z` passed d10, native HP
+  `0/11/18`, evaluated skill points `4/4` at Intelligence 10, level 2, and
+  isolation. Combined with Sprint 72, the class-chassis row is runtime-qualified.
+  Commit this curated evidence, then select the next incomplete independent
+  integration or final-acceptance item; do not stop at Sprint 75.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

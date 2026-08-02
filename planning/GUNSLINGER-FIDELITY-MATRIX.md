@@ -19,6 +19,13 @@ player-fireable firearms and 99 each of powder, balls, and repair kits using
 observed native quantity precedents. Native entries and prices are preserved;
 Blunderbuss remains unavailable pending scatter qualification.
 
+Sprint 75 runtime-qualified the base class chassis on `e35de17`. Two fresh
+save-free native `CharGen`/`LevelUp` observations reproduced d10 player-class
+base HP `0 -> 11 -> 18`, class skill base 4, Intelligence-10 evaluated skill
+points `4/4`, class level 2, and exact detached-unit isolation. Together with
+the Sprint 72 level-20 BAB, saves, and fact graph, the chassis row is complete;
+creation and broad player-respec integration remain separately tracked.
+
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
 | 1 | Weapon/armor/firearm proficiencies | EXACT | Native level-one preview contains exactly one production aggregate plus exact simple, martial, light-armor, and firearm proficiency facts; source isolation and cleanup reproduced twice | Preserve through creation commit, level-up, multiclass, and respec |

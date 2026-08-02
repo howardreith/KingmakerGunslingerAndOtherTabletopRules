@@ -2615,3 +2615,24 @@
   `e3c7f7eccc23b82c8e23c54e41a481152fcd7aa7f1327d75451345216845f281`.
 - Do not run a third respec replacement attempt. Continue to an independent
   save-free gap; broad player replacement remains separate.
+
+## 2026-08-02 Sprint 75 evaluated hit die and skill points
+
+- Installed native level-up IL established the exact d10 player base-class HP
+  contract `0 -> 11 -> 18` and class-plus-Intelligence skill-point evaluation.
+- Source `e35de17` adds a detached, save-free exact `CharGen` then `LevelUp`
+  observer with Intelligence fixed at 10 and no commit or shared inventory.
+- Seven focused checks, 26 runner checks, 84 preflight checks, repository
+  validation, 831/831 tests, clean Release build, and strict package validation
+  passed. The preflight's known artifact-fingerprint race failed once and
+  passed all 84 immediately when rerun in isolation; no guard was weakened.
+- Exact mod load `20260802T1149510654742Z-mod-load-smoke` and fresh observations
+  `20260802T1151111616673Z` / `20260802T1152385768115Z` passed d10, HP
+  `0/11/18`, skill base 4, evaluated points `4/4`, class level 2, and external
+  isolation.
+- Exact package/DLL SHA-256 are
+  `86c3ad51eb2ad54bdaebc6f77a1a3b592893ee578d14b61d9386bbd04ff797b7` /
+  `c92ee42f8662459bc4d588a093ad87d31dff3e1c760bb9f31fd4225e1dade908`.
+- The class-chassis row is runtime-qualified when combined with Sprint 72's
+  reproduced level-20 BAB/saves/facts. Continue immediately to the next
+  independent integration or acceptance gap.
