@@ -2978,3 +2978,12 @@
 - Repository validation, 848 tests, clean Release build, and strict packaging
   pass. Package/DLL hashes: `2b29d984...37470` / `321fc6c1...4e8e2`.
 - Next: commit, exact mod load, then retry the authorized scenario once.
+- Exact `6b1e413` mod load passed as
+  `20260802T1440278862789Z-mod-load-smoke`.
+- Two fresh-process guarded runs passed as
+  `20260802T1441506873456Z-gunslinger-starting-items` and
+  `20260802T1445126858809Z-gunslinger-starting-items`. Both proved native
+  pistol/powder/ball `1/1/1`, exact originating owner, bound/ordinary sale
+  values `22/1000`, exact rollback, no save-writing API, and version `0.0.60`.
+- The Gunsmith/starting-equipment row is runtime-qualified. Continue the
+  mission re-audit; this checkpoint is not a stopping boundary.

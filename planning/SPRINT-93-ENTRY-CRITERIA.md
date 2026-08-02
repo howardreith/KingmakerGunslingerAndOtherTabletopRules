@@ -21,3 +21,14 @@ validation, all 848 domain/reflection tests, clean Release build, strict
 package validation, and exact staged safety audits. Runtime requires mod load
 followed by the authorized guarded scenario; any second materially different
 failure changes to narrower evidence rather than a speculative third repair.
+
+## Qualification result
+
+Exact commit `6b1e413ba5153d30163f9c11923129e4c7b515c7` passed mod load as
+`20260802T1440278862789Z-mod-load-smoke`. Two independent fresh-process
+`gunslinger-starting-items` runs passed as
+`20260802T1441506873456Z-gunslinger-starting-items` and
+`20260802T1445126858809Z-gunslinger-starting-items`. Each proved the native
+1/1/1 firearm/ammunition grant, exact owner binding, 22 gp bound value versus
+1000 gp for an ordinary pistol, exact in-memory rollback, no save-writing API,
+and loaded version `0.0.60`.

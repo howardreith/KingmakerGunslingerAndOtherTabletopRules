@@ -8,21 +8,14 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `4c8c8d7`; extended bound-value scenario passes source
-  qualification and exact mod load `20260802T1422559268495Z`. Its guarded
-  `gunslinger-starting-items` run was externally rejected as unauthorized
-  feature-specific save-backed testing; do not retry or circumvent. Continue
-  the next independent mandatory row.
-- Remaining-independent-work audit found no safe unblocked source slice:
-  broad creation/replacement commits lack global rollback proof; remaining
-  deed/scatter rows require renewed-attempt or design authority. The next exact
-  action is the single authorization question in `HUMAN-INPUT-REQUIRED.md`.
-- Authorization received. First exact scenario run
-  `20260802T1430156234274Z-gunslinger-starting-items` failed safely because the
-  prior binder assumed nonexistent `ItemEntityWeapon.UniqueId`; no save write
-  occurred and exact rollback passed. Sprint 93 replaces production ownership
-  with an item-owned origin enchantment/context. Source qualification passes;
-  commit/mod-load, then make the single repaired scenario attempt.
+- Audited source HEAD: `6b1e413`. Sprint 93 item-owned battered origin repair
+  passed exact mod load `20260802T1440278862789Z` and two fresh guarded
+  `gunslinger-starting-items` runs `20260802T1441506873456Z` /
+  `20260802T1445126858809Z`. Native 1/1/1 grant, exact owner, bound/ordinary
+  values 22/1000, exact rollback, no save write, and version 0.0.60 passed.
+- Gunsmith/starting equipment is runtime-qualified. Commit this curated
+  evidence, re-audit mandatory coverage, and continue the highest-priority
+  independently actionable gap; do not stop at Sprint 93.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

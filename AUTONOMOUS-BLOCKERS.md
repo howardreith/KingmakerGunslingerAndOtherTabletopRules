@@ -195,14 +195,8 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   numeric value and ordinary-AC selection fails closed. Concrete scatter range
   execution remains assigned to Sprint 32 and is engineering work, not a
   human-input hard stop.
-- Sprint 92 bound-value runtime proof is externally permission-blocked. Exact
-  `4c8c8d7` mod load passed as `20260802T1422559268495Z-mod-load-smoke`, but
-  the canonical guarded `gunslinger-starting-items` request naming only
-  `KMG_AUTOMATION_WORKING` was rejected because feature-specific save-backed
-  scenarios are not authorized. Do not retry or circumvent this boundary.
-  Source, patch installation, exact origin binding, and no-save scenario
-  rollback contracts remain qualified; continue independent mandatory rows.
-- Resolution: the user explicitly authorized the exact named scenario. The
-  permission blocker is closed. Its first run failed safely on the invalid
-  `UniqueId` assumption and is under the bounded Sprint 93 item-owned carrier
-  repair; this is an engineering failure, not a new human-input blocker.
+- Sprint 92/93 bound-value permission and engineering blockers are resolved.
+  The user authorized the exact named scenario; item-owned repair `6b1e413`
+  passed mod load and two fresh guarded runs
+  `20260802T1441506873456Z` / `20260802T1445126858809Z`. Native grant, exact
+  origin, 22/1000 gp isolation, rollback, and no-save behavior all passed.
