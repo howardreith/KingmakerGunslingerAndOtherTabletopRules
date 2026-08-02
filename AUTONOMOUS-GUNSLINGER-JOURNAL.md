@@ -1634,3 +1634,23 @@
   narrow correction changes only the mixed forced sequence to `19,1,19`.
 - Next action: commit the source checkpoint, require exact mod load, and run two
   independent Dead Shot PASS processes. Sprint 43 is not a stopping condition.
+
+## 2026-08-01 Sprint 43 Dead Shot runtime qualification
+
+- Corrected checkpoint `fdd5d7c2f3423fd85112b80e046bec042f7be8b0` rebuilt
+  cleanly with all 762 tests and strict package validation passing. Final
+  package/DLL SHA-256 are
+  `191be3b74ca79c1d0128f0c02c377a9118ea02cfc4dd802030bbd3a0bcd16b4b` /
+  `d235c2bcfb74bb25b320f7904a8e72bb9120f01a398d254c0a5dce369bb6a4f4`.
+- Exact-version mod load PASS run
+  `20260802T0032018715336Z-6864954149b440dc9f10abfac6449d6e`
+  loaded version `0.0.43` from the corrected commit with ready Harmony context.
+- Independent fresh-process feature PASS runs
+  `20260802T0033299551403Z-5d701f8560b7443b9a4433072e419c69` and
+  `20260802T0034468834084Z-e1508a1ec47246ab91a5ba4f863bef43`
+  identically observed three BAB-11 probes at `+11,+6,+1`, forced natural
+  rolls `19,1,19`, two hits and two base-dice packets, Normal condition after
+  the mixed volley, all-roll misfire changing Normal to Broken, grit
+  `4->3->3`, and exact detached-state cleanup.
+- Sprint 43 is runtime-qualified. Continue immediately to level-seven
+  Startling Shot; the checkpoint is not a stopping condition.

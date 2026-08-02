@@ -8,19 +8,30 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `efbd5bd` (Sprint 42 runtime qualification evidence).
+- Audited HEAD: `fdd5d7c` (Sprint 43 Dead Shot fixture correction).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 43 Dead Shot is source-qualified. The level-seven
+- Current checkpoint: Sprint 43 Dead Shot is runtime-qualified. The level-seven
   full-round ability uses BAB-native probes, one item-owned discharge/damage
   delivery, base-dice-only hit aggregation, one adjusted native critical
-  confirmation, and all-roll aggregate misfire. Commit the source checkpoint,
-  then run exact mod load and two guarded feature runs.
+  confirmation, and all-roll aggregate misfire. Record the exact runtime
+  evidence, then advance immediately to level-seven Startling Shot.
 - Version: `0.0.43`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Dead Shot exact mod load passed on `fdd5d7c` with run
+  `20260802T0032018715336Z-6864954149b440dc9f10abfac6449d6e`.
+  Independent PASS runs
+  `20260802T0033299551403Z-5d701f8560b7443b9a4433072e419c69` and
+  `20260802T0034468834084Z-e1508a1ec47246ab91a5ba4f863bef43`
+  both observed BAB-11 probes `+11,+6,+1`, rolls `19,1,19`, two hits/two
+  base-dice packets, no mixed-volley condition change, all-roll misfire
+  `Normal -> Broken`, grit `4->3->3`, and exact cleanup. Package/DLL SHA-256
+  are `191be3b74ca79c1d0128f0c02c377a9118ea02cfc4dd802030bbd3a0bcd16b4b` /
+  `d235c2bcfb74bb25b320f7904a8e72bb9120f01a398d254c0a5dce369bb6a4f4`.
 
 - Gun Training source `72ab329` plus natural-roll fixture correction `76ae9f9`
   passed exact mod load at `20260801T2353104199349Z-mod-load-smoke`.
@@ -386,9 +397,8 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the reconstructable Sprint 41 source checkpoint, require exact mod load,
-and run two fresh-process `disposable-gunslinger-bonus-feats` qualifications.
-Then record evidence and advance to Gun Training. Preserve the Dodge movement
+Commit the Sprint 43 runtime evidence, then inspect and implement the next
+incomplete fidelity row, level-seven Startling Shot. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until
