@@ -74,6 +74,7 @@ $expected = @(
     'disposable-gunslinger-targeting-torso',
     'disposable-gunslinger-targeting-legs',
     'disposable-gunslinger-targeting-arms',
+    'disposable-gunslinger-deaths-shot',
     'disposable-gunslinger-bleeding-wound',
     'disposable-gunslinger-expert-loading',
     'disposable-gunslinger-lightning-reload',

@@ -387,6 +387,11 @@
     <Compile Include="Deeds\StunningShotAbilityLogic.cs" />
     <Compile Include="Deeds\StunningShotAttackHandler.cs" />
     <Compile Include="Deeds\TrueGritDeed.cs" />
+    <Compile Include="Deeds\DeathsShotDecision.cs" />
+    <Compile Include="Deeds\DeathsShotService.cs" />
+    <Compile Include="Deeds\DeathsShotAbilityLogic.cs" />
+    <Compile Include="Deeds\DeathsShotAttackHandler.cs" />
+    <Compile Include="Blueprints\DeathsShotBlueprints.cs" />
     <Compile Include="Deeds\TrueGritChoice.cs" />
     <Compile Include="Deeds\TrueGritCatalog.cs" />
     <Compile Include="Deeds\TrueGritRequest.cs" />

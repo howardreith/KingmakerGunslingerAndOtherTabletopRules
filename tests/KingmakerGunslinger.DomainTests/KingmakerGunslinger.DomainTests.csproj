@@ -41,6 +41,7 @@
     <Compile Include="Sprint61Tests.cs" />
     <Compile Include="Sprint83Tests.cs" />
     <Compile Include="Sprint104Tests.cs" />
+    <Compile Include="Sprint105Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>
@@ -51,6 +52,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotDecision.cs"><Link>Deeds\StunningShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotService.cs"><Link>Deeds\StunningShotService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeathsShotDecision.cs"><Link>Deeds\DeathsShotDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeathsShotService.cs"><Link>Deeds\DeathsShotService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritDeed.cs"><Link>Deeds\TrueGritDeed.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritChoice.cs"><Link>Deeds\TrueGritChoice.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritCatalog.cs"><Link>Deeds\TrueGritCatalog.cs</Link></Compile>

@@ -768,6 +768,21 @@
     },
     {
       "symbol": "KMG.Firearms.ScatterShotAbility", "guid": "3bf6d00c24d94d32a69c1f700a6eeb36", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 98", "notes": "Player-facing standard-action Blunderbuss cone delivery."
+    },
+    {
+      "symbol": "KMG.Deeds.DeathsShotFeature", "guid": "c90022e8f715409bb3b2898f30a6a42f", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 105", "notes": "Level-19 Death's Shot grant."
+    },
+    {
+      "symbol": "KMG.Deeds.DeathsShotAbility", "guid": "effaa5da710e486c87e6e3637c00e1ed", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 105", "notes": "Free-action next-shot arming ability."
+    },
+    {
+      "symbol": "KMG.Deeds.DeathsShotArmed", "guid": "dfc8df775a53441292502d05f13334e4", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 105", "notes": "Unit-owned next-firearm marker."
+    },
+    {
+      "symbol": "KMG.Deeds.DeathsShotDeathEffect", "guid": "b3ed104593874cdc9a0f5bbf99d26cd2", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 105", "notes": "Death-descriptor native kill action carrier."
+    },
+    {
+      "symbol": "KMG.Classes.TrueGritDeathsShot", "guid": "0e96be083f894aa19ae9a8c9eeeff4fc", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 105", "notes": "Unit-owned Death's Shot True Grit choice."
     }
   ]
 }

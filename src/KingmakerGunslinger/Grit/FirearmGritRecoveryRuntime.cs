@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
@@ -141,6 +142,15 @@ namespace KingmakerGunslinger.Grit
         {
             UnitEntityData initiator = attackRoll.Initiator;
             GunslingerClassBlueprintSet blueprints = BlueprintBootstrap.GunslingerClass;
+            if (blueprints != null && initiator != null &&
+                initiator.Descriptor.Buffs.RawFacts.Any(value =>
+                    ReferenceEquals(value.Blueprint,
+                        blueprints.DeathsShot.ArmedMarker)))
+            {
+                FirearmGritRecoveryRuntimeDiagnostics.RecordIgnored(kind,
+                    GritRecoveryStatus.NotQualifyingOutcome);
+                return;
+            }
             bool exactFirearm = FirearmMarkerLookup.ReadFromRuleEvent(attackRoll)
                 .IsExactFirearm;
             int characterLevel = CharacterLevel(initiator);

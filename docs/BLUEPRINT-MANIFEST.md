@@ -2,8 +2,8 @@
 
 ## Sprint 55 status
 
-Sprint 104 extends the append-only contract to 132 stable identifiers: 131 active and one reserved. The three added active identities are the Targeting Arms feature, ability, and True Grit choice. Firearm Proficiency owns Reload and Scatter Shot, while Gunsmithing owns Repair and Overhaul.
-Bootstrap validates and rolls back the complete one-hundred-thirty-one-blueprint transaction.
+Sprint 105 extends the append-only contract to 137 stable identifiers: 136 active and one reserved. The five added active identities implement Death's Shot and its True Grit choice.
+Bootstrap validates and rolls back the complete one-hundred-thirty-six-blueprint transaction.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -180,6 +180,12 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Classes.TrueGritStunningShot` | `0d8c89f38b6d4bdcbef25a63d8bf4ef4` | `BlueprintFeature` | Active | Stunning Shot choice |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
+
+| `KMG.Deeds.DeathsShotFeature` | `c90022e8f715409bb3b2898f30a6a42f` | `BlueprintFeature` | Active | Level-19 Death's Shot grant |
+| `KMG.Deeds.DeathsShotAbility` | `effaa5da710e486c87e6e3637c00e1ed` | `BlueprintAbility` | Active | Free-action arming ability |
+| `KMG.Deeds.DeathsShotArmed` | `dfc8df775a53441292502d05f13334e4` | `BlueprintBuff` | Active | Next-firearm marker |
+| `KMG.Deeds.DeathsShotDeathEffect` | `b3ed104593874cdc9a0f5bbf99d26cd2` | `BlueprintBuff` | Active | Native death carrier |
+| `KMG.Classes.TrueGritDeathsShot` | `0e96be083f894aa19ae9a8c9eeeff4fc` | `BlueprintFeature` | Active | Death's Shot choice |
 
 ## Editing policy
 

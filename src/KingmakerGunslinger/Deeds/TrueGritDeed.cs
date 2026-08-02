@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.Deeds
         Evasive,
         MenacingShot,
         CheatDeath,
+        DeathsShot,
         StunningShot
     }
 }

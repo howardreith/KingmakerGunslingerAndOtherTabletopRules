@@ -55,6 +55,7 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Classes.TrueGritEvasive",
             "KMG.Classes.TrueGritMenacingShot",
             "KMG.Classes.TrueGritCheatDeath",
+            "KMG.Classes.TrueGritDeathsShot",
             "KMG.Classes.TrueGritStunningShot"
         };
 

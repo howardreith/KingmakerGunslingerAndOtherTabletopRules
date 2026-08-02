@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.Deeds
             Choice(TrueGritDeed.Evasive, "Evasive"),
             Choice(TrueGritDeed.MenacingShot, "Menacing Shot"),
             Choice(TrueGritDeed.CheatDeath, "Cheat Death"),
+            Choice(TrueGritDeed.DeathsShot, "Death's Shot"),
             Choice(TrueGritDeed.StunningShot, "Stunning Shot")
         };
 

@@ -9,7 +9,7 @@ import validate_sprint59
 
 VERSION = "0.0.60"
 INFORMATIONAL_VERSION = "0.0.60-s60-player-presentation"
-TEST_COUNT = 834
+TEST_COUNT = 837
 
 def read(root: Path, relative: str) -> str:
     path = root / relative
@@ -25,7 +25,7 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 def validate(root: Path) -> None:
     root = root.resolve()
     validate_sprint59.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               TEST_COUNT, 131, 132)
+                               TEST_COUNT, 136, 137)
     require_tokens(read(root, "planning/SPRINT-60-ENTRY-CRITERIA.md"),
         ["non-hidden feature or ability", "approved fallback icon",
          "Progression UI groups", "presentation metadata only"],

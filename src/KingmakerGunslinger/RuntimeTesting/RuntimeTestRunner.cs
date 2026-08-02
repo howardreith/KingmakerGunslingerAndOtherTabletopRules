@@ -708,6 +708,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerDeathsShot)
+                {
+                    Complete(RunDisposableGunslingerDeathsShot());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit)
                 {
                     Complete(RunDisposableGunslingerStunningShot(true));
@@ -3310,6 +3316,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RunDisposableGunslingerCheatDeath);
             AppendAcceptanceSlice(assertions, "stunning-shot", ref slices,
                 () => RunDisposableGunslingerStunningShot(false));
+            AppendAcceptanceSlice(assertions, "deaths-shot", ref slices,
+                RunDisposableGunslingerDeathsShot);
             AppendAcceptanceSlice(assertions, "true-grit", ref slices,
                 () => RunDisposableGunslingerStunningShot(true));
             AppendAcceptanceSlice(assertions, "production-switching", ref slices,
@@ -8131,6 +8139,112 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerDeathsShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            DeathsShotBlueprintSet set = gunslinger.DeathsShot;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null,
+                failedTarget = null, passedTarget = null;
+            ItemEntityWeapon weapon = null; object controller = null;
+            int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1;
+            bool failedKilled = false, passedKilled = false, cleaned = false;
+            string stage = "setup";
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                failedTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                passedTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                failedTarget.Descriptor.State.Immortality.ReleaseAll();
+                passedTarget.Descriptor.State.Immortality.ReleaseAll();
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 20;
+                AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger, 19,
+                    ref controller);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                var context = new MechanicsContext(attacker, attacker.Descriptor,
+                    set.Ability, null, new TargetWrapper(attacker));
+
+                stage = "save-failure";
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                Buff marker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint, set.ArmedMarker));
+                RuleAttackWithWeapon failure = CreateResolvedStunningShotAttack(
+                    attacker, failedTarget, weapon, false);
+                SetExactProperty(failure.AttackRoll, "IsCriticalConfirmed", true);
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
+                    handler => handler.OnEventDidTrigger(failure));
+                gritAfterFailure = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                failedKilled = failedTarget.Descriptor.State.IsDead;
+
+                stage = "save-success";
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                marker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint, set.ArmedMarker));
+                RuleAttackWithWeapon success = CreateResolvedStunningShotAttack(
+                    attacker, passedTarget, weapon, false);
+                SetExactProperty(success.AttackRoll, "IsCriticalConfirmed", true);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
+                    handler => handler.OnEventDidTrigger(success));
+                gritAfterSuccess = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                passedKilled = passedTarget.Descriptor.State.IsDead;
+            }
+            catch (Exception exception)
+            { throw new InvalidOperationException("Disposable Death's Shot failed at " +
+                stage + ".", exception); }
+            finally
+            {
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (failedTarget != null) failedTarget.Dispose();
+                if (passedTarget != null) passedTarget.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+            }
+            string observed = "grit=" + gritBefore + "->" + gritAfterFailure +
+                "->" + gritAfterSuccess + ";failedKilled=" + failedKilled +
+                ";passedKilled=" + passedKilled;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("deaths-shot-progression", "level 19 feature", observed,
+                    gunslinger.Progression.LevelEntries[18].Features.Any(value =>
+                        ReferenceEquals(value, set.Feature)), "production progression"),
+                Assertion("deaths-shot-native-death",
+                    "natural-1 Fortitude failure kills; natural-20 succeeds", observed,
+                    failedKilled && !passedKilled, "Death descriptor and ContextActionKillTarget"),
+                Assertion("deaths-shot-grit", "one grit per confirmed critical", observed,
+                    gritAfterFailure == gritBefore - 1 &&
+                    gritAfterSuccess == gritBefore - 2, "unit-owned grit"),
+                Assertion("external-isolation", "disposables cleaned", "cleaned=" + cleaned,
+                    cleaned, "reference snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private static RuleAttackWithWeapon CreateResolvedStunningShotAttack(
