@@ -8,10 +8,10 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `2f8136d`; Sprint 90 effective-condition misfire
+- Audited source HEAD: `b0fa6ad`; Sprint 90 effective-condition misfire
   propagation passes repository validation, 848 tests, clean Release build,
-  and strict packaging. Commit/mod-load, then continue remaining deed use
-  gates. Sprint 89 mod load is `20260802T1402557908977Z`.
+  strict packaging, and guarded Steam mod load
+  `20260802T1408301519777Z`. Continue remaining deed use gates.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

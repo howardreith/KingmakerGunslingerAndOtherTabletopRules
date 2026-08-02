@@ -2893,3 +2893,6 @@
   `bd216cb3...f73a8` / `448824f7...624f5`.
 - Next: commit/mod-load, then convert remaining deed use gates from actual to
   effective condition while preserving maintenance-only actual semantics.
+- Exact `b0fa6ad` guarded Steam mod-load PASS is
+  `20260802T1408301519777Z-mod-load-smoke`; rebuilt package/DLL hashes are
+  `5b59b009...2d5de` / `de62f372...118967`. Sprint 90 is runtime-qualified.
