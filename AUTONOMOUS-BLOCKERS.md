@@ -2,6 +2,17 @@
 
 No genuine human-input hard stop is currently established.
 
+## 2026-08-02 save-backed feature-scenario permission boundary
+
+- The external runtime reviewer rejected `production-firearm-catalog`, stating
+  that only `mod-load-smoke` and `working-save-smoke` are explicitly permitted
+  save-backed scenarios at that boundary.
+- No retry, indirect execution, or workaround is permitted. This blocks the
+  existing save-backed catalog/capacity/starting-item feature routes unless
+  explicit authority changes.
+- Save-free detached observers remain permitted and productive, so this is not
+  yet an overall human-input hard stop.
+
 ## 2026-08-02 Sprint 64 save-backed runtime permission boundary
 
 - Exact mod load passes on source `fdf54ec`.

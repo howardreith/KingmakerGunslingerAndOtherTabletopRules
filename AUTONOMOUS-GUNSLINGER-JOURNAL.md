@@ -2562,3 +2562,23 @@
 - This advances final acceptance to runtime-partial but is not comprehensive
   mechanical acceptance. Remaining design-authority and integrated feature
   gates are preserved; continue to an independent actionable item.
+
+## 2026-08-02 Sprint 72 save-free level-twenty progression
+
+- The external reviewer rejected the existing save-backed
+  `production-firearm-catalog` launch because feature-specific save-backed
+  scenarios lack explicit boundary permission. No workaround was attempted;
+  the next safe independent class-chassis gap was selected.
+- Source `ddea6cc` applies exact native `CharGen` level one and nineteen exact
+  native `LevelUp` actions to one detached unit without `Commit` or save load.
+  Seven focused checks, 84 preflight checks, repository validation, 831/831
+  tests, clean Release build, and strict package validation pass.
+- Exact mod load `20260802T1117198249088Z` and fresh save-free progression runs
+  `20260802T1118455028165Z` / `20260802T1120048623643Z` all passed. Both
+  progression runs observed level 20, BAB 20, saves `12/12/6`, 29/29 direct
+  progression facts, and external isolation.
+- Exact package/DLL SHA-256 are
+  `f258eb67a4e1ba36226daf944ee974b0878d01c30dc91fadd5d1238ee8988752` /
+  `653fdc9bf9778bd5306001b71a2dd18aa691e612d5a239022022cc116e3976bb`.
+- Continue to another save-free integration gap; do not retry denied
+  save-backed feature scenarios without explicit permission.

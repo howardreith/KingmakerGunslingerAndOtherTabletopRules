@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `d0b15f6` (safely reversible level-up commit observer).
+- Audited source HEAD: `ddea6cc` (save-free native level-twenty progression).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -21,6 +21,14 @@ definition of done or a listed genuine human-input hard stop.
   smoke runs `20260802T1108448693251Z` and `20260802T1110221239004Z` on
   `KMG_AUTOMATION_WORKING`. This is a save/load regression checkpoint, not the
   still-pending comprehensive mechanical acceptance scenario.
+- Latest class progression: exact `ddea6cc` passed mod load
+  `20260802T1117198249088Z` and save-free level-20 PASS runs
+  `20260802T1118455028165Z` / `20260802T1120048623643Z`, proving BAB 20,
+  saves `12/12/6`, 29/29 direct facts, and isolation.
+- External boundary: `production-firearm-catalog` was rejected because
+  feature-specific save-backed scenarios are not explicitly permitted. Do not
+  retry or circumvent it; save-free scenarios and canonical working-save smoke
+  remain available.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
