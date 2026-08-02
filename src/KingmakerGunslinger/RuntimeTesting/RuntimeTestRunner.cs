@@ -3919,10 +3919,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitCondition.LoseDexterityToAC);
 
                 stage = "intentional-miss-delivery";
-                var mechanicsContext = new Kingmaker.UnitLogic.Mechanics.MechanicsContext(
-                    attacker, attacker.Descriptor,
-                    gunslinger.StartlingShot.Ability, null,
-                    new Kingmaker.Utility.TargetWrapper(target));
+                var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    gunslinger.StartlingShot.Ability, attacker.Descriptor);
+                var abilityParams = new Kingmaker.UnitLogic.Abilities.AbilityParams();
+                var mechanicsContext =
+                    new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                        abilityData, abilityParams,
+                        new Kingmaker.Utility.TargetWrapper(target), null);
                 result = StartlingShotRuntime.Execute(attacker.Descriptor, target,
                     gunslinger.StartlingShot.FlatFootedBuff, mechanicsContext);
                 roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)

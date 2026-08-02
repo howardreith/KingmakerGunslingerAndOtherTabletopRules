@@ -1684,3 +1684,9 @@
   mechanics context to `BuffCollection.AddBuff`; production ability delivery
   always supplies one. The narrow correction constructs the exact native
   disposable caster/target context and leaves production behavior unchanged.
+- Corrected commit `9cade83` passed exact mod load, but feature run
+  `20260802T0104131211548Z-2030d6c86378401bb4cabcde78d535d8` proved a generic
+  `MechanicsContext` is still not a sufficient native buff-delivery fixture:
+  `AddBuff` returned null. Exact installed constructor inspection established
+  the production-shaped `AbilityData`, `AbilityParams`, and
+  `AbilityExecutionContext` path now used by the detached scenario.
