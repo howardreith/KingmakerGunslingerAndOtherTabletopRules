@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.60 - Complete Base Gunslinger qualification
+
+- Completes and runtime-qualifies every meaningful base Gunslinger feature and
+  the supporting item-owned firearm system from character creation through
+  level 20.
+- Passes 854 deterministic tests, strict Release/package validation, final mod
+  load, and two independent 32-slice comprehensive runtime acceptances.
+- Records accepted Kingmaker adaptations and unsupported tabletop interactions
+  in the fidelity matrix and the complete qualification report.
+
 ## 0.0.60 - Sprint 60 Player-Facing Presentation
 
 - Adds approved fallback icons to project-owned visible Gunslinger progression
