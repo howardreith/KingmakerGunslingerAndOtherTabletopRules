@@ -1740,21 +1740,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !BatteredFirearmOriginRuntime.IsBattered(item));
                 bool saleCredited = player.Money == moneyBefore + 22;
                 vendorPhase = "stage-repurchase-deal";
+                object ignoredMoney;
+                string moneyMethod;
+                if (!ReflectionAccess.TryInvokeAny(player,
+                    new[] { "GainMoney" },
+                    new[] { new object[] { 100000L } }, out ignoredMoney,
+                    out moneyMethod))
+                    throw new InvalidOperationException(
+                        "Exact temporary repurchase funding failed.");
                 vendor.AddForBuy(stored, 1);
-                long purchaseCost = Convert.ToInt64(vendor.DealPrice,
-                    System.Globalization.CultureInfo.InvariantCulture);
-                if (player.Money < purchaseCost)
-                {
-                    object ignoredMoney;
-                    string moneyMethod;
-                    long grant = purchaseCost - player.Money;
-                    if (!ReflectionAccess.TryInvokeAny(player,
-                        new[] { "GainMoney" },
-                        new[] { new object[] { grant } }, out ignoredMoney,
-                        out moneyMethod))
-                        throw new InvalidOperationException(
-                            "Exact temporary repurchase funding failed.");
-                }
+                object ignoredUpdate;
+                string updateMethod;
+                if (!ReflectionAccess.TryInvokeAny(vendor,
+                    new[] { "UpdateDeal" }, new[] { Array.Empty<object>() },
+                    out ignoredUpdate, out updateMethod))
+                    throw new InvalidOperationException(
+                        "Exact native deal update failed.");
+                if (!vendor.IsDealPossible)
+                    throw new InvalidOperationException(
+                        "The funded native repurchase deal is not possible.");
                 vendorPhase = "commit-repurchase-deal";
                 vendor.Deal();
                 ItemEntityWeapon[] sharedPistols = EnumerateRuntimeInventory(
