@@ -2202,6 +2202,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var ownerRecords = new List<string>();
             var capitalEntries = new List<string>();
             var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
+            var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null))
@@ -2298,6 +2299,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
             }
+            if (fixedItemField != null && fixedCountField != null)
+            {
+                foreach (BlueprintSharedVendorTable table in tables)
+                {
+                    foreach (LootItemsPackFixed component in
+                        (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .OfType<LootItemsPackFixed>())
+                    {
+                        object reference = fixedItemField.GetValue(component);
+                        PropertyInfo property = reference == null ? null :
+                            reference.GetType().GetProperty("Item", Flags);
+                        var item = property == null ? null :
+                            property.GetValue(reference, null) as BlueprintItem;
+                        object count = fixedCountField.GetValue(component);
+                        string key = item == null ? "<null>" :
+                            "stackable=" + item.IsActuallyStackable + ":count=" + count;
+                        int frequency;
+                        fixedEntryPatterns.TryGetValue(key, out frequency);
+                        fixedEntryPatterns[key] = frequency + 1;
+                    }
+                }
+            }
             string catalog = string.Join(" | ", tables.Select(value =>
                 value.name + ":" + value.AssetGuid + ":" +
                 DescribeBlueprintComponents(value)).ToArray());
@@ -2308,7 +2331,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
                     capitalEntries.ToArray()) + ";capitalReferenceContracts=" +
                     string.Join(" | ", capitalReferenceContracts.OrderBy(value => value,
-                        StringComparer.Ordinal).ToArray()) + ";records=" +
+                        StringComparer.Ordinal).ToArray()) + ";fixedEntryPatterns=" +
+                    string.Join(" | ", fixedEntryPatterns.OrderBy(value => value.Key,
+                        StringComparer.Ordinal).Select(value => value.Key + ":frequency=" +
+                            value.Value).ToArray()) + ";records=" +
                     string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -2335,6 +2361,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "C11_JhodVendorTable LootItemsPackFixed fields"),
+                Assertion("vendor-fixed-entry-quantity-precedent",
+                    "resolved native stackable and non-stackable count patterns",
+                    observed, fixedEntryPatterns.Keys.Any(value =>
+                        value.StartsWith("stackable=True:", StringComparison.Ordinal)) &&
+                        fixedEntryPatterns.Keys.Any(value =>
+                        value.StartsWith("stackable=False:", StringComparison.Ordinal)) &&
+                        !fixedEntryPatterns.ContainsKey("<null>"),
+                    "all BlueprintSharedVendorTable LootItemsPackFixed entries"),
                 Assertion("vendor-observation-only",
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,
