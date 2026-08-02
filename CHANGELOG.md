@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.45 — Sprint 45 Targeting Head (in progress)
+
+- Adds the level-seven full-round Targeting — Head ability.
+- Spends one grit and makes one ordinary native firearm attack.
+- A qualifying hit applies one round of mind-affecting native Confusion while
+  preserving native sneak-attack and mind-affecting immunity handling.
+- Adds five focused policy/rider cases; the complete suite is 770 tests.
+
 ## 0.0.44 — Sprint 44 Startling Shot (in progress)
 
 - Adds the level-seven standard-action Startling Shot deed using native weapon

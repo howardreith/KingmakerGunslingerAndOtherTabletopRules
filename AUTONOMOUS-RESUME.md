@@ -397,6 +397,10 @@ isolation, and observed no save write.
 
 ## Next action
 
+Sprint 45 Targeting Head is source-qualified at version `0.0.45` with 770
+domain tests, all harness safety gates, a validated Release package, and a
+guarded save-free scenario. Commit the reconstructable checkpoint, rebuild the
+exact clean commit, require mod load, and run two feature qualifications.
 Sprint 44 source and successive evidence-driven fixture checkpoints are
 committed through `e34e40c`. Exact mod load passes, but the disposable
 `DefaultPlayerCharacter` target retains an unidentified `RuleApplyBuff` veto

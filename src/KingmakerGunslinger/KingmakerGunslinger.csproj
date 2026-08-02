@@ -288,6 +288,15 @@
     <Compile Include="Deeds\DeadShotExecutionResult.cs" />
     <Compile Include="Deeds\DeadShotAbilityLogic.cs" />
     <Compile Include="Blueprints\DeadShotBlueprints.cs" />
+    <Compile Include="Deeds\TargetingHeadStatus.cs" />
+    <Compile Include="Deeds\TargetingHeadRequest.cs" />
+    <Compile Include="Deeds\TargetingHeadDecision.cs" />
+    <Compile Include="Deeds\TargetingHeadRiderDecision.cs" />
+    <Compile Include="Deeds\TargetingHeadService.cs" />
+    <Compile Include="Deeds\TargetingHeadResult.cs" />
+    <Compile Include="Deeds\TargetingHeadRuntime.cs" />
+    <Compile Include="Deeds\TargetingHeadAbilityLogic.cs" />
+    <Compile Include="Blueprints\TargetingHeadBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />

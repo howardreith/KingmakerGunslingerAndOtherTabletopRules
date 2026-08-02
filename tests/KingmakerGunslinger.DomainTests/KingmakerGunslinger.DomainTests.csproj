@@ -37,6 +37,7 @@
     <Compile Include="Sprint36Tests.cs" />
     <Compile Include="Sprint43Tests.cs" />
     <Compile Include="Sprint44Tests.cs" />
+    <Compile Include="Sprint45Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotDecision.cs"><Link>Deeds\DeadShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcome.cs"><Link>Deeds\DeadShotOutcome.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcomeService.cs"><Link>Deeds\DeadShotOutcomeService.cs</Link></Compile>
@@ -48,6 +49,11 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StartlingShotRequest.cs"><Link>Deeds\StartlingShotRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StartlingShotService.cs"><Link>Deeds\StartlingShotService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StartlingShotStatus.cs"><Link>Deeds\StartlingShotStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadStatus.cs"><Link>Deeds\TargetingHeadStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadRequest.cs"><Link>Deeds\TargetingHeadRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadDecision.cs"><Link>Deeds\TargetingHeadDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadRiderDecision.cs"><Link>Deeds\TargetingHeadRiderDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TargetingHeadService.cs"><Link>Deeds\TargetingHeadService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeDecision.cs">
       <Link>Deeds\DeadeyeDecision.cs</Link>
     </Compile>

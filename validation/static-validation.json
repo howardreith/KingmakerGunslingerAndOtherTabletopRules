@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.44-s44-startling-shot",
-  "version": "0.0.44",
+  "milestone": "0.0.45-s45-targeting-head",
+  "version": "0.0.45",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 65,
-    "activeEntryCount": 64,
+    "entryCount": 68,
+    "activeEntryCount": 67,
     "reservedEntryCount": 1,
-    "registrationCount": 64
+    "registrationCount": 67
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 765,
+    "testCount": 770,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

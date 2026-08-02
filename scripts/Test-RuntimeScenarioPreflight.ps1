@@ -47,6 +47,7 @@ $expected = @(
     'disposable-gunslinger-gun-training',
     'disposable-gunslinger-dead-shot',
     'disposable-gunslinger-startling-shot',
+    'disposable-gunslinger-targeting-head',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -107,10 +108,16 @@ Assert-True (-not $startlingShot.RequiresManualInteraction) `
     'startling-shot-is-autonomous'
 Assert-True (-not $startlingShot.RequiresSaveName) `
     'startling-shot-is-save-free'
+$targetingHead = Get-KmgRuntimeScenarioMetadata `
+    'disposable-gunslinger-targeting-head'
+Assert-True (-not $targetingHead.RequiresManualInteraction) `
+    'targeting-head-is-autonomous'
+Assert-True (-not $targetingHead.RequiresSaveName) `
+    'targeting-head-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.44'
+    ExpectedVersion = '0.0.45'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -143,7 +150,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.44' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.45' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -198,7 +205,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.44' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.45' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

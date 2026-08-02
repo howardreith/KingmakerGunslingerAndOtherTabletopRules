@@ -527,6 +527,30 @@
       "status": "active",
       "milestone": "Sprint 44",
       "notes": "One-round native LoseDexterityToAC condition applied by Startling Shot."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingHeadFeature",
+      "guid": "3e1891d4407541e9ae80963ff0087432",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 45",
+      "notes": "Level-seven Targeting Head feature granting the production full-round deed."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingHeadAbility",
+      "guid": "54de8261f0c348389b88058e83028920",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 45",
+      "notes": "Full-round one-grit ordinary firearm attack with the Head rider."
+    },
+    {
+      "symbol": "KMG.Deeds.TargetingHeadConfusionBuff",
+      "guid": "1a99dc0d5365452192494b0a9059b65b",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Sprint 45",
+      "notes": "One-round mind-affecting native Confusion condition for a qualifying Head hit."
     }
   ]
 }

@@ -2,7 +2,15 @@
 
 ## Sprint 29 status
 
-The append-only ledger contains **65 stable identifiers: 64 active and one reserved**. Sprint 44 adds the level-seven Startling Shot feature, standard-action ability, and one-round native flat-footed buff. Sprint 43 adds the level-seven Dead Shot feature and full-round ability. Sprint 42 adds one cumulative Gun Training selection and five exact firearm-kind choices. Sprint 40 adds Utility Shot's feature and supported Stop Bleeding ability. Sprint 39 adds Pistol-Whip's feature, ability, and four hidden transient melee-surrogate identities. Sprint 38 adds the level-three Gunslinger Initiative feature. Sprint 37 adds five cumulative Nimble rank features at levels 2/6/10/14/18. Sprint 36 added Deadeye, the adapted drop-prone branch of Gunslinger's Dodge, and Quick Clear's feature plus standard/move actions without changing any prior GUID. Sprint 35 added the persistent Gunslinger grit resource, its level-one owner feature, and a hidden per-unit marker. Sprint 34 added the production Gunslinger class, progression, and proficiency aggregate identities; Sprint 33 added four production advanced-firearm identities:
+Sprint 45 extends the append-only contract to **68 stable identifiers: 67 active
+and one reserved** with Targeting Head's feature, ability, and Confusion buff.
+The ledger has 68 stable identifiers: 67 active and one reserved. Gunslinger
+class registration remains a complete twenty-four-blueprint transaction.
+
+Sprint 45 adds Targeting Head's level-seven feature, full-round ability, and
+one-round mind-affecting Confusion buff. Earlier additions remain append-only:
+Startling Shot, Dead Shot, Gun Training, Utility Shot, Pistol-Whip, Initiative,
+Nimble, the level-one deeds and grit, the production class, and firearms.
 
 - `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
 

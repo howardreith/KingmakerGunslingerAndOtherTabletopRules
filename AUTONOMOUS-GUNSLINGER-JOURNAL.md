@@ -1718,3 +1718,30 @@
   sufficient, so additional feature launches stop pending a narrower handler
   observation. Startling Shot remains source-qualified; Targeting is the next
   independent completion item.
+
+## 2026-08-01 Sprint 45 Targeting Head implementation
+
+- Selected the independently exact Head row rather than inventing the unresolved
+  Arms replacement debuff. Entry criteria are recorded in
+  `planning/SPRINT-45-ENTRY-CRITERIA.md`.
+- Version `0.0.45` adds a level-seven full-round weapon-range ability using one
+  ordinary native `RuleAttackWithWeapon`. Eligibility requires one exact loaded
+  non-Wrecked firearm, a valid target, and 1 grit; delivery spends exactly 1
+  grit and leaves native chamber, misfire, damage, critical, concealment, and
+  immunity behavior authoritative.
+- A hit applies a one-round native Confusion buff only when the attack's native
+  `ImmuneToSneakAttack` result is false. The buff carries the MindAffecting
+  descriptor so native effect immunities remain authoritative.
+- Five focused policy/rider cases bring the complete suite to 770/770 PASS.
+  Initial clean Release/package validation passed with candidate package
+  SHA-256 `4497b9a660fc77302d23d4e9d41870116b9eb278d21c353e2c60cea9f82a3bd2`
+  and DLL SHA-256
+  `56e021f47057a71ccf6f8c4f9470f43b839cc69f3dad60f499a3c8e8c0b4b160`.
+  Updated harness gates pass: runtime request 20, scenario preflight 44,
+  runtime result 2, runner 19, deployment 16, Steam launch 47, validation
+  dispatcher 29, PowerShell parser 74, and guarded WhatIf. The guarded
+  save-free scenario is implemented. Latest qualified dirty-tree candidate
+  package SHA-256 is
+  `805bc0b0af5c8bb4c240ba219d5ab90f618c84447e3ffc2e5b0150df349f7ea3`
+  and DLL SHA-256 is
+  `53c0fd5cd0e5b6fa6353da7dab24ec44471e9ee8d005dcf9f6edb16cb30e3584`.

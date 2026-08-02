@@ -425,6 +425,10 @@ FirearmRepairTransactionService
 item-owned state token + Firearm Repair Kit stack
 ```
 
+Sprint 45 extends the ledger to 68 stable IDs: 67 active and one reserved.
+Targeting Head uses one ordinary native firearm attack and a one-round
+mind-affecting Confusion buff gated by the native sneak-immunity result.
+
 Availability remains read-only. Repair starts no transaction before `Deliver`, accepts only one exact equipped empty/Broken Test Musket, consumes one kit, writes empty/Normal once, verifies both resources, and restores the pre-operation values after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
 
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.

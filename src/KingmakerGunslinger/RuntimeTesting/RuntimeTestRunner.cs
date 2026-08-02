@@ -282,6 +282,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -435,6 +436,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot)
                 {
                     Complete(RunDisposableGunslingerStartlingShot());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerTargetingHead)
+                {
+                    Complete(RunDisposableGunslingerTargetingHead());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4001,6 +4008,145 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "buff removed, item state forgotten, disposables disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerTargetingHead()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            TargetingHeadResult result = null;
+            int gritBefore = -1, gritAfter = -1, roundsBefore = -1,
+                roundsAfter = -1, damageBefore = -1, damageAfter = -1;
+            bool confusedBefore = false, confusedAfter = false, cleaned = false;
+            double durationSeconds = -1d;
+            string stage = "blueprint-contract";
+            int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
+                .Count(value => ReferenceEquals(value,
+                    gunslinger.TargetingHead.Feature));
+            AddCondition condition = gunslinger.TargetingHead.ConfusionBuff
+                .ComponentsArray.OfType<AddCondition>().Single();
+            SpellDescriptorComponent descriptor = gunslinger.TargetingHead
+                .ConfusionBuff.ComponentsArray.OfType<SpellDescriptorComponent>()
+                .Single();
+            bool blueprintContract = levelSevenCount == 1 &&
+                gunslinger.TargetingHead.Ability.IsFullRoundAction &&
+                gunslinger.TargetingHead.Ability.Range == AbilityRange.Weapon &&
+                condition.Condition == UnitCondition.Confusion &&
+                descriptor.Descriptor.HasAnyFlag(SpellDescriptor.MindAffecting);
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.ReleaseAll();
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                damageBefore = target.Damage;
+                confusedBefore = target.Descriptor.State.HasCondition(
+                    UnitCondition.Confusion);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                roundsBefore = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+
+                stage = "native-head-attack";
+                var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    gunslinger.TargetingHead.Ability, attacker.Descriptor);
+                var abilityParams = new Kingmaker.UnitLogic.Abilities.AbilityParams();
+                var mechanicsContext =
+                    new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                        abilityData, abilityParams,
+                        new Kingmaker.Utility.TargetWrapper(target), null);
+                result = TargetingHeadRuntime.ExecuteForRuntimeTest(attacker,
+                    target, gunslinger.TargetingHead.ConfusionBuff,
+                    mechanicsContext, true);
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                damageAfter = target.Damage;
+                confusedAfter = target.Descriptor.State.HasCondition(
+                    UnitCondition.Confusion);
+                if (result.Buff != null)
+                    durationSeconds = result.Buff.TimeLeft.TotalSeconds;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Targeting Head failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (result != null && result.Buff != null && target != null)
+                    target.Descriptor.Buffs.RemoveFact(result.Buff);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Damage = Math.Max(0, damageBefore);
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "rounds=" + roundsBefore + "->" + roundsAfter +
+                ";grit=" + gritBefore + "->" + gritAfter + ";damage=" +
+                damageBefore + "->" + damageAfter + ";confused=" +
+                confusedBefore + "->" + confusedAfter + ";durationSeconds=" +
+                durationSeconds.ToString("F3",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";hit=" + (result != null && result.Hit) + ";immune=" +
+                (result != null && result.Rider != null &&
+                    result.Rider.ImmuneToSneakAttack);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("targeting-head-progression",
+                    "level 7 full-round weapon ability and mind-affecting Confusion buff",
+                    observed, blueprintContract, "production blueprint contracts"),
+                Assertion("targeting-head-attack",
+                    "one grit, one chamber, ordinary hit damage", observed,
+                    result != null && result.Hit && gritAfter == gritBefore - 1 &&
+                    roundsBefore == 1 && roundsAfter == 0 &&
+                    damageAfter > damageBefore,
+                    "native RuleAttackWithWeapon and firearm pipeline"),
+                Assertion("targeting-head-rider",
+                    "one-round native Confusion on non-immune hit", observed,
+                    result != null && result.Rider != null &&
+                    result.Rider.ShouldConfuse && result.Buff != null &&
+                    !confusedBefore && confusedAfter && durationSeconds > 0d &&
+                    durationSeconds <= 6.1d,
+                    "native sneak-immunity result and timed mind-affecting buff"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
+                    cleaned, "buff/item state removed and disposables disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
