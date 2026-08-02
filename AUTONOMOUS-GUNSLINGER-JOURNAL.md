@@ -3267,3 +3267,9 @@
   repository validation, 849 tests, Release build, and strict package pass;
   package/DLL hashes are `a3e0683850dac4db5ec7e95b13668113eb0c4a2bdb033b53f37f97eab9e89740` /
   `d7787177c9f627dfaafd0fb76cd83d391f69413f24dcd81befe4ce049839616e`.
+- Exact `7b26575` mod load `20260802T1734465501394Z` and guarded
+  `KMG_AUTOMATION_WORKING` PASS pair `20260802T1736103455384Z` /
+  `20260802T1737524072305Z` prove the exact request-created pistol retained its
+  item-owned battered origin across native live inventory transfer and return,
+  with complete rollback and no save-writing API. Continue shared stash and
+  vendor sale/repurchase lifecycle paths.
