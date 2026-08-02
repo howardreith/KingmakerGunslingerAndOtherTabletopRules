@@ -756,6 +756,14 @@ incomplete independent coverage item; Sprint 59 is not a stopping boundary.
 
 ## Safety boundaries
 
+Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
+by fresh working-save PASS pair `20260802T1820527823172Z` /
+`20260802T1822316079053Z`. The player-sale direction is `AddForSell` /
+`ItemsForSell` / `RemoveFromSell` against detached exact `Capital_Jhod`, with
+complete rollback and no save writes. Commit this curated evidence, then
+implement and qualify the durable `Deal`, repurchase, and restart lifecycle.
+Do not stop at the pre-deal boundary.
+
 Launch only through Steam App ID 640820 and the guarded request mechanism. Use
 only `KMG_AUTOMATION_WORKING`; never load or mutate
 `KMG_AUTOMATION_BASELINE`. Never save, quicksave, send UI input, or infer a save

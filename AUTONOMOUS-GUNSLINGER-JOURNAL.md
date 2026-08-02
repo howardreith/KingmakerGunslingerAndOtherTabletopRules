@@ -3288,3 +3288,16 @@
   the existing exact reflection boundary. Full gates pass; package/DLL hashes
   are `cdc06158f2d209ab3740d122e3c286f0b5b6b27ebc7d2b0db2a5d208c9b56448` /
   `6fa1ed9d75628307230e4879748a8fbe77fbb5cf9e7a8ca3d5fecf25667a4572`.
+- Sprint 103 native evidence corrected three installed-contract assumptions:
+  the capital table has fifteen blueprint owners, exact native `Capital_Jhod`
+  is `c8d4913edee594749b706de35924617e`, and player-owned items use the
+  `AddForSell` / `ItemsForSell` / `RemoveFromSell` direction. Exact `d7fe62a`
+  then passed two fresh guarded working-save runs
+  `20260802T1820527823172Z` / `20260802T1822316079053Z`. Both prove the same
+  request-created pistol and battered owner survive native vendor staging and
+  return, 22 gp sale value remains exact, inventory/class/gold/money roll back,
+  and no save-writing API occurs. Package/DLL SHA-256 are
+  `e8c4e9986525cb98b2572c9961430283b604b52dbfd46551e0b6b8d7da24ab6f` /
+  `46c3a1499e469e04335af519f267bbd32a469a6c3e36a95ad96883360a6c4b10`.
+  Continue to the durable `Deal`, repurchase, and restart lifecycle; this
+  reversible pre-deal checkpoint is not a stopping boundary.
