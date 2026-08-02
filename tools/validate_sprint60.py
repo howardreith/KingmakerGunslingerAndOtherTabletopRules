@@ -39,7 +39,10 @@ def validate(root: Path) -> None:
         "Sprint 60 presentation graph")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
-        ["PlayerFacingPresentation.Apply(progression, characterClass.Icon)"],
+        ["PlayerFacingPresentation.Apply(progression, characterClass.Icon)",
+         "fighter.Progression.Icon",
+         "native Fighter class and progression exposed no presentation icon",
+         "result.m_Icon = presentationIcon"],
         "Sprint 60 bootstrap integration")
     bootstrap = read(root,
         "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs")

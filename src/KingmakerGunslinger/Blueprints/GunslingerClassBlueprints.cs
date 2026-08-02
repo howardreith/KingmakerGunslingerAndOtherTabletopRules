@@ -313,12 +313,18 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall)
         {
+            var presentationIcon = fighter.Icon;
+            if (presentationIcon == null && fighter.Progression != null)
+                presentationIcon = fighter.Progression.Icon;
+            if (presentationIcon == null)
+                throw new InvalidOperationException(
+                    "The native Fighter class and progression exposed no presentation icon.");
             var result = ScriptableObject.CreateInstance<BlueprintCharacterClass>();
             result.name = "KMG_Gunslinger_Class";
             result.LocalizedName = LocalizationService.Create("KMG.Gunslinger.Class.Name", "Gunslinger");
             result.LocalizedDescription = LocalizationService.Create("KMG.Gunslinger.Class.Description",
                 "A master of firearms who fights with grit, precision, and daring deeds.");
-            result.m_Icon = fighter.Icon;
+            result.m_Icon = presentationIcon;
             result.HitDie = DiceType.D10;
             result.BaseAttackBonus = fullBab;
             result.FortitudeSave = goodSave;
