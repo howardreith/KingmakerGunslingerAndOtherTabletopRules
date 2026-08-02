@@ -1,7 +1,7 @@
 # Sprint 92 battered firearm fixed scrap value
 
 Installed Kingmaker 2.1.7b exposes the exact player-to-vendor instance-price
-boundary as `VendorLogic.GetItemBuyPrice(ItemEntity)`. The battered overlay
+boundary as `VendorLogic.GetItemSellPrice(ItemEntity)`. The battered overlay
 patches only that one-argument instance method and returns 22 gp only when the
 exact item GUID exists in the persisted battered ownership carrier.
 

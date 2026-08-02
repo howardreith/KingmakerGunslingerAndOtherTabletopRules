@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.Gunsmithing
         }
     }
 
-    [HarmonyPatch(typeof(VendorLogic), "GetItemBuyPrice",
+    [HarmonyPatch(typeof(VendorLogic), "GetItemSellPrice",
         new Type[] { typeof(ItemEntity) })]
     internal static class BatteredFirearmSaleValuePatch
     {

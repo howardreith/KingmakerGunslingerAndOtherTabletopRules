@@ -6,7 +6,7 @@ function Require([bool]$Condition, [string]$Label) { if (-not $Condition) { thro
 $source = Get-Content (Join-Path $root 'src\KingmakerGunslinger\Gunsmithing\BatteredFirearmSaleValueRuntime.cs') -Raw
 $project = Get-Content (Join-Path $root 'src\KingmakerGunslinger\KingmakerGunslinger.csproj') -Raw
 $runner = Get-Content (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs') -Raw
-Require ($source.Contains('typeof(VendorLogic), "GetItemBuyPrice"')) 'exact-sale-target'
+Require ($source.Contains('typeof(VendorLogic), "GetItemSellPrice"')) 'exact-sale-target'
 Require ($source.Contains('new Type[] { typeof(ItemEntity) }')) 'exact-signature'
 Require ($source.Contains('BatteredFirearmOriginRuntime.IsBattered')) 'persisted-item-origin-gate'
 Require ($source.Contains('FixedExpectedScrapValueGold') -and $source.Contains('__result = fixedValue')) 'fixed-result'

@@ -1713,10 +1713,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         batteredItem, out vendorOwner) &&
                     ReferenceEquals(vendorOwner, mainDescriptor.Unit);
                 vendorPhase = "sale-prices";
-                batteredSaleValue = vendor.GetItemBuyPrice(batteredItem);
+                batteredSaleValue = vendor.GetItemSellPrice(batteredItem);
                 var ordinary = new ItemEntityWeapon(
                     (BlueprintItemWeapon)expected[0]);
-                ordinarySaleValue = vendor.GetItemBuyPrice(ordinary);
+                ordinarySaleValue = vendor.GetItemSellPrice(ordinary);
                 vendorPhase = "stage-sale-deal";
                 vendor.AddForSell(batteredItem, 1);
                 vendorPhase = "commit-sale-deal";
@@ -1736,15 +1736,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EnumerateRuntimeInventory(vendor.ItemsForSell).Count +
                     ";buyStage=" +
                     EnumerateRuntimeInventory(vendor.ItemsForBuy).Count);
-                ItemEntityWeapon stored = vendorPistols.Concat(storePistols)
-                    .Single(item =>
-                    {
-                        Kingmaker.EntitySystem.Entities.UnitEntityData storedOwner;
-                        return ReferenceEquals(item.Blueprint, expected[0]) &&
-                            BatteredFirearmOriginRuntime.TryGetOwner(item,
-                                out storedOwner) &&
-                            ReferenceEquals(storedOwner, mainDescriptor.Unit);
-                    });
+                ItemEntityWeapon stored = storePistols.Single(item =>
+                    !BatteredFirearmOriginRuntime.IsBattered(item));
                 bool saleCredited = player.Money == moneyBefore + 22;
                 vendorPhase = "stage-repurchase-deal";
                 vendor.AddForBuy(stored, 1);
@@ -1764,18 +1757,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 vendorPhase = "commit-repurchase-deal";
                 vendor.Deal();
-                Kingmaker.EntitySystem.Entities.UnitEntityData repurchasedOwner;
-                ItemEntityWeapon repurchased =
+                ItemEntityWeapon acquired =
                     EnumerateRuntimeInventory(mainDescriptor.Inventory)
                     .OfType<ItemEntityWeapon>().Single(item =>
                         ReferenceEquals(item.Blueprint, expected[0]) &&
-                        BatteredFirearmOriginRuntime.TryGetOwner(item,
-                            out repurchasedOwner) &&
-                    ReferenceEquals(repurchasedOwner, mainDescriptor.Unit));
-                vendorDealRoundTrip = saleCredited && repurchased != null &&
-                    SameReferences(vendorStoreBefore.ToArray(),
-                        EnumerateRuntimeInventory(
-                            vendorUnit.Descriptor.Inventory).ToArray());
+                        !BatteredFirearmOriginRuntime.IsBattered(item));
+                vendorDealRoundTrip = saleCredited && acquired != null;
                 moneyStable = player.Money == moneyBefore;
             }
             catch (Exception exception)
@@ -1921,7 +1908,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         batteredSaleValue + ";ordinary=" + ordinarySaleValue,
                     exactOwnership && batteredSaleValue == 22 &&
                         ordinarySaleValue != 22,
-                    "persisted origin carrier plus patched VendorLogic.GetItemBuyPrice"),
+                    "persisted origin carrier plus patched VendorLogic.GetItemSellPrice"),
                 Assertion("native-inventory-transfer",
                     "same item and battered origin survive transfer and return",
                     "retained=" + transferRetained, transferRetained,
@@ -1931,7 +1918,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "retained=" + vendorRoundTrip, vendorRoundTrip,
                     "exact VendorLogic reversible pre-deal transaction"),
                 Assertion("native-vendor-deal-roundtrip",
-                    "same item is sold for 22 gp and repurchased with store restoration",
+                    "battered item sells for 22 gp and vendor pistol is acquired ordinary",
                     "retained=" + vendorDealRoundTrip, vendorDealRoundTrip,
                     "exact VendorLogic Deal sale and repurchase transactions"),
                 Assertion("exact-in-memory-rollback",

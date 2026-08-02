@@ -2917,7 +2917,8 @@
 ## 2026-08-02 Sprint 92 battered sale value
 
 - Re-audited installed item/vendor metadata and selected exact
-  `VendorLogic.GetItemBuyPrice(ItemEntity)`, the player-to-vendor instance sale
+  `VendorLogic.GetItemBuyPrice(ItemEntity)`, initially believed to be the
+  player-to-vendor instance sale
   calculation. Vendor-to-player and blueprint prices remain native.
 - Added a per-item postfix that returns the authorized fixed 22 gp only for an
   exact GUID present in the persisted battered ownership carrier. Missing or
