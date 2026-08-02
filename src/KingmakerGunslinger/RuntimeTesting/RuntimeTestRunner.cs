@@ -303,6 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -546,6 +547,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned)
                 {
                     Complete(RunObserveStunningShotNativeStunned());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot)
+                {
+                    Complete(RunDisposableGunslingerStunningShot());
                     return;
                 }
                 if (_request.Scenario ==
@@ -5347,6 +5354,250 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerStunningShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            StunningShotBlueprintSet set = gunslinger.StunningShot;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData failedTarget = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData passedTarget = null;
+            ItemEntityWeapon weapon = null;
+            Buff stunned = null;
+            object controller = null;
+            int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1,
+                gritAfterImmunity = -1, roundsBefore = -1, roundsAfter = -1,
+                damageBefore = -1, damageAfter = -1;
+            bool available = false, failureMarkerConsumed = false,
+                successMarkerConsumed = false, immunityMarkerConsumed = false,
+                successStunned = false, immunityStunned = false, cleaned = false;
+            double durationSeconds = -1d;
+            int failureD20 = -1, successD20 = -1;
+            string stage = "progression";
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                failedTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                passedTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                failedTarget.Descriptor.State.Immortality.ReleaseAll();
+                passedTarget.Descriptor.State.Immortality.ReleaseAll();
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger, 19,
+                    ref controller);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                roundsBefore = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    set.Ability, attacker.Descriptor);
+                available = set.Ability.ComponentsArray
+                    .OfType<StunningShotAbilityLogic>().Single()
+                    .IsAvailableFor(abilityData);
+
+                stage = "ordinary-native-shot";
+                damageBefore = failedTarget.Damage;
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+                var ordinary = new RuleAttackWithWeapon(attacker, failedTarget,
+                    weapon, 0) { AutoHit = true };
+                Rulebook.Trigger(ordinary);
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                damageAfter = failedTarget.Damage;
+
+                stage = "save-failure";
+                var context = new MechanicsContext(attacker, attacker.Descriptor,
+                    set.Ability, null, new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                Buff failureMarker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                var failureAttack = CreateResolvedStunningShotAttack(attacker,
+                    failedTarget, weapon, false);
+                int failureSeed = FindNativeD20Seed(1);
+                UnityEngine.Random.InitState(failureSeed);
+                failureMarker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(failureAttack));
+                gritAfterFailure = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                failureMarkerConsumed = !attacker.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Any(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                stunned = failedTarget.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint,
+                        set.Stunned));
+                if (stunned != null) durationSeconds = stunned.TimeLeft.TotalSeconds;
+                failureD20 = 1;
+
+                stage = "save-success";
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                Buff successMarker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                var successAttack = CreateResolvedStunningShotAttack(attacker,
+                    passedTarget, weapon, false);
+                int successSeed = FindNativeD20Seed(20);
+                UnityEngine.Random.InitState(successSeed);
+                successMarker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(successAttack));
+                gritAfterSuccess = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                successMarkerConsumed = !attacker.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Any(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                successStunned = passedTarget.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, set.Stunned));
+                successD20 = 20;
+
+                stage = "critical-immunity";
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                int beforeImmunity = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                attacker.Descriptor.Buffs.AddBuff(set.ArmedMarker, context, null);
+                Buff immunityMarker = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                var immunityAttack = CreateResolvedStunningShotAttack(attacker,
+                    passedTarget, weapon, true);
+                immunityMarker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(immunityAttack));
+                gritAfterImmunity = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                immunityMarkerConsumed = !attacker.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Any(value => ReferenceEquals(value.Blueprint,
+                        set.ArmedMarker));
+                immunityStunned = passedTarget.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value.Blueprint, set.Stunned));
+                if (gritAfterImmunity != beforeImmunity)
+                    throw new InvalidOperationException(
+                        "Critical immunity changed grit unexpectedly.");
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Stunning Shot failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (stunned != null && failedTarget != null)
+                    failedTarget.Descriptor.Buffs.RemoveFact(stunned);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
+                if (failedTarget != null) failedTarget.Dispose();
+                if (passedTarget != null) passedTarget.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (failedTarget == null || !ContainsReference(allUnits, failedTarget)) &&
+                    (passedTarget == null || !ContainsReference(allUnits, passedTarget));
+            }
+            bool progression = gunslinger.Progression.LevelEntries[18].Features
+                .Count(value => ReferenceEquals(value, set.Feature)) == 1;
+            string observed = "available=" + available + ";rounds=" + roundsBefore +
+                "->" + roundsAfter + ";damage=" + damageBefore + "->" +
+                damageAfter + ";grit=" + gritBefore + "->" + gritAfterFailure +
+                "->" + gritAfterSuccess + "->" + gritAfterImmunity +
+                ";d20=" + failureD20 + "," + successD20 +
+                ";markers=" + failureMarkerConsumed + "," +
+                successMarkerConsumed + "," + immunityMarkerConsumed +
+                ";stunnedDuration=" + durationSeconds.ToString("F3",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";successStunned=" + successStunned +
+                ";immunityStunned=" + immunityStunned + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("stunning-shot-progression-and-arming",
+                    "level 19 and available with four grit and loaded firearm",
+                    observed, progression && available && gritBefore == 4,
+                    "production progression and availability provider"),
+                Assertion("stunning-shot-native-firearm-preservation",
+                    "ordinary hit consumes one chamber and deals native damage",
+                    observed, roundsBefore == 1 && roundsAfter == 0 &&
+                    damageAfter > damageBefore,
+                    "native RuleAttackWithWeapon and firearm pipeline"),
+                Assertion("stunning-shot-save-failure",
+                    "natural 1 Fortitude spends two grit and applies one-round Stunned",
+                    observed, failureMarkerConsumed && gritAfterFailure == 2 &&
+                    stunned != null && durationSeconds > 0d && durationSeconds <= 6.1d,
+                    "production marker handler and native RuleSavingThrow"),
+                Assertion("stunning-shot-save-success",
+                    "natural 20 Fortitude spends two grit without Stunned",
+                    observed, successMarkerConsumed && gritAfterSuccess == 0 &&
+                    !successStunned,
+                    "production marker handler and native RuleSavingThrow"),
+                Assertion("stunning-shot-critical-immunity",
+                    "native critical immunity consumes marker without grit or Stunned",
+                    observed, immunityMarkerConsumed && gritAfterImmunity == 2 &&
+                    !immunityStunned,
+                    "RuleAttackRoll.ImmuneToCriticalHit"),
+                Assertion("external-isolation", "detached units and item cleaned",
+                    observed, cleaned, "reference snapshots and disposal"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static RuleAttackWithWeapon CreateResolvedStunningShotAttack(
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker,
+            Kingmaker.EntitySystem.Entities.UnitEntityData target,
+            ItemEntityWeapon weapon, bool immuneToCritical)
+        {
+            var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+            var roll = new RuleAttackRoll(attacker, target, weapon, 0);
+            roll.RuleAttackWithWeapon = attack;
+            roll.AutoHit = true;
+            roll.ImmuneToCriticalHit = immuneToCritical;
+            SetExactProperty(attack, "AttackRoll", roll);
+            SetExactProperty(roll, "IsHit", true);
+            return attack;
+        }
+
+        private static int FindNativeD20Seed(int expected)
+        {
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                if (RulebookEvent.Dice.D20.Value == expected) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native d20 seed produced " + expected + ".");
         }
 
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()

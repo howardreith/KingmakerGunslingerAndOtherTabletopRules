@@ -34,12 +34,16 @@ def validate(root: Path) -> None:
     require_tokens(runner,
         ["RunObserveStunningShotNativeStunned", "name == \"Stunned\"",
          "AddCondition{Condition=Stunned}", "ImmuneToCriticalHit",
-         "stunning-shot-native-stunned-condition"],
+         "stunning-shot-native-stunned-condition",
+         "RunDisposableGunslingerStunningShot",
+         "stunning-shot-save-failure", "stunning-shot-save-success",
+         "stunning-shot-critical-immunity"],
         "Sprint 58 native Stunned observer")
     require_tokens(read(root,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs") +
         read(root, "scripts/RuntimeAutomation.Common.ps1"),
-        ["observe-stunning-shot-native-stunned"],
+        ["observe-stunning-shot-native-stunned",
+         "disposable-gunslinger-stunning-shot"],
         "Sprint 58 observer allowlists")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Deeds/StunningShotService.cs") + read(root,

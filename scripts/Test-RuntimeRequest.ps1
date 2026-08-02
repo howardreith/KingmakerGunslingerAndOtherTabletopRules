@@ -250,6 +250,15 @@ if ($stunningShotObserverRequest.scenario -cne
     $stunningShotObserverRequest.parameters.Count -ne 0) {
     $failures.Add('stunning-shot-observer-request-valid')
 }
+$stunningShotRequest = New-KmgRuntimeRequest `
+    -Scenario 'disposable-gunslinger-stunning-shot' `
+    -ExpectedVersion '0.0.58' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($stunningShotRequest.scenario -cne
+    'disposable-gunslinger-stunning-shot' -or
+    $stunningShotRequest.parameters.Count -ne 0) {
+    $failures.Add('stunning-shot-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 34'
+Write-Host 'Runtime request source tests passed: 35'

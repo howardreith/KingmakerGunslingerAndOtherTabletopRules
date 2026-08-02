@@ -82,6 +82,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-deaths-shot-native-death";
         internal const string ObserveStunningShotNativeStunned =
             "observe-stunning-shot-native-stunned";
+        internal const string DisposableGunslingerStunningShot =
+            "disposable-gunslinger-stunning-shot";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -146,6 +148,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerCheatDeath,
                 ObserveDeathsShotNativeDeath,
                 ObserveStunningShotNativeStunned,
+                DisposableGunslingerStunningShot,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

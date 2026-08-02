@@ -62,6 +62,7 @@ $expected = @(
     'disposable-gunslinger-cheat-death',
     'observe-deaths-shot-native-death',
     'observe-stunning-shot-native-stunned',
+    'disposable-gunslinger-stunning-shot',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -210,6 +211,12 @@ Assert-True (-not $stunningShotObserver.RequiresManualInteraction) `
     'stunning-shot-observer-is-autonomous'
 Assert-True (-not $stunningShotObserver.RequiresSaveName) `
     'stunning-shot-observer-is-save-free'
+$stunningShot = Get-KmgRuntimeScenarioMetadata `
+    'disposable-gunslinger-stunning-shot'
+Assert-True (-not $stunningShot.RequiresManualInteraction) `
+    'stunning-shot-is-autonomous'
+Assert-True (-not $stunningShot.RequiresSaveName) `
+    'stunning-shot-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
