@@ -3260,3 +3260,10 @@
   native handler, callback, source transformation, replacement state,
   proficiency/grit facts, exact cleanup, and loaded version. Character creation,
   level-up, multiclass, and respec are now runtime-qualified end to end.
+- Sprint 102 extends the working-save starting-item transaction with exact live
+  `ItemsCollection.Extract/Add` transfer of the request-created battered pistol
+  into a detached native inventory and back. Origin/state isolation and a
+  guaranteed finally return precede the existing exact rollback. Focused checks,
+  repository validation, 849 tests, Release build, and strict package pass;
+  package/DLL hashes are `a3e0683850dac4db5ec7e95b13668113eb0c4a2bdb033b53f37f97eab9e89740` /
+  `d7787177c9f627dfaafd0fb76cd83d391f69413f24dcd81befe4ce049839616e`.

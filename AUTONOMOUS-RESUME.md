@@ -111,6 +111,9 @@ definition of done or a listed genuine human-input hard stop.
   mod load `20260802T1727191713556Z` and PASS pair
   `20260802T1728404473198Z` / `20260802T1730049919619Z`. Commit curated
   evidence and continue to the save-backed item lifecycle row.
+- Sprint 102 live inventory transfer passes all source/build/package gates.
+  Commit it and run exact mod load plus two guarded `gunslinger-starting-items`
+  transactions against only `KMG_AUTOMATION_WORKING`, then continue stash/vendor.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

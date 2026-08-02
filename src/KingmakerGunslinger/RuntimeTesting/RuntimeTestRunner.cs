@@ -1566,6 +1566,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             long batteredSaleValue = -1;
             long ordinarySaleValue = -1;
             bool exactOwnership = false;
+            bool transferRetained = false;
+            Kingmaker.EntitySystem.Entities.UnitEntityData transferUnit = null;
+            UnitDescriptor mainDescriptor = null;
+            ItemEntityWeapon batteredItem = null;
+            bool transferredAway = false;
 
             Player player = null;
             Kingmaker.UnitLogic.ClassData classData = null;
@@ -1592,13 +1597,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The production Gunslinger class blueprint is unavailable.");
 
-                var descriptor = player.MainCharacter.Value.Descriptor;
-                BlueprintCharacterClass maximum = descriptor.Progression.GetMaxClass();
-                classData = descriptor.Progression.GetClassData(maximum);
+                mainDescriptor = player.MainCharacter.Value.Descriptor;
+                BlueprintCharacterClass maximum = mainDescriptor.Progression.GetMaxClass();
+                classData = mainDescriptor.Progression.GetClassData(maximum);
                 if (classData == null)
                     throw new InvalidOperationException(
                         "The main character has no exact maximum ClassData receiver.");
-                if (descriptor.Progression.GetClassData(gunslinger) != null)
+                if (mainDescriptor.Progression.GetClassData(gunslinger) != null)
                     throw new InvalidOperationException(
                         "The working character already has Gunslinger ClassData; identity substitution refused.");
 
@@ -1622,7 +1627,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 gunslinger.StartingGold = 0;
                 classField.SetValue(classData, gunslinger);
-                LevelUpHelper.AddStartingItems(descriptor);
+                LevelUpHelper.AddStartingItems(mainDescriptor);
 
                 List<object> afterGrant = EnumerateRuntimeInventory(player.Inventory);
                 added.AddRange(afterGrant.Where(item =>
@@ -1637,13 +1642,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 exactGrant = added.All(item => expected.Any(blueprint =>
                         ItemUsesRuntimeBlueprint(item, blueprint))) &&
                     pistolCount == 1 && powderCount == 1 && ballCount == 1;
-                ItemEntityWeapon battered = added.OfType<ItemEntityWeapon>()
+                batteredItem = added.OfType<ItemEntityWeapon>()
                     .Single(item => ReferenceEquals(item.Blueprint, expected[0]));
                 Kingmaker.EntitySystem.Entities.UnitEntityData owner;
                 exactOwnership = BatteredFirearmOriginRuntime.TryGetOwner(
-                    battered, out owner) && ReferenceEquals(owner, descriptor.Unit);
+                    batteredItem, out owner) && ReferenceEquals(owner, mainDescriptor.Unit);
+                transferUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                if (transferUnit == null || transferUnit.Descriptor == null ||
+                    transferUnit.Descriptor.Inventory == null)
+                    throw new InvalidOperationException(
+                        "Detached transfer receiver inventory is unavailable.");
+                object ignored;
+                string method;
+                if (!ReflectionAccess.TryInvokeAny(mainDescriptor.Inventory,
+                    new[] { "Extract" }, new[] { new object[] { batteredItem } },
+                    out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(transferUnit.Descriptor.Inventory,
+                    new[] { "Add" }, new[] { new object[] { batteredItem } },
+                    out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Exact native transfer into the detached inventory failed.");
+                transferredAway = true;
+                Kingmaker.EntitySystem.Entities.UnitEntityData transferredOwner;
+                transferRetained = BatteredFirearmOriginRuntime.TryGetOwner(
+                    batteredItem, out transferredOwner) &&
+                    ReferenceEquals(transferredOwner, mainDescriptor.Unit) &&
+                    FirearmRuntimeState.ReadStateTokenIds(batteredItem).Count == 0;
+                if (!ReflectionAccess.TryInvokeAny(transferUnit.Descriptor.Inventory,
+                    new[] { "Extract" }, new[] { new object[] { batteredItem } },
+                    out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(mainDescriptor.Inventory,
+                    new[] { "Add" }, new[] { new object[] { batteredItem } },
+                    out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Exact native transfer rollback to the source inventory failed.");
+                transferredAway = false;
                 var vendor = new VendorLogic();
-                batteredSaleValue = vendor.GetItemBuyPrice(battered);
+                batteredSaleValue = vendor.GetItemBuyPrice(batteredItem);
                 var ordinary = new ItemEntityWeapon(
                     (BlueprintItemWeapon)expected[0]);
                 ordinarySaleValue = vendor.GetItemBuyPrice(ordinary);
@@ -1655,6 +1691,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (transferredAway && transferUnit != null && batteredItem != null &&
+                    mainDescriptor != null)
+                {
+                    object ignored;
+                    string method;
+                    ReflectionAccess.TryInvokeAny(transferUnit.Descriptor.Inventory,
+                        new[] { "Extract" }, new[] { new object[] { batteredItem } },
+                        out ignored, out method);
+                    ReflectionAccess.TryInvokeAny(mainDescriptor.Inventory,
+                        new[] { "Add" }, new[] { new object[] { batteredItem } },
+                        out ignored, out method);
+                }
+                if (transferUnit != null) transferUnit.Dispose();
                 if (classData != null && originalClass != null && classField != null)
                     classField.SetValue(classData, originalClass);
                 if (gunslinger != null)
@@ -1745,6 +1794,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exactOwnership && batteredSaleValue == 22 &&
                         ordinarySaleValue != 22,
                     "persisted origin carrier plus patched VendorLogic.GetItemBuyPrice"),
+                Assertion("native-inventory-transfer",
+                    "same item and battered origin survive transfer and return",
+                    "retained=" + transferRetained, transferRetained,
+                    "exact ItemsCollection Extract/Add across main and detached inventories"),
                 Assertion("exact-in-memory-rollback",
                     "inventory references, class identity, gold, and money restored",
                     "inventory=" + exactRollback + ";class=" + classRestored +
