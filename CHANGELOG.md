@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.50 — Sprint 50 Bleeding Wound (in progress)
+## 0.0.50 — Sprint 50 Bleeding Wound
 
 - Adds the level-eleven four-choice Bleeding Wound deed with free-action
   pre-shot selection, exact post-hit grit costs, ordinary firearm damage, and

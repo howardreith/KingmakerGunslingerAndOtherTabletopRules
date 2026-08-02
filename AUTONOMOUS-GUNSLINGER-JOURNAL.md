@@ -1915,3 +1915,23 @@
 - Next action: audit and commit the reconstructable source checkpoint, rebuild
   the exact commit, require guarded mod load, then run two independent
   Bleeding Wound PASS processes. Sprint 50 is not a stopping condition.
+
+## 2026-08-01 Sprint 50 Bleeding Wound runtime qualification
+
+- Source checkpoint `628fd58` was followed by two bounded native-contract
+  repairs: `e86da67` moved delivery before exact firearm correlation teardown,
+  and `5a939d7` verified the attached exact fact rather than trusting
+  `BuffCollection.AddBuff`'s null return in the detached fixture.
+- Exact final package SHA-256:
+  `412fa07d8831d5d07a5ac009278ad845460f7a5327ee421df2a26e5ea6cb620e`.
+  Exact DLL SHA-256:
+  `05859c0ef58adc52e67bbb05eea3faebed389c016c8ceb4f6c203c3f83f72622`.
+- Guarded exact-commit mod load passed in
+  `20260802T0321317830272Z-mod-load-smoke`. Independent feature PASS runs
+  `20260802T0322528218163Z-disposable-gunslinger-bleeding-wound` and
+  `20260802T0324126984990Z-disposable-gunslinger-bleeding-wound` proved level-11
+  progression, four free choices, ordinary damage, Dexterity-modifier 4 HP
+  bleed, 1 Strength bleed, exact 1+2 grit spend, miss/chamber behavior, removal,
+  cleanup, and no save-backed interaction.
+- Continue immediately to Expert Loading. Sprint 50 is a checkpoint, not a
+  stopping condition.

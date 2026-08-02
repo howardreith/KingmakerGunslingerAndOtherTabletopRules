@@ -421,15 +421,15 @@ selects a replacement. Preserve the audit in
 to Bleeding Wound; do not stop the overall mission on this independent design
 question.
 
-Sprint 50 Bleeding Wound is source-qualified in the worktree. Four mutually
-exclusive free-action markers, exact next-firearm attack correlation, post-hit
-grit spend, persistent native-descriptor Bleed facts, per-round HP/stat damage,
-level-11 progression, and the guarded save-free scenario are complete. The
-full invariant chain, 29 dispatch checks, PowerShell safety suites, 780/780
-domain tests, clean Release build, and strict package validation pass. Audit
-and commit this reconstructable checkpoint, rebuild the exact commit, require
-mod load, and run two fresh-process feature PASS runs. Continue immediately to
-Expert Loading after curated runtime evidence; Sprint 50 is not a stop.
+Sprint 50 Bleeding Wound is runtime-qualified on exact repair commit `5a939d7`.
+Mod-load run `20260802T0321317830272Z-mod-load-smoke` and independent feature
+runs `20260802T0322528218163Z-disposable-gunslinger-bleeding-wound` and
+`20260802T0324126984990Z-disposable-gunslinger-bleeding-wound` passed all seven
+mechanical/isolation assertions. The exact package/DLL hashes are
+`412fa07d8831d5d07a5ac009278ad845460f7a5327ee421df2a26e5ea6cb620e` /
+`05859c0ef58adc52e67bbb05eea3faebed389c016c8ceb4f6c203c3f83f72622`.
+Commit curated evidence and begin Expert Loading immediately; Sprint 50 is not
+a stopping condition.
 
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
