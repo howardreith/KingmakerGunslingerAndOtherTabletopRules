@@ -113,6 +113,7 @@
     <Compile Include="Blueprints\LocalizationService.cs" />
     <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\ProductionFirearmBlueprints.cs" />
+    <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
@@ -500,6 +501,7 @@
     <Compile Include="Scatter\NativeScatterConeTargetResolver.cs" />
     <Compile Include="Scatter\ScatterVolleyRuntime.cs" />
     <Compile Include="Scatter\ScatterShotExecutionResult.cs" />
+    <Compile Include="Scatter\ScatterShotAbilityLogic.cs" />
     <Compile Include="Scatter\ScatterShotRuntime.cs" />
     <Compile Include="Scatter\ScatterAttackRollObservation.cs" />
     <Compile Include="Scatter\ScatterAttackVolleyDecision.cs" />

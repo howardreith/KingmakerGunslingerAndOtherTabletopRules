@@ -36,13 +36,15 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static void AttachReload(
             BlueprintFeature feature,
-            BlueprintAbility reloadAbility)
+            BlueprintAbility reloadAbility,
+            BlueprintAbility scatterShotAbility)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
             {
                 throw new ArgumentNullException("reloadAbility");
             }
+            if (scatterShotAbility == null) throw new ArgumentNullException("scatterShotAbility");
 
             if (feature.ComponentsArray.Length != 0)
             {
@@ -54,11 +56,12 @@ namespace KingmakerGunslinger.Blueprints
             addFacts.name = AbilityGrantComponentName;
             addFacts.Facts = new BlueprintUnitFact[]
             {
-                reloadAbility
+                reloadAbility,
+                scatterShotAbility
             };
             addFacts.DoNotRestoreMissingFacts = false;
             feature.ComponentsArray = new BlueprintComponent[] { addFacts };
-            Validate(feature, reloadAbility);
+            Validate(feature, reloadAbility, scatterShotAbility);
         }
 
         internal static void ValidateBase(BlueprintFeature feature)
@@ -95,7 +98,8 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static void Validate(
             BlueprintFeature feature,
-            BlueprintAbility reloadAbility)
+            BlueprintAbility reloadAbility,
+            BlueprintAbility scatterShotAbility)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
@@ -117,8 +121,9 @@ namespace KingmakerGunslinger.Blueprints
                     StringComparison.Ordinal) ||
                 grant.DoNotRestoreMissingFacts ||
                 grant.Facts == null ||
-                grant.Facts.Length != 1 ||
-                !ReferenceEquals(grant.Facts[0], reloadAbility))
+                grant.Facts.Length != 2 ||
+                !ReferenceEquals(grant.Facts[0], reloadAbility) ||
+                !ReferenceEquals(grant.Facts[1], scatterShotAbility))
             {
                 throw new InvalidOperationException(
                     "The Firearm Proficiency Reload grant has incorrect identity, restore policy, or target ability.");

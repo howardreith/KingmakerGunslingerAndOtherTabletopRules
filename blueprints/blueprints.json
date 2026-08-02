@@ -756,6 +756,9 @@
     },
     {
       "symbol": "KMG.Classes.TrueGritStunningShot", "guid": "0d8c89f38b6d4bdcbef25a63d8bf4ef4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 59", "notes": "Unit-owned Stunning Shot True Grit choice."
+    },
+    {
+      "symbol": "KMG.Firearms.ScatterShotAbility", "guid": "3bf6d00c24d94d32a69c1f700a6eeb36", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Sprint 98", "notes": "Player-facing standard-action Blunderbuss cone delivery."
     }
   ]
 }

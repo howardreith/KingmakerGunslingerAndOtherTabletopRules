@@ -46,6 +46,11 @@ definition of done or a listed genuine human-input hard stop.
   clean Release build, and strict package pass with package/DLL hashes
   `b4d21431...` / `af48d199...`. Commit it before registering the guarded
   ability/runtime acceptance or unlocking player content.
+- Sprint 97 is committed as `c392935`. Sprint 98 registers and grants the
+  guarded Scatter Shot ability while retaining the item/vendor lock. Source,
+  849 tests, Release build, and strict package pass with package/DLL hashes
+  `f8c31f26...` / `3278619b...`. Commit it, then implement and run the save-free
+  guarded scatter acceptance before unlocking the Blunderbuss.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

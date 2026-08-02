@@ -32,10 +32,16 @@ namespace KingmakerGunslinger.Scatter
 
         internal static bool IsAvailable(UnitEntityData caster, out string reason)
         {
+            return IsAvailable(caster == null ? null : caster.Descriptor,
+                out reason);
+        }
+
+        internal static bool IsAvailable(UnitDescriptor caster, out string reason)
+        {
             reason = null;
             ExactEquippedFirearmContext firearm;
             if (caster == null || !ExactEquippedFirearmResolver.TryResolve(
-                    caster.Descriptor, out firearm, out reason)) return false;
+                    caster, out firearm, out reason)) return false;
             if (firearm.Definition.Kind != FirearmKind.Blunderbuss ||
                 !firearm.Definition.IsScatter)
             { reason = "Equip exactly one production Blunderbuss."; return false; }

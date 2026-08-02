@@ -2,8 +2,8 @@
 
 ## Sprint 55 status
 
-Sprint 93 extends the append-only contract to 128 stable identifiers: 127 active and one reserved. The added active identity is the item-owned battered-origin enchantment; Sprint 84 previously added the visible level-one Gunsmithing feature. Firearm Proficiency owns Reload only, while Gunsmithing owns Repair and Overhaul.
-Bootstrap validates and rolls back the complete one-hundred-twenty-seven-blueprint transaction.
+Sprint 98 extends the append-only contract to 129 stable identifiers: 128 active and one reserved. The added active identity is the guarded Scatter Shot ability; Sprint 93 added the item-owned battered-origin enchantment. Firearm Proficiency owns Reload and Scatter Shot, while Gunsmithing owns Repair and Overhaul.
+Bootstrap validates and rolls back the complete one-hundred-twenty-eight-blueprint transaction.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 

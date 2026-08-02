@@ -3078,3 +3078,17 @@
   `af48d19994631119c8855b3c896c62cda39770347ca4e496b84d9e2fafc22cab`.
   Next: commit this transaction core, then register the guarded ability and
   save-free runtime acceptance while keeping player content locked.
+
+## 2026-08-02 Sprint 98 guarded Scatter Shot ability
+
+- Registered stable `KMG.Firearms.ScatterShotAbility` as a standard-action,
+  weapon-range unit-direction ability and granted it beside Reload through
+  Firearm Proficiency.
+- Availability and delivery delegate to the exact Sprint 97 transaction. The
+  Blunderbuss restriction and vendor exclusion remain in force until runtime
+  acceptance passes.
+- Repository validation, 849 tests, clean Release build, and strict package
+  pass. Package/DLL SHA-256: `f8c31f26b44042e9da651328c886628d6abaf5592573cf632ae56075d72bd656` /
+  `3278619b8cc687eb5cab791ede3d38454c59aa6ff1de903f1145f241e692a724`.
+  Next: commit, add the save-free guarded scatter transaction scenario, and
+  obtain mod-load plus two fresh-process PASS runs before unlocking the item.
