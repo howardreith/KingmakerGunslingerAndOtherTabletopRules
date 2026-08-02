@@ -2157,3 +2157,16 @@
   Will save and native Shaken on the forced successful save, then disposed both
   units without save or external-unit interaction.
 - Continue immediately to Slinger's Luck; Sprint 54 is a checkpoint only.
+
+## 2026-08-02 Sprint 55 Slinger's Luck entry audit
+
+- Authority requires a saving-throw reroll for fixed cost 2 or a skill-check
+  reroll for fixed cost 1, always retaining the second result even when lower;
+  no effect may reduce either cost.
+- Kingmaker has no safe generic post-roll player interruption. The established
+  project adaptation is two explicit pre-roll arming choices whose next matching
+  unit-owned rule event consumes one marker and requests one native reroll.
+- No current exact observation proves the installed saving-throw and skill-check
+  rule types, result members, or safe replacement phase. Sprint 55 therefore
+  begins with a save-free contract observer before gameplay implementation.
+- Entry criteria are recorded in `planning/SPRINT-55-ENTRY-CRITERIA.md`.
