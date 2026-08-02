@@ -5141,9 +5141,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (replacementEntity != null &&
                     !ReferenceEquals(replacementEntity, source) &&
-                    !replacementEntity.Destroyed)
+                    !replacementEntity.Destroyed &&
+                    replacementEntity.Descriptor.Body != null)
                     replacementEntity.Dispose();
-                if (source != null && !source.Destroyed) source.Dispose();
+                if (source != null && !source.Destroyed &&
+                    source.Descriptor.Body != null) source.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     SameReferences(remoteBefore, SnapshotReferences(remote)) &&

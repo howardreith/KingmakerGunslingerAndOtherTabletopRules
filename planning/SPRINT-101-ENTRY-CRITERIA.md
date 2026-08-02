@@ -18,3 +18,7 @@ inventory, and money snapshots exactly.
 Native replacement may destroy its source during the success callback; cleanup
 must honor authoritative `EntityDataBase.Destroyed` and never dispose an entity
 twice.
+`PrepareRespec` transfers the native body and can leave the detached source with
+a null body while `Destroyed` remains false; such a transferred shell is not a
+valid `Dispose` receiver and is accepted only when all external snapshots prove
+it is unregistered.

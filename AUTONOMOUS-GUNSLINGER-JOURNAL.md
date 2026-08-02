@@ -3229,3 +3229,11 @@
   strict package pass; package/DLL hashes are
   `47361c30533da90f3b3fc069f1c5295c2bb58ca2b8bdd8aea52bca84ec6b27c2` /
   `7b79e4d096f7915157056b9dcb0bc4bad5fef1024be9a08a56fa0d2d77a24a24`.
+- Exact `3a87fac` mod load passed as `20260802T1714333117423Z`; repaired run
+  `20260802T1715541597825Z` showed `Destroyed` alone is insufficient because
+  native `PrepareRespec` transfers the body and leaves a non-destroyed null-body
+  shell. Cleanup now disposes only an entity that is both live and still owns a
+  body, while exact external snapshots remain the authoritative leak check.
+  Full repaired gates pass; package/DLL hashes are
+  `46f1a0e9774c1c1dff5ffb2b4640823ece41606310b7ad59512c5eff36580cd4` /
+  `88db502a7bbbe3f82dc1b95361f63659ce0f5222dc02cb83e41e2426ec2c6abc`.
