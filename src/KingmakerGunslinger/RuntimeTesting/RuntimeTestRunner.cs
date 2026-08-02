@@ -5417,11 +5417,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     weapon, 0) { AutoHit = true };
                 Rulebook.Trigger(ordinary);
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                RuleDealDamage ordinaryDamage = ordinary.MeleeDamage;
+                if (ordinaryDamage == null && ordinary.AttackRoll != null &&
+                    ordinary.AttackRoll.IsHit)
+                {
+                    ordinaryDamage = ordinary.CreateRuleDealDamage(false);
+                    Rulebook.Trigger(ordinaryDamage);
+                }
                 roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.LoadedRounds;
                 damageAfter = failedTarget.Damage;
-                if (ordinary.MeleeDamage != null)
-                    nativeDamage = ordinary.MeleeDamage.Damage;
+                if (ordinaryDamage != null) nativeDamage = ordinaryDamage.Damage;
 
                 stage = "save-failure";
                 var context = new MechanicsContext(attacker, attacker.Descriptor,
