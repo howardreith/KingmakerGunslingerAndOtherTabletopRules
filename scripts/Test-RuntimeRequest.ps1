@@ -173,6 +173,14 @@ if ($lightningReloadRequest.scenario -cne 'disposable-gunslinger-lightning-reloa
     $lightningReloadRequest.parameters.Count -ne 0) {
     $failures.Add('lightning-reload-request-valid')
 }
+$evasiveObserverRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-evasive-native-features' `
+    -ExpectedVersion '0.0.52' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($evasiveObserverRequest.scenario -cne 'observe-evasive-native-features' -or
+    $evasiveObserverRequest.parameters.Count -ne 0) {
+    $failures.Add('evasive-observer-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 25'
+Write-Host 'Runtime request source tests passed: 26'

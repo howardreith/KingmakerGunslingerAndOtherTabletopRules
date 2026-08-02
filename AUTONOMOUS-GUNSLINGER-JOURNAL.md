@@ -2052,3 +2052,16 @@
   rejection, exact shared-inventory restoration, and disposable isolation.
 - Continue immediately to Evasive. Sprint 52 is a checkpoint, not a stopping
   condition.
+
+## 2026-08-01 Sprint 53 Evasive entry audit
+
+- The authoritative level-15 feature conditionally grants native Evasion,
+  Uncanny Dodge, and Improved Uncanny Dodge while grit is positive, substituting
+  Gunslinger level for Rogue level in the improved comparison.
+- Exact installed candidate GUIDs are available, but their Kingmaker 2.1.7b
+  components and class-level fields have not yet been observed in this runtime.
+  A narrow save-free observer will resolve only those three identities and
+  record their concrete components before implementation.
+- Entry criteria are recorded in `planning/SPRINT-53-ENTRY-CRITERIA.md`. Next:
+  commit and run the exact native-feature observer; do not infer scaling from
+  display names or another Owlcat game.

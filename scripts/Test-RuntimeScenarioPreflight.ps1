@@ -53,6 +53,7 @@ $expected = @(
     'disposable-gunslinger-bleeding-wound',
     'disposable-gunslinger-expert-loading',
     'disposable-gunslinger-lightning-reload',
+    'observe-evasive-native-features',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -149,6 +150,12 @@ Assert-True (-not $lightningReload.RequiresManualInteraction) `
     'lightning-reload-is-autonomous'
 Assert-True (-not $lightningReload.RequiresSaveName) `
     'lightning-reload-is-save-free'
+$evasiveObserver = Get-KmgRuntimeScenarioMetadata `
+    'observe-evasive-native-features'
+Assert-True (-not $evasiveObserver.RequiresManualInteraction) `
+    'evasive-observer-is-autonomous'
+Assert-True (-not $evasiveObserver.RequiresSaveName) `
+    'evasive-observer-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'

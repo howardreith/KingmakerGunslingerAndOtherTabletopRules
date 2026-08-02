@@ -64,6 +64,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-expert-loading";
         internal const string DisposableGunslingerLightningReload =
             "disposable-gunslinger-lightning-reload";
+        internal const string ObserveEvasiveNativeFeatures =
+            "observe-evasive-native-features";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -119,6 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerBleedingWound,
                 DisposableGunslingerExpertLoading,
                 DisposableGunslingerLightningReload,
+                ObserveEvasiveNativeFeatures,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

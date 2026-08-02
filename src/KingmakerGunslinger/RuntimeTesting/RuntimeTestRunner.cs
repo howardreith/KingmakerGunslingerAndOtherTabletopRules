@@ -290,6 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -479,6 +480,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload)
                 {
                     Complete(RunDisposableGunslingerLightningReload());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures)
+                {
+                    Complete(RunObserveEvasiveNativeFeatures());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4491,6 +4498,77 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunObserveEvasiveNativeFeatures()
+        {
+            const string EvasionGuid = "576933720c440aa4d8d42b0c54b77e80";
+            const string UncannyDodgeGuid = "3c08d842e802c3e4eb19d15496145709";
+            const string ImprovedUncannyDodgeGuid =
+                "485a18c05792521459c7d06c63128c79";
+            BlueprintFeature evasion = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    EvasionGuid, "native Evasion feature");
+            BlueprintFeature uncanny = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    UncannyDodgeGuid, "native Uncanny Dodge feature");
+            BlueprintFeature improved = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    ImprovedUncannyDodgeGuid,
+                    "native Improved Uncanny Dodge feature");
+            string evasionObserved = DescribeExactFeature(evasion);
+            string uncannyObserved = DescribeExactFeature(uncanny);
+            string improvedObserved = DescribeExactFeature(improved);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("evasive-native-evasion", EvasionGuid,
+                    evasionObserved, evasion.ComponentsArray != null &&
+                        evasion.ComponentsArray.Length > 0,
+                    "exact installed blueprint and declared component fields"),
+                Assertion("evasive-native-uncanny-dodge", UncannyDodgeGuid,
+                    uncannyObserved, uncanny.ComponentsArray != null &&
+                        uncanny.ComponentsArray.Length > 0,
+                    "exact installed blueprint and declared component fields"),
+                Assertion("evasive-native-improved-uncanny-dodge",
+                    ImprovedUncannyDodgeGuid, improvedObserved,
+                    improved.ComponentsArray != null &&
+                        improved.ComponentsArray.Length > 0,
+                    "exact installed blueprint and declared component fields"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static string DescribeExactFeature(BlueprintFeature feature)
+        {
+            var components = new List<string>();
+            foreach (BlueprintComponent component in feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+            {
+                Type type = component.GetType();
+                var fields = new List<string>();
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly).OrderBy(value => value.Name,
+                        StringComparer.Ordinal))
+                {
+                    object value = field.GetValue(component);
+                    if (value == null || value is string || value is bool ||
+                        value is int || value is Enum ||
+                        value is BlueprintScriptableObject)
+                        fields.Add(field.Name + "=" +
+                            (value == null ? "<null>" : value.ToString()));
+                }
+                components.Add(type.FullName + "{" +
+                    string.Join(",", fields.ToArray()) + "}");
+            }
+            return feature.name + "|" + feature.Name + "|" +
+                string.Join(";", components.ToArray());
         }
 
         private RuntimeTestResult RunDisposableGunslingerBleedingWound()

@@ -42,6 +42,10 @@ $checks = [ordered]@{
     'lightning-reload-guarded-dispatch' = $runner.Contains(
         'RunDisposableGunslingerLightningReload()') -and $catalog.Contains(
         'DisposableGunslingerLightningReload')
+    'evasive-native-observer-is-exact' = $runner.Contains(
+        'RunObserveEvasiveNativeFeatures()') -and $runner.Contains(
+        '576933720c440aa4d8d42b0c54b77e80') -and $catalog.Contains(
+        'ObserveEvasiveNativeFeatures')
     'write-failure-suppresses-exit' = $runner.Contains(
         'automatic exit was suppressed')
 }
