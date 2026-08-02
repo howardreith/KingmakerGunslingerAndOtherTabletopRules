@@ -1851,3 +1851,18 @@
   then ensures its successful result owns the same native `UnitCondition.Prone`
   state when detached event aftermath did not install it. Requalify all source
   gates and checkpoint this evidence-driven repair before another runtime run.
+
+## 2026-08-01 Sprint 47 Targeting Legs runtime qualification
+
+- Exact repair commit `1a2f29c` rebuilt with package/DLL SHA-256
+  `598313f1b3e38201646ee039e87d8614ef8a87427596d39d72e55cec1e81df89` /
+  `cda2c4e181c205b1676a6b81eb6575a345c566c9ed4d018c33cb274c4b282c25`.
+  Mod-load run `20260802T0231549132685Z-mod-load-smoke` passed.
+- Independent feature runs
+  `20260802T0233121188720Z-7ef51e849a88459591847b21e4d7466e` and
+  `20260802T0234333804832Z-c0c8adb9ca9648f8bbbea1c7117546c9`
+  both passed: grit `3->1`, both chambers `1->0`, eligible damage was positive,
+  native Trip succeeded and prone changed `False->True`, the immune target took
+  positive damage without Trip or prone, and cleanup/external isolation passed.
+- Targeting Legs is runtime-qualified. Continue immediately with the remaining
+  Targeting dispositions, beginning with exact Wings interaction support.

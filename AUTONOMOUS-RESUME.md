@@ -397,21 +397,14 @@ isolation, and observed no save write.
 
 ## Next action
 
-Sprint 47 Targeting Legs is source-qualified in the worktree at version
-`0.0.47`: inherited validators, 776 domain/reflection tests, clean Release
-build, strict package checks, all focused harness safety suites, validator
-dispatch, and guarded WhatIf pass. Stage only the explicit reconstructable
-checkpoint files, audit and commit them, rebuild the exact clean commit, then
-require exact mod-load plus two independent save-free Legs feature PASS runs
-before changing its runtime status. Continue immediately to the next incomplete
-coverage item after recording that evidence.
-
-The first exact Legs feature run on `3a7738f` proved damage, grit, chambers,
-immunity, and cleanup but observed a successful native Trip without the prone
-condition on its detached target. A narrow worktree repair now ensures native
-`UnitCondition.Prone` after successful Trip. Re-run the complete source/build/
-package/harness gates, commit the repair, then repeat exact mod load and require
-two independent feature PASS runs.
+Sprint 47 Targeting Legs is runtime-qualified on exact repair commit `1a2f29c`.
+Mod-load run `20260802T0231549132685Z-mod-load-smoke` and independent feature
+runs `20260802T0233121188720Z-7ef51e849a88459591847b21e4d7466e` and
+`20260802T0234333804832Z-c0c8adb9ca9648f8bbbea1c7117546c9` passed, proving
+positive normal damage, successful native Trip with prone aftermath, native
+maneuver-immunity suppression, exact grit/chambers, and cleanup. Commit this
+curated evidence and inspect exact installed support for Targeting Wings next;
+do not stop at the Sprint 47 boundary.
 
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`
