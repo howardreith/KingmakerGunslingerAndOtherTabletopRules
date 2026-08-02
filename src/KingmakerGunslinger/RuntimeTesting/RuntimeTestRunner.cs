@@ -5054,15 +5054,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 var saving = new RuleSavingThrow(unit, SavingThrowType.Will, 100);
                 Rulebook.Trigger(saving);
+                EventBus.RaiseEvent<IUnitSubscriber>(unit, subscriber =>
+                {
+                    var handler = subscriber as IInitiatorRulebookHandler<
+                        RuleSavingThrow>;
+                    if (handler != null) handler.OnEventDidTrigger(saving);
+                });
                 savingGritAfter = unit.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 savingConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value.Blueprint,
                         set.SavingMarker));
-                if (saving.BaseRollResult != savingSecond)
+                if (saving.D20.Value != savingSecond)
                     throw new InvalidOperationException(
                         "Saving throw did not retain the lower second d20: expected " +
-                        savingSecond + ", observed " + saving.BaseRollResult +
+                        savingSecond + ", observed " + saving.D20.Value +
                         ", grit " + savingGritBefore + "->" + savingGritAfter +
                         ", markerConsumed=" + savingConsumed + ".");
 
@@ -5076,12 +5082,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 var skill = new RuleSkillCheck(unit, StatType.SkillAthletics, 100);
                 Rulebook.Trigger(skill);
+                EventBus.RaiseEvent<IUnitSubscriber>(unit, subscriber =>
+                {
+                    var handler = subscriber as IInitiatorRulebookHandler<
+                        RuleSkillCheck>;
+                    if (handler != null) handler.OnEventDidTrigger(skill);
+                });
                 skillGritAfter = unit.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
                 skillConsumed = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value.Blueprint,
                         set.SkillMarker));
-                if (skill.BaseRollResult != skillSecond)
+                if (skill.D20.Value != skillSecond)
                     throw new InvalidOperationException(
                         "Skill check did not retain the lower second d20.");
                 otherGritAfter = other.Descriptor.Resources.GetResourceAmount(
