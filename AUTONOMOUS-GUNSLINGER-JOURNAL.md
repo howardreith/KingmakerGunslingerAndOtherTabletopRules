@@ -3212,3 +3212,11 @@
   replacement initiation without UI input. All 849 tests/build/package gates
   pass; package/DLL hashes are `3359344cb3447f48ae99f44df4756df9e49d3e81cfd8d9f1581d9e21901a546f` /
   `e3d50ecb58d6fbe453ae076358570571b477744dfbfa6ec821095fb8f24ef802`.
+- Exact observer `958645e` passed as `20260802T1704378322168Z`, proving
+  `HandleLevelUpStart(UnitDescriptor,JToken,Action,LevelUpState.CharBuildMode)`.
+  The request-local handler-backed broad fixture is now implemented. Two compile
+  repairs corrected the observed nested enum and explicit entity namespace;
+  focused checks, preflight 84, repository validation, 849 tests, Release build,
+  and strict package pass. Package/DLL SHA-256 are
+  `149f3ff2833e40e3a7adfb79064070b22b90e7a25ad98367ec264199acf98850` /
+  `d0a8432c067ea311b8f15c5537fe97a8f3f0f0898035dd541adeca4b28f0b8f0`.

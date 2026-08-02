@@ -103,6 +103,10 @@ definition of done or a listed genuine human-input hard stop.
 - Sprint 101 source-qualifies expanded metadata-only observation of exact
   installed `Player.RespecCompanion` signatures/call graph. Commit and run it,
   then implement the reversible broad callback fixture from observed evidence.
+- Exact handler contract is observed and the reversible broad callback fixture
+  passes all source/build/package gates. Commit it, run exact mod load and fresh
+  broad-respec qualification, repair from structured evidence as needed, and
+  continue the mandatory matrix.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

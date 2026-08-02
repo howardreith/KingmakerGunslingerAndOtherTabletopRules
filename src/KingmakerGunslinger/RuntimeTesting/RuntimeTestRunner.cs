@@ -78,6 +78,50 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
 
+        private sealed class BroadRespecInitiationHandler :
+            ILevelUpInitiateUIHandler
+        {
+            internal BlueprintCharacterClass SelectedClass;
+            internal UnitDescriptor Replacement;
+            internal object Controller;
+            internal bool Invoked;
+            internal bool Selected;
+
+            public void HandleLevelUpStart(UnitDescriptor unit,
+                Newtonsoft.Json.Linq.JToken unitJson, Action onSuccess,
+                Kingmaker.UnitLogic.Class.LevelUp.LevelUpState.CharBuildMode mode)
+            {
+                Invoked = true;
+                Replacement = unit;
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = type.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (unit == null || SelectedClass == null || selectClass == null ||
+                    mechanics == null || commit == null)
+                    throw new InvalidOperationException(
+                        "Broad respec initiation contract is incomplete.");
+                Controller = start.Invoke(null,
+                    new object[] { unit, false, unitJson, onSuccess, mode });
+                Selected = (bool)selectClass.Invoke(Controller,
+                    new object[] { SelectedClass, false });
+                if (!Selected)
+                    throw new InvalidOperationException(
+                        "Broad respec Gunslinger selection was rejected.");
+                mechanics.Invoke(Controller, null);
+                commit.Invoke(Controller, null);
+                Controller = null;
+            }
+        }
+
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
         {
             _request = request;
@@ -284,6 +328,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecCommit &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBroadRespec &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
@@ -457,6 +502,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerRespecCommit)
                 {
                     Complete(RunDisposableGunslingerRespecCommit());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerBroadRespec)
+                {
+                    Complete(RunDisposableGunslingerBroadRespec());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4959,6 +5010,166 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "unchanged party, units, cross-scene, companions, and inventory",
                     "cleaned=" + cleaned, cleaned,
                     "expanded snapshots after both detached entities disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerBroadRespec()
+        {
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
+                .Single(value => value != null && value.AssetGuid ==
+                    "48ac8db94d5de7645906c7d0ad3bcfbd");
+            Player player = Game.Instance.Player;
+            object state = ReadExactMember(Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object remote = ReadExactMember(player, "RemoteCompanions");
+            object cross = ReadExactMember(ReadExactMember(player, "CrossSceneState"),
+                "AllEntityData");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] remoteBefore = SnapshotReferences(remote);
+            object[] crossBefore = SnapshotReferences(cross);
+            object[] inventoryBefore = SnapshotReferences(player.Inventory);
+            long moneyBefore = player.Money;
+            BlueprintItem[] startingItems = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
+            int[] startingCounts = startingItems.Select(item =>
+                player.Inventory.Count(item)).ToArray();
+            int originalStartingGold = gunslinger.StartingGold;
+            var addedInventory = new List<object>();
+            Kingmaker.EntitySystem.Entities.UnitEntityData source = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData replacementEntity = null;
+            object seed = null;
+            var handler = new BroadRespecInitiationHandler
+            {
+                SelectedClass = gunslinger
+            };
+            bool subscribed = false, callback = false, facts = false,
+                cleaned = false;
+            int sourceFighter = -1, sourceGunslinger = -1,
+                replacementFighter = -1, replacementGunslinger = -1;
+            try
+            {
+                source = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                UnitDescriptor descriptor = source == null ? null : source.Descriptor;
+                if (descriptor == null)
+                    throw new InvalidOperationException(
+                        "Detached broad-respec source is unavailable.");
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null ||
+                    cancel == null)
+                    throw new MissingMethodException(
+                        "Broad-respec seed contract is unavailable.");
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seed = start.Invoke(null,
+                    new object[] { descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seed, new object[] { fighter, false }))
+                    throw new InvalidOperationException("Broad-respec Fighter seed failed.");
+                mechanics.Invoke(seed, null);
+                apply.Invoke(seed, new object[] { descriptor });
+                cancel.Invoke(seed, null);
+                seed = null;
+
+                gunslinger.StartingGold = 0;
+                EventBus.Subscribe(handler);
+                subscribed = true;
+                player.RespecCompanion(source, () => callback = true);
+                replacementEntity = handler.Replacement == null ? null :
+                    handler.Replacement.Unit;
+                addedInventory.AddRange(EnumerateRuntimeInventory(player.Inventory)
+                    .Where(item => !inventoryBefore.Any(existing =>
+                        ReferenceEquals(existing, item))));
+                sourceFighter = descriptor.Progression.GetClassLevel(fighter);
+                sourceGunslinger = descriptor.Progression.GetClassLevel(gunslinger);
+                replacementFighter = handler.Replacement == null ? -1 :
+                    handler.Replacement.Progression.GetClassLevel(fighter);
+                replacementGunslinger = handler.Replacement == null ? -1 :
+                    handler.Replacement.Progression.GetClassLevel(gunslinger);
+                facts = handler.Replacement != null &&
+                    handler.Replacement.HasFact(
+                        BlueprintBootstrap.GunslingerClass.Proficiencies) &&
+                    handler.Replacement.HasFact(
+                        BlueprintBootstrap.GunslingerClass.Grit.Feature);
+            }
+            finally
+            {
+                if (subscribed) EventBus.Unsubscribe(handler);
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (handler.Controller != null && cancel != null)
+                    cancel.Invoke(handler.Controller, null);
+                if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                gunslinger.StartingGold = originalStartingGold;
+                foreach (object item in addedInventory)
+                {
+                    object ignored;
+                    string method;
+                    ReflectionAccess.TryInvokeAny(player.Inventory,
+                        new[] { "Remove", "RemoveItem" },
+                        new[] { new object[] { item, 1, false },
+                            new object[] { item, 1 }, new object[] { item } },
+                        out ignored, out method);
+                }
+                for (int index = 0; index < startingItems.Length; index++)
+                {
+                    int excess = player.Inventory.Count(startingItems[index]) -
+                        startingCounts[index];
+                    if (excess > 0)
+                        player.Inventory.Remove(startingItems[index], excess);
+                }
+                if (replacementEntity != null &&
+                    !ReferenceEquals(replacementEntity, source))
+                    replacementEntity.Dispose();
+                if (source != null) source.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(remoteBefore, SnapshotReferences(remote)) &&
+                    SameReferences(crossBefore, SnapshotReferences(cross)) &&
+                    SameReferences(inventoryBefore, SnapshotReferences(player.Inventory)) &&
+                    player.Money == moneyBefore;
+            }
+            string observed = "handler=" + handler.Invoked + ";selected=" +
+                handler.Selected + ";callback=" + callback + ";source=" +
+                sourceFighter + "/" + sourceGunslinger + ";replacement=" +
+                replacementFighter + "/" + replacementGunslinger +
+                ";facts=" + facts;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("broad-native-replacement",
+                    "handler/callback; source Fighter 1; replacement Gunslinger 1",
+                    observed, handler.Invoked && handler.Selected && callback &&
+                        sourceFighter == 1 && sourceGunslinger == 0 &&
+                        replacementFighter == 0 && replacementGunslinger == 1,
+                    "Player.RespecCompanion plus exact initiation handler and Commit"),
+                Assertion("broad-replacement-facts",
+                    "proficiency and grit installed", observed, facts,
+                    "replacement descriptor exact facts"),
+                Assertion("external-isolation",
+                    "party, units, companions, cross-scene, inventory, and money restored",
+                    "cleaned=" + cleaned, cleaned,
+                    "handler unsubscription, grant rollback, and entity disposal in finally"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
