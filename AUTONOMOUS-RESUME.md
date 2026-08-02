@@ -429,14 +429,15 @@ mechanical/isolation assertions. The exact package/DLL hashes are
 `412fa07d8831d5d07a5ac009278ad845460f7a5327ee421df2a26e5ea6cb620e` /
 `05859c0ef58adc52e67bbb05eea3faebed389c016c8ceb4f6c203c3f83f72622`.
 Curated Sprint 50 evidence is committed as `b84063f`. Sprint 51 Expert Loading
-is source-qualified in the worktree at version `0.0.51`: the level-11 feature,
-free-action pre-shot ability, unit marker, exact first-evaluation suppression,
-fail-closed ordinary explosion path, and guarded save-free scenario are
-complete. The full validator chain, 29 dispatch checks, PowerShell safety
-suites, 784/784 domain tests, clean Release build, strict package validation,
-and WhatIf pass. Audit and commit the reconstructable checkpoint, rebuild the
-exact commit, require mod-load PASS, and run two fresh-process feature PASS
-runs. Continue immediately to Lightning Reload afterward.
+is runtime-qualified on exact source commit `79731d1` at version `0.0.51`.
+Exact mod load `20260802T0343348846193Z-mod-load-smoke` and independent feature
+runs `20260802T0344552821282Z-disposable-gunslinger-expert-loading` and
+`20260802T0347194832064Z-disposable-gunslinger-expert-loading` passed. The
+exact package/DLL hashes are
+`81a00010bf9a38bf4f7be4d22409159dd828172113e71f48e33296dd172d09bd` /
+`3e34b55954328cbbfdc33ed6b8745e83addea2735887ea948287db7a62e15f88`.
+Commit the curated Sprint 51 evidence and continue immediately to Lightning
+Reload.
 
 Sprint 46 Targeting Torso is runtime-qualified on exact commit `cc629a5`.
 Mod-load run `20260802T0209076152067Z-14117474bdfb443a988299a617157502`

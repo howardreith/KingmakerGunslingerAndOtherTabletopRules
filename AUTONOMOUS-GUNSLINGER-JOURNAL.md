@@ -1977,3 +1977,21 @@
   and is not recoverable.
 - Next: commit the reconstructable source checkpoint, rebuild the exact commit,
   require mod-load PASS, and run two independent Expert Loading PASS processes.
+
+## 2026-08-01 Sprint 51 Expert Loading runtime qualification
+
+- The reconstructable source checkpoint is commit `79731d1`. Its exact package
+  SHA-256 is `81a00010bf9a38bf4f7be4d22409159dd828172113e71f48e33296dd172d09bd`;
+  its DLL SHA-256 is
+  `3e34b55954328cbbfdc33ed6b8745e83addea2735887ea948287db7a62e15f88`.
+- Guarded exact-commit mod load passed in
+  `20260802T0343348846193Z-mod-load-smoke`. Independent fresh-process feature
+  runs `20260802T0344552821282Z-disposable-gunslinger-expert-loading` and
+  `20260802T0347194832064Z-disposable-gunslinger-expert-loading` both passed.
+- Each feature run proved the level-11 feature and ability, exact one-grit
+  suppression, empty/Broken retention, consumed marker, zero scheduled burst,
+  and a no-grit control that became Wrecked and scheduled exactly one burst.
+  Cleanup and external-isolation assertions passed; no save was loaded or
+  mutated.
+- Continue immediately to Lightning Reload. Sprint 51 is a checkpoint, not a
+  stopping condition.

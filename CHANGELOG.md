@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.51 — Sprint 51 Expert Loading (in progress)
+## 0.0.51 — Sprint 51 Expert Loading
 
 - Adds the level-eleven free-action pre-shot Expert Loading adaptation.
 - An armed Broken early-firearm misfire spends exactly 1 grit, remains Broken,
