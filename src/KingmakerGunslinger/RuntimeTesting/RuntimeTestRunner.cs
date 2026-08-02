@@ -5657,8 +5657,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 damageAfter = target.Damage;
                 confusedAfter = target.Descriptor.State.HasCondition(
                     UnitCondition.Confusion);
-                if (result.Attack != null && result.Attack.MeleeDamage != null)
-                    nativeDamage = result.Attack.MeleeDamage.Damage;
+                nativeDamage = damageAfter - damageBefore;
                 if (result.Buff != null)
                 {
                     durationSeconds = result.Buff.TimeLeft.TotalSeconds;
@@ -5710,7 +5709,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result != null && result.Hit && gritAfter == gritBefore - 1 &&
                     roundsBefore == 1 && roundsAfter == 0 &&
                     nativeDamage > 0,
-                    "native RuleAttackWithWeapon and firearm pipeline"),
+                    "authoritative target damage delta after native firearm delivery"),
                 Assertion("targeting-head-rider",
                     "one-round native Confusion on non-immune hit", observed,
                     result != null && result.Rider != null &&

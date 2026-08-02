@@ -58,7 +58,8 @@ def validate(root: Path, version: str = VERSION,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs"),
         ["RunDisposableGunslingerTargetingHead",
          "targeting-head-progression", "targeting-head-attack",
-         "targeting-head-rider"], "Sprint 45 guarded scenario")
+         "targeting-head-rider", "damageAfter - damageBefore"],
+        "Sprint 45 guarded scenario")
     print("Sprint 45 source invariant validation passed with inherited Sprint 44 checks.")
 
 def main() -> int:
