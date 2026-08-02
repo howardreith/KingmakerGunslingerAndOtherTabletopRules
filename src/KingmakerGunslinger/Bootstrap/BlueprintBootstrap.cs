@@ -598,6 +598,11 @@ namespace KingmakerGunslinger.Bootstrap
             }
             catch (Exception initializationException)
             {
+                context.Logger.Failure(
+                    "blueprints",
+                    "initialize.root-cause",
+                    "Blueprint initialization reached a failing owned operation before rollback.",
+                    initializationException);
                 if (classPublication != null)
                 {
                     try

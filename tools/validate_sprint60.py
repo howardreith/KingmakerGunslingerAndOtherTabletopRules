@@ -41,6 +41,16 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),
         ["PlayerFacingPresentation.Apply(progression, characterClass.Icon)"],
         "Sprint 60 bootstrap integration")
+    bootstrap = read(root,
+        "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs")
+    require_tokens(bootstrap,
+        ['"initialize.root-cause"', "initializationException",
+         "registry.RollbackAll()"],
+        "Sprint 60 pre-rollback root-cause diagnostic")
+    if bootstrap.index('"initialize.root-cause"') > bootstrap.index(
+            "registry.RollbackAll()"):
+        raise RuntimeError(
+            "Sprint 60 root-cause diagnostic must precede rollback")
     require_tokens(read(root,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs") + read(root,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
