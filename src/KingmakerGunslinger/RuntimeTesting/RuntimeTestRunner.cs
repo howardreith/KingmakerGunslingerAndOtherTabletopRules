@@ -22,6 +22,7 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Ammunition;
+using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
@@ -316,6 +317,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -362,6 +364,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts)
                 {
                     Complete(RunFirearmItemLifecycleContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching)
+                {
+                    Complete(RunDisposableProductionFirearmSwitching());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2791,6 +2799,125 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableProductionFirearmSwitching()
+        {
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            ItemEntityWeapon first = null, second = null;
+            ExactEquippedFirearmContext firstContext = null, secondContext = null,
+                ambiguousContext = null;
+            string firstReason = null, secondReason = null, ambiguousReason = null;
+            bool firstResolved = false, secondResolved = false,
+                ambiguousResolved = true, cleaned = false;
+            FirearmState firstState = null, secondState = null;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                first = new ItemEntityWeapon(pistol);
+                second = new ItemEntityWeapon(pistol);
+                FirearmRuntimeState.Service.Set(first, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                FirearmRuntimeState.Service.Set(second, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+
+                unit.Body.PrimaryHand.InsertItem(first);
+                firstResolved = ExactEquippedFirearmResolver.TryResolve(
+                    unit.Descriptor, out firstContext, out firstReason);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                unit.Body.PrimaryHand.InsertItem(second);
+                secondResolved = ExactEquippedFirearmResolver.TryResolve(
+                    unit.Descriptor, out secondContext, out secondReason);
+                unit.Body.PrimaryHand.RemoveItem(false);
+
+                firstState = FirearmRuntimeState.Service.GetOrCreate(first)
+                    .Repository.State;
+                secondState = FirearmRuntimeState.Service.GetOrCreate(second)
+                    .Repository.State;
+                unit.Body.PrimaryHand.InsertItem(first);
+                unit.Body.SecondaryHand.InsertItem(second);
+                ambiguousResolved = ExactEquippedFirearmResolver.TryResolve(
+                    unit.Descriptor, out ambiguousContext, out ambiguousReason);
+            }
+            finally
+            {
+                if (unit != null && unit.Body != null)
+                {
+                    if (unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    if (unit.Body.SecondaryHand.MaybeItem != null)
+                        unit.Body.SecondaryHand.RemoveItem(false);
+                }
+                if (first != null)
+                {
+                    FirearmRuntimeState.Service.Forget(first);
+                    first.Dispose();
+                }
+                if (second != null)
+                {
+                    FirearmRuntimeState.Service.Forget(second);
+                    second.Dispose();
+                }
+                if (unit != null) unit.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit));
+            }
+            string observed = "first=" + firstResolved + "/" + firstReason +
+                ";second=" + secondResolved + "/" + secondReason +
+                ";states=" + firstState + "|" + secondState +
+                ";ambiguous=" + ambiguousResolved + "/" + ambiguousReason;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("first-identical-firearm-selected",
+                    "first exact pistol with loaded/Normal state", observed,
+                    firstResolved && firstContext != null &&
+                        ReferenceEquals(firstContext.Weapon, first) &&
+                        firstContext.Firearm.Repository.State.LoadedRounds == 1,
+                    "exact equipped-firearm resolver and item reference"),
+                Assertion("second-identical-firearm-selected",
+                    "second exact pistol with empty/Broken state", observed,
+                    secondResolved && secondContext != null &&
+                        ReferenceEquals(secondContext.Weapon, second) &&
+                        secondContext.Firearm.Repository.State.LoadedRounds == 0 &&
+                        secondContext.Firearm.Repository.State.Condition ==
+                            FirearmCondition.Broken,
+                    "native hand-slot switch and exact item reference"),
+                Assertion("identical-firearm-state-isolation",
+                    "first remains loaded/Normal; second remains empty/Broken", observed,
+                    firstState != null && firstState.LoadedRounds == 1 &&
+                        firstState.Condition == FirearmCondition.Normal &&
+                        secondState != null && secondState.LoadedRounds == 0 &&
+                        secondState.Condition == FirearmCondition.Broken,
+                    "item-owned token repositories after two switches"),
+                Assertion("dual-firearm-ambiguity-fails-closed",
+                    "two distinct equipped firearms reject exact selection", observed,
+                    !ambiguousResolved && ambiguousContext == null &&
+                        ambiguousReason != null && ambiguousReason.Contains(
+                            "More than one distinct marked firearm"),
+                    "primary and secondary native hand slots"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
+                    cleaned, "detached unit/items disposed and token state forgotten"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private static bool ObserveFallback(string label,
