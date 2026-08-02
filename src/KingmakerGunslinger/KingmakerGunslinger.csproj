@@ -176,6 +176,14 @@
     <Compile Include="Deeds\StopBleedingRuntimeDiagnostics.cs" />
     <Compile Include="Deeds\StopBleedingService.cs" />
     <Compile Include="Deeds\StopBleedingStatus.cs" />
+    <Compile Include="Deeds\StartlingShotAbilityLogic.cs" />
+    <Compile Include="Deeds\StartlingShotDecision.cs" />
+    <Compile Include="Deeds\StartlingShotRequest.cs" />
+    <Compile Include="Deeds\StartlingShotResult.cs" />
+    <Compile Include="Deeds\StartlingShotRuntime.cs" />
+    <Compile Include="Deeds\StartlingShotRuntimeDiagnostics.cs" />
+    <Compile Include="Deeds\StartlingShotService.cs" />
+    <Compile Include="Deeds\StartlingShotStatus.cs" />
     <Compile Include="Deeds\QuickClearAbilityLogic.cs" />
     <Compile Include="Deeds\QuickClearRuntime.cs" />
     <Compile Include="Deeds\QuickClearRuntimeDiagnostics.cs" />
@@ -186,6 +194,7 @@
     <Compile Include="Blueprints\GunslingerInitiativeBlueprints.cs" />
     <Compile Include="Blueprints\PistolWhipBlueprints.cs" />
     <Compile Include="Blueprints\UtilityShotBlueprints.cs" />
+    <Compile Include="Blueprints\StartlingShotBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />

@@ -79,6 +79,10 @@ No genuine human-input hard stop is currently established.
   Exact mod load and two independent guarded mixed/all-misfire runs passed.
   Startling Shot is the next engineering gate, not a human-input blocker.
 
+- Sprint 44 Startling Shot is source-qualified at version `0.0.44`. Exact mod
+  load and two independent guarded native-flat-footed runs remain an
+  engineering gate, not a human-input blocker.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

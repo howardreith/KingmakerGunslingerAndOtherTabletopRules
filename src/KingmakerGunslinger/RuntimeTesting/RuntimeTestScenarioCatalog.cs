@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-gun-training";
         internal const string DisposableGunslingerDeadShot =
             "disposable-gunslinger-dead-shot";
+        internal const string DisposableGunslingerStartlingShot =
+            "disposable-gunslinger-startling-shot";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -98,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerBonusFeats,
                 DisposableGunslingerGunTraining,
                 DisposableGunslingerDeadShot,
+                DisposableGunslingerStartlingShot,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.0.44 — Sprint 44 Startling Shot (in progress)
+
+- Adds the level-seven standard-action Startling Shot deed using native weapon
+  targeting, one item-owned chamber, positive-but-unspent grit, no attack or
+  damage event, and a one-round native flat-footed condition.
+- Adds atomic firearm/buff rollback, focused policy tests, stable production
+  blueprints, and a guarded save-free runtime scenario.
+
+## 0.0.43 — Sprint 43 Dead Shot
+
+- Added and runtime-qualified the full-round BAB-iterative Dead Shot deed with
+  one discharge, base-dice-only hit aggregation, adjusted native critical
+  confirmation, and all-roll aggregate misfire.
+
 ## 0.0.42 — Sprint 42 Gun Training (in progress)
 
 - Adds cumulative firearm-kind selections at levels 5, 9, 13, and 17.

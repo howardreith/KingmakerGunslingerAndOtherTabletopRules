@@ -22,7 +22,8 @@ namespace KingmakerGunslinger.Blueprints
             GunslingerDodgeBlueprintSet dodge, QuickClearBlueprintSet quickClear,
             NimbleBlueprintSet nimble, BlueprintFeature initiative,
             PistolWhipBlueprintSet pistolWhip, UtilityShotBlueprintSet utilityShot,
-            GunTrainingBlueprintSet gunTraining, DeadShotBlueprintSet deadShot)
+            GunTrainingBlueprintSet gunTraining, DeadShotBlueprintSet deadShot,
+            StartlingShotBlueprintSet startlingShot)
         {
             CharacterClass = characterClass ?? throw new ArgumentNullException("characterClass");
             Progression = progression ?? throw new ArgumentNullException("progression");
@@ -37,6 +38,8 @@ namespace KingmakerGunslinger.Blueprints
             UtilityShot = utilityShot ?? throw new ArgumentNullException("utilityShot");
             GunTraining = gunTraining ?? throw new ArgumentNullException("gunTraining");
             DeadShot = deadShot ?? throw new ArgumentNullException("deadShot");
+            StartlingShot = startlingShot ??
+                throw new ArgumentNullException("startlingShot");
         }
         internal BlueprintCharacterClass CharacterClass { get; private set; }
         internal BlueprintProgression Progression { get; private set; }
@@ -51,7 +54,8 @@ namespace KingmakerGunslinger.Blueprints
         internal UtilityShotBlueprintSet UtilityShot { get; private set; }
         internal GunTrainingBlueprintSet GunTraining { get; private set; }
         internal DeadShotBlueprintSet DeadShot { get; private set; }
-        internal int Count { get { return 4 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count; } }
+        internal StartlingShotBlueprintSet StartlingShot { get; private set; }
+        internal int Count { get { return 4 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count; } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -143,6 +147,8 @@ namespace KingmakerGunslinger.Blueprints
             UtilityShotBlueprintSet utilityShot = UtilityShotBlueprints.Register(registry);
             GunTrainingBlueprintSet gunTraining = GunTrainingBlueprints.Register(registry);
             DeadShotBlueprintSet deadShot = DeadShotBlueprints.Register(registry);
+            StartlingShotBlueprintSet startlingShot =
+                StartlingShotBlueprints.Register(registry);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
@@ -158,12 +164,13 @@ namespace KingmakerGunslinger.Blueprints
             foreach (int level in Classes.GunTrainingProgression.Levels)
                 progression.LevelEntries[level - 1].Features.Add(gunTraining.Selection);
             progression.LevelEntries[6].Features.Add(deadShot.Feature);
+            progression.LevelEntries[6].Features.Add(startlingShot.Feature);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
             return new GunslingerClassBlueprintSet(characterClass, progression,
                 proficiencies, grit, deadeye, dodge, quickClear, nimble, initiative,
-                pistolWhip, utilityShot, gunTraining, deadShot);
+                pistolWhip, utilityShot, gunTraining, deadShot, startlingShot);
         }
 
         internal static GunslingerClassCatalogPublication Publish(

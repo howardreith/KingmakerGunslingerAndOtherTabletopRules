@@ -503,6 +503,30 @@
       "status": "active",
       "milestone": "Sprint 43",
       "notes": "Full-round BAB-iterative Dead Shot with one discharge and aggregate damage, critical, and misfire resolution."
+    },
+    {
+      "symbol": "KMG.Deeds.StartlingShotFeature",
+      "guid": "3a30677e79454992a498588e674622ac",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Sprint 44",
+      "notes": "Level-seven Startling Shot feature granting the production standard-action deed."
+    },
+    {
+      "symbol": "KMG.Deeds.StartlingShotAbility",
+      "guid": "19a40245da23459ba478e6333df031c8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Sprint 44",
+      "notes": "Intentional no-damage firearm miss consuming one chamber while positive grit is retained."
+    },
+    {
+      "symbol": "KMG.Deeds.StartlingShotFlatFootedBuff",
+      "guid": "816825ffcd7a4ed18288bb82bfad2805",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Sprint 44",
+      "notes": "One-round native LoseDexterityToAC condition applied by Startling Shot."
     }
   ]
 }

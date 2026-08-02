@@ -1654,3 +1654,27 @@
   `4->3->3`, and exact detached-state cleanup.
 - Sprint 43 is runtime-qualified. Continue immediately to level-seven
   Startling Shot; the checkpoint is not a stopping condition.
+
+## 2026-08-01 Sprint 44 Startling Shot source qualification
+
+- Authority requires at least one grit without expenditure, a standard-action
+  intentional firearm miss, no damage, and flat-footed state until the start
+  of the target's next turn. The recorded Kingmaker adaptation uses native
+  weapon-range enemy targeting and a one-round `LoseDexterityToAC` buff; the
+  deliberate miss creates no attack or damage rule event.
+- Added stable level-seven feature, ability, and buff blueprints. Delivery
+  consumes exactly one item-owned chamber and zero grit. Failure after
+  discharge removes the new buff and restores the exact prior firearm state.
+- Added three focused policy cases; all 765 domain/reflection tests pass.
+  Sprint 44 plus inherited repository validation, exact-reference Release
+  compilation, build-output checks, and strict standalone package validation
+  pass. Runtime request tests pass 19 checks and preflight passes 42 checks.
+- The guarded save-free scenario checks progression/action/targeting, one
+  chamber, unchanged grit and HP, native `RuleCheckTargetFlatFooted`, one-round
+  duration, diagnostics, and exact detached cleanup without save APIs.
+- Current source candidate package/DLL SHA-256 are
+  `6492b8f7bbc7dd27189ac663c4d7065f0f88839ae8950575c603af7b907e7d8c` /
+  `c2e8ad3afd24a1dc2c62405a04a6384c0ae967931c5a840a7b871a36859315a9`.
+- Next action: finish dispatcher/parser/WhatIf gates, commit the source
+  checkpoint, require exact mod load, and run two independent Startling Shot
+  PASS processes. Sprint 44 is not a stopping condition.

@@ -8,15 +8,15 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited HEAD: `fdd5d7c` (Sprint 43 Dead Shot fixture correction).
+- Audited HEAD: `c4683ba` (Sprint 43 runtime qualification evidence).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 43 Dead Shot is runtime-qualified. The level-seven
-  full-round ability uses BAB-native probes, one item-owned discharge/damage
-  delivery, base-dice-only hit aggregation, one adjusted native critical
-  confirmation, and all-roll aggregate misfire. Record the exact runtime
-  evidence, then advance immediately to level-seven Startling Shot.
-- Version: `0.0.43`.
+- Current checkpoint: Sprint 44 Startling Shot is source-qualified. The
+  level-seven standard-action weapon ability requires positive grit without
+  spending it, consumes one item-owned chamber, intentionally emits no attack
+  or damage event, and applies a one-round native flat-footed condition. Commit
+  the source checkpoint, then run exact mod load and two guarded feature runs.
+- Version: `0.0.44`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
@@ -397,8 +397,9 @@ isolation, and observed no save write.
 
 ## Next action
 
-Commit the Sprint 43 runtime evidence, then inspect and implement the next
-incomplete fidelity row, level-seven Startling Shot. Preserve the Dodge movement
+Commit the reconstructable Sprint 44 source checkpoint, require exact mod load,
+and run two fresh-process `disposable-gunslinger-startling-shot` qualifications.
+Then record evidence and advance to Targeting. Preserve the Dodge movement
 alternative as a documented pending adaptation until deterministic destination
 selection is safe. Broad
 first-level `Commit` and native replacement callbacks remain deferred until

@@ -281,6 +281,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStopBleeding &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBonusFeats &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGunTraining &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -428,6 +429,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerDeadShot)
                 {
                     Complete(RunDisposableGunslingerDeadShot());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerStartlingShot)
+                {
+                    Complete(RunDisposableGunslingerStartlingShot());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3846,6 +3853,146 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "item state forgotten and detached units disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerStartlingShot()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            StartlingShotResult result = null;
+            int gritBefore = -1, gritAfter = -1;
+            int damageBefore = -1, damageAfter = -1;
+            int roundsBefore = -1, roundsAfter = -1;
+            bool flatBefore = false, flatAfter = false, nativeFlatAfter = false;
+            double durationSeconds = -1d;
+            bool cleaned = false;
+            string stage = "blueprint-contract";
+            StartlingShotRuntimeDiagnostics.Reset();
+            int levelSevenCount = gunslinger.Progression.LevelEntries[6].Features
+                .Count(value => ReferenceEquals(value,
+                    gunslinger.StartlingShot.Feature));
+            AddCondition condition = gunslinger.StartlingShot.FlatFootedBuff
+                .ComponentsArray.OfType<AddCondition>().Single();
+            bool blueprintContract = levelSevenCount == 1 &&
+                gunslinger.StartlingShot.Ability.ActionType ==
+                    UnitCommand.CommandType.Standard &&
+                !gunslinger.StartlingShot.Ability.IsFullRoundAction &&
+                gunslinger.StartlingShot.Ability.Range == AbilityRange.Weapon &&
+                gunslinger.StartlingShot.Ability.CanTargetEnemies &&
+                condition.Condition == UnitCondition.LoseDexterityToAC;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 2);
+                gritBefore = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                damageBefore = target.Damage;
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                roundsBefore = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                flatBefore = target.Descriptor.State.HasCondition(
+                    UnitCondition.LoseDexterityToAC);
+
+                stage = "intentional-miss-delivery";
+                result = StartlingShotRuntime.Execute(attacker.Descriptor, target,
+                    gunslinger.StartlingShot.FlatFootedBuff, null);
+                roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                gritAfter = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                damageAfter = target.Damage;
+                flatAfter = target.Descriptor.State.HasCondition(
+                    UnitCondition.LoseDexterityToAC);
+                durationSeconds = result.Buff.TimeLeft.TotalSeconds;
+                var check = new RuleCheckTargetFlatFooted(attacker, target);
+                Rulebook.Trigger(check);
+                nativeFlatAfter = check.IsFlatFooted;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Startling Shot failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (result != null && result.Buff != null && target != null)
+                    target.Descriptor.Buffs.RemoveFact(result.Buff);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (target != null) target.Damage = Math.Max(0, damageBefore);
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
+                    (target == null || !ContainsReference(allUnits, target));
+            }
+            string observed = "rounds=" + roundsBefore + "->" + roundsAfter +
+                ";grit=" + gritBefore + "->" + gritAfter + ";damage=" +
+                damageBefore + "->" + damageAfter + ";flat=" + flatBefore +
+                "->" + flatAfter + ";nativeFlat=" + nativeFlatAfter +
+                ";durationSeconds=" + durationSeconds.ToString("F3",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";applied=" + StartlingShotRuntimeDiagnostics.Applied +
+                ";rejected=" + StartlingShotRuntimeDiagnostics.Rejected +
+                ";faults=" + StartlingShotRuntimeDiagnostics.Faults;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("startling-shot-progression",
+                    "level 7 standard-action weapon ability and native flat-footed buff",
+                    observed, blueprintContract,
+                    "production progression and BlueprintAbility/BlueprintBuff contracts"),
+                Assertion("startling-shot-delivery",
+                    "one chamber, zero grit, zero damage",
+                    observed, result != null && result.Decision.ShouldApply &&
+                    roundsBefore == 1 && roundsAfter == 0 && gritBefore > 0 &&
+                    gritAfter == gritBefore && damageAfter == damageBefore,
+                    "item-owned discharge without attack or damage event"),
+                Assertion("startling-shot-flat-footed",
+                    "native LoseDexterityToAC for one round",
+                    observed, !flatBefore && flatAfter && nativeFlatAfter &&
+                    durationSeconds > 0d && durationSeconds <= 6.1d,
+                    "timed BlueprintBuff and RuleCheckTargetFlatFooted"),
+                Assertion("startling-shot-diagnostics",
+                    "one apply, no rejection or fault", observed,
+                    StartlingShotRuntimeDiagnostics.Applied == 1 &&
+                    StartlingShotRuntimeDiagnostics.Rejected == 0 &&
+                    StartlingShotRuntimeDiagnostics.Faults == 0,
+                    "narrow runtime diagnostics"),
+                Assertion("external-isolation",
+                    "unchanged party and global-unit snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "buff removed, item state forgotten, disposables disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
