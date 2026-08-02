@@ -2,6 +2,15 @@
 
 No genuine human-input hard stop is currently established.
 
+## 2026-08-02 Sprint 61 vendor reference investigation (resolved)
+
+- Direct-cast and speculative `Get()` resolver attempts failed closed because
+  `LootItemsPackFixed.m_Item` is a `LootItem` wrapper.
+- The mission-required mode change used non-invoking metadata observation to
+  prove the wrapper's exact read-only `Item` property, then safely resolved all
+  native entries. Production qualification passed twice on `c2fd27b`.
+- This is resolved and is not a human-input blocker.
+
 ## 2026-08-01 disposable respec cleanup investigation (resolved)
 
 - Exact metadata observation on `dd85431` passed twice and proved

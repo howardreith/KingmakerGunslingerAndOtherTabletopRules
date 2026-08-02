@@ -13,6 +13,12 @@ excluded; and the unchanged 20-level progression is organized into six native
 UI groups. ADR-0007's inherited Early Pistol/Light Crossbow icon is the
 fail-closed fallback because installed Fighter class/progression icons are null.
 
+Sprint 61 runtime-qualified the supporting acquisition adaptation on `c2fd27b`:
+the exact capital Jhod shared-vendor table appends one each of the four
+player-fireable firearms and 99 each of powder, balls, and repair kits using
+observed native quantity precedents. Native entries and prices are preserved;
+Blunderbuss remains unavailable pending scatter qualification.
+
 | Level | Feature | Classification | Current state | Required disposition / adaptation question |
 |---|---|---|---|---|
 | 1 | Weapon/armor/firearm proficiencies | EXACT | Native level-one preview contains exactly one production aggregate plus exact simple, martial, light-armor, and firearm proficiency facts; source isolation and cleanup reproduced twice | Preserve through creation commit, level-up, multiclass, and respec |

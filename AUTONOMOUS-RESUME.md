@@ -8,17 +8,28 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `adcb030` (Sprint 60 presentation runtime qualification).
+- Audited source HEAD: `c2fd27b` (Sprint 61 acquisition runtime qualification).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
-- Current checkpoint: Sprint 60 presentation is runtime-qualified; begin Sprint
-  61 later equipment acquisition/economy while the independent Death's Shot and
-  Targeting Arms authority blockers remain recorded.
+- Current checkpoint: Sprint 61 later equipment acquisition is runtime-qualified;
+  re-audit the coverage matrix and select the highest-dependency incomplete
+  independent row while Death's Shot and Targeting Arms authority blockers
+  remain recorded.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.
 
 ## Last runtime evidence
+
+- Acquisition exact source `c2fd27b` passed mod load at
+  `20260802T0931384431105Z-mod-load-smoke`. Independent PASS runs
+  `20260802T0932570144693Z-observe-vendor-table-contracts` and
+  `20260802T0934221001134Z-observe-vendor-table-contracts` both observed 58
+  capital table entries, seven exact Gunslinger entries, correct native-derived
+  quantities, zero Blunderbuss entries, and no save/shop interaction.
+  Package/DLL SHA-256 are
+  `6bbd63bf662197b540684b09cd4a84eebe275eb210ad86804fdc736a6d9f0819` /
+  `e31962312cc583eb83cdb5e27645816f90c1acf409360243adfa687654288169`.
 
 - Presentation exact source `adcb030` passed mod load at
   `20260802T0838152303512Z-mod-load-smoke`. Independent PASS runs

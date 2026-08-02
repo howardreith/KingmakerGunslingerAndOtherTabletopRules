@@ -2342,3 +2342,30 @@
   non-initiating installed-contract observer to prove exact table identities,
   content shape, duplicate/restock behavior, and rollback before implementation.
 - Next action: implement and source-qualify that exact vendor-table observer.
+
+## 2026-08-02 Sprint 61 later equipment acquisition qualification
+
+- Read-only observer checkpoints mapped 43 shared vendor tables, 26 direct
+  associations, and the exact capital Jhod route. After two incorrect item
+  resolver theories failed closed, metadata-only commit `04eec65` proved
+  `LootItemsPackFixed.m_Item` is a native `LootItem` wrapper with read-only
+  `Item`; `f80480d` then resolved exact item identities safely.
+- Stock-pattern commit `f3b113d` observed installed quantity authority:
+  non-stackable count one occurs 498 times; the target capital table uses 99
+  for 50 ordinary stackables and 2000 only for Diamond Dust.
+- Transaction checkpoint `7242f75` added append-order, idempotence,
+  ambiguity, and rollback tests. Production commit `c2fd27b` publishes four
+  player-fireable firearms at one each and three consumables at 99 each,
+  retaining 51 native entries and excluding Blunderbuss.
+- Complete validation passes 831/831 tests, clean exact-reference Release
+  build, strict package validation, 38 request checks, and 80 preflight checks.
+- Exact mod load `20260802T0931384431105Z-mod-load-smoke` passed. Independent
+  PASS runs `20260802T0932570144693Z-observe-vendor-table-contracts` and
+  `20260802T0934221001134Z-observe-vendor-table-contracts` observed 58 table
+  entries, seven exact project entries, zero invalid counts, and zero
+  Blunderbuss entries without shop, inventory, or save interaction.
+- Package/DLL SHA-256 are
+  `6bbd63bf662197b540684b09cd4a84eebe275eb210ad86804fdc736a6d9f0819` /
+  `e31962312cc583eb83cdb5e27645816f90c1acf409360243adfa687654288169`.
+- Sprint 61 is runtime-qualified. Next action: re-audit the coverage matrix and
+  select the highest-dependency incomplete independent row.
