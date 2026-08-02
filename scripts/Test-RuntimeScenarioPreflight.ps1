@@ -28,6 +28,7 @@ $expected = @(
     'observe-gunslinger-presentation',
     'observe-vendor-table-contracts',
     'observe-production-firearm-fallbacks',
+    'observe-firearm-item-lifecycle-contracts',
     'observe-character-creation-contracts',
     'disposable-descriptor-construction',
     'disposable-gunslinger-selection',
@@ -102,6 +103,10 @@ $fallbacks = Get-KmgRuntimeScenarioMetadata 'observe-production-firearm-fallback
 Assert-True (-not $fallbacks.RequiresManualInteraction) `
     'fallbacks-is-autonomous'
 Assert-True (-not $fallbacks.RequiresSaveName) 'fallbacks-is-save-free'
+$lifecycle = Get-KmgRuntimeScenarioMetadata 'observe-firearm-item-lifecycle-contracts'
+Assert-True (-not $lifecycle.RequiresManualInteraction) `
+    'lifecycle-is-autonomous'
+Assert-True (-not $lifecycle.RequiresSaveName) 'lifecycle-is-save-free'
 
 $entry = Get-KmgRuntimeScenarioMetadata 'observe-working-save-entry-action'
 Assert-True $entry.RequiresManualInteraction 'entry-requires-manual-interaction'

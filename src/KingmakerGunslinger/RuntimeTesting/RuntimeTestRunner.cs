@@ -310,6 +310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -350,6 +351,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts)
+                {
+                    Complete(RunFirearmItemLifecycleContractObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2518,6 +2525,153 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunFirearmItemLifecycleContractObservation()
+        {
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            ItemEntityWeapon source = null;
+            ItemEntityWeapon created = null;
+            FirearmState loaded = new FirearmState(FirearmState.CurrentSchemaVersion,
+                1, FirearmStateTokenCatalog.DiagnosticLeadBall,
+                FirearmCondition.Normal);
+            FirearmState sourceBeforeApply = null;
+            FirearmState sourceAfterApply = null;
+            FirearmState createdState = null;
+            int sourceTokensBeforeApply = -1;
+            int sourceTokensAfterApply = -1;
+            int sourceTokensAfterRemove = -1;
+            int createdTokens = -1;
+            bool removed = false;
+            string stage = "native-contracts";
+
+            Type collectionType = typeof(ItemEntity).Assembly.GetType(
+                "Kingmaker.Items.ItemsCollection", false, false);
+            Type factoryType = typeof(ItemEntity).Assembly.GetType(
+                "Kingmaker.Items.ItemsEntityFactory", false, false);
+            MethodInfo[] collectionMethods = collectionType == null
+                ? Array.Empty<MethodInfo>()
+                : collectionType.GetMethods(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic);
+            bool removeContract = collectionMethods.Any(value =>
+                value.Name == "Remove" && !value.IsStatic &&
+                value.GetParameters().Length == 1 &&
+                value.GetParameters()[0].ParameterType == typeof(ItemEntity));
+            bool extractContract = collectionMethods.Any(value =>
+                value.Name == "Extract" && !value.IsStatic &&
+                value.GetParameters().Length == 1 &&
+                value.GetParameters()[0].ParameterType == typeof(ItemEntity));
+            bool addBlueprintContract = collectionMethods.Any(value =>
+                value.Name == "Add" && !value.IsStatic &&
+                value.GetParameters().Length > 0 &&
+                typeof(BlueprintItem).IsAssignableFrom(
+                    value.GetParameters()[0].ParameterType));
+            bool factoryContract = factoryType != null &&
+                factoryType.GetMethods(BindingFlags.Static | BindingFlags.Public |
+                    BindingFlags.NonPublic).Any(value =>
+                        value.Name == "CreateEntity" &&
+                        value.GetParameters().Length > 0 &&
+                        typeof(BlueprintItem).IsAssignableFrom(
+                            value.GetParameters()[0].ParameterType));
+            MethodInfo applyEnchantments = typeof(ItemEntity).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                .Single(value => value.Name == "ApplyEnchantments" &&
+                    !value.IsStatic && !value.IsGenericMethodDefinition &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 0);
+
+            try
+            {
+                stage = "detached-source";
+                source = new ItemEntityWeapon(pistol);
+                FirearmRuntimeState.Service.Set(source, loaded);
+                sourceBeforeApply = FirearmRuntimeState.Service.GetOrCreate(source)
+                    .Repository.State;
+                sourceTokensBeforeApply = FirearmRuntimeState.ReadStateTokenIds(source).Count;
+
+                stage = "native-enchantment-rebuild";
+                applyEnchantments.Invoke(source, null);
+                sourceAfterApply = FirearmRuntimeState.Service.GetOrCreate(source)
+                    .Repository.State;
+                sourceTokensAfterApply = FirearmRuntimeState.ReadStateTokenIds(source).Count;
+
+                stage = "new-blueprint-item";
+                created = new ItemEntityWeapon(pistol);
+                createdState = FirearmRuntimeState.Service.GetOrCreate(created)
+                    .Repository.State;
+                createdTokens = FirearmRuntimeState.ReadStateTokenIds(created).Count;
+
+                stage = "exact-item-removal";
+                removed = FirearmRuntimeState.Repository.Remove(source);
+                sourceTokensAfterRemove = FirearmRuntimeState.ReadStateTokenIds(source).Count;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Save-free firearm lifecycle observation failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (source != null)
+                {
+                    try { FirearmRuntimeState.Repository.Remove(source); }
+                    catch { }
+                    source.Dispose();
+                }
+                if (created != null)
+                {
+                    try { FirearmRuntimeState.Repository.Remove(created); }
+                    catch { }
+                    created.Dispose();
+                }
+            }
+
+            string observed = "remove=" + removeContract +
+                ";extract=" + extractContract +
+                ";addBlueprint=" + addBlueprintContract +
+                ";factory=" + factoryContract +
+                ";sourceTokens=" + sourceTokensBeforeApply + "->" +
+                    sourceTokensAfterApply + "->" + sourceTokensAfterRemove +
+                ";createdTokens=" + createdTokens +
+                ";sourceState=" + sourceBeforeApply + "->" + sourceAfterApply +
+                ";createdState=" + createdState + ";removed=" + removed;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-item-lifecycle-contracts",
+                    "Remove(ItemEntity);Extract(ItemEntity);Add(BlueprintItem);CreateEntity(BlueprintItem)",
+                    observed, removeContract && extractContract &&
+                        addBlueprintContract && factoryContract,
+                    "exact installed ItemsCollection and ItemsEntityFactory methods"),
+                Assertion("same-item-token-reconstruction",
+                    "loaded state and one token survive ApplyEnchantments",
+                    observed, loaded.Equals(sourceBeforeApply) &&
+                        loaded.Equals(sourceAfterApply) &&
+                        sourceTokensBeforeApply == 1 && sourceTokensAfterApply == 1,
+                    "detached production firearm and reconciliation patch"),
+                Assertion("new-item-state-isolation",
+                    "new same-blueprint item is empty/Normal with zero tokens",
+                    observed, FirearmState.CreateEmpty().Equals(createdState) &&
+                        createdTokens == 0,
+                    "distinct ItemEntityWeapon constructed from production blueprint"),
+                Assertion("removed-item-state-does-not-transfer",
+                    "source token removed; distinct item remains empty/Normal",
+                    observed, removed && sourceTokensAfterRemove == 0 &&
+                        FirearmState.CreateEmpty().Equals(createdState) &&
+                        createdTokens == 0,
+                    "exact repository removal and distinct item isolation"),
+                Assertion("lifecycle-observation-isolation",
+                    "detached items only; no unit, collection, inventory, vendor, or save mutation",
+                    "detached production ItemEntityWeapon fixtures disposed", true,
+                    "no ItemsCollection method invocation and deterministic finally cleanup"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private static bool ObserveFallback(string label,

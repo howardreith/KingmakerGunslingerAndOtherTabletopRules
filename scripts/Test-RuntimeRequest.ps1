@@ -39,6 +39,13 @@ if ($fallbackRequest.scenario -cne 'observe-production-firearm-fallbacks' -or
     $fallbackRequest.parameters.Count -ne 0) {
     $failures.Add('fallback-presentation-request-valid')
 }
+$lifecycleRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-firearm-item-lifecycle-contracts' -ExpectedVersion '0.0.60' `
+    -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
+if ($lifecycleRequest.scenario -cne 'observe-firearm-item-lifecycle-contracts' -or
+    $lifecycleRequest.parameters.Count -ne 0) {
+    $failures.Add('firearm-lifecycle-request-valid')
+}
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'unknown' -ExpectedVersion '0.0.60' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'unknown-scenario'
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '' `
