@@ -2138,3 +2138,22 @@
   `01bf2d015c7aa1642407cb64fdd9596bba98f6b6f805afd7051ac3364f697205`.
 - Next: commit this reconstructable source checkpoint, rebuild the exact commit,
   require exact mod-load PASS, and run two independent feature launches.
+
+## 2026-08-02 Sprint 54 Menacing Shot runtime qualification
+
+- Exact source commit is `24a735e2e9b6b2261cf249515300ae1528311d06`.
+  Exact package SHA-256 is
+  `ee2c66a181d7b0b60d186da892c27ada2f23f863e7ebe26dfbc689a84bc0b05a`;
+  DLL SHA-256 is
+  `d94d2465fae2974370a2b803ecb057c168420550340e53dd4e2c7e5ebb2fcb27`.
+- Guarded exact mod load passed at
+  `20260802T0510264214475Z-mod-load-smoke`.
+- Independent feature runs
+  `20260802T0511440259050Z-disposable-gunslinger-menacing-shot` and
+  `20260802T0513015518728Z-disposable-gunslinger-menacing-shot` both passed.
+- Each run observed two level-fifteen/Wisdom-18 disposable Gunslingers with
+  DC 21 and caster level 15. Each delivery included self, changed grit `4->3`
+  and its loaded chamber `1->0`, applied native Frightened on the forced failed
+  Will save and native Shaken on the forced successful save, then disposed both
+  units without save or external-unit interaction.
+- Continue immediately to Slinger's Luck; Sprint 54 is a checkpoint only.
