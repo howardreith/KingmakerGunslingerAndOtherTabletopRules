@@ -2675,3 +2675,22 @@
 - The two-attempt limit still prohibits a third Targeting Head launch. Preserve
   the strong retained runtime evidence, keep the corrected observer
   source-qualified, and continue to an independent coverage item.
+
+## 2026-08-02 Sprint 78 save-free corrupt token preservation
+
+- Source `2505613` extended the detached production-firearm lifecycle observer
+  with two distinct registered native token enchantments on one Early Pistol.
+- Eight focused checks, inherited validation, 831/831 tests, 26 runner checks,
+  84 preflight checks, clean Release, and strict packaging passed.
+- Mod load `20260802T1205137472949Z` passed. First run
+  `20260802T1206373328455Z` exposed that the correct rejection is
+  `InvalidDataException`, not the observer's expected exception.
+- Repair `731ff07`, mod load `20260802T1209365380684Z`, and the second/final run
+  `20260802T1210579132106Z` passed reconstruction `1->1`, removal `1->0`, new
+  item isolation, corrupt rejection with tokens preserved `2->2`, and cleanup
+  without inventory or save mutation.
+- Exact repaired package/DLL SHA-256 are
+  `d9a7081ea6458ee3e0167a2d5fd60a6ac6623c5fcee04d7f7f5c7d1c270e199c` /
+  `746c369f8211216595c68d0a4f848e574b15a5b3b32d75c7c545dc8901754e1c`.
+- Do not run a third attempt. This is strong single-run evidence after one exact
+  observer repair, not two-run reproduction. Continue independently.

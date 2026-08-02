@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `4485dba` (Targeting Head damage-evidence correction).
+- Audited source HEAD: `731ff07` (save-free corrupt token preservation repair).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -56,6 +56,13 @@ definition of done or a listed genuine human-input hard stop.
   evidence proved `0 -> 5` damage plus hit, grit/chamber, Confusion, and cleanup.
   All source/build/package gates pass. Do not launch a third Targeting Head
   attempt without new authority; continue independently.
+- Latest lifecycle evidence: exact `731ff07` package/DLL hashes are
+  `d9a7081ea6458ee3e0167a2d5fd60a6ac6623c5fcee04d7f7f5c7d1c270e199c` /
+  `746c369f8211216595c68d0a4f848e574b15a5b3b32d75c7c545dc8901754e1c`.
+  Mod load `20260802T1209365380684Z` and final run
+  `20260802T1210579132106Z` passed reconstruction, removal, new-item isolation,
+  duplicate rejection/preservation `2->2`, and no inventory/save mutation.
+  Do not run a third attempt; continue independently.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

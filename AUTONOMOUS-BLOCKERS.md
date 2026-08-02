@@ -171,6 +171,12 @@ No genuine human-input hard stop is currently established.
   Two fresh-process observations proved 75 visible facts, one excluded hidden
   fact, zero incomplete facts, and six native UI groups. This is no longer an
   active blocker; later equipment acquisition is the next engineering gate.
+- Sprint 78 detached corruption handling has strong single-run evidence on
+  `731ff07`. The first run exposed only the exact exception type; the repaired
+  second/final run preserved two ambiguous native tokens while rejecting state
+  reconstruction. Do not run a third attempt. Live sale/restart qualification
+  remains behind the separate save-backed permission boundary, but independent
+  work remains available.
 - The authoritative firearm table labels blunderbuss range `special`; the
   immutable definition and marker vocabulary now represent that fact without a
   numeric value and ordinary-AC selection fails closed. Concrete scatter range
