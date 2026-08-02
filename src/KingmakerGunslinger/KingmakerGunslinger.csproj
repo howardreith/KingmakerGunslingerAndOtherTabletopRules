@@ -497,6 +497,7 @@
     <Compile Include="Scatter\ScatterGeometryDisposition.cs" />
     <Compile Include="Scatter\ScatterConeDistanceDecision.cs" />
     <Compile Include="Scatter\ScatterConeDistanceService.cs" />
+    <Compile Include="Scatter\NativeScatterConeTargetResolver.cs" />
     <Compile Include="Scatter\ScatterAttackRollObservation.cs" />
     <Compile Include="Scatter\ScatterAttackVolleyDecision.cs" />
     <Compile Include="Scatter\ScatterAttackVolleyService.cs" />

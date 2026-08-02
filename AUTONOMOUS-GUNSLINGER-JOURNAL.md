@@ -3038,3 +3038,14 @@
   delivery checkpoint passes.
 - Removed the resolved human-input file. Next: source-qualify and commit this
   authority slice, then implement the native scatter adapter.
+
+## 2026-08-02 Sprint 95 native scatter geometry
+
+- Added an exact native target resolver over the Sprint 94 15-foot decision,
+  `GameHelper.GetTargetsAround`, and
+  `AbilityDeliverProjectile.WouldTargetUnitCone`.
+- Native Kingmaker remains authoritative for 90-degree geometry, LOS,
+  corpulence, and boundary inclusion. The adapter rejects null/zero direction,
+  caster, and duplicate references.
+- Production remains locked. Next: compile/source-qualify this boundary, then
+  implement the one-discharge independent-attack transaction.
