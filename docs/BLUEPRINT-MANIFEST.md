@@ -2,8 +2,8 @@
 
 ## Sprint 55 status
 
-Sprint 105 extends the append-only contract to 137 stable identifiers: 136 active and one reserved. The five added active identities implement Death's Shot and its True Grit choice.
-Bootstrap validates and rolls back the complete one-hundred-thirty-six-blueprint transaction.
+Playtest 0.0.61 extends the append-only contract to 141 stable identifiers: 140 active and one reserved. Four hidden Reload Firearm variants provide free, move, standard, and full-round command costs beneath the existing stable player-facing parent.
+Bootstrap validates and rolls back the complete one-hundred-forty-blueprint transaction.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 

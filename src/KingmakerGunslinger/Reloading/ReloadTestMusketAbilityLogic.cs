@@ -6,6 +6,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Firearms;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Reloading
@@ -29,10 +30,14 @@ namespace KingmakerGunslinger.Reloading
         [SerializeField]
         private BlueprintItem m_LeadBall;
 
+        [SerializeField]
+        private EffectiveReloadAction m_Action;
+
         internal static ReloadTestMusketAbilityLogic Create(
             BlueprintItemWeapon testMusket,
             BlueprintItem blackPowder,
-            BlueprintItem leadBall)
+            BlueprintItem leadBall,
+            EffectiveReloadAction action)
         {
             if (testMusket == null)
             {
@@ -54,6 +59,7 @@ namespace KingmakerGunslinger.Reloading
             component.m_TestMusket = testMusket;
             component.m_BlackPowder = blackPowder;
             component.m_LeadBall = leadBall;
+            component.m_Action = action;
             component.ValidateConfiguration();
             return component;
         }
@@ -63,13 +69,16 @@ namespace KingmakerGunslinger.Reloading
             try
             {
                 ValidateConfiguration();
-                return ability != null &&
-                    ReloadTestMusketRuntime.Evaluate(
+                if (ability == null) return false;
+                ReloadTestMusketAvailability result = ReloadTestMusketRuntime.Evaluate(
                         ability.Caster,
                         m_TestMusket,
                         m_BlackPowder,
-                        m_LeadBall)
-                    .IsAvailable;
+                        m_LeadBall);
+                return result.IsAvailable && ReloadActionEconomy.Evaluate(
+                    result.Firearm.Definition,
+                    RapidReloadRuntime.HasMatchingChoice(ability.Caster,
+                        result.Firearm.Definition.Kind)) == m_Action;
             }
             catch
             {
@@ -135,7 +144,9 @@ namespace KingmakerGunslinger.Reloading
 
         internal void ValidateConfiguration()
         {
-            if (m_TestMusket == null || m_BlackPowder == null || m_LeadBall == null)
+            if (m_TestMusket == null || m_BlackPowder == null || m_LeadBall == null ||
+                !Enum.IsDefined(typeof(EffectiveReloadAction), m_Action) ||
+                m_Action == EffectiveReloadAction.Unknown)
             {
                 throw new InvalidOperationException(
                     "Reload Firearm has incomplete blueprint dependencies.");

@@ -783,6 +783,18 @@
     },
     {
       "symbol": "KMG.Classes.TrueGritDeathsShot", "guid": "0e96be083f894aa19ae9a8c9eeeff4fc", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 105", "notes": "Unit-owned Death's Shot True Grit choice."
+    },
+    {
+      "symbol": "KMG.Actions.ReloadFree", "guid": "41f90971f24a48ca87994f4fe4a46d80", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Hidden free-action Reload Firearm variant."
+    },
+    {
+      "symbol": "KMG.Actions.ReloadMove", "guid": "67545b4d9d104ac4af77c20cbb4d460a", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Hidden move-action Reload Firearm variant."
+    },
+    {
+      "symbol": "KMG.Actions.ReloadStandard", "guid": "9c4e73ca49be48d69030bfd2e34ea6c5", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Hidden standard-action Reload Firearm variant."
+    },
+    {
+      "symbol": "KMG.Actions.ReloadFullRound", "guid": "c75706201af544f68fa6e16af8295133", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Hidden full-round Reload Firearm variant."
     }
   ]
 }

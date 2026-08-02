@@ -24,10 +24,12 @@ def require_tokens(text: str, tokens: list[str], label: str) -> None:
 
 def validate(root: Path, version: str = VERSION,
              informational_version: str = INFORMATIONAL_VERSION,
-             test_count: int = TEST_COUNT) -> None:
+             test_count: int = TEST_COUNT,
+             active_blueprints: int = 136,
+             declared_blueprints: int = 137) -> None:
     root = root.resolve()
     validate_sprint59.validate(root, version, informational_version,
-                               test_count, 136, 137)
+                               test_count, active_blueprints, declared_blueprints)
     require_tokens(read(root, "planning/SPRINT-60-ENTRY-CRITERIA.md"),
         ["non-hidden feature or ability", "approved fallback icon",
          "Progression UI groups", "presentation metadata only"],

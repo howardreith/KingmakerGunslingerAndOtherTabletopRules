@@ -11,7 +11,8 @@ VERSION = "0.0.61"
 INFORMATIONAL_VERSION = "0.0.61-first-playtest-repair"
 
 def validate(root: Path) -> None:
-    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 841)
+    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 841,
+                               140, 141)
 
 def main() -> int:
     parser = argparse.ArgumentParser()
