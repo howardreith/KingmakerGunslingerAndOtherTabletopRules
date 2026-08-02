@@ -45,7 +45,7 @@ def main() -> int:
     run(
         [python, "-B", str(dispatcher), "--root", str(source)],
         0,
-        "dispatched version 0.0.55 to validate_sprint55.py",
+        "dispatched version 0.0.56 to validate_sprint56.py",
     )
     run([python, "-B", str(sprint44)], 0,
         "Sprint 55 source invariant validation passed")

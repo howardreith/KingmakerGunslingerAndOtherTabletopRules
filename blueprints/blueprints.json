@@ -673,6 +673,9 @@
     },
     {
       "symbol": "KMG.Deeds.SlingersLuckSkillCheckArmed", "guid": "e553eb5c573b4b178f4b973850f5a0e3", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Sprint 55", "notes": "Unit-owned skill-check reroll marker."
+    },
+    {
+      "symbol": "KMG.Deeds.CheatDeathFeature", "guid": "a8a316812d244e3498daf29ecf2be115", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Sprint 56", "notes": "Level-nineteen all-grit Cheat Death damage handler."
     }
   ]
 }

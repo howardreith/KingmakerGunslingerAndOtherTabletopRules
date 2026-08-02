@@ -300,6 +300,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMenacingShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSlingersLuckNativeRerolls &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -525,6 +526,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerSlingersLuck)
                 {
                     Complete(RunDisposableGunslingerSlingersLuck());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerCheatDeath)
+                {
+                    Complete(RunDisposableGunslingerCheatDeath());
                     return;
                 }
                 if (_request.Scenario ==
@@ -5156,6 +5163,86 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             throw new InvalidOperationException(
                 "No deterministic descending native d20 seed was found.");
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerCheatDeath()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData noGrit = null;
+            object controller = null;
+            int maxHp = -1, gritBefore = -1, gritAfter = -1, hpAfter = -1,
+                noGritHpAfter = -1;
+            bool cleaned = false;
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                noGrit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                AdvanceDisposableGunslinger(unit.Descriptor, gunslinger, 19,
+                    ref controller);
+                AdvanceDisposableGunslinger(noGrit.Descriptor, gunslinger, 19,
+                    ref controller);
+                unit.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
+                noGrit.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    noGrit.Descriptor.Resources.GetResourceAmount(
+                        gunslinger.Grit.Resource));
+                maxHp = unit.MaxHP;
+                gritBefore = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                var lethal = new RuleDealDamage(attacker, unit,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), maxHp + 10)));
+                Rulebook.Trigger(lethal);
+                hpAfter = unit.HPLeft;
+                gritAfter = unit.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                var unprevented = new RuleDealDamage(attacker, noGrit,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), noGrit.MaxHP + 10)));
+                Rulebook.Trigger(unprevented);
+                noGritHpAfter = noGrit.HPLeft;
+            }
+            finally
+            {
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
+                if (attacker != null) attacker.Dispose();
+                if (unit != null) unit.Dispose();
+                if (noGrit != null) noGrit.Dispose();
+                cleaned = true;
+            }
+            string observed = "maxHp=" + maxHp + ";grit=" + gritBefore +
+                "->" + gritAfter + ";hpAfter=" + hpAfter +
+                ";zeroGritHpAfter=" + noGritHpAfter + ";cleaned=" + cleaned;
+            bool progression = gunslinger.Progression.LevelEntries[18].Features
+                .Count(value => ReferenceEquals(value, gunslinger.CheatDeath)) == 1;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("cheat-death-native-lethal-damage",
+                    "completed native damage leaves exactly 1 HP and spends all grit",
+                    observed, hpAfter == 1 && gritBefore >= 1 && gritAfter == 0,
+                    "RuleDealDamage target feature handler"),
+                Assertion("cheat-death-zero-grit-gate",
+                    "zero grit does not prevent lethal damage", observed,
+                    noGritHpAfter <= 0, "independent detached unit"),
+                Assertion("cheat-death-level-and-cleanup",
+                    "level 19 grant and detached-unit disposal", observed,
+                    progression && cleaned, "production progression"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunObserveEvasiveNativeFeatures()

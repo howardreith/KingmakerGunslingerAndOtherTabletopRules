@@ -76,6 +76,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-slingers-luck-native-rerolls";
         internal const string DisposableGunslingerSlingersLuck =
             "disposable-gunslinger-slingers-luck";
+        internal const string DisposableGunslingerCheatDeath =
+            "disposable-gunslinger-cheat-death";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -137,6 +139,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerMenacingShot,
                 ObserveSlingersLuckNativeRerolls,
                 DisposableGunslingerSlingersLuck,
+                DisposableGunslingerCheatDeath,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,

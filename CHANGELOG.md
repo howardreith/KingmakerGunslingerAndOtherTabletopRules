@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.56 - Sprint 56 Cheat Death
+
+- Adds the level-19 Cheat Death deed using the completed native damage event.
+- Spends every remaining grit point (minimum one) and leaves the owner at exactly 1 HP.
+- Adds six focused policy cases; the complete suite is 813 tests.
+
 ## 0.0.55 - Sprint 55 Slinger's Luck
 
 - Adds separate level-fifteen saving-throw and skill-check reroll arming actions.

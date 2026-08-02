@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.55-s55-slingers-luck",
-  "version": "0.0.55",
+  "milestone": "0.0.56-s56-cheat-death",
+  "version": "0.0.56",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 102,
-    "activeEntryCount": 101,
+    "entryCount": 103,
+    "activeEntryCount": 102,
     "reservedEntryCount": 1,
-    "registrationCount": 101
+    "registrationCount": 102
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 807,
+    "testCount": 813,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

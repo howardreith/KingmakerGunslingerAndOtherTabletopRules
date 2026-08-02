@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-Sprint 55 extends the append-only contract to 102 stable identifiers: 101 active and one reserved.
+Sprint 56 extends the append-only contract to 103 stable identifiers: 102 active and one reserved.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 
@@ -81,7 +81,7 @@ verify exact object reference
 record symbol and log success
 ```
 
-If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete one-hundred-one-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
+If registration fails after a library mutation, the registry removes only the exact object it created. The current bootstrap rolls the complete one-hundred-two-blueprint transaction back in reverse order. It never assigns through the dictionary indexer and never intentionally replaces an existing game or mod blueprint.
 
 ## Current entries
 
@@ -150,6 +150,7 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Deeds.SlingersLuckSkillCheckAbility` | `f759c4b6fba246f4bb9f34b2c30ab7b5` | `BlueprintAbility` | Active | Fixed one-grit skill-check reroll arming action |
 | `KMG.Deeds.SlingersLuckSavingThrowArmed` | `841a2ca5e4994da48fadcc4f3a3c3579` | `BlueprintBuff` | Active | Unit-owned next-saving-throw marker |
 | `KMG.Deeds.SlingersLuckSkillCheckArmed` | `e553eb5c573b4b178f4b973850f5a0e3` | `BlueprintBuff` | Active | Unit-owned next-skill-check marker |
+| `KMG.Deeds.CheatDeathFeature` | `a8a316812d244e3498daf29ecf2be115` | `BlueprintFeature` | Active | Level-19 all-grit Cheat Death handler |
 
 The absence of a state-token enchantment represents canonical Empty/Normal state. The item-owned inert state-token carrier remains authoritative.
 
