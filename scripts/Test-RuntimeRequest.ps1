@@ -223,6 +223,15 @@ if ($slingersLuckRequest.scenario -cne
     $slingersLuckRequest.parameters.Count -ne 0) {
     $failures.Add('slingers-luck-request-valid')
 }
+$cheatDeathRequest = New-KmgRuntimeRequest `
+    -Scenario 'disposable-gunslinger-cheat-death' `
+    -ExpectedVersion '0.0.56' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($cheatDeathRequest.scenario -cne
+    'disposable-gunslinger-cheat-death' -or
+    $cheatDeathRequest.parameters.Count -ne 0) {
+    $failures.Add('cheat-death-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 31'
+Write-Host 'Runtime request source tests passed: 32'

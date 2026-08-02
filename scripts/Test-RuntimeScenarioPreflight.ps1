@@ -59,6 +59,7 @@ $expected = @(
     'disposable-gunslinger-menacing-shot',
     'observe-slingers-luck-native-rerolls',
     'disposable-gunslinger-slingers-luck',
+    'disposable-gunslinger-cheat-death',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -189,6 +190,12 @@ Assert-True (-not $slingersLuck.RequiresManualInteraction) `
     'slingers-luck-is-autonomous'
 Assert-True (-not $slingersLuck.RequiresSaveName) `
     'slingers-luck-is-save-free'
+$cheatDeath = Get-KmgRuntimeScenarioMetadata `
+    'disposable-gunslinger-cheat-death'
+Assert-True (-not $cheatDeath.RequiresManualInteraction) `
+    'cheat-death-is-autonomous'
+Assert-True (-not $cheatDeath.RequiresSaveName) `
+    'cheat-death-is-save-free'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
