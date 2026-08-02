@@ -1621,11 +1621,16 @@
   validation-dispatch checks, clean exact-reference Release compilation, and
   strict package validation pass. Source-only scenario WhatIf also passes.
 - The guarded save-free scenario observes the level-seven full-round blueprint,
-  forces BAB 11 rolls `19,2,19` to prove two hits/two base-dice packets with no
+  forces BAB 11 rolls `19,1,19` to prove two hits/two base-dice packets with no
   aggregate misfire, then forces `1,1,1` to prove exactly one chamber/grit cost
   and one Normal-to-Broken transition. Detached state is cleaned without saving.
 - Candidate package/DLL SHA-256 are
   `85c574e881c58f7e2f15a49a855cfc40d85efb3ce51174021d1558b5ba61b27d` /
   `c477bb009ecd47cc880e4525ad7a6f1425cebbef1074f75420810854091f7870`.
+- Exact mod load passed for `2cc0f33`. Its first feature run failed closed only
+  because the mixed fixture used natural 2 as its intended misfire even though
+  the production Early Pistol's Normal threshold is exactly 1. The structured
+  result proved progression, all-1 aggregate misfire, costs, and cleanup; the
+  narrow correction changes only the mixed forced sequence to `19,1,19`.
 - Next action: commit the source checkpoint, require exact mod load, and run two
   independent Dead Shot PASS processes. Sprint 43 is not a stopping condition.

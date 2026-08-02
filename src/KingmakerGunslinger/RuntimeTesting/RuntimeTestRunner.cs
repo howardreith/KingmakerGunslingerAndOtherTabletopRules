@@ -3761,7 +3761,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 mixed = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(attacker,
-                    target, 19, 2, 19);
+                    target, 19, 1, 19);
                 gritAfterMixed = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
 
@@ -3812,7 +3812,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool mixedContract = mixed != null && mixed.Probes.Length == 3 &&
                 mixed.Decision.AttackBonuses.SequenceEqual(new[] { 11, 6, 1 }) &&
                 mixed.Probes.Select(value => value.Roll.Value)
-                    .SequenceEqual(new[] { 19, 2, 19 }) &&
+                    .SequenceEqual(new[] { 19, 1, 19 }) &&
                 mixed.Outcome.HitCount == 2 && mixed.Outcome.ThreatCount == 0 &&
                 mixed.Outcome.BaseDamageDicePackets == 2 &&
                 !mixed.Outcome.Misfires && mixed.After.IsEmpty &&
@@ -3832,7 +3832,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, blueprintContract,
                     "production progression and BlueprintAbility contract"),
                 Assertion("dead-shot-mixed-volley",
-                    "BAB 11 rolls 19,2,19; two hits; two base-dice packets; no misfire",
+                    "BAB 11 rolls 19,1,19; two hits; two base-dice packets; no aggregate misfire",
                     observed, mixedContract,
                     "native probe rolls plus one primary weapon delivery"),
                 Assertion("dead-shot-all-misfire",
