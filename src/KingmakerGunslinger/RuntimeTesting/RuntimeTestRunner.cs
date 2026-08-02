@@ -4679,9 +4679,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "|action=" + fear.ActionType + "|range=" + fear.Range +
                 "|enemies=" + fear.CanTargetEnemies + "|friends=" +
                 fear.CanTargetFriends + "|self=" + fear.CanTargetSelf + "|" +
-                "|descriptor=" + descriptor.Descriptor + "|" +
+                "|descriptor=" + DescribeNestedObject(descriptor.Descriptor, 4) + "|" +
                 DescribeComponents(fear.ComponentsArray) + "|nested=" +
-                DescribeNestedObject(effect, 5);
+                DescribeNestedObject(effect, 10);
             bool contract = fear.ComponentsArray != null &&
                 fear.ComponentsArray.Length > 0;
             var assertions = new List<RuntimeTestAssertion>
