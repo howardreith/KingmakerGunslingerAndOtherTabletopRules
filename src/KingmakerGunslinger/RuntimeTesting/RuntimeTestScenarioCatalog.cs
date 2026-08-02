@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-multiclass-commit";
         internal const string DisposableGunslingerRespecPreview =
             "disposable-gunslinger-respec-preview";
+        internal const string DisposableGunslingerRespecCommit =
+            "disposable-gunslinger-respec-commit";
         internal const string DisposableGunslingerGritResource =
             "disposable-gunslinger-grit-resource";
         internal const string DisposableGunslingerGritRest =
@@ -141,6 +143,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerMulticlassPreview,
                 DisposableGunslingerMulticlassCommit,
                 DisposableGunslingerRespecPreview,
+                DisposableGunslingerRespecCommit,
                 DisposableGunslingerGritResource,
                 DisposableGunslingerGritRest,
                 DisposableGunslingerGritPersistence,

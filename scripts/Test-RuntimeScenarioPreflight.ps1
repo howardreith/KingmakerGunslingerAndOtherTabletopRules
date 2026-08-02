@@ -39,6 +39,7 @@ $expected = @(
     'disposable-gunslinger-multiclass-preview',
     'disposable-gunslinger-multiclass-commit',
     'disposable-gunslinger-respec-preview',
+    'disposable-gunslinger-respec-commit',
     'disposable-gunslinger-grit-resource',
     'disposable-gunslinger-grit-rest',
     'disposable-gunslinger-grit-persistence',

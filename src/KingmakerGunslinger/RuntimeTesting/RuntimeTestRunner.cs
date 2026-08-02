@@ -279,6 +279,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassPreview &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerMulticlassCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerRespecCommit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritResource &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritRest &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerGritPersistence &&
@@ -420,6 +421,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerRespecPreview)
                 {
                     Complete(RunDisposableGunslingerRespecPreview());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerRespecCommit)
+                {
+                    Complete(RunDisposableGunslingerRespecCommit());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4182,6 +4189,150 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerRespecCommit()
+        {
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
+                .Single(value => value != null && value.AssetGuid ==
+                    "48ac8db94d5de7645906c7d0ad3bcfbd");
+            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object remote = ReadExactMember(player, "RemoteCompanions");
+            object cross = ReadExactMember(ReadExactMember(player, "CrossSceneState"),
+                "AllEntityData");
+            object inventory = ReadExactMember(player, "Inventory");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] remoteBefore = SnapshotReferences(remote);
+            object[] crossBefore = SnapshotReferences(cross);
+            object[] inventoryBefore = SnapshotReferences(inventory);
+            Kingmaker.EntitySystem.Entities.UnitEntityData sourceEntity = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData replacementEntity = null;
+            Kingmaker.UnitLogic.UnitDescriptor sourceDescriptor = null;
+            object seed = null, respecController = null;
+            int sourceFighter = -1, sourceGunslinger = -1;
+            int previewFighter = -1, previewGunslinger = -1;
+            int replacementFighter = -1, replacementGunslinger = -1;
+            bool selected = false, callback = false, proficiencies = false,
+                grit = false, cleaned = false;
+            try
+            {
+                BlueprintUnit blueprint = BlueprintRoot.Instance.DefaultPlayerCharacter;
+                sourceEntity = new Kingmaker.UI.LevelUp.ChargenUnit(blueprint).Unit;
+                sourceDescriptor = sourceEntity == null ? null : sourceEntity.Descriptor;
+                replacementEntity = new Kingmaker.UI.LevelUp.ChargenUnit(blueprint).Unit;
+                var replacement = replacementEntity == null ? null :
+                    replacementEntity.Descriptor;
+                if (sourceDescriptor == null || replacement == null)
+                    throw new InvalidOperationException(
+                        "Detached respec source or replacement is unavailable.");
+                Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = type.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = type.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = type.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = type.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || mechanics == null || apply == null ||
+                    cancel == null || commit == null)
+                    throw new MissingMethodException(
+                        "An exact native respec commit method is unavailable.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                seed = start.Invoke(null,
+                    new object[] { sourceDescriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seed, new object[] { fighter, false }))
+                    throw new InvalidOperationException("Fighter source seed was rejected.");
+                mechanics.Invoke(seed, null);
+                apply.Invoke(seed, new object[] { sourceDescriptor });
+                cancel.Invoke(seed, null);
+                seed = null;
+
+                object respec = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "Respec", false);
+                Action onSuccess = () => callback = true;
+                respecController = start.Invoke(null,
+                    new object[] { replacement, false, null, onSuccess, respec });
+                selected = (bool)selectClass.Invoke(respecController,
+                    new object[] { gunslinger, false });
+                mechanics.Invoke(respecController, null);
+                var preview = ReadExactMember(respecController, "Preview") as
+                    Kingmaker.UnitLogic.UnitDescriptor;
+                previewFighter = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(fighter);
+                previewGunslinger = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(gunslinger);
+                commit.Invoke(respecController, null);
+                respecController = null;
+                sourceFighter = sourceDescriptor.Progression.GetClassLevel(fighter);
+                sourceGunslinger = sourceDescriptor.Progression.GetClassLevel(gunslinger);
+                replacementFighter = replacement.Progression.GetClassLevel(fighter);
+                replacementGunslinger = replacement.Progression.GetClassLevel(gunslinger);
+                proficiencies = replacement.HasFact(
+                    BlueprintBootstrap.GunslingerClass.Proficiencies);
+                grit = replacement.HasFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
+                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
+                if (respecController != null && cancel != null)
+                    cancel.Invoke(respecController, null);
+                if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                if (replacementEntity != null) replacementEntity.Dispose();
+                if (sourceEntity != null) sourceEntity.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(remoteBefore, SnapshotReferences(remote)) &&
+                    SameReferences(crossBefore, SnapshotReferences(cross)) &&
+                    SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
+                    (sourceEntity == null || !ContainsReference(cross, sourceEntity)) &&
+                    (replacementEntity == null || !ContainsReference(cross,
+                        replacementEntity));
+            }
+            string observed = "selected=" + selected + ";preview=" + previewFighter +
+                "/" + previewGunslinger + ";source=" + sourceFighter + "/" +
+                sourceGunslinger + ";replacement=" + replacementFighter + "/" +
+                replacementGunslinger + ";callback=" + callback +
+                ";proficiencies=" + proficiencies + ";grit=" + grit;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-respec-replacement-commit",
+                    "source Fighter 1/Gunslinger 0; replacement Fighter 0/Gunslinger 1",
+                    observed, selected && previewFighter == 0 && previewGunslinger == 1 &&
+                        sourceFighter == 1 && sourceGunslinger == 0 &&
+                        replacementFighter == 0 && replacementGunslinger == 1 && callback,
+                    "Respec-mode native Commit on detached replacement"),
+                Assertion("respec-replacement-level-one-facts",
+                    "Gunslinger proficiencies and grit installed", observed,
+                    proficiencies && grit,
+                    "exact replacement descriptor HasFact after Commit"),
+                Assertion("external-isolation",
+                    "unchanged party, units, cross-scene, companions, and inventory",
+                    "cleaned=" + cleaned, cleaned,
+                    "expanded snapshots after both detached entities disposed"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
         }
 
         private RuntimeTestResult RunDisposableGunslingerGritResource()
