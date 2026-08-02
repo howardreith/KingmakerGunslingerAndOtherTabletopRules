@@ -2192,12 +2192,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BindingFlags.Public | BindingFlags.NonPublic;
             FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", Flags);
             FieldInfo lootField = typeof(AddVendorItems).GetField("m_Loot", Flags);
+            FieldInfo fixedItemField = typeof(LootItemsPackFixed).GetField("m_Item", Flags);
+            FieldInfo fixedCountField = typeof(LootItemsPackFixed).GetField("m_Count", Flags);
             BlueprintSharedVendorTable[] tables = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintSharedVendorTable>()
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
             var tableSet = new HashSet<BlueprintSharedVendorTable>(tables);
             var records = new List<string>();
             var ownerRecords = new List<string>();
+            var capitalEntries = new List<string>();
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             foreach (BlueprintScriptableObject owner in BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null))
@@ -2254,6 +2257,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             records.Sort(StringComparer.Ordinal);
             ownerRecords.Sort(StringComparer.Ordinal);
+            BlueprintSharedVendorTable capitalTable = tables.SingleOrDefault(value =>
+                string.Equals(value.AssetGuid,
+                    "afa2c7f292b8e1c4d9c835f0e8047dd3", StringComparison.Ordinal));
+            if (capitalTable != null && fixedItemField != null && fixedCountField != null)
+            {
+                foreach (LootItemsPackFixed component in
+                    (capitalTable.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>())
+                {
+                    var item = fixedItemField.GetValue(component) as BlueprintItem;
+                    object count = fixedCountField.GetValue(component);
+                    capitalEntries.Add("item=" + (item == null ? "<null>" :
+                        item.name + ":" + item.AssetGuid + ":cost=" + item.Cost +
+                        ":stackable=" + item.IsActuallyStackable) + ":count=" + count);
+                }
+            }
             string catalog = string.Join(" | ", tables.Select(value =>
                 value.name + ":" + value.AssetGuid + ":" +
                 DescribeBlueprintComponents(value)).ToArray());
@@ -2261,7 +2280,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";catalog=" +
                 catalog + ";owners=" + string.Join(" | ",
-                    ownerRecords.ToArray()) + ";records=" + string.Join(" | ",
+                    ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
+                    capitalEntries.ToArray()) + ";records=" + string.Join(" | ",
                     records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -2281,6 +2301,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "nonempty exact AddSharedVendor component owner catalog",
                     observed, ownerRecords.Count > 0,
                     "all registered BlueprintScriptableObject component arrays"),
+                Assertion("capital-vendor-fixed-entry-contract",
+                    "exact capital table fixed-item count, cost, and stack contract",
+                    observed, capitalTable != null && fixedItemField != null &&
+                        fixedCountField != null && capitalEntries.Count == 51 &&
+                        !capitalEntries.Any(value => value.Contains("<null>")),
+                    "C11_JhodVendorTable LootItemsPackFixed fields"),
                 Assertion("vendor-observation-only",
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,

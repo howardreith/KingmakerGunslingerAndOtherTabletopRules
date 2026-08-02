@@ -64,6 +64,8 @@ def validate(root: Path) -> None:
          "RunVendorTableContractObservation",
          '";catalog="',
          '";owners="',
+         '";capitalEntries="',
+         'Assertion("capital-vendor-fixed-entry-contract"',
          'Assertion("vendor-component-owners"',
          "unit.AddFacts ?? Array.Empty<BlueprintUnitFact>()",
          ".GroupBy(value => value.GetType().FullName)",
