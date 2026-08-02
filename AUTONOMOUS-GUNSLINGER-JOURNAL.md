@@ -1678,3 +1678,9 @@
 - Next action: finish dispatcher/parser/WhatIf gates, commit the source
   checkpoint, require exact mod load, and run two independent Startling Shot
   PASS processes. Sprint 44 is not a stopping condition.
+- Exact mod load passed on source commit `acf909a`. The first feature run
+  `20260802T0100005433275Z-1a5b38ac671a4750883ac0e6af4b87d5` failed closed
+  at the intentional-miss delivery because the detached fixture passed a null
+  mechanics context to `BuffCollection.AddBuff`; production ability delivery
+  always supplies one. The narrow correction constructs the exact native
+  disposable caster/target context and leaves production behavior unchanged.
