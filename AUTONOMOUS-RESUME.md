@@ -8,7 +8,7 @@ definition of done or a listed genuine human-input hard stop.
 ## Repository state
 
 - Branch: `codex/complete-gunslinger`
-- Audited source HEAD: `ddea6cc` (save-free native level-twenty progression).
+- Audited source HEAD: `7fbdfae` (save-free native multiclass commit).
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 70 exact mod load and the corrected final guarded
@@ -29,6 +29,10 @@ definition of done or a listed genuine human-input hard stop.
   feature-specific save-backed scenarios are not explicitly permitted. Do not
   retry or circumvent it; save-free scenarios and canonical working-save smoke
   remain available.
+- Latest multiclass evidence: exact `7fbdfae` passed mod load
+  `20260802T1126008241032Z` and PASS runs `20260802T1127226945921Z` /
+  `20260802T1128499610464Z`, proving Fighter 1/Gunslinger 1, native callback,
+  proficiency/grit facts, and expanded external isolation.
 - Version: `0.0.60`.
 - User-supplied worktree inputs `AGENTS.md` and
   `AUTONOMOUS-GUNSLINGER-MISSION.md` must be preserved.

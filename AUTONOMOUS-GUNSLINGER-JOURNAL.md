@@ -2582,3 +2582,18 @@
   `653fdc9bf9778bd5306001b71a2dd18aa691e612d5a239022022cc116e3976bb`.
 - Continue to another save-free integration gap; do not retry denied
   save-backed feature scenarios without explicit permission.
+
+## 2026-08-02 Sprint 73 save-free multiclass commit
+
+- Source `7fbdfae` adds a detached Fighter 1 -> Fighter 1/Gunslinger 1 native
+  `LevelUp` commit with success callback, exact proficiency/grit fact checks,
+  and party/global/cross-scene/remote-companion/inventory isolation.
+- Five focused checks, 84 preflight checks, repository validation, 831/831
+  tests, clean exact-reference Release build, and strict packaging passed.
+- Exact mod load `20260802T1126008241032Z` and fresh multiclass runs
+  `20260802T1127226945921Z` / `20260802T1128499610464Z` all passed.
+- Exact package/DLL SHA-256 are
+  `7b6680e6006fa9746efdf2a52fbf4183f45548619507148023c803b6e039d5d7` /
+  `bd45166466a4146463892081527486648251f1af9d539f2f90a901094c7c1928`.
+- Multiclass commit is qualified. Continue to the next safe class-integration
+  gap; creation commit and broad respec replacement remain separate.
