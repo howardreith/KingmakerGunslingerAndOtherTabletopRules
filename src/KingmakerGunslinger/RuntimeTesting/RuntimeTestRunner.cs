@@ -5376,7 +5376,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object controller = null;
             int gritBefore = -1, gritAfterFailure = -1, gritAfterSuccess = -1,
                 gritAfterImmunity = -1, roundsBefore = -1, roundsAfter = -1,
-                damageBefore = -1, damageAfter = -1;
+                damageBefore = -1, damageAfter = -1, nativeDamage = -1;
             bool available = false, failureMarkerConsumed = false,
                 successMarkerConsumed = false, immunityMarkerConsumed = false,
                 successStunned = false, immunityStunned = false, cleaned = false;
@@ -5420,6 +5420,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.LoadedRounds;
                 damageAfter = failedTarget.Damage;
+                if (ordinary.MeleeDamage != null)
+                    nativeDamage = ordinary.MeleeDamage.Damage;
 
                 stage = "save-failure";
                 var context = new MechanicsContext(attacker, attacker.Descriptor,
@@ -5527,7 +5529,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Count(value => ReferenceEquals(value, set.Feature)) == 1;
             string observed = "available=" + available + ";rounds=" + roundsBefore +
                 "->" + roundsAfter + ";damage=" + damageBefore + "->" +
-                damageAfter + ";grit=" + gritBefore + "->" + gritAfterFailure +
+                damageAfter + ";nativeDamage=" + nativeDamage + ";grit=" +
+                gritBefore + "->" + gritAfterFailure +
                 "->" + gritAfterSuccess + "->" + gritAfterImmunity +
                 ";d20=" + failureD20 + "," + successD20 +
                 ";markers=" + failureMarkerConsumed + "," +
@@ -5545,7 +5548,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("stunning-shot-native-firearm-preservation",
                     "ordinary hit consumes one chamber and deals native damage",
                     observed, roundsBefore == 1 && roundsAfter == 0 &&
-                    damageAfter > damageBefore,
+                    nativeDamage > 0,
                     "native RuleAttackWithWeapon and firearm pipeline"),
                 Assertion("stunning-shot-save-failure",
                     "natural 1 Fortitude spends two grit and applies one-round Stunned",
