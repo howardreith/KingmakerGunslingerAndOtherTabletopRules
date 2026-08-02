@@ -33,6 +33,13 @@ $checks = [ordered]@{
     'special-range-fails-closed' =
         $runner.Contains('"special-range-fails-closed"') -and
         $runner.Contains('blunderbussUnavailable == 1')
+    'production-critical-profiles-exact' =
+        $runner.Contains('"production-critical-profiles"') -and
+        $runner.Contains('HasCriticalProfile(catalog.Pistol.WeaponType, 20, 4)') -and
+        $runner.Contains('HasCriticalProfile(catalog.Musket.WeaponType, 20, 4)') -and
+        $runner.Contains('HasCriticalProfile(catalog.Blunderbuss.WeaponType, 20, 2)') -and
+        $runner.Contains('HasCriticalProfile(catalog.AdvancedRifle.WeaponType, 20, 4)') -and
+        $runner.Contains('HasCriticalProfile(catalog.AdvancedRevolver.WeaponType, 20, 4)')
     'save-write-sentinel-retained' =
         $runner.Contains('!evidence.SaveWritingApiObserved')
     'steam-launch-only' =

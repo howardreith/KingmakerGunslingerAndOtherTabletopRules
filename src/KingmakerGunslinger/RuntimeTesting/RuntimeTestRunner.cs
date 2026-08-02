@@ -1265,6 +1265,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (catalog.Blunderbuss.Item.ComponentsArray ??
                     Array.Empty<BlueprintComponent>())
                 .OfType<UnavailableProductionFirearmRestriction>().Count();
+            string criticalProfiles = catalog == null ? "catalog-unavailable" :
+                DescribeCriticalProfile("pistol", catalog.Pistol.WeaponType) + ";" +
+                DescribeCriticalProfile("musket", catalog.Musket.WeaponType) + ";" +
+                DescribeCriticalProfile("blunderbuss", catalog.Blunderbuss.WeaponType) + ";" +
+                DescribeCriticalProfile("rifle", catalog.AdvancedRifle.WeaponType) + ";" +
+                DescribeCriticalProfile("revolver", catalog.AdvancedRevolver.WeaponType);
 
             WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
             var assertions = new List<RuntimeTestAssertion>
@@ -1304,6 +1310,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !catalog.Blunderbuss.Spec.IsPlayerFireable &&
                         blunderbussUnavailable == 1,
                     "special-range definition and concrete item restriction"),
+                Assertion("production-critical-profiles",
+                    "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
+                        "rifle=20/x4;revolver=20/x4",
+                    criticalProfiles,
+                    catalog != null &&
+                        HasCriticalProfile(catalog.Pistol.WeaponType, 20, 4) &&
+                        HasCriticalProfile(catalog.Musket.WeaponType, 20, 4) &&
+                        HasCriticalProfile(catalog.Blunderbuss.WeaponType, 20, 2) &&
+                        HasCriticalProfile(catalog.AdvancedRifle.WeaponType, 20, 4) &&
+                        HasCriticalProfile(catalog.AdvancedRevolver.WeaponType, 20, 4),
+                    "registered BlueprintWeaponType native critical fields"),
                 Assertion("no-save-writing-api", "none",
                     evidence.SaveWritingApiObserved ? "observed" : "none",
                     !evidence.SaveWritingApiObserved,
@@ -1645,6 +1662,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     count++;
             }
             return count;
+        }
+
+        private static string DescribeCriticalProfile(string name,
+            BlueprintWeaponType weaponType)
+        {
+            if (weaponType == null)
+                return name + "=unavailable";
+            return name + "=" + weaponType.CriticalRollEdge + "/x" +
+                (int)weaponType.CriticalModifier;
+        }
+
+        private static bool HasCriticalProfile(BlueprintWeaponType weaponType,
+            int rollEdge, int multiplier)
+        {
+            return weaponType != null &&
+                weaponType.CriticalRollEdge == rollEdge &&
+                (int)weaponType.CriticalModifier == multiplier;
         }
 
         private void RunLoadGameButtonActionObservation()

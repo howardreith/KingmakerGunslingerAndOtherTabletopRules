@@ -34,12 +34,11 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 61 later equipment acquisition and economy. Sprint 60 player-facing
-presentation is runtime-qualified on `adcb030`: exact mod load and two fresh
-presentation observations proved the complete visible progression graph and
-native UI groups. The next mandatory independent gap in integration order is a
-normal, finite, non-test acquisition route for production firearm ammunition
-and repair kits, with exact local economy authority inspected before choosing a
-vendor, loot, or crafting adaptation. Scatter remains fail-closed pending an
-authoritative numeric Blunderbuss cone distance; Targeting Arms and Death's
-Shot retain their separately documented human-authority blocks.
+Sprint 64 makes the production critical profiles an explicit guarded runtime
+contract and dispositions special ammunition according to mission scope. The
+roadmap contains no special-ammunition deliverable; its only alchemical-
+cartridge references identify an absent Lightning Reload prerequisite that
+requires separate future authority. No ammunition type may be invented for
+this checkpoint. Scatter remains fail-closed pending an authoritative numeric
+Blunderbuss cone distance; Targeting Arms and Death's Shot retain their
+separately documented human-authority blocks.
