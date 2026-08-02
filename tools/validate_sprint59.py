@@ -74,6 +74,12 @@ def validate(root: Path) -> None:
         root, "src/KingmakerGunslinger/Deeds/SlingersLuckSkillCheckReroll.cs")
     if "TrueGritRuntime" in luck:
         raise RuntimeError("Slinger's Luck must retain its fixed grit cost")
+    require_tokens(read(root,
+        "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs") + read(root,
+        "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
+        ["disposable-gunslinger-true-grit", "true-grit-selection-and-policy",
+         "positiveGateAtZero", "zeroCostRequiresPositive"],
+        "Sprint 59 guarded runtime qualification")
     print("Sprint 59 source validation passed with inherited Sprint 58 checks.")
 
 def main() -> int:

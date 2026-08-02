@@ -259,6 +259,15 @@ if ($stunningShotRequest.scenario -cne
     $stunningShotRequest.parameters.Count -ne 0) {
     $failures.Add('stunning-shot-request-valid')
 }
+$trueGritRequest = New-KmgRuntimeRequest `
+    -Scenario 'disposable-gunslinger-true-grit' `
+    -ExpectedVersion '0.0.59' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic
+if ($trueGritRequest.scenario -cne
+    'disposable-gunslinger-true-grit' -or
+    $trueGritRequest.parameters.Count -ne 0) {
+    $failures.Add('true-grit-request-valid')
+}
 
 if ($failures.Count -ne 0) { throw "Runtime request tests failed: $($failures -join ', ')" }
-Write-Host 'Runtime request source tests passed: 35'
+Write-Host 'Runtime request source tests passed: 36'

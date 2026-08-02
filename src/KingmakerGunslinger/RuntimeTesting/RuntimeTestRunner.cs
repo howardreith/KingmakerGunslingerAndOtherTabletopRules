@@ -304,6 +304,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveDeathsShotNativeDeath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
@@ -553,6 +554,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot)
                 {
                     Complete(RunDisposableGunslingerStunningShot());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit)
+                {
+                    Complete(RunDisposableGunslingerStunningShot(true));
                     return;
                 }
                 if (_request.Scenario ==
@@ -5356,7 +5363,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
-        private RuntimeTestResult RunDisposableGunslingerStunningShot()
+        private RuntimeTestResult RunDisposableGunslingerStunningShot(
+            bool qualifyTrueGrit = false)
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
@@ -5380,6 +5388,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool available = false, failureMarkerConsumed = false,
                 successMarkerConsumed = false, immunityMarkerConsumed = false,
                 successStunned = false, immunityStunned = false, cleaned = false;
+            bool selectionShape = false, positiveGateAtZero = false,
+                zeroCostRequiresPositive = false, variableCost = false,
+                slingersLuckExcluded = false;
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
             string stage = "progression";
@@ -5391,8 +5402,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failedTarget.Descriptor.State.Immortality.ReleaseAll();
                 passedTarget.Descriptor.State.Immortality.ReleaseAll();
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
-                AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger, 19,
+                AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger,
+                    qualifyTrueGrit ? 20 : 19,
                     ref controller);
+                if (qualifyTrueGrit)
+                {
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.StunningShot));
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.StopBleeding));
+                    selectionShape = gunslinger.TrueGrit.Choices.Length == 18 &&
+                        gunslinger.Progression.LevelEntries[19].Features.Count(
+                            value => ReferenceEquals(value,
+                                gunslinger.TrueGrit.Selection)) == 2;
+                    slingersLuckExcluded = !TrueGritCatalog.Choices.Any(value =>
+                        value.Deed.ToString().IndexOf("Luck",
+                            StringComparison.OrdinalIgnoreCase) >= 0);
+                }
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 4);
                 weapon = new ItemEntityWeapon(pistol);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
@@ -5498,6 +5524,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (gritAfterImmunity != beforeImmunity)
                     throw new InvalidOperationException(
                         "Critical immunity changed grit unexpectedly.");
+                if (qualifyTrueGrit)
+                {
+                    variableCost = TrueGritRuntime.Evaluate(attacker.Descriptor,
+                        TrueGritDeed.StunningShot, 3, false).EffectiveCost == 2;
+                    int remaining = attacker.Descriptor.Resources.GetResourceAmount(
+                        gunslinger.Grit.Resource);
+                    attacker.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                        remaining);
+                    positiveGateAtZero = TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.StopBleeding, 0, true)
+                        .Available;
+                    zeroCostRequiresPositive = !TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.StunningShot, 1, false)
+                        .Available;
+                }
             }
             catch (Exception exception)
             {
@@ -5533,6 +5574,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool progression = gunslinger.Progression.LevelEntries[18].Features
                 .Count(value => ReferenceEquals(value, set.Feature)) == 1;
+            int deedCost = qualifyTrueGrit ? 1 : 2;
             string observed = "available=" + available + ";rounds=" + roundsBefore +
                 "->" + roundsAfter + ";damage=" + damageBefore + "->" +
                 damageAfter + ";nativeDamage=" + nativeDamage + ";grit=" +
@@ -5557,20 +5599,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeDamage > 0,
                     "native RuleAttackWithWeapon and firearm pipeline"),
                 Assertion("stunning-shot-save-failure",
-                    "natural 1 Fortitude spends two grit and applies one-round Stunned",
-                    observed, failureMarkerConsumed && gritAfterFailure == 2 &&
+                    "natural 1 Fortitude spends the effective grit cost and applies one-round Stunned",
+                    observed, failureMarkerConsumed && gritAfterFailure == 4 - deedCost &&
                     stunned != null && durationSeconds > 0d && durationSeconds <= 6.1d,
                     "production marker handler and native RuleSavingThrow"),
                 Assertion("stunning-shot-save-success",
-                    "natural 20 Fortitude spends two grit without Stunned",
-                    observed, successMarkerConsumed && gritAfterSuccess == 0 &&
+                    "natural 20 Fortitude spends the effective grit cost without Stunned",
+                    observed, successMarkerConsumed && gritAfterSuccess == 4 - (2 * deedCost) &&
                     !successStunned,
                     "production marker handler and native RuleSavingThrow"),
                 Assertion("stunning-shot-critical-immunity",
                     "native critical immunity consumes marker without grit or Stunned",
-                    observed, immunityMarkerConsumed && gritAfterImmunity == 2 &&
+                    observed, immunityMarkerConsumed && gritAfterImmunity ==
+                        Math.Min(4, 6 - (2 * deedCost)) &&
                     !immunityStunned,
                     "RuleAttackRoll.ImmuneToCriticalHit"),
+                Assertion("true-grit-selection-and-policy",
+                    qualifyTrueGrit ? "two level-20 selections, eighteen choices, selected cost reduction, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
+                    observed, !qualifyTrueGrit || (selectionShape &&
+                        positiveGateAtZero && zeroCostRequiresPositive &&
+                        variableCost && slingersLuckExcluded),
+                    "production selection blueprints, unit-owned facts, and TrueGritRuntime"),
                 Assertion("external-isolation", "detached units and item cleaned",
                     observed, cleaned, "reference snapshots and disposal"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
