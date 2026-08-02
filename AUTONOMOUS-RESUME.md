@@ -107,6 +107,10 @@ definition of done or a listed genuine human-input hard stop.
   passes all source/build/package gates. Commit it, run exact mod load and fresh
   broad-respec qualification, repair from structured evidence as needed, and
   continue the mandatory matrix.
+- Broad native player replacement is runtime-qualified on exact `61ed182` with
+  mod load `20260802T1727191713556Z` and PASS pair
+  `20260802T1728404473198Z` / `20260802T1730049919619Z`. Commit curated
+  evidence and continue to the save-backed item lifecycle row.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

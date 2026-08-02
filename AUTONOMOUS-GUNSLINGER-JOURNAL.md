@@ -3255,3 +3255,8 @@
   Corrected full gates pass; package/DLL hashes are
   `c6175beeff90bc6cce6ca26dde6227cadeac9bc53247f21a67604f14733fcd62` /
   `af4d04ed898a85e959773d08af72c2266ef6f9fccb2ac793e73b9ec8b739864c`.
+- Exact `61ed182` mod load `20260802T1727191713556Z` and fresh broad-respec
+  PASS pair `20260802T1728404473198Z` / `20260802T1730049919619Z` prove the
+  native handler, callback, source transformation, replacement state,
+  proficiency/grit facts, exact cleanup, and loaded version. Character creation,
+  level-up, multiclass, and respec are now runtime-qualified end to end.
