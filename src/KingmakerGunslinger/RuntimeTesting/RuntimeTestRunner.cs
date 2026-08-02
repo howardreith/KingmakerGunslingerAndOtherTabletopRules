@@ -2266,7 +2266,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (capitalTable.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<LootItemsPackFixed>())
                 {
-                    var item = fixedItemField.GetValue(component) as BlueprintItem;
+                    object itemReference = fixedItemField.GetValue(component);
+                    MethodInfo getItem = itemReference == null ? null :
+                        itemReference.GetType().GetMethod("Get", Flags, null,
+                            Type.EmptyTypes, null);
+                    var item = getItem == null ? null :
+                        getItem.Invoke(itemReference, null) as BlueprintItem;
                     object count = fixedCountField.GetValue(component);
                     capitalEntries.Add("item=" + (item == null ? "<null>" :
                         item.name + ":" + item.AssetGuid + ":cost=" + item.Cost +
