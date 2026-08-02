@@ -3199,3 +3199,11 @@
   one, success callback, proficiency/grit facts, exact external restoration,
   loaded version, and no save interaction. Starting access is now fully
   runtime-qualified; continue to the broad native player replacement callback.
+- Sprint 101 extends the non-mutating installed-contract observer with every
+  exact `Player.RespecCompanion` signature and resolved IL call graph. Focused
+  checks, repository validation, 849 tests, clean Release build, and strict
+  packaging pass; package/DLL hashes are
+  `40d87abb1b60e5d024e15471aa6664ef5b20c40e98f01f73aa4ddc75671ade8c` /
+  `a2396b812fa645093d0e961744a136b0b09528789b7446bb12ca2a049a257ef9`.
+  Commit and run the metadata observer before constructing the reversible broad
+  callback fixture.

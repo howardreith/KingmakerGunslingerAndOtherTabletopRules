@@ -37,6 +37,7 @@ $checks = [ordered]@{
         $runner.Contains('root.CharGen.Pregens') -and $runner.Contains('DescribeBlueprintUnit')
     'exact-respec-call-graphs' = $runner.Contains('UnitDescriptor.PrepareRespec=') -and
         $runner.Contains('UnitEntityData.PrepareRespec=') -and
+        $runner.Contains('Player.RespecCompanion=') -and
         $runner.Contains('UnitDescriptor.Body.set=') -and
         $runner.Contains('UnitDescriptor.Dispose=') -and
         $runner.Contains('UnitEntityData.Dispose=') -and

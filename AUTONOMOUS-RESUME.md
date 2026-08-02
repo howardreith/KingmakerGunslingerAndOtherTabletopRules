@@ -100,6 +100,9 @@ definition of done or a listed genuine human-input hard stop.
   `20260802T1653068423255Z` and PASS pair `20260802T1654290642019Z` /
   `20260802T1655490400235Z`. Commit curated evidence and continue the remaining
   broad native player replacement callback.
+- Sprint 101 source-qualifies expanded metadata-only observation of exact
+  installed `Player.RespecCompanion` signatures/call graph. Commit and run it,
+  then implement the reversible broad callback fixture from observed evidence.
 - Qualified baseline contained: `4f28dcf` runtime implementation and `5c92012`
   documentation.
 - Current checkpoint: Sprint 89 carries battered effective condition through

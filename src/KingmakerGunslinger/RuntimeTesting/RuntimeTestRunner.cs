@@ -3253,6 +3253,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             else records.Add(DescribeCreationType(buildModeType));
             Type descriptorType = typeof(Kingmaker.UnitLogic.UnitDescriptor);
             Type entityType = typeof(Kingmaker.EntitySystem.Entities.UnitEntityData);
+            Type playerType = typeof(Kingmaker.Player);
+            MethodInfo[] respecCompanionMethods = playerType.GetMethods(
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(value => value.Name == "RespecCompanion").ToArray();
+            string respecCompanionGraph = string.Join(";",
+                respecCompanionMethods.Select(value => value.ToString() + "=>" +
+                    DescribeCalledMethods(value)).ToArray());
             Type selectActionType = assembly.GetType(
                 "Kingmaker.UnitLogic.Class.LevelUp.Actions.SelectClass", false, false);
             Type mechanicsActionType = assembly.GetType(
@@ -3286,6 +3293,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 " | UnitEntityData.PrepareRespec=" + DescribeCalledMethods(
                     entityType.GetMethod("PrepareRespec", BindingFlags.Public |
                         BindingFlags.NonPublic | BindingFlags.Instance)) +
+                " | Player.RespecCompanion=" + respecCompanionGraph +
                 " | UnitDescriptor.Body.set=" + DescribeCalledMethods(
                     descriptorType.GetProperty("Body", BindingFlags.Public |
                         BindingFlags.NonPublic | BindingFlags.Instance).GetSetMethod(true)) +
@@ -3334,6 +3342,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         callGraph.Contains("LevelUpController.StartWithoutStatic=") &&
                         callGraph.Contains("LevelUpController.ctor=") &&
                         callGraph.Contains("LevelUpController.RequestPreview=") &&
+                        respecCompanionMethods.Length > 0 &&
+                        !string.IsNullOrEmpty(respecCompanionGraph) &&
                         !callGraph.Contains("PrepareRespec=<unavailable>"),
                     "metadata-only MethodBody IL; no respec or cleanup method invoked"),
                 Assertion("observation-only", "no unit construction or game-state mutation",
