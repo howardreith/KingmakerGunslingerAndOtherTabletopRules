@@ -1720,9 +1720,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendor.AddForSell(batteredItem, 1);
                 vendorPhase = "commit-sale-deal";
                 vendor.Deal();
-                ItemEntity stored = EnumerateRuntimeInventory(vendor.StoreItems)
-                    .OfType<ItemEntity>().Single(item =>
-                        ReferenceEquals(item, batteredItem));
+                ItemEntityWeapon stored = EnumerateRuntimeInventory(vendor.StoreItems)
+                    .OfType<ItemEntityWeapon>().Single(item =>
+                    {
+                        Kingmaker.EntitySystem.Entities.UnitEntityData storedOwner;
+                        return ReferenceEquals(item.Blueprint, expected[0]) &&
+                            BatteredFirearmOriginRuntime.TryGetOwner(item,
+                                out storedOwner) &&
+                            ReferenceEquals(storedOwner, mainDescriptor.Unit);
+                    });
                 bool saleCredited = player.Money == moneyBefore + 22;
                 vendorPhase = "stage-repurchase-deal";
                 vendor.AddForBuy(stored, 1);
@@ -1743,12 +1749,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendorPhase = "commit-repurchase-deal";
                 vendor.Deal();
                 Kingmaker.EntitySystem.Entities.UnitEntityData repurchasedOwner;
-                vendorDealRoundTrip = saleCredited &&
-                    EnumerateRuntimeInventory(mainDescriptor.Inventory).Any(item =>
-                        ReferenceEquals(item, batteredItem)) &&
-                    BatteredFirearmOriginRuntime.TryGetOwner(batteredItem,
-                        out repurchasedOwner) &&
-                    ReferenceEquals(repurchasedOwner, mainDescriptor.Unit) &&
+                ItemEntityWeapon repurchased =
+                    EnumerateRuntimeInventory(mainDescriptor.Inventory)
+                    .OfType<ItemEntityWeapon>().Single(item =>
+                        ReferenceEquals(item.Blueprint, expected[0]) &&
+                        BatteredFirearmOriginRuntime.TryGetOwner(item,
+                            out repurchasedOwner) &&
+                        ReferenceEquals(repurchasedOwner, mainDescriptor.Unit));
+                vendorDealRoundTrip = saleCredited && repurchased != null &&
                     SameReferences(vendorStoreBefore.ToArray(),
                         EnumerateRuntimeInventory(vendor.StoreItems).ToArray());
                 moneyStable = player.Money == moneyBefore;
