@@ -88,6 +88,15 @@ No genuine human-input hard stop is currently established.
   not a human-input hard stop; proceed with independent Targeting work while a
   narrower hostile-target fixture/handler observation is designed.
 
+- Sprint 45 Targeting Head is source-qualified at version `0.0.45`. Exact mod
+  load passes, and both guarded runs prove grit spend, chamber consumption,
+  native hit/immunity correlation, and Confusion state. The second run proves
+  direct `RuleAttackWithWeapon` did not dispatch `MeleeDamage` and the detached
+  timed buff was permanent. After two materially different verifier theories,
+  further speculative repair is suspended pending exact native contract
+  inspection. This is an engineering gate, not a human-input hard stop;
+  Targeting Torso is independently actionable.
+
 - Most base-class and production-content rows are not started; they are planned
   engineering work, not blockers.
 - Several deed adaptations require exact Kingmaker contract investigation.

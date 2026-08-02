@@ -397,10 +397,15 @@ isolation, and observed no save write.
 
 ## Next action
 
-Sprint 45 Targeting Head is source-qualified at version `0.0.45` with 770
-domain tests, all harness safety gates, a validated Release package, and a
-guarded save-free scenario. Commit the reconstructable checkpoint, rebuild the
-exact clean commit, require mod load, and run two feature qualifications.
+Sprint 45 Targeting Head is source-qualified through clean commits `e543356`
+and `6b29536` at version `0.0.45`. Exact mod load passed, but fresh feature runs
+`20260802T0145575387773Z-98fdf5c587d942ffb26d9f7d736a8e20` and
+`20260802T0150467055365Z-ad41b1a17c7b4ecaa4003d7eafc0403d` exposed two exact
+runtime gaps: direct `RuleAttackWithWeapon` dispatch resolves the hit without a
+native damage rule, and the detached context applies the requested timed buff
+as permanent. Do not attempt a third speculative repair. Inspect exact native
+damage/timed-buff contracts later; begin the independent Targeting Torso slice
+now.
 Sprint 44 source and successive evidence-driven fixture checkpoints are
 committed through `e34e40c`. Exact mod load passes, but the disposable
 `DefaultPlayerCharacter` target retains an unidentified `RuleApplyBuff` veto

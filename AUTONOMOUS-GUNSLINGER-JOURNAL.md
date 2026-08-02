@@ -1745,3 +1745,29 @@
   `805bc0b0af5c8bb4c240ba219d5ab90f618c84447e3ffc2e5b0150df349f7ea3`
   and DLL SHA-256 is
   `53c0fd5cd0e5b6fa6353da7dab24ec44471e9ee8d005dcf9f6edb16cb30e3584`.
+
+## 2026-08-01 Sprint 45 Targeting Head runtime boundary
+
+- Source checkpoint `e543356` and verifier checkpoint `6b29536` remain clean,
+  reconstructable commits. The exact latter build passed 770/770 tests and
+  strict package validation with package SHA-256
+  `eaa5a2001d8ac6fde6c46eb62551e493f687312c1ded95f39e2ccadff02fc112`
+  and DLL SHA-256
+  `8e9789a2ce7cd26f2923699019e1ee00b5b975a2d04305ff877d183caddbc06b`.
+- Exact mod load passed in evidence directory
+  `20260802T0144092249996Z-mod-load-smoke`.
+- First feature run `20260802T0145575387773Z-98fdf5c587d942ffb26d9f7d736a8e20`
+  proved grit `3->2`, chamber `1->0`, hit, non-immunity, and native Confusion,
+  but falsified detached HP delta and `TimeLeft` as valid fixture assertions.
+- The narrowed verifier used the native damage rule and `Buff.IsPermanent`.
+  Second fresh run
+  `20260802T0150467055365Z-ad41b1a17c7b4ecaa4003d7eafc0403d`
+  again proved the attack roll and Confusion state, but exposed
+  `MeleeDamage=null` and `IsPermanent=true`. Directly triggering
+  `RuleAttackWithWeapon` therefore resolves the roll without the subsequent
+  native damage dispatch, while this detached context does not retain the
+  supplied timed duration.
+- Per the two-material-attempt rule, do not make a third speculative Targeting
+  Head repair. Change mode to exact damage-dispatch and timed-buff contract
+  inspection. Continue independently with Targeting Torso, whose deed-local
+  threat-range behavior does not depend on a timed rider.
