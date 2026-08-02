@@ -34,18 +34,12 @@ by the changed behavior. Only a passing checkpoint is committed.
 
 ## Current checkpoint
 
-Sprint 36 core deed bundle. Sprint 35 established and runtime-qualified the
-native grit pool, daily rest, persistence, multiclass no-refill, firearm
-critical/killing-blow recovery, and duplicate protection. Sprint 36 now adds
-Deadeye, Gunslinger's Dodge, and Quick Clear as one coherent level-one bundle.
-The first Sprint 35 checkpoint added
-the bounded dependency-free resource rules, daily reset, maximum reconciliation,
-atomic spend/restore, and operation deduplication. Next bind these rules to an
-exact persistent Kingmaker per-unit ability resource, then add daily-rest and
-firearm critical/killing-blow recovery contracts. Scatter content remains
-fail-closed pending an authoritative numeric Blunderbuss cone distance.
-The second checkpoint binds that model to a stable native per-unit ability
-resource. Its level-one owner restores only on initial activation, never on
-level-up, and an exact active-unit subscriber produces `max(1, Wisdom modifier)`.
-Guarded detached-unit acceptance covers grant, spend, non-refill, restore, and
-external cleanup before rest/save-backed evidence is attempted.
+Sprint 60 player-facing presentation. Sprints 36-59 established the class,
+grit, progression features, deed tiers, and True Grit through guarded runtime
+qualification. The next mandatory independent gap is presentation: normalize
+approved fallback icons across project-owned visible progression facts,
+organize existing level entries into native progression UI groups, preserve
+all mechanics and hidden implementation facts, and qualify the registered
+presentation graph in a save-free guarded scenario. Scatter remains fail-closed
+pending an authoritative numeric Blunderbuss cone distance; Targeting Arms and
+Death's Shot retain their separately documented human-authority blocks.
