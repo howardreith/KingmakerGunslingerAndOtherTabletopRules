@@ -5046,8 +5046,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var savingContext = new MechanicsContext(unit, unit.Descriptor,
                     set.SavingAbility, null, new TargetWrapper(unit));
-                Buff savingMarker = unit.Descriptor.Buffs.AddBuff(
-                    set.SavingMarker, savingContext, null);
+                unit.Descriptor.Buffs.AddBuff(set.SavingMarker, savingContext, null);
+                Buff savingMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        set.SavingMarker));
                 int savingSeed = FindDescendingNativeD20Seed(out savingFirst,
                     out savingSecond);
                 UnityEngine.Random.InitState(savingSeed);
@@ -5071,8 +5073,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var skillContext = new MechanicsContext(unit, unit.Descriptor,
                     set.SkillAbility, null, new TargetWrapper(unit));
-                Buff skillMarker = unit.Descriptor.Buffs.AddBuff(
-                    set.SkillMarker, skillContext, null);
+                unit.Descriptor.Buffs.AddBuff(set.SkillMarker, skillContext, null);
+                Buff skillMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        set.SkillMarker));
                 int skillSeed = FindDescendingNativeD20Seed(out skillFirst,
                     out skillSecond);
                 UnityEngine.Random.InitState(skillSeed);
