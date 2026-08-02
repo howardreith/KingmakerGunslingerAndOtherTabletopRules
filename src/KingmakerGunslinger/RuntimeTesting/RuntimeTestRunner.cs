@@ -1695,13 +1695,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vendorPhase = "begin-trading";
                 vendor.BeginTrading(vendorUnit);
                 vendorTradingStarted = true;
-                vendorPhase = "add-for-buy";
-                vendor.AddForBuy(batteredItem, 1);
-                ItemEntity staged = EnumerateRuntimeInventory(vendor.ItemsForBuy)
+                vendorPhase = "add-for-sell";
+                vendor.AddForSell(batteredItem, 1);
+                ItemEntity staged = EnumerateRuntimeInventory(vendor.ItemsForSell)
                     .OfType<ItemEntity>().Single(item =>
                         ReferenceEquals(item, batteredItem));
-                vendorPhase = "remove-from-buy";
-                ItemEntity returned = vendor.RemoveFromBuy(staged, 1);
+                vendorPhase = "remove-from-sell";
+                ItemEntity returned = vendor.RemoveFromSell(staged, 1);
                 Kingmaker.EntitySystem.Entities.UnitEntityData vendorOwner;
                 vendorRoundTrip = ReferenceEquals(staged, batteredItem) &&
                     ReferenceEquals(returned, batteredItem) &&
@@ -1851,7 +1851,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "retained=" + transferRetained, transferRetained,
                     "exact ItemsCollection Extract/Add across main and detached inventories"),
                 Assertion("native-vendor-staging-roundtrip",
-                    "same item and battered origin survive AddForBuy/RemoveFromBuy",
+                    "same item and battered origin survive AddForSell/RemoveFromSell",
                     "retained=" + vendorRoundTrip, vendorRoundTrip,
                     "exact VendorLogic reversible pre-deal transaction"),
                 Assertion("exact-in-memory-rollback",
