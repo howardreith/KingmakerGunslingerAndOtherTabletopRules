@@ -38,7 +38,8 @@ try {
         'blueprints\blueprints.schema.json'
     )
     $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
-        'deeds','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
+        'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
+        'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
         'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
         'rifle','revolver','lead-ball','black-powder','repair-kit')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })

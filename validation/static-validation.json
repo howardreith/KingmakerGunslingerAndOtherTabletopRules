@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.61-first-playtest-repair",
-  "version": "0.0.61",
+  "milestone": "0.0.62-second-playtest-assets-and-ux",
+  "version": "0.0.62",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
@@ -275,6 +276,10 @@ namespace KingmakerGunslinger.Blueprints
                 progression.LevelEntries[DeedTierBlueprints.Levels[index] - 1]
                     .Features.Add(deedTiers[index]);
             PlayerFacingPresentation.Apply(progression, characterClass.Icon);
+            PlayerFacingPresentation.ConfigureTracks(progression,
+                deedTiers, nimble.Features,
+                Repeat(bonusFeats, Classes.BonusFeatProgression.Levels.Length),
+                Repeat(gunTraining.Selection, Classes.GunTrainingProgression.Levels.Length));
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
                 simple, martial, lightArmor, firearmProficiency);
@@ -305,18 +310,50 @@ namespace KingmakerGunslinger.Blueprints
                 if (ReferenceEquals(existing, characterClass) ||
                     string.Equals(existing.AssetGuid, characterClass.AssetGuid,
                         StringComparison.Ordinal))
-                    throw new InvalidOperationException(
-                        "Gunslinger is already present in the character-class catalog.");
+                    return new GunslingerClassCatalogPublication(previous, previous);
             }
             var published = new BlueprintCharacterClass[previous.Length + 1];
-            Array.Copy(previous, published, previous.Length);
-            published[published.Length - 1] = characterClass;
+            int insertion = FindLocalizedInsertionIndex(previous, characterClass);
+            Array.Copy(previous, 0, published, 0, insertion);
+            published[insertion] = characterClass;
+            Array.Copy(previous, insertion, published, insertion + 1,
+                previous.Length - insertion);
             root.Progression.CharacterClasses = published;
             if (!ReferenceEquals(root.Progression.CharacterClasses, published) ||
-                !ReferenceEquals(published[published.Length - 1], characterClass))
+                !ReferenceEquals(published[insertion], characterClass))
                 throw new InvalidOperationException(
                     "Gunslinger character-class catalog publication could not be verified.");
             return new GunslingerClassCatalogPublication(previous, published);
+        }
+
+        internal static int FindLocalizedInsertionIndex(
+            BlueprintCharacterClass[] existing, BlueprintCharacterClass candidate)
+        {
+            if (existing == null) throw new ArgumentNullException("existing");
+            if (candidate == null) throw new ArgumentNullException("candidate");
+            string candidateName = candidate.LocalizedName == null ? string.Empty :
+                candidate.LocalizedName.ToString();
+            CompareInfo comparer = CultureInfo.CurrentUICulture.CompareInfo;
+            for (int index = 0; index < existing.Length; index++)
+            {
+                BlueprintCharacterClass value = existing[index];
+                if (value == null) throw new InvalidOperationException(
+                    "Kingmaker's character-class catalog contains a null entry.");
+                string valueName = value.LocalizedName == null ? string.Empty :
+                    value.LocalizedName.ToString();
+                if (comparer.Compare(candidateName, valueName,
+                    CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) < 0)
+                    return index;
+            }
+            return existing.Length;
+        }
+
+        private static BlueprintFeatureBase[] Repeat(BlueprintFeatureBase feature,
+            int count)
+        {
+            var result = new BlueprintFeatureBase[count];
+            for (int index = 0; index < count; index++) result[index] = feature;
+            return result;
         }
 
         private static BlueprintFeature CreateProficiencies(params BlueprintUnitFact[] facts)

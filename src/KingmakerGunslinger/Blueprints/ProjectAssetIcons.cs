@@ -27,7 +27,9 @@ namespace KingmakerGunslinger.Blueprints
             Icons.Clear();
             string directory = Path.Combine(context.ModEntry.Path, "assets", "icons");
             string[] names = { "gunslinger-class", "firearm-proficiency",
-                "gunsmithing", "grit", "deeds", "deadeye", "gunslingers-dodge",
+                "gunsmithing", "grit", "deeds", "nimble", "bonus-feat",
+                "gun-training", "true-grit", "rapid-reload",
+                "weapon-focus-firearm", "deadeye", "gunslingers-dodge",
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit" };
@@ -74,6 +76,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (BlueprintFeature choice in feats.WeaponFocusChoices) ApplyFact(choice, visited);
             foreach (BlueprintFeature choice in feats.RapidReloadChoices) ApplyFact(choice, visited);
             ApplyFact(feats.WeaponFocus, visited);
+            ApplyFact(feats.NativeWeaponFocusWithFirearms, visited);
             ApplyFact(feats.RapidReload, visited);
             ApplyFact(reload, visited); ApplyFact(repair, visited); ApplyFact(overhaul, visited);
             BlueprintItemAccess items = BlueprintItemAccess.Resolve();
@@ -112,10 +115,16 @@ namespace KingmakerGunslinger.Blueprints
             if (value.Contains("progression") || value.EndsWith("_class")) return "gunslinger-class";
             if (value.Contains("proficien")) return "firearm-proficiency";
             if (value.Contains("gunsmith")) return "gunsmithing";
+            if (value.Contains("truegrit") || value.Contains("true_grit")) return "true-grit";
             if (value.Contains("grit")) return "grit";
+            if (value.Contains("nimble")) return "nimble";
+            if (value.Contains("bonus") && value.Contains("feat")) return "bonus-feat";
+            if (value.Contains("guntraining") || value.Contains("gun_training")) return "gun-training";
             if (value.Contains("deadeye")) return "deadeye";
             if (value.Contains("dodge")) return "gunslingers-dodge";
             if (value.Contains("quickclear") || value.Contains("quick_clear")) return "quick-clear";
+            if (value.Contains("rapidreload") || value.Contains("rapid_reload")) return "rapid-reload";
+            if (value.Contains("weaponfocus") || value.Contains("weapon_focus")) return "weapon-focus-firearm";
             if (value.Contains("reload")) return "reload-firearm";
             if (value.Contains("repair")) return "repair-firearm";
             if (value.Contains("overhaul")) return "overhaul-firearm";

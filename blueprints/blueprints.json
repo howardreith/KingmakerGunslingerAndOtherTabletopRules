@@ -800,6 +800,9 @@
       "symbol": "KMG.Feats.FirearmWeaponFocus", "guid": "0061053ca1104e19b7aa77e34c3a442c", "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Grouped firearm Weapon Focus selection."
     },
     {
+      "symbol": "KMG.Feats.NativeWeaponFocusWithFirearms", "guid": "62ca8c449be14b708778137902890bd9", "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Second Playtest 0.0.62", "notes": "Player-facing native Weapon Focus wrapper containing the native parameterized feat and firearm-type choices."
+    },
+    {
       "symbol": "KMG.Feats.WeaponFocusPistol", "guid": "8b39bd79d27048dda58e0a513e529f2c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Pistol choice."
     },
     {

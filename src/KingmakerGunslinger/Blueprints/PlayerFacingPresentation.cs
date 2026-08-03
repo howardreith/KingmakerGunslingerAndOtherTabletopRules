@@ -25,15 +25,6 @@ namespace KingmakerGunslinger.Blueprints
                 foreach (BlueprintFeatureBase feature in entry.Features)
                     Visit(feature, fallbackIcon, visited);
 
-            progression.UIGroups = progression.LevelEntries
-                .Select(entry => entry.Features.Where(IsVisibleProjectFeature)
-                    .Distinct().ToArray())
-                .Where(features => features.Length > 1)
-                .Select(features => new UIGroup { Features = features.ToList() })
-                .ToArray();
-            if (progression.UIGroups.Length == 0)
-                throw new InvalidOperationException(
-                    "Gunslinger progression exposed no player-facing UI groups.");
             foreach (BlueprintUnitFact fact in visited)
             {
                 BlueprintAbility ability = fact as BlueprintAbility;
@@ -50,6 +41,19 @@ namespace KingmakerGunslinger.Blueprints
                     throw new InvalidOperationException(
                         "Player-facing ability tooltip metadata is incomplete: " + ability.name);
             }
+        }
+
+        internal static void ConfigureTracks(BlueprintProgression progression,
+            params BlueprintFeatureBase[][] tracks)
+        {
+            if (progression == null) throw new ArgumentNullException("progression");
+            progression.UIGroups = (tracks ?? Array.Empty<BlueprintFeatureBase[]>())
+                .Where(features => features != null && features.Length > 1)
+                .Select(features => new UIGroup { Features = features.ToList() })
+                .ToArray();
+            if (progression.UIGroups.Length == 0)
+                throw new InvalidOperationException(
+                    "Gunslinger progression exposed no player-facing UI groups.");
         }
 
         private static void CompleteTooltipMetadata(BlueprintAbility ability)

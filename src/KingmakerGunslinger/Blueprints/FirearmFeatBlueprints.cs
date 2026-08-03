@@ -15,16 +15,19 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal FirearmFeatBlueprintSet(BlueprintFeatureSelection weaponFocus,
             BlueprintFeature[] weaponFocusChoices,
+            BlueprintFeatureSelection nativeWeaponFocusWithFirearms,
             BlueprintFeatureSelection rapidReload,
             BlueprintFeature[] rapidReloadChoices)
         {
             WeaponFocus = weaponFocus;
             WeaponFocusChoices = weaponFocusChoices;
+            NativeWeaponFocusWithFirearms = nativeWeaponFocusWithFirearms;
             RapidReload = rapidReload;
             RapidReloadChoices = rapidReloadChoices;
         }
         internal BlueprintFeatureSelection WeaponFocus { get; private set; }
         internal BlueprintFeature[] WeaponFocusChoices { get; private set; }
+        internal BlueprintFeatureSelection NativeWeaponFocusWithFirearms { get; private set; }
         internal BlueprintFeatureSelection RapidReload { get; private set; }
         internal BlueprintFeature[] RapidReloadChoices { get; private set; }
     }
@@ -33,7 +36,10 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string BasicFeatSelectionGuid = "247a4068296e8be42890143f451b4b45";
         private const string FighterFeatSelectionGuid = "41c8486641f7d6d4283ca9dae4147a9f";
+        private const string NativeWeaponFocusGuid = "1e1f627d26ad36f43bbd26cc2bf8ac7e";
         internal const string WeaponFocusSelectionSymbol = "KMG.Feats.FirearmWeaponFocus";
+        internal const string NativeWeaponFocusWrapperSymbol =
+            "KMG.Feats.NativeWeaponFocusWithFirearms";
         internal const string RapidReloadSelectionSymbol = "KMG.Feats.RapidReload";
         internal static readonly FirearmKind[] Kinds = { FirearmKind.Pistol,
             FirearmKind.Musket, FirearmKind.Blunderbuss, FirearmKind.Rifle,
@@ -47,9 +53,13 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Feats.RapidReloadBlunderbuss", "KMG.Feats.RapidReloadRifle",
             "KMG.Feats.RapidReloadRevolver" };
 
-        internal static FirearmFeatBlueprintSet Register(BlueprintRegistry registry,
+        internal static FirearmFeatBlueprintSet Register(LibraryScriptableObject library,
+            BlueprintRegistry registry,
             BlueprintFeature firearmProficiency)
         {
+            if (library == null) throw new ArgumentNullException("library");
+            BlueprintFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
             var focus = new BlueprintFeature[Kinds.Length];
             var rapid = new BlueprintFeature[Kinds.Length];
             for (int i = 0; i < Kinds.Length; i++)
@@ -63,11 +73,19 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection focusSelection = registry.Register<BlueprintFeatureSelection>(
                 WeaponFocusSelectionSymbol, () => CreateSelection("Firearm Weapon Focus",
                     "Select a firearm type. Attacks with that firearm gain a +1 bonus.", focus));
+            focusSelection.HideInUI = true;
+            var wrapperChoices = new BlueprintFeature[focus.Length + 1];
+            wrapperChoices[0] = nativeWeaponFocus;
+            Array.Copy(focus, 0, wrapperChoices, 1, focus.Length);
+            BlueprintFeatureSelection wrapper = registry.Register<BlueprintFeatureSelection>(
+                NativeWeaponFocusWrapperSymbol, () => CreateSelection("Weapon Focus",
+                    "Choose a native weapon category or a firearm type. You gain +1 attack with only the selected weapon.",
+                    wrapperChoices));
             BlueprintFeatureSelection rapidSelection = registry.Register<BlueprintFeatureSelection>(
                 RapidReloadSelectionSymbol, () => CreateSelection("Rapid Reload",
                     "Select a firearm type. Reloading that firearm uses the reduced action listed in its description.", rapid));
             RapidReloadRuntime.Configure(Kinds, rapid);
-            return new FirearmFeatBlueprintSet(focusSelection, focus,
+            return new FirearmFeatBlueprintSet(focusSelection, focus, wrapper,
                 rapidSelection, rapid);
         }
 
@@ -82,7 +100,10 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintFeatureSelection>(library, FighterFeatSelectionGuid,
                     "native Fighter combat feat selection");
             var publication = new FirearmFeatCatalogPublication(basic, fighter);
-            publication.Publish(set.WeaponFocus, set.RapidReload);
+            BlueprintFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
+            publication.Publish(nativeWeaponFocus,
+                set.NativeWeaponFocusWithFirearms, set.RapidReload);
             return publication;
         }
 
@@ -162,16 +183,21 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection fighter)
         { _basic = basic; _fighter = fighter; }
 
-        internal void Publish(params BlueprintFeature[] additions)
+        internal void Publish(BlueprintFeature nativeWeaponFocus,
+            BlueprintFeature wrapper, BlueprintFeature rapidReload)
         {
             _basicBefore = _basic.Features;
             _basicAllBefore = _basic.AllFeatures;
             _fighterBefore = _fighter.Features;
             _fighterAllBefore = _fighter.AllFeatures;
-            _basic.Features = Append(_basicBefore, additions);
-            _basic.AllFeatures = Append(_basicAllBefore, additions);
-            _fighter.Features = Append(_fighterBefore, additions);
-            _fighter.AllFeatures = Append(_fighterAllBefore, additions);
+            _basic.Features = ReplaceAndAppend(_basicBefore, nativeWeaponFocus,
+                wrapper, rapidReload);
+            _basic.AllFeatures = ReplaceAndAppend(_basicAllBefore,
+                nativeWeaponFocus, wrapper, rapidReload);
+            _fighter.Features = ReplaceAndAppend(_fighterBefore,
+                nativeWeaponFocus, wrapper, rapidReload);
+            _fighter.AllFeatures = ReplaceAndAppend(_fighterAllBefore,
+                nativeWeaponFocus, wrapper, rapidReload);
         }
 
         internal void Rollback()
@@ -182,13 +208,25 @@ namespace KingmakerGunslinger.Blueprints
             _fighter.AllFeatures = _fighterAllBefore;
         }
 
-        private static BlueprintFeature[] Append(BlueprintFeature[] source,
-            BlueprintFeature[] additions)
+        private static BlueprintFeature[] ReplaceAndAppend(BlueprintFeature[] source,
+            BlueprintFeature nativeWeaponFocus, BlueprintFeature wrapper,
+            BlueprintFeature rapidReload)
         {
             source = source ?? Array.Empty<BlueprintFeature>();
-            var result = new BlueprintFeature[source.Length + additions.Length];
-            Array.Copy(source, result, source.Length);
-            Array.Copy(additions, 0, result, source.Length, additions.Length);
+            int matches = 0;
+            var result = new BlueprintFeature[source.Length + 1];
+            for (int index = 0; index < source.Length; index++)
+            {
+                if (ReferenceEquals(source[index], nativeWeaponFocus))
+                {
+                    result[index] = wrapper;
+                    matches++;
+                }
+                else result[index] = source[index];
+            }
+            if (matches != 1) throw new InvalidOperationException(
+                "Native Weapon Focus must occur exactly once in each feat catalog.");
+            result[result.Length - 1] = rapidReload;
             return result;
         }
     }

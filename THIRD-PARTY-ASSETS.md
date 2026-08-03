@@ -16,3 +16,9 @@
 
 No icon in this set was extracted from Kingmaker, Wrath of the Righteous, or
 another mod.
+
+## Second-playtest intake
+
+All five candidate model sets and all five candidate WAV recordings are quarantined: no author, URL, license text, or redistribution permission accompanied them. Nothing from those roots is copied, processed, bundled, or packaged. See `C:\Dev\KingmakerGunslingerLab\ASSET-INTAKE-AUDIT.md`.
+
+The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.

@@ -18,8 +18,8 @@ def main() -> int:
     if not source.is_dir() or source.name != "KingmakerGunslinger":
         raise RuntimeError("Source must be the staged KingmakerGunslinger directory.")
     files = sorted((path for path in source.rglob("*") if path.is_file()), key=lambda p: p.as_posix())
-    if len(files) != 28:
-        raise RuntimeError(f"Expected exactly 28 staged package files, observed {len(files)}.")
+    if len(files) != 34:
+        raise RuntimeError(f"Expected exactly 34 staged package files, observed {len(files)}.")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(
         args.output,
