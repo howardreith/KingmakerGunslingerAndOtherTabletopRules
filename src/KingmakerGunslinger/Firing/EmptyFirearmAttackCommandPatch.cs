@@ -24,9 +24,12 @@ namespace KingmakerGunslinger.Firing
             Reported = new ConditionalWeakTable<UnitAttack, ReportMarker>();
         private static long _rejected;
         private static long _autoReloadReplacements;
+        private static long _evaluatedAttacks;
         internal static long Rejected { get { return Interlocked.Read(ref _rejected); } }
         internal static long AutoReloadReplacements
         { get { return Interlocked.Read(ref _autoReloadReplacements); } }
+        internal static long EvaluatedAttacks
+        { get { return Interlocked.Read(ref _evaluatedAttacks); } }
 
         private static bool Prepare()
         {
@@ -47,6 +50,7 @@ namespace KingmakerGunslinger.Firing
             UnitAttack attack = __instance as UnitAttack;
             if (attack == null || attack.Executor == null ||
                 attack.Executor.Descriptor == null) return true;
+            Interlocked.Increment(ref _evaluatedAttacks);
             ExactEquippedFirearmContext firearm;
             string reason;
             if (!ExactEquippedFirearmResolver.TryResolve(

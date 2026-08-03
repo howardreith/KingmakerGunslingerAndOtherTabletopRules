@@ -2838,9 +2838,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             long rejectedBefore = EmptyFirearmAttackCommandPatch.Rejected;
             long autoBefore = EmptyFirearmAttackCommandPatch.AutoReloadReplacements;
+            long evaluatedBefore = EmptyFirearmAttackCommandPatch.EvaluatedAttacks;
             long rulesBefore = FirearmDischargeRuntimeDiagnostics.Observed;
             bool rejectedOnce = false, noRule = false, autoReplacement = false,
-                statePreserved = false;
+                statePreserved = false, resolverReady = false;
             try
             {
                 weapon = new ItemEntityWeapon(pistol);
@@ -2848,6 +2849,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Normal));
+                ExactEquippedFirearmContext resolved;
+                string resolutionReason;
+                resolverReady = ExactEquippedFirearmResolver.TryResolve(
+                    attacker.Descriptor, out resolved, out resolutionReason);
                 var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
                 SetDeclaredExactProperty(attack, "Target", target);
                 bool first = ReadCanStartThroughPatchedGetter(attack);
@@ -2900,13 +2905,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Dispose();
                 attacker.Dispose();
             }
-            string observed = "rejectedOnce=" + rejectedOnce + ";auto=" +
-                autoReplacement + ";noRule=" + noRule + ";state=" + statePreserved;
+            string observed = "resolver=" + resolverReady + ";evaluated=" +
+                (EmptyFirearmAttackCommandPatch.EvaluatedAttacks - evaluatedBefore) +
+                ";rejectedOnce=" + rejectedOnce + ";auto=" + autoReplacement +
+                ";noRule=" + noRule + ";state=" + statePreserved;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("empty-command-pre-rule-rejection",
                     "one bounded rejection across repeated CanStart validation", observed,
-                    rejectedOnce, "Harmony UnitCommand.CanStart production patch"),
+                    resolverReady && rejectedOnce,
+                    "exact equipped resolver and Harmony UnitCommand.CanStart production patch"),
                 Assertion("empty-command-no-attack-rule",
                     "no RuleAttackRoll discharge observation", observed, noRule,
                     "FirearmDischargeRuntimeDiagnostics observed counter"),
