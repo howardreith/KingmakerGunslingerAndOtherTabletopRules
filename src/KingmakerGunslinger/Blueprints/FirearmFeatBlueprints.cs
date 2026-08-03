@@ -58,8 +58,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature firearmProficiency)
         {
             if (library == null) throw new ArgumentNullException("library");
-            BlueprintFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
+            BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
+                BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
             var focus = new BlueprintFeature[Kinds.Length];
             var rapid = new BlueprintFeature[Kinds.Length];
             for (int i = 0; i < Kinds.Length; i++)
@@ -100,8 +100,8 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintFeatureSelection>(library, FighterFeatSelectionGuid,
                     "native Fighter combat feat selection");
             var publication = new FirearmFeatCatalogPublication(basic, fighter);
-            BlueprintFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
+            BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
+                BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
             publication.Publish(nativeWeaponFocus,
                 set.NativeWeaponFocusWithFirearms, set.RapidReload);
             return publication;

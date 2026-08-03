@@ -19,6 +19,16 @@ another mod.
 
 ## Second-playtest intake
 
-All five candidate model sets and all five candidate WAV recordings are quarantined: no author, URL, license text, or redistribution permission accompanied them. Nothing from those roots is copied, processed, bundled, or packaged. See `C:\Dev\KingmakerGunslingerLab\ASSET-INTAKE-AUDIT.md`.
+All five candidate model sets and all five candidate WAV recordings remain
+quarantined and are excluded from source and packages. Four model sets and all
+audio lack adequate provenance/license evidence. The advanced-rifle folder now
+claims **Martini Henry rifle** by **ASHISH (Ashish0096)** under CC-BY-4.0, but
+its FBX embeds the contradictory Maya filename `fusil winchester v3.mb` and no
+ASHISH, Ashish0096, or Martini-Henry identifier. The license evidence therefore
+does not yet establish that it covers the exact local binary hashes. This is a
+single file-to-source identity gap, not a second candidate or attribution to a
+different Winchester creator. See
+`C:\Dev\KingmakerGunslingerLab\ASSET-INTAKE-AUDIT.md` for hashes and the exact
+evidence required to clear quarantine.
 
 The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.
