@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
@@ -14,7 +15,7 @@ namespace KingmakerGunslinger.Assets
         private static readonly object Sync = new object();
         private static AssetBundle _bundle;
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
-        private static readonly Dictionary<FirearmKind, AudioClip> Shots = new Dictionary<FirearmKind, AudioClip>();
+        private static readonly Dictionary<FirearmKind, UnityEngine.Object> Shots = new Dictionary<FirearmKind, UnityEngine.Object>();
         private static long _shotEvents;
         internal static long ShotEvents { get { lock (Sync) return _shotEvents; } }
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
@@ -53,7 +54,7 @@ namespace KingmakerGunslinger.Assets
         private static void LoadShot(FirearmKind kind, string name)
         {
             string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name, StringComparison.OrdinalIgnoreCase));
-            AudioClip clip = _bundle.LoadAsset<AudioClip>(path);
+            UnityEngine.Object clip = _bundle.LoadAsset(path);
             if (clip == null) throw new InvalidDataException("Missing firearm audio: " + name);
             Shots[kind] = clip;
         }
@@ -65,9 +66,23 @@ namespace KingmakerGunslinger.Assets
         {
             lock (Sync)
             {
-                AudioClip clip;
+                UnityEngine.Object clip;
                 if (wielder == null || !Shots.TryGetValue(kind, out clip) || clip == null) return false;
-                AudioSource.PlayClipAtPoint(clip, wielder.Position, 0.75f);
+                Type source = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(assembly => assembly.GetType("UnityEngine.AudioSource",
+                        false, false)).FirstOrDefault(value => value != null);
+                if (source == null)
+                {
+                    Assembly audio = Assembly.Load("UnityEngine.AudioModule");
+                    source = audio == null ? null : audio.GetType(
+                        "UnityEngine.AudioSource", false, false);
+                }
+                if (source == null) return false;
+                MethodInfo play = source.GetMethods(BindingFlags.Public |
+                    BindingFlags.Static).Single(value =>
+                        value.Name == "PlayClipAtPoint" &&
+                        value.GetParameters().Length == 3);
+                play.Invoke(null, new object[] { clip, wielder.Position, 0.75f });
                 _shotEvents++; return true;
             }
         }
