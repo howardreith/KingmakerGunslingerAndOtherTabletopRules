@@ -2855,13 +2855,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string resolutionReason;
                 resolverReady = ExactEquippedFirearmResolver.TryResolve(
                     attacker.Descriptor, out resolved, out resolutionReason);
-                var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                SetDeclaredExactProperty(attack, "Target", target);
-                attacker.Commands.Run(attack);
-                attacker.Commands.Run(attack);
-                bool first = false;
-                bool second = false;
-                rejectedOnce = !first && !second &&
+                UnitCommand rejected = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(attacker, target);
+                rejectedOnce = rejected == null &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 1 &&
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore;
                 noRule = FirearmDischargeRuntimeDiagnostics.Observed == rulesBefore;
@@ -2882,14 +2878,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(
                     standard, attacker.Descriptor);
                 attacker.AutoUseAbility = data;
-                var autoAttack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                SetDeclaredExactProperty(autoAttack, "Target", target);
-                attacker.Commands.Run(autoAttack);
-                bool autoCanStart = false;
-                autoReplacement = !autoCanStart &&
+                UnitCommand replacement = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(attacker, target);
+                autoReplacement = replacement is Kingmaker.UnitLogic.Commands.UnitUseAbility &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 2 &&
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore + 1 &&
-                    EmptyFirearmAttackCommandPatch.EvaluatedAttacks >= evaluatedBefore + 3;
+                    EmptyFirearmAttackCommandPatch.EvaluatedAttacks == evaluatedBefore + 2;
                 noRule = noRule && FirearmDischargeRuntimeDiagnostics.Observed == rulesBefore;
             }
             finally
@@ -2917,9 +2911,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("empty-command-pre-rule-rejection",
-                    "one bounded rejection across repeated CanStart validation", observed,
+                    "no attack command is constructed for one unloaded request", observed,
                     resolverReady && rejectedOnce,
-                    "exact equipped resolver and Harmony UnitCommand.CanStart production patch"),
+                    "exact equipped resolver and UnitAttack.CreateAttackCommand patch"),
                 Assertion("empty-command-no-attack-rule",
                     "no RuleAttackRoll discharge observation", observed, noRule,
                     "FirearmDischargeRuntimeDiagnostics observed counter"),
@@ -2927,8 +2921,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "empty state remains empty", observed, statePreserved,
                     "item-owned firearm state"),
                 Assertion("empty-command-auto-reload-replacement",
-                    "attack rejected once and native auto-use reload remains selected", observed,
-                    autoReplacement, "native AbilityData auto-use scheduling"),
+                    "attack construction replaced by one native reload command", observed,
+                    autoReplacement, "native UnitUseAbility auto-use command"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -10466,19 +10460,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (value == null) throw new ArgumentNullException("value");
             PropertyInfo property = value.GetType().GetProperty(name,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
-            if (setter == null)
-                throw new MissingMemberException(value.GetType().FullName, name);
-            setter.Invoke(value, new[] { propertyValue });
-        }
-
-        private static void SetDeclaredExactProperty(object value, string name,
-            object propertyValue)
-        {
-            if (value == null) throw new ArgumentNullException("value");
-            PropertyInfo property = value.GetType().GetProperty(name,
-                BindingFlags.Public | BindingFlags.NonPublic |
-                BindingFlags.Instance | BindingFlags.DeclaredOnly);
             MethodInfo setter = property == null ? null : property.GetSetMethod(true);
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
