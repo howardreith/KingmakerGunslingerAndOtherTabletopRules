@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Reloading;
@@ -13,32 +14,33 @@ namespace KingmakerGunslinger.Firing
     /// Rejects an empty firearm at UnitAttack.CanStart, before OnStart configures an
     /// animation or TriggerAttackRule constructs RuleAttackWithWeapon/RuleAttackRoll.
     /// </summary>
-    [HarmonyPatch(typeof(UnitAttack), "get_CanStart")]
+    [HarmonyPatch(typeof(UnitCommand), "get_CanStart")]
     internal static class EmptyFirearmAttackCommandPatch
     {
         private static readonly ConditionalWeakTable<UnitAttack, ReportMarker>
             Reported = new ConditionalWeakTable<UnitAttack, ReportMarker>();
 
-        private static bool Prefix(UnitAttack __instance, ref bool __result)
+        private static bool Prefix(UnitCommand __instance, ref bool __result)
         {
-            if (__instance == null || __instance.Executor == null ||
-                __instance.Executor.Descriptor == null) return true;
+            UnitAttack attack = __instance as UnitAttack;
+            if (attack == null || attack.Executor == null ||
+                attack.Executor.Descriptor == null) return true;
             ExactEquippedFirearmContext firearm;
             string reason;
             if (!ExactEquippedFirearmResolver.TryResolve(
-                __instance.Executor.Descriptor, out firearm, out reason))
+                attack.Executor.Descriptor, out firearm, out reason))
             {
                 if (reason != null && reason.IndexOf("ambiguous",
                     StringComparison.OrdinalIgnoreCase) >= 0)
-                    return Reject(__instance,
+                    return Reject(attack,
                         EmptyFirearmCommandDisposition.RejectAmbiguous,
                         "Firearm attack rejected: equipped firearms are ambiguous.",
                         ref __result);
                 return true;
             }
-            bool autoReload = IsReloadAutoUse(__instance);
+            bool autoReload = IsReloadAutoUse(attack);
             bool reloadLegal = autoReload &&
-                __instance.Executor.GetAvailableAutoUseAbility() != null;
+                attack.Executor.GetAvailableAutoUseAbility() != null;
             EmptyFirearmCommandDisposition disposition =
                 EmptyFirearmAttackPolicy.Evaluate(true, false,
                     firearm.Firearm.Repository.State, autoReload, reloadLegal);
@@ -48,7 +50,7 @@ namespace KingmakerGunslinger.Firing
                 : disposition == EmptyFirearmCommandDisposition.RejectWrecked
                 ? firearm.Firearm.ItemDisplayName + " is Wrecked."
                 : firearm.Firearm.ItemDisplayName + " is unloaded.";
-            return Reject(__instance, disposition, message, ref __result);
+            return Reject(attack, disposition, message, ref __result);
         }
 
         private static bool IsReloadAutoUse(UnitAttack command)
