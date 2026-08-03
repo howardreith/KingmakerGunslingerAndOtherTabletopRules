@@ -291,6 +291,8 @@
     <Compile Include="Firearms\FirearmStateTokenReconciliationService.cs" />
     <Compile Include="Firing\FirearmDischargeResult.cs" />
     <Compile Include="Firing\FirearmDischargeRuntime.cs" />
+    <Compile Include="Firing\EmptyFirearmAttackPolicy.cs" />
+    <Compile Include="Firing\EmptyFirearmAttackCommandPatch.cs" />
     <Compile Include="Firing\FirearmDischargeRuntimeDiagnostics.cs" />
     <Compile Include="Firing\FirearmDischargeService.cs" />
     <Compile Include="Firing\FirearmDischargeStatus.cs" />

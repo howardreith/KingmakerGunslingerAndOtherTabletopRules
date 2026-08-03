@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 841,
+    "testCount": 846,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

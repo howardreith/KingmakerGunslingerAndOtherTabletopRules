@@ -2754,7 +2754,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("reload-single-player-action",
                     "one visible parent; four non-autofill native variants",
                     observed, !parent.Hidden && variants.Length == 4 &&
-                        variants.All(value => !value.Hidden &&
+                        variants.All(value => value.Hidden &&
                             value.ActionBarAutoFillIgnored),
                     "AbilityVariants parent and child presentation"),
                 Assertion("native-reload-autocast-selection",

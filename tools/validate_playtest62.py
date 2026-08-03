@@ -25,7 +25,7 @@ def require_tokens(path: Path, tokens: tuple[str, ...]) -> None:
         raise AssertionError(f"{path.relative_to(path.parents[2])} lacks {missing}")
 
 def validate(root: Path) -> None:
-    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 841, 158, 159)
+    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 846, 158, 159)
     icon_dir = root / "assets" / "game" / "icons"
     for name in ICON_NAMES:
         icon = icon_dir / f"{name}.png"

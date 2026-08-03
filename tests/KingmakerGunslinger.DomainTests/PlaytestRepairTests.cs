@@ -1,6 +1,7 @@
 using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Firing;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -50,6 +51,62 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentNullException>(() =>
                 ReloadActionEconomy.Evaluate(null, false),
                 "Null firearm definition must fail closed.");
+        }
+
+        private static void EmptyCommandLoadedAllows()
+        {
+            Assertions.Equal(EmptyFirearmCommandDisposition.Allow,
+                EmptyFirearmAttackPolicy.Evaluate(true, false,
+                    FirearmStateMachine.Load(EmptyState(),
+                        new FirearmStateRules(1, new[] { BasicRound() }),
+                        BasicRound(), 1), false, false),
+                "A loaded firearm command must remain legal.");
+        }
+
+        private static void EmptyCommandUnloadedRejects()
+        {
+            Assertions.Equal(EmptyFirearmCommandDisposition.RejectUnloaded,
+                EmptyFirearmAttackPolicy.Evaluate(true, false,
+                    EmptyState(), false, true),
+                "An unloaded firearm must reject before attack construction.");
+        }
+
+        private static void EmptyCommandWreckedRejects()
+        {
+            Assertions.Equal(EmptyFirearmCommandDisposition.RejectWrecked,
+                EmptyFirearmAttackPolicy.Evaluate(true, false,
+                    FirearmStateMachine.Wreck(EmptyState()), true, true),
+                "A Wrecked firearm must never auto-reload or attack.");
+        }
+
+        private static void EmptyCommandAutoQueuesLegalReload()
+        {
+            Assertions.Equal(EmptyFirearmCommandDisposition.QueueReload,
+                EmptyFirearmAttackPolicy.Evaluate(true, false,
+                    EmptyState(), true, true),
+                "Auto-reload may replace only a legal unloaded attack.");
+            Assertions.Equal(EmptyFirearmCommandDisposition.RejectUnloaded,
+                EmptyFirearmAttackPolicy.Evaluate(true, false,
+                    EmptyState(), true, false),
+                "Auto-reload without a legal reload must fail closed.");
+        }
+
+        private static void EmptyCommandAmbiguousRejects()
+        {
+            Assertions.Equal(EmptyFirearmCommandDisposition.RejectAmbiguous,
+                EmptyFirearmAttackPolicy.Evaluate(false, true, null, true, true),
+                "Ambiguous firearms must fail closed before state access.");
+        }
+
+        private static FirearmState EmptyState()
+        {
+            return new FirearmState(FirearmState.CurrentSchemaVersion, 0,
+                null, FirearmCondition.Normal);
+        }
+
+        private static AmmunitionId BasicRound()
+        {
+            return new AmmunitionId("basic-round");
         }
     }
 }

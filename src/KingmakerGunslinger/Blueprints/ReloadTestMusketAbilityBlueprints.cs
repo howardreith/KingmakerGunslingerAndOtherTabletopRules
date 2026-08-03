@@ -79,7 +79,7 @@ namespace KingmakerGunslinger.Blueprints
             // Variants must remain eligible for native right-click autocast. They are
             // not granted as separate facts and are excluded from action-bar autofill,
             // so the player still receives one coherent Reload Firearm parent action.
-            result.Hidden = false;
+            result.Hidden = true;
             result.ActionType = action == EffectiveReloadAction.Move
                 ? UnitCommand.CommandType.Move : action == EffectiveReloadAction.Free
                     ? UnitCommand.CommandType.Free : UnitCommand.CommandType.Standard;
@@ -138,6 +138,9 @@ namespace KingmakerGunslinger.Blueprints
                     "Reload Firearm parent has incorrect presentation or variants.");
             foreach (BlueprintAbility variant in variants)
             {
+                if (!variant.Hidden || !variant.ActionBarAutoFillIgnored)
+                    throw new InvalidOperationException(
+                        "Internal Reload Firearm variants must remain hidden implementation details.");
                 ReloadTestMusketAbilityLogic logic = variant.ComponentsArray
                     .OfType<ReloadTestMusketAbilityLogic>().Single();
                 logic.ValidateConfiguration();
