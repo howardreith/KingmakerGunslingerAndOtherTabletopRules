@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
@@ -15,7 +14,7 @@ namespace KingmakerGunslinger.Assets
         private static readonly object Sync = new object();
         private static AssetBundle _bundle;
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
-        private static readonly Dictionary<FirearmKind, UnityEngine.Object> Shots = new Dictionary<FirearmKind, UnityEngine.Object>();
+        private static readonly Dictionary<FirearmKind, AudioClip> Shots = new Dictionary<FirearmKind, AudioClip>();
         private static long _shotEvents;
         internal static long ShotEvents { get { lock (Sync) return _shotEvents; } }
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
@@ -54,7 +53,7 @@ namespace KingmakerGunslinger.Assets
         private static void LoadShot(FirearmKind kind, string name)
         {
             string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name, StringComparison.OrdinalIgnoreCase));
-            UnityEngine.Object clip = _bundle.LoadAsset(path);
+            AudioClip clip = _bundle.LoadAsset<AudioClip>(path);
             if (clip == null) throw new InvalidDataException("Missing firearm audio: " + name);
             Shots[kind] = clip;
         }
@@ -66,12 +65,9 @@ namespace KingmakerGunslinger.Assets
         {
             lock (Sync)
             {
-                UnityEngine.Object clip;
+                AudioClip clip;
                 if (wielder == null || !Shots.TryGetValue(kind, out clip) || clip == null) return false;
-                Type source = Type.GetType("UnityEngine.AudioSource, UnityEngine.AudioModule", false);
-                if (source == null) return false;
-                MethodInfo play = source.GetMethods(BindingFlags.Public | BindingFlags.Static).Single(value => value.Name == "PlayClipAtPoint" && value.GetParameters().Length == 3);
-                play.Invoke(null, new object[] { clip, wielder.Position, 0.75f });
+                AudioSource.PlayClipAtPoint(clip, wielder.Position, 0.75f);
                 _shotEvents++; return true;
             }
         }
