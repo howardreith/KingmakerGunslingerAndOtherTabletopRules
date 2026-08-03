@@ -18,6 +18,9 @@ $projectPath = Join-Path $repositoryRoot 'tests\KingmakerGunslinger.DomainTests\
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
+$processPath = $env:Path
+[Environment]::SetEnvironmentVariable('PATH', $null, 'Process')
+[Environment]::SetEnvironmentVariable('Path', $processPath, 'Process')
 $target = if ($Clean) { 'Rebuild' } else { 'Build' }
 $arguments = @(
     $projectPath,
