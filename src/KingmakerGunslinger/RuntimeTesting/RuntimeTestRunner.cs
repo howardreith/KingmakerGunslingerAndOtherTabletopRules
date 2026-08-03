@@ -2849,7 +2849,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Normal));
                 var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                attack.NewTarget = target;
+                SetExactProperty(attack, "Target", target);
                 bool first = attack.CanStart;
                 bool second = attack.CanStart;
                 rejectedOnce = !first && !second &&
@@ -2874,7 +2874,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     standard, attacker.Descriptor);
                 attacker.AutoUseAbility = data;
                 var autoAttack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                autoAttack.NewTarget = target;
+                SetExactProperty(autoAttack, "Target", target);
                 bool autoCanStart = autoAttack.CanStart;
                 autoReplacement = !autoCanStart &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 2 &&
