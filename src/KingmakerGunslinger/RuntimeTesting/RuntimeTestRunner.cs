@@ -5115,6 +5115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int originalStartingGold = 0;
             long moneyBefore = 0;
             int previewLevel = -1, committedLevel = -1;
+            int pistolDelta = -1, powderDelta = -1, ballDelta = -1;
             bool selected = false, callback = false, proficiencies = false,
                 grit = false, cleaned = false;
             var addedInventory = new List<object>();
@@ -5173,6 +5174,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 addedInventory.AddRange(EnumerateRuntimeInventory(runtimePlayer.Inventory)
                     .Where(item => !inventoryBefore.Any(existing =>
                         ReferenceEquals(existing, item))));
+                if (startingItems.Length != 3)
+                    throw new InvalidOperationException(
+                        "Gunslinger creation did not expose three stable starting-item identities.");
+                pistolDelta = runtimePlayer.Inventory.Count(startingItems[0]) -
+                    startingCounts[0];
+                powderDelta = runtimePlayer.Inventory.Count(startingItems[1]) -
+                    startingCounts[1];
+                ballDelta = runtimePlayer.Inventory.Count(startingItems[2]) -
+                    startingCounts[2];
                 committedLevel = descriptor.Progression.GetClassLevel(gunslinger);
                 proficiencies = descriptor.HasFact(
                     BlueprintBootstrap.GunslingerClass.Proficiencies);
@@ -5216,7 +5226,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "selected=" + selected + ";preview=" + previewLevel +
                 ";committed=" + committedLevel + ";callback=" + callback +
-                ";proficiencies=" + proficiencies + ";grit=" + grit;
+                ";proficiencies=" + proficiencies + ";grit=" + grit +
+                ";starting=" + pistolDelta + "/" + powderDelta + "/" + ballDelta;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("native-character-creation-commit",
@@ -5227,6 +5238,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Gunslinger proficiencies and grit installed", observed,
                     proficiencies && grit,
                     "exact committed descriptor HasFact after native Commit"),
+                Assertion("creation-starting-stacks",
+                    "one Pistol; one stack of 20 Black Powder Charges; one stack of 20 Lead Balls",
+                    observed, pistolDelta == 1 && powderDelta == 20 && ballDelta == 20 &&
+                        addedInventory.Count == 3,
+                    "native CharGen commit plus exact stable blueprint inventory deltas"),
                 Assertion("external-isolation",
                     "unchanged party, units, cross-scene, companions, inventory, and money",
                     "cleaned=" + cleaned, cleaned,
