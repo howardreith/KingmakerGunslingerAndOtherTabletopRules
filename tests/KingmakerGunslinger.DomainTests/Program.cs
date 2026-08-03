@@ -17,6 +17,7 @@ using KingmakerGunslinger.Persistence;
 using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Classes;
 using KingmakerGunslinger.Grit;
+using KingmakerGunslinger.Feats;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -181,6 +182,11 @@ namespace KingmakerGunslinger.DomainTests
             Case("empty-command.wrecked-rejects", EmptyCommandWreckedRejects),
             Case("empty-command.auto-queues", EmptyCommandAutoQueuesLegalReload),
             Case("empty-command.ambiguous-rejects", EmptyCommandAmbiguousRejects),
+            Case("dependent-feats.attack-kind", DependentFeatAttackKind),
+            Case("dependent-feats.damage-kind", DependentFeatDamageKind),
+            Case("dependent-feats.critical-kind", DependentFeatCriticalKind),
+            Case("dependent-feats.wrong-kind", DependentFeatWrongKind),
+            Case("dependent-feats.invalid", DependentFeatInvalid),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),

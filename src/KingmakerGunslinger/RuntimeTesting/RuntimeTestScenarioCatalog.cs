@@ -12,6 +12,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-gunslinger-presentation";
         internal const string ObserveNativeWeaponFeatContracts =
             "observe-native-weapon-feat-contracts";
+        internal const string DisposableFirearmDependentFeats =
+            "disposable-firearm-dependent-feats";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
         internal const string ObserveProductionFirearmFallbacks =
@@ -151,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
                 ObserveNativeWeaponFeatContracts,
+                DisposableFirearmDependentFeats,
                 ObserveVendorTableContracts,
                 ObserveProductionFirearmFallbacks,
                 ObserveFirearmItemLifecycleContracts,

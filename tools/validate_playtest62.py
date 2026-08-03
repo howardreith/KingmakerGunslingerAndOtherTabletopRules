@@ -26,7 +26,7 @@ def require_tokens(path: Path, tokens: tuple[str, ...]) -> None:
         raise AssertionError(f"{path.relative_to(path.parents[2])} lacks {missing}")
 
 def validate(root: Path) -> None:
-    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 846, 182, 183)
+    validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 851, 182, 183)
     ledger = json.loads((root / "blueprints/blueprints.json").read_text(encoding="utf-8"))
     if any(not isinstance(entry.get("notes"), str) or not entry["notes"].strip()
            for entry in ledger["entries"]):

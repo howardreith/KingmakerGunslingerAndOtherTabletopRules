@@ -458,6 +458,7 @@
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
+    <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
     <Compile Include="Blueprints\ProjectAssetIcons.cs" />
     <Compile Include="Blueprints\DeedTierBlueprints.cs" />

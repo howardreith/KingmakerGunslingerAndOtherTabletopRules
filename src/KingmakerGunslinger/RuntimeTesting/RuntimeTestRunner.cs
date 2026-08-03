@@ -403,6 +403,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunNativeWeaponFeatContractObservation());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFirearmDependentFeats)
+                {
+                    Complete(RunDisposableFirearmDependentFeats());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
                 {
@@ -2682,6 +2688,129 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableFirearmDependentFeats()
+        {
+            string[] choiceGuids = {
+                "71747ea144af4c12922d800f3e9dfa7d",
+                "9bc027cd2bba4fcba753b67e9ecaaca5",
+                "568543cec0ed434e94dc9c453077473f",
+                "c50fd779d2744043ad53f623f21463f0" };
+            string[] selectionGuids = {
+                "c86f79bc910e46c8846bfdef5b296cbd",
+                "ad68031670bd4a67829062b5b39b468e",
+                "9218b10aab644225bd8bbe4fd1b47fbe",
+                "0de5bfcca6bc486fb16f6fb4d5bf7170" };
+            BlueprintFeature[] choices = choiceGuids.Select((guid, index) =>
+                BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                    BlueprintBootstrap.Library, guid, "firearm dependent feat " + index))
+                .ToArray();
+            BlueprintFeatureSelection[] selections = selectionGuids.Select((guid, index) =>
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library, guid, "firearm dependent selection " + index))
+                .ToArray();
+            BlueprintFeature legacy = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                BlueprintBootstrap.Library, "0061053ca1104e19b7aa77e34c3a442c",
+                "legacy firearm Weapon Focus");
+            BlueprintFeatureSelection basic = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                BlueprintBootstrap.Library, "247a4068296e8be42890143f451b4b45",
+                "basic feat selection");
+            BlueprintFeatureSelection fighter = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                BlueprintBootstrap.Library, "41c8486641f7d6d4283ca9dae4147a9f",
+                "Fighter feat selection");
+            bool catalog = selections.All(selection =>
+                basic.AllFeatures.Contains(selection) && fighter.AllFeatures.Contains(selection) &&
+                selection.Features.Length == 6 && selection.AllFeatures.Length == 6);
+            bool prerequisites = choices[0].ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
+                choices[1].ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
+                choices[2].ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
+                choices[3].ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteStatValue>().Any() &&
+                choices.Take(3).All(choice => choice.ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>().Count() == 1);
+
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+            var target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+            ItemEntityWeapon pistol = null, musket = null, crossbow = null;
+            bool effects = false, isolation = false;
+            try
+            {
+                pistol = new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                musket = new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Musket.Item);
+                BlueprintItemWeapon nativeCrossbow = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    BlueprintBootstrap.Library,
+                    TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid,
+                    "native heavy crossbow isolation fixture");
+                crossbow = new ItemEntityWeapon(nativeCrossbow);
+                var greaterFocus = choices[0].ComponentsArray.OfType<
+                    KingmakerGunslinger.Feats.FirearmWeaponFeatBonus>().Single();
+                var specialization = choices[1].ComponentsArray.OfType<
+                    KingmakerGunslinger.Feats.FirearmWeaponFeatBonus>().Single();
+                var greaterSpecialization = choices[2].ComponentsArray.OfType<
+                    KingmakerGunslinger.Feats.FirearmWeaponFeatBonus>().Single();
+                var improvedCritical = choices[3].ComponentsArray.OfType<
+                    KingmakerGunslinger.Feats.FirearmWeaponFeatBonus>().Single();
+                var pistolRoll = new RuleAttackRoll(attacker, target, pistol, 0);
+                greaterFocus.OnEventAboutToTrigger(pistolRoll);
+                var pistolStats = new RuleCalculateWeaponStats(attacker, pistol, null);
+                specialization.OnEventAboutToTrigger(pistolStats);
+                greaterSpecialization.OnEventAboutToTrigger(pistolStats);
+                improvedCritical.OnEventAboutToTrigger(pistolStats);
+                effects = pistolRoll.AttackBonusPenalty == -1 &&
+                    pistolStats.BonusDamage == 4 && pistolStats.DoubleCriticalEdge;
+
+                var musketRoll = new RuleAttackRoll(attacker, target, musket, 0);
+                greaterFocus.OnEventAboutToTrigger(musketRoll);
+                var musketStats = new RuleCalculateWeaponStats(attacker, musket, null);
+                specialization.OnEventAboutToTrigger(musketStats);
+                greaterSpecialization.OnEventAboutToTrigger(musketStats);
+                improvedCritical.OnEventAboutToTrigger(musketStats);
+                var crossbowRoll = new RuleAttackRoll(attacker, target, crossbow, 0);
+                greaterFocus.OnEventAboutToTrigger(crossbowRoll);
+                var crossbowStats = new RuleCalculateWeaponStats(attacker, crossbow, null);
+                specialization.OnEventAboutToTrigger(crossbowStats);
+                greaterSpecialization.OnEventAboutToTrigger(crossbowStats);
+                improvedCritical.OnEventAboutToTrigger(crossbowStats);
+                isolation = musketRoll.AttackBonusPenalty == 0 &&
+                    musketStats.BonusDamage == 0 && !musketStats.DoubleCriticalEdge &&
+                    crossbowRoll.AttackBonusPenalty == 0 &&
+                    crossbowStats.BonusDamage == 0 && !crossbowStats.DoubleCriticalEdge;
+            }
+            finally
+            {
+                if (crossbow != null) crossbow.Dispose();
+                if (musket != null) musket.Dispose();
+                if (pistol != null) pistol.Dispose();
+                target.Dispose();
+                attacker.Dispose();
+            }
+            string observed = "catalog=" + catalog + ";prerequisites=" + prerequisites +
+                ";effects=" + effects + ";isolation=" + isolation +
+                ";legacyHidden=" + legacy.HideInUI;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("dependent-feat-catalog", "four native-style wrappers with six choices each", observed,
+                    catalog, "live basic and Fighter feat catalogs"),
+                Assertion("dependent-feat-prerequisites", "native level/BAB shapes plus exact firearm dependency", observed,
+                    prerequisites, "cloned native prerequisites and project feature dependency"),
+                Assertion("dependent-feat-effects", "+1 attack, +4 combined specialization damage, doubled critical edge", observed,
+                    effects, "production firearm feat rule components"),
+                Assertion("dependent-feat-isolation", "wrong firearm kind and native crossbow unchanged", observed,
+                    isolation, "exact FirearmDefinition.Kind matching"),
+                Assertion("legacy-weapon-focus-compatibility", "legacy selection retained and hidden", observed,
+                    legacy.HideInUI, "preserved 0.0.61 GUID and facts"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableReloadAutocast()

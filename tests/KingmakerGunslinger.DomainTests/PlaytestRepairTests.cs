@@ -2,11 +2,54 @@ using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Firing;
+using Feats = KingmakerGunslinger.Feats;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static partial class Program
     {
+        private static void DependentFeatAttackKind()
+        {
+            var value = Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Pistol,
+                FirearmKind.Pistol, Feats.FirearmWeaponFeatEffect.Attack, 1);
+            Assertions.Equal(1, value.AttackBonus, "Greater Weapon Focus attack bonus changed.");
+            Assertions.Equal(0, value.DamageBonus, "Attack feat leaked damage.");
+        }
+
+        private static void DependentFeatDamageKind()
+        {
+            var value = Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Rifle,
+                FirearmKind.Rifle, Feats.FirearmWeaponFeatEffect.Damage, 2);
+            Assertions.Equal(2, value.DamageBonus, "Weapon Specialization damage changed.");
+            Assertions.Equal(0, value.AttackBonus, "Damage feat leaked attack.");
+        }
+
+        private static void DependentFeatCriticalKind()
+        {
+            var value = Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Revolver,
+                FirearmKind.Revolver, Feats.FirearmWeaponFeatEffect.DoubleCriticalEdge, 0);
+            Assertions.True(value.DoubleCriticalEdge, "Improved Critical did not double the edge.");
+        }
+
+        private static void DependentFeatWrongKind()
+        {
+            var value = Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Pistol,
+                FirearmKind.Musket, Feats.FirearmWeaponFeatEffect.Damage, 2);
+            Assertions.Equal(0, value.DamageBonus, "Wrong firearm kind gained damage.");
+            Assertions.False(value.DoubleCriticalEdge, "Wrong firearm kind gained critical edge.");
+        }
+
+        private static void DependentFeatInvalid()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Pistol,
+                    FirearmKind.Pistol, (Feats.FirearmWeaponFeatEffect)99, 1),
+                "Unknown feat effect must fail closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                Feats.FirearmWeaponFeatPolicy.Evaluate(FirearmKind.Pistol,
+                    FirearmKind.Pistol, Feats.FirearmWeaponFeatEffect.Attack, -1),
+                "Negative feat bonus must fail closed.");
+        }
         private static void ReloadActionsBaseProfiles()
         {
             Assertions.Equal(EffectiveReloadAction.Standard,
