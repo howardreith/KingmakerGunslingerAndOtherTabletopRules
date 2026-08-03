@@ -11,7 +11,7 @@
 - Keeps Rapid Reload optional and firearm-type-specific, exposes one Reload Firearm
   parent command, and hides all static action-cost implementation variants.
 - Adds native right-click auto-reload scheduling and rejects empty-firearm attacks
-  at the command-runner boundary before UnitAttack.OnStart or attack rules.
+  in `UnitAttack.CreateAttackCommand`, before a UnitAttack or attack rule exists.
 - Expands the deterministic suite to 868 tests. External model/audio candidates are
   not packaged unless their exact local binary provenance is established.
 

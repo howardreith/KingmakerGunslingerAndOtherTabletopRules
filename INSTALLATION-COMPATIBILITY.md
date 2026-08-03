@@ -76,6 +76,9 @@ Never test removal against the only copy of a valued save.
 - External model/audio integration requires exact source-file provenance and the
   locally unavailable Unity 2018.4.10f1 editor. These presentation limitations do
   not change firearm rules identity, save schema, or reload action economy.
+- Empty firearm requests are rejected during native attack-command construction.
+  When the applicable Reload Firearm variant is selected for native automatic use,
+  the request produces one normal `UnitUseAbility` reload command instead.
 
 When diagnosing a conflict, reproduce it first on a copied save with only
 Unity Mod Manager and Kingmaker Gunslinger enabled. A clean mod load does not
