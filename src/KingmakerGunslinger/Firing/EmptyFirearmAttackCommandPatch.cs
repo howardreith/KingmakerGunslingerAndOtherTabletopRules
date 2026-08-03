@@ -47,9 +47,9 @@ namespace KingmakerGunslinger.Firing
             harmony.Patch(runDetailed, new HarmonyMethod(prefix), null, null);
         }
 
-        private static bool Prefix(UnitCommands __instance, UnitCommand command)
+        private static bool Prefix(UnitCommands __instance, UnitCommand __0)
         {
-            UnitAttack attack = command as UnitAttack;
+            UnitAttack attack = __0 as UnitAttack;
             if (attack == null || attack.Executor == null ||
                 attack.Executor.Descriptor == null) return true;
             Interlocked.Increment(ref _evaluatedAttacks);
