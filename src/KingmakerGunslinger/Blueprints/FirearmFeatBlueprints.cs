@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
@@ -17,19 +18,25 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature[] weaponFocusChoices,
             BlueprintFeatureSelection nativeWeaponFocusWithFirearms,
             BlueprintFeatureSelection rapidReload,
-            BlueprintFeature[] rapidReloadChoices)
+            BlueprintFeature[] rapidReloadChoices,
+            BlueprintFeatureSelection[] dependentSelections,
+            BlueprintFeature[][] dependentChoices)
         {
             WeaponFocus = weaponFocus;
             WeaponFocusChoices = weaponFocusChoices;
             NativeWeaponFocusWithFirearms = nativeWeaponFocusWithFirearms;
             RapidReload = rapidReload;
             RapidReloadChoices = rapidReloadChoices;
+            DependentSelections = dependentSelections;
+            DependentChoices = dependentChoices;
         }
         internal BlueprintFeatureSelection WeaponFocus { get; private set; }
         internal BlueprintFeature[] WeaponFocusChoices { get; private set; }
         internal BlueprintFeatureSelection NativeWeaponFocusWithFirearms { get; private set; }
         internal BlueprintFeatureSelection RapidReload { get; private set; }
         internal BlueprintFeature[] RapidReloadChoices { get; private set; }
+        internal BlueprintFeatureSelection[] DependentSelections { get; private set; }
+        internal BlueprintFeature[][] DependentChoices { get; private set; }
     }
 
     internal static class FirearmFeatBlueprints
@@ -37,6 +44,15 @@ namespace KingmakerGunslinger.Blueprints
         private const string BasicFeatSelectionGuid = "247a4068296e8be42890143f451b4b45";
         private const string FighterFeatSelectionGuid = "41c8486641f7d6d4283ca9dae4147a9f";
         private const string NativeWeaponFocusGuid = "1e1f627d26ad36f43bbd26cc2bf8ac7e";
+        private static readonly string[] NativeDependentGuids = {
+            "09c9e82965fb4334b984a1e9df3bd088",
+            "31470b17e8446ae4ea0dacd6c5817d86",
+            "7cf5edc65e785a24f9cf93af987d66b3",
+            "f4201c85a991369408740c6888362e20" };
+        private static readonly string[] DependentNames = { "Greater Weapon Focus",
+            "Weapon Specialization", "Greater Weapon Specialization", "Improved Critical" };
+        private static readonly string[] DependentSymbolStems = { "GreaterWeaponFocus",
+            "WeaponSpecialization", "GreaterWeaponSpecialization", "ImprovedCritical" };
         internal const string WeaponFocusSelectionSymbol = "KMG.Feats.FirearmWeaponFocus";
         internal const string NativeWeaponFocusWrapperSymbol =
             "KMG.Feats.NativeWeaponFocusWithFirearms";
@@ -84,9 +100,35 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection rapidSelection = registry.Register<BlueprintFeatureSelection>(
                 RapidReloadSelectionSymbol, () => CreateSelection("Rapid Reload",
                     "Select a firearm type. Reloading that firearm uses the reduced action listed in its description.", rapid));
+            var dependentSelections = new BlueprintFeatureSelection[DependentNames.Length];
+            var dependentChoices = new BlueprintFeature[DependentNames.Length][];
+            for (int family = 0; family < DependentNames.Length; family++)
+            {
+                BlueprintParametrizedFeature native = BlueprintLibraryLookup.RequireExact<
+                    BlueprintParametrizedFeature>(library, NativeDependentGuids[family],
+                        "native " + DependentNames[family]);
+                dependentChoices[family] = new BlueprintFeature[Kinds.Length];
+                for (int kindIndex = 0; kindIndex < Kinds.Length; kindIndex++)
+                {
+                    int capturedFamily = family, capturedKind = kindIndex;
+                    string symbol = "KMG.Feats." + DependentSymbolStems[family] + Kinds[kindIndex];
+                    dependentChoices[family][kindIndex] = registry.Register<BlueprintFeature>(
+                        symbol, () => CreateDependentChoice(capturedFamily,
+                            Kinds[capturedKind], native, focus[capturedKind],
+                            capturedFamily == 2 ? dependentChoices[1][capturedKind] : null));
+                }
+                var choices = new BlueprintFeature[Kinds.Length + 1];
+                choices[0] = native;
+                Array.Copy(dependentChoices[family], 0, choices, 1, Kinds.Length);
+                int captured = family;
+                dependentSelections[family] = registry.Register<BlueprintFeatureSelection>(
+                    "KMG.Feats." + DependentSymbolStems[family] + "WithFirearms",
+                    () => CreateSelection(DependentNames[captured],
+                        "Choose a native weapon category or a firearm type.", choices));
+            }
             RapidReloadRuntime.Configure(Kinds, rapid);
             return new FirearmFeatBlueprintSet(focusSelection, focus, wrapper,
-                rapidSelection, rapid);
+                rapidSelection, rapid, dependentSelections, dependentChoices);
         }
 
         internal static FirearmFeatCatalogPublication Publish(
@@ -102,8 +144,12 @@ namespace KingmakerGunslinger.Blueprints
             var publication = new FirearmFeatCatalogPublication(basic, fighter);
             BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
                 BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
-            publication.Publish(nativeWeaponFocus,
-                set.NativeWeaponFocusWithFirearms, set.RapidReload);
+            var additions = new BlueprintFeature[set.DependentSelections.Length + 2];
+            additions[0] = set.NativeWeaponFocusWithFirearms;
+            additions[1] = set.RapidReload;
+            Array.Copy(set.DependentSelections, 0, additions, 2,
+                set.DependentSelections.Length);
+            publication.Publish(nativeWeaponFocus, additions);
             return publication;
         }
 
@@ -137,6 +183,41 @@ namespace KingmakerGunslinger.Blueprints
                     (rapid ? "Rapid Reload (" : "Weapon Focus (") + kind + ")"),
                 LocalizationService.Create("KMG.Feats." + (rapid ? "RapidReload" : "WeaponFocus") + kind + ".Description", effect),
                 null);
+            return feature;
+        }
+
+        private static BlueprintFeature CreateDependentChoice(int family,
+            FirearmKind kind, BlueprintParametrizedFeature native,
+            BlueprintFeature weaponFocus, BlueprintFeature specialization)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = "KMG_" + DependentSymbolStems[family] + "_" + kind;
+            feature.Ranks = 1;
+            feature.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };
+            var components = native.ComponentsArray
+                .Where(value => value is PrerequisiteStatValue ||
+                    value is PrerequisiteClassLevel)
+                .Select(value => (BlueprintComponent)UnityEngine.Object.Instantiate(value))
+                .ToList();
+            if (family != 3)
+            {
+                var prerequisite = ScriptableObject.CreateInstance<PrerequisiteFeature>();
+                prerequisite.Feature = family == 2 ? specialization : weaponFocus;
+                components.Add(prerequisite);
+            }
+            var effect = ScriptableObject.CreateInstance<FirearmWeaponFeatBonus>();
+            effect.Kind = kind;
+            effect.Effect = family == 0 ? FirearmWeaponFeatEffect.Attack :
+                family == 3 ? FirearmWeaponFeatEffect.DoubleCriticalEdge :
+                FirearmWeaponFeatEffect.Damage;
+            effect.Bonus = family == 0 ? 1 : family == 3 ? 0 : 2;
+            components.Add(effect);
+            feature.ComponentsArray = components.ToArray();
+            string name = DependentNames[family] + " (" + kind + ")";
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.Feats." + DependentSymbolStems[family] + kind + ".Name", name),
+                LocalizationService.Create("KMG.Feats." + DependentSymbolStems[family] + kind + ".Description",
+                    "Gain the " + DependentNames[family] + " benefit with " + kind + " firearms only."), null);
             return feature;
         }
 
@@ -184,17 +265,19 @@ namespace KingmakerGunslinger.Blueprints
         { _basic = basic; _fighter = fighter; }
 
         internal void Publish(BlueprintFeature nativeWeaponFocus,
-            BlueprintFeature wrapper, BlueprintFeature rapidReload)
+            BlueprintFeature[] additions)
         {
             if (nativeWeaponFocus == null) throw new ArgumentNullException("nativeWeaponFocus");
+            if (additions == null || additions.Any(value => value == null))
+                throw new ArgumentNullException("additions");
             _basicBefore = _basic.Features;
             _basicAllBefore = _basic.AllFeatures;
             _fighterBefore = _fighter.Features;
             _fighterAllBefore = _fighter.AllFeatures;
-            _basic.Features = AppendUnique(_basicBefore, wrapper, rapidReload);
-            _basic.AllFeatures = AppendUnique(_basicAllBefore, wrapper, rapidReload);
-            _fighter.Features = AppendUnique(_fighterBefore, wrapper, rapidReload);
-            _fighter.AllFeatures = AppendUnique(_fighterAllBefore, wrapper, rapidReload);
+            _basic.Features = AppendUnique(_basicBefore, additions);
+            _basic.AllFeatures = AppendUnique(_basicAllBefore, additions);
+            _fighter.Features = AppendUnique(_fighterBefore, additions);
+            _fighter.AllFeatures = AppendUnique(_fighterAllBefore, additions);
         }
 
         internal void Rollback()
@@ -206,20 +289,15 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintFeature[] AppendUnique(BlueprintFeature[] source,
-            BlueprintFeature wrapper, BlueprintFeature rapidReload)
+            BlueprintFeature[] additions)
         {
             source = source ?? Array.Empty<BlueprintFeature>();
-            if (wrapper == null) throw new ArgumentNullException("wrapper");
-            if (rapidReload == null) throw new ArgumentNullException("rapidReload");
-            bool hasWrapper = Array.IndexOf(source, wrapper) >= 0;
-            bool hasRapidReload = Array.IndexOf(source, rapidReload) >= 0;
-            var result = new BlueprintFeature[source.Length +
-                (hasWrapper ? 0 : 1) + (hasRapidReload ? 0 : 1)];
+            BlueprintFeature[] missing = additions.Where(value =>
+                Array.IndexOf(source, value) < 0).ToArray();
+            var result = new BlueprintFeature[source.Length + missing.Length];
             for (int index = 0; index < source.Length; index++)
                 result[index] = source[index];
-            int next = source.Length;
-            if (!hasWrapper) result[next++] = wrapper;
-            if (!hasRapidReload) result[next] = rapidReload;
+            Array.Copy(missing, 0, result, source.Length, missing.Length);
             return result;
         }
     }

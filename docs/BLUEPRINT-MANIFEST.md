@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-Playtest 0.0.62 extends the append-only contract to 159 stable identifiers: 158 active and one reserved. The native Weapon Focus wrapper joins the 0.0.61 reload variants, firearm feat choices, and five presentation-only deed-tier summaries.
+Playtest 0.0.62 extends the append-only contract to 183 stable identifiers: 182 active and one reserved. Native-style firearm wrappers for Weapon Focus, Greater Weapon Focus, Weapon Specialization, Greater Weapon Specialization, and Improved Critical join the 0.0.61 reload variants, firearm feat choices, and five presentation-only deed-tier summaries.
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
