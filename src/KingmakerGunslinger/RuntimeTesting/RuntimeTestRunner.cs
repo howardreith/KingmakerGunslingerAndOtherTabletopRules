@@ -1444,13 +1444,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         pistolMarkers == 1 && musketMarkers == 1 &&
                         blunderbussMarkers == 1 && rifleMarkers == 1 && revolverMarkers == 1,
                     "concrete BlueprintWeaponType component arrays"),
-                Assertion("special-range-fails-closed", "unavailableRestrictions=1",
+                Assertion("special-range-enabled-contract", "unavailableRestrictions=0",
                     "unavailableRestrictions=" + blunderbussUnavailable,
                     catalog != null &&
                         !catalog.Blunderbuss.Spec.Definition.HasFixedRangeIncrement &&
                         catalog.Blunderbuss.Spec.IsPlayerFireable &&
-                        blunderbussUnavailable == 1,
-                    "special-range definition and concrete item restriction"),
+                        blunderbussUnavailable == 0,
+                    "enabled scatter-range definition and concrete production item"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",

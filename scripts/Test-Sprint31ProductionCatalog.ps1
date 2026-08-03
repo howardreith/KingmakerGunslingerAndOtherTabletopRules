@@ -30,9 +30,9 @@ $checks = [ordered]@{
     'proves-marker-and-native-isolation' =
         $runner.Contains('"marker-and-native-source-isolation"') -and
         $runner.Contains('nativeHeavyMarkers == 0')
-    'special-range-fails-closed' =
-        $runner.Contains('"special-range-fails-closed"') -and
-        $runner.Contains('blunderbussUnavailable == 1')
+    'enabled-special-range-contract' =
+        $runner.Contains('"special-range-enabled-contract"') -and
+        $runner.Contains('blunderbussUnavailable == 0')
     'production-critical-profiles-exact' =
         $runner.Contains('"production-critical-profiles"') -and
         $runner.Contains('HasCriticalProfile(catalog.Pistol.WeaponType, 20, 4)') -and
