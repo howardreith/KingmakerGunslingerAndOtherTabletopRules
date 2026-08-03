@@ -416,6 +416,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableReloadAutocast)
+                {
+                    Complete(RunDisposableReloadAutocast());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching)
                 {
                     Complete(RunDisposableProductionFirearmSwitching());
@@ -1661,7 +1667,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     beforeQuantities[2];
                 exactGrant = added.All(item => expected.Any(blueprint =>
                         ItemUsesRuntimeBlueprint(item, blueprint))) &&
-                    pistolCount == 1 && powderCount == 1 && ballCount == 1;
+                    pistolCount == 1 && powderCount == 20 && ballCount == 20;
                 batteredItem = added.OfType<ItemEntityWeapon>()
                     .Single(item => ReferenceEquals(item.Blueprint, expected[0]));
                 Kingmaker.EntitySystem.Entities.UnitEntityData owner;
@@ -1932,7 +1938,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.DescriptorReferenceCorrelated &&
                         !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
                     "qualified receiver-bound working-save path"),
-                Assertion("native-starting-item-grant", "pistol=1;powder=1;ball=1",
+                Assertion("native-starting-item-grant", "pistol=1;powder=20;ball=20",
                     "added=" + addedCount + ";pistol=" + pistolCount +
                         ";powder=" + powderCount + ";ball=" + ballCount,
                     exactGrant,
@@ -2536,7 +2542,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (LevelEntry entry in progression.LevelEntries)
                 foreach (BlueprintFeatureBase feature in entry.Features)
                     if (feature != null) pending.Push(feature);
-            int visible = 0, hidden = 0, incomplete = 0;
+            int visible = 0, hidden = 0, incomplete = 0, tooltipIncomplete = 0;
             while (pending.Count > 0)
             {
                 BlueprintUnitFact fact = pending.Pop();
@@ -2554,6 +2560,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (string.IsNullOrWhiteSpace(fact.Name) ||
                         string.IsNullOrWhiteSpace(fact.Description) ||
                         fact.Icon == null) incomplete++;
+                    if (ability != null &&
+                        (ability.LocalizedDuration == null ||
+                         ability.LocalizedSavingThrow == null ||
+                         string.IsNullOrWhiteSpace(ability.LocalizedDuration.ToString()) ||
+                         string.IsNullOrWhiteSpace(ability.LocalizedSavingThrow.ToString()) ||
+                         ability.LocalizedDuration.ToString().IndexOf("<null>",
+                             StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         ability.LocalizedSavingThrow.ToString().IndexOf("<null>",
+                             StringComparison.OrdinalIgnoreCase) >= 0))
+                        tooltipIncomplete++;
                 }
                 var selection = fact as BlueprintFeatureSelection;
                 if (selection != null && selection.AllFeatures != null)
@@ -2574,6 +2590,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int grouped = progression.UIGroups == null ? 0 :
                 progression.UIGroups.Sum(group => group == null ||
                     group.Features == null ? 0 : group.Features.Count);
+            int topLevelVisible = progression.LevelEntries.Sum(entry =>
+                entry.Features.OfType<BlueprintFeature>().Count(feature =>
+                    !feature.HideInUI));
             BlueprintAbility reload = BlueprintBootstrap.ReloadTestMusketAbility;
             BlueprintAbility overhaul = BlueprintBootstrap.OverhaulTestMusketAbility;
             BlueprintAbility repair = BlueprintBootstrap.RepairTestMusketAbility;
@@ -2586,7 +2605,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !repair.Description.Contains("Test Musket");
             string observed = "levels=" + progression.LevelEntries.Length +
                 ";visible=" + visible + ";hidden=" + hidden +
-                ";incomplete=" + incomplete + ";groups=" +
+                ";topLevelVisible=" + topLevelVisible +
+                ";incomplete=" + incomplete +
+                ";tooltipIncomplete=" + tooltipIncomplete + ";groups=" +
                 (progression.UIGroups == null ? 0 : progression.UIGroups.Length) +
                 ";grouped=" + grouped + ";class=" + classMetadata +
                 ";progression=" + progressionMetadata +
@@ -2600,8 +2621,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     classMetadata && progressionMetadata,
                     "registered BlueprintCharacterClass and BlueprintProgression"),
                 Assertion("gunslinger-visible-fact-presentation",
-                    "all reachable visible project facts have name, description, and icon",
-                    observed, visible > 0 && incomplete == 0,
+                    "all reachable visible project facts have complete names, descriptions, icons, and tooltip metadata",
+                    observed, visible > 0 && incomplete == 0 && tooltipIncomplete == 0,
                     "registered progression, selections, and AddFacts graph"),
                 Assertion("gunslinger-hidden-fact-exclusion",
                     "hidden implementation facts remain reachable but excluded from visible count",
@@ -2617,6 +2638,140 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableReloadAutocast()
+        {
+            BlueprintAbility parent = BlueprintBootstrap.ReloadTestMusketAbility;
+            BlueprintAbility[] variants = parent.ComponentsArray
+                .OfType<AbilityVariants>().Single().Variants;
+            BlueprintAbility standard = variants.Single(value =>
+                value.ActionType == UnitCommand.CommandType.Standard &&
+                !value.IsFullRoundAction);
+            ReloadTestMusketAbilityLogic logic = standard.ComponentsArray
+                .OfType<ReloadTestMusketAbilityLogic>().Single();
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItem powder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
+            BlueprintItem ball = BlueprintBootstrap.BasicAmmunition.LeadBall;
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player inventory is unavailable.");
+            int powderBefore = player.Inventory.Count(powder);
+            int ballBefore = player.Inventory.Count(ball);
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            ItemEntityWeapon weapon = null;
+            bool nativeSelected = false, oneTransaction = false,
+                noRetryWhenFull = false, noAmmoLoop = false, cleaned = false;
+            int powderAfter = -1, ballAfter = -1, roundsAfter = -1;
+            try
+            {
+                object ignored;
+                string method;
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory,
+                    new[] { "Add" }, new[] { new object[] { powder, 2 },
+                        new object[] { powder } }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(player.Inventory,
+                    new[] { "Add" }, new[] { new object[] { ball, 2 },
+                        new object[] { ball } }, out ignored, out method))
+                    throw new InvalidOperationException("Temporary ammunition could not be added.");
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Normal));
+                var combat = new Kingmaker.Controllers.Combat.UnitCombatState(unit);
+                SetExactProperty(unit, "CombatState", combat);
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    standard, unit.Descriptor);
+                unit.AutoUseAbility = data;
+                Kingmaker.UnitLogic.Abilities.AbilityData selected =
+                    unit.GetAvailableAutoUseAbility();
+                nativeSelected = ReferenceEquals(selected, data) &&
+                    data.IsSuitableForAutoUse && data.IsAvailable;
+                var context = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    selected, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(unit), null);
+                IEnumerator<AbilityDeliveryTarget> delivery = logic.Deliver(
+                    context, new TargetWrapper(unit));
+                while (delivery.MoveNext()) { }
+                roundsAfter = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds;
+                powderAfter = player.Inventory.Count(powder);
+                ballAfter = player.Inventory.Count(ball);
+                oneTransaction = roundsAfter == 1 &&
+                    powderAfter == powderBefore + 1 &&
+                    ballAfter == ballBefore + 1;
+                noRetryWhenFull = unit.GetAvailableAutoUseAbility() == null;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Normal));
+                player.Inventory.Remove(powder, player.Inventory.Count(powder) - powderBefore);
+                player.Inventory.Remove(ball, player.Inventory.Count(ball) - ballBefore);
+                noAmmoLoop = unit.GetAvailableAutoUseAbility() == null &&
+                    unit.GetAvailableAutoUseAbility() == null &&
+                    FirearmRuntimeState.Service.GetOrCreate(weapon)
+                        .Repository.State.LoadedRounds == 0;
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    unit.AutoUseAbility = null;
+                    SetExactProperty(unit, "CombatState", null);
+                }
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                }
+                int powderExcess = player.Inventory.Count(powder) - powderBefore;
+                int ballExcess = player.Inventory.Count(ball) - ballBefore;
+                if (powderExcess > 0) player.Inventory.Remove(powder, powderExcess);
+                if (ballExcess > 0) player.Inventory.Remove(ball, ballExcess);
+                if (unit != null) unit.Dispose();
+                cleaned = player.Inventory.Count(powder) == powderBefore &&
+                    player.Inventory.Count(ball) == ballBefore;
+            }
+            string observed = "variants=" + variants.Length + ";selected=" +
+                nativeSelected + ";rounds=" + roundsAfter + ";powder=" +
+                powderBefore + "->" + powderAfter + ";ball=" + ballBefore +
+                "->" + ballAfter + ";fullRetry=" + !noRetryWhenFull +
+                ";noAmmoLoop=" + noAmmoLoop + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("reload-single-player-action",
+                    "one visible parent; four non-autofill native variants",
+                    observed, !parent.Hidden && variants.Length == 4 &&
+                        variants.All(value => !value.Hidden &&
+                            value.ActionBarAutoFillIgnored),
+                    "AbilityVariants parent and child presentation"),
+                Assertion("native-reload-autocast-selection",
+                    "native right-click selection resolves the exact standard Pistol variant",
+                    observed, nativeSelected,
+                    "UnitEntityData.AutoUseAbility/GetAvailableAutoUseAbility"),
+                Assertion("automatic-reload-single-transaction",
+                    "one round and one powder/ball pair consumed exactly once",
+                    observed, oneTransaction && noRetryWhenFull,
+                    "the same ReloadTestMusketAbilityLogic delivery used by manual reload"),
+                Assertion("automatic-reload-no-ammunition-loop",
+                    "two consecutive native polls reject without mutation",
+                    observed, noAmmoLoop,
+                    "availability provider plus empty exact firearm state"),
+                Assertion("request-local-cleanup", "ammunition and unit fixture restored",
+                    observed, cleaned,
+                    "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

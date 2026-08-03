@@ -76,7 +76,10 @@ namespace KingmakerGunslinger.Blueprints
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = InternalName + "_" + action;
             ConfigureCommon(result, iconSource, true);
-            result.Hidden = true;
+            // Variants must remain eligible for native right-click autocast. They are
+            // not granted as separate facts and are excluded from action-bar autofill,
+            // so the player still receives one coherent Reload Firearm parent action.
+            result.Hidden = false;
             result.ActionType = action == EffectiveReloadAction.Move
                 ? UnitCommand.CommandType.Move : action == EffectiveReloadAction.Free
                     ? UnitCommand.CommandType.Free : UnitCommand.CommandType.Standard;
