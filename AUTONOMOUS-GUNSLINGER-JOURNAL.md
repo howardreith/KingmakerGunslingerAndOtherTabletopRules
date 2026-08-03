@@ -3384,3 +3384,22 @@
   passed, no save-writing API was observed, and the baseline save was untouched.
 - The finite autonomous mission is complete. See
   `docs/COMPLETE-GUNSLINGER-QUALIFICATION-REPORT.md`.
+
+# Fourth playtest native Grit counter repair (2026-08-03)
+
+- Exact installed IL showed `AbilityData.GetAvailableForCastCount()` consults
+  `AbilityResourceLogic.RequiredResource` only when `IsSpendResource` is true;
+  the published paid deeds had it false, explaining the missing action-bar
+  number in the fourth-playtest screenshot.
+- Production now publishes a one-point spend-enabled native resource component
+  with a no-op virtual `Spend`, leaving the deed-specific atomic transaction
+  authoritative and avoiding double spend. Focused invariants, repository
+  validation, all 878 tests, clean Release, and strict package validation pass.
+- The first guarded observer `20260803T2236515694613Z` failed safely because a
+  detached `AbilityData` had no native fact and returned `-1`. The corrected
+  observer uses the descriptor's retained `Ability` fact. Guarded Steam run
+  `20260803T2240193812834Z` passed with count `1->0`, availability
+  `True->False`, UI-side resource preservation, level-up non-refill, capped
+  restore, and external isolation. Package/DLL hashes are
+  `cefc9fa962ac33b05a914ed46d05a70c063175e74f7a91cd041412ae5f06b1a9` /
+  `68ee5be23eee638872b52f6a2b4553afcc676053f24e3b5b4910d775143816f1`.

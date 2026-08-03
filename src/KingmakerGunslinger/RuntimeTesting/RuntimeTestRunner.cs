@@ -5939,7 +5939,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<AbilityResourceLogic>().Count(component =>
                         component != null && component.name == "$KMG_SharedGritUi" &&
                         ReferenceEquals(component.RequiredResource, grit) &&
-                        !component.IsSpendResource && component.Amount == 1) == 1);
+                        component.IsSpendResource && component.Amount == 1 &&
+                        component is KingmakerGunslinger.Grit.GritAbilityResourceUiLogic) == 1);
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -5955,6 +5956,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int currentAfterSpend = -1;
             int currentAfterLevelUp = -1;
             int currentAfterRestore = -1;
+            int counterAtOne = -1;
+            int counterAtZero = -1;
+            int currentAfterUiSpend = -1;
+            bool uiAvailableAtOne = false;
+            bool uiAvailableAtZero = true;
             int gunslingerLevel = -1;
             bool cleaned = false;
             string stage = "construct-disposable";
@@ -6002,12 +6008,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 maximumAfterGrant = grit.GetMaxAmount(descriptor);
                 currentAfterGrant = descriptor.Resources.GetResourceAmount(grit);
 
+                stage = "exercise-native-actionbar-counter";
+                BlueprintAbility counterBlueprint = gritUiAbilities.First();
+                descriptor.AddFact(counterBlueprint);
+                Kingmaker.UnitLogic.Abilities.Ability counterAbility =
+                    descriptor.Abilities.GetAbility(counterBlueprint);
+                if (counterAbility == null)
+                    throw new InvalidOperationException(
+                        "Kingmaker did not retain the granted grit counter ability fact.");
+                var counterData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    counterAbility);
+                var counterLogic = counterBlueprint.ComponentsArray.OfType<
+                    KingmakerGunslinger.Grit.GritAbilityResourceUiLogic>().Single();
+                counterAtOne = counterData.GetAvailableForCastCount();
+                uiAvailableAtOne = counterLogic.IsAvailableFor(counterData);
+                counterLogic.Spend(counterData);
+                currentAfterUiSpend = descriptor.Resources.GetResourceAmount(grit);
+
                 stage = "spend-and-level";
                 if (!descriptor.Resources.HasEnoughResource(grit, 1))
                     throw new InvalidOperationException(
                         "Fresh disposable grit resource cannot fund one point.");
                 descriptor.Resources.Spend(grit, 1);
                 currentAfterSpend = descriptor.Resources.GetResourceAmount(grit);
+                counterAtZero = counterData.GetAvailableForCastCount();
+                uiAvailableAtZero = counterLogic.IsAvailableFor(counterData);
                 object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "LevelUp", false);
                 secondController = start.Invoke(null,
@@ -6049,6 +6074,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "maximumAfterGrant=" + maximumAfterGrant +
                 ";currentAfterGrant=" + currentAfterGrant +
                 ";currentAfterSpend=" + currentAfterSpend +
+                ";counterAtOne=" + counterAtOne +
+                ";counterAtZero=" + counterAtZero +
+                ";currentAfterUiSpend=" + currentAfterUiSpend +
+                ";uiAvailable=" + uiAvailableAtOne + "->" + uiAvailableAtZero +
                 ";gunslingerLevel=" + gunslingerLevel +
                 ";currentAfterLevelUp=" + currentAfterLevelUp +
                 ";currentAfterRestore=" + currentAfterRestore;
@@ -6066,11 +6095,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, currentAfterRestore == maximumAfterGrant,
                     "native UnitAbilityResourceCollection.Restore"),
                 Assertion("grit-shared-actionbar-counter",
-                    "every visible paid deed exposes exactly one display-only native AbilityResourceLogic bound to the single Gunslinger grit resource",
+                    "every visible paid deed exposes exactly one no-double-spend native AbilityResourceLogic bound to the single Gunslinger grit resource",
                     "abilities=" + string.Join(",", gritUiAbilities
                         .Select(value => value.Name).ToArray()),
                     sharedGritUi,
                     "published BlueprintAbility components consumed by the native action-bar remaining-resource counter"),
+                Assertion("grit-native-actionbar-values",
+                    "native remaining-use count 1->0; zero disables; UI Spend does not mutate grit",
+                    observed, counterAtOne == 1 && counterAtZero == 0 &&
+                        uiAvailableAtOne && !uiAvailableAtZero &&
+                        currentAfterUiSpend == currentAfterGrant,
+                    "AbilityData.GetAvailableForCastCount plus GritAbilityResourceUiLogic availability/no-op Spend"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "controllers canceled and disposable entity disposed"),

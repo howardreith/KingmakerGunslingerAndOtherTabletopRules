@@ -34,7 +34,8 @@ def validate(root: Path) -> None:
     require(root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs",
             "dodge.ArmorClassBuff", "TimeSpan.FromSeconds(6d)")
     require(root / "src/KingmakerGunslinger/Grit/GritAbilityUiIntegration.cs",
-            "AbilityResourceLogic", "RequiredResource = grit", "IsSpendResource = false")
+            "AbilityResourceLogic", "RequiredResource = grit", "IsSpendResource = true",
+            "GritAbilityResourceUiLogic", "public override void Spend")
 
 def main() -> int:
     parser = argparse.ArgumentParser()

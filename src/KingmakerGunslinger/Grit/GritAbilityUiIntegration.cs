@@ -27,13 +27,15 @@ namespace KingmakerGunslinger.Grit
                 if ((ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<AbilityResourceLogic>().Any(value =>
                         ReferenceEquals(value.RequiredResource, grit))) continue;
-                var ui = UnityEngine.ScriptableObject.CreateInstance<AbilityResourceLogic>();
+                var ui = UnityEngine.ScriptableObject.CreateInstance<
+                    GritAbilityResourceUiLogic>();
                 ui.name = "$KMG_SharedGritUi";
                 ui.RequiredResource = grit;
-                // Runtime deed transactions remain authoritative because several
-                // reactions spend only when they trigger. The native component is
-                // deliberately display-only and therefore cannot double-spend.
-                ui.IsSpendResource = false;
+                // Kingmaker's action bar reports a resource count only when this
+                // flag is true. The derived component keeps native availability
+                // and count behavior while its virtual Spend remains a no-op;
+                // request-local deed transactions stay the atomic authority.
+                ui.IsSpendResource = true;
                 ui.CostIsCustom = false;
                 ui.Amount = 1;
                 ability.ComponentsArray = (ability.ComponentsArray ??
@@ -66,6 +68,16 @@ namespace KingmakerGunslinger.Grit
             return component.GetType().GetFields(flags).Any(field =>
                 typeof(BlueprintAbilityResource).IsAssignableFrom(field.FieldType) &&
                 ReferenceEquals(field.GetValue(component), grit));
+        }
+    }
+
+    internal sealed class GritAbilityResourceUiLogic : AbilityResourceLogic
+    {
+        public override void Spend(Kingmaker.UnitLogic.Abilities.AbilityData ability)
+        {
+            // The deed's production transaction spends after all deed-specific
+            // gates pass. Spending here would double-charge or charge reactions
+            // that never trigger.
         }
     }
 }

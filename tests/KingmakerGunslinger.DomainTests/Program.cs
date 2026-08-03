@@ -1026,8 +1026,10 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Grit/GritAbilityUiIntegration.cs");
             Assertions.True(source.Contains("AbilityResourceLogic") &&
                 source.Contains("RequiredResource = grit") &&
-                source.Contains("IsSpendResource = false"),
-                "Paid deeds do not expose the one shared grit resource safely.");
+                source.Contains("IsSpendResource = true") &&
+                source.Contains("class GritAbilityResourceUiLogic") &&
+                source.Contains("public override void Spend"),
+                "Paid deeds do not expose the shared native counter without double-spending.");
         }
 
         private static void ThirdPlaytestEmptyPreconstruction()

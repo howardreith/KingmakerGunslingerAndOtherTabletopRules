@@ -19,9 +19,15 @@ definition of done or a listed genuine human-input hard stop.
   save-free runtime run
   `20260803T2230567143233Z-disposable-firearm-dependent-feats` pass. Final live
   UI observation remains required with the coherent `0.0.64` package.
-- Next exact action: audit the live Grit ability/resource presentation contract
-  against the screenshot failure, then implement the shared native counter and
-  zero-resource UI gate without weakening the already-qualified mechanics.
+- The native Grit counter repair passes repository validation, 878 tests,
+  Release/package validation, and guarded save-free runtime evidence
+  `20260803T2240193812834Z-disposable-gunslinger-grit-resource`. The real
+  granted ability fact reported count `1->0`, availability `True->False`, and
+  no UI-side double spend. Package/DLL hashes are `cefc9fa9...b1a9` /
+  `68ee5be2...16f1`; final player-visible observation remains Phase 12 work.
+- Next exact action: commit the qualified Grit checkpoint, then audit and repair
+  the native reload auto-use/action-bar integration from the fourth-playtest
+  evidence without weakening the existing firearm transaction gates.
 
 - Mission complete. Exact `eda0202` passed final mod load
   `20260802T2020407693601Z` and consecutive fresh-process 32-slice acceptance

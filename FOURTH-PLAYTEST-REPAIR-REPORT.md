@@ -54,9 +54,46 @@ This mechanically qualifies the live native menu data and ordering. Final Phase
 12 still requires a player-visible UI observation after the full `0.0.64`
 repair package is coherent.
 
+## Native Grit action-bar checkpoint
+
+Root cause: every paid deed carried an `AbilityResourceLogic` bound to Grit,
+but `IsSpendResource` was false. Exact installed `Assembly-CSharp` inspection
+showed that `AbilityData.GetAvailableForCastCount()` ignores such a component
+and returns no finite counter. The earlier runtime check proved only component
+presence and therefore missed the screenshot-visible defect.
+
+Repair:
+
+- mark the shared native resource component as spend-enabled with an amount of
+  one, enabling Kingmaker's own availability and remaining-use calculation;
+- use a narrow `GritAbilityResourceUiLogic` subclass whose `Spend` is a no-op,
+  retaining each deed's authoritative post-gate transaction and preventing a
+  second resource mutation;
+- strengthen source and runtime checks to require the exact shared component,
+  real granted ability fact, finite native count, zero-resource disablement,
+  and no UI-side spend.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 878/878 PASS;
+- clean Release compile and strict standalone package validation: PASS;
+- checkpoint package SHA-256:
+  `cefc9fa962ac33b05a914ed46d05a70c063175e74f7a91cd041412ae5f06b1a9`;
+- checkpoint DLL SHA-256:
+  `68ee5be23eee638872b52f6a2b4553afcc676053f24e3b5b4910d775143816f1`;
+- guarded save-free runtime PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2240193812834Z-disposable-gunslinger-grit-resource`.
+
+The live engine observed `counterAtOne=1`, `counterAtZero=0`, availability
+`True->False`, and unchanged Grit after the UI component's `Spend`. The first
+attempt at `20260803T2236515694613Z` failed safely because the observer used a
+detached `AbilityData` with no fact; it was corrected to use the descriptor's
+actual granted native ability, without changing the production repair.
+
 ## Remaining mission scope
 
-Rapid Reload and semantic icon art, visible finite Grit UI, real equipped firearm
-models/projectile/audio presentation, native reload auto-use, condition and
+Rapid Reload and semantic icon art, final player-visible Grit observation, real
+equipped firearm models/projectile/audio presentation, native reload auto-use, condition and
 maintenance UX, Winchester attribution, comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.
