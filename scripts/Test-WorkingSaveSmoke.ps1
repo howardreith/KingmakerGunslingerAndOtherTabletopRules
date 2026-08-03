@@ -37,7 +37,7 @@ $observerSources = @(
 
 $synthetic = Join-Path $script:KmgRuntimeEvidenceRoot 'working-save-smoke-source-test'
 $request = New-KmgRuntimeRequest -Scenario 'working-save-smoke' `
-    -ExpectedVersion '0.0.30' -TimeoutSeconds 120 -StartupTimeoutSeconds 180 `
+    -ExpectedVersion '0.0.61' -TimeoutSeconds 120 -StartupTimeoutSeconds 180 `
     -CatalogTimeoutSeconds 180 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 180 -MainMenuTimeoutSeconds 180 `
     -ActionResolutionTimeoutSeconds 180 -ActionInvocationTimeoutSeconds 30 `

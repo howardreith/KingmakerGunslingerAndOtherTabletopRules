@@ -440,12 +440,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_observeSelectionLoadAction)
                     ResolveWorkingSelectionLoadActions();
                 else ResolveWorkingEntryAction();
-                if (((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
-                     _receiverScopeResolutionAttempted) ||
-                    (_entryCandidates <= 1 &&
-                    (_observeSelectionLoadAction || _observeReceiverBoundAction ||
-                     _autonomousReceiverBoundAction ||
-                     _entryActionCandidates <= 1)))
+                bool receiverBoundReady =
+                    (_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
+                    _receiverScopeResolutionAttempted;
+                bool otherEntryActionReady =
+                    !_observeReceiverBoundAction && !_autonomousReceiverBoundAction &&
+                    _entryCandidates <= 1 &&
+                    (_observeSelectionLoadAction || _entryActionCandidates <= 1);
+                if (receiverBoundReady || otherEntryActionReady)
                     Transition(_autonomousReceiverBoundAction
                             ? "receiver-bound-action-invocation"
                             : "working-entry-click",
@@ -612,7 +614,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             _receiverBoundSlot = slots[0];
             string memberIdentity;
             if (!TryFindExactDescriptorMember(
-                _receiverBoundSlot, _workingDescriptor, out memberIdentity)) return;
+                _receiverBoundSlot, _workingDescriptor, out memberIdentity))
+            {
+                _receiverScopeResolutionAttempted = false;
+                return;
+            }
             _descriptorMemberIdentity = memberIdentity;
             _entryHierarchyPath = HierarchyPath(_entryOwner.transform);
 

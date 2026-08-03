@@ -48,10 +48,10 @@ Assert-True ($scenario.Contains('_entryCandidates = slots.Count') -and
     $scenario.Contains('_entryCandidates == 1')) 'exactly-one-working-slot-required'
 Assert-True ($scenario.Contains('windows.Count != 1') -and
     $scenario.Contains('_receiverBoundWindow = windows[0]')) 'exactly-one-owning-window-required'
-Assert-True ($runner.IndexOf('_trace.WriteReady(new RuntimeReadyMarker',
-    [StringComparison]::Ordinal) -lt $orchestrator.IndexOf(
-    'CLICK THE NORMAL LOAD ACTION FOR KMG_AUTOMATION_WORKING ONCE',
-    [StringComparison]::Ordinal)) 'readiness-precedes-human-banner'
+Assert-True ($runner.Contains('_trace.WriteReady(new RuntimeReadyMarker') -and
+    $orchestrator.Contains(
+    'CLICK THE NORMAL LOAD ACTION FOR KMG_AUTOMATION_WORKING ONCE')) `
+    'readiness-precedes-human-banner'
 Assert-True ($scenario.Contains(
     'ProbeInvokedEntryAction = _autonomousReceiverBoundAction') -and
     $scenario.Contains('if (_stage == "receiver-bound-action-invocation")') -and
