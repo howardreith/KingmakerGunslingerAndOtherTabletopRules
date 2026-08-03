@@ -3470,3 +3470,21 @@
 - The first compile used the wrong modern Harmony namespace and failed before
   packaging; `Harmony12` is the exact project/runtime contract. Final visible
   wrapping, placement, and live refresh remain integrated UI acceptance work.
+
+# Fourth playtest Quick Clear presentation (2026-08-03)
+
+- A strengthened guarded observer proved the original Quick Clear mechanics and
+  availability but exposed `presentation=False`: the semantic icon loader did
+  not traverse progression level entries, and Quick Clear was not an explicit
+  icon root. Production now roots its feature, which recursively assigns the
+  dedicated `quick-clear` sprite to both granted actions.
+- Unavailable guidance explicitly requires one misfire-Broken firearm and at
+  least one Grit, and directs Wrecked firearms to Overhaul.
+- Repository validation, all 880 tests, clean exact-reference Release, and
+  strict package validation pass. Final package/DLL hashes are
+  `dbfecb4500a9a8cf65f1456d4678e0a4b0d5e0c03bbf6911916248685749f8dd` /
+  `bf35cd354c344c4780dc4f9f4259b2a7ba6260e9ec4e895be6b3ffdf67452f12`.
+- Guarded run `20260803T2323347859647Z-disposable-gunslinger-quick-clear`
+  passed native facts/icons/guidance, Broken availability, Wrecked and zero-Grit
+  rejection, standard and move repair/cost behavior, diagnostics, and cleanup.
+  The prior run `20260803T2321232806825Z` is retained as the presentation failure.

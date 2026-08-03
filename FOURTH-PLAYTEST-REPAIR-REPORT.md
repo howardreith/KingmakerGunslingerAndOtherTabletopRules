@@ -193,6 +193,34 @@ to this repository's installed `Harmony12` contract resolved the annotations.
 Visible placement, wrapping, and refresh after condition changes remain for the
 final supervised UI acceptance; bootstrap and patch installation are qualified.
 
+## Quick Clear player-facing checkpoint
+
+The existing exact-item mechanics were correct, but the icon loader did not
+traverse progression level entries and Quick Clear was not an explicit root.
+Its feature and both granted actions could therefore retain null icons. Quick
+Clear is now an explicit project-icon root, recursively assigning the dedicated
+`quick-clear` sprite to its standard and move actions. Its unavailable reason
+now explains the one Broken firearm/one Grit requirements and directs Wrecked
+firearms to Overhaul.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 880/880 PASS;
+- clean exact-reference Release and strict package validation: PASS;
+- checkpoint package/DLL SHA-256:
+  `dbfecb4500a9a8cf65f1456d4678e0a4b0d5e0c03bbf6911916248685749f8dd` /
+  `bf35cd354c344c4780dc4f9f4259b2a7ba6260e9ec4e895be6b3ffdf67452f12`;
+- guarded save-free runtime PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2323347859647Z-disposable-gunslinger-quick-clear`.
+
+The preceding run `20260803T2321232806825Z` passed every mechanical and
+availability assertion but failed native presentation, exposing the null-icon
+root omission. The final run proves real level-granted facts, semantic icons,
+meaningful names/reason, Broken availability, Wrecked and zero-Grit rejection,
+standard `2->2` and move `2->1` Grit behavior, exact Broken-to-Normal repair,
+atomic rejection, diagnostics, and cleanup.
+
 ## Remaining mission scope
 
 Rapid Reload and semantic icon art, final player-visible Grit observation, real

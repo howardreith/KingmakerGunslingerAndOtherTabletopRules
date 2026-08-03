@@ -26,7 +26,8 @@ def validate(root: Path) -> None:
             "GetFullSelectionItems", "new FeatureParam(parameter)",
             "NativeFirearmParametrizedBonus")
     require(root / "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
-            "Never repaint native blueprints", "StartsWith(\"KMG_\"")
+            "Never repaint native blueprints", "StartsWith(\"KMG_\"",
+            "ApplyFact(gunslinger.QuickClear.Feature, visited)")
     require(root / "src/KingmakerGunslinger/Blueprints/ReloadTestMusketAbilityBlueprints.cs",
             "CreateDynamic", "hidden compatibility helpers")
     require(root / "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs",
@@ -48,6 +49,9 @@ def validate(root: Path) -> None:
             "Firearm condition: Normal", "Firearm condition: Broken",
             "misfire value increases by 4", "Firearm condition: Wrecked",
             "one uninterrupted minute out of combat")
+    require(root / "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs",
+            "exactly one Broken firearm", "at least 1 Grit",
+            "Wrecked firearms require Overhaul Firearm")
 
 def main() -> int:
     parser = argparse.ArgumentParser()

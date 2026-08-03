@@ -1081,6 +1081,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => FirearmConditionPresentation.Describe((FirearmCondition)99),
                 "Unknown firearm conditions must fail closed.");
+            string quickClear = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs");
+            Assertions.True(quickClear.Contains("exactly one Broken firearm") &&
+                quickClear.Contains("at least 1 Grit") &&
+                quickClear.Contains("Wrecked firearms require Overhaul Firearm"),
+                "Quick Clear unavailable guidance is not player-readable.");
         }
 
         private static TestCase Case(string name, Action body)

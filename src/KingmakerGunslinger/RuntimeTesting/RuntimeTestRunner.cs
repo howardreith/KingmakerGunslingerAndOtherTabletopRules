@@ -10148,6 +10148,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 moveCondition = FirearmCondition.Wrecked,
                 rejectedCondition = FirearmCondition.Wrecked;
             bool cleaned = false; string stage = "construct-disposable";
+            bool nativePresentation = false, brokenAvailable = false,
+                wreckedRejected = false, zeroGritRejected = false;
             QuickClearRuntimeDiagnostics.Reset();
             try
             {
@@ -10188,6 +10190,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "standard-action";
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
                     FirearmState.CreateEmpty()));
+                Kingmaker.UnitLogic.Abilities.Ability standardFact =
+                    unit.Descriptor.Abilities.GetAbility(
+                        gunslinger.QuickClear.StandardAbility);
+                Kingmaker.UnitLogic.Abilities.Ability moveFact =
+                    unit.Descriptor.Abilities.GetAbility(
+                        gunslinger.QuickClear.MoveAbility);
+                if (standardFact == null || moveFact == null)
+                    throw new InvalidOperationException(
+                        "Quick Clear native ability facts were not granted.");
+                var standardData = new Kingmaker.UnitLogic.Abilities.AbilityData(standardFact);
+                var standardLogic = gunslinger.QuickClear.StandardAbility.ComponentsArray
+                    .OfType<QuickClearAbilityLogic>().Single();
+                nativePresentation = gunslinger.QuickClear.StandardAbility.Icon != null &&
+                    gunslinger.QuickClear.MoveAbility.Icon != null &&
+                    gunslinger.QuickClear.StandardAbility.Icon.name == "KMG_Icon_quick-clear" &&
+                    gunslinger.QuickClear.MoveAbility.Icon.name == "KMG_Icon_quick-clear" &&
+                    gunslinger.QuickClear.StandardAbility.Name.Contains("Quick Clear") &&
+                    gunslinger.QuickClear.MoveAbility.Name.Contains("Quick Clear") &&
+                    standardLogic.GetReason().Contains("Wrecked firearms require Overhaul Firearm");
+                brokenAvailable = standardLogic.IsAvailableFor(standardData);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Wrecked));
+                wreckedRejected = !standardLogic.IsAvailableFor(standardData);
+                FirearmRuntimeState.Service.Set(weapon,
+                    FirearmStateMachine.ApplyMisfireDamage(FirearmState.CreateEmpty()));
                 QuickClearRuntime.Execute(unit.Descriptor, QuickClearMode.Standard);
                 afterStandard = unit.Descriptor.Resources.GetResourceAmount(grit);
                 standardCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
@@ -10205,6 +10233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
                     FirearmState.CreateEmpty()));
                 unit.Descriptor.Resources.Spend(grit, afterMove);
+                zeroGritRejected = !standardLogic.IsAvailableFor(standardData);
                 QuickClearRuntime.Execute(unit.Descriptor, QuickClearMode.Standard);
                 afterRejected = unit.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
@@ -10237,7 +10266,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";rejected=" + rejectedCondition + ";applied=" +
                 QuickClearRuntimeDiagnostics.Applied + ";rejectedCount=" +
                 QuickClearRuntimeDiagnostics.Rejected + ";faults=" +
-                QuickClearRuntimeDiagnostics.Faults;
+                QuickClearRuntimeDiagnostics.Faults + ";presentation=" +
+                nativePresentation + ";brokenAvailable=" + brokenAvailable +
+                ";wreckedRejected=" + wreckedRejected + ";zeroGritRejected=" +
+                zeroGritRejected;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("quick-clear-standard", "grit 2 unchanged; Broken -> Normal",
@@ -10250,6 +10282,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("quick-clear-insufficient-atomic", "grit 0; remains Broken",
                     observed, afterRejected == 0 && rejectedCondition == FirearmCondition.Broken,
                     "production fail-closed policy"),
+                Assertion("quick-clear-native-presentation",
+                    "real granted abilities; semantic icons; meaningful reason",
+                    observed, nativePresentation,
+                    "native ability facts and project Quick Clear icon"),
+                Assertion("quick-clear-native-availability",
+                    "Broken available; Wrecked and zero Grit unavailable",
+                    observed, brokenAvailable && wreckedRejected && zeroGritRejected,
+                    "IAbilityAvailabilityProvider against exact equipped state"),
                 Assertion("quick-clear-diagnostics", "applied=2;rejected=1;faults=0",
                     observed, QuickClearRuntimeDiagnostics.Applied == 2 &&
                     QuickClearRuntimeDiagnostics.Rejected == 1 &&

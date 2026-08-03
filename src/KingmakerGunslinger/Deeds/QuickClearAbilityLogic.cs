@@ -25,7 +25,11 @@ namespace KingmakerGunslinger.Deeds
             return QuickClearRuntime.Evaluate(ability.Caster, m_Mode,
                 out ignored, out reason).ShouldRepair;
         }
-        public string GetReason() { return "Requires at least 1 grit and exactly one equipped misfire-broken firearm."; }
+        public string GetReason()
+        {
+            return "Unavailable: equip exactly one Broken firearm created by a misfire " +
+                "and have at least 1 Grit. Wrecked firearms require Overhaul Firearm.";
+        }
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context, TargetWrapper target)
         {
