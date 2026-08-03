@@ -7,6 +7,7 @@ using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Reloading;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace KingmakerGunslinger.Firing
@@ -15,9 +16,10 @@ namespace KingmakerGunslinger.Firing
     /// Rejects an empty firearm at UnitAttack.CanStart, before OnStart configures an
     /// animation or TriggerAttackRule constructs RuleAttackWithWeapon/RuleAttackRoll.
     /// </summary>
-    [HarmonyPatch(typeof(UnitCommand), "get_CanStart")]
+    [HarmonyPatch]
     internal static class EmptyFirearmAttackCommandPatch
     {
+        private static MethodBase _target;
         private static readonly ConditionalWeakTable<UnitAttack, ReportMarker>
             Reported = new ConditionalWeakTable<UnitAttack, ReportMarker>();
         private static long _rejected;
@@ -25,6 +27,20 @@ namespace KingmakerGunslinger.Firing
         internal static long Rejected { get { return Interlocked.Read(ref _rejected); } }
         internal static long AutoReloadReplacements
         { get { return Interlocked.Read(ref _autoReloadReplacements); } }
+
+        private static bool Prepare()
+        {
+            PropertyInfo property = typeof(UnitCommand).GetProperty("CanStart",
+                BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            _target = property == null ? null : property.GetGetMethod(true);
+            return _target != null;
+        }
+
+        private static MethodBase TargetMethod()
+        {
+            return _target;
+        }
 
         private static bool Prefix(UnitCommand __instance, ref bool __result)
         {
