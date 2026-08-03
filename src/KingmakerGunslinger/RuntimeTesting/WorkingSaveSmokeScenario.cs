@@ -603,7 +603,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ToList();
             slots = UniqueComponents(slots);
             _entryCandidates = slots.Count;
-            if (slots.Count != 1) return;
+            if (slots.Count != 1)
+            {
+                _receiverScopeResolutionAttempted = false;
+                return;
+            }
             _entryOwner = slots[0];
             _receiverBoundSlot = slots[0];
             string memberIdentity;
@@ -625,6 +629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (windows.Count != 1)
             {
                 _entryActionCandidates = windows.Count;
+                _receiverScopeResolutionAttempted = false;
                 return;
             }
             _receiverBoundWindow = windows[0];
@@ -638,6 +643,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (lists.Count != 1)
             {
                 _entryActionCandidates = lists.Count;
+                _receiverScopeResolutionAttempted = false;
                 return;
             }
             _listObjectIdentity = ObjectIdentity(lists[0]);
