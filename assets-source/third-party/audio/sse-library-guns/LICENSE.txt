@@ -1,0 +1,8 @@
+License: CC0 1.0 Universal
+Identifier: CC0-1.0
+Official license URL: https://creativecommons.org/publicdomain/zero/1.0/
+Legal code: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+CC0 permits copying, modification, redistribution, performance, and commercial use without asking permission. Attribution is not legally required.
+
+This is a provenance record. The official legal code controls.

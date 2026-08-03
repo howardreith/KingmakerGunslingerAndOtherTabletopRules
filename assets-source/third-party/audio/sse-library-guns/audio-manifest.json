@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "license": "CC0-1.0",
+  "source": "SSE Library: GUNS",
+  "records": [
+    {
+      "source": "GUNAntq_Flintlock fire_CS_USC.wav",
+      "sourceSha256": "A9861195428E905D5FBB3171E705AFD6633DA6048DE02FBEEA17C232F0A49CDD",
+      "sourceChannels": 1,
+      "sourceSampleRate": 48000,
+      "sourceBitDepth": 24,
+      "sourceDurationSeconds": 1.925771,
+      "sourcePeak": 0.773432,
+      "sourceClippedSamples": 0,
+      "processed": "GUNAntq_Flintlock fire_CS_USC.wav",
+      "processedSha256": "C99F55FA7873AE6B861FE928B8E57C11CC0A54494F1CCEE4CDF696DBBFE72A5B",
+      "processedBitDepth": 16,
+      "processedDurationSeconds": 1.654229,
+      "processedPeak": 0.7,
+      "mapping": [
+        "pistol-shot"
+      ],
+      "modifications": "trim below -50 dBFS with 10 ms padding; peak-normalize to -3.10 dBFS; deterministic 16-bit PCM mono"
+    },
+    {
+      "source": "GUNAntq_Flintlock rifle fire_CS_USC.wav",
+      "sourceSha256": "0F6E6BC26AC3824482937A0FB61A92E74399AD86DA084F27B2026BE6714FD7DD",
+      "sourceChannels": 1,
+      "sourceSampleRate": 48000,
+      "sourceBitDepth": 24,
+      "sourceDurationSeconds": 2.72875,
+      "sourcePeak": 0.403372,
+      "sourceClippedSamples": 0,
+      "processed": "GUNAntq_Flintlock rifle fire_CS_USC.wav",
+      "processedSha256": "CEB48D21849A444439E29216EC7FE36B2A6DFD378DBA985D7A1A406EA61CF51E",
+      "processedBitDepth": 16,
+      "processedDurationSeconds": 2.72875,
+      "processedPeak": 0.7,
+      "mapping": [
+        "rifle-shot"
+      ],
+      "modifications": "trim below -50 dBFS with 10 ms padding; peak-normalize to -3.10 dBFS; deterministic 16-bit PCM mono"
+    },
+    {
+      "source": "GUNAntq_Musket shots_CS_USC.wav",
+      "sourceSha256": "58257B39E6FA5C7B3F1B6F48C7753A611BDDED6500624ADD9A3B6A8740D10E48",
+      "sourceChannels": 1,
+      "sourceSampleRate": 48000,
+      "sourceBitDepth": 24,
+      "sourceDurationSeconds": 3.405271,
+      "sourcePeak": 0.692893,
+      "sourceClippedSamples": 0,
+      "processed": "GUNAntq_Musket shots_CS_USC.wav",
+      "processedSha256": "C34DC4A78EAE1B1E0A8159D536AAE4730EBA54662D8496E138569037C2996C58",
+      "processedBitDepth": 16,
+      "processedDurationSeconds": 2.895979,
+      "processedPeak": 0.7,
+      "mapping": [
+        "musket-shot"
+      ],
+      "modifications": "trim below -50 dBFS with 10 ms padding; peak-normalize to -3.10 dBFS; deterministic 16-bit PCM mono"
+    },
+    {
+      "source": "GUNPis_Exterior pistol shot_CS_USC.wav",
+      "sourceSha256": "0342ABE42D0D9ABD8B6F9202A66DC9D46D47C7FC2DC97FFBB348A5CDB5AF7ADD",
+      "sourceChannels": 1,
+      "sourceSampleRate": 48000,
+      "sourceBitDepth": 24,
+      "sourceDurationSeconds": 1.4,
+      "sourcePeak": 0.316291,
+      "sourceClippedSamples": 0,
+      "processed": "GUNPis_Exterior pistol shot_CS_USC.wav",
+      "processedSha256": "436A198D38D4DA0891F31B97B30F97A1E19E84C700929F743AD2EF08436D5D89",
+      "processedBitDepth": 16,
+      "processedDurationSeconds": 1.301146,
+      "processedPeak": 0.7,
+      "mapping": [
+        "revolver-shot"
+      ],
+      "modifications": "trim below -50 dBFS with 10 ms padding; peak-normalize to -3.10 dBFS; deterministic 16-bit PCM mono"
+    },
+    {
+      "source": "GUNShotg_Classic western shotgun blast with reverb_CS_USC.wav",
+      "sourceSha256": "9F2BCD7B53602E8A66E861E10B057FF76FF51FD37B7CC7035F3B745902E16284",
+      "sourceChannels": 1,
+      "sourceSampleRate": 48000,
+      "sourceBitDepth": 24,
+      "sourceDurationSeconds": 14.347812,
+      "sourcePeak": 0.342444,
+      "sourceClippedSamples": 0,
+      "processed": "GUNShotg_Classic western shotgun blast with reverb_CS_USC.wav",
+      "processedSha256": "E210953771458F867A9E5D314E9857CE442AF649E86E6BA541EEBA2DE54CF53F",
+      "processedBitDepth": 16,
+      "processedDurationSeconds": 4.0,
+      "processedPeak": 0.7,
+      "mapping": [
+        "blunderbuss-shot"
+      ],
+      "modifications": "trim below -50 dBFS with 10 ms padding; cap excessive tail at 4 s with 250 ms fade; peak-normalize to -3.10 dBFS; deterministic 16-bit PCM mono"
+    }
+  ]
+}

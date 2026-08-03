@@ -36,11 +36,18 @@ different Winchester creator. See
 `C:\Dev\KingmakerGunslingerLab\ASSET-INTAKE-AUDIT.md` for hashes and the exact
 evidence required to clear quarantine.
 
-The two CC0 audio source records are valid license evidence for their named
-sources, but their folders contain no original recordings and do not map the
-five loose root WAV hashes to either source. Those WAVs remain quarantined and
-are excluded from source and packages pending an exact source-file/derivative
-mapping. Credit will be retained as project policy if that identity gap is
-resolved.
+## Third-playtest SSE audio intake
+
+The user supplied all five original recordings beneath the exact
+`incoming-assets/audio/sse-library-guns/original` provenance folder and
+explicitly mapped that folder to *SSE Library: GUNS* (USC Cinema / Sunset
+Editorial Collection, Internet Archive upload by Jason Scott), CC0-1.0. Each
+file is valid mono 48 kHz/24-bit PCM and has no clipped samples. Originals are
+preserved byte-for-byte under
+`assets-source/third-party/audio/sse-library-guns/original`; deterministic
+16-bit PCM runtime derivatives and their complete hashes are recorded in the
+adjacent `audio-manifest.json`. Credit is retained as project policy.
+
+No mlsulli/Freesound binary was supplied, processed, mapped, or required.
 
 The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.
