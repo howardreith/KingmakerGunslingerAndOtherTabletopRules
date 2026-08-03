@@ -34,16 +34,12 @@ namespace KingmakerGunslinger.Firing
             if (harmony == null) throw new ArgumentNullException("harmony");
             MethodInfo prefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
                 "Prefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo run = typeof(UnitCommands).GetMethod("Run",
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
-                new[] { typeof(UnitCommand) }, null);
             MethodInfo runDetailed = typeof(UnitCommands).GetMethod("Run",
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
                 new[] { typeof(UnitCommand), typeof(bool), typeof(bool) }, null);
-            if (run == null || runDetailed == null || prefix == null)
+            if (runDetailed == null || prefix == null)
                 throw new MissingMethodException(
                     "Exact UnitCommands.Run empty-firearm patch contract was unavailable.");
-            harmony.Patch(run, new HarmonyMethod(prefix), null, null);
             harmony.Patch(runDetailed, new HarmonyMethod(prefix), null, null);
         }
 
