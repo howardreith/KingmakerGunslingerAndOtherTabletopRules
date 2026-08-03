@@ -35,10 +35,10 @@ namespace KingmakerGunslinger.Firing
             MethodInfo prefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
                 "Prefix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo run = typeof(UnitCommands).GetMethod("Run",
-                BindingFlags.Public | BindingFlags.Instance, null,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
                 new[] { typeof(UnitCommand) }, null);
             MethodInfo runDetailed = typeof(UnitCommands).GetMethod("Run",
-                BindingFlags.Public | BindingFlags.Instance, null,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
                 new[] { typeof(UnitCommand), typeof(bool), typeof(bool) }, null);
             if (run == null || runDetailed == null || prefix == null)
                 throw new MissingMethodException(
