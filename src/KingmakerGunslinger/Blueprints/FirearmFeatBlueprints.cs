@@ -202,8 +202,15 @@ namespace KingmakerGunslinger.Blueprints
             if (family != 3)
             {
                 var prerequisite = ScriptableObject.CreateInstance<PrerequisiteFeature>();
-                prerequisite.Feature = family == 2 ? specialization : weaponFocus;
+                prerequisite.Feature = weaponFocus;
                 components.Add(prerequisite);
+                if (family == 2)
+                {
+                    var specializationPrerequisite =
+                        ScriptableObject.CreateInstance<PrerequisiteFeature>();
+                    specializationPrerequisite.Feature = specialization;
+                    components.Add(specializationPrerequisite);
+                }
             }
             var effect = ScriptableObject.CreateInstance<FirearmWeaponFeatBonus>();
             effect.Kind = kind;

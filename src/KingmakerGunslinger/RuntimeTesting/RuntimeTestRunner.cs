@@ -2736,8 +2736,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
                 choices[3].ComponentsArray.OfType<
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteStatValue>().Any() &&
-                choices.Take(3).All(choice => choice.ComponentsArray.OfType<
-                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>().Count() == 1);
+                choices.Take(2).All(choice => choice.ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>().Count() == 1) &&
+                choices[2].ComponentsArray.OfType<
+                    Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>().Count() == 2;
 
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             var attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
