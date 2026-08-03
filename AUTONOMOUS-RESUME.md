@@ -35,6 +35,12 @@ definition of done or a listed genuine human-input hard stop.
   `edc45bb7...74a0a`. Commit this coherent checkpoint, then add exact
   weapon-switch/interruption/Wrecked cancellation and turn-based action-state
   coverage before closing Phase 7.
+- Follow-up guarded run `20260803T2257100760678Z-disposable-reload-autocast`
+  passed weapon-switch and interruption cancellation, Wrecked rejection, and
+  the RTwP/turn-based action-availability policy. Package/DLL hashes are
+  `af2b9b88...ed93d` / `75792762...dcc27`. Commit this extension, then proceed
+  to Phase 8 condition and maintenance player UX; integrated all-kind and
+  player-visible right-click checks remain final acceptance work.
 
 - Mission complete. Exact `eda0202` passed final mod load
   `20260802T2020407693601Z` and consecutive fresh-process 32-slice acceptance

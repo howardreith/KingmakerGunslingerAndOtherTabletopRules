@@ -1041,6 +1041,7 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("typeof(UnitUseAbility).GetMethod(\"OnEnded\"") &&
                 source.Contains("ReferenceEquals(resolved.Weapon, pending.FirearmWeapon)") &&
                 source.Contains("turn.ActionsStates.Standard.CanUse") &&
+                source.Contains("return !isTurnBased || (hasCurrentTurn && standardActionAvailable)") &&
                 source.Contains("executor.Commands.AddToQueue(attack)"),
                 "Empty firearm rejection or exact-item native reload continuation is incomplete.");
         }

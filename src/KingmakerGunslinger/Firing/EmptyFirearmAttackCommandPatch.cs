@@ -213,9 +213,16 @@ namespace KingmakerGunslinger.Firing
             if (controller == null ||
                 !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return true;
             TurnBased.Controllers.TurnController turn = controller.CurrentTurn;
-            return turn != null && turn.ActionsStates != null &&
+            return TurnBasedAllowsStandardAttack(true, turn != null,
+                turn != null && turn.ActionsStates != null &&
                 turn.ActionsStates.Standard != null &&
-                turn.ActionsStates.Standard.CanUse;
+                turn.ActionsStates.Standard.CanUse);
+        }
+
+        internal static bool TurnBasedAllowsStandardAttack(bool isTurnBased,
+            bool hasCurrentTurn, bool standardActionAvailable)
+        {
+            return !isTurnBased || (hasCurrentTurn && standardActionAvailable);
         }
 
         private sealed class PendingAttack

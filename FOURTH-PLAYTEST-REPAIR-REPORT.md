@@ -128,9 +128,18 @@ complete cleanup. The earlier run `20260803T2248367218954Z` failed only because
 the observer assumed the linked-list queue rather than Kingmaker's complete
 command collection; it was corrected to use `UnitCommands.Contains`.
 
-This checkpoint does not yet qualify turn-based execution, weapon-switch
-cancellation, Wrecked rejection in the same continuation path, or every firearm
-kind. Those remain active Phase 7 work.
+Follow-up guarded evidence
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2257100760678Z-disposable-reload-autocast`
+also passed exact weapon-switch cancellation, interrupted-command cancellation,
+Wrecked rejection without a reload replacement, and the fail-closed action-mode
+matrix: RTwP resumes, while turn-based continuation requires both a current turn
+and an unused native standard action. Its package/DLL SHA-256 values are
+`af2b9b8871004611edc5d77a7ddcc959ff8b2e100c93019ab1c4e2c2dc0ed93d` /
+`75792762c2628bce8ce0090dd95575d350ecf7cd8546c1be5fd675bda63dcc27`.
+
+Every firearm kind and actual player-visible right-click behavior remain for the
+integrated/final acceptance runs; the guarded continuation mechanics are now
+qualified.
 
 ## Remaining mission scope
 

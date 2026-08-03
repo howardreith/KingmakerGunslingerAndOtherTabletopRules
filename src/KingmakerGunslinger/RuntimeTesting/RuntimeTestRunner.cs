@@ -2977,8 +2977,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
             ItemEntityWeapon weapon = null;
+            ItemEntityWeapon switchedWeapon = null;
             bool nativeSelected = false, oneTransaction = false,
                 resumedTargetAttack = false, noRetryWhenFull = false,
+                switchedWeaponCanceled = false, interruptedCanceled = false,
+                wreckedRejected = false, turnBasedPolicy = false,
                 noAmmoLoop = false, cleaned = false;
             int powderAfter = -1, ballAfter = -1, roundsAfter = -1;
             try
@@ -3049,6 +3052,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Normal));
+                var switchedPending = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(unit, target) as
+                    Kingmaker.UnitLogic.Commands.UnitUseAbility;
+                switchedWeapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                unit.Body.PrimaryHand.InsertItem(switchedWeapon);
+                    FirearmRuntimeState.Service.Set(switchedWeapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Spec.Definition
+                        .Reload.Ammunition,
+                    FirearmCondition.Normal));
+                switchedWeaponCanceled = switchedPending != null &&
+                    EmptyFirearmAttackCommandPatch.CompletePendingForRuntimeTest(
+                        switchedPending, false) == null;
+                unit.Body.PrimaryHand.RemoveItem(false);
+                FirearmRuntimeState.Service.Forget(switchedWeapon);
+                switchedWeapon.Dispose();
+                switchedWeapon = null;
+                unit.Body.PrimaryHand.InsertItem(weapon);
+
+                var interruptedPending = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(unit, target) as
+                    Kingmaker.UnitLogic.Commands.UnitUseAbility;
+                interruptedCanceled = interruptedPending != null &&
+                    EmptyFirearmAttackCommandPatch.CompletePendingForRuntimeTest(
+                        interruptedPending, true) == null;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Wrecked));
+                long replacementsBeforeWrecked =
+                    EmptyFirearmAttackCommandPatch.AutoReloadReplacements;
+                UnitCommand wrecked = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(unit, target);
+                wreckedRejected = wrecked == null &&
+                    EmptyFirearmAttackCommandPatch.AutoReloadReplacements ==
+                        replacementsBeforeWrecked;
+                turnBasedPolicy =
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
+                        false, false, false) &&
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
+                        true, true, true) &&
+                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
+                        true, true, false) &&
+                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
+                        true, false, true);
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Normal));
                 player.Inventory.Remove(powder, player.Inventory.Count(powder) - powderBefore);
                 player.Inventory.Remove(ball, player.Inventory.Count(ball) - ballBefore);
                 noAmmoLoop = unit.GetAvailableAutoUseAbility() == null &&
@@ -3069,6 +3122,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
                         unit.Body.PrimaryHand.RemoveItem(false);
                 }
+                if (switchedWeapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(switchedWeapon);
+                    if (unit != null && ReferenceEquals(
+                        unit.Body.PrimaryHand.MaybeItem, switchedWeapon))
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    switchedWeapon.Dispose();
+                }
                 int powderExcess = player.Inventory.Count(powder) - powderBefore;
                 int ballExcess = player.Inventory.Count(ball) - ballBefore;
                 if (powderExcess > 0) player.Inventory.Remove(powder, powderExcess);
@@ -3083,6 +3144,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 powderBefore + "->" + powderAfter + ";ball=" + ballBefore +
                 "->" + ballAfter + ";fullRetry=" + !noRetryWhenFull +
                 ";resumedTarget=" + resumedTargetAttack +
+                ";switchCanceled=" + switchedWeaponCanceled +
+                ";interruptedCanceled=" + interruptedCanceled +
+                ";wreckedRejected=" + wreckedRejected +
+                ";turnBasedPolicy=" + turnBasedPolicy +
                 ";noAmmoLoop=" + noAmmoLoop + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3104,6 +3169,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "successful exact-item reload queues one native attack against the original target",
                     observed, resumedTargetAttack,
                     "UnitUseAbility completion continuation plus UnitCommands.AddToQueue"),
+                Assertion("automatic-reload-stale-context-cancellation",
+                    "weapon switch and interrupted reload cancel; Wrecked never queues reload",
+                    observed, switchedWeaponCanceled && interruptedCanceled &&
+                        wreckedRejected,
+                    "exact weapon reference re-resolution, completion result, and Wrecked policy"),
+                Assertion("automatic-reload-turn-based-action-policy",
+                    "RTwP resumes; turn-based resumes only with a current turn and unused standard action",
+                    observed, turnBasedPolicy,
+                    "fail-closed turn-based standard-action continuation gate"),
                 Assertion("automatic-reload-no-ammunition-loop",
                     "two consecutive native polls reject without mutation",
                     observed, noAmmoLoop,

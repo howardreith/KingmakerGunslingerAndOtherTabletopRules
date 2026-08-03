@@ -3424,3 +3424,12 @@
   Kingmaker's command collection; the accepted observer uses the exact native
   `UnitCommands.Contains` contract. Continue weapon-switch/interruption/Wrecked
   and turn-based coverage; this checkpoint does not close Phase 7.
+- Follow-up exact run `20260803T2257100760678Z` passed switched-item and
+  interrupted-command cancellation, Wrecked rejection without reload
+  substitution, and the explicit action-mode policy: RTwP resumes, while
+  turn-based requires a current turn and unused native standard action. All 878
+  tests and full build/package gates pass; package/DLL hashes are
+  `af2b9b8871004611edc5d77a7ddcc959ff8b2e100c93019ab1c4e2c2dc0ed93d` /
+  `75792762c2628bce8ce0090dd95575d350ecf7cd8546c1be5fd675bda63dcc27`.
+  Continue Phase 8; all-kind and visible right-click checks remain integrated
+  acceptance work.
