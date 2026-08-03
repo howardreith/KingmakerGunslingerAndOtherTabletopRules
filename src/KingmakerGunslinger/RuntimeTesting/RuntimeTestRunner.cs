@@ -2725,9 +2725,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintFeatureSelection fighter = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                 BlueprintBootstrap.Library, "41c8486641f7d6d4283ca9dae4147a9f",
                 "Fighter feat selection");
-            bool catalog = selections.All(selection =>
-                basic.AllFeatures.Contains(selection) && fighter.AllFeatures.Contains(selection) &&
-                selection.Features.Length == 6 && selection.AllFeatures.Length == 6);
+            string[] nativeGuids = {
+                "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+                "09c9e82965fb4334b984a1e9df3bd088",
+                "31470b17e8446ae4ea0dacd6c5817d86",
+                "7cf5edc65e785a24f9cf93af987d66b3",
+                "f4201c85a991369408740c6888362e20" };
+            BlueprintParametrizedFeature[] native = nativeGuids.Select((guid, index) =>
+                BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, guid, "native weapon feat " + index))
+                .ToArray();
+            bool catalog = selections.All(selection => selection.HideInUI &&
+                !basic.AllFeatures.Contains(selection) &&
+                !fighter.AllFeatures.Contains(selection));
+            bool nativeMenus = native.All(feature => feature.GetFullSelectionItems()
+                .Count(item => item != null && item.Param.Blueprint != null &&
+                    item.Param.Blueprint.name.StartsWith(
+                        "KMG_WeaponFocus_", StringComparison.Ordinal)) == 5);
             bool prerequisites = choices[0].ComponentsArray.OfType<
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
                 choices[1].ComponentsArray.OfType<
@@ -2799,11 +2813,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "catalog=" + catalog + ";prerequisites=" + prerequisites +
                 ";effects=" + effects + ";isolation=" + isolation +
-                ";legacyHidden=" + legacy.HideInUI;
+                ";nativeMenus=" + nativeMenus + ";legacyHidden=" + legacy.HideInUI;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("dependent-feat-catalog", "four native-style wrappers with six choices each", observed,
+                Assertion("dependent-feat-catalog", "obsolete wrappers hidden and absent from native catalogs", observed,
                     catalog, "live basic and Fighter feat catalogs"),
+                Assertion("native-firearm-parameter-menus",
+                    "five exact firearm parameters inside each native feat submenu",
+                    observed, nativeMenus,
+                    "BlueprintParametrizedFeature.GetFullSelectionItems"),
                 Assertion("dependent-feat-prerequisites", "native level/BAB shapes plus exact firearm dependency", observed,
                     prerequisites, "cloned native prerequisites and project feature dependency"),
                 Assertion("dependent-feat-effects", "+1 attack, +4 combined specialization damage, doubled critical edge", observed,
@@ -2826,10 +2844,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
             BlueprintItem powder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
             BlueprintItem ball = BlueprintBootstrap.BasicAmmunition.LeadBall;
-            BlueprintAbility standard = BlueprintBootstrap.ReloadTestMusketAbility
-                .ComponentsArray.OfType<AbilityVariants>().Single().Variants
-                .Single(value => value.ActionType == UnitCommand.CommandType.Standard &&
-                    !value.IsFullRoundAction);
+            BlueprintAbility standard = BlueprintBootstrap.ReloadTestMusketAbility;
             Player player = Game.Instance.Player;
             int powderBefore = player.Inventory.Count(powder);
             int ballBefore = player.Inventory.Count(ball);
@@ -2936,10 +2951,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintAbility parent = BlueprintBootstrap.ReloadTestMusketAbility;
             BlueprintAbility[] variants = parent.ComponentsArray
-                .OfType<AbilityVariants>().Single().Variants;
-            BlueprintAbility standard = variants.Single(value =>
-                value.ActionType == UnitCommand.CommandType.Standard &&
-                !value.IsFullRoundAction);
+                .OfType<AbilityVariants>().SelectMany(value => value.Variants).ToArray();
+            BlueprintAbility standard = parent;
             ReloadTestMusketAbilityLogic logic = standard.ComponentsArray
                 .OfType<ReloadTestMusketAbilityLogic>().Single();
             BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
@@ -3028,7 +3041,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cleaned = player.Inventory.Count(powder) == powderBefore &&
                     player.Inventory.Count(ball) == ballBefore;
             }
-            string observed = "variants=" + variants.Length + ";selected=" +
+            string observed = "publicVariants=" + variants.Length + ";selected=" +
                 nativeSelected + ";rounds=" + roundsAfter + ";powder=" +
                 powderBefore + "->" + powderAfter + ";ball=" + ballBefore +
                 "->" + ballAfter + ";fullRetry=" + !noRetryWhenFull +
@@ -3036,13 +3049,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("reload-single-player-action",
-                    "one visible parent; four non-autofill native variants",
-                    observed, !parent.Hidden && variants.Length == 4 &&
-                        variants.All(value => value.Hidden &&
-                            value.ActionBarAutoFillIgnored),
-                    "AbilityVariants parent and child presentation"),
+                    "one visible dynamic ability; no public variants",
+                    observed, !parent.Hidden && variants.Length == 0 &&
+                        parent.ComponentsArray.OfType<ReloadTestMusketAbilityLogic>()
+                            .Count() == 1,
+                    "single public reload blueprint presentation"),
                 Assertion("native-reload-autocast-selection",
-                    "native right-click selection resolves the exact standard Pistol variant",
+                    "native right-click selection resolves the single Reload Firearm ability",
                     observed, nativeSelected,
                     "UnitEntityData.AutoUseAbility/GetAvailableAutoUseAbility"),
                 Assertion("automatic-reload-single-transaction",
@@ -9959,6 +9972,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int initial = -1, afterApplied = -1, acAfter = -1,
                 acDuplicate = -1, afterRejected = -1, rejectedAc = -1;
             bool armedBefore = false, armedAfter = true, proneAfter = false,
+                armorClassBuffAfter = false,
                 rejectedProne = true, rejectedConsumed = false, cleaned = false;
             string stage = "construct-disposables";
             try
@@ -10015,6 +10029,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
                 proneAfter = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
+                armorClassBuffAfter = defender.Descriptor.HasFact(
+                    gunslinger.Dodge.ArmorClassBuff);
                 var calculate = new RuleCalculateAC(attacker, defender, AttackType.Ranged);
                 SetExactProperty(calculate, "TargetAC", 20);
                 GunslingerDodgeRuntime.AfterCalculateArmorClass(calculate);
@@ -10064,7 +10080,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
                 ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
-                ";proneAfter=" + proneAfter + ";acAfter=" + acAfter +
+                ";proneAfter=" + proneAfter + ";acBuff=" + armorClassBuffAfter +
+                ";acAfter=" + acAfter +
                 ";acDuplicate=" + acDuplicate + ";afterRejected=" + afterRejected +
                 ";rejectedProne=" + rejectedProne + ";rejectedConsumed=" +
                 rejectedConsumed + ";rejectedAc=" + rejectedAc + ";applied=" +
@@ -10074,13 +10091,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GunslingerDodgeRuntimeDiagnostics.Faults;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("dodge-native-reaction", "armed; grit 2 -> 1; prone",
+                Assertion("dodge-native-reaction", "armed; grit 2 -> 1; standing with +2 dodge buff",
                     observed, initial == 2 && armedBefore && afterApplied == 1 &&
-                    !armedAfter && proneAfter,
-                    "native light armor/load, persisted marker, UnitState prone"),
-                Assertion("dodge-trigger-ac", "20 -> 24; duplicate remains 24",
-                    observed, acAfter == 24 && acDuplicate == 24,
-                    "exact RuleCalculateAC TargetAC mutation"),
+                    !armedAfter && !proneAfter && armorClassBuffAfter,
+                    "persisted marker, exact shared grit, one-round BlueprintBuff"),
+                Assertion("dodge-trigger-ac", "native +2 Dodge buff; no direct unbounded AC mutation",
+                    observed, acAfter == 20 && acDuplicate == 20,
+                    "AddStatBonus ModifierDescriptor.Dodge on one-round buff"),
                 Assertion("dodge-insufficient-atomic",
                     "grit 0; marker consumed; standing; AC remains 20", observed,
                     afterRejected == 0 && rejectedConsumed && !rejectedProne &&
