@@ -18,7 +18,7 @@ def require(path: Path, *tokens: str) -> None:
 
 def validate(root: Path) -> None:
     validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               862, 183, 184)
+                               863, 183, 184)
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs",
             "wrapper.HideInUI = true", "set.RapidReload }",
             "NativeFirearmFeatIntegration.Configure")
@@ -41,6 +41,13 @@ def validate(root: Path) -> None:
             "ReferenceEquals(completed.Weapon, start.Weapon)")
     require(root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs",
             "caster.Unit.IsInCombat", "one uninterrupted minute out of combat")
+    require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionTooltipPatch.cs",
+            "DescriptionTemplatesItem", "ItemHeader", "data.Item",
+            "TryGetOrCreate", "DescriptionTemplatesBase.Bricks.CursiveText")
+    require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionPresentation.cs",
+            "Firearm condition: Normal", "Firearm condition: Broken",
+            "misfire value increases by 4", "Firearm condition: Wrecked",
+            "one uninterrupted minute out of combat")
 
 def main() -> int:
     parser = argparse.ArgumentParser()

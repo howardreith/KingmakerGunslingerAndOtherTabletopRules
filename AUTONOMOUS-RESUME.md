@@ -819,6 +819,13 @@ are `7d5b83ba05b27eb5aaf657f7016cd02395629147cd6bc60408f58f24629404e3` /
 Continue Phase 8 at condition tooltip/combat-log visibility and Quick Clear
 presentation; do not treat the timed action checkpoint as full UX acceptance.
 
+Native firearm condition tooltip source and bootstrap are qualified through
+fresh mod-load `20260803T2317264754582Z-mod-load-smoke`; package/DLL hashes are
+`4a3f9d55eae4ec59210804286bb25dcc964239e64b9a4d2ef552d13758b011be` /
+`91828430d78309a5eeffd278be45f9ce048f255ca15d8760bb62a4819c0167b6`.
+Continue Phase 8 with condition transition combat-log feedback and Quick Clear
+presentation. Preserve final supervised tooltip layout/refresh verification.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

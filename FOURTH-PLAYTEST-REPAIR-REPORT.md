@@ -168,10 +168,35 @@ Overhaul unit. The final run observed `duration=1 minute`, delayed and
 interruption-atomic delivery, real combat blocking, exact atomic completion,
 cleanup, and version `0.0.63`.
 
+## Native firearm condition tooltip checkpoint
+
+The installed `DescriptionTemplatesItem.ItemHeader` contract receives the exact
+`ItemEntity` used by both item tooltips and item descriptions. A narrow Harmony
+postfix now appends a native text brick only when that exact item resolves as a
+firearm. Normal, Broken, and Wrecked each have non-null mechanical wording;
+Broken states its +4 misfire increase and recovery actions, while Wrecked states
+its fire/reload prohibition and timed out-of-combat Overhaul recovery.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 880/880 PASS;
+- clean exact-reference Release build and strict package validation: PASS;
+- checkpoint package/DLL SHA-256:
+  `4a3f9d55eae4ec59210804286bb25dcc964239e64b9a4d2ef552d13758b011be` /
+  `91828430d78309a5eeffd278be45f9ce048f255ca15d8760bb62a4819c0167b6`;
+- guarded fresh mod-load PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2317264754582Z-mod-load-smoke`.
+
+The first exact compile rejected the modern `HarmonyLib` namespace; changing it
+to this repository's installed `Harmony12` contract resolved the annotations.
+Visible placement, wrapping, and refresh after condition changes remain for the
+final supervised UI acceptance; bootstrap and patch installation are qualified.
+
 ## Remaining mission scope
 
 Rapid Reload and semantic icon art, final player-visible Grit observation, real
 equipped firearm models/projectile/audio presentation, integrated reload auto-use,
-condition tooltip/combat-log and Quick Clear presentation, Winchester attribution,
+condition transition combat-log and Quick Clear presentation, Winchester attribution,
 comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.

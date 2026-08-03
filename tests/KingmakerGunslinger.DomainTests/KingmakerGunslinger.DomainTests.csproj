@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmWeaponFeatPolicy.cs"><Link>Domain\FirearmWeaponFeatPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmConditionPresentation.cs"><Link>Domain\FirearmConditionPresentation.cs</Link></Compile>
     <Compile Include="Sprint55Tests.cs" />
     <Compile Include="Sprint56Tests.cs" />
     <Compile Include="Sprint58Tests.cs" />

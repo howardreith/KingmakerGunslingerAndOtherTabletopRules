@@ -198,6 +198,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("third-playtest.grit-shared-ui", ThirdPlaytestGritSharedUi),
             Case("third-playtest.empty-command-preconstruction", ThirdPlaytestEmptyPreconstruction),
             Case("fourth-playtest.overhaul-maintenance", FourthPlaytestOverhaulMaintenance),
+            Case("fourth-playtest.condition-presentation", FourthPlaytestConditionPresentation),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1062,6 +1063,24 @@ namespace KingmakerGunslinger.DomainTests
                 blueprint.Contains("one uninterrupted minute out of combat") &&
                 blueprint.Contains("\"1 minute\""),
                 "Overhaul is not a one-minute, out-of-combat, exact-item atomic action.");
+        }
+
+        private static void FourthPlaytestConditionPresentation()
+        {
+            string normal = FirearmConditionPresentation.Describe(FirearmCondition.Normal);
+            string broken = FirearmConditionPresentation.Describe(FirearmCondition.Broken);
+            string wrecked = FirearmConditionPresentation.Describe(FirearmCondition.Wrecked);
+            Assertions.True(normal.Contains("Normal") && normal.Contains("ordinary use"),
+                "Normal firearm condition presentation is not meaningful.");
+            Assertions.True(broken.Contains("Broken") && broken.Contains("increases by 4") &&
+                broken.Contains("Quick Clear") && broken.Contains("Repair Firearm"),
+                "Broken firearm condition presentation omits mechanical recovery guidance.");
+            Assertions.True(wrecked.Contains("Wrecked") && wrecked.Contains("cannot fire or reload") &&
+                wrecked.Contains("one uninterrupted minute") && wrecked.Contains("out of combat"),
+                "Wrecked firearm condition presentation omits restrictions or Overhaul guidance.");
+            Assertions.Throws<ArgumentOutOfRangeException>(
+                () => FirearmConditionPresentation.Describe((FirearmCondition)99),
+                "Unknown firearm conditions must fail closed.");
         }
 
         private static TestCase Case(string name, Action body)

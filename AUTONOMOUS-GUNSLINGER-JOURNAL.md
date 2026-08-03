@@ -3452,3 +3452,21 @@
   native combat flag from an adjacent observer onto the exact Overhaul unit.
 - Continue Phase 8 with condition tooltip/combat-log visibility and Quick Clear
   presentation. This checkpoint does not complete maintenance UX acceptance.
+
+# Fourth playtest native firearm condition tooltip (2026-08-03)
+
+- Exact installed IL identified `DescriptionTemplatesItem.ItemHeader` as the
+  shared native item tooltip/description hook with the concrete `TooltipData.Item`.
+  Production appends one native cursive text brick only for an exact resolved
+  firearm; ordinary items remain unchanged.
+- Normal, Broken, and Wrecked descriptions are non-null and mechanically
+  explicit. Broken names the +4 misfire increase and Quick Clear/Repair;
+  Wrecked names fire/reload prohibition and the one-minute out-of-combat Overhaul.
+- Repository validation, all 880 tests, clean exact-reference Release, strict
+  package validation, and guarded fresh mod-load
+  `20260803T2317264754582Z-mod-load-smoke` pass. Package/DLL hashes are
+  `4a3f9d55eae4ec59210804286bb25dcc964239e64b9a4d2ef552d13758b011be` /
+  `91828430d78309a5eeffd278be45f9ce048f255ca15d8760bb62a4819c0167b6`.
+- The first compile used the wrong modern Harmony namespace and failed before
+  packaging; `Harmony12` is the exact project/runtime contract. Final visible
+  wrapping, placement, and live refresh remain integrated UI acceptance work.
