@@ -1,0 +1,4 @@
+"Flintlock Rifle" by Mesh Masters.
+Source: https://sketchfab.com/3d-models/flintlock-rifle-6605ddbf0dd2411690ac58e46213fa80
+License: Creative Commons Attribution 4.0 International — https://creativecommons.org/licenses/by/4.0/
+Modified for KingmakerGunslinger; changes are documented in MODIFICATIONS.md.

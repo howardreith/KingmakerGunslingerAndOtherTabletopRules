@@ -19,9 +19,14 @@ another mod.
 
 ## Second-playtest intake
 
-All five candidate model sets and all five candidate WAV recordings remain
-quarantined and are excluded from source and packages. Four model sets and all
-audio lack adequate provenance/license evidence. The advanced-rifle folder now
+Four candidate model sets are approved and preserved byte-for-byte under
+`assets-source/third-party/models`: *Flintlock pistol* by Cyril43,
+*Blunderbuss Low Poly* by ccotwist, *1851 Colt Navy Revolver* by Steven
+Jurriaans, and *Flintlock Rifle* by Mesh Masters. Each is CC-BY-4.0; distributed
+source or derivatives must retain the creator, title, source URL, license link,
+and change notices in its adjacent records.
+
+The advanced-rifle folder now
 claims **Martini Henry rifle** by **ASHISH (Ashish0096)** under CC-BY-4.0, but
 its FBX embeds the contradictory Maya filename `fusil winchester v3.mb` and no
 ASHISH, Ashish0096, or Martini-Henry identifier. The license evidence therefore
@@ -30,5 +35,12 @@ single file-to-source identity gap, not a second candidate or attribution to a
 different Winchester creator. See
 `C:\Dev\KingmakerGunslingerLab\ASSET-INTAKE-AUDIT.md` for hashes and the exact
 evidence required to clear quarantine.
+
+The two CC0 audio source records are valid license evidence for their named
+sources, but their folders contain no original recordings and do not map the
+five loose root WAV hashes to either source. Those WAVs remain quarantined and
+are excluded from source and packages pending an exact source-file/derivative
+mapping. Credit will be retained as project policy if that identity gap is
+resolved.
 
 The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.

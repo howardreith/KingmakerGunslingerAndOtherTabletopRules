@@ -1,0 +1,8 @@
+License: Creative Commons Attribution 4.0 International
+Identifier: CC-BY-4.0
+Official license URL: https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+This license permits copying, adaptation, redistribution, and commercial use, provided appropriate credit, a license link, and change notices are supplied.
+
+This is a provenance record. The official legal code controls.

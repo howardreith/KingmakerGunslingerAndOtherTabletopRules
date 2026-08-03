@@ -1,0 +1,4 @@
+"Blunderbuss Low Poly" by ccotwist.
+Source: https://sketchfab.com/3d-models/blunderbuss-low-poly-46842aaad9a84b76b92316a47028a3cd
+License: Creative Commons Attribution 4.0 International — https://creativecommons.org/licenses/by/4.0/
+Modified for KingmakerGunslinger; changes are documented in MODIFICATIONS.md.

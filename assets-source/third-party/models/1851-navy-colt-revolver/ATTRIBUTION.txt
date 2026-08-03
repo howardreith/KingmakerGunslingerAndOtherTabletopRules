@@ -1,0 +1,4 @@
+"1851 Colt Navy Revolver" by Steven Jurriaans.
+Source: https://sketchfab.com/3d-models/1851-colt-navy-revolver-960c842911ac4f278fbebf6cf7b4286b
+License: Creative Commons Attribution 4.0 International — https://creativecommons.org/licenses/by/4.0/
+Modified for KingmakerGunslinger; changes are documented in MODIFICATIONS.md.

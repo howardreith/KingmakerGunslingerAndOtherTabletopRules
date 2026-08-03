@@ -1,0 +1,4 @@
+"Flintlock pistol" by Cyril43.
+Source: https://sketchfab.com/3d-models/flintlock-pistol-d2b82ab60b6a4960bf859953bb933595
+License: Creative Commons Attribution 4.0 International — https://creativecommons.org/licenses/by/4.0/
+Modified for KingmakerGunslinger; changes are documented in MODIFICATIONS.md.
