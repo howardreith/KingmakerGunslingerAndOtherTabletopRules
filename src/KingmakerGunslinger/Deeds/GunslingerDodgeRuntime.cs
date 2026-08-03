@@ -6,6 +6,8 @@ using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Rules;
@@ -53,8 +55,11 @@ namespace KingmakerGunslinger.Deeds
                                 trueGrit.EffectiveCost);
                             try
                             {
+                                var buffContext = new MechanicsContext(target,
+                                    descriptor, dodge.ProneAbility, null,
+                                    new TargetWrapper(target));
                                 if (descriptor.Buffs.AddBuff(dodge.ArmorClassBuff,
-                                    null, TimeSpan.FromSeconds(6d)) == null &&
+                                    buffContext, TimeSpan.FromSeconds(6d)) == null &&
                                     !descriptor.Buffs.RawFacts.Any(value =>
                                         ReferenceEquals(value.Blueprint,
                                             dodge.ArmorClassBuff)))
