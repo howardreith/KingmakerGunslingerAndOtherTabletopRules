@@ -2849,7 +2849,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Normal));
                 var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                SetExactProperty(attack, "Target", target);
+                SetDeclaredExactProperty(attack, "Target", target);
                 bool first = attack.CanStart;
                 bool second = attack.CanStart;
                 rejectedOnce = !first && !second &&
@@ -2874,7 +2874,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     standard, attacker.Descriptor);
                 attacker.AutoUseAbility = data;
                 var autoAttack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
-                SetExactProperty(autoAttack, "Target", target);
+                SetDeclaredExactProperty(autoAttack, "Target", target);
                 bool autoCanStart = autoAttack.CanStart;
                 autoReplacement = !autoCanStart &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 2 &&
@@ -10453,6 +10453,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (value == null) throw new ArgumentNullException("value");
             PropertyInfo property = value.GetType().GetProperty(name,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null)
+                throw new MissingMemberException(value.GetType().FullName, name);
+            setter.Invoke(value, new[] { propertyValue });
+        }
+
+        private static void SetDeclaredExactProperty(object value, string name,
+            object propertyValue)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            PropertyInfo property = value.GetType().GetProperty(name,
+                BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance | BindingFlags.DeclaredOnly);
             MethodInfo setter = property == null ? null : property.GetSetMethod(true);
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
