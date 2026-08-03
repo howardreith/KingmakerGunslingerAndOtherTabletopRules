@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.Blueprints
             {
                 BlueprintAbility ability = fact as BlueprintAbility;
                 if (ability == null || ability.Hidden) continue;
+                CompleteTooltipMetadata(ability);
                 string duration = ability.LocalizedDuration == null ? null :
                     ability.LocalizedDuration.ToString();
                 string saving = ability.LocalizedSavingThrow == null ? null :
@@ -48,6 +49,26 @@ namespace KingmakerGunslinger.Blueprints
                     saving.IndexOf("<null>", StringComparison.OrdinalIgnoreCase) >= 0)
                     throw new InvalidOperationException(
                         "Player-facing ability tooltip metadata is incomplete: " + ability.name);
+            }
+        }
+
+        private static void CompleteTooltipMetadata(BlueprintAbility ability)
+        {
+            string description = ability.Description ?? string.Empty;
+            if (ability.LocalizedDuration == null ||
+                string.IsNullOrWhiteSpace(ability.LocalizedDuration.ToString()))
+                ability.LocalizedDuration = LocalizationService.Create(
+                    "KMG.Presentation." + ability.name + ".Duration",
+                    "See description");
+            if (ability.LocalizedSavingThrow == null ||
+                string.IsNullOrWhiteSpace(ability.LocalizedSavingThrow.ToString()))
+            {
+                bool mentionsSave = description.IndexOf("saving throw",
+                    StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    description.IndexOf(" save", StringComparison.OrdinalIgnoreCase) >= 0;
+                ability.LocalizedSavingThrow = LocalizationService.Create(
+                    "KMG.Presentation." + ability.name + ".SavingThrow",
+                    mentionsSave ? "See description" : "None");
             }
         }
 
