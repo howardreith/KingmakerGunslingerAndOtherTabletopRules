@@ -186,18 +186,15 @@ namespace KingmakerGunslinger.Blueprints
         internal void Publish(BlueprintFeature nativeWeaponFocus,
             BlueprintFeature wrapper, BlueprintFeature rapidReload)
         {
+            if (nativeWeaponFocus == null) throw new ArgumentNullException("nativeWeaponFocus");
             _basicBefore = _basic.Features;
             _basicAllBefore = _basic.AllFeatures;
             _fighterBefore = _fighter.Features;
             _fighterAllBefore = _fighter.AllFeatures;
-            _basic.Features = ReplaceAndAppend(_basicBefore, nativeWeaponFocus,
-                wrapper, rapidReload);
-            _basic.AllFeatures = ReplaceAndAppend(_basicAllBefore,
-                nativeWeaponFocus, wrapper, rapidReload);
-            _fighter.Features = ReplaceAndAppend(_fighterBefore,
-                nativeWeaponFocus, wrapper, rapidReload);
-            _fighter.AllFeatures = ReplaceAndAppend(_fighterAllBefore,
-                nativeWeaponFocus, wrapper, rapidReload);
+            _basic.Features = AppendUnique(_basicBefore, wrapper, rapidReload);
+            _basic.AllFeatures = AppendUnique(_basicAllBefore, wrapper, rapidReload);
+            _fighter.Features = AppendUnique(_fighterBefore, wrapper, rapidReload);
+            _fighter.AllFeatures = AppendUnique(_fighterAllBefore, wrapper, rapidReload);
         }
 
         internal void Rollback()
@@ -208,25 +205,21 @@ namespace KingmakerGunslinger.Blueprints
             _fighter.AllFeatures = _fighterAllBefore;
         }
 
-        private static BlueprintFeature[] ReplaceAndAppend(BlueprintFeature[] source,
-            BlueprintFeature nativeWeaponFocus, BlueprintFeature wrapper,
-            BlueprintFeature rapidReload)
+        private static BlueprintFeature[] AppendUnique(BlueprintFeature[] source,
+            BlueprintFeature wrapper, BlueprintFeature rapidReload)
         {
             source = source ?? Array.Empty<BlueprintFeature>();
-            int matches = 0;
-            var result = new BlueprintFeature[source.Length + 1];
+            if (wrapper == null) throw new ArgumentNullException("wrapper");
+            if (rapidReload == null) throw new ArgumentNullException("rapidReload");
+            bool hasWrapper = Array.IndexOf(source, wrapper) >= 0;
+            bool hasRapidReload = Array.IndexOf(source, rapidReload) >= 0;
+            var result = new BlueprintFeature[source.Length +
+                (hasWrapper ? 0 : 1) + (hasRapidReload ? 0 : 1)];
             for (int index = 0; index < source.Length; index++)
-            {
-                if (ReferenceEquals(source[index], nativeWeaponFocus))
-                {
-                    result[index] = wrapper;
-                    matches++;
-                }
-                else result[index] = source[index];
-            }
-            if (matches != 1) throw new InvalidOperationException(
-                "Native Weapon Focus must occur exactly once in each feat catalog.");
-            result[result.Length - 1] = rapidReload;
+                result[index] = source[index];
+            int next = source.Length;
+            if (!hasWrapper) result[next++] = wrapper;
+            if (!hasRapidReload) result[next] = rapidReload;
             return result;
         }
     }
