@@ -5922,7 +5922,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<AbilityResourceLogic>().Any(component =>
                         component != null && component.name == "$KMG_SharedGritUi"))
                 .ToArray();
-            bool sharedGritUi = gritUiAbilities.Length > 0 &&
+            bool sharedGritUi = gritUiAbilities.Length > 5 &&
                 gritUiAbilities.All(value => (value.ComponentsArray ??
                     Array.Empty<BlueprintComponent>())
                     .OfType<AbilityResourceLogic>().Count(component =>

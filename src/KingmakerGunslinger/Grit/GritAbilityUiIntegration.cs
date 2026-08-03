@@ -22,7 +22,8 @@ namespace KingmakerGunslinger.Grit
             {
                 if (!ReferenceEquals(ability, dodge) &&
                     !(ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                        .Any(component => References(component, grit))) continue;
+                        .Any(component => References(component, grit)) &&
+                    !DescribesGritSpend(ability)) continue;
                 if ((ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<AbilityResourceLogic>().Any(value =>
                         ReferenceEquals(value.RequiredResource, grit))) continue;
@@ -44,6 +45,16 @@ namespace KingmakerGunslinger.Grit
                 throw new InvalidOperationException(
                     "No grit-consuming abilities received the shared resource UI contract.");
             return count;
+        }
+
+        private static bool DescribesGritSpend(BlueprintAbility ability)
+        {
+            string description = ability == null ? null : ability.Description;
+            if (string.IsNullOrWhiteSpace(description)) return false;
+            return description.IndexOf("grit", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                description.IndexOf("spend", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                description.IndexOf("without spending grit",
+                    StringComparison.OrdinalIgnoreCase) < 0;
         }
 
         private static bool References(BlueprintComponent component,
