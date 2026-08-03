@@ -841,6 +841,15 @@ guarded evidence is `20260803T2330553131263Z-observe-production-firearm-fallback
 Continue Phase 6/9 with actual doll socket/crossbow suppression and live audio
 layering evidence; do not treat prefab instantiation as visual completion.
 
+Production weapon visual parameters now drive the native equipment lifecycle
+with exact custom firearm prefabs and cleared inherited crossbow sound/model
+fallback. Guarded evidence
+`20260803T2343075121479Z-observe-production-firearm-fallbacks` passes all five
+entries; package/DLL hashes are `af3c5aeb...90a23` / `e2c13102...fe006`.
+Next, prove the loaded doll hierarchy and enabled-renderer state, then perform
+final supervised socket/scale/projectile and audible exactly-once acceptance.
+Do not promote this structural checkpoint to completed visual/audio UX.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

@@ -246,10 +246,42 @@ and prefab/material resolution. It does not yet prove the live doll socket,
 complete crossbow/bolt/quiver suppression, projectile appearance, or absence of
 layered crossbow audio; those remain production-context/final visual acceptance.
 
+## Native equipment-model and crossbow-audio suppression checkpoint
+
+Installed IL establishes that `WeaponVisualParameters.Model` is the native
+equipment model and that `HasQuiver` is unconditionally true for the retained
+Crossbow animation style. Each production firearm now owns a distinct visual
+parameter instance whose model is the exact approved firearm prefab. Native
+belt/sheath models and prototype fallback are removed; inherited crossbow
+combat sound, miss sound, and whoosh values are cleared. Projectile and attack
+animation contracts remain unchanged. The equipment fact no longer spawns a
+second model on a guessed hand socket; it only disables enabled renderers whose
+names identify crossbow, bolt, quiver, or arrow presentation and restores them
+when the firearm is unequipped.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 880/880 PASS;
+- clean exact-reference Release and strict package validation: PASS;
+- checkpoint package/DLL SHA-256:
+  `af3c5aebedf627f021819ab6382dd90eb5177a4b51eaa9da5fe3f59e46a90a23` /
+  `e2c13102059b6ce0fa614cf79abad11cf3f1b9509b0a3c1c46d99df7b7dfe006`;
+- guarded Steam-backed PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2343075121479Z-observe-production-firearm-fallbacks`.
+
+The observer passed all five exact custom-model mappings, distinct visual
+instances, native sound suppression, one preserved projectile per firearm,
+animation preservation, transient prefab resolution, cleanup, and version
+`0.0.63`. This is structural runtime evidence, not live-doll or audible-output
+acceptance. Actual socket/scale, enabled renderer state, projectile appearance,
+and exactly-once audible playback remain for loaded-unit and final supervised
+qualification.
+
 ## Remaining mission scope
 
-Rapid Reload and semantic icon art, final player-visible Grit observation, real
-equipped firearm models/projectile/audio presentation, integrated reload auto-use,
+Rapid Reload and semantic icon art, final player-visible Grit observation,
+loaded-doll firearm socket/projectile/audio presentation, integrated reload auto-use,
 condition transition combat-log and Quick Clear presentation, Winchester attribution,
 comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.

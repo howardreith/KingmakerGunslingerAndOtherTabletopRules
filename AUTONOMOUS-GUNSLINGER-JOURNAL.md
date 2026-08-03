@@ -3503,3 +3503,20 @@
   Package/DLL hashes are `7128c91a...36db1` / `19b9ea5c...38955`.
 - Continue with live doll/socket and audio-layer production evidence; prefab
   instantiation alone is not final visual/audio acceptance.
+
+# Fourth playtest native equipment model and sound suppression (2026-08-03)
+
+- Exact installed IL shows the native equipment lifecycle consumes
+  `WeaponVisualParameters.Model`, while Crossbow animation implies a quiver.
+  Production firearms now use distinct visual parameters with the exact bundle
+  prefab as native model and no belt, sheath, or prototype fallback.
+- Crossbow combat/miss/whoosh and equipment sound strings are cleared without
+  changing the one native projectile or Crossbow attack animation. The feature
+  component now suppresses named crossbow/bolt/quiver/arrow renderers and no
+  longer creates a duplicate model on a guessed transform.
+- Repository validation, 880/880 tests, clean exact Release, strict package,
+  and guarded run `20260803T2343075121479Z-observe-production-firearm-fallbacks`
+  pass. Package/DLL hashes are `af3c5aeb...90a23` / `e2c13102...fe006`.
+- Continue with a loaded-unit hierarchy observation and final supervised
+  socket/scale/projectile/audible-output acceptance. Structural blueprint
+  resolution alone is not evidence that a live doll looks or sounds correct.

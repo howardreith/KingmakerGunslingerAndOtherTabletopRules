@@ -62,6 +62,14 @@ namespace KingmakerGunslinger.Assets
         {
             lock (Sync) { GameObject prefab; return Prefabs.TryGetValue(kind, out prefab) && prefab != null ? UnityEngine.Object.Instantiate(prefab) : null; }
         }
+        internal static GameObject GetPrefab(FirearmKind kind)
+        {
+            lock (Sync)
+            {
+                GameObject prefab;
+                return Prefabs.TryGetValue(kind, out prefab) ? prefab : null;
+            }
+        }
         internal static bool PlayShot(FirearmKind kind, UnitEntityData wielder)
         {
             lock (Sync)

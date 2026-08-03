@@ -103,6 +103,7 @@
     <Compile Include="Ammunition\IBasicAmmunitionInventory.cs" />
     <Compile Include="Ammunition\KingmakerBasicAmmunitionInventory.cs" />
     <Compile Include="Blueprints\BasicAmmunitionBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />

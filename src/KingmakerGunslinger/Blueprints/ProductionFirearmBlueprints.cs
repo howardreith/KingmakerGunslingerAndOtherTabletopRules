@@ -203,6 +203,7 @@ namespace KingmakerGunslinger.Blueprints
                         weaponTypeInternalName);
                     mechanicalAccess.Configure(clone, spec, name, description);
                     AppendMarker(clone, spec.Definition);
+                    FirearmWeaponPresentation.Apply(clone, spec.Definition);
                     return clone;
                 });
             BlueprintItemWeapon item = registry.Register<BlueprintItemWeapon>(

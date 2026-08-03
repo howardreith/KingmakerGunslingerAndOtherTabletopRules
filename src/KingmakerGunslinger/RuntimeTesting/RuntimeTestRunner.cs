@@ -4081,9 +4081,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool typeIcon = EquivalentPresentationValue(
                 ReadField(firearm.WeaponType, "m_Icon"),
                 ReadField(sourceType, "m_Icon"));
-            bool typeVisual = VisualParametersEqual(
-                ReadField(firearm.WeaponType, "m_VisualParameters"),
-                ReadField(sourceType, "m_VisualParameters"));
+            object typeVisualValue = ReadField(firearm.WeaponType,
+                "m_VisualParameters");
+            object sourceVisualValue = ReadField(sourceType,
+                "m_VisualParameters");
+            bool typeVisual = RepairedFirearmVisualParameters(
+                firearm, typeVisualValue, sourceVisualValue);
             bool itemIconDistinct = !EquivalentPresentationValue(
                 ReadField(firearm.Item, "m_Icon"), ReadField(sourceItem, "m_Icon"));
             int projectiles = GetProjectileCount(firearm.WeaponType);
@@ -4093,6 +4096,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";projectiles=" + projectiles + ";icon=" +
                 (firearm.Item.Icon != null));
             return itemMatch && itemIconDistinct && typeIcon && typeVisual;
+        }
+
+        private static bool RepairedFirearmVisualParameters(
+            ProductionFirearmBlueprintEntry firearm, object visual,
+            object source)
+        {
+            if (visual == null || source == null || ReferenceEquals(visual, source))
+                return false;
+            Array projectiles = ReadField(visual, "m_Projectiles") as Array;
+            Array sourceProjectiles = ReadField(source, "m_Projectiles") as Array;
+            bool projectilesPreserved = projectiles != null &&
+                sourceProjectiles != null && projectiles.Length == sourceProjectiles.Length;
+            bool animationPreserved = EquivalentPresentationValue(
+                ReadField(visual, "m_WeaponAnimationStyle"),
+                ReadField(source, "m_WeaponAnimationStyle"));
+            bool customModel = ReferenceEquals(ReadField(visual, "m_WeaponModel"),
+                Assets.FirearmAssetRuntime.GetPrefab(firearm.Spec.Definition.Kind));
+            bool noInheritedModels = ReadField(visual, "m_WeaponBeltModel") == null &&
+                ReadField(visual, "m_WeaponSheathModel") == null;
+            bool noNativeCombatSound = string.Equals(Convert.ToString(
+                ReadField(visual, "m_SoundType"),
+                System.Globalization.CultureInfo.InvariantCulture),
+                "None", StringComparison.Ordinal) && string.Equals(Convert.ToString(
+                ReadField(visual, "m_MissSoundType"),
+                System.Globalization.CultureInfo.InvariantCulture),
+                "None", StringComparison.Ordinal) && string.IsNullOrEmpty(Convert.ToString(
+                ReadField(visual, "m_WhooshSound"),
+                System.Globalization.CultureInfo.InvariantCulture));
+            bool noPrototypeFallback = ReadField(visual,
+                "<Prototype>k__BackingField") == null;
+            return projectilesPreserved && animationPreserved && customModel &&
+                noInheritedModels && noNativeCombatSound && noPrototypeFallback;
         }
 
         private static bool VisualParametersEqual(object left, object right)
