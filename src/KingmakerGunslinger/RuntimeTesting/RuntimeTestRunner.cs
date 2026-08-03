@@ -2612,6 +2612,74 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool progressionMetadata = !string.IsNullOrWhiteSpace(progression.Name) &&
                 !string.IsNullOrWhiteSpace(progression.Description) &&
                 progression.Icon != null;
+            BlueprintFeature deedPackage = progression.LevelEntries
+                .SelectMany(entry => entry.Features)
+                .OfType<BlueprintFeature>()
+                .FirstOrDefault(value => value.name != null &&
+                    value.name.IndexOf("Deed", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                    !value.HideInUI);
+            BlueprintUnitFact[] semanticFacts = {
+                set.Proficiencies, set.Gunsmithing, set.Grit.Feature,
+                deedPackage, set.Nimble.Features[0], set.GunTraining.Selection,
+                set.TrueGrit.Selection, set.QuickClear.Feature,
+                BlueprintBootstrap.ReloadTestMusketAbility,
+                BlueprintBootstrap.RepairTestMusketAbility,
+                BlueprintBootstrap.OverhaulTestMusketAbility };
+            int semanticIconCount = semanticFacts.Where(value => value != null &&
+                    value.Icon != null).Select(value => value.Icon).Distinct().Count();
+            string semanticMap = string.Join("|", semanticFacts.Select(value =>
+                value == null ? "<missing>" : value.name + "=" +
+                    (value.Icon == null ? "<null>" : value.Icon.name)).ToArray());
+
+            BlueprintFeatureSelection rapidReload =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    "85103137b2f54b7dacd98d51e856d8c3", "Rapid Reload selection");
+            BlueprintFeature[] rapidChoices = rapidReload.AllFeatures ??
+                Array.Empty<BlueprintFeature>();
+            BlueprintFeatureSelection basicFeats =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    "247a4068296e8be42890143f451b4b45", "native basic feat selection");
+            BlueprintFeatureSelection fighterFeats =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    "41c8486641f7d6d4283ca9dae4147a9f", "native Fighter feat selection");
+            bool rapidPresentation = rapidChoices.Length == 5 &&
+                rapidReload.Icon != null && rapidReload.Icon.name ==
+                    "KMG_Icon_rapid-reload" && rapidChoices.All(value =>
+                        value != null && value.Icon == rapidReload.Icon) &&
+                (basicFeats.AllFeatures ?? Array.Empty<BlueprintFeature>())
+                    .Count(value => ReferenceEquals(value, rapidReload)) == 1 &&
+                (fighterFeats.AllFeatures ?? Array.Empty<BlueprintFeature>())
+                    .Count(value => ReferenceEquals(value, rapidReload)) == 1;
+            bool rapidKindIsolation = true;
+            Kingmaker.EntitySystem.Entities.UnitEntityData rapidUnit = null;
+            try
+            {
+                rapidUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                for (int index = 0; index < rapidChoices.Length; index++)
+                {
+                    rapidUnit.Descriptor.AddFact(rapidChoices[index]);
+                    for (int kind = 0; kind < FirearmFeatBlueprints.Kinds.Length; kind++)
+                        rapidKindIsolation = rapidKindIsolation &&
+                            Reloading.RapidReloadRuntime.HasMatchingChoice(
+                                rapidUnit.Descriptor,
+                                FirearmFeatBlueprints.Kinds[kind]) == (kind == index);
+                    rapidUnit.Descriptor.RemoveFact(rapidChoices[index]);
+                }
+            }
+            finally
+            {
+                if (rapidUnit != null)
+                {
+                    foreach (BlueprintFeature choice in rapidChoices)
+                        if (rapidUnit.Descriptor.HasFact(choice))
+                            rapidUnit.Descriptor.RemoveFact(choice);
+                    rapidUnit.Dispose();
+                }
+            }
             int grouped = progression.UIGroups == null ? 0 :
                 progression.UIGroups.Sum(group => group == null ||
                     group.Features == null ? 0 : group.Features.Count);
@@ -2636,6 +2704,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (progression.UIGroups == null ? 0 : progression.UIGroups.Length) +
                 ";grouped=" + grouped + ";class=" + classMetadata +
                 ";progression=" + progressionMetadata +
+                ";semanticIcons=" + semanticIconCount + ";semanticMap=" + semanticMap +
+                ";rapidPresentation=" + rapidPresentation +
+                ";rapidIsolation=" + rapidKindIsolation +
                 ";actions=" + (reload == null ? "<null>" : reload.Name) + "," +
                     (overhaul == null ? "<null>" : overhaul.Name) + "," +
                     (repair == null ? "<null>" : repair.Name);
@@ -2659,6 +2730,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         progression.UIGroups != null &&
                         progression.UIGroups.Length > 0 && grouped > 0,
                     "LevelEntries and UIGroups"),
+                Assertion("gunslinger-semantic-icon-family",
+                    "eleven distinct native-style concepts for core, deed, training, capstone, and maintenance facts",
+                    semanticMap, semanticFacts.All(value => value != null &&
+                        value.Icon != null) && semanticIconCount == semanticFacts.Length,
+                    "exact registered fact icon references"),
+                Assertion("rapid-reload-presentation-and-kind-isolation",
+                    "one top-level selection; five choices; one native-style icon; each choice matches only its firearm kind",
+                    "presentation=" + rapidPresentation + ";isolation=" +
+                        rapidKindIsolation + ";choices=" + rapidChoices.Length,
+                    rapidPresentation && rapidKindIsolation,
+                    "native feat catalogs, exact icon references, and disposable fact grants"),
                 Assertion("production-firearm-actions-presentation",
                     "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
                     observed, productionActions,

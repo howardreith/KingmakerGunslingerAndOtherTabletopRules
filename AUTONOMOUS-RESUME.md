@@ -850,6 +850,15 @@ Next, prove the loaded doll hierarchy and enabled-renderer state, then perform
 final supervised socket/scale/projectile and audible exactly-once acceptance.
 Do not promote this structural checkpoint to completed visual/audio UX.
 
+Rapid Reload and the semantic progression icon family are runtime-qualified at
+`20260803T2353092670187Z-observe-gunslinger-presentation`. The preceding
+`20260803T2350599488388Z` failure exposed missing progression-level traversal;
+the final run proves eleven distinct core/deed/training/capstone/maintenance
+icons and one top-level/five kind-isolated Rapid Reload choices. Package/DLL
+hashes are `efae7436...8c2dd` / `8bc39668...04f1a2`. Preserve the generated
+source and deterministic exporter; continue with loaded doll/audio, integrated
+auto-use visibility, and final Grit/condition UI acceptance.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

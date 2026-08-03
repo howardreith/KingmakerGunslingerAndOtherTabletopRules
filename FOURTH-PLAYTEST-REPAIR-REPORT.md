@@ -278,9 +278,44 @@ acceptance. Actual socket/scale, enabled renderer state, projectile appearance,
 and exactly-once audible playback remain for loaded-unit and final supervised
 qualification.
 
+## Rapid Reload and semantic progression icon checkpoint
+
+The former Rapid Reload asset was a flat salmon disk. Its replacement is a
+hand-painted, framed oxblood-and-antique-gold icon with one large ramrod and
+circular reload arrow, legible in inspected 64- and 32-pixel exports. The
+built-in image tool produced the high-resolution chroma source;
+`tools/New-RapidReloadIcon.ps1` deterministically removes chroma, despills,
+crops, and resamples the game asset. Source/export SHA-256 are
+`CAB121AF2BE6943A4E9B29ADC9544F2F3A38B9CA35719C36231A7C2A12E5F319` /
+`552455F3CE043B8D93E3DCE91B73AB78EE1852FDF51BDA99611CDD298D12560E`.
+
+The strengthened first run
+`20260803T2350599488388Z-observe-gunslinger-presentation` failed because six
+core progression facts still shared the class icon. The loader traversed
+selections and `AddFacts`, but not progression level entries. Production now
+walks exact `BlueprintProgression.LevelEntries` while still skipping native
+facts.
+
+Final evidence:
+
+- repository validation and 880/880 domain/reflection tests: PASS;
+- clean exact-reference Release and strict package validation: PASS;
+- package/DLL SHA-256:
+  `efae74366d83ed74dbab0686d0f28748f707d1d8c8abbb1060d4b8972fd8c2dd` /
+  `8bc39668f6e8b36666126fa714bcfd154e93c796f6bb275a7b6bba207704f1a2`;
+- guarded Steam-backed PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2353092670187Z-observe-gunslinger-presentation`.
+
+The final run observes eleven distinct semantic icon references for
+Proficiencies, Gunsmithing, Grit, Deeds, Nimble, Gun Training, True Grit, Quick
+Clear, Reload, Repair, and Overhaul. It also proves exactly one Rapid Reload
+selection in each native feat catalog, five choices, the exact new icon, and
+choice matching only its Pistol/Musket/Blunderbuss/Rifle/Revolver kind. Native
+Bonus Combat Feat remains unmodified and retains its native icon.
+
 ## Remaining mission scope
 
-Rapid Reload and semantic icon art, final player-visible Grit observation,
+Final player-visible Grit observation,
 loaded-doll firearm socket/projectile/audio presentation, integrated reload auto-use,
 condition transition combat-log and Quick Clear presentation, Winchester attribution,
 comprehensive regression/runtime runs,

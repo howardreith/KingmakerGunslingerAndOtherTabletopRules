@@ -108,6 +108,12 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection selection = fact as BlueprintFeatureSelection;
             if (selection != null && selection.AllFeatures != null)
                 foreach (BlueprintFeature child in selection.AllFeatures) ApplyFact(child, visited);
+            BlueprintProgression progression = fact as BlueprintProgression;
+            if (progression != null && progression.LevelEntries != null)
+                foreach (LevelEntry entry in progression.LevelEntries)
+                    if (entry != null && entry.Features != null)
+                        foreach (BlueprintFeatureBase child in entry.Features)
+                            ApplyFact(child, visited);
             foreach (AddFacts add in (fact.ComponentsArray ?? Array.Empty<BlueprintComponent>()).OfType<AddFacts>())
                 foreach (BlueprintUnitFact child in add.Facts ?? Array.Empty<BlueprintUnitFact>())
                     ApplyFact(child, visited);

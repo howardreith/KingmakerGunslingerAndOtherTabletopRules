@@ -3520,3 +3520,19 @@
 - Continue with a loaded-unit hierarchy observation and final supervised
   socket/scale/projectile/audible-output acceptance. Structural blueprint
   resolution alone is not evidence that a live doll looks or sounds correct.
+
+# Fourth playtest Rapid Reload and semantic icon family (2026-08-03)
+
+- Replaced the flat salmon Rapid Reload disk with generated native-style source
+  art: framed oxblood field, antique-gold circular action, and ramrod. The
+  deterministic 64px export is `552455F3...D12560E`; inspected 64px and 32px
+  reductions remain legible.
+- Strengthened presentation evidence first failed at
+  `20260803T2350599488388Z`: six core nodes shared the class icon. Root cause
+  was missing `BlueprintProgression.LevelEntries` traversal.
+- Final run `20260803T2353092670187Z-observe-gunslinger-presentation` passes
+  eleven distinct semantic references plus one Rapid Reload top-level
+  selection, five choices, exact icon sharing, and kind-only fact matching.
+  Native Bonus Combat Feat is not repainted.
+- Repository validation, 880/880 tests, exact Release, and strict package pass;
+  package/DLL hashes are `efae7436...8c2dd` / `8bc39668...04f1a2`.
