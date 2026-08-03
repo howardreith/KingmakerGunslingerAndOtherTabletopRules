@@ -3370,6 +3370,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 catalog.Blunderbuss, heavyType, heavyItem, records);
             bool rifle = ObserveRepairedPresentation("AdvancedRifle",
                 catalog.AdvancedRifle, heavyType, heavyItem, records);
+            var resolvedAssets = new List<string>();
+            bool approvedBundle = Assets.FirearmAssetRuntime.IsLoaded;
+            foreach (FirearmKind kind in new[] { FirearmKind.Pistol,
+                FirearmKind.Musket, FirearmKind.Blunderbuss,
+                FirearmKind.Revolver })
+            {
+                GameObject instance = Assets.FirearmAssetRuntime.InstantiatePrefab(kind);
+                bool resolved = instance != null &&
+                    instance.GetComponentsInChildren<Renderer>(true).Any(value =>
+                        value != null && value.sharedMaterials != null &&
+                        value.sharedMaterials.Any(material => material != null &&
+                            material.shader != null));
+                resolvedAssets.Add(kind + "=" + resolved);
+                if (instance != null) UnityEngine.Object.Destroy(instance);
+                approvedBundle &= resolved;
+            }
             string observed = string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3386,10 +3402,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, catalog.Entries.All(value => value.Item.Icon != null &&
                         GetProjectileCount(value.WeaponType) > 0),
                     "registered firearm public icon and visual projectile fields"),
+                Assertion("approved-firearm-asset-bundle",
+                    "Unity 2018.4.10f1 bundle loads renderable Pistol, Musket, Blunderbuss, and Revolver prefabs with resolved materials",
+                    string.Join(" | ", resolvedAssets.ToArray()),
+                    approvedBundle,
+                    "FirearmAssetRuntime bundle cache and instantiated renderer/material dependencies"),
                 Assertion("fallback-observation-only",
-                    "no blueprint, asset, unit, inventory, or save mutation",
-                    "read-only exact field comparison", true,
-                    "scenario performs only blueprint lookup and member reads"),
+                    "no blueprint, unit, inventory, or save mutation; temporary prefab instances are destroyed",
+                    "read-only blueprint comparison plus four transient prefab instances", true,
+                    "scenario mutates no persistent game state"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
