@@ -3606,7 +3606,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool approvedBundle = Assets.FirearmAssetRuntime.IsLoaded;
             foreach (FirearmKind kind in new[] { FirearmKind.Pistol,
                 FirearmKind.Musket, FirearmKind.Blunderbuss,
-                FirearmKind.Revolver })
+                FirearmKind.Revolver, FirearmKind.Rifle })
             {
                 GameObject instance = Assets.FirearmAssetRuntime.InstantiatePrefab(kind);
                 bool resolved = instance != null &&
@@ -3635,13 +3635,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         GetProjectileCount(value.WeaponType) > 0),
                     "registered firearm public icon and visual projectile fields"),
                 Assertion("approved-firearm-asset-bundle",
-                    "Unity 2018.4.10f1 bundle loads renderable Pistol, Musket, Blunderbuss, and Revolver prefabs with resolved materials",
+                    "Unity 2018.4.10f1 bundle loads renderable Pistol, Musket, Blunderbuss, Revolver, and Rifle prefabs with resolved materials",
                     string.Join(" | ", resolvedAssets.ToArray()),
                     approvedBundle,
                     "FirearmAssetRuntime bundle cache and instantiated renderer/material dependencies"),
                 Assertion("fallback-observation-only",
                     "no blueprint, unit, inventory, or save mutation; temporary prefab instances are destroyed",
-                    "read-only blueprint comparison plus four transient prefab instances", true,
+                    "read-only blueprint comparison plus five transient prefab instances", true,
                     "scenario mutates no persistent game state"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

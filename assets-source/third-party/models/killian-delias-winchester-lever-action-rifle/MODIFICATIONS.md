@@ -1,0 +1,42 @@
+﻿# Modification record
+
+Original source files are preserved unchanged.
+
+Record every derivative operation below before release. At minimum document:
+
+- import tool and version;
+- Unity editor version;
+- coordinate-system conversion;
+- scale;
+- rotation/orientation;
+- pivot/origin changes;
+- hand-socket attachment;
+- material/shader conversion;
+- texture conversion or compression;
+- mesh optimization, decimation, or topology changes;
+- collider changes;
+- animation or rig changes;
+- AssetBundle name and hash;
+- processed output hashes;
+- assignment in game.
+
+Intended game mapping: **Advanced Rifle only**.
+
+Do not use this lever-action model as the early Musket.
+
+## Kingmaker derivative
+
+- Import/build tool: Unity 2018.4.10f1, Windows 64-bit target.
+- Original FBX and five textures: preserved byte-for-byte; no topology,
+  decimation, collider, animation, or rig changes.
+- Prefab: wrapped as `Rifle`, normalized to a 1.55-unit target length, centered,
+  rotated onto the shared firearm forward axis, and given a muzzle marker.
+- Material: Unity Standard shader with the preserved BaseColor texture;
+  conservative runtime texture import/compression defaults.
+- Attachment: mapped only to `FirearmKind.Rifle` / Advanced Rifle and attached
+  by the shared right-hand firearm visual handler.
+- Bundle: deterministic Windows bundle `kingmakergunslinger.firearms`; final
+  bundle SHA-256
+  `D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`,
+  reproduced by two consecutive builds. Packaged output hashes are recorded in
+  the release report.

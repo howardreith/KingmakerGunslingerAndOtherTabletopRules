@@ -33,13 +33,14 @@ namespace KingmakerGunslinger.Assets
                     _bundle = bundle;
                     LoadPrefab(FirearmKind.Pistol, "pistol"); LoadPrefab(FirearmKind.Musket, "musket");
                     LoadPrefab(FirearmKind.Blunderbuss, "blunderbuss"); LoadPrefab(FirearmKind.Revolver, "revolver");
+                    LoadPrefab(FirearmKind.Rifle, "rifle");
                     LoadShot(FirearmKind.Pistol, "gunantq_flintlock fire_cs_usc.wav");
                     LoadShot(FirearmKind.Musket, "gunantq_musket shots_cs_usc.wav");
                     LoadShot(FirearmKind.Blunderbuss, "gunshotg_classic western shotgun blast with reverb_cs_usc.wav");
                     LoadShot(FirearmKind.Revolver, "gunpis_exterior pistol shot_cs_usc.wav");
                     LoadShot(FirearmKind.Rifle, "gunantq_flintlock rifle fire_cs_usc.wav");
                 }
-                context.Logger.Info("assets", "bundle.loaded", "Loaded four approved firearm prefabs and five approved CC0 shot mappings.");
+                context.Logger.Info("assets", "bundle.loaded", "Loaded five approved firearm prefabs and five approved CC0 shot mappings.");
             }
             catch (Exception exception) { context.Logger.Failure("assets", "bundle.load-failed", "Firearm bundle failed safely; native fallbacks remain active.", exception); }
         }

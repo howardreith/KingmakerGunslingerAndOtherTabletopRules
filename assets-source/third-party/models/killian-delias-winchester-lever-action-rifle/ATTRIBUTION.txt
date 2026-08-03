@@ -1,0 +1,14 @@
+﻿"Winchester lever action rifle" by Killian Delias
+Sketchfab account: Killian_Delias
+Source:
+https://sketchfab.com/3d-models/winchester-lever-action-rifle-678f6e091d7149da8fce413b6fd31288
+
+Licensed under Creative Commons Attribution 4.0 International:
+https://creativecommons.org/licenses/by/4.0/
+
+Modified for the KingmakerGunslinger mod. Expected modifications include import,
+scale/orientation adjustment, hand-socket alignment, material/shader conversion,
+mesh optimization where necessary, collider/pivot cleanup, and Unity AssetBundle
+packaging. The final MODIFICATIONS.md must record the changes actually made.
+
+The creator does not endorse the KingmakerGunslinger project.

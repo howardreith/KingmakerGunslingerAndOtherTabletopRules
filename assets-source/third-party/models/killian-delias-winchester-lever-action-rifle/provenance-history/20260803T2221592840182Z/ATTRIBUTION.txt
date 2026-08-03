@@ -1,0 +1,11 @@
+"Martini Henry rifle" by ASHISH (Ashish0096), licensed under
+Creative Commons Attribution 4.0 International.
+
+Source:
+https://sketchfab.com/3d-models/martini-henry-rifle-dc9d28d4280747d98f7b350d116eab3a
+
+License:
+https://creativecommons.org/licenses/by/4.0/
+
+Modified for the KingmakerGunslinger mod. Changes are documented in
+MODIFICATIONS.md.

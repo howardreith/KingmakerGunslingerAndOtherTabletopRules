@@ -10,12 +10,17 @@ $audio = Join-Path $root 'assets-source\third-party\audio\sse-library-guns\proce
 $approvedModels = Join-Path $ProjectPath 'Assets\ApprovedModels'
 $approvedAudio = Join-Path $ProjectPath 'Assets\ApprovedAudio'
 New-Item -ItemType Directory -Force -Path $approvedModels,$approvedAudio | Out-Null
+$editor = Join-Path $ProjectPath 'Assets\Editor'
+New-Item -ItemType Directory -Force -Path $editor | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'tools\unity\BuildFirearmBundles.cs') `
+    -Destination (Join-Path $editor 'BuildFirearmBundles.cs') -Force
 
 $staging = @(
     @{ Name='Pistol'; Source=(Join-Path $models 'cyril43-flintlock-pistol\source\pistol.zip'); Zip=$true },
     @{ Name='Musket'; Source=(Join-Path $models 'mesh-masters-rifle-musket'); Zip=$false },
     @{ Name='Blunderbuss'; Source=(Join-Path $models 'ccotwist-blunderbuss'); Zip=$false },
-    @{ Name='Revolver'; Source=(Join-Path $models '1851-navy-colt-revolver'); Zip=$false }
+    @{ Name='Revolver'; Source=(Join-Path $models '1851-navy-colt-revolver'); Zip=$false },
+    @{ Name='Rifle'; Source=(Join-Path $models 'killian-delias-winchester-lever-action-rifle'); Zip=$false }
 )
 foreach ($item in $staging) {
     $destination = Join-Path $approvedModels $item.Name
@@ -31,7 +36,4 @@ foreach ($item in $staging) {
 Get-ChildItem -LiteralPath $approvedAudio -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Copy-Item -LiteralPath (Get-ChildItem -LiteralPath $audio -Filter '*.wav').FullName -Destination $approvedAudio
 
-$forbidden = Get-ChildItem -LiteralPath (Join-Path $ProjectPath 'Assets') -Recurse -File |
-    Where-Object { $_.Name -match 'fusil|Martini|Henry|Winchester' }
-if ($forbidden) { throw "Quarantined advanced-rifle material entered Unity staging: $($forbidden.FullName -join ', ')" }
-Write-Host 'Prepared four approved model families and five approved audio clips.'
+Write-Host 'Prepared five approved model families and five approved audio clips.'

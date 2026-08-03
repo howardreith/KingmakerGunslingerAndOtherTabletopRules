@@ -221,6 +221,31 @@ meaningful names/reason, Broken availability, Wrecked and zero-Grit rejection,
 standard `2->2` and move `2->1` Grit behavior, exact Broken-to-Normal repair,
 atomic rejection, diagnostics, and cleanup.
 
+## Winchester provenance and five-prefab bundle checkpoint
+
+The corrected handoff identifies the exact advanced-rifle payload as
+*Winchester lever action rifle* by Killian Delias (`Killian_Delias`), Sketchfab
+UID `678f6e091d7149da8fce413b6fd31288`, CC-BY-4.0. All six preserved payload
+hashes match the corrected provenance record; embedded Winchester/lever-action
+names agree, former Martini-Henry records remain in `provenance-history`, and
+clearance is limited to Advanced Rifle. The handoff ZIP was correctly classified
+as playtest evidence rather than an original Sketchfab distribution.
+
+Unity `2018.4.10f1` produced two byte-identical five-prefab bundles:
+SHA-256 `D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`,
+16,680,466 bytes. Repository validation, 880/880 tests, clean exact-reference
+Release, and strict packaging pass. Package/DLL SHA-256 are
+`7128c91a75c43ad246ac58cdb6d84cbd5cd44ad43a4121912e4636e8edd36db1` /
+`19b9ea5cc49fbd899ddf3c9af3bcc20d6fd36c6077cc933fbc1da98abd038955`.
+Guarded run
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2330553131263Z-observe-production-firearm-fallbacks`
+passed all five prefab/material mappings and transient cleanup.
+
+This checkpoint proves provenance, deterministic bundle identity, loadability,
+and prefab/material resolution. It does not yet prove the live doll socket,
+complete crossbow/bolt/quiver suppression, projectile appearance, or absence of
+layered crossbow audio; those remain production-context/final visual acceptance.
+
 ## Remaining mission scope
 
 Rapid Reload and semantic icon art, final player-visible Grit observation, real

@@ -834,6 +834,13 @@ Package/DLL hashes are `dbfecb4500a9a8cf65f1456d4678e0a4b0d5e0c03bbf691191624868
 Continue to the next incomplete independent Phase 9 visual/audio item while
 preserving final supervised condition/Quick Clear UI acceptance.
 
+The five-prefab bundle, including the provenance-cleared Killian Delias
+Winchester mapped only to Advanced Rifle, is deterministic and runtime-resolved.
+Bundle SHA-256 is `D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`;
+guarded evidence is `20260803T2330553131263Z-observe-production-firearm-fallbacks`.
+Continue Phase 6/9 with actual doll socket/crossbow suppression and live audio
+layering evidence; do not treat prefab instantiation as visual completion.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

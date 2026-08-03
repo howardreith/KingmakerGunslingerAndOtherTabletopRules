@@ -52,6 +52,9 @@ def validate(root: Path) -> None:
     require(root / "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs",
             "exactly one Broken firearm", "at least 1 Grit",
             "Wrecked firearms require Overhaul Firearm")
+    require(root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs",
+            "LoadPrefab(FirearmKind.Rifle, \"rifle\")",
+            "Loaded five approved firearm prefabs")
 
 def main() -> int:
     parser = argparse.ArgumentParser()

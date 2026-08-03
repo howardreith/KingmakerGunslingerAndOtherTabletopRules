@@ -1,0 +1,18 @@
+﻿Winchester lever action rifle by Killian Delias (Sketchfab: Killian_Delias)
+
+Source:
+https://sketchfab.com/3d-models/winchester-lever-action-rifle-678f6e091d7149da8fce413b6fd31288
+
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+Canonical license:
+https://creativecommons.org/licenses/by/4.0/
+Legal code:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+CC BY 4.0 permits sharing and adaptation, including commercial use, provided
+appropriate credit is given, the license is linked, and modifications are
+indicated. No endorsement by the creator is implied.
+
+The exact local model files may be redistributed only after their identity is
+matched to the licensed source with the preserved evidence described in
+SOURCE-IDENTITY-REQUIRED.md.

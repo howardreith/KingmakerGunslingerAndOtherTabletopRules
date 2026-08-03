@@ -1,0 +1,10 @@
+License: Creative Commons Attribution 4.0 International
+Identifier: CC-BY-4.0
+Official deed: https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+This license permits sharing and adaptation for any purpose, including
+commercial use, provided appropriate credit is given, a link to the license is
+provided, and changes are indicated. Attribution must not imply endorsement.
+
+This file is a provenance summary. The official legal code controls.

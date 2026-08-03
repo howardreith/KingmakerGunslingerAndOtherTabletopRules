@@ -3488,3 +3488,18 @@
   passed native facts/icons/guidance, Broken availability, Wrecked and zero-Grit
   rejection, standard and move repair/cost behavior, diagnostics, and cleanup.
   The prior run `20260803T2321232806825Z` is retained as the presentation failure.
+
+# Fourth playtest Winchester and five-prefab bundle (2026-08-03)
+
+- Corrected user attestation, exact hashes, and embedded Winchester/lever-action
+  names clear the six-file Killian Delias payload under CC-BY-4.0 for Advanced
+  Rifle only. Former Martini-Henry records remain preserved; the handoff ZIP is
+  explicitly not treated as an original model archive.
+- Unity 2018.4.10f1 produced two identical 16,680,466-byte bundles at SHA-256
+  `D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`.
+- Repository validation, 880/880 tests, clean exact-reference Release, strict
+  package validation, and guarded five-prefab observer
+  `20260803T2330553131263Z-observe-production-firearm-fallbacks` pass.
+  Package/DLL hashes are `7128c91a...36db1` / `19b9ea5c...38955`.
+- Continue with live doll/socket and audio-layer production evidence; prefab
+  instantiation alone is not final visual/audio acceptance.

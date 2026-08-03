@@ -1,0 +1,63 @@
+﻿{
+    "schemaVersion":  1,
+    "recordedAtUtc":  "2026-08-03T22:21:59.4870681Z",
+    "userAttested":  true,
+    "asset":  {
+                  "title":  "Winchester lever action rifle",
+                  "creatorDisplayName":  "Killian Delias",
+                  "creatorAccount":  "Killian_Delias",
+                  "platform":  "Sketchfab",
+                  "modelUid":  "678f6e091d7149da8fce413b6fd31288",
+                  "sourceUrl":  "https://sketchfab.com/3d-models/winchester-lever-action-rifle-678f6e091d7149da8fce413b6fd31288",
+                  "supplementalCreatorUrl":  "https://www.artstation.com/killian",
+                  "licenseDisplay":  "Creative Commons Attribution",
+                  "licenseIdentifier":  "CC-BY-4.0",
+                  "licenseUrl":  "https://creativecommons.org/licenses/by/4.0/",
+                  "intendedGameMapping":  "Advanced Rifle"
+              },
+    "localFolder":  "C:\\Dev\\KingmakerGunslingerLab\\incoming-assets\\models\\Martini-Henry-winchester-rifle",
+    "embeddedIdentityNotes":  [
+                                  "fusil winchester v3.mb",
+                                  "FusilALevier",
+                                  "fusilALevier"
+                              ],
+    "originalDownloadArchive":  {
+                                    "fileName":  "gunslinger-fourth-playtest-handoff.zip",
+                                    "sizeBytes":  10611610,
+                                    "sha256":  "301F9440DE0B7D88E4D2939FC2E5C272374D4773FFF4356D63E7B1253DBBAEC9",
+                                    "copiedTo":  "C:\\Dev\\KingmakerGunslingerLab\\incoming-assets\\models\\Martini-Henry-winchester-rifle\\original-download\\gunslinger-fourth-playtest-handoff.zip"
+                                },
+    "originalFiles":  [
+                          {
+                              "relativePath":  "source\\fusilALevier.fbx",
+                              "sizeBytes":  210304,
+                              "sha256":  "74D60FCC6D9A6E89C20EBB8C2D35471417E9F6C23A840FA65967C20251540A1D"
+                          },
+                          {
+                              "relativePath":  "textures\\fusilALevier_lambert1_BaseColor.png",
+                              "sizeBytes":  1593014,
+                              "sha256":  "DBA372B8B262BFD89495FC7D34773E94DE39A373FBA1A15696F40E80DB6CEA73"
+                          },
+                          {
+                              "relativePath":  "textures\\fusilALevier_lambert1_Height.png",
+                              "sizeBytes":  267955,
+                              "sha256":  "1BA5494F98777876566CB707D3A0D6F443D3702E4F5B9010FDCA6375D26CF7BA"
+                          },
+                          {
+                              "relativePath":  "textures\\fusilALevier_lambert1_Metallic.png",
+                              "sizeBytes":  398018,
+                              "sha256":  "41A69EFC93E966FF932425893DD0B7E7AA1C879527995DE2CECC332BF8C17BED"
+                          },
+                          {
+                              "relativePath":  "textures\\fusilALevier_lambert1_Normal.png",
+                              "sizeBytes":  1684193,
+                              "sha256":  "8C16C4D6A6F5730CB31A88F31DE1194FEC5756AD0A1419BD6A1AF92B2597EDFD"
+                          },
+                          {
+                              "relativePath":  "textures\\fusilALevier_lambert1_Roughness.png",
+                              "sizeBytes":  569218,
+                              "sha256":  "6CC7E97DDDE8F6E57C2B98BBD516D8048AE306BA43CA02CE4A1AB5ECCCEB896F"
+                          }
+                      ],
+    "clearanceInstruction":  "Codex must independently inspect and match the exact local payload before clearing quarantine."
+}
