@@ -7,6 +7,22 @@ definition of done or a listed genuine human-input hard stop.
 
 ## Repository state
 
+- Active fourth-playtest mission: branch
+  `codex/fourth-playtest-runtime-ux-repair`, starting from qualified `0.0.63`
+  commit `6a0117d`. Fresh exact mod-load
+  `20260803T2225523236661Z-mod-load-smoke` proved the reported UX failures are
+  real integration defects, not stale deployment. Baseline package/DLL hashes
+  are recorded in `FOURTH-PLAYTEST-REPAIR-REPORT.md`.
+- First repair checkpoint merges the firearm rows alphabetically into all five
+  native parametrized feat menus and uses exact `Rifle` naming. Repository
+  validation, 878 tests, Release build, strict package validation, and guarded
+  save-free runtime run
+  `20260803T2230567143233Z-disposable-firearm-dependent-feats` pass. Final live
+  UI observation remains required with the coherent `0.0.64` package.
+- Next exact action: audit the live Grit ability/resource presentation contract
+  against the screenshot failure, then implement the shared native counter and
+  zero-resource UI gate without weakening the already-qualified mechanics.
+
 - Mission complete. Exact `eda0202` passed final mod load
   `20260802T2020407693601Z` and consecutive fresh-process 32-slice acceptance
   runs `20260802T2017342856278Z` / `20260802T2019030300247Z`. All 854 tests,

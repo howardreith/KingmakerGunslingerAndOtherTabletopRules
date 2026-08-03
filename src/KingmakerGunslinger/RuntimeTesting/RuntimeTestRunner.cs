@@ -2738,10 +2738,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool catalog = selections.All(selection => selection.HideInUI &&
                 !basic.AllFeatures.Contains(selection) &&
                 !fighter.AllFeatures.Contains(selection));
-            bool nativeMenus = native.All(feature => feature.GetFullSelectionItems()
-                .Count(item => item != null && item.Param.Blueprint != null &&
-                    item.Param.Blueprint.name.StartsWith(
-                        "KMG_WeaponFocus_", StringComparison.Ordinal)) == 5);
+            string[] expectedFirearmNames = { "Blunderbuss", "Musket", "Pistol",
+                "Revolver", "Rifle" };
+            bool nativeMenus = native.All(feature =>
+            {
+                FeatureUIData[] menu = feature.GetFullSelectionItems().ToArray();
+                string[] names = menu.Select(item => item == null
+                    ? string.Empty : item.Name).ToArray();
+                string[] firearmNames = menu.Where(item => item != null &&
+                        item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
+                            "KMG_WeaponFocus_", StringComparison.Ordinal))
+                    .Select(item => item.Name).ToArray();
+                return names.SequenceEqual(names.OrderBy(name => name,
+                           StringComparer.CurrentCultureIgnoreCase)) &&
+                    firearmNames.SequenceEqual(expectedFirearmNames);
+            });
             bool prerequisites = choices[0].ComponentsArray.OfType<
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
                 choices[1].ComponentsArray.OfType<
@@ -2819,7 +2830,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("dependent-feat-catalog", "obsolete wrappers hidden and absent from native catalogs", observed,
                     catalog, "live basic and Fighter feat catalogs"),
                 Assertion("native-firearm-parameter-menus",
-                    "five exact firearm parameters inside each native feat submenu",
+                    "Blunderbuss, Musket, Pistol, Revolver, and Rifle alphabetically inside each native feat submenu",
                     observed, nativeMenus,
                     "BlueprintParametrizedFeature.GetFullSelectionItems"),
                 Assertion("dependent-feat-prerequisites", "native level/BAB shapes plus exact firearm dependency", observed,

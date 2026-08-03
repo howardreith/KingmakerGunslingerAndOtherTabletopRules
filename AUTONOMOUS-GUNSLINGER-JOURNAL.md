@@ -1,5 +1,28 @@
 # Autonomous Gunslinger journal
 
+## 2026-08-03 fourth-playtest identity and native feat checkpoint
+
+- Created `codex/fourth-playtest-runtime-ux-repair` from clean qualified
+  `6a0117d` (`0.0.63`). Inspected all five failing screenshots.
+- Fresh guarded Steam mod load
+  `20260803T2225523236661Z-mod-load-smoke` loaded exact commit `6a0117d`, MVID
+  `80b76899-d9b8-464b-b926-7719a3f9b50d`, and byte-identical package/live/cache
+  DLL `f4855c22...a0f9`. The screenshot failures are true integration defects.
+- Repaired the native firearm feat adapter to merge by displayed-name order and
+  use exact `Rifle` labeling. Strengthened deterministic and guarded runtime
+  assertions to require the complete alphabetic native menu plus exact firearm
+  subsequence in Weapon Focus and all four dependent families.
+- Repository validation, 878 tests, clean Release build, and strict package
+  validation pass. Candidate package/DLL hashes are `496ce8ac...bb09` /
+  `c5789a75...43cc`.
+- Guarded save-free run
+  `20260803T2230567143233Z-disposable-firearm-dependent-feats` passed catalog,
+  exact menu order/names, native prerequisite shapes, effects, kind isolation,
+  hidden compatibility wrappers, and loaded version.
+- Remaining uncertainty: final player-visible submenu observation is pending the
+  coherent `0.0.64` repair package. Next action is the Grit resource/UI contract
+  audit and shared counter repair.
+
 ## 2026-08-01 initial mission audit
 
 - Branch: `codex/complete-gunslinger`

@@ -963,8 +963,12 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs");
             Assertions.True(source.Contains("new FeatureParam(parameter)") &&
                 source.Contains("GetFullSelectionItems") &&
-                source.Contains("NativeFirearmParametrizedBonus"),
-                "Native firearm parameters are not appended to the native menu.");
+                source.Contains("NativeFirearmParametrizedBonus") &&
+                source.Contains("OrderBy(value => value == null ? string.Empty : value.Name") &&
+                source.Contains("StringComparer.CurrentCultureIgnoreCase") &&
+                source.Contains("return kind.ToString();") &&
+                !source.Contains("Advanced Rifle"),
+                "Native firearm parameters are not merged alphabetically with the exact firearm labels.");
         }
 
         private static void ThirdPlaytestLegacyWrapperHidden()

@@ -106,12 +106,13 @@ namespace KingmakerGunslinger.Feats
                     displayName, parameter.Description, parameter.Icon,
                     displayName));
             }
-            return result;
+            return result.OrderBy(value => value == null ? string.Empty : value.Name,
+                StringComparer.CurrentCultureIgnoreCase).ToArray();
         }
 
         private static string DisplayName(FirearmKind kind)
         {
-            return kind == FirearmKind.Rifle ? "Advanced Rifle" : kind.ToString();
+            return kind.ToString();
         }
 
         internal static bool TryKind(FeatureParam parameter, out FirearmKind kind)
