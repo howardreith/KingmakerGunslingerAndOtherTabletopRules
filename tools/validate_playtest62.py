@@ -2,6 +2,7 @@
 """Portable validator for the 0.0.62 second-playtest UX repair."""
 from __future__ import annotations
 import argparse
+import json
 import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
@@ -26,6 +27,10 @@ def require_tokens(path: Path, tokens: tuple[str, ...]) -> None:
 
 def validate(root: Path) -> None:
     validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 846, 182, 183)
+    ledger = json.loads((root / "blueprints/blueprints.json").read_text(encoding="utf-8"))
+    if any(not isinstance(entry.get("notes"), str) or not entry["notes"].strip()
+           for entry in ledger["entries"]):
+        raise AssertionError("Every blueprint ledger entry requires nonempty runtime notes.")
     icon_dir = root / "assets" / "game" / "icons"
     for name in ICON_NAMES:
         icon = icon_dir / f"{name}.png"
