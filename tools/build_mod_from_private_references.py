@@ -79,6 +79,7 @@ def main() -> int:
         managed / "Newtonsoft.Json.dll",
         managed / "UnityEngine.dll",
         managed / "UnityEngine.AnimationModule.dll",
+        managed / "UnityEngine.AudioModule.dll",
         managed / "UnityEngine.AssetBundleModule.dll",
         managed / "UnityEngine.CoreModule.dll",
         managed / "UnityEngine.UI.dll",
