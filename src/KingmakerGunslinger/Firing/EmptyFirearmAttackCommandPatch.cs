@@ -13,12 +13,11 @@ using System.Threading;
 namespace KingmakerGunslinger.Firing
 {
     /// <summary>
-    /// Rejects an empty firearm at UnitAttack.CanStart, before OnStart configures an
+    /// Rejects an empty firearm at UnitCommands.Run, before OnStart configures an
     /// animation or TriggerAttackRule constructs RuleAttackWithWeapon/RuleAttackRoll.
     /// </summary>
     internal static class EmptyFirearmAttackCommandPatch
     {
-        private static MethodBase _target;
         private static readonly ConditionalWeakTable<UnitAttack, ReportMarker>
             Reported = new ConditionalWeakTable<UnitAttack, ReportMarker>();
         private static long _rejected;
@@ -33,21 +32,24 @@ namespace KingmakerGunslinger.Firing
         internal static void Install(HarmonyInstance harmony)
         {
             if (harmony == null) throw new ArgumentNullException("harmony");
-            PropertyInfo property = typeof(UnitCommand).GetProperty("CanStart",
-                BindingFlags.Public | BindingFlags.NonPublic |
-                BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            _target = property == null ? null : property.GetGetMethod(true);
             MethodInfo prefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
                 "Prefix", BindingFlags.NonPublic | BindingFlags.Static);
-            if (_target == null || prefix == null)
+            MethodInfo run = typeof(UnitCommands).GetMethod("Run",
+                BindingFlags.Public | BindingFlags.Instance, null,
+                new[] { typeof(UnitCommand) }, null);
+            MethodInfo runDetailed = typeof(UnitCommands).GetMethod("Run",
+                BindingFlags.Public | BindingFlags.Instance, null,
+                new[] { typeof(UnitCommand), typeof(bool), typeof(bool) }, null);
+            if (run == null || runDetailed == null || prefix == null)
                 throw new MissingMethodException(
-                    "Exact UnitCommand.CanStart empty-firearm patch contract was unavailable.");
-            harmony.Patch(_target, new HarmonyMethod(prefix), null, null);
+                    "Exact UnitCommands.Run empty-firearm patch contract was unavailable.");
+            harmony.Patch(run, new HarmonyMethod(prefix), null, null);
+            harmony.Patch(runDetailed, new HarmonyMethod(prefix), null, null);
         }
 
-        private static bool Prefix(UnitCommand __instance, ref bool __result)
+        private static bool Prefix(UnitCommands __instance, UnitCommand command)
         {
-            UnitAttack attack = __instance as UnitAttack;
+            UnitAttack attack = command as UnitAttack;
             if (attack == null || attack.Executor == null ||
                 attack.Executor.Descriptor == null) return true;
             Interlocked.Increment(ref _evaluatedAttacks);
@@ -61,7 +63,7 @@ namespace KingmakerGunslinger.Firing
                     return Reject(attack,
                         EmptyFirearmCommandDisposition.RejectAmbiguous,
                         "Firearm attack rejected: equipped firearms are ambiguous.",
-                        ref __result);
+                        __instance);
                 return true;
             }
             bool autoReload = IsReloadAutoUse(attack);
@@ -76,7 +78,7 @@ namespace KingmakerGunslinger.Firing
                 : disposition == EmptyFirearmCommandDisposition.RejectWrecked
                 ? firearm.Firearm.ItemDisplayName + " is Wrecked."
                 : firearm.Firearm.ItemDisplayName + " is unloaded.";
-            return Reject(attack, disposition, message, ref __result);
+            return Reject(attack, disposition, message, __instance);
         }
 
         private static bool IsReloadAutoUse(UnitAttack command)
@@ -93,9 +95,8 @@ namespace KingmakerGunslinger.Firing
 
         private static bool Reject(UnitAttack command,
             EmptyFirearmCommandDisposition disposition, string message,
-            ref bool result)
+            UnitCommands commands)
         {
-            result = false;
             if (!Reported.TryGetValue(command, out _))
             {
                 Reported.Add(command, new ReportMarker());
@@ -106,6 +107,14 @@ namespace KingmakerGunslinger.Firing
                 if (ModContext.TryGet(out context))
                     context.Logger.Info("firearms", "attack.command-rejected",
                         message + " disposition=" + disposition);
+                if (disposition == EmptyFirearmCommandDisposition.QueueReload &&
+                    commands != null && command.Executor != null)
+                {
+                    var reload = command.Executor.GetAvailableAutoUseAbility();
+                    if (reload != null)
+                        commands.Run(new UnitUseAbility(reload,
+                            new Kingmaker.Utility.TargetWrapper(command.Executor)));
+                }
             }
             return false;
         }

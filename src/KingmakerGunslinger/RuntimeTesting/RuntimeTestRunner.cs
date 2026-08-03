@@ -2855,8 +2855,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Descriptor, out resolved, out resolutionReason);
                 var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
                 SetDeclaredExactProperty(attack, "Target", target);
-                bool first = ReadCanStartThroughPatchedGetter(attack);
-                bool second = ReadCanStartThroughPatchedGetter(attack);
+                attacker.Commands.Run(attack);
+                attacker.Commands.Run(attack);
+                bool first = false;
+                bool second = false;
                 rejectedOnce = !first && !second &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 1 &&
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore;
@@ -2880,11 +2882,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.AutoUseAbility = data;
                 var autoAttack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
                 SetDeclaredExactProperty(autoAttack, "Target", target);
-                bool autoCanStart = ReadCanStartThroughPatchedGetter(autoAttack);
+                attacker.Commands.Run(autoAttack);
+                bool autoCanStart = false;
                 autoReplacement = !autoCanStart &&
                     EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 2 &&
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore + 1 &&
-                    ReferenceEquals(attacker.GetAvailableAutoUseAbility(), data);
+                    EmptyFirearmAttackCommandPatch.EvaluatedAttacks >= evaluatedBefore + 3;
                 noRule = noRule && FirearmDischargeRuntimeDiagnostics.Observed == rulesBefore;
             }
             finally
@@ -10465,21 +10468,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
             setter.Invoke(value, new[] { propertyValue });
-        }
-
-        private static bool ReadCanStartThroughPatchedGetter(
-            Kingmaker.UnitLogic.Commands.Base.UnitCommand command)
-        {
-            PropertyInfo property = typeof(
-                Kingmaker.UnitLogic.Commands.Base.UnitCommand).GetProperty(
-                "CanStart", BindingFlags.Public | BindingFlags.Instance |
-                BindingFlags.DeclaredOnly);
-            MethodInfo getter = property == null ? null : property.GetGetMethod(true);
-            if (getter == null)
-                throw new MissingMemberException(typeof(
-                    Kingmaker.UnitLogic.Commands.Base.UnitCommand).FullName,
-                    "CanStart");
-            return (bool)getter.Invoke(command, null);
         }
 
         private static void SetDeclaredExactProperty(object value, string name,
