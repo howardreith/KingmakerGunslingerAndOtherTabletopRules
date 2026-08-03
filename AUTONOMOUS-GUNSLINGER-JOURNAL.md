@@ -3403,3 +3403,24 @@
   restore, and external isolation. Package/DLL hashes are
   `cefc9fa962ac33b05a914ed46d05a70c063175e74f7a91cd041412ae5f06b1a9` /
   `68ee5be23eee638872b52f6a2b4553afcc676053f24e3b5b4910d775143816f1`.
+
+# Fourth playtest Reload auto-use RTwP continuation (2026-08-03)
+
+- Audit found the empty-firearm patch replaced an attack with Reload Firearm
+  but discarded the original target. Production now keys a pending continuation
+  to the exact reload command, equipped weapon object, executor, and target;
+  successful completion revalidates all state and uses native
+  `UnitCommands.AddToQueue` for the original attack. Turn-based mode additionally
+  requires the native standard action to remain usable.
+- Repository validation, all 878 tests, clean Release, and strict package
+  validation pass. Guarded run
+  `20260803T2250479651771Z-disposable-reload-autocast` proved a real granted
+  right-click fact, one `0->1` powder/ball transaction, one loaded round,
+  retained target, full/no-ammunition loop prevention, and cleanup. Package/DLL
+  hashes are `03ccbba8c05dcb81514ac951b9eae83c5c6e62a87b2d3fe7e924f154f8482fce` /
+  `edc45bb7390483926520e416e01f9e054b3394d1195f9776f0336c6e1eb74a0a`.
+- The preceding observer `20260803T2248367218954Z` failed narrowly because it
+  inspected only the linked-list queue. The production continuation had entered
+  Kingmaker's command collection; the accepted observer uses the exact native
+  `UnitCommands.Contains` contract. Continue weapon-switch/interruption/Wrecked
+  and turn-based coverage; this checkpoint does not close Phase 7.

@@ -2975,9 +2975,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int powderBefore = player.Inventory.Count(powder);
             int ballBefore = player.Inventory.Count(ball);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target = null;
             ItemEntityWeapon weapon = null;
             bool nativeSelected = false, oneTransaction = false,
-                noRetryWhenFull = false, noAmmoLoop = false, cleaned = false;
+                resumedTargetAttack = false, noRetryWhenFull = false,
+                noAmmoLoop = false, cleaned = false;
             int powderAfter = -1, ballAfter = -1, roundsAfter = -1;
             try
             {
@@ -2992,6 +2994,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Temporary ammunition could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
@@ -2999,13 +3003,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmCondition.Normal));
                 var combat = new Kingmaker.Controllers.Combat.UnitCombatState(unit);
                 SetExactProperty(unit, "CombatState", combat);
-                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(
-                    standard, unit.Descriptor);
+                unit.Descriptor.AddFact(standard);
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    unit.Descriptor.Abilities.GetAbility(standard);
+                if (granted == null)
+                    throw new InvalidOperationException(
+                        "Kingmaker did not retain the granted Reload Firearm fact.");
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 unit.AutoUseAbility = data;
                 Kingmaker.UnitLogic.Abilities.AbilityData selected =
                     unit.GetAvailableAutoUseAbility();
                 nativeSelected = ReferenceEquals(selected, data) &&
                     data.IsSuitableForAutoUse && data.IsAvailable;
+                UnitCommand replacement = Kingmaker.UnitLogic.Commands.UnitAttack
+                    .CreateAttackCommand(unit, target);
+                var reloadCommand = replacement as
+                    Kingmaker.UnitLogic.Commands.UnitUseAbility;
+                if (reloadCommand == null)
+                    throw new InvalidOperationException(
+                        "Empty exact firearm attack did not produce a native reload command.");
+                nativeSelected = nativeSelected && reloadCommand != null &&
+                    ReferenceEquals(reloadCommand.Spell.Blueprint, standard);
                 var context = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
                     selected, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(unit), null);
@@ -3019,6 +3037,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 oneTransaction = roundsAfter == 1 &&
                     powderAfter == powderBefore + 1 &&
                     ballAfter == ballBefore + 1;
+                UnitCommand resumed = EmptyFirearmAttackCommandPatch
+                    .CompletePendingForRuntimeTest(
+                    reloadCommand, false);
+                var resumedAttack = resumed as Kingmaker.UnitLogic.Commands.UnitAttack;
+                resumedTargetAttack = resumedAttack != null &&
+                    ReferenceEquals(resumedAttack.Target, target) &&
+                    unit.Commands.Contains(resumedAttack);
                 noRetryWhenFull = unit.GetAvailableAutoUseAbility() == null;
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
@@ -3049,6 +3074,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (powderExcess > 0) player.Inventory.Remove(powder, powderExcess);
                 if (ballExcess > 0) player.Inventory.Remove(ball, ballExcess);
                 if (unit != null) unit.Dispose();
+                if (target != null) target.Dispose();
                 cleaned = player.Inventory.Count(powder) == powderBefore &&
                     player.Inventory.Count(ball) == ballBefore;
             }
@@ -3056,6 +3082,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nativeSelected + ";rounds=" + roundsAfter + ";powder=" +
                 powderBefore + "->" + powderAfter + ";ball=" + ballBefore +
                 "->" + ballAfter + ";fullRetry=" + !noRetryWhenFull +
+                ";resumedTarget=" + resumedTargetAttack +
                 ";noAmmoLoop=" + noAmmoLoop + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3073,6 +3100,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "one round and one powder/ball pair consumed exactly once",
                     observed, oneTransaction && noRetryWhenFull,
                     "the same ReloadTestMusketAbilityLogic delivery used by manual reload"),
+                Assertion("automatic-reload-rtwp-target-resume",
+                    "successful exact-item reload queues one native attack against the original target",
+                    observed, resumedTargetAttack,
+                    "UnitUseAbility completion continuation plus UnitCommands.AddToQueue"),
                 Assertion("automatic-reload-no-ammunition-loop",
                     "two consecutive native polls reject without mutation",
                     observed, noAmmoLoop,

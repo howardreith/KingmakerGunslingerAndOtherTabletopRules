@@ -28,6 +28,13 @@ definition of done or a listed genuine human-input hard stop.
 - Next exact action: commit the qualified Grit checkpoint, then audit and repair
   the native reload auto-use/action-bar integration from the fourth-playtest
   evidence without weakening the existing firearm transaction gates.
+- RTwP auto-use continuation is now source/runtime-qualified: guarded run
+  `20260803T2250479651771Z-disposable-reload-autocast` used the real granted
+  ability, loaded exactly once, and retained the original target in the native
+  command collection. Package/DLL hashes are `03ccbba8...82fce` /
+  `edc45bb7...74a0a`. Commit this coherent checkpoint, then add exact
+  weapon-switch/interruption/Wrecked cancellation and turn-based action-state
+  coverage before closing Phase 7.
 
 - Mission complete. Exact `eda0202` passed final mod load
   `20260802T2020407693601Z` and consecutive fresh-process 32-slice acceptance

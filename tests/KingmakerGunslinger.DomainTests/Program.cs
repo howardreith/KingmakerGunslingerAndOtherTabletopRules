@@ -1037,8 +1037,12 @@ namespace KingmakerGunslinger.DomainTests
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Firing/EmptyFirearmAttackCommandPatch.cs");
             Assertions.True(source.Contains("UnitAttack.CreateAttackCommand") &&
-                source.Contains("result = null") && source.Contains("return false"),
-                "Empty firearm rejection no longer occurs during command construction.");
+                source.Contains("result = null") && source.Contains("return false") &&
+                source.Contains("typeof(UnitUseAbility).GetMethod(\"OnEnded\"") &&
+                source.Contains("ReferenceEquals(resolved.Weapon, pending.FirearmWeapon)") &&
+                source.Contains("turn.ActionsStates.Standard.CanUse") &&
+                source.Contains("executor.Commands.AddToQueue(attack)"),
+                "Empty firearm rejection or exact-item native reload continuation is incomplete.");
         }
 
         private static TestCase Case(string name, Action body)

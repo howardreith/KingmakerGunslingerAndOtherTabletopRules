@@ -91,6 +91,47 @@ attempt at `20260803T2236515694613Z` failed safely because the observer used a
 detached `AbilityData` with no fact; it was corrected to use the descriptor's
 actual granted native ability, without changing the production repair.
 
+## Native Reload auto-use RTwP continuation checkpoint
+
+Root cause: the empty-firearm construction patch replaced the rejected attack
+with a native reload command, but discarded the original target and had no
+completion continuation. The prior observer also assigned detached
+`AbilityData`, so it did not prove the right-click state of a granted ability.
+
+Repair:
+
+- retain exactly one player-facing dynamic `Reload Firearm` blueprint;
+- bind a pending continuation to the exact native `UnitUseAbility`, executor,
+  target, and equipped weapon object;
+- on successful reload completion, defer to the next game action, re-resolve
+  the exact equipped item and auto-use state, require a loaded non-Wrecked
+  firearm, and queue a native attack against the original target;
+- fail closed after interruption, failed reload, weapon/target/auto-use drift,
+  ambiguity, empty/Wrecked state, or unavailable turn-based standard action;
+- retain native action economy and avoid recursion because the resumed attack
+  is constructed only after the exact item is loaded.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 878/878 PASS;
+- clean Release compile and strict standalone package validation: PASS;
+- checkpoint package/DLL SHA-256:
+  `03ccbba8c05dcb81514ac951b9eae83c5c6e62a87b2d3fe7e924f154f8482fce` /
+  `edc45bb7390483926520e416e01f9e054b3394d1195f9776f0336c6e1eb74a0a`;
+- guarded save-free RTwP command-collection PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2250479651771Z-disposable-reload-autocast`.
+
+The live run observed native selection, `rounds=1`, powder and ball `0->1`,
+`resumedTarget=True`, no retry when full, two stable no-ammunition polls, and
+complete cleanup. The earlier run `20260803T2248367218954Z` failed only because
+the observer assumed the linked-list queue rather than Kingmaker's complete
+command collection; it was corrected to use `UnitCommands.Contains`.
+
+This checkpoint does not yet qualify turn-based execution, weapon-switch
+cancellation, Wrecked rejection in the same continuation path, or every firearm
+kind. Those remain active Phase 7 work.
+
 ## Remaining mission scope
 
 Rapid Reload and semantic icon art, final player-visible Grit observation, real
