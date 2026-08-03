@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.60-*.zip` with Unity Mod
+2. Install the standalone `KingmakerGunslinger-0.0.62-local-runtime.zip` with Unity Mod
    Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.60 without a load error.
+   Kingmaker Gunslinger version 0.0.62 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -59,8 +59,9 @@ Never test removal against the only copy of a valued save.
 
 ## Compatibility boundaries
 
-- Production firearms intentionally reuse installed crossbow-compatible
-  presentation assets; this is visual compatibility, not firearm identity.
+- This functional package retains safe installed-game visual/audio fallbacks. It
+  does not contain the quarantined incoming audio or advanced-rifle model, and it
+  does not claim final firearm model/audio presentation acceptance.
 - The mod patches native attack, armor-class, damage, rest, initiative, save,
   skill, equipment, and level-up flows. Mods changing the same callbacks may
   conflict depending on patch order and behavior.
@@ -72,9 +73,9 @@ Never test removal against the only copy of a valued save.
 - Call of the Wild, Cowboys and Demons, BlueprintCore, Wrath Modification
   Template, and other gameplay mods are neither dependencies nor currently
   qualified compatibility targets.
-- Blunderbuss/scatter delivery remains unavailable pending an authorized cone
-  distance. Crossbow-like visuals/audio and other documented adaptations are
-  intentional limitations.
+- External model/audio integration requires exact source-file provenance and the
+  locally unavailable Unity 2018.4.10f1 editor. These presentation limitations do
+  not change firearm rules identity, save schema, or reload action economy.
 
 When diagnosing a conflict, reproduce it first on a copied save with only
 Unity Mod Manager and Kingmaker Gunslinger enabled. A clean mod load does not

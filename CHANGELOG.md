@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.62 - Second-playtest functional and UX repair
+
+- Inserts Gunslinger alphabetically without globally sorting native classes and
+  presents coherent Deeds, Nimble, Bonus Feat, and Gun Training progression tracks.
+- Adds distinct native-style semantic icons and integrates firearm choices into
+  native-style Weapon Focus, Greater Weapon Focus, Weapon Specialization, Greater
+  Weapon Specialization, and Improved Critical selections while retaining hidden
+  legacy Weapon Focus compatibility.
+- Keeps Rapid Reload optional and firearm-type-specific, exposes one Reload Firearm
+  parent command, and hides all static action-cost implementation variants.
+- Adds native right-click auto-reload scheduling and rejects empty-firearm attacks
+  at the command-runner boundary before UnitAttack.OnStart or attack rules.
+- Expands the deterministic suite to 868 tests. External model/audio candidates are
+  not packaged unless their exact local binary provenance is established.
+
 ## 0.0.60 - Complete Base Gunslinger qualification
 
 - Completes and runtime-qualifies every meaningful base Gunslinger feature and
