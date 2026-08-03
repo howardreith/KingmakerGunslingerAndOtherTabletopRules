@@ -5171,6 +5171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     preview.Progression.GetClassLevel(gunslinger);
                 commit.Invoke(controller, null);
                 controller = null;
+                LevelUpHelper.AddStartingItems(descriptor);
                 addedInventory.AddRange(EnumerateRuntimeInventory(runtimePlayer.Inventory)
                     .Where(item => !inventoryBefore.Any(existing =>
                         ReferenceEquals(existing, item))));
