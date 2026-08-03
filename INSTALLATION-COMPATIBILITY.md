@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.62-local-runtime.zip` with Unity Mod
+2. Install the standalone `KingmakerGunslinger-0.0.63-local-runtime.zip` with Unity Mod
    Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.62 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.63 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -59,9 +59,10 @@ Never test removal against the only copy of a valued save.
 
 ## Compatibility boundaries
 
-- This functional package retains safe installed-game visual/audio fallbacks. It
-  does not contain the quarantined incoming audio or advanced-rifle model, and it
-  does not claim final firearm model/audio presentation acceptance.
+- This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
+  and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.
+  The quarantined advanced-rifle binary is not packaged; Advanced Rifle retains
+  the safe native visual fallback and its approved temporary long-gun sound map.
 - The mod patches native attack, armor-class, damage, rest, initiative, save,
   skill, equipment, and level-up flows. Mods changing the same callbacks may
   conflict depending on patch order and behavior.
@@ -73,8 +74,8 @@ Never test removal against the only copy of a valued save.
 - Call of the Wild, Cowboys and Demons, BlueprintCore, Wrath Modification
   Template, and other gameplay mods are neither dependencies nor currently
   qualified compatibility targets.
-- External model/audio integration requires exact source-file provenance and the
-  locally unavailable Unity 2018.4.10f1 editor. These presentation limitations do
+- The approved asset bundle was built with the locally installed, licensed Unity
+  2018.4.10f1 editor. Missing or corrupt bundle data falls back safely and does
   not change firearm rules identity, save schema, or reload action economy.
 - Empty firearm requests are rejected during native attack-command construction.
   When the applicable Reload Firearm variant is selected for native automatic use,

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.63 - Third-playtest feat, reload, grit, dodge, and asset repair
+
+- Restores the native weapon-feat family presentation and prerequisites while
+  publishing exact firearm choices through the native parameter menus; obsolete
+  wrappers remain hidden compatibility identities.
+- Preserves the single Reload Firearm action, native right-click autocast,
+  pre-command empty-firearm rejection, and the standing one-round +2 AC
+  Gunslinger's Dodge adaptation.
+- Exposes the one shared grit resource through native action-bar counters on all
+  paid deed abilities and adds a native-palette Rapid Reload icon.
+- Ships a deterministic Unity 2018.4.10f1 Windows AssetBundle containing approved
+  Pistol, Musket, Blunderbuss, and Revolver prefabs plus five processed CC0 shot
+  sounds. The unverified advanced-rifle binary remains quarantined.
+- Passes 878 deterministic tests and exact-assembly runtime checks for UMM load,
+  prefab/material resolution, shared grit UI binding, and exactly-once discharge
+  audio.
+
 ## 0.0.62 - Second-playtest functional and UX repair
 
 - Inserts Gunslinger alphabetically without globally sorting native classes and
