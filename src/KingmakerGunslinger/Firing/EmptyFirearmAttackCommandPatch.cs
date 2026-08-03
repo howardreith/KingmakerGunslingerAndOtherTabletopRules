@@ -16,7 +16,6 @@ namespace KingmakerGunslinger.Firing
     /// Rejects an empty firearm at UnitAttack.CanStart, before OnStart configures an
     /// animation or TriggerAttackRule constructs RuleAttackWithWeapon/RuleAttackRoll.
     /// </summary>
-    [HarmonyPatch]
     internal static class EmptyFirearmAttackCommandPatch
     {
         private static MethodBase _target;
@@ -31,18 +30,19 @@ namespace KingmakerGunslinger.Firing
         internal static long EvaluatedAttacks
         { get { return Interlocked.Read(ref _evaluatedAttacks); } }
 
-        private static bool Prepare()
+        internal static void Install(HarmonyInstance harmony)
         {
+            if (harmony == null) throw new ArgumentNullException("harmony");
             PropertyInfo property = typeof(UnitCommand).GetProperty("CanStart",
                 BindingFlags.Public | BindingFlags.NonPublic |
                 BindingFlags.Instance | BindingFlags.DeclaredOnly);
             _target = property == null ? null : property.GetGetMethod(true);
-            return _target != null;
-        }
-
-        private static MethodBase TargetMethod()
-        {
-            return _target;
+            MethodInfo prefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
+                "Prefix", BindingFlags.NonPublic | BindingFlags.Static);
+            if (_target == null || prefix == null)
+                throw new MissingMethodException(
+                    "Exact UnitCommand.CanStart empty-firearm patch contract was unavailable.");
+            harmony.Patch(_target, new HarmonyMethod(prefix), null, null);
         }
 
         private static bool Prefix(UnitCommand __instance, ref bool __result)
