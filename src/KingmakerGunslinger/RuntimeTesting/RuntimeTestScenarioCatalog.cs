@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string ObserveNativeWeaponFeatContracts =
+            "observe-native-weapon-feat-contracts";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
         internal const string ObserveProductionFirearmFallbacks =
@@ -148,6 +150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModLoadSmoke,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                ObserveNativeWeaponFeatContracts,
                 ObserveVendorTableContracts,
                 ObserveProductionFirearmFallbacks,
                 ObserveFirearmItemLifecycleContracts,

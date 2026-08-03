@@ -397,6 +397,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunGunslingerPresentationObservation());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveNativeWeaponFeatContracts)
+                {
+                    Complete(RunNativeWeaponFeatContractObservation());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
                 {
@@ -2638,6 +2644,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunNativeWeaponFeatContractObservation()
+        {
+            string[] terms = { "WeaponFocus", "WeaponSpecialization",
+                "ImprovedCritical" };
+            var matches = BlueprintBootstrap.Library.BlueprintsByAssetId
+                .Where(pair => pair.Value != null && terms.Any(term =>
+                    pair.Value.name.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(pair => pair.Value.name, StringComparer.Ordinal)
+                .Select(pair => pair.Value.name + "|" + pair.Key + "|" +
+                    pair.Value.GetType().FullName + "|components=" +
+                    string.Join(",", pair.Value.ComponentsArray.Select(component =>
+                        component == null ? "<null>" : component.GetType().FullName)))
+                .ToArray();
+            string observed = string.Join(";", matches);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-weapon-feat-contracts",
+                    "native focus, specialization, and improved-critical blueprints are discoverable",
+                    observed, matches.Length >= 4,
+                    "live LibraryScriptableObject dictionary names, GUIDs, types, and components"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
