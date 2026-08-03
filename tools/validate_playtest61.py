@@ -9,10 +9,41 @@ import validate_sprint60
 
 VERSION = "0.0.61"
 INFORMATIONAL_VERSION = "0.0.61-first-playtest-repair"
+ICON_NAMES = (
+    "gunslinger-class", "firearm-proficiency", "gunsmithing", "grit",
+    "deeds", "deadeye", "gunslingers-dodge", "quick-clear",
+    "reload-firearm", "repair-firearm", "overhaul-firearm", "early-pistol",
+    "musket", "blunderbuss", "rifle", "revolver", "lead-ball",
+    "black-powder", "repair-kit",
+)
+
+def require_tokens(path: Path, tokens: tuple[str, ...]) -> None:
+    text = path.read_text(encoding="utf-8")
+    missing = [token for token in tokens if token not in text]
+    if missing:
+        raise AssertionError(f"{path.relative_to(path.parents[2])} lacks {missing}")
 
 def validate(root: Path) -> None:
     validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION, 841,
-                               152, 153)
+                               157, 158)
+    icon_dir = root / "assets" / "game" / "icons"
+    for name in ICON_NAMES:
+        icon = icon_dir / f"{name}.png"
+        if not icon.is_file() or icon.read_bytes()[:8] != b"\x89PNG\r\n\x1a\n":
+            raise AssertionError(f"Missing or invalid production icon: {icon}")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/PlayerFacingPresentation.cs", (
+        "Player-facing ability tooltip metadata is incomplete",
+        "duration.IndexOf(\"<null>\"", "saving.IndexOf(\"<null>\"",
+    ))
+    for source in ("DeadeyeBlueprints.cs", "GunslingerDodgeBlueprints.cs"):
+        require_tokens(root / "src/KingmakerGunslinger/Blueprints" / source, (
+            "LocalizedDuration", '"Until triggered"',
+            "LocalizedSavingThrow", '"None"',
+        ))
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs", (
+        'Require("early-pistol")', 'Require("lead-ball")',
+        'Require("black-powder")', '"reload-firearm"',
+    ))
 
 def main() -> int:
     parser = argparse.ArgumentParser()

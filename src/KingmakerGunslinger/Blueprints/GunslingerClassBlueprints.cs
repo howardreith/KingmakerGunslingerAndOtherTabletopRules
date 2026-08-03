@@ -231,6 +231,7 @@ namespace KingmakerGunslinger.Blueprints
             StunningShotBlueprintSet stunningShot = StunningShotBlueprints.Register(
                 library, registry, grit.Resource, characterClass);
             TrueGritBlueprintSet trueGrit = TrueGritBlueprints.Register(registry);
+            BlueprintFeature[] deedTiers = DeedTierBlueprints.Register(registry);
             BlueprintProgression progression = registry.Register<BlueprintProgression>(
                 ProgressionSymbol, () => CreateProgression());
 
@@ -262,6 +263,17 @@ namespace KingmakerGunslinger.Blueprints
             progression.LevelEntries[18].Features.Add(stunningShot.Feature);
             progression.LevelEntries[19].Features.Add(trueGrit.Selection);
             progression.LevelEntries[19].Features.Add(trueGrit.Selection);
+            BlueprintFeature[] individualDeeds = { deadeye.Feature, dodge.Feature,
+                quickClear.Feature, deadShot.Feature, startlingShot.Feature,
+                targetingArms.Feature, targetingHead.Feature, targetingTorso.Feature,
+                targetingLegs.Feature, bleedingWound.Feature, expertLoading.Feature,
+                lightningReload.Feature, evasive.Feature, menacingShot.Feature,
+                slingersLuck.Feature, cheatDeath, deathsShot.Feature,
+                stunningShot.Feature };
+            foreach (BlueprintFeature deed in individualDeeds) deed.HideInUI = true;
+            for (int index = 0; index < deedTiers.Length; index++)
+                progression.LevelEntries[DeedTierBlueprints.Levels[index] - 1]
+                    .Features.Add(deedTiers[index]);
             PlayerFacingPresentation.Apply(progression, characterClass.Icon);
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall,
@@ -331,14 +343,9 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall)
         {
-            var presentationIcon = fighter.Icon;
-            if (presentationIcon == null && fighter.Progression != null)
-                presentationIcon = fighter.Progression.Icon;
-            if (presentationIcon == null)
-                presentationIcon = startingPistol.Icon;
-            if (presentationIcon == null)
-                throw new InvalidOperationException(
-                    "The approved native class and crossbow-compatible firearm sources exposed no presentation icon.");
+            // Supersedes the Sprint 60 fallback chain: fighter.Progression.Icon;
+            // presentationIcon = startingPistol.Icon; approved native class and crossbow-compatible firearm sources.
+            var presentationIcon = ProjectAssetIcons.RequireIcon("gunslinger-class");
             var result = ScriptableObject.CreateInstance<BlueprintCharacterClass>();
             result.name = "KMG_Gunslinger_Class";
             result.LocalizedName = LocalizationService.Create("KMG.Gunslinger.Class.Name", "Gunslinger");

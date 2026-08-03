@@ -73,6 +73,10 @@ namespace KingmakerGunslinger.Blueprints
             result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
             result.ActionType = UnitCommand.CommandType.Free;
             result.ResourceAssetIds = Array.Empty<string>();
+            result.LocalizedDuration = LocalizationService.Create(
+                "KMG.Dodge.Prone.Duration", "Until triggered");
+            result.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.Dodge.Prone.SavingThrow", "None");
             result.ComponentsArray = new BlueprintComponent[]
                 { GunslingerDodgeProneAbilityLogic.Create(marker) };
             return result;

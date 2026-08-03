@@ -49,6 +49,13 @@ foreach ($copy in $copies) {
     }
     Copy-Item -LiteralPath $copy.Source -Destination $copy.Destination
 }
+$assetSource = Join-Path $outputDirectory 'assets\icons'
+$assetDestination = Join-Path $modDirectory 'assets\icons'
+if (-not (Test-Path -LiteralPath $assetSource -PathType Container)) {
+    throw "Required packaged icon directory is missing: $assetSource"
+}
+New-Item -ItemType Directory -Path $assetDestination -Force | Out-Null
+Copy-Item -Path (Join-Path $assetSource '*.png') -Destination $assetDestination
 
 if (Test-Path -LiteralPath $packagePath) {
     Remove-Item -LiteralPath $packagePath -Force

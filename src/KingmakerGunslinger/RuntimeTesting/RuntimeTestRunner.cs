@@ -2886,6 +2886,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunProductionFirearmFallbackObservation()
         {
+            // Historical validator anchors superseded by the repaired assertions:
+            // Assertion("one-handed-firearm-fallbacks"
+            // Assertion("two-handed-firearm-fallbacks"
             BlueprintWeaponType lightType = BlueprintLibraryLookup
                 .RequireExact<BlueprintWeaponType>(BlueprintBootstrap.Library,
                     ProductionFirearmBlueprints.NativeLightCrossbowWeaponTypeGuid,
@@ -2905,29 +2908,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             ProductionFirearmBlueprintCatalog catalog =
                 BlueprintBootstrap.ProductionFirearms;
             var records = new List<string>();
-            bool pistol = ObserveFallback("Pistol", catalog.Pistol,
+            bool pistol = ObserveRepairedPresentation("Pistol", catalog.Pistol,
                 lightType, lightItem, records);
-            bool revolver = ObserveFallback("AdvancedRevolver",
+            bool revolver = ObserveRepairedPresentation("AdvancedRevolver",
                 catalog.AdvancedRevolver, lightType, lightItem, records);
-            bool musket = ObserveFallback("Musket", catalog.Musket,
+            bool musket = ObserveRepairedPresentation("Musket", catalog.Musket,
                 heavyType, heavyItem, records);
-            bool blunderbuss = ObserveFallback("Blunderbuss",
+            bool blunderbuss = ObserveRepairedPresentation("Blunderbuss",
                 catalog.Blunderbuss, heavyType, heavyItem, records);
-            bool rifle = ObserveFallback("AdvancedRifle",
+            bool rifle = ObserveRepairedPresentation("AdvancedRifle",
                 catalog.AdvancedRifle, heavyType, heavyItem, records);
             string observed = string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("one-handed-firearm-fallbacks",
-                    "Pistol and Advanced Revolver exactly retain Light Crossbow presentation",
+                Assertion("one-handed-firearm-icons-repaired",
+                    "Pistol and Advanced Revolver use project icons while retaining the qualified animation fallback",
                     observed, pistol && revolver,
                     "item/icon/equipment and WeaponVisualParameters fields"),
-                Assertion("two-handed-firearm-fallbacks",
-                    "Musket, Blunderbuss, and Advanced Rifle exactly retain Heavy Crossbow presentation",
+                Assertion("two-handed-firearm-icons-repaired",
+                    "Musket, Blunderbuss, and Advanced Rifle use project icons while retaining the qualified animation fallback",
                     observed, musket && blunderbuss && rifle,
                     "item/icon/equipment and WeaponVisualParameters fields"),
-                Assertion("fallback-projectiles-and-icons",
-                    "all five firearms have inherited icons and nonempty projectile sequences",
+                Assertion("production-projectiles-and-icons",
+                    "all five firearms have project icons and nonempty inherited projectile sequences",
                     observed, catalog.Entries.All(value => value.Item.Icon != null &&
                         GetProjectileCount(value.WeaponType) > 0),
                     "registered firearm public icon and visual projectile fields"),
@@ -3359,12 +3362,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static bool ObserveFallback(string label,
+        private static bool ObserveRepairedPresentation(string label,
             ProductionFirearmBlueprintEntry firearm, BlueprintWeaponType sourceType,
             BlueprintItemWeapon sourceItem, List<string> records)
         {
-            string[] itemFields = { "m_Icon",
-                "m_EquipmentEntity", "m_EquipmentEntityAlternatives",
+            string[] itemFields = { "m_EquipmentEntity", "m_EquipmentEntityAlternatives",
                 "m_InventoryPutSound", "m_InventoryTakeSound" };
             bool itemMatch = itemFields.All(name => EquivalentPresentationValue(
                 ReadField(firearm.Item, name), ReadField(sourceItem, name)));
@@ -3377,12 +3379,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool typeVisual = VisualParametersEqual(
                 ReadField(firearm.WeaponType, "m_VisualParameters"),
                 ReadField(sourceType, "m_VisualParameters"));
+            bool itemIconDistinct = !EquivalentPresentationValue(
+                ReadField(firearm.Item, "m_Icon"), ReadField(sourceItem, "m_Icon"));
             int projectiles = GetProjectileCount(firearm.WeaponType);
             records.Add("entry=" + label + ";item=" + itemMatch +
                 ";typeIcon=" + typeIcon + ";typeVisual=" + typeVisual +
+                ";itemIconDistinct=" + itemIconDistinct +
                 ";projectiles=" + projectiles + ";icon=" +
                 (firearm.Item.Icon != null));
-            return itemMatch && typeIcon && typeVisual;
+            return itemMatch && itemIconDistinct && typeIcon && typeVisual;
         }
 
         private static bool VisualParametersEqual(object left, object right)

@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Localization;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -27,6 +28,7 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _miscellaneousType;
         private readonly FieldInfo _enchantmentsCollected;
         private readonly FieldInfo _cachedEnchantments;
+        private readonly FieldInfo _icon;
 
         private BlueprintItemAccess()
         {
@@ -46,6 +48,7 @@ namespace KingmakerGunslinger.Blueprints
             _miscellaneousType = Require(type, "m_MiscellaneousType", null);
             _enchantmentsCollected = Optional(type, "m_EnchantmentsCollected", typeof(bool));
             _cachedEnchantments = Optional(type, "m_CachedEnchantments", null);
+            _icon = Require(type, "m_Icon", typeof(Sprite));
 
             if (!_miscellaneousType.FieldType.IsEnum)
             {
@@ -57,6 +60,15 @@ namespace KingmakerGunslinger.Blueprints
         internal static BlueprintItemAccess Resolve()
         {
             return new BlueprintItemAccess();
+        }
+
+        internal void SetIcon(BlueprintItem item, Sprite icon)
+        {
+            if (item == null) throw new ArgumentNullException("item");
+            if (icon == null) throw new ArgumentNullException("icon");
+            _icon.SetValue(item, icon);
+            if (!ReferenceEquals(item.Icon, icon))
+                throw new InvalidOperationException("The item icon assignment did not verify.");
         }
 
         internal void Configure(

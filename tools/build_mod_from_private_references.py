@@ -145,6 +145,10 @@ def main() -> int:
     blueprint_dir.mkdir(exist_ok=True)
     shutil.copy2(root / "blueprints" / "blueprints.json", blueprint_dir / "blueprints.json")
     shutil.copy2(root / "blueprints" / "blueprints.schema.json", blueprint_dir / "blueprints.schema.json")
+    icon_dir = package_root / "assets" / "icons"
+    icon_dir.mkdir(parents=True, exist_ok=True)
+    for icon in sorted((root / "assets" / "game" / "icons").glob("*.png")):
+        shutil.copy2(icon, icon_dir / icon.name)
 
     zip_path = output / f'{info["Id"]}-{info["Version"]}-compile-candidate.zip'
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:

@@ -17,6 +17,13 @@ $requiredFiles = @(
     'blueprints\blueprints.json',
     'blueprints\blueprints.schema.json'
 )
+$requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
+    'deeds','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
+    'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
+    'rifle','revolver','lead-ball','black-powder','repair-kit')
+foreach ($name in $requiredIcons) {
+    $requiredFiles += "assets\icons\$name.png"
+}
 foreach ($relativePath in $requiredFiles) {
     $path = Join-Path $outputDirectory $relativePath
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -35,7 +42,8 @@ $allowedRelativePaths = @{
 $unexpected = @()
 foreach ($file in Get-ChildItem -LiteralPath $outputDirectory -Recurse -File) {
     $relativePath = $file.FullName.Substring($outputDirectory.Length).TrimStart('\', '/')
-    if (-not $allowedRelativePaths.ContainsKey($relativePath)) {
+    if (-not $allowedRelativePaths.ContainsKey($relativePath) -and
+        $relativePath -notlike 'assets\icons\*.png') {
         $unexpected += $relativePath
     }
 }

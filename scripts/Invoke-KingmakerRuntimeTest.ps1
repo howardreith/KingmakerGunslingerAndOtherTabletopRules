@@ -121,7 +121,7 @@ if (-not $PSCmdlet.ShouldProcess(
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
 & (Join-Path $PSScriptRoot 'Build-Local.ps1')
-$package = Join-Path $root "artifacts\local-runtime\0.0.60\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
+$package = Join-Path $root "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
 if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
     throw "Build-Local did not produce the expected package: $package"
 }

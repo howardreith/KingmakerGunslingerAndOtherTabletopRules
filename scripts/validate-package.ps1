@@ -37,6 +37,11 @@ try {
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
+    $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
+        'deeds','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
+        'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
+        'rifle','revolver','lead-ball','black-powder','repair-kit')
+    $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
     $actual = @(
         Get-ChildItem -LiteralPath $modDirectory -Recurse -File |
             ForEach-Object { $_.FullName.Substring($modDirectory.Length).TrimStart('\', '/') } |
@@ -44,7 +49,7 @@ try {
     )
     $expectedSorted = @($expected | Sort-Object)
     if (($actual -join "`n") -ne ($expectedSorted -join "`n")) {
-        throw "Package entries do not match the strict nine-file allowlist.`nExpected:`n$($expectedSorted -join [Environment]::NewLine)`nActual:`n$($actual -join [Environment]::NewLine)"
+        throw "Package entries do not match the strict release allowlist.`nExpected:`n$($expectedSorted -join [Environment]::NewLine)`nActual:`n$($actual -join [Environment]::NewLine)"
     }
 
     $packagedInfo = Get-Content -LiteralPath (Join-Path $modDirectory 'Info.json') -Raw | ConvertFrom-Json

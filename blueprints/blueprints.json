@@ -831,6 +831,21 @@
     },
     {
       "symbol": "KMG.Feats.RapidReloadRevolver", "guid": "e207ee10db6c4b2caf4408fd815553b4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Revolver choice."
+    },
+    {
+      "symbol": "KMG.Presentation.DeedsLevel1", "guid": "3d049234c81e46cc9e3f1355bc8a5da6", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Level-one deed-tier progression summary."
+    },
+    {
+      "symbol": "KMG.Presentation.DeedsLevel7", "guid": "c971fe4aa22b4b08ac56aec54dab048b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Level-seven deed-tier progression summary."
+    },
+    {
+      "symbol": "KMG.Presentation.DeedsLevel11", "guid": "d484520ece2b43c7b248c9ea2311f03f", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Level-eleven deed-tier progression summary."
+    },
+    {
+      "symbol": "KMG.Presentation.DeedsLevel15", "guid": "57a539544017480eb886986d4b50d43a", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Level-fifteen deed-tier progression summary."
+    },
+    {
+      "symbol": "KMG.Presentation.DeedsLevel19", "guid": "8fdaf992f6ba459787960f16313ab5d1", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Level-nineteen deed-tier progression summary."
     }
   ]
 }

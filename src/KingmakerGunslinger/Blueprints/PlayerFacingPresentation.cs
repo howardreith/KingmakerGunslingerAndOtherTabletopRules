@@ -34,6 +34,21 @@ namespace KingmakerGunslinger.Blueprints
             if (progression.UIGroups.Length == 0)
                 throw new InvalidOperationException(
                     "Gunslinger progression exposed no player-facing UI groups.");
+            foreach (BlueprintUnitFact fact in visited)
+            {
+                BlueprintAbility ability = fact as BlueprintAbility;
+                if (ability == null || ability.Hidden) continue;
+                string duration = ability.LocalizedDuration == null ? null :
+                    ability.LocalizedDuration.ToString();
+                string saving = ability.LocalizedSavingThrow == null ? null :
+                    ability.LocalizedSavingThrow.ToString();
+                if (string.IsNullOrWhiteSpace(duration) ||
+                    string.IsNullOrWhiteSpace(saving) ||
+                    duration.IndexOf("<null>", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    saving.IndexOf("<null>", StringComparison.OrdinalIgnoreCase) >= 0)
+                    throw new InvalidOperationException(
+                        "Player-facing ability tooltip metadata is incomplete: " + ability.name);
+            }
         }
 
         private static void Visit(BlueprintUnitFact fact, Sprite fallbackIcon,

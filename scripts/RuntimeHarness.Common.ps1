@@ -47,8 +47,8 @@ function Read-KmgBuildLocalManifest {
     }
     $allowedPackageRoot = Join-Path $RepositoryRoot 'artifacts\local-runtime'
     [void](Assert-KmgPathWithin -Path $package -Root $allowedPackageRoot)
-    if ($manifest.version -ne $info.Version -or $manifest.version -ne '0.0.60') {
-        throw "Build-Local package version is not the required 0.0.60: $($manifest.version)"
+    if ($manifest.version -ne $info.Version) {
+        throw "Build-Local package version does not match repository Info.json: $($manifest.version)"
     }
     $actualHash = Get-KmgSha256 -Path $package
     if ($manifest.packageSha256 -ne $actualHash) {

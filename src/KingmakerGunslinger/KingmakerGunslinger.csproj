@@ -456,6 +456,8 @@
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
+    <Compile Include="Blueprints\ProjectAssetIcons.cs" />
+    <Compile Include="Blueprints\DeedTierBlueprints.cs" />
     <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
     <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
     <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />
@@ -552,6 +554,10 @@
     </Content>
     <Content Include="..\..\blueprints\blueprints.schema.json">
       <Link>blueprints\blueprints.schema.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\game\icons\*.png">
+      <Link>assets\icons\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

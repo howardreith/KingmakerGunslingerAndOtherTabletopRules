@@ -72,6 +72,10 @@ namespace KingmakerGunslinger.Blueprints
             result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
             result.ActionType = UnitCommand.CommandType.Free;
             result.ResourceAssetIds = Array.Empty<string>();
+            result.LocalizedDuration = LocalizationService.Create(
+                "KMG.Deadeye.Ability.Duration", "Until triggered");
+            result.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.Deadeye.Ability.SavingThrow", "None");
             result.ComponentsArray = new BlueprintComponent[] { DeadeyeAbilityLogic.Create(marker) };
             return result;
         }

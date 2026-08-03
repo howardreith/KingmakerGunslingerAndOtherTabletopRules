@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 152;
+        internal const int ExpectedRegisteredBlueprintCount = 157;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -407,6 +407,7 @@ namespace KingmakerGunslinger.Bootstrap
 
             try
             {
+                ProjectAssetIcons.Load(context);
                 BlueprintInitializationResult result = InitializeCore(context, library);
 
                 lock (Gate)
@@ -585,6 +586,10 @@ namespace KingmakerGunslinger.Bootstrap
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall);
+                ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
+                    productionFirearms, basicAmmunition, firearmRepairKit,
+                    reloadTestMusketAbility, repairTestMusketAbility,
+                    overhaulTestMusketAbility);
                 classPublication = GunslingerClassBlueprints.Publish(
                     gunslingerClassBlueprints.CharacterClass);
 

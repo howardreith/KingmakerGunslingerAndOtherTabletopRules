@@ -2,8 +2,8 @@
 
 ## Sprint 55 status
 
-Playtest 0.0.61 extends the append-only contract to 153 stable identifiers: 152 active and one reserved. Four hidden Reload Firearm variants provide free, move, standard, and full-round command costs; grouped firearm Weapon Focus and Rapid Reload selections add five choices each.
-Bootstrap validates and rolls back the complete one-hundred-fifty-two-blueprint transaction.
+Playtest 0.0.61 extends the append-only contract to 158 stable identifiers: 157 active and one reserved. Reload variants and firearm feat choices are joined by five presentation-only deed-tier summaries.
+Bootstrap validates and rolls back the complete one-hundred-fifty-seven-blueprint transaction.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
 

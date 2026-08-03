@@ -74,6 +74,15 @@ namespace KingmakerGunslinger.Blueprints
                     "The unit-fact icon was not readable after assignment.");
         }
 
+        internal void SetIcon(BlueprintUnitFact fact, Sprite icon)
+        {
+            if (fact == null) throw new ArgumentNullException("fact");
+            if (icon == null) throw new ArgumentNullException("icon");
+            _icon.SetValue(fact, icon);
+            if (!ReferenceEquals(fact.Icon, icon))
+                throw new InvalidOperationException("The unit-fact icon assignment did not verify.");
+        }
+
         private static FieldInfo Require(
             Type type,
             string name,

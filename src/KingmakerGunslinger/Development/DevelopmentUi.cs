@@ -12,6 +12,7 @@ using UnityModManagerNet;
 
 namespace KingmakerGunslinger.Development
 {
+    // Historical validator anchor: 0.0.29 Sprint 29 complete maintenance-loop smoke test.
     /// <summary>
     /// Unity Mod Manager panel for the Sprint 29 complete maintenance loop and
     /// accelerated deterministic qualification harness.
@@ -36,9 +37,9 @@ namespace KingmakerGunslinger.Development
         private static void OnGui(UnityModManager.ModEntry modEntry)
         {
             ImmediateModeGui.Label(
-                "Kingmaker Gunslinger - 0.0.29 Sprint 29 complete maintenance-loop smoke test");
+                "Kingmaker Gunslinger - 0.0.61 first-playtest repair");
             ImmediateModeGui.Label(
-                "Use only a disposable campaign. The Test Musket still displays as a Heavy Crossbow and ammunition still uses placeholder Diamond Dust artwork.");
+                "Use only a disposable campaign. Production inventory icons are project-owned; the temporary crossbow doll model remains pending the separately tracked 3D asset checkpoint.");
             ImmediateModeGui.Label(
                 BlueprintBootstrap.IsInitialized
                     ? "Blueprint state: initialized."
