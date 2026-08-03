@@ -8450,7 +8450,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 shotEventsBefore = Assets.FirearmAssetRuntime.ShotEvents;
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 var ordinary = new RuleAttackWithWeapon(attacker, failedTarget,
-                    weapon, 0) { AutoHit = true };
+                    weapon, 0);
                 Rulebook.Trigger(ordinary);
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
                 shotEventsAfter = Assets.FirearmAssetRuntime.ShotEvents;
