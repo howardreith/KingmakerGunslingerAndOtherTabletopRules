@@ -409,6 +409,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposableFirearmDependentFeats());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableEmptyFirearmCommand)
+                {
+                    Complete(RunDisposableEmptyFirearmCommand());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
                 {
@@ -2804,6 +2810,112 @@ namespace KingmakerGunslinger.RuntimeTesting
                     isolation, "exact FirearmDefinition.Kind matching"),
                 Assertion("legacy-weapon-focus-compatibility", "legacy selection retained and hidden", observed,
                     legacy.HideInUI, "preserved 0.0.61 GUID and facts"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableEmptyFirearmCommand()
+        {
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItem powder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
+            BlueprintItem ball = BlueprintBootstrap.BasicAmmunition.LeadBall;
+            BlueprintAbility standard = BlueprintBootstrap.ReloadTestMusketAbility
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants
+                .Single(value => value.ActionType == UnitCommand.CommandType.Standard &&
+                    !value.IsFullRoundAction);
+            Player player = Game.Instance.Player;
+            int powderBefore = player.Inventory.Count(powder);
+            int ballBefore = player.Inventory.Count(ball);
+            var attacker = new Kingmaker.UI.LevelUp.ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            var target = new Kingmaker.UI.LevelUp.ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            ItemEntityWeapon weapon = null;
+            long rejectedBefore = EmptyFirearmAttackCommandPatch.Rejected;
+            long autoBefore = EmptyFirearmAttackCommandPatch.AutoReloadReplacements;
+            long rulesBefore = FirearmDischargeRuntimeDiagnostics.Observed;
+            bool rejectedOnce = false, noRule = false, autoReplacement = false,
+                statePreserved = false;
+            try
+            {
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Normal));
+                var attack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
+                attack.Target = target;
+                bool first = attack.CanStart;
+                bool second = attack.CanStart;
+                rejectedOnce = !first && !second &&
+                    EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 1 &&
+                    EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore;
+                noRule = FirearmDischargeRuntimeDiagnostics.Observed == rulesBefore;
+                statePreserved = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds == 0;
+
+                object ignored;
+                string method;
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { powder }, new object[] { powder, 1 } },
+                    out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { ball }, new object[] { ball, 1 } },
+                    out ignored, out method))
+                    throw new InvalidOperationException("Temporary auto-reload ammunition could not be added.");
+                var combat = new Kingmaker.Controllers.Combat.UnitCombatState(attacker);
+                SetExactProperty(attacker, "CombatState", combat);
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    standard, attacker.Descriptor);
+                attacker.AutoUseAbility = data;
+                var autoAttack = new Kingmaker.UnitLogic.Commands.UnitAttack(attacker);
+                autoAttack.Target = target;
+                bool autoCanStart = autoAttack.CanStart;
+                autoReplacement = !autoCanStart &&
+                    EmptyFirearmAttackCommandPatch.Rejected == rejectedBefore + 2 &&
+                    EmptyFirearmAttackCommandPatch.AutoReloadReplacements == autoBefore + 1 &&
+                    ReferenceEquals(attacker.GetAvailableAutoUseAbility(), data);
+                noRule = noRule && FirearmDischargeRuntimeDiagnostics.Observed == rulesBefore;
+            }
+            finally
+            {
+                attacker.AutoUseAbility = null;
+                SetExactProperty(attacker, "CombatState", null);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                int powderExtra = player.Inventory.Count(powder) - powderBefore;
+                int ballExtra = player.Inventory.Count(ball) - ballBefore;
+                if (powderExtra > 0) player.Inventory.Remove(powder, powderExtra);
+                if (ballExtra > 0) player.Inventory.Remove(ball, ballExtra);
+                target.Dispose();
+                attacker.Dispose();
+            }
+            string observed = "rejectedOnce=" + rejectedOnce + ";auto=" +
+                autoReplacement + ";noRule=" + noRule + ";state=" + statePreserved;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("empty-command-pre-rule-rejection",
+                    "one bounded rejection across repeated CanStart validation", observed,
+                    rejectedOnce, "Harmony UnitCommand.CanStart production patch"),
+                Assertion("empty-command-no-attack-rule",
+                    "no RuleAttackRoll discharge observation", observed, noRule,
+                    "FirearmDischargeRuntimeDiagnostics observed counter"),
+                Assertion("empty-command-no-mutation",
+                    "empty state remains empty", observed, statePreserved,
+                    "item-owned firearm state"),
+                Assertion("empty-command-auto-reload-replacement",
+                    "attack rejected once and native auto-use reload remains selected", observed,
+                    autoReplacement, "native AbilityData auto-use scheduling"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

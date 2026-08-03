@@ -7,6 +7,7 @@ using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Reloading;
 using System.Linq;
+using System.Threading;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -19,6 +20,11 @@ namespace KingmakerGunslinger.Firing
     {
         private static readonly ConditionalWeakTable<UnitAttack, ReportMarker>
             Reported = new ConditionalWeakTable<UnitAttack, ReportMarker>();
+        private static long _rejected;
+        private static long _autoReloadReplacements;
+        internal static long Rejected { get { return Interlocked.Read(ref _rejected); } }
+        internal static long AutoReloadReplacements
+        { get { return Interlocked.Read(ref _autoReloadReplacements); } }
 
         private static bool Prefix(UnitCommand __instance, ref bool __result)
         {
@@ -73,6 +79,9 @@ namespace KingmakerGunslinger.Firing
             if (!Reported.TryGetValue(command, out _))
             {
                 Reported.Add(command, new ReportMarker());
+                Interlocked.Increment(ref _rejected);
+                if (disposition == EmptyFirearmCommandDisposition.QueueReload)
+                    Interlocked.Increment(ref _autoReloadReplacements);
                 ModContext context;
                 if (ModContext.TryGet(out context))
                     context.Logger.Info("firearms", "attack.command-rejected",
