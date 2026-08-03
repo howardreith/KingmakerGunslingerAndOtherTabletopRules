@@ -76,7 +76,6 @@ namespace KingmakerGunslinger.Blueprints
             foreach (BlueprintFeature choice in feats.WeaponFocusChoices) ApplyFact(choice, visited);
             foreach (BlueprintFeature choice in feats.RapidReloadChoices) ApplyFact(choice, visited);
             ApplyFact(feats.WeaponFocus, visited);
-            ApplyFact(feats.NativeWeaponFocusWithFirearms, visited);
             ApplyFact(feats.RapidReload, visited);
             ApplyFact(reload, visited); ApplyFact(repair, visited); ApplyFact(overhaul, visited);
             BlueprintItemAccess items = BlueprintItemAccess.Resolve();
@@ -99,7 +98,11 @@ namespace KingmakerGunslinger.Blueprints
             HashSet<BlueprintUnitFact> visited)
         {
             if (fact == null || !visited.Add(fact)) return;
-            string key = Choose(fact.name ?? string.Empty);
+            string factName = fact.name ?? string.Empty;
+            // Never repaint native blueprints reached through a Gunslinger
+            // selection. Native feat identity includes its original icon.
+            if (!factName.StartsWith("KMG_", StringComparison.Ordinal)) return;
+            string key = Choose(factName);
             BlueprintUnitFactAccess.Resolve().SetIcon(fact, Require(key));
             BlueprintFeatureSelection selection = fact as BlueprintFeatureSelection;
             if (selection != null && selection.AllFeatures != null)

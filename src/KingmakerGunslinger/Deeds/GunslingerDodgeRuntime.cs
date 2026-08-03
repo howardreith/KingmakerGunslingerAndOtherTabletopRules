@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules;
@@ -52,7 +53,13 @@ namespace KingmakerGunslinger.Deeds
                                 trueGrit.EffectiveCost);
                             try
                             {
-                                descriptor.State.AddCondition(UnitCondition.Prone, null);
+                                if (descriptor.Buffs.AddBuff(dodge.ArmorClassBuff,
+                                    null, TimeSpan.FromSeconds(6d)) == null &&
+                                    !descriptor.Buffs.RawFacts.Any(value =>
+                                        ReferenceEquals(value.Blueprint,
+                                            dodge.ArmorClassBuff)))
+                                    throw new InvalidOperationException(
+                                        "Gunslinger's Dodge AC buff was not created.");
                             }
                             catch
                             {
@@ -92,17 +99,8 @@ namespace KingmakerGunslinger.Deeds
             }
             try
             {
-                int current; string member;
-                if (!KingmakerArmorClassAccess.TryReadTargetArmorClass(
-                    ruleCalculateArmorClass, out current, out member))
-                    throw new InvalidOperationException(
-                        "RuleCalculateAC did not expose one exact TargetAC member.");
-                int selected = checked(current + 4);
-                string written;
-                if (!KingmakerArmorClassAccess.TryWriteTargetArmorClass(
-                    ruleCalculateArmorClass, selected, out written))
-                    throw new InvalidOperationException(
-                        "RuleCalculateAC TargetAC could not be written.");
+                // The timed buff contributes +2 through Kingmaker's native stat
+                // pipeline. This frame only proves pre-AC reaction timing.
                 frame.Applied = true;
             }
             catch (Exception exception)

@@ -97,6 +97,7 @@ namespace KingmakerGunslinger.Blueprints
                 NativeWeaponFocusWrapperSymbol, () => CreateSelection("Weapon Focus",
                     "Choose a native weapon category or a firearm type. You gain +1 attack with only the selected weapon.",
                     wrapperChoices));
+            wrapper.HideInUI = true;
             BlueprintFeatureSelection rapidSelection = registry.Register<BlueprintFeatureSelection>(
                 RapidReloadSelectionSymbol, () => CreateSelection("Rapid Reload",
                     "Select a firearm type. Reloading that firearm uses the reduced action listed in its description.", rapid));
@@ -125,7 +126,13 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.Feats." + DependentSymbolStems[family] + "WithFirearms",
                     () => CreateSelection(DependentNames[captured],
                         "Choose a native weapon category or a firearm type.", choices));
+                dependentSelections[family].HideInUI = true;
             }
+            NativeFirearmFeatIntegration.Configure(nativeWeaponFocus,
+                NativeDependentGuids.Select((guid, index) =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                        library, guid, "native " + DependentNames[index])).ToArray(),
+                focus, dependentChoices);
             RapidReloadRuntime.Configure(Kinds, rapid);
             return new FirearmFeatBlueprintSet(focusSelection, focus, wrapper,
                 rapidSelection, rapid, dependentSelections, dependentChoices);
@@ -144,11 +151,11 @@ namespace KingmakerGunslinger.Blueprints
             var publication = new FirearmFeatCatalogPublication(basic, fighter);
             BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
                 BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
-            var additions = new BlueprintFeature[set.DependentSelections.Length + 2];
-            additions[0] = set.NativeWeaponFocusWithFirearms;
-            additions[1] = set.RapidReload;
-            Array.Copy(set.DependentSelections, 0, additions, 2,
-                set.DependentSelections.Length);
+            // Only Rapid Reload is a new top-level feat. Firearm parameters are
+            // appended inside the five native parametrized feat menus by the
+            // native integration adapter. The retained wrappers are hidden
+            // compatibility blueprints for existing 0.0.61/0.0.62 saves.
+            var additions = new BlueprintFeature[] { set.RapidReload };
             publication.Publish(nativeWeaponFocus, additions);
             return publication;
         }

@@ -6,7 +6,6 @@ using Kingmaker.UnitLogic.Commands.Base;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Reloading;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -79,11 +78,8 @@ namespace KingmakerGunslinger.Firing
         {
             if (executor == null || executor.AutoUseAbility == null ||
                 BlueprintBootstrap.ReloadTestMusketAbility == null) return false;
-            var variants = BlueprintBootstrap.ReloadTestMusketAbility
-                .ComponentsArray.OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
-                .Single().Variants;
-            return variants.Any(value => ReferenceEquals(value,
-                executor.AutoUseAbility.Blueprint));
+            return ReferenceEquals(BlueprintBootstrap.ReloadTestMusketAbility,
+                executor.AutoUseAbility.Blueprint);
         }
 
         private static bool Reject(UnitEntityData executor, UnitEntityData target,

@@ -409,6 +409,7 @@
     <Compile Include="Blueprints\StunningShotBlueprints.cs" />
     <Compile Include="Blueprints\TrueGritBlueprints.cs" />
     <Compile Include="Grit\GritOperationGate.cs" />
+    <Compile Include="Grit\GritAbilityUiIntegration.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntime.cs" />
     <Compile Include="Grit\FirearmGritRecoveryRuntimeDiagnostics.cs" />
     <Compile Include="Grit\GritResourceAmountBonus.cs" />
@@ -456,8 +457,10 @@
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
+    <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
+    <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />
     <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
     <Compile Include="Blueprints\ProjectAssetIcons.cs" />

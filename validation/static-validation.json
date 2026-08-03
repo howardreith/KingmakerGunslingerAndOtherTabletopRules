@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.62-second-playtest-assets-and-ux",
-  "version": "0.0.62",
+  "milestone": "0.0.63-third-playtest-feats-reload-grit-dodge-assets",
+  "version": "0.0.63",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 158,
-    "activeEntryCount": 157,
+    "entryCount": 184,
+    "activeEntryCount": 183,
     "reservedEntryCount": 1,
-    "registrationCount": 157
+    "registrationCount": 183
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 851,
+    "testCount": 861,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

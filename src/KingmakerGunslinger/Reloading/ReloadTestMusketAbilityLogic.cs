@@ -33,6 +33,9 @@ namespace KingmakerGunslinger.Reloading
         [SerializeField]
         private EffectiveReloadAction m_Action;
 
+        [SerializeField]
+        private bool m_DynamicAction;
+
         internal static ReloadTestMusketAbilityLogic Create(
             BlueprintItemWeapon testMusket,
             BlueprintItem blackPowder,
@@ -64,6 +67,16 @@ namespace KingmakerGunslinger.Reloading
             return component;
         }
 
+        internal static ReloadTestMusketAbilityLogic CreateDynamic(
+            BlueprintItemWeapon testMusket, BlueprintItem blackPowder,
+            BlueprintItem leadBall)
+        {
+            ReloadTestMusketAbilityLogic component = Create(testMusket,
+                blackPowder, leadBall, EffectiveReloadAction.Standard);
+            component.m_DynamicAction = true;
+            return component;
+        }
+
         public bool IsAvailableFor(AbilityData ability)
         {
             try
@@ -75,10 +88,10 @@ namespace KingmakerGunslinger.Reloading
                         m_TestMusket,
                         m_BlackPowder,
                         m_LeadBall);
-                return result.IsAvailable && ReloadActionEconomy.Evaluate(
+                return result.IsAvailable && (m_DynamicAction || ReloadActionEconomy.Evaluate(
                     result.Firearm.Definition,
                     RapidReloadRuntime.HasMatchingChoice(ability.Caster,
-                        result.Firearm.Definition.Kind)) == m_Action;
+                        result.Firearm.Definition.Kind)) == m_Action);
             }
             catch
             {

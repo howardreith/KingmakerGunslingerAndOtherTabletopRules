@@ -16,8 +16,7 @@ namespace KingmakerGunslinger.Deeds
             if (armorClassBonus < 0 || gritCost < 0)
                 throw new ArgumentOutOfRangeException();
             if (status == GunslingerDodgeStatus.Eligible &&
-                (gritCost != 1 || armorClassBonus !=
-                    (mode == GunslingerDodgeMode.MoveFiveFeet ? 2 : 4)))
+                (gritCost != 1 || armorClassBonus != 2))
                 throw new ArgumentException("Eligible dodge values changed.");
             if (status != GunslingerDodgeStatus.Eligible &&
                 (gritCost != 0 || armorClassBonus != 0))
@@ -32,7 +31,7 @@ namespace KingmakerGunslinger.Deeds
         internal bool ShouldApply { get { return Status == GunslingerDodgeStatus.Eligible; } }
         internal bool ShouldDropProne
         {
-            get { return ShouldApply && Mode == GunslingerDodgeMode.DropProne; }
+            get { return false; }
         }
     }
 }

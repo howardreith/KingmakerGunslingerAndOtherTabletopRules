@@ -187,6 +187,16 @@ namespace KingmakerGunslinger.DomainTests
             Case("dependent-feats.critical-kind", DependentFeatCriticalKind),
             Case("dependent-feats.wrong-kind", DependentFeatWrongKind),
             Case("dependent-feats.invalid", DependentFeatInvalid),
+            Case("third-playtest.native-parent-only", ThirdPlaytestNativeParentOnly),
+            Case("third-playtest.native-icon-guard", ThirdPlaytestNativeIconGuard),
+            Case("third-playtest.firearm-parameter-menu", ThirdPlaytestFirearmParameterMenu),
+            Case("third-playtest.legacy-wrapper-hidden", ThirdPlaytestLegacyWrapperHidden),
+            Case("third-playtest.reload-one-public", ThirdPlaytestReloadOnePublic),
+            Case("third-playtest.reload-dynamic-action", ThirdPlaytestReloadDynamicAction),
+            Case("third-playtest.dodge-no-prone", ThirdPlaytestDodgeNoProne),
+            Case("third-playtest.dodge-one-round-two-ac", ThirdPlaytestDodgeOneRoundTwoAc),
+            Case("third-playtest.grit-shared-ui", ThirdPlaytestGritSharedUi),
+            Case("third-playtest.empty-command-preconstruction", ThirdPlaytestEmptyPreconstruction),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -921,6 +931,108 @@ namespace KingmakerGunslinger.DomainTests
                     Cases.Length,
                     failures));
             return failures == 0 ? 0 : 1;
+        }
+
+        private static string ThirdPlaytestSource(string relative)
+        {
+            return File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                relative.Replace('/', Path.DirectorySeparatorChar)));
+        }
+
+        private static void ThirdPlaytestNativeParentOnly()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs");
+            Assertions.True(source.Contains(
+                "var additions = new BlueprintFeature[] { set.RapidReload }"),
+                "A wrapper feat is still published at top level.");
+        }
+
+        private static void ThirdPlaytestNativeIconGuard()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs");
+            Assertions.True(source.Contains(
+                "if (!factName.StartsWith(\"KMG_\", StringComparison.Ordinal)) return;"),
+                "Native blueprint icons are not guarded from repainting.");
+        }
+
+        private static void ThirdPlaytestFirearmParameterMenu()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs");
+            Assertions.True(source.Contains("new FeatureParam(parameter)") &&
+                source.Contains("GetFullSelectionItems") &&
+                source.Contains("NativeFirearmParametrizedBonus"),
+                "Native firearm parameters are not appended to the native menu.");
+        }
+
+        private static void ThirdPlaytestLegacyWrapperHidden()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs");
+            Assertions.True(source.Contains("wrapper.HideInUI = true") &&
+                source.Contains("dependentSelections[family].HideInUI = true"),
+                "Legacy feat wrappers are still player-facing.");
+        }
+
+        private static void ThirdPlaytestReloadOnePublic()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/ReloadTestMusketAbilityBlueprints.cs");
+            Assertions.True(!source.Contains("new AbilityVariants") &&
+                source.Contains("CreateDynamic"),
+                "Reload still exposes its four implementation variants.");
+        }
+
+        private static void ThirdPlaytestReloadDynamicAction()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs");
+            Assertions.True(source.Contains("get_ActionType") &&
+                source.Contains("get_RuntimeActionType") &&
+                source.Contains("get_RequireFullRoundAction"),
+                "The public reload ability does not expose its real action cost.");
+        }
+
+        private static void ThirdPlaytestDodgeNoProne()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs");
+            Assertions.True(!source.Contains("AddCondition(UnitCondition.Prone") &&
+                source.Contains("dodge.ArmorClassBuff"),
+                "Gunslinger's Dodge still applies Prone.");
+        }
+
+        private static void ThirdPlaytestDodgeOneRoundTwoAc()
+        {
+            string blueprints = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs");
+            string runtime = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs");
+            Assertions.True(blueprints.Contains("bonus.Value = 2") &&
+                blueprints.Contains("ModifierDescriptor.Dodge") &&
+                runtime.Contains("TimeSpan.FromSeconds(6d)"),
+                "The adapted Dodge bonus is not +2 dodge AC for one round.");
+        }
+
+        private static void ThirdPlaytestGritSharedUi()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Grit/GritAbilityUiIntegration.cs");
+            Assertions.True(source.Contains("AbilityResourceLogic") &&
+                source.Contains("RequiredResource = grit") &&
+                source.Contains("IsSpendResource = false"),
+                "Paid deeds do not expose the one shared grit resource safely.");
+        }
+
+        private static void ThirdPlaytestEmptyPreconstruction()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Firing/EmptyFirearmAttackCommandPatch.cs");
+            Assertions.True(source.Contains("UnitAttack.CreateAttackCommand") &&
+                source.Contains("result = null") && source.Contains("return false"),
+                "Empty firearm rejection no longer occurs during command construction.");
         }
 
         private static TestCase Case(string name, Action body)

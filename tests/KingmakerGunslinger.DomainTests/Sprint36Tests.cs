@@ -238,9 +238,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             GunslingerDodgeDecision result = Dodge(GunslingerDodgeMode.DropProne,
                 true, GunslingerDodgeArmor.Medium, GunslingerDodgeLoad.Light, 1);
-            Assertions.True(result.ShouldApply, "Eligible prone dodge was rejected.");
-            Assertions.Equal(4, result.ArmorClassBonus, "Prone dodge AC changed.");
-            Assertions.True(result.ShouldDropProne, "Prone dodge omitted prone rider.");
+            Assertions.True(result.ShouldApply, "Eligible adapted dodge was rejected.");
+            Assertions.Equal(2, result.ArmorClassBonus, "Adapted dodge AC changed.");
+            Assertions.False(result.ShouldDropProne, "Adapted dodge applied prone.");
         }
 
         private static void GunslingerDodgeRequiresRangedTrigger()
@@ -253,22 +253,22 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void GunslingerDodgeArmorExact()
         {
-            Assertions.Equal(GunslingerDodgeStatus.UnsupportedArmor,
+            Assertions.Equal(GunslingerDodgeStatus.Eligible,
                 Dodge(GunslingerDodgeMode.DropProne, true,
                     GunslingerDodgeArmor.None, GunslingerDodgeLoad.Light, 2).Status,
-                "No armor bypassed the exact light/medium restriction.");
-            Assertions.Equal(GunslingerDodgeStatus.UnsupportedArmor,
+                "The explicit Kingmaker adaptation incorrectly requires armor.");
+            Assertions.Equal(GunslingerDodgeStatus.Eligible,
                 Dodge(GunslingerDodgeMode.DropProne, true,
                     GunslingerDodgeArmor.Heavy, GunslingerDodgeLoad.Light, 2).Status,
-                "Heavy armor activated Gunslinger's Dodge.");
+                "The explicit Kingmaker adaptation incorrectly rejects heavy armor.");
         }
 
         private static void GunslingerDodgeLoadExact()
         {
-            Assertions.Equal(GunslingerDodgeStatus.Overloaded,
+            Assertions.Equal(GunslingerDodgeStatus.Eligible,
                 Dodge(GunslingerDodgeMode.MoveFiveFeet, true,
                     GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Medium, 2).Status,
-                "Medium load activated Gunslinger's Dodge.");
+                "The explicit Kingmaker adaptation incorrectly rejects medium load.");
         }
 
         private static void GunslingerDodgeInsufficientAtomic()
@@ -302,10 +302,12 @@ namespace KingmakerGunslinger.DomainTests
                 new GunslingerDodgeRequest(true, GunslingerDodgeMode.DropProne,
                     true, GunslingerDodgeArmor.Light, GunslingerDodgeLoad.Light,
                     2, false));
-            Assertions.Equal(GunslingerDodgeStatus.CannotDropProne, result.Status,
-                "Already-prone defender activated the drop-prone reaction.");
-            Assertions.Equal(0, result.GritCost,
-                "Already-prone rejection exposed a grit cost.");
+            Assertions.Equal(GunslingerDodgeStatus.Eligible, result.Status,
+                "Existing prone state incorrectly blocked the no-prone adaptation.");
+            Assertions.Equal(1, result.GritCost,
+                "Eligible adapted reaction lost its grit cost.");
+            Assertions.False(result.ShouldDropProne,
+                "Adapted reaction attempted to add another prone state.");
         }
 
         private static GunslingerDodgeDecision Dodge(GunslingerDodgeMode mode,

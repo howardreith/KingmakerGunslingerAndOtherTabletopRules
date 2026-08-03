@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 182;
+        internal const int ExpectedRegisteredBlueprintCount = 183;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -586,6 +586,12 @@ namespace KingmakerGunslinger.Bootstrap
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall);
+                int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
+                    library, gunslingerClassBlueprints.Grit.Resource,
+                    gunslingerClassBlueprints.Dodge.ProneAbility);
+                context.Logger.Info("grit", "ui.shared-resource-ready",
+                    "Bound the native shared-grit indicator to " +
+                    gritUiAbilities + " deed abilities.");
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
                     productionFirearms, basicAmmunition, firearmRepairKit,
                     reloadTestMusketAbility, repairTestMusketAbility,
@@ -634,6 +640,17 @@ namespace KingmakerGunslinger.Bootstrap
                     "initialize.root-cause",
                     "Blueprint initialization reached a failing owned operation before rollback.",
                     initializationException);
+                try
+                {
+                    Feats.NativeFirearmFeatIntegration.Rollback();
+                }
+                catch (Exception nativeFeatRollbackException)
+                {
+                    context.Logger.Failure(
+                        "blueprints", "native-firearm-feats.rollback-failed",
+                        "Blueprint initialization failed and native firearm feat integration rollback was refused.",
+                        nativeFeatRollbackException);
+                }
                 if (capitalVendorPublication != null)
                 {
                     try

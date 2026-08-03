@@ -1,0 +1,60 @@
+using System;
+using System.Linq;
+using System.Reflection;
+using Kingmaker.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+
+namespace KingmakerGunslinger.Grit
+{
+    internal static class GritAbilityUiIntegration
+    {
+        internal static int Apply(LibraryScriptableObject library,
+            BlueprintAbilityResource grit, BlueprintAbility dodge)
+        {
+            if (library == null || grit == null || dodge == null)
+                throw new ArgumentNullException();
+            int count = 0;
+            foreach (BlueprintAbility ability in library.GetAllBlueprints()
+                .OfType<BlueprintAbility>().Where(value => value != null &&
+                    value.name != null && value.name.StartsWith("KMG_",
+                        StringComparison.Ordinal)))
+            {
+                if (!ReferenceEquals(ability, dodge) &&
+                    !(ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Any(component => References(component, grit))) continue;
+                if ((ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AbilityResourceLogic>().Any(value =>
+                        ReferenceEquals(value.RequiredResource, grit))) continue;
+                var ui = UnityEngine.ScriptableObject.CreateInstance<AbilityResourceLogic>();
+                ui.name = "$KMG_SharedGritUi";
+                ui.RequiredResource = grit;
+                // Runtime deed transactions remain authoritative because several
+                // reactions spend only when they trigger. The native component is
+                // deliberately display-only and therefore cannot double-spend.
+                ui.IsSpendResource = false;
+                ui.CostIsCustom = false;
+                ui.Amount = 1;
+                ability.ComponentsArray = (ability.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).Concat(
+                        new BlueprintComponent[] { ui }).ToArray();
+                count++;
+            }
+            if (count == 0)
+                throw new InvalidOperationException(
+                    "No grit-consuming abilities received the shared resource UI contract.");
+            return count;
+        }
+
+        private static bool References(BlueprintComponent component,
+            BlueprintAbilityResource grit)
+        {
+            if (component == null) return false;
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance;
+            return component.GetType().GetFields(flags).Any(field =>
+                typeof(BlueprintAbilityResource).IsAssignableFrom(field.FieldType) &&
+                ReferenceEquals(field.GetValue(component), grit));
+        }
+    }
+}

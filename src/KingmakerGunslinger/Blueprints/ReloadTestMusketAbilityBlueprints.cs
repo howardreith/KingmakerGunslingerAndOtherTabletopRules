@@ -47,25 +47,25 @@ namespace KingmakerGunslinger.Blueprints
                         blackPowder, leadBall, action));
             }
             BlueprintAbility parent = registry.Register<BlueprintAbility>(Symbol,
-                () => CreateParent(iconSource, variants));
+                () => CreateParent(iconSource, blackPowder, leadBall));
             ValidateParent(parent, variants);
             logger.Info("reload", "ability.ready", string.Format(
                 CultureInfo.InvariantCulture,
-                "Registered Reload Firearm variant parent guid={0}; variants={1}.",
+                "Registered one public Reload Firearm guid={0}; hidden compatibility helpers={1}.",
                 registry.ResolveGuid(Symbol), variants.Length));
             return parent;
         }
 
         private static BlueprintAbility CreateParent(BlueprintItemWeapon iconSource,
-            BlueprintAbility[] variants)
+            BlueprintItem blackPowder, BlueprintItem leadBall)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = InternalName;
             ConfigureCommon(result, iconSource, false);
-            var component = ScriptableObject.CreateInstance<AbilityVariants>();
-            component.name = "$KMG_ReloadVariants";
-            component.Variants = (BlueprintAbility[])variants.Clone();
-            result.ComponentsArray = new BlueprintComponent[] { component };
+            ReloadTestMusketAbilityLogic logic = ReloadTestMusketAbilityLogic
+                .CreateDynamic(iconSource, blackPowder, leadBall);
+            logic.name = ComponentName + "_Dynamic";
+            result.ComponentsArray = new BlueprintComponent[] { logic };
             return result;
         }
 
@@ -127,15 +127,15 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (ability == null || variants == null || variants.Length != 4)
                 throw new InvalidOperationException("Reload Firearm variant graph is incomplete.");
-            AbilityVariants[] components = (ability.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>().ToArray();
+            ReloadTestMusketAbilityLogic[] components = (ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<ReloadTestMusketAbilityLogic>().ToArray();
             if (ability.Type != AbilityType.Extraordinary || ability.Hidden ||
                 ability.ActionType != UnitCommand.CommandType.Free ||
                 ability.IsFullRoundAction || components.Length != 1 ||
-                ability.ComponentsArray.Length != 1 ||
-                !components[0].Variants.SequenceEqual(variants))
+                ability.ComponentsArray.Length != 1)
                 throw new InvalidOperationException(
                     "Reload Firearm parent has incorrect presentation or variants.");
+            components[0].ValidateConfiguration();
             foreach (BlueprintAbility variant in variants)
             {
                 if (!variant.Hidden || !variant.ActionBarAutoFillIgnored)

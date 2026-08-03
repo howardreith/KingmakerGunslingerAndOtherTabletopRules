@@ -316,6 +316,14 @@
       "notes": "Hidden native persisted fact recording an armed drop-prone reaction."
     },
     {
+      "symbol": "KMG.Deeds.GunslingerDodgeArmorClassBuff",
+      "guid": "bbd7d42117cc4c23b3e22af3a71621d9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Third Playtest 0.0.63",
+      "notes": "One-round +2 dodge AC adaptation; never applies Prone."
+    },
+    {
       "symbol": "KMG.Deeds.QuickClearFeature",
       "guid": "5c3ca8be372b4fc2a6bcc6bbfa59e17d",
       "plannedType": "BlueprintFeature",
