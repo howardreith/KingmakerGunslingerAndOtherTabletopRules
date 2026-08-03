@@ -3433,3 +3433,22 @@
   `75792762c2628bce8ce0090dd95575d350ecf7cd8546c1be5fd675bda63dcc27`.
   Continue Phase 8; all-kind and visible right-click checks remain integrated
   acceptance work.
+
+# Fourth playtest timed Overhaul maintenance (2026-08-03)
+
+- Overhaul Firearm now advertises and enforces one uninterrupted minute out of
+  combat. Its delivery delays before mutation, revalidates the exact equipped
+  item at completion, and leaves both state and repair kits unchanged when
+  interrupted or invalidated.
+- Repository validation, all 879 tests, clean exact-reference Release, and
+  strict package validation pass. Final checkpoint package/DLL hashes are
+  `7d5b83ba05b27eb5aaf657f7016cd02395629147cd6bc60408f58f24629404e3` /
+  `438ab26030c6bea5ecd15dbd70ccde2e3c890f557c038d421e95f4268f9543db`.
+- Guarded run `20260803T2312021633458Z-disposable-overhaul-maintenance`
+  passed delayed start, interruption atomicity, real native combat blocking,
+  Wrecked-to-Broken completion with one kit, cleanup, and version identity.
+  Earlier runs `20260803T2305568410359Z` and `20260803T2309470365802Z`
+  safely failed the observer combat assertion; the final correction moved the
+  native combat flag from an adjacent observer onto the exact Overhaul unit.
+- Continue Phase 8 with condition tooltip/combat-log visibility and Quick Clear
+  presentation. This checkpoint does not complete maintenance UX acceptance.

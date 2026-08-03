@@ -20,6 +20,8 @@ namespace KingmakerGunslinger.Recovery
         AbilityCustomLogic,
         IAbilityAvailabilityProvider
     {
+        internal const float WorkDurationSeconds = 60f;
+
         [SerializeField]
         private BlueprintItemWeapon m_TestMusket;
 
@@ -68,13 +70,39 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped Wrecked firearm and one Firearm Repair Kit.";
+            return "Requires exactly one equipped Wrecked firearm, one Firearm Repair Kit, and one uninterrupted minute out of combat.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context,
             TargetWrapper target)
         {
+            return DeliverTimed(context, target);
+        }
+
+        private IEnumerator<AbilityDeliveryTarget> DeliverTimed(
+            AbilityExecutionContext context, TargetWrapper target)
+        {
+            FirearmOverhaulAvailability start;
+            TimeSpan completion;
+            if (!TryPrepare(context, out start, out completion))
+            {
+                yield return new AbilityDeliveryTarget(target);
+                yield break;
+            }
+            while (Kingmaker.Game.Instance != null &&
+                Kingmaker.Game.Instance.TimeController != null &&
+                Kingmaker.Game.Instance.TimeController.GameTime < completion)
+                yield return null;
+            Complete(context, start);
+            yield return new AbilityDeliveryTarget(target);
+        }
+
+        private bool TryPrepare(AbilityExecutionContext context,
+            out FirearmOverhaulAvailability start, out TimeSpan completion)
+        {
+            start = null;
+            completion = default(TimeSpan);
             try
             {
                 ValidateConfiguration();
@@ -86,10 +114,40 @@ namespace KingmakerGunslinger.Recovery
                         "The overhaul delivery has no concrete caster descriptor.");
                 }
 
-                FirearmOverhaulRuntimeResult result = OverhaulTestMusketRuntime.Execute(
+                start = OverhaulTestMusketRuntime.Evaluate(
                     context.Caster.Descriptor,
                     m_TestMusket,
                     m_RepairKit);
+                if (!start.IsAvailable || start.Weapon == null)
+                    throw new InvalidOperationException(start.Reason);
+                if (Kingmaker.Game.Instance == null ||
+                    Kingmaker.Game.Instance.TimeController == null)
+                    throw new InvalidOperationException(
+                        "The overhaul work timer is unavailable.");
+                completion = Kingmaker.Game.Instance.TimeController.GameTime +
+                    TimeSpan.FromSeconds(WorkDurationSeconds);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                RecordFailure(exception);
+                return false;
+            }
+        }
+
+        private void Complete(AbilityExecutionContext context,
+            FirearmOverhaulAvailability start)
+        {
+            try
+            {
+                FirearmOverhaulAvailability completed = OverhaulTestMusketRuntime.Evaluate(
+                    context.Caster.Descriptor, m_TestMusket, m_RepairKit);
+                if (!completed.IsAvailable ||
+                    !ReferenceEquals(completed.Weapon, start.Weapon))
+                    throw new InvalidOperationException(
+                        "Overhaul Firearm was interrupted or its exact item context changed.");
+                FirearmOverhaulRuntimeResult result = OverhaulTestMusketRuntime.Execute(
+                    context.Caster.Descriptor, m_TestMusket, m_RepairKit);
                 OverhaulRuntimeDiagnostics.Record(result);
 
                 ModContext modContext;
@@ -105,19 +163,18 @@ namespace KingmakerGunslinger.Recovery
             }
             catch (Exception exception)
             {
-                OverhaulRuntimeDiagnostics.RecordFault(exception);
-                ModContext modContext;
-                if (ModContext.TryGet(out modContext))
-                {
-                    modContext.Logger.Failure(
-                        "recovery",
-                        "overhaul.failed",
-                        "Overhaul Firearm failed during delivery. The transaction attempted to restore both the exact item-owned state and the Firearm Repair Kit count.",
-                        exception);
-                }
+                RecordFailure(exception);
             }
+        }
 
-            yield return new AbilityDeliveryTarget(target);
+        private static void RecordFailure(Exception exception)
+        {
+            OverhaulRuntimeDiagnostics.RecordFault(exception);
+            ModContext modContext;
+            if (ModContext.TryGet(out modContext))
+                modContext.Logger.Failure("recovery", "overhaul.failed",
+                    "Overhaul Firearm failed or was interrupted; no kit or exact item state should change before completion.",
+                    exception);
         }
 
         public override void Cleanup(AbilityExecutionContext context)

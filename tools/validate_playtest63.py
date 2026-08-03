@@ -18,7 +18,7 @@ def require(path: Path, *tokens: str) -> None:
 
 def validate(root: Path) -> None:
     validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               861, 183, 184)
+                               862, 183, 184)
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs",
             "wrapper.HideInUI = true", "set.RapidReload }",
             "NativeFirearmFeatIntegration.Configure")
@@ -36,6 +36,11 @@ def validate(root: Path) -> None:
     require(root / "src/KingmakerGunslinger/Grit/GritAbilityUiIntegration.cs",
             "AbilityResourceLogic", "RequiredResource = grit", "IsSpendResource = true",
             "GritAbilityResourceUiLogic", "public override void Spend")
+    require(root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketAbilityLogic.cs",
+            "WorkDurationSeconds = 60f", "TimeController.GameTime < completion",
+            "ReferenceEquals(completed.Weapon, start.Weapon)")
+    require(root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs",
+            "caster.Unit.IsInCombat", "one uninterrupted minute out of combat")
 
 def main() -> int:
     parser = argparse.ArgumentParser()

@@ -811,6 +811,14 @@ incomplete independent coverage item; Sprint 59 is not a stopping boundary.
 
 ## Safety boundaries
 
+Fourth-playtest checkpoint: timed Overhaul maintenance is source- and
+runtime-qualified by guarded run
+`20260803T2312021633458Z-disposable-overhaul-maintenance`. Package/DLL hashes
+are `7d5b83ba05b27eb5aaf657f7016cd02395629147cd6bc60408f58f24629404e3` /
+`438ab26030c6bea5ecd15dbd70ccde2e3c890f557c038d421e95f4268f9543db`.
+Continue Phase 8 at condition tooltip/combat-log visibility and Quick Clear
+presentation; do not treat the timed action checkpoint as full UX acceptance.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

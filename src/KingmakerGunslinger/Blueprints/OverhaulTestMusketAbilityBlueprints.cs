@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_OverhaulTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action and consume one Firearm Repair Kit to overhaul the exact equipped Wrecked firearm into an empty Broken firearm. This preserves the same item and does not perform ordinary Broken-to-Normal repair.";
+            "Work for one uninterrupted minute out of combat and consume one Firearm Repair Kit to overhaul the exact equipped Wrecked firearm into an empty Broken firearm. Interruption consumes nothing and changes no state. This preserves the same item and does not perform ordinary Broken-to-Normal repair.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
@@ -88,7 +88,7 @@ namespace KingmakerGunslinger.Blueprints
                     result.ResourceAssetIds = Array.Empty<string>();
                     result.LocalizedDuration = LocalizationService.Create(
                         "KMG.Ability.OverhaulTestMusket.Duration",
-                        "Instantaneous");
+                        "1 minute");
                     result.LocalizedSavingThrow = LocalizationService.Create(
                         "KMG.Ability.OverhaulTestMusket.SavingThrow",
                         "None");

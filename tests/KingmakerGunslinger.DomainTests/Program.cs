@@ -197,6 +197,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("third-playtest.dodge-one-round-two-ac", ThirdPlaytestDodgeOneRoundTwoAc),
             Case("third-playtest.grit-shared-ui", ThirdPlaytestGritSharedUi),
             Case("third-playtest.empty-command-preconstruction", ThirdPlaytestEmptyPreconstruction),
+            Case("fourth-playtest.overhaul-maintenance", FourthPlaytestOverhaulMaintenance),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1044,6 +1045,23 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("return !isTurnBased || (hasCurrentTurn && standardActionAvailable)") &&
                 source.Contains("executor.Commands.AddToQueue(attack)"),
                 "Empty firearm rejection or exact-item native reload continuation is incomplete.");
+        }
+
+        private static void FourthPlaytestOverhaulMaintenance()
+        {
+            string logic = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketAbilityLogic.cs");
+            string runtime = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
+            string blueprint = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/OverhaulTestMusketAbilityBlueprints.cs");
+            Assertions.True(logic.Contains("WorkDurationSeconds = 60f") &&
+                logic.Contains("TimeController.GameTime < completion") &&
+                logic.Contains("ReferenceEquals(completed.Weapon, start.Weapon)") &&
+                runtime.Contains("caster.Unit.IsInCombat") &&
+                blueprint.Contains("one uninterrupted minute out of combat") &&
+                blueprint.Contains("\"1 minute\""),
+                "Overhaul is not a one-minute, out-of-combat, exact-item atomic action.");
         }
 
         private static TestCase Case(string name, Action body)

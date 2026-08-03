@@ -34,6 +34,12 @@ namespace KingmakerGunslinger.Recovery
                     "Overhaul blueprint dependencies are not initialized.");
             }
 
+            if (caster.Unit != null && caster.Unit.IsInCombat)
+            {
+                return Unavailable(
+                    "Overhaul Firearm requires one uninterrupted minute out of combat.");
+            }
+
             ExactEquippedFirearmContext context;
             string rejection;
             if (!ExactEquippedFirearmResolver.TryResolve(caster, out context, out rejection))

@@ -141,9 +141,37 @@ Every firearm kind and actual player-visible right-click behavior remain for the
 integrated/final acceptance runs; the guarded continuation mechanics are now
 qualified.
 
+## Timed Overhaul maintenance checkpoint
+
+Overhaul Firearm now requires one uninterrupted minute out of combat. Starting
+the delivery performs no mutation; interruption, disposal, combat at completion,
+or exact-item drift consumes no repair kit and changes no firearm state. A valid
+completion reuses the existing atomic exact-item transaction: Wrecked becomes
+Broken and exactly one repair kit is consumed.
+
+Evidence:
+
+- repository validation: PASS;
+- dependency-free domain/reflection suite: 879/879 PASS;
+- clean exact-reference Release build and strict package validation: PASS;
+- checkpoint package/DLL SHA-256:
+  `7d5b83ba05b27eb5aaf657f7016cd02395629147cd6bc60408f58f24629404e3` /
+  `438ab26030c6bea5ecd15dbd70ccde2e3c890f557c038d421e95f4268f9543db`;
+- guarded save-free runtime PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260803T2312021633458Z-disposable-overhaul-maintenance`.
+
+The first two observer runs (`20260803T2305568410359Z` and
+`20260803T2309470365802Z`) failed only the synthetic combat-state assertion.
+The second package revealed that the native `m_InCombat` fixture flag had been
+placed in an adjacent observer; it was removed there and attached to the exact
+Overhaul unit. The final run observed `duration=1 minute`, delayed and
+interruption-atomic delivery, real combat blocking, exact atomic completion,
+cleanup, and version `0.0.63`.
+
 ## Remaining mission scope
 
 Rapid Reload and semantic icon art, final player-visible Grit observation, real
-equipped firearm models/projectile/audio presentation, native reload auto-use, condition and
-maintenance UX, Winchester attribution, comprehensive regression/runtime runs,
+equipped firearm models/projectile/audio presentation, integrated reload auto-use,
+condition tooltip/combat-log and Quick Clear presentation, Winchester attribution,
+comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.
