@@ -795,6 +795,42 @@
     },
     {
       "symbol": "KMG.Actions.ReloadFullRound", "guid": "c75706201af544f68fa6e16af8295133", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Hidden full-round Reload Firearm variant."
+    },
+    {
+      "symbol": "KMG.Feats.FirearmWeaponFocus", "guid": "0061053ca1104e19b7aa77e34c3a442c", "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Grouped firearm Weapon Focus selection."
+    },
+    {
+      "symbol": "KMG.Feats.WeaponFocusPistol", "guid": "8b39bd79d27048dda58e0a513e529f2c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Pistol choice."
+    },
+    {
+      "symbol": "KMG.Feats.WeaponFocusMusket", "guid": "939f52fce6ec4c5d8df2bb1cf793416a", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Musket choice."
+    },
+    {
+      "symbol": "KMG.Feats.WeaponFocusBlunderbuss", "guid": "79579fdb7d494f4fb0e618f6e4c33990", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Blunderbuss choice."
+    },
+    {
+      "symbol": "KMG.Feats.WeaponFocusRifle", "guid": "9ac654bf5b604d1686994d17f50a2b1b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Rifle choice."
+    },
+    {
+      "symbol": "KMG.Feats.WeaponFocusRevolver", "guid": "7ee41e6731bf488a842d36952f2a8cf7", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Weapon Focus Revolver choice."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReload", "guid": "85103137b2f54b7dacd98d51e856d8c3", "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Grouped firearm Rapid Reload selection."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReloadPistol", "guid": "070f4f07b5164d8a82d647a93539746d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Pistol choice."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReloadMusket", "guid": "128963c18e0d48268d8696f9f14513d2", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Musket choice."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReloadBlunderbuss", "guid": "40c69ab4ea844bd8a087cb8e84235bd9", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Blunderbuss choice."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReloadRifle", "guid": "3c5fc5420f1941a68b77b052609549a0", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Rifle choice."
+    },
+    {
+      "symbol": "KMG.Feats.RapidReloadRevolver", "guid": "e207ee10db6c4b2caf4408fd815553b4", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Playtest 0.0.61", "notes": "Rapid Reload Revolver choice."
     }
   ]
 }

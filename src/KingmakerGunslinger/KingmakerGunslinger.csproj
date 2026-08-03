@@ -454,6 +454,8 @@
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
+    <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
+    <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
     <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
     <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
     <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />

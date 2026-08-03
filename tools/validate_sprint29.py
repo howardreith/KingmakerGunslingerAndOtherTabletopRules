@@ -359,7 +359,8 @@ def validate(
                      128: "one-hundred-twenty-eight",
                      131: "one-hundred-thirty-one",
                      136: "one-hundred-thirty-six",
-                     140: "one-hundred-forty"}
+                     140: "one-hundred-forty",
+                     152: "one-hundred-fifty-two"}
                     .get(expected_active_blueprints, "twenty-four"))
     ledger_summary = (f"{expected_ledger_entries} stable IDs: "
                       f"{expected_active_blueprints} active and one reserved")

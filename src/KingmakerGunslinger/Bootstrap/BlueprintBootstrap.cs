@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 140;
+        internal const int ExpectedRegisteredBlueprintCount = 152;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -502,6 +502,7 @@ namespace KingmakerGunslinger.Bootstrap
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
+            FirearmFeatCatalogPublication featPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -510,6 +511,10 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintFeature firearmProficiency =
                     FirearmProficiencyBlueprints.Register(registry);
                 FirearmProficiencyBlueprints.ValidateBase(firearmProficiency);
+
+                FirearmFeatBlueprintSet firearmFeats =
+                    FirearmFeatBlueprints.Register(registry, firearmProficiency);
+                featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
 
                 TestMusketBlueprintSet testMusket = TestMusketBlueprints.Register(
                     library,
@@ -636,6 +641,16 @@ namespace KingmakerGunslinger.Bootstrap
                             "blueprints", "capital-vendor.rollback-failed",
                             "Blueprint initialization failed and capital vendor rollback was refused.",
                             vendorRollbackException);
+                    }
+                }
+                if (featPublication != null)
+                {
+                    try { featPublication.Rollback(); }
+                    catch (Exception featRollbackException)
+                    {
+                        context.Logger.Failure("blueprints", "firearm-feats.rollback-failed",
+                            "Blueprint initialization failed and firearm feat catalog rollback was refused.",
+                            featRollbackException);
                     }
                 }
                 if (classPublication != null)
