@@ -96,6 +96,11 @@ the audited production items/principal features.
 - `20260803T0115497054842Z-advanced-capacity`: PASS.
 - `20260803T0120125540858Z-production-firearm-catalog`: PASS for all five exact
   production identities and native-crossbow isolation.
+- `20260803T0124503024918Z-disposable-gunslinger-comprehensive-acceptance` and
+  `20260803T0126274484293Z-disposable-gunslinger-comprehensive-acceptance`:
+  two consecutive fresh-process PASS runs.
+- `20260803T0128033631664Z-working-save-smoke`: PASS on the canonical exact
+  working-save path.
 - `20260803T0034253550707Z-mod-load-smoke`: PASS.
 - `20260803T0036120442708Z-observe-gunslinger-presentation`: earlier PASS used
   while repairing generalized tooltip metadata.
@@ -109,12 +114,12 @@ firearm identity, or item-state identity changed.
 ## Package
 
 - Path: `artifacts/local-runtime/0.0.61/KingmakerGunslinger-0.0.61-local-runtime.zip`
-- Package SHA-256: `4f8bd050602d1a521f9a2a937eeb79b921b56856fe21f69dd5badb76214a82b4`
-- DLL SHA-256: `118b90792f67b73aa2c22de6adea5ff806448908dd6af5143c16729c8b08aa4e`
-- Functional qualification commit before this report: `92de6640d9806595e4023dcd71c7e99c4021e5f1`
-
-Hashes and final commit are refreshed after the documentation checkpoint and
-final clean rebuild.
+- Package SHA-256: `4939429f28741393418503adf86d888369fe4d79c832f1db07cf23944bd64581`
+- DLL SHA-256: `7b11e39bc0c04cbbd7c468552ff1f4b8aa5285bbe07ca20b51f2b6685b3f3199`
+- Final qualified package/documentation commit:
+  `bccf0b754487839c2b3510374f84e126d59e4568`.
+- The final report-evidence closeout is the commit containing this revision; it
+  does not change the qualified package payload.
 
 ## One-time supervised visual acceptance checklist
 
