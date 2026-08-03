@@ -107,7 +107,8 @@ namespace KingmakerGunslinger.Misfires
                         effectiveCondition,
                         HasGunTraining(wielder, postDischarge.Definition.Kind)),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
-                    Normalize(postDischarge.ItemDisplayName));
+                    Normalize(postDischarge.ItemDisplayName),
+                    postDischarge.Definition.Kind);
                 lock (ContextGate)
                 {
                     EligibleAttacks.Remove(attackRoll);
@@ -302,6 +303,9 @@ namespace KingmakerGunslinger.Misfires
                     condition,
                     context.Firearm,
                     context.Forced);
+                if (!decision.IsMisfire)
+                    Assets.FirearmAssetRuntime.PlayShot(context.Kind,
+                        context.Wielder);
                 LogInfo(
                     decision.IsMisfire
                         ? "natural-roll.misfire"
@@ -529,7 +533,8 @@ namespace KingmakerGunslinger.Misfires
                 string repositoryIdentity,
                 int misfireValue,
                 int misfireBurstRadiusFeet,
-                string firearm)
+                string firearm,
+                FirearmKind kind)
             {
                 if (firearmItem == null)
                 {
@@ -585,6 +590,7 @@ namespace KingmakerGunslinger.Misfires
                 MisfireValue = misfireValue;
                 MisfireBurstRadiusFeet = misfireBurstRadiusFeet;
                 Firearm = firearm ?? throw new ArgumentNullException("firearm");
+                Kind = kind;
             }
 
             internal object FirearmItem { get; private set; }
@@ -602,6 +608,7 @@ namespace KingmakerGunslinger.Misfires
             internal int MisfireBurstRadiusFeet { get; private set; }
 
             internal string Firearm { get; private set; }
+            internal FirearmKind Kind { get; private set; }
 
             internal int OriginalNaturalRoll
             {

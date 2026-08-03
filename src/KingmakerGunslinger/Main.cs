@@ -64,6 +64,7 @@ namespace KingmakerGunslinger
 
                 context = ModContext.Create(modEntry, assembly, logger);
                 ModContext.Publish(context);
+                Assets.FirearmAssetRuntime.Configure(context);
                 // Commit guarded binary identity before patches, blueprint work,
                 // UI attachment, or runtime-request parsing.
                 RuntimeTestRunner.RecordEarlyIdentity(context);

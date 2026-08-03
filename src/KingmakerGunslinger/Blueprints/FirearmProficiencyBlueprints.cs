@@ -60,7 +60,9 @@ namespace KingmakerGunslinger.Blueprints
                 scatterShotAbility
             };
             addFacts.DoNotRestoreMissingFacts = false;
-            feature.ComponentsArray = new BlueprintComponent[] { addFacts };
+            var visuals = ScriptableObject.CreateInstance<Assets.FirearmVisualEquipmentHandler>();
+            visuals.name = "$KMG_FirearmVisualEquipmentHandler";
+            feature.ComponentsArray = new BlueprintComponent[] { addFacts, visuals };
             Validate(feature, reloadAbility, scatterShotAbility);
         }
 
@@ -108,7 +110,8 @@ namespace KingmakerGunslinger.Blueprints
             }
 
             AddFacts[] grants = feature.ComponentsArray.OfType<AddFacts>().ToArray();
-            if (feature.ComponentsArray.Length != 1 || grants.Length != 1)
+            if (feature.ComponentsArray.Length != 2 || grants.Length != 1 ||
+                feature.ComponentsArray.OfType<Assets.FirearmVisualEquipmentHandler>().Count() != 1)
             {
                 throw new InvalidOperationException(
                     "Firearm Proficiency must contain exactly one AddFacts ability grant.");
