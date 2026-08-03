@@ -5915,6 +5915,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             GunslingerClassBlueprintSet gunslingerSet = BlueprintBootstrap.GunslingerClass;
             BlueprintCharacterClass gunslinger = gunslingerSet.CharacterClass;
             BlueprintAbilityResource grit = gunslingerSet.Grit.Resource;
+            BlueprintAbility[] gritUiAbilities = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintAbility>()
+                .Where(value => value != null &&
+                    (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AbilityResourceLogic>().Any(component =>
+                        component != null && component.name == "$KMG_SharedGritUi"))
+                .ToArray();
+            bool sharedGritUi = gritUiAbilities.Length > 0 &&
+                gritUiAbilities.All(value => (value.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                    .OfType<AbilityResourceLogic>().Count(component =>
+                        component != null && component.name == "$KMG_SharedGritUi" &&
+                        ReferenceEquals(component.RequiredResource, grit) &&
+                        !component.IsSpendResource && component.Amount == 1) == 1);
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -6040,6 +6054,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("grit-capped-restore", "current=maximum=1",
                     observed, currentAfterRestore == maximumAfterGrant,
                     "native UnitAbilityResourceCollection.Restore"),
+                Assertion("grit-shared-actionbar-counter",
+                    "every visible paid deed exposes exactly one display-only native AbilityResourceLogic bound to the single Gunslinger grit resource",
+                    "abilities=" + string.Join(",", gritUiAbilities
+                        .Select(value => value.Name).ToArray()),
+                    sharedGritUi,
+                    "published BlueprintAbility components consumed by the native action-bar remaining-resource counter"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "controllers canceled and disposable entity disposed"),
