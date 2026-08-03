@@ -600,7 +600,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OfType<Component>()
                 .Where(component => component != null &&
                     component.GetType() == slotType &&
-                    component.gameObject.activeInHierarchy &&
                     HasExactDescriptorMember(component, _workingDescriptor))
                 .ToList();
             slots = UniqueComponents(slots);

@@ -46,6 +46,10 @@ Assert-True ($scenario.Contains('method.GetMethodBody() == null') -and
     $scenario.Contains('method.DeclaringType != declaringType')) 'bodyless-inherited-abstract-generic-rejected'
 Assert-True ($scenario.Contains('_entryCandidates = slots.Count') -and
     $scenario.Contains('_entryCandidates == 1')) 'exactly-one-working-slot-required'
+Assert-True (-not [regex]::IsMatch($scenario,
+    'component\.GetType\(\) == slotType &&\s*' +
+    'component\.gameObject\.activeInHierarchy')) `
+    'virtualized-working-slot-remains-resolvable'
 Assert-True ($scenario.Contains('windows.Count != 1') -and
     $scenario.Contains('_receiverBoundWindow = windows[0]')) 'exactly-one-owning-window-required'
 Assert-True ($runner.Contains('_trace.WriteReady(new RuntimeReadyMarker') -and
