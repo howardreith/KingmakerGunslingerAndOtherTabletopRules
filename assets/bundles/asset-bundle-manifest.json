@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "unityVersion": "2018.4.10f1",
+  "buildTarget": "StandaloneWindows64",
+  "bundleName": "kingmakergunslinger.firearms",
+  "sha256": "5418A9BC008B80E92F10A52E653728612A892BB398AA0A9664D603B21C26D324",
+  "prefabs": ["Pistol", "Musket", "Blunderbuss", "Revolver"],
+  "audioMappings": ["pistol-shot", "musket-shot", "blunderbuss-shot", "revolver-shot", "rifle-shot"],
+  "quarantined": ["Martini-Henry-winchester-rifle"]
+}

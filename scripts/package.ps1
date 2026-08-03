@@ -40,6 +40,7 @@ $copies = @(
     [ordered]@{ Source = (Join-Path $repositoryRoot 'README.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'INSTALLATION-COMPATIBILITY.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'SMOKE-TEST-GUIDE.md'); Destination = $modDirectory },
+    [ordered]@{ Source = (Join-Path $repositoryRoot 'THIRD-PARTY-ASSETS.md'); Destination = $modDirectory },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'blueprints\blueprints.json'); Destination = (Join-Path $modDirectory 'blueprints') },
     [ordered]@{ Source = (Join-Path $repositoryRoot 'blueprints\blueprints.schema.json'); Destination = (Join-Path $modDirectory 'blueprints') }
 )
@@ -56,6 +57,10 @@ if (-not (Test-Path -LiteralPath $assetSource -PathType Container)) {
 }
 New-Item -ItemType Directory -Path $assetDestination -Force | Out-Null
 Copy-Item -Path (Join-Path $assetSource '*.png') -Destination $assetDestination
+$bundleDestination = Join-Path $modDirectory 'assets\bundles'
+New-Item -ItemType Directory -Path $bundleDestination -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.firearms') -Destination $bundleDestination
+Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\asset-bundle-manifest.json') -Destination $bundleDestination
 
 if (Test-Path -LiteralPath $packagePath) {
     Remove-Item -LiteralPath $packagePath -Force

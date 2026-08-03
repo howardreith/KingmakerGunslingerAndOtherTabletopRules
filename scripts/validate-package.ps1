@@ -34,6 +34,9 @@ try {
         'LICENSE',
         'README.md',
         'SMOKE-TEST-GUIDE.md',
+        'THIRD-PARTY-ASSETS.md',
+        'assets\bundles\kingmakergunslinger.firearms',
+        'assets\bundles\asset-bundle-manifest.json',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

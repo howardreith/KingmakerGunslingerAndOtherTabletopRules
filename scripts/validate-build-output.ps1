@@ -15,7 +15,9 @@ $requiredFiles = @(
     'KingmakerGunslinger.dll',
     'Info.json',
     'blueprints\blueprints.json',
-    'blueprints\blueprints.schema.json'
+    'blueprints\blueprints.schema.json',
+    'assets\bundles\kingmakergunslinger.firearms',
+    'assets\bundles\asset-bundle-manifest.json'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -38,6 +40,8 @@ $allowedRelativePaths = @{
     'Info.json' = $true
     'blueprints\blueprints.json' = $true
     'blueprints\blueprints.schema.json' = $true
+    'assets\bundles\kingmakergunslinger.firearms' = $true
+    'assets\bundles\asset-bundle-manifest.json' = $true
 }
 
 $unexpected = @()

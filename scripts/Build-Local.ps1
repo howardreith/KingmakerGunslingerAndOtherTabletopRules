@@ -54,12 +54,19 @@ if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'blueprints') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\icons') -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\bundles') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll') -Destination $buildOutput -Force
 Copy-Item -LiteralPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.pdb') -Destination $buildOutput -Force
 Copy-Item -LiteralPath (Join-Path $root 'Info.json') -Destination $buildOutput -Force
 Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.json') -Destination (Join-Path $buildOutput 'blueprints') -Force
 Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.schema.json') -Destination (Join-Path $buildOutput 'blueprints') -Force
 Copy-Item -Path (Join-Path $root 'assets\game\icons\*.png') -Destination (Join-Path $buildOutput 'assets\icons') -Force
+$bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
+$bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
+if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) { throw "Qualified firearm AssetBundle is missing: $bundleSource" }
+if ((Get-KmgSha256 -Path $bundleSource) -ne $bundleManifest.sha256) { throw 'Firearm AssetBundle hash does not match the qualified manifest.' }
+Copy-Item -LiteralPath $bundleSource -Destination (Join-Path $buildOutput 'assets\bundles\kingmakergunslinger.firearms') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
 & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
 

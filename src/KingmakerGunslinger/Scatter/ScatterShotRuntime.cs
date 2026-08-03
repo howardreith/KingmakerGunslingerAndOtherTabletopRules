@@ -172,6 +172,15 @@ namespace KingmakerGunslinger.Scatter
                             firearm.Firearm.ItemDisplayName,
                             scatterExplosion.BaseDamageMultiplier);
                 }
+                else
+                {
+                    // Scatter is one qualified discharge even though it resolves
+                    // one attack event per cone target.  Audio therefore belongs
+                    // here, after the volley proves that a discharge occurred,
+                    // rather than inside the per-target loop.
+                    Assets.FirearmAssetRuntime.PlayShot(
+                        FirearmKind.Blunderbuss, caster);
+                }
                 return new ScatterShotExecutionResult(plan, discharge, volley,
                     attacks, condition, before, expected);
             }
