@@ -8401,6 +8401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 slingersLuckExcluded = false;
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
+            long shotEventsBefore = -1, shotEventsAfter = -1;
             string stage = "progression";
             try
             {
@@ -8446,11 +8447,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "ordinary-native-shot";
                 damageBefore = failedTarget.Damage;
+                shotEventsBefore = Assets.FirearmAssetRuntime.ShotEvents;
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 var ordinary = new RuleAttackWithWeapon(attacker, failedTarget,
                     weapon, 0) { AutoHit = true };
                 Rulebook.Trigger(ordinary);
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                shotEventsAfter = Assets.FirearmAssetRuntime.ShotEvents;
                 RuleDealDamage ordinaryDamage = ordinary.MeleeDamage;
                 if (ordinaryDamage == null && ordinary.AttackRoll != null &&
                     ordinary.AttackRoll.IsHit)
@@ -8594,7 +8597,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";stunnedDuration=" + durationSeconds.ToString("F3",
                     System.Globalization.CultureInfo.InvariantCulture) +
                 ";successStunned=" + successStunned +
-                ";immunityStunned=" + immunityStunned + ";cleaned=" + cleaned;
+                ";immunityStunned=" + immunityStunned + ";shotEvents=" +
+                shotEventsBefore + "->" + shotEventsAfter + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("stunning-shot-progression-and-arming",
@@ -8606,6 +8610,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, roundsBefore == 1 && roundsAfter == 0 &&
                     nativeDamage > 0,
                     "native RuleAttackWithWeapon and firearm pipeline"),
+                Assertion("successful-discharge-audio-exactly-once",
+                    "one approved Pistol shot event for one successful ordinary discharge",
+                    observed, shotEventsBefore >= 0 &&
+                        shotEventsAfter == shotEventsBefore + 1,
+                    "post-misfire FirearmAssetRuntime shot boundary"),
                 Assertion("stunning-shot-save-failure",
                     "natural 1 Fortitude spends the effective grit cost and applies one-round Stunned",
                     observed, failureMarkerConsumed && gritAfterFailure == 4 - deedCost &&
