@@ -17,7 +17,6 @@ namespace KingmakerGunslinger.Gunsmithing
         IAbilityAvailabilityProvider
     {
         internal const int BatchSize = 20;
-        internal const float WorkDurationSeconds = 60f;
         [SerializeField] private BlueprintItem m_BlackPowder;
         [SerializeField] private BlueprintItem m_LeadBall;
         [SerializeField] private BlueprintItem m_GunsmithKit;
@@ -59,12 +58,6 @@ namespace KingmakerGunslinger.Gunsmithing
         {
             if (context == null || context.Caster == null ||
                 !IsAvailableFor(context.Ability))
-            { yield return new AbilityDeliveryTarget(target); yield break; }
-            TimeSpan finish = Game.Instance.TimeController.GameTime +
-                TimeSpan.FromSeconds(WorkDurationSeconds);
-            while (Game.Instance != null && Game.Instance.TimeController != null &&
-                Game.Instance.TimeController.GameTime < finish) yield return null;
-            if (!IsAvailableFor(context.Ability))
             { yield return new AbilityDeliveryTarget(target); yield break; }
             Complete(context.Caster.Descriptor);
             yield return new AbilityDeliveryTarget(target);

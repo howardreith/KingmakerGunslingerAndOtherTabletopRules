@@ -42,12 +42,12 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintUnitFactAccess.Resolve().Configure(value,
                     LocalizationService.Create("KMG.Crafting.BasicAmmo.Name", "Craft Basic Firearm Ammunition"),
                     LocalizationService.Create("KMG.Crafting.BasicAmmo.Description",
-                        "Once per rest, work for one uninterrupted minute out of combat with a Gunsmith's Kit. At completion, pay 22 gp (10% of ordinary purchase value) and create 20 Black Powder Charges and 20 Lead Balls. Cancellation consumes nothing."), tool.Icon);
+                        "Once per rest, use a Gunsmith's Kit outside combat to immediately pay 22 gp (10% of ordinary purchase value) and create 20 Black Powder Charges and 20 Lead Balls. A failed transaction consumes nothing."), tool.Icon);
                 value.Type = AbilityType.Extraordinary; value.Range = AbilityRange.Personal;
-                value.CanTargetSelf = true; value.ActionType = UnitCommand.CommandType.Standard;
-                value.SetIsFullRoundAction(true); value.NeedEquipWeapons = false;
+                value.CanTargetSelf = true; value.ActionType = UnitCommand.CommandType.Free;
+                value.SetIsFullRoundAction(false); value.NeedEquipWeapons = false;
                 value.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
-                value.LocalizedDuration = LocalizationService.Create("KMG.Crafting.BasicAmmo.Duration", "1 minute");
+                value.LocalizedDuration = LocalizationService.Create("KMG.Crafting.BasicAmmo.Duration", "Instantaneous");
                 value.LocalizedSavingThrow = LocalizationService.Create("KMG.Crafting.BasicAmmo.Save", "None");
                 value.ComponentsArray = new BlueprintComponent[] {
                     CraftBasicAmmunitionAbilityLogic.Create(ammo.BlackPowder,
