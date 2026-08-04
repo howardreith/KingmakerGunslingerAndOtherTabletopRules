@@ -3,11 +3,14 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Enums;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Deeds;
@@ -101,9 +104,22 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Deadeye.Ability.Duration", "1 round or until the next firearm shot");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Deadeye.Ability.SavingThrow", "None");
+            var apply = new ContextActionApplyBuff
+            {
+                Buff = armedBuff,
+                DurationValue = new ContextDurationValue
+                {
+                    Rate = DurationRate.Rounds,
+                    BonusValue = 1
+                },
+                IsNotDispelable = true
+            };
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.name = "$KMG_Deadeye_ApplyArmedBuff";
+            effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
             result.ComponentsArray = new BlueprintComponent[] {
                 DeadeyeGritResourceLogic.Create(grit),
-                DeadeyeAbilityLogic.Create(marker, armedBuff) };
+                effect };
             return result;
         }
 
@@ -126,11 +142,11 @@ namespace KingmakerGunslinger.Blueprints
         private static void Validate(BlueprintFeature feature, BlueprintAbility ability,
             BlueprintFeature marker, BlueprintBuff armedBuff)
         {
-            DeadeyeAbilityLogic logic = ability.ComponentsArray.OfType<DeadeyeAbilityLogic>().Single();
+            AbilityEffectRunAction effect = ability.ComponentsArray
+                .OfType<AbilityEffectRunAction>().Single();
             AddFacts grant = feature.ComponentsArray.OfType<AddFacts>().Single();
             if (ability.ActionType != UnitCommand.CommandType.Free ||
-                !ReferenceEquals(logic.ArmedMarker, marker) || grant.Facts.Length != 1 ||
-                !ReferenceEquals(logic.ArmedBuff, armedBuff) ||
+                effect.Actions.Actions.Length != 1 || grant.Facts.Length != 1 ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI)
                 throw new InvalidOperationException("Deadeye blueprint contract is incomplete.");
         }
