@@ -11,8 +11,8 @@ namespace KingmakerGunslinger.Assets
         private static readonly Dictionary<FirearmKind, FirearmPresentationProfile>
             Profiles = new Dictionary<FirearmKind, FirearmPresentationProfile>
             {
-                { FirearmKind.Pistol, new FirearmPresentationProfile(FirearmKind.Pistol, WeaponAnimationStyle.PiercingOneHanded, true) },
-                { FirearmKind.Revolver, new FirearmPresentationProfile(FirearmKind.Revolver, WeaponAnimationStyle.PiercingOneHanded, true) },
+                { FirearmKind.Pistol, new FirearmPresentationProfile(FirearmKind.Pistol, null, false) },
+                { FirearmKind.Revolver, new FirearmPresentationProfile(FirearmKind.Revolver, null, false) },
                 { FirearmKind.Musket, new FirearmPresentationProfile(FirearmKind.Musket, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(FirearmKind.Blunderbuss, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(FirearmKind.Rifle, null, false) }

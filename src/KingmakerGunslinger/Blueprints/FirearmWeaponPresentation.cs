@@ -60,16 +60,8 @@ namespace KingmakerGunslinger.Blueprints
             Set(visual, "m_Projectiles", new[] { projectile });
             if (profile.Animation.HasValue)
             {
-                // The mechanical blueprints remain crossbow-derived, but a short
-                // firearm must not inherit the two-handed crossbow stance or its
-                // shoulder-holster contract.  An empty attach-slot override makes
-                // the engine use the safe hidden-holster fallback.
                 Set(visual, "m_WeaponAnimationStyle",
                     profile.Animation.Value);
-                Set(visual, "m_OverrideAttachSlots", profile.OverrideAttachSlots);
-                FieldInfo slots = Find(visual.GetType(), "m_PossibleAttachSlots");
-                slots.SetValue(visual, Array.CreateInstance(
-                    slots.FieldType.GetElementType(), 0));
             }
             Set(visual, "m_SoundType", WeaponSoundType.None);
             Set(visual, "m_MissSoundType", WeaponMissSoundType.None);

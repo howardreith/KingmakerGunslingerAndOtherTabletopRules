@@ -11,11 +11,19 @@ public static class BuildFirearmBundles
     {
         if (!Application.unityVersion.Equals("2018.4.10f1", StringComparison.Ordinal))
             throw new InvalidOperationException("Exact Unity 2018.4.10f1 is required; observed " + Application.unityVersion);
-        CreatePrefab("Pistol", 0.48f, 180f, 0.16f);
-        CreatePrefab("Musket", 1.55f);
-        CreatePrefab("Blunderbuss", 1.25f);
-        CreatePrefab("Revolver", 0.48f, 180f, 0.18f);
-        CreatePrefab("Rifle", 1.55f);
+        // These are explicit, model-specific wrapper transforms. They replace
+        // the rejected renderer-bounds/principal-axis heuristic. Root zero is
+        // Kingmaker's native crossbow hand socket and +Z is the muzzle direction.
+        CreatePrefab("Pistol", new Vector3(0f, 0f, 0.1632f),
+            new Vector3(0f, 180f, 0f), 0.24f, 0.264f);
+        CreatePrefab("Musket", new Vector3(-0.0067338f, 0.0326295f, -1.0392216f),
+            new Vector3(0f, 90f, 0f), 4.8088603f, 0.8525f);
+        CreatePrefab("Blunderbuss", new Vector3(0.0009311f, 0f, 0.0921176f),
+            new Vector3(0f, 90f, 0f), 0.2946390f, 0.6875f);
+        CreatePrefab("Revolver", new Vector3(-0.0460553f, -0.1052241f, 0.1857974f),
+            new Vector3(0f, 90f, 0f), 0.01719849f, 0.264f);
+        CreatePrefab("Rifle", new Vector3(0f, 0f, -0.651f),
+            new Vector3(0f, 90f, 0f), 1.5401387f, 0.8525f);
         string[] approved = { "Assets/ApprovedModels/Pistol.prefab",
             "Assets/ApprovedModels/Musket.prefab", "Assets/ApprovedModels/Blunderbuss.prefab",
             "Assets/ApprovedModels/Revolver.prefab", "Assets/ApprovedModels/Rifle.prefab" };
@@ -51,8 +59,8 @@ public static class BuildFirearmBundles
             BuildTarget.StandaloneWindows64);
     }
 
-    private static void CreatePrefab(string name, float targetLength,
-        float presentationYaw = 0f, float gripFromRear = 0.08f)
+    private static void CreatePrefab(string name, Vector3 localPosition,
+        Vector3 localEuler, float uniformScale, float muzzleDistance)
     {
         string folder = "Assets/ApprovedModels/" + name;
         string[] modelGuids = AssetDatabase.FindAssets("t:Model", new[] { folder });
@@ -70,28 +78,12 @@ public static class BuildFirearmBundles
         Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0) throw new InvalidOperationException(name + " has no renderer.");
         ApplyMaterials(name, renderers);
-        Bounds bounds = renderers[0].bounds;
-        foreach (Renderer renderer in renderers) bounds.Encapsulate(renderer.bounds);
-        Vector3 size = bounds.size;
-        if (size.x >= size.y && size.x >= size.z)
-            visual.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
-        else if (size.y >= size.x && size.y >= size.z)
-            visual.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-        visual.transform.localRotation = Quaternion.Euler(0f,
-            presentationYaw, 0f) * visual.transform.localRotation;
-        bounds = CalculateBounds(renderers);
-        float length = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-        visual.transform.localScale = Vector3.one * (targetLength / length);
-        bounds = CalculateBounds(renderers);
-        // Equipment roots attach at the hand.  Anchor a point just forward of
-        // the rear of the weapon at the origin so short firearms are held by
-        // the handle rather than by their inferred geometric centre/barrel.
-        float gripZ = bounds.min.z + targetLength * gripFromRear;
-        visual.transform.position -= new Vector3(bounds.center.x,
-            bounds.center.y, gripZ);
+        visual.transform.localPosition = localPosition;
+        visual.transform.localRotation = Quaternion.Euler(localEuler);
+        visual.transform.localScale = Vector3.one * uniformScale;
         GameObject muzzle = new GameObject("Muzzle");
         muzzle.transform.SetParent(root.transform, false);
-        muzzle.transform.localPosition = new Vector3(0f, 0f, targetLength * 0.55f);
+        muzzle.transform.localPosition = new Vector3(0f, 0f, muzzleDistance);
         PrefabUtility.CreatePrefab("Assets/ApprovedModels/" + name + ".prefab", root,
             ReplacePrefabOptions.ReplaceNameBased);
         UnityEngine.Object.DestroyImmediate(root);

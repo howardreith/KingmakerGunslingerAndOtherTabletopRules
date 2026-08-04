@@ -3,7 +3,7 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "1D72CE9067B9B30929CC77F5BC2E1778AA26CA860CF83449A2E2F0EAD7F2CDA3",
+  "sha256": "56CB3526CCC2DD261EB1080A4C84F13FE50356C1E6FA066B22F996499EEBDF08",
   "prefabs": ["Pistol", "Musket", "Blunderbuss", "Revolver", "Rifle"],
   "audioMappings": ["pistol-shot", "musket-shot", "blunderbuss-shot", "revolver-shot", "rifle-shot"],
   "quarantined": []
