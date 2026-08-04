@@ -154,3 +154,12 @@ Maintain:
 
 Do not ask for routine engineering decisions. Stop only for a hard stop defined
 by the mission.
+
+## GitHub checkpoint publication
+
+After every coherent commit on a `codex/*` feature branch, and before ending,
+pausing, compacting, or handing off a work cycle, push the branch by running
+exactly:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1
