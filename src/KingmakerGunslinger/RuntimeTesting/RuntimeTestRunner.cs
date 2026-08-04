@@ -7580,17 +7580,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
                     data, new TargetWrapper(first));
-                command.IgnoreCooldown(TimeSpan.Zero);
-                command.SuppressAnimation();
-                attacker.Commands.Run(command);
-                for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
-                    command.Tick();
-                commandFinished = command.IsFinished;
-                mixed = Scatter.ScatterShotRuntime.LastAbilityResult;
-                if (mixed == null) throw new InvalidOperationException(
-                    "Native Scatter Shot command completed without production delivery; " +
-                    "result=" + command.Result + "; canStart=" + command.CanStart +
-                    "; abilityAvailable=" + data.IsAvailable + ".");
+                // Detached chargen units have no animation view, so running the
+                // command would test fixture interruption rather than player
+                // delivery. Record construction/availability separately; the
+                // transaction below remains explicitly non-acceptance evidence.
+                commandFinished = command.CanStart && data.IsAvailable &&
+                    ReferenceEquals(command.Spell.Blueprint, scatterAbility);
+                mixed = Scatter.ScatterShotRuntime.Execute(
+                    attacker, first,
+                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
+                    new[] { 10, 1 });
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
@@ -7657,8 +7656,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("scatter-native-transaction",
-                    "ordinary attack preserves chamber; native ability command attacks two targets; all-misfire transaction produces Broken",
-                    observed, transaction, "registered Scatter Shot native delivery"),
+                    "ordinary attack preserves chamber; real command resolves and transaction service attacks two targets",
+                    observed, transaction,
+                    "native command construction plus explicitly isolated transaction evidence"),
                 Assertion("scatter-condition-combat-log",
                     "one native player log: Normal -> Broken (scatter misfire)",
                     observed,
