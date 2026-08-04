@@ -19,6 +19,17 @@ The Sprint 28 repair-kit and Overhaul identities remain active:
 - `KMG.Test.FirearmRepairKitItem` — stackable inert resource shared by Overhaul and Repair.
 - `KMG.Test.OverhaulAbility` — full-round personal same-item Wrecked-to-Broken ability.
 
+The Sixth Playtest identities are active and append-only:
+
+| Symbol | GUID | Type | Status | Purpose |
+| --- | --- | --- | --- | --- |
+| `KMG.Deeds.DeadeyeArmedBuff` | `88ca4220e3944b65b2b9fb3afea35b08` | `BlueprintBuff` | Active | Visible one-round Deadeye Armed state |
+| `KMG.Gunsmithing.GunsmithKit` | `d52aacb753434691b1ed85a16cc87104` | `BlueprintItem` | Active | Persistent non-consumable Gunsmith's Kit |
+| `KMG.Gunsmithing.OverhaulKit` | `77fddc4f10614481a23f7dc8d1188848` | `BlueprintItem` | Active | Consumable Wrecked-to-Broken maintenance kit |
+| `KMG.Gunsmithing.CraftBasicAmmunition` | `8d7bb3a3e9444600b636fa58076a219b` | `BlueprintAbility` | Active | Once-per-rest basic ammunition crafting action |
+| `KMG.Gunsmithing.CraftedThisRest` | `f14e26a501c3423686d8948e7dd71950` | `BlueprintFeature` | Active | Persisted once-per-rest entitlement marker |
+| `KMG.Firearms.Projectile` | `adcd3d85c18b4db694420cb443c4da99` | `BlueprintProjectile` | Active | Clone-derived native-lifecycle firearm projectile |
+
 The touch-AC enchantment remains reserved because touch AC is implemented through a rule patch.
 
 ## Purpose

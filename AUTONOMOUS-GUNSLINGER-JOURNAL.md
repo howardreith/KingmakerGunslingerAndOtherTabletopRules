@@ -1,5 +1,16 @@
 # Autonomous Gunslinger journal
 
+## 2026-08-04 - Sixth-playtest 0.0.66 repair
+
+- Verified exact 0.0.65 live package/DLL/bundle/MVID identity before changes.
+- Added immediate Dodge/Deadeye costs, immediate Grit diagnostics, exact BTSL
+  vendor publication, and atomic once-per-rest basic-ammunition crafting.
+- Rebuilt the approved Unity bundle under 2018.4.10f1 with corrected short-gun
+  wrapper grip/yaw/scale contracts and explicit per-kind profiles.
+- 882 tests, Release/package validation, mod-load, vendor, presentation, and a
+  crafting-inclusive comprehensive runtime run pass. Human visual/audio and
+  shop-UI verdict remains mandatory.
+
 ## 2026-08-03 fourth-playtest identity and native feat checkpoint
 
 - Created `codex/fourth-playtest-runtime-ux-repair` from clean qualified

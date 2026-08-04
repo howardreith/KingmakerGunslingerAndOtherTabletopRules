@@ -1,5 +1,14 @@
 # Autonomous Gunslinger resume handoff
 
+## Current sixth-playtest state
+
+- Branch `codex/sixth-playtest-btsl-animation-grit-crafting`, version 0.0.66.
+- Latest crafting-inclusive comprehensive PASS:
+  `20260804T1240496957011Z-disposable-gunslinger-comprehensive-acceptance`.
+- Next: commit documentation, run the second comprehensive acceptance and two
+  working-save smokes, deterministic package/audits, append hashes, and hand
+  off the consolidated human checklist.
+
 ## Durable objective
 
 Execute `AUTONOMOUS-GUNSLINGER-MISSION.md` continuously until its complete

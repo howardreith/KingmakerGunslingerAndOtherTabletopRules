@@ -1,5 +1,13 @@
 # Asset provenance
 
+## Sixth-playtest presentation processing
+
+The 0.0.66 bundle remains limited to the previously approved five model and
+five CC0 audio sources. No external assets were added. The pinned Unity
+2018.4.10f1 script authors grip-relative short-gun wrappers: length 0.48, yaw
+180 degrees, and rear-relative grip fractions 0.16/0.18. Runtime sound uses one
+persistent spatial emitter. Invocation evidence is not audible acceptance.
+
 ## First-playtest icon set
 
 - Source/author: original artwork generated specifically for Kingmaker

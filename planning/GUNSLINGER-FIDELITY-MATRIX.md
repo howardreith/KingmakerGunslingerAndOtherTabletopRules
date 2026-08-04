@@ -1,5 +1,10 @@
 # Base Gunslinger fidelity matrix
 
+Sixth-playtest note: Dodge and Deadeye now pay immediately; Gunsmithing has the
+documented 20/20 once-per-rest Kingmaker adaptation; BTSL testing vendors use
+exact optional native tables. Presentation/projectile/audio structural repairs
+await the consolidated human verdict and are not visually/audibly accepted.
+
 The authoritative local class text is
 `C:\Dev\KingmakerGunslingerLab\private\rules\GUNSLINGER_PFSRD.md`. Alternative
 deeds and archetype replacements are excluded from the base-class matrix.

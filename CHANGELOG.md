@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.66 - Sixth-playtest repair and BTSL testing support
+
+- Makes Gunslinger's Dodge spend immediately and grant +2 dodge AC for one round.
+- Makes Deadeye spend immediately and expose a one-round Deadeye Armed buff.
+- Adds once-per-rest 20/20 basic ammunition crafting with a non-consumable
+  Gunsmith's Kit and atomic 22 gp completion cost.
+- Publishes all five firearms and maintenance supplies idempotently to the exact
+  installed standalone and campaign Beneath the Stolen Lands vendor tables.
+- Adds explicit firearm presentation profiles, corrected short-firearm wrapper
+  pivots, hidden-holster fallback, and a clone-derived renderer-free projectile.
+- Preserves native Weapon Focus integration, Targeting Arms delivery, firearm
+  item/state identities, and all qualified maintenance behavior.
+
 ## 0.0.65 - Fifth-playtest visual and native-feat repair
 
 - Appends all five firearm parameters through the native level-up UI's actual
