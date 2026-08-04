@@ -4439,18 +4439,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmProjectileBlueprints.Projectile);
             bool shortFirearm = firearm.Spec.Definition.Kind == FirearmKind.Pistol ||
                 firearm.Spec.Definition.Kind == FirearmKind.Revolver;
-            bool animationPreserved = shortFirearm
-                ? string.Equals(Convert.ToString(ReadField(visual,
-                    "m_WeaponAnimationStyle")), "PiercingOneHanded",
-                    StringComparison.Ordinal)
-                : EquivalentPresentationValue(
-                    ReadField(visual, "m_WeaponAnimationStyle"),
-                    ReadField(source, "m_WeaponAnimationStyle"));
-            Array attachSlots = ReadField(visual, "m_PossibleAttachSlots") as Array;
+            bool animationPreserved = EquivalentPresentationValue(
+                ReadField(visual, "m_WeaponAnimationStyle"),
+                ReadField(source, "m_WeaponAnimationStyle"));
             bool safeHolster = !shortFirearm ||
-                (Convert.ToBoolean(ReadField(visual, "m_OverrideAttachSlots"),
-                    System.Globalization.CultureInfo.InvariantCulture) &&
-                attachSlots != null && attachSlots.Length == 0);
+                !Convert.ToBoolean(ReadField(visual, "m_OverrideAttachSlots"),
+                    System.Globalization.CultureInfo.InvariantCulture);
             bool customModel = ReferenceEquals(ReadField(visual, "m_WeaponModel"),
                 Assets.FirearmAssetRuntime.GetPrefab(firearm.Spec.Definition.Kind));
             bool noInheritedModels = ReadField(visual, "m_WeaponBeltModel") == null &&
