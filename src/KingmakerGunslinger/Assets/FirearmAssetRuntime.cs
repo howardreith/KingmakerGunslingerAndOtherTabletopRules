@@ -94,7 +94,7 @@ namespace KingmakerGunslinger.Assets
                 if (source == null) source = emitter.AddComponent<AudioSource>();
                 source.playOnAwake = false;
                 source.loop = false;
-                source.spatialBlend = 0f;
+                source.spatialBlend = 1f;
                 source.volume = 1f;
                 source.PlayOneShot(clip, 1f);
                 // Headless/guarded Unity runs can report isPlaying=false when no

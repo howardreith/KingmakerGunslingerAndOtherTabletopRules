@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Portable validator for the 0.0.66 sixth-playtest repair."""
+from __future__ import annotations
+import argparse
+import sys
+from pathlib import Path
+sys.dont_write_bytecode = True
+import validate_playtest64
+
+VERSION = "0.0.66"
+INFORMATIONAL_VERSION = "0.0.66-sixth-playtest-btsl-animation-grit-crafting"
+
+
+def require(path: Path, *tokens: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    missing = [token for token in tokens if token not in text]
+    if missing:
+        raise AssertionError(f"{path.name} lacks {missing}")
+
+
+def validate(root: Path) -> None:
+    validate_playtest64.validate_playtest63.validate_sprint60.validate(
+        root, VERSION, INFORMATIONAL_VERSION, 865, 189, 190)
+    require(root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
+            "ExtractSelectionItems", "IEnumerable<IFeatureSelectionItem>",
+            "NativeFirearmFeatLevelUpMenuPatch")
+    require(root / "src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs",
+            "FirearmWeaponPresentation.Apply(clone, spec.Definition,",
+            "FirearmProjectileBlueprints.Register(registry, lightType)")
+    require(root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs",
+            "KMG_FirearmAudio", "spatialBlend = 1f", "PlayOneShot(clip, 1f)")
+    require(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+            "itemVisual", "itemMatch && itemVisual && itemIconDistinct")
+    require(root / "src/KingmakerGunslinger/Blueprints/BeneathStolenLandsVendorBlueprints.cs",
+            "StandaloneHonestGuyTableGuid", "CampaignXellirenTableGuid", "200, 200, 10, 5, 1")
+    require(root / "src/KingmakerGunslinger/Gunsmithing/CraftBasicAmmunitionAbilityLogic.cs",
+            "BatchSize = 20", "WorkDurationSeconds = 60f", "SpendMoney(cost)", "GainMoney(cost)")
+    require(root / "src/KingmakerGunslinger/Deeds/DeadeyeAbilityLogic.cs",
+            "Spend(set.Grit.Resource", "AddBuff(m_ArmedBuff")
+    require(root / "src/KingmakerGunslinger/Blueprints/FirearmProjectileBlueprints.cs",
+            "KMG.Firearms.Projectile", "BlueprintCloneService.Clone(source")
+    require(root / "src/KingmakerGunslinger/Assets/FirearmProjectileVisualPatch.cs",
+            "FirearmProjectileBlueprints.Projectile", "renderer.enabled = false")
+    require(root / "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs",
+            "FirearmKind.Pistol", "FirearmKind.Musket", "HolsterPolicy")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path,
+                        default=Path(__file__).resolve().parents[1])
+    args = parser.parse_args()
+    try:
+        validate(args.root.resolve())
+    except Exception as exception:
+        print(f"Playtest 0.0.66 validation failed: {exception}", file=sys.stderr)
+        return 1
+    print("Playtest 0.0.66 source validation passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

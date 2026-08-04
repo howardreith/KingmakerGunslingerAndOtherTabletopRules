@@ -20,7 +20,7 @@ def require(path: Path, *tokens: str) -> None:
 
 def validate(root: Path) -> None:
     validate_playtest64.validate_playtest63.validate_sprint60.validate(
-        root, VERSION, INFORMATIONAL_VERSION, 865, 188, 189)
+        root, VERSION, INFORMATIONAL_VERSION, 865, 183, 184)
     require(root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
             "ExtractSelectionItems", "IEnumerable<IFeatureSelectionItem>",
             "NativeFirearmFeatLevelUpMenuPatch")

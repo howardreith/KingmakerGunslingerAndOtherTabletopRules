@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.Gunsmithing
         {
             return ability != null && ability.Caster != null &&
                 !ability.Caster.Unit.IsInCombat &&
+                ability.Caster.State.IsConscious && ability.Caster.State.CanAct &&
                 !ability.Caster.HasFact(m_UsedMarker) && Game.Instance != null &&
                 Game.Instance.Player != null && Game.Instance.Player.Inventory != null &&
                 Game.Instance.Player.Inventory.Count(m_GunsmithKit) > 0 &&
@@ -71,7 +72,14 @@ namespace KingmakerGunslinger.Gunsmithing
 
         internal void Complete(UnitDescriptor caster)
         {
+            if (caster == null || caster.Unit == null || caster.Unit.IsInCombat ||
+                !caster.State.IsConscious || !caster.State.CanAct ||
+                caster.HasFact(m_UsedMarker))
+                throw new InvalidOperationException(
+                    "Crafting requires an able conscious caster and an unused rest entitlement.");
             var player = Game.Instance.Player;
+            if (player.Inventory.Count(m_GunsmithKit) < 1)
+                throw new InvalidOperationException("Crafting requires a Gunsmith's Kit.");
             int powderBefore = player.Inventory.Count(m_BlackPowder);
             int ballBefore = player.Inventory.Count(m_LeadBall);
             int cost = GoldCost;

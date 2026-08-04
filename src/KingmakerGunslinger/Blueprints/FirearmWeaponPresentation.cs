@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.View.Animation;
 using Kingmaker.Visual.Sound;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Firearms;
@@ -14,23 +16,26 @@ namespace KingmakerGunslinger.Blueprints
             BindingFlags.Public | BindingFlags.NonPublic;
 
         internal static void Apply(BlueprintWeaponType weaponType,
-            FirearmDefinition definition)
+            FirearmDefinition definition, BlueprintProjectile projectile)
         {
             if (weaponType == null) throw new ArgumentNullException("weaponType");
-            ApplyCore(weaponType, definition, true);
+            ApplyCore(weaponType, definition, projectile);
         }
 
         internal static void Apply(BlueprintItemWeapon weapon,
-            FirearmDefinition definition)
+            FirearmDefinition definition, BlueprintProjectile projectile)
         {
             if (weapon == null) throw new ArgumentNullException("weapon");
-            ApplyCore(weapon, definition, false);
+            ApplyCore(weapon, definition, projectile);
         }
 
         private static void ApplyCore(object owner, FirearmDefinition definition,
-            bool clearPrototype)
+            BlueprintProjectile projectile)
         {
-            GameObject prefab = FirearmAssetRuntime.GetPrefab(definition.Kind);
+            if (projectile == null) throw new ArgumentNullException("projectile");
+            FirearmPresentationProfile profile =
+                FirearmPresentationProfile.Require(definition.Kind);
+            GameObject prefab = profile.EquippedModel;
             if (prefab == null) return;
             object source = Read(owner, "m_VisualParameters");
             if (source == null)
@@ -48,11 +53,24 @@ namespace KingmakerGunslinger.Blueprints
                 }
             }
 
-            if (clearPrototype)
-                Set(visual, "<Prototype>k__BackingField", null);
+            Set(visual, "<Prototype>k__BackingField", null);
             Set(visual, "m_WeaponModel", prefab);
-            Set(visual, "m_WeaponBeltModel", null);
-            Set(visual, "m_WeaponSheathModel", null);
+            Set(visual, "m_WeaponBeltModel", profile.BeltModel);
+            Set(visual, "m_WeaponSheathModel", profile.SheathModel);
+            Set(visual, "m_Projectiles", new[] { projectile });
+            if (profile.Animation.HasValue)
+            {
+                // The mechanical blueprints remain crossbow-derived, but a short
+                // firearm must not inherit the two-handed crossbow stance or its
+                // shoulder-holster contract.  An empty attach-slot override makes
+                // the engine use the safe hidden-holster fallback.
+                Set(visual, "m_WeaponAnimationStyle",
+                    profile.Animation.Value);
+                Set(visual, "m_OverrideAttachSlots", profile.OverrideAttachSlots);
+                FieldInfo slots = Find(visual.GetType(), "m_PossibleAttachSlots");
+                slots.SetValue(visual, Array.CreateInstance(
+                    slots.FieldType.GetElementType(), 0));
+            }
             Set(visual, "m_SoundType", WeaponSoundType.None);
             Set(visual, "m_MissSoundType", WeaponMissSoundType.None);
             Set(visual, "m_WhooshSound", string.Empty);

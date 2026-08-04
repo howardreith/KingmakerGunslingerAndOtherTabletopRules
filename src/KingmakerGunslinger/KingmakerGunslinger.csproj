@@ -95,6 +95,8 @@
     <Compile Include="Actions\ExactEquippedFirearmContext.cs" />
     <Compile Include="Actions\ExactEquippedFirearmResolver.cs" />
     <Compile Include="Assets\FirearmAssetRuntime.cs" />
+    <Compile Include="Assets\FirearmProjectileVisualPatch.cs" />
+    <Compile Include="Assets\FirearmPresentationProfile.cs" />
     <Compile Include="Assets\FirearmVisualEquipmentHandler.cs" />
     <Compile Include="Actions\FirearmActionDecision.cs" />
     <Compile Include="Actions\FirearmActionKind.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmProjectileBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />
     <Compile Include="Blueprints\GunTrainingBlueprints.cs" />

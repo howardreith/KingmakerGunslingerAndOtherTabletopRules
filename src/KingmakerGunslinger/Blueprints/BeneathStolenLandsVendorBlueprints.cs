@@ -28,6 +28,9 @@ namespace KingmakerGunslinger.Blueprints
         internal static readonly string[] TableGuids = {
             StandaloneHonestGuyTableGuid, StandaloneXellirenTableGuid,
             CampaignHonestGuyTableGuid, CampaignXellirenTableGuid };
+        internal static readonly string[] ExpectedNames = {
+            "RogueLike_NPCVendorTable", "RogueLike_DragonVendorTable",
+            "DLC3_VendorFirstTable", "DLC3_VendorSecondTable" };
 
         internal static BeneathStolenLandsVendorPublication Publish(
             LibraryScriptableObject library, ProductionFirearmBlueprintCatalog firearms,
@@ -43,10 +46,22 @@ namespace KingmakerGunslinger.Blueprints
             var publications = new List<CapitalVendorPublication>();
             try
             {
-                foreach (string guid in TableGuids)
+                for (int tableIndex = 0; tableIndex < TableGuids.Length; tableIndex++)
                 {
-                    BlueprintSharedVendorTable table = BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>(
-                        library, guid, "exact Beneath the Stolen Lands vendor table");
+                    string guid = TableGuids[tableIndex];
+                    BlueprintSharedVendorTable table = library.GetAllBlueprints()
+                        .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
+                            string.Equals(value.AssetGuid, guid, StringComparison.Ordinal));
+                    if (table == null)
+                    {
+                        logger.Info("acquisition", "btsl-vendor.skipped-optional",
+                            "SKIPPED_OPTIONAL_TABLE_ABSENT;guid=" + guid);
+                        continue;
+                    }
+                    if (!string.Equals(table.name, ExpectedNames[tableIndex],
+                        StringComparison.Ordinal))
+                        throw new InvalidOperationException("BTSL vendor GUID resolved to unexpected table: " +
+                            guid + "; observed=" + table.name + "; expected=" + ExpectedNames[tableIndex]);
                     BlueprintComponent[] existing = table.ComponentsArray ?? Array.Empty<BlueprintComponent>();
                     int[] matches = items.Select(item => existing.OfType<LootItemsPackFixed>()
                         .Count(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item))).ToArray();
@@ -69,7 +84,8 @@ namespace KingmakerGunslinger.Blueprints
                     publication.Validate(); publications.Add(publication);
                 }
                 logger.Info("acquisition", "btsl-vendors.published",
-                    "Published exact Gunslinger testing stock to four standalone/campaign BTSL vendor tables.");
+                    "Published exact Gunslinger testing stock to " + publications.Count +
+                    " installed standalone/campaign BTSL vendor tables.");
                 return new BeneathStolenLandsVendorPublication(publications);
             }
             catch

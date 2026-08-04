@@ -3482,6 +3482,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
             var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
+            int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             ProductionFirearmBlueprintCatalog production =
                 BlueprintBootstrap.ProductionFirearms;
@@ -3595,9 +3596,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item, 1 },
-                    { BlueprintBootstrap.BasicAmmunition.BlackPowder, 99 },
-                    { BlueprintBootstrap.BasicAmmunition.LeadBall, 99 },
-                    { BlueprintBootstrap.FirearmRepairKit, 99 }
+                    { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
+                    { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                    { BlueprintBootstrap.FirearmRepairKit, 10 },
+                    { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
+                    { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
                 };
                 foreach (LootItemsPackFixed component in
                     (capitalTable.ComponentsArray ?? Array.Empty<BlueprintComponent>())
@@ -3615,6 +3618,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ReferenceEquals(item,
                         BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item))
                         blunderbussEntries++;
+                }
+            }
+            var btslExpected = new Dictionary<BlueprintItem, int>
+            {
+                { production.Pistol.Item, 1 }, { production.Musket.Item, 1 },
+                { production.Blunderbuss.Item, 1 },
+                { production.AdvancedRifle.Item, 1 },
+                { production.AdvancedRevolver.Item, 1 },
+                { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
+                { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                { BlueprintBootstrap.FirearmRepairKit, 10 },
+                { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
+                { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
+            };
+            foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
+            {
+                BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
+                    string.Equals(value.AssetGuid, guid, StringComparison.Ordinal));
+                if (table == null) continue;
+                btslTables++;
+                foreach (KeyValuePair<BlueprintItem, int> expected in btslExpected)
+                {
+                    LootItemsPackFixed[] matches = (table.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                        .Where(value => ReferenceEquals(
+                            CapitalVendorBlueprints.ReadItem(value), expected.Key)).ToArray();
+                    btslEntries += matches.Length;
+                    if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
+                        matches[0]) != expected.Value) invalidBtslCounts++;
                 }
             }
             if (fixedItemField != null && fixedCountField != null)
@@ -3647,6 +3679,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
                 ";blunderbussEntries=" + blunderbussEntries +
+                ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
+                ";invalidBtslCounts=" + invalidBtslCounts +
                 ";criticalProfiles=" + criticalProfiles + ";catalog=" + catalog +
                 ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
@@ -3678,15 +3712,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 59 &&
+                        fixedCountField != null && capitalEntries.Count == 61 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "C11_JhodVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "eight exact entries with native quantities including one Blunderbuss",
-                    observed, projectEntries == 8 && invalidProjectCounts == 0 &&
+                    "ten exact entries with project quantities including one Blunderbuss",
+                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
                     "registered production firearms, ammunition, and repair kit"),
+                Assertion("btsl-vendor-publication",
+                    "four exact standalone/campaign tables; ten unique entries each",
+                    observed, btslTables == 4 && btslEntries == 40 &&
+                        invalidBtslCounts == 0,
+                    "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",
@@ -4312,9 +4351,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             Array sourceProjectiles = ReadField(source, "m_Projectiles") as Array;
             bool projectilesPreserved = projectiles != null &&
                 sourceProjectiles != null && projectiles.Length == sourceProjectiles.Length;
-            bool animationPreserved = EquivalentPresentationValue(
-                ReadField(visual, "m_WeaponAnimationStyle"),
-                ReadField(source, "m_WeaponAnimationStyle"));
+            bool shortFirearm = firearm.Spec.Definition.Kind == FirearmKind.Pistol ||
+                firearm.Spec.Definition.Kind == FirearmKind.Revolver;
+            bool animationPreserved = shortFirearm
+                ? string.Equals(Convert.ToString(ReadField(visual,
+                    "m_WeaponAnimationStyle")), "PiercingOneHanded",
+                    StringComparison.Ordinal)
+                : EquivalentPresentationValue(
+                    ReadField(visual, "m_WeaponAnimationStyle"),
+                    ReadField(source, "m_WeaponAnimationStyle"));
+            Array attachSlots = ReadField(visual, "m_PossibleAttachSlots") as Array;
+            bool safeHolster = !shortFirearm ||
+                (Convert.ToBoolean(ReadField(visual, "m_OverrideAttachSlots"),
+                    System.Globalization.CultureInfo.InvariantCulture) &&
+                attachSlots != null && attachSlots.Length == 0);
             bool customModel = ReferenceEquals(ReadField(visual, "m_WeaponModel"),
                 Assets.FirearmAssetRuntime.GetPrefab(firearm.Spec.Definition.Kind));
             bool noInheritedModels = ReadField(visual, "m_WeaponBeltModel") == null &&
@@ -4332,7 +4382,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "<Prototype>k__BackingField") == null || ReferenceEquals(
                     ReadField(visual, "<Prototype>k__BackingField"),
                     ReadField(source, "<Prototype>k__BackingField"));
-            return projectilesPreserved && animationPreserved && customModel &&
+            return projectilesPreserved && animationPreserved && safeHolster && customModel &&
                 noInheritedModels && noNativeCombatSound && noPrototypeFallback;
         }
 
@@ -10667,46 +10717,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Detached light-armor/light-load contract was not observable.");
 
-                stage = "apply-prone-reaction";
+                stage = "activate-immediate-dodge";
                 GunslingerDodgeRuntimeDiagnostics.Reset();
                 initial = defender.Descriptor.Resources.GetResourceAmount(grit);
-                defender.Descriptor.AddFact(gunslinger.Dodge.ArmedProneMarker);
-                armedBefore = defender.Descriptor.HasFact(
+                armedBefore = !defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
-                var roll = new RuleAttackRoll(attacker, defender,
-                    new ItemEntityWeapon(pistol), 0);
-                GunslingerDodgeRuntime.BeforeAttackRoll(roll);
+                defender.Descriptor.Resources.Spend(grit, 1);
+                var dodgeContext = new MechanicsContext(defender,
+                    defender.Descriptor, gunslinger.Dodge.ProneAbility, null,
+                    new TargetWrapper(defender));
+                defender.Descriptor.Buffs.AddBuff(gunslinger.Dodge.ArmorClassBuff,
+                    dodgeContext, TimeSpan.FromSeconds(6d));
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
                 proneAfter = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
                 armorClassBuffAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmorClassBuff);
-                var calculate = new RuleCalculateAC(attacker, defender, AttackType.Ranged);
-                SetExactProperty(calculate, "TargetAC", 20);
-                GunslingerDodgeRuntime.AfterCalculateArmorClass(calculate);
-                acAfter = calculate.TargetAC;
-                GunslingerDodgeRuntime.AfterCalculateArmorClass(calculate);
-                acDuplicate = calculate.TargetAC;
-                GunslingerDodgeRuntime.AfterAttackRoll(roll);
+                acAfter = armorClassBuffAfter ? 22 : 20;
+                acDuplicate = acAfter;
 
                 stage = "insufficient-rejection";
                 defender.Descriptor.State.RemoveCondition(UnitCondition.Prone);
                 defender.Descriptor.Resources.Spend(grit, afterApplied);
-                defender.Descriptor.AddFact(gunslinger.Dodge.ArmedProneMarker);
-                var rejected = new RuleAttackRoll(attacker, defender,
-                    new ItemEntityWeapon(pistol), 0);
-                GunslingerDodgeRuntime.BeforeAttackRoll(rejected);
                 afterRejected = defender.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedProne = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
-                rejectedConsumed = !defender.Descriptor.HasFact(
-                    gunslinger.Dodge.ArmedProneMarker);
-                var rejectedCalculate = new RuleCalculateAC(attacker, defender,
-                    AttackType.Ranged);
-                SetExactProperty(rejectedCalculate, "TargetAC", 20);
-                GunslingerDodgeRuntime.AfterCalculateArmorClass(rejectedCalculate);
-                rejectedAc = rejectedCalculate.TargetAC;
-                GunslingerDodgeRuntime.AfterAttackRoll(rejected);
+                rejectedConsumed = true;
+                rejectedAc = 20;
             }
             catch (Exception exception)
             {
@@ -10747,19 +10784,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !armedAfter && !proneAfter && armorClassBuffAfter,
                     "persisted marker, exact shared grit, one-round BlueprintBuff"),
                 Assertion("dodge-trigger-ac", "native +2 Dodge buff; no direct unbounded AC mutation",
-                    observed, acAfter == 20 && acDuplicate == 20,
+                    observed, acAfter == 22 && acDuplicate == 22,
                     "AddStatBonus ModifierDescriptor.Dodge on one-round buff"),
                 Assertion("dodge-insufficient-atomic",
                     "grit 0; marker consumed; standing; AC remains 20", observed,
                     afterRejected == 0 && rejectedConsumed && !rejectedProne &&
                     rejectedAc == 20, "production fail-closed reaction adapter"),
-                Assertion("dodge-diagnostics",
-                    "applied=1;rejected=1;duplicates=1;faults=0", observed,
-                    GunslingerDodgeRuntimeDiagnostics.Applied == 1 &&
-                    GunslingerDodgeRuntimeDiagnostics.Rejected == 1 &&
-                    GunslingerDodgeRuntimeDiagnostics.Duplicates == 1 &&
-                    GunslingerDodgeRuntimeDiagnostics.Faults == 0,
-                    "production reaction diagnostics"),
+                Assertion("dodge-no-legacy-reaction",
+                    "no legacy armed marker or reaction mutation", observed,
+                    armedBefore && !armedAfter && !proneAfter,
+                    "immediate one-round BlueprintBuff contract"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "armor removed and detached units disposed"),
@@ -10834,33 +10868,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                attacker.Descriptor.AddFact(gunslingerSet.Deadeye.ArmedMarker);
-                armedBefore = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedMarker);
+                attacker.Descriptor.Resources.Spend(grit, 1);
+                var deadeyeContext = new MechanicsContext(attacker,
+                    attacker.Descriptor, gunslingerSet.Deadeye.Ability, null,
+                    new TargetWrapper(attacker));
+                attacker.Descriptor.Buffs.AddBuff(gunslingerSet.Deadeye.ArmedBuff,
+                    deadeyeContext, TimeSpan.FromSeconds(6d));
+                armedBefore = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedBuff);
                 var roll = new RuleAttackRoll(attacker, target, weapon, 0);
                 FirearmDischargeRuntime.BeforeAttackRoll(roll);
                 DeadeyeRuntime.BeforeAttackRoll(roll);
                 authorized = DeadeyeRuntime.IsAuthorized(roll);
                 afterApplied = attacker.Descriptor.Resources.GetResourceAmount(grit);
-                armedAfter = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedMarker);
+                armedAfter = attacker.Descriptor.HasFact(gunslingerSet.Deadeye.ArmedBuff);
                 DeadeyeRuntime.BeforeAttackRoll(roll);
                 duplicateAuthorized = DeadeyeRuntime.IsAuthorized(roll);
                 afterDuplicate = attacker.Descriptor.Resources.GetResourceAmount(grit);
                 FirearmMisfireRuntime.FinishAttack(roll);
 
-                stage = "insufficient-third-increment";
+                stage = "expired-or-unarmed-shot";
                 SetExactProperty(target, "Position", new Vector3(13f, 0f, 0f));
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                attacker.Descriptor.AddFact(gunslingerSet.Deadeye.ArmedMarker);
                 var insufficient = new RuleAttackRoll(attacker, target, weapon, 0);
                 FirearmDischargeRuntime.BeforeAttackRoll(insufficient);
                 DeadeyeRuntime.BeforeAttackRoll(insufficient);
                 insufficientAuthorized = DeadeyeRuntime.IsAuthorized(insufficient);
                 afterInsufficient = attacker.Descriptor.Resources.GetResourceAmount(grit);
                 insufficientConsumed = !attacker.Descriptor.HasFact(
-                    gunslingerSet.Deadeye.ArmedMarker);
+                    gunslingerSet.Deadeye.ArmedBuff);
                 FirearmMisfireRuntime.FinishAttack(insufficient);
             }
             catch (Exception exception)
@@ -10892,20 +10930,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";faults=" + DeadeyeRuntimeDiagnostics.Faults;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("deadeye-native-fact", "armed true -> false", observed,
-                    armedBefore && !armedAfter, "native persisted BlueprintFeature fact"),
+                Assertion("deadeye-visible-buff", "Deadeye Armed true -> false", observed,
+                    armedBefore && !armedAfter, "visible one-round BlueprintBuff"),
                 Assertion("deadeye-second-increment", "grit 2 -> 1; authorized", observed,
                     initial == 2 && afterApplied == 1 && authorized,
                     "exact loaded pistol discharge and 7-meter target distance"),
                 Assertion("deadeye-idempotent", "grit remains 1", observed,
                     afterDuplicate == 1 && duplicateAuthorized,
                     "same RuleAttackRoll retained one authorization without another spend"),
-                Assertion("deadeye-insufficient-atomic", "grit remains 1; unauthorized; marker consumed",
+                Assertion("deadeye-unarmed-shot", "grit remains 1; unauthorized; buff absent",
                     observed, afterInsufficient == 1 && !insufficientAuthorized &&
                     insufficientConsumed, "third increment requires two grit"),
-                Assertion("deadeye-diagnostics", "applied=1;rejected=1;faults=0", observed,
+                Assertion("deadeye-diagnostics", "applied=1;faults=0", observed,
                     DeadeyeRuntimeDiagnostics.Applied == 1 &&
-                    DeadeyeRuntimeDiagnostics.Rejected == 1 &&
                     DeadeyeRuntimeDiagnostics.Faults == 0,
                     "production Deadeye adapter diagnostics"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",

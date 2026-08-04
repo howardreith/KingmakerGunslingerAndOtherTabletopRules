@@ -1149,7 +1149,8 @@ namespace KingmakerGunslinger.DomainTests
             string observer = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
             Assertions.True(production.Contains(
-                    "FirearmWeaponPresentation.Apply(clone, spec.Definition);") &&
+                    "FirearmWeaponPresentation.Apply(clone, spec.Definition,") &&
+                production.Contains("FirearmProjectileBlueprints.Register(registry, lightType)") &&
                 observer.Contains("itemVisual=\" + itemVisual") &&
                 observer.Contains("itemMatch && itemVisual && itemIconDistinct"),
                 "Firearm item-level hand-slot visuals can regress to the inherited crossbow model.");
@@ -1160,7 +1161,7 @@ namespace KingmakerGunslinger.DomainTests
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
             Assertions.True(source.Contains("KMG_FirearmAudio") &&
-                source.Contains("source.spatialBlend = 0f") &&
+                source.Contains("source.spatialBlend = 1f") &&
                 source.Contains("source.PlayOneShot(clip, 1f)") &&
                 source.Contains("_lastEmitterReady = source.enabled && emitter.activeInHierarchy") &&
                 !source.Contains("AudioSource.PlayClipAtPoint"),

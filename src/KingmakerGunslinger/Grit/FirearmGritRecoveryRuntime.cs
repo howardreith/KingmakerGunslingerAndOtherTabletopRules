@@ -184,6 +184,12 @@ namespace KingmakerGunslinger.Grit
             int after = initiator.Descriptor.Resources.GetResourceAmount(
                 blueprints.Grit.Resource);
             FirearmGritRecoveryRuntimeDiagnostics.RecordApplied(kind, before, after);
+            ModContext mod;
+            if (ModContext.TryGet(out mod))
+                mod.Logger.Info("grit", "recovery.immediate",
+                    "callback=" + kind + ";before=" + before + ";after=" + after +
+                    ";eventSequence=" +
+                    FirearmGritRecoveryRuntimeDiagnostics.LastAppliedSequence);
         }
 
         private static bool IsExactWeaponDamage(RuleDealDamage damage,

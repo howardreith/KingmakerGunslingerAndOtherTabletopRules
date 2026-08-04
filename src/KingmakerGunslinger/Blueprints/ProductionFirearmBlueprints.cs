@@ -71,10 +71,13 @@ namespace KingmakerGunslinger.Blueprints
             SourceSnapshot heavyBefore = SourceSnapshot.Capture(heavyType, heavyItem, itemTypeAccess);
             WeaponTypeMechanicalAccess mechanicalAccess = WeaponTypeMechanicalAccess.Resolve();
             BlueprintItemAccess itemAccess = BlueprintItemAccess.Resolve();
+            BlueprintProjectile firearmProjectile =
+                FirearmProjectileBlueprints.Register(registry, lightType);
 
             ProductionFirearmBlueprintEntry pistol = RegisterOne(
                 registry,
                 firearmProficiency,
+                firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
                 itemAccess,
@@ -88,6 +91,7 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintEntry musket = RegisterOne(
                 registry,
                 firearmProficiency,
+                firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
                 itemAccess,
@@ -101,6 +105,7 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintEntry blunderbuss = RegisterOne(
                 registry,
                 firearmProficiency,
+                firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
                 itemAccess,
@@ -112,12 +117,12 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG_EarlyBlunderbuss_WeaponType",
                 "KMG_EarlyBlunderbuss_Item");
             ProductionFirearmBlueprintEntry rifle = RegisterOne(
-                registry, firearmProficiency, itemTypeAccess, mechanicalAccess, itemAccess,
+                registry, firearmProficiency, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
                 heavyType, heavyItem, ProductionFirearmCatalog.CreateAdvancedRifle(),
                 AdvancedRifleWeaponTypeSymbol, AdvancedRifleItemSymbol,
                 "KMG_AdvancedRifle_WeaponType", "KMG_AdvancedRifle_Item");
             ProductionFirearmBlueprintEntry revolver = RegisterOne(
-                registry, firearmProficiency, itemTypeAccess, mechanicalAccess, itemAccess,
+                registry, firearmProficiency, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
                 lightType, lightItem, ProductionFirearmCatalog.CreateAdvancedRevolver(),
                 AdvancedRevolverWeaponTypeSymbol, AdvancedRevolverItemSymbol,
                 "KMG_AdvancedRevolver_WeaponType", "KMG_AdvancedRevolver_Item");
@@ -170,6 +175,7 @@ namespace KingmakerGunslinger.Blueprints
         private static ProductionFirearmBlueprintEntry RegisterOne(
             BlueprintRegistry registry,
             BlueprintFeature firearmProficiency,
+            BlueprintProjectile firearmProjectile,
             WeaponBlueprintAccess itemTypeAccess,
             WeaponTypeMechanicalAccess mechanicalAccess,
             BlueprintItemAccess itemAccess,
@@ -203,7 +209,8 @@ namespace KingmakerGunslinger.Blueprints
                         weaponTypeInternalName);
                     mechanicalAccess.Configure(clone, spec, name, description);
                     AppendMarker(clone, spec.Definition);
-                    FirearmWeaponPresentation.Apply(clone, spec.Definition);
+                    FirearmWeaponPresentation.Apply(clone, spec.Definition,
+                        firearmProjectile);
                     return clone;
                 });
             BlueprintItemWeapon item = registry.Register<BlueprintItemWeapon>(
@@ -221,7 +228,8 @@ namespace KingmakerGunslinger.Blueprints
                         flavor,
                         spec.CostGold,
                         spec.WeightPounds);
-                    FirearmWeaponPresentation.Apply(clone, spec.Definition);
+                    FirearmWeaponPresentation.Apply(clone, spec.Definition,
+                        firearmProjectile);
                     AppendProficiencyRestriction(clone, firearmProficiency);
                     if (!spec.IsPlayerFireable)
                     {

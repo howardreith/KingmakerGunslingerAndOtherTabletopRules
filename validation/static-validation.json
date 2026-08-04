@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.65-fifth-playtest-visual-native-feat-repair",
-  "version": "0.0.65",
+  "milestone": "0.0.66-sixth-playtest-btsl-animation-grit-crafting",
+  "version": "0.0.66",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 184,
-    "activeEntryCount": 188,
+    "entryCount": 190,
+    "activeEntryCount": 189,
     "reservedEntryCount": 1,
-    "registrationCount": 188
+    "registrationCount": 189
   },
   "sprint29": {
     "completeMaintenanceLoop": true,

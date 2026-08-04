@@ -12,6 +12,8 @@ namespace KingmakerGunslinger.Grit
         private static int _faults;
         private static int _lastBefore;
         private static int _lastAfter;
+        private static int _eventSequence;
+        private static int _lastAppliedSequence;
 
         internal static int CriticalApplied { get { return Volatile.Read(ref _criticalApplied); } }
         internal static int KillingBlowApplied { get { return Volatile.Read(ref _killingBlowApplied); } }
@@ -20,11 +22,14 @@ namespace KingmakerGunslinger.Grit
         internal static int Faults { get { return Volatile.Read(ref _faults); } }
         internal static int LastBefore { get { return Volatile.Read(ref _lastBefore); } }
         internal static int LastAfter { get { return Volatile.Read(ref _lastAfter); } }
+        internal static int LastAppliedSequence { get { return Volatile.Read(ref _lastAppliedSequence); } }
 
         internal static void RecordApplied(GritRecoveryEventKind kind, int before, int after)
         {
             Volatile.Write(ref _lastBefore, before);
             Volatile.Write(ref _lastAfter, after);
+            Volatile.Write(ref _lastAppliedSequence,
+                Interlocked.Increment(ref _eventSequence));
             if (kind == GritRecoveryEventKind.ConfirmedCritical)
                 Interlocked.Increment(ref _criticalApplied);
             else
@@ -57,6 +62,8 @@ namespace KingmakerGunslinger.Grit
             Volatile.Write(ref _faults, 0);
             Volatile.Write(ref _lastBefore, 0);
             Volatile.Write(ref _lastAfter, 0);
+            Volatile.Write(ref _eventSequence, 0);
+            Volatile.Write(ref _lastAppliedSequence, 0);
         }
     }
 }
