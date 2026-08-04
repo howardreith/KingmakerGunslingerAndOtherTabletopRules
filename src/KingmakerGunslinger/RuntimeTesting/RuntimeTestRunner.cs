@@ -4209,6 +4209,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var assertions = new List<RuntimeTestAssertion>();
             int slices = 0;
+            AppendAcceptanceSlice(assertions, "gunsmithing-crafting", ref slices,
+                RunDisposableGunsmithingCrafting);
             AppendAcceptanceSlice(assertions, "level-twenty", ref slices,
                 RunDisposableGunslingerLevelTwentyProgression);
             AppendAcceptanceSlice(assertions, "evaluated-chassis", ref slices,
@@ -4273,12 +4275,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                 () => RunDisposableGunslingerStunningShot(true));
             AppendAcceptanceSlice(assertions, "production-switching", ref slices,
                 RunDisposableProductionFirearmSwitching);
-            assertions.Add(Assertion("acceptance-slice-count", "32 qualified slices",
-                "slices=" + slices, slices == 32,
+            assertions.Add(Assertion("acceptance-slice-count", "33 qualified slices",
+                "slices=" + slices, slices == 33,
                 "explicit save-free comprehensive acceptance catalog"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunsmithingCrafting()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var player = Kingmaker.Game.Instance.Player;
+            BasicAmmunitionBlueprintSet ammo = BlueprintBootstrap.BasicAmmunition;
+            BlueprintItem tool = BlueprintBootstrap.GunsmithingSupplies.GunsmithKit;
+            GunsmithingCraftingBlueprintSet crafting =
+                BlueprintBootstrap.GunsmithingCrafting;
+            CraftBasicAmmunitionAbilityLogic logic = crafting.Ability.ComponentsArray
+                .OfType<CraftBasicAmmunitionAbilityLogic>().Single();
+            int powderBefore = player.Inventory.Count(ammo.BlackPowder);
+            int ballsBefore = player.Inventory.Count(ammo.LeadBall);
+            int toolsBefore = player.Inventory.Count(tool);
+            long moneyBefore = player.Money;
+            int seededMoney = moneyBefore < logic.GoldCost ? logic.GoldCost : 0;
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
+            bool crafted = false, duplicateRejected = false, cleaned = false;
+            int powderAfter = -1, ballsAfter = -1;
+            long moneyAfter = -1;
+            try
+            {
+                if (toolsBefore == 0) player.Inventory.Add(tool, 1);
+                if (seededMoney > 0) player.GainMoney(seededMoney);
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                logic.Complete(unit.Descriptor);
+                powderAfter = player.Inventory.Count(ammo.BlackPowder);
+                ballsAfter = player.Inventory.Count(ammo.LeadBall);
+                moneyAfter = player.Money;
+                crafted = powderAfter == powderBefore + 20 &&
+                    ballsAfter == ballsBefore + 20 &&
+                    moneyAfter == moneyBefore + seededMoney - logic.GoldCost &&
+                    unit.Descriptor.HasFact(crafting.UsedMarker);
+                try { logic.Complete(unit.Descriptor); }
+                catch (InvalidOperationException) { duplicateRejected = true; }
+            }
+            finally
+            {
+                int powderExtra = player.Inventory.Count(ammo.BlackPowder) - powderBefore;
+                int ballsExtra = player.Inventory.Count(ammo.LeadBall) - ballsBefore;
+                int toolsExtra = player.Inventory.Count(tool) - toolsBefore;
+                if (powderExtra > 0) player.Inventory.Remove(ammo.BlackPowder, powderExtra);
+                if (ballsExtra > 0) player.Inventory.Remove(ammo.LeadBall, ballsExtra);
+                if (toolsExtra > 0) player.Inventory.Remove(tool, toolsExtra);
+                long moneyDelta = player.Money - moneyBefore;
+                if (moneyDelta < 0) player.GainMoney((int)-moneyDelta);
+                else if (moneyDelta > 0) player.SpendMoney((int)moneyDelta);
+                if (unit != null) unit.Dispose();
+                cleaned = player.Inventory.Count(ammo.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammo.LeadBall) == ballsBefore &&
+                    player.Inventory.Count(tool) == toolsBefore &&
+                    player.Money == moneyBefore;
+            }
+            string observed = "cost=" + logic.GoldCost + ";powder=" +
+                powderBefore + "->" + powderAfter + ";balls=" + ballsBefore +
+                "->" + ballsAfter + ";money=" + moneyBefore + "->" + moneyAfter +
+                ";duplicateRejected=" + duplicateRejected + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("craft-basic-ammunition", "20 powder;20 balls;22 gp;marker",
+                    observed, crafted && logic.GoldCost == 22,
+                    "production atomic completion adapter"),
+                Assertion("craft-once-per-rest", "second completion rejected with no grant",
+                    observed, duplicateRejected, "persisted entitlement marker"),
+                Assertion("craft-request-cleanup", "inventory and money restored exactly",
+                    observed, cleaned, "guaranteed request-local cleanup; no save call")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private void AppendAcceptanceSlice(List<RuntimeTestAssertion> assertions,
