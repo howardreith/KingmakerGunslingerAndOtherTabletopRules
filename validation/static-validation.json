@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.63-third-playtest-feats-reload-grit-dodge-assets",
-  "version": "0.0.63",
+  "milestone": "0.0.64-fourth-playtest-runtime-ux-repair",
+  "version": "0.0.64",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

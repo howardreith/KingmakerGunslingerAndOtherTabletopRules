@@ -3553,3 +3553,19 @@
 - Repository validation, 880/880 tests, exact Release, and strict package pass;
   package/DLL hashes are `c6a6b206...bbb2b4` / `b43890a9...5395f`.
 - Preserve final supervised tooltip layout and live-refresh acceptance.
+
+# Fourth playtest 0.0.64 final functional qualification (2026-08-03)
+
+- Advanced the coherent candidate to `0.0.64`; the version-aware repository
+  validator, 880/880 suite, clean exact Release, and strict package pass.
+- Package/DLL/bundle hashes are `dff6891d...9a02a` /
+  `f804c5c1...10b6e` / `D902F279...FBFD`.
+- Final guarded PASS IDs: mod load `20260804T0017030833654Z`, presentation
+  `20260804T0018308614483Z`, firearm assets/qualities
+  `20260804T0019578736107Z`, comprehensive pair `20260804T0021240668392Z` /
+  `20260804T0022573382219Z`, and canonical working-save pair
+  `20260804T0024344255556Z` / `20260804T0026123359766Z`.
+- Each comprehensive run passed 32 slices and 187 assertions. Both working-save
+  runs used the exact same named-save fingerprint and observed no save write.
+- Only one consolidated human-perception pass remains; use
+  `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`.

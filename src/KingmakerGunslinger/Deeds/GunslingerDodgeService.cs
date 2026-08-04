@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.Deeds
     {
         // Legacy request/status vocabulary (DropProne, UnsupportedArmor,
         // Overloaded, CannotDropProne) remains serialized and append-only, but
-        // the 0.0.63 player-facing adaptation deliberately does not use those
+        // the player-facing adaptation deliberately does not use those
         // gates or apply the native Prone condition.
         internal GunslingerDodgeDecision Evaluate(GunslingerDodgeRequest request)
         {

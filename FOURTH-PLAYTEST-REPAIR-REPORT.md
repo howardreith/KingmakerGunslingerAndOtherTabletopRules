@@ -321,6 +321,34 @@ condition transition combat-log and Quick Clear presentation, Winchester attribu
 comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.
 
+## Coherent 0.0.64 functional qualification
+
+The final candidate advances all authoritative version surfaces to `0.0.64`
+and adds a version-aware validator preserving inherited contracts. Repository
+validation, all 880 domain/reflection tests, clean exact-reference Release, and
+strict standalone package validation pass. Package/DLL SHA-256 are
+`dff6891db8a1a5db020d36a517717f74de2c49bf65a92888a0bc5f0d55b9a02a` /
+`f804c5c152cb4832f5313519b4c9517487d9415c65086ebe36e2733a55410b6e`;
+the five-model/five-audio bundle remains
+`D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`.
+
+Guarded Steam-backed final evidence:
+
+- mod load: `20260804T0017030833654Z-mod-load-smoke`;
+- semantic presentation: `20260804T0018308614483Z-observe-gunslinger-presentation`;
+- model/audio/description/qualities structure:
+  `20260804T0019578736107Z-observe-production-firearm-fallbacks`;
+- independent 32-slice/187-assertion comprehensive passes:
+  `20260804T0021240668392Z` and `20260804T0022573382219Z`;
+- independent canonical working-save passes: `20260804T0024344255556Z`
+  and `20260804T0026123359766Z`.
+
+Both working-save runs positively identified the same exact fingerprint, used
+only `KMG_AUTOMATION_WORKING`, and observed no save-writing API. Functional
+qualification is complete. Human perception remains necessary only for the
+single consolidated checklist covering live layout, doll transform/visibility,
+projectile appearance, and audible sound quality/layering.
+
 ## Firearm description and qualities checkpoint
 
 Production firearm descriptions no longer describe approved placeholder or

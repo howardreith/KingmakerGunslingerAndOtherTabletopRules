@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.64 - Fourth-playtest runtime and UX repair
+
+- Restored five firearm parameters inside native Weapon Focus and dependent
+  feat menus while preserving native icons, gates, options, and kind isolation.
+- Made Grit deeds share one finite native resource and action-bar counter, with
+  atomic cost, zero-resource rejection, recovery, persistence, and True Grit.
+- Added native Reload Firearm auto-use continuation with fail-closed switching,
+  interruption, action-economy, Wrecked, and ammunition behavior.
+- Added timed out-of-combat Overhaul, explicit condition/Quick Clear UX, useful
+  firearm qualities, and production descriptions without placeholder wording.
+- Replaced duplicate progression presentation with a semantic icon family and
+  a native-style Rapid Reload icon.
+- Added deterministic five-model/five-audio Unity 2018.4.10f1 assets, native
+  weapon-model mapping, crossbow renderer/audio suppression, and corrected
+  Winchester CC-BY-4.0 provenance for Advanced Rifle only.
+
 ## 0.0.63 - Third-playtest feat, reload, grit, dodge, and asset repair
 
 - Restores the native weapon-feat family presentation and prerequisites while

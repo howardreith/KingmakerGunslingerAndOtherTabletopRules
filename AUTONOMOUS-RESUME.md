@@ -870,6 +870,17 @@ condition without `<null>` text. Package/DLL hashes are
 integrated final UI acceptance; rendered tooltip wrapping and refresh remain
 unproven.
 
+The coherent `0.0.64` candidate is functionally qualified. Validator and
+880/880 tests pass; package/DLL/bundle hashes are `dff6891d...9a02a` /
+`f804c5c1...10b6e` / `D902F279...FBFD`. Final PASS evidence comprises mod load
+`20260804T0017030833654Z`, presentation `20260804T0018308614483Z`, firearm
+assets/qualities `20260804T0019578736107Z`, comprehensive pair
+`20260804T0021240668392Z` / `20260804T0022573382219Z`, and canonical
+working-save pair `20260804T0024344255556Z` / `20260804T0026123359766Z`.
+No save-writing API was observed. Next and only remaining action is the single
+supervised perception session in `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`;
+do not split it into piecemeal review requests.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /
