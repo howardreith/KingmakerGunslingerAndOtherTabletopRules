@@ -15,6 +15,7 @@ namespace KingmakerGunslinger.Scatter
 {
     internal static class ScatterShotRuntime
     {
+        internal static ScatterShotExecutionResult LastAbilityResult { get; private set; }
         private static readonly NativeScatterConeTargetResolver Targets =
             new NativeScatterConeTargetResolver();
         private static readonly ScatterTargetPlanService Plans =
@@ -54,13 +55,15 @@ namespace KingmakerGunslinger.Scatter
             return true;
         }
 
-        internal static ScatterShotExecutionResult ExecuteForRuntimeTest(
-            UnitEntityData caster, UnitEntityData aimedTarget,
-            params int[] forcedNaturalRolls)
+        internal static ScatterShotExecutionResult ExecuteFromAbility(
+            Kingmaker.UnitLogic.Abilities.AbilityExecutionContext context,
+            UnitEntityData aimedTarget)
         {
-            return Execute(caster, aimedTarget,
-                delegate(RuleAttackWithWeapon attack) { Rulebook.Trigger(attack); },
-                forcedNaturalRolls);
+            if (context == null || context.MaybeCaster == null)
+                throw new ArgumentNullException("context");
+            LastAbilityResult = Execute(context.MaybeCaster, aimedTarget,
+                delegate(RuleAttackWithWeapon attack) { Rulebook.Trigger(attack); });
+            return LastAbilityResult;
         }
 
         internal static ScatterShotExecutionResult Execute(

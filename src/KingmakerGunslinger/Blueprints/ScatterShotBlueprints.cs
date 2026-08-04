@@ -31,7 +31,10 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ScatterShot.Description",
                     "Fire one Blunderbuss pellet load in a 15-foot cone. Make a separate attack at -2 against each creature; the weapon misfires only if every attack roll misfires."), null);
             result.Type = AbilityType.Extraordinary;
-            result.Range = AbilityRange.Weapon;
+            // The Blunderbuss intentionally has no ordinary weapon range. Close
+            // keeps native unit targeting available while production delivery
+            // applies the authoritative fixed 15-foot cone predicate.
+            result.Range = AbilityRange.Close;
             result.CanTargetEnemies = true;
             result.CanTargetFriends = true;
             result.CanTargetSelf = false;
@@ -53,7 +56,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Validate(BlueprintAbility ability)
         {
             if (ability == null || ability.ActionType != UnitCommand.CommandType.Standard ||
-                ability.Range != AbilityRange.Weapon || !ability.CanTargetEnemies ||
+                ability.Range != AbilityRange.Close || !ability.CanTargetEnemies ||
                 !ability.CanTargetFriends || ability.CanTargetSelf ||
                 ability.ComponentsArray.OfType<ScatterShotAbilityLogic>().Count() != 1)
                 throw new InvalidOperationException(

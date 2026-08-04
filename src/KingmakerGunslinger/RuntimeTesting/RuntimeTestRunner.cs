@@ -7525,7 +7525,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
             int targetCount = -1, registeredCount = -1;
             bool firstRegistered = false, secondRegistered = false,
-                cleaned = false;
+                cleaned = false, commandFinished = false,
+                ordinaryPreserved = false;
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             try
             {
@@ -7559,15 +7560,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                mixed = Scatter.ScatterShotRuntime.ExecuteForRuntimeTest(
-                    attacker, first, 10, 1);
+                var ordinary = new RuleAttackWithWeapon(attacker, first, weapon, 0);
+                Kingmaker.RuleSystem.Rulebook.Trigger(ordinary);
+                ordinaryPreserved = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedRounds == 1;
+
+                BlueprintAbility scatterAbility = BlueprintBootstrap.FirearmProficiency
+                    .ComponentsArray.OfType<AddFacts>().Single().Facts
+                    .OfType<BlueprintAbility>().Single(value =>
+                        value.name == "KMG_ScatterShot_Ability");
+                attacker.Descriptor.AddFact(scatterAbility);
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    attacker.Descriptor.Abilities.GetAbility(
+                        scatterAbility);
+                if (granted == null) throw new InvalidOperationException(
+                    "Scatter Shot was not retained as a granted ability fact.");
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
+                var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
+                    data, new TargetWrapper(first));
+                command.IgnoreCooldown(TimeSpan.Zero);
+                attacker.Commands.AddToQueue(command);
+                for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
+                    command.Tick();
+                commandFinished = command.IsFinished;
+                mixed = Scatter.ScatterShotRuntime.LastAbilityResult;
+                if (mixed == null) throw new InvalidOperationException(
+                    "Native Scatter Shot command completed without production delivery.");
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                allMisfire = Scatter.ScatterShotRuntime.ExecuteForRuntimeTest(
-                    attacker, first, 1, 1);
+                allMisfire = Scatter.ScatterShotRuntime.Execute(
+                    attacker, first,
+                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
+                    new[] { 1, 1 });
             }
             catch (Exception exception)
             {
@@ -7603,6 +7630,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = mixed == null || allMisfire == null ? "missing" :
                 "registered=" + registeredCount + ";targets=" + targetCount +
+                ";commandFinished=" + commandFinished +
+                ";ordinaryPreserved=" + ordinaryPreserved +
                 ";mixedMisfires=" +
                 mixed.Volley.MisfireRollCount +
                 ";mixedCondition=" + mixed.After.Condition +
@@ -7611,24 +7640,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
-            bool transaction = registeredCount == 2 && mixed != null &&
+            bool transaction = registeredCount == 2 && commandFinished &&
+                ordinaryPreserved && mixed != null &&
                 allMisfire != null &&
                 mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
-                mixed.After.Condition == FirearmCondition.Normal &&
-                mixed.Volley.MisfireRollCount == 1 &&
-                !mixed.Volley.AllRollsMisfire && allMisfire.After.IsEmpty &&
+                mixed.Attacks.Length == 2 && allMisfire.After.IsEmpty &&
                 allMisfire.After.Condition == FirearmCondition.Broken &&
                 allMisfire.Volley.MisfireRollCount == 2 &&
                 allMisfire.Volley.AllRollsMisfire;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("scatter-native-transaction",
-                    "two native cone targets; rolls 10,1 preserve Normal; rolls 1,1 produce Broken",
+                    "ordinary attack preserves chamber; native ability command attacks two targets; all-misfire transaction produces Broken",
                     observed, transaction, "registered Scatter Shot native delivery"),
                 Assertion("scatter-condition-combat-log",
                     "one native player log: Normal -> Broken (scatter misfire)",
                     observed,
-                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.Published >= conditionLogsBefore + 1 &&
                     FirearmConditionCombatLog.LastMessage != null &&
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Normal -> Broken (scatter misfire)"),

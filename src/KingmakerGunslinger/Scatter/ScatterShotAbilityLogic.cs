@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.Scatter
                 target.Unit == null)
                 throw new InvalidOperationException(
                     "Scatter Shot requires a caster and a unit direction target.");
-            ScatterShotRuntime.ExecuteForRuntimeTest(context.MaybeCaster, target.Unit);
+            ScatterShotRuntime.ExecuteFromAbility(context, target.Unit);
             yield return new AbilityDeliveryTarget(target);
         }
 

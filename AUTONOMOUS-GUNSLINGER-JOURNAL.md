@@ -1,5 +1,17 @@
 # Autonomous Gunslinger journal
 
+## 2026-08-04 seventh-playtest human failure record
+
+- Human playtesting accepts and freezes standalone BTSL vendor publication and
+  base Reload Firearm across all five weapon families.
+- Human playtesting rejects the 0.0.66 ordinary Blunderbuss and Scatter Shot
+  player paths: ordinary Attack consumed its chamber without useful delivery,
+  while the clickable Scatter ability produced no meaningful activation.
+- Prior Scatter acceptance called the transaction service directly and is not
+  player-command evidence. Seventh-playtest repair must reject ordinary scatter
+  attacks before mutation and qualify the granted ability through Kingmaker's
+  native command path. Cone appearance remains human-gated.
+
 ## 2026-08-04 sixth-playtest final qualification
 
 Post-commit comprehensive runtime `20260804T1248487401307Z` passed all 33
