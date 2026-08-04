@@ -127,8 +127,16 @@ namespace KingmakerGunslinger.Blueprints
             var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             effect.name = "$KMG_GunslingerDodge_ApplyBuff";
             effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
+            var resource = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            resource.name = "$KMG_GunslingerDodge_NativeGrit";
+            resource.RequiredResource = grit;
+            resource.IsSpendResource = true;
+            resource.CostIsCustom = true;
+            resource.Amount = 0;
+            var calculator = ScriptableObject.CreateInstance<DodgeGritCostCalculator>();
+            calculator.name = "$KMG_GunslingerDodge_TrueGritCost";
             result.ComponentsArray = new BlueprintComponent[] {
-                DodgeGritResourceLogic.Create(grit),
+                resource, calculator,
                 effect };
             return result;
         }
@@ -154,9 +162,15 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature marker, BlueprintBuff acBuff)
         {
             var effect = ability.ComponentsArray.OfType<AbilityEffectRunAction>().Single();
+            AbilityResourceLogic resource = ability.ComponentsArray
+                .OfType<AbilityResourceLogic>().Single();
+            DodgeGritCostCalculator calculator = ability.ComponentsArray
+                .OfType<DodgeGritCostCalculator>().Single();
             var grant = feature.ComponentsArray.OfType<AddFacts>().Single();
             if (ability.ActionType != UnitCommand.CommandType.Swift ||
                 effect.Actions.Actions.Length != 1 || grant.Facts.Length != 1 ||
+                !resource.IsSpendResource || !resource.CostIsCustom ||
+                calculator == null ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI ||
                 acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray.OfType<AddStatBonus>().Single().Value != 2)

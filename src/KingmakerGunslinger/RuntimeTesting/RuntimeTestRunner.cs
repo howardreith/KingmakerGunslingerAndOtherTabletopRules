@@ -10846,16 +10846,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, new TargetWrapper(defender));
                 if (!command.CanStart || !data.IsAvailable) throw new InvalidOperationException(
                     "Native Dodge command was not available for the leveled unit.");
-                DodgeGritResourceLogic resourceLogic = gunslinger.Dodge.ProneAbility
-                    .ComponentsArray.OfType<DodgeGritResourceLogic>().Single();
-                AbilityEffectRunAction deliveryLogic =
-                    gunslinger.Dodge.ProneAbility.ComponentsArray
-                        .OfType<AbilityEffectRunAction>().Single();
-                resourceLogic.Spend(data);
-                var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
-                    data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
-                    new TargetWrapper(defender), null);
-                deliveryLogic.Apply(execution, new TargetWrapper(defender));
+                command.IgnoreCooldown(TimeSpan.Zero);
+                command.SuppressAnimation();
+                defender.Commands.Run(command);
+                for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
+                    command.Tick();
+                if (!command.IsFinished || !string.Equals(command.Result.ToString(),
+                    "Success", StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        "Native Dodge command did not complete successfully; result=" +
+                        command.Result + ".");
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);

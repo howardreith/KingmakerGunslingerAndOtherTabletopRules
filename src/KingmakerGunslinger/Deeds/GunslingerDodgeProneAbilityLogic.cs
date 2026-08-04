@@ -73,29 +73,15 @@ namespace KingmakerGunslinger.Deeds
         internal BlueprintBuff ArmorClassBuff { get { return m_ArmorClassBuff; } }
     }
 
-    internal sealed class DodgeGritResourceLogic : AbilityResourceLogic
+    internal sealed class DodgeGritCostCalculator : BlueprintComponent,
+        IAbilityResourceCostCalculator
     {
-        internal static DodgeGritResourceLogic Create(BlueprintAbilityResource grit)
+        public int Calculate(AbilityData ability)
         {
-            var value = ScriptableObject.CreateInstance<DodgeGritResourceLogic>();
-            value.name = "$KMG_DodgeNativeGrit";
-            value.RequiredResource = grit;
-            value.IsSpendResource = true;
-            value.CostIsCustom = true;
-            value.Amount = 0;
-            return value;
-        }
-
-        public override void Spend(AbilityData ability)
-        {
-            if (ability == null || ability.Caster == null) return;
-            TrueGritDecision cost = TrueGritRuntime.Evaluate(ability.Caster,
-                TrueGritDeed.GunslingersDodge, 1, false);
-            if (!cost.Available || ability.Caster.Resources.GetResourceAmount(
-                    RequiredResource) < cost.EffectiveCost)
-                throw new InvalidOperationException(
-                    "Gunslinger's Dodge requires enough Grit.");
-            ability.Caster.Resources.Spend(RequiredResource, cost.EffectiveCost);
+            if (ability == null || ability.Caster == null) return 1;
+            return TrueGritRuntime.Evaluate(ability.Caster,
+                TrueGritDeed.GunslingersDodge, 1, false)
+                .EffectiveCost;
         }
     }
 }
