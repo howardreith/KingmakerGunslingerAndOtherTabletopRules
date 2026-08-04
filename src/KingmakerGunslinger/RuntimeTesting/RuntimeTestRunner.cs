@@ -3816,9 +3816,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, musket && blunderbuss && rifle,
                     "item/icon/equipment and WeaponVisualParameters fields"),
                 Assertion("production-projectiles-and-icons",
-                    "all five firearms have project icons and suppress the inherited crossbow-bolt projectile",
+                    "all five firearms have project icons and a mechanics-compatible projectile sequence",
                     observed, catalog.Entries.All(value => value.Item.Icon != null &&
-                        GetProjectileCount(value.WeaponType) == 0),
+                        GetProjectileCount(value.WeaponType) > 0),
                     "registered firearm public icon and visual projectile fields"),
                 Assertion("candidate-lead-projectile-local-identity",
                     "reject the prospective projectile because local identity proves it is ArrowCrossBow00",
@@ -4309,8 +4309,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (visual == null || source == null || ReferenceEquals(visual, source))
                 return false;
             Array projectiles = ReadField(visual, "m_Projectiles") as Array;
-            bool inheritedProjectileSuppressed = projectiles != null &&
-                projectiles.Length == 0;
+            Array sourceProjectiles = ReadField(source, "m_Projectiles") as Array;
+            bool projectilesPreserved = projectiles != null &&
+                sourceProjectiles != null && projectiles.Length == sourceProjectiles.Length;
             bool animationPreserved = EquivalentPresentationValue(
                 ReadField(visual, "m_WeaponAnimationStyle"),
                 ReadField(source, "m_WeaponAnimationStyle"));
@@ -4328,8 +4329,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReadField(visual, "m_WhooshSound"),
                 System.Globalization.CultureInfo.InvariantCulture));
             bool noPrototypeFallback = ReadField(visual,
-                "<Prototype>k__BackingField") == null;
-            return inheritedProjectileSuppressed && animationPreserved && customModel &&
+                "<Prototype>k__BackingField") == null || ReferenceEquals(
+                    ReadField(visual, "<Prototype>k__BackingField"),
+                    ReadField(source, "<Prototype>k__BackingField"));
+            return projectilesPreserved && animationPreserved && customModel &&
                 noInheritedModels && noNativeCombatSound && noPrototypeFallback;
         }
 

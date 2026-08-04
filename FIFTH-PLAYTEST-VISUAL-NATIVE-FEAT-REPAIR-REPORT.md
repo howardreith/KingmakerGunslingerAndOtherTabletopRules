@@ -2,13 +2,13 @@
 
 ## Outcome
 
-Version 0.0.65 is functionally repaired and awaits the final supervised visual/audio verdict. Firearm parameters now flow through both native parametrized-feature enumeration routes. Equipped item visuals, as well as weapon-type visuals, receive approved firearm prefabs. Native crossbow sounds and the inherited crossbow-bolt projectile are suppressed, and successful discharge invokes the mapped firearm clip exactly once.
+Version 0.0.65 is functionally repaired and awaits the final supervised visual/audio verdict. Firearm parameters now flow through both native parametrized-feature enumeration routes. Equipped item visuals, as well as weapon-type visuals, receive approved firearm prefabs. Native crossbow sounds are suppressed, and successful discharge invokes the mapped firearm clip exactly once. The inherited projectile sequence remains because removing it caused a demonstrated Targeting Arms damage-suppression regression; its live appearance remains an explicit human-review item.
 
 ## Runtime evidence
 
 - Native menus: `20260804T0324161708239Z-observe-native-weapon-feat-contracts`.
 - Unit-aware parameter menus: `20260804T0327479465160Z-disposable-firearm-dependent-feats` (an updated commit-level run follows final build).
-- Five repaired item/type visuals and zero bolts: `20260804T0338269806180Z-observe-production-firearm-fallbacks`.
+- Five repaired item/type visuals: `20260804T0338269806180Z-observe-production-firearm-fallbacks`.
 - Native damage, chamber consumption, and exact flintlock invocation: `20260804T0339517895460Z-disposable-gunslinger-stunning-shot`.
 - Deterministic tests: 882/882 PASS.
 

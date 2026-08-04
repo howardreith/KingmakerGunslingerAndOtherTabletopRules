@@ -17,17 +17,18 @@ namespace KingmakerGunslinger.Blueprints
             FirearmDefinition definition)
         {
             if (weaponType == null) throw new ArgumentNullException("weaponType");
-            ApplyCore(weaponType, definition);
+            ApplyCore(weaponType, definition, true);
         }
 
         internal static void Apply(BlueprintItemWeapon weapon,
             FirearmDefinition definition)
         {
             if (weapon == null) throw new ArgumentNullException("weapon");
-            ApplyCore(weapon, definition);
+            ApplyCore(weapon, definition, false);
         }
 
-        private static void ApplyCore(object owner, FirearmDefinition definition)
+        private static void ApplyCore(object owner, FirearmDefinition definition,
+            bool clearPrototype)
         {
             GameObject prefab = FirearmAssetRuntime.GetPrefab(definition.Kind);
             if (prefab == null) return;
@@ -47,11 +48,11 @@ namespace KingmakerGunslinger.Blueprints
                 }
             }
 
-            Set(visual, "<Prototype>k__BackingField", null);
+            if (clearPrototype)
+                Set(visual, "<Prototype>k__BackingField", null);
             Set(visual, "m_WeaponModel", prefab);
             Set(visual, "m_WeaponBeltModel", null);
             Set(visual, "m_WeaponSheathModel", null);
-            SetEmptyArray(visual, "m_Projectiles");
             Set(visual, "m_SoundType", WeaponSoundType.None);
             Set(visual, "m_MissSoundType", WeaponMissSoundType.None);
             Set(visual, "m_WhooshSound", string.Empty);
@@ -61,17 +62,6 @@ namespace KingmakerGunslinger.Blueprints
             Set(visual, "m_InventoryPutSound", string.Empty);
             Set(visual, "m_InventoryTakeSound", string.Empty);
             Set(owner, "m_VisualParameters", visual);
-        }
-
-        private static void SetEmptyArray(object instance, string name)
-        {
-            FieldInfo field = Find(instance.GetType(), name);
-            Type elementType = field.FieldType.GetElementType();
-            if (elementType == null)
-            {
-                throw new InvalidOperationException(name + " is not an array field.");
-            }
-            field.SetValue(instance, Array.CreateInstance(elementType, 0));
         }
 
         private static object Read(object instance, string name)
