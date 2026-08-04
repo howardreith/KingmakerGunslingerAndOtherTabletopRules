@@ -4,12 +4,15 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Deeds;
 using UnityEngine;
@@ -111,9 +114,22 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Dodge.Prone.Duration", "1 round");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Dodge.Prone.SavingThrow", "None");
+            var apply = new ContextActionApplyBuff
+            {
+                Buff = armorClassBuff,
+                DurationValue = new ContextDurationValue
+                {
+                    Rate = DurationRate.Rounds,
+                    BonusValue = 1
+                },
+                IsNotDispelable = true
+            };
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.name = "$KMG_GunslingerDodge_ApplyBuff";
+            effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
             result.ComponentsArray = new BlueprintComponent[] {
                 DodgeGritResourceLogic.Create(grit),
-                GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff) };
+                effect };
             return result;
         }
 
@@ -137,11 +153,10 @@ namespace KingmakerGunslinger.Blueprints
         private static void Validate(BlueprintFeature feature, BlueprintAbility ability,
             BlueprintFeature marker, BlueprintBuff acBuff)
         {
-            var logic = ability.ComponentsArray.OfType<GunslingerDodgeProneAbilityLogic>().Single();
+            var effect = ability.ComponentsArray.OfType<AbilityEffectRunAction>().Single();
             var grant = feature.ComponentsArray.OfType<AddFacts>().Single();
             if (ability.ActionType != UnitCommand.CommandType.Swift ||
-                !ReferenceEquals(logic.ArmedMarker, marker) || grant.Facts.Length != 1 ||
-                !ReferenceEquals(logic.ArmorClassBuff, acBuff) ||
+                effect.Actions.Actions.Length != 1 || grant.Facts.Length != 1 ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI ||
                 acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray.OfType<AddStatBonus>().Single().Value != 2)

@@ -10854,16 +10854,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Native Dodge command was not available for the leveled unit.");
                 DodgeGritResourceLogic resourceLogic = gunslinger.Dodge.ProneAbility
                     .ComponentsArray.OfType<DodgeGritResourceLogic>().Single();
-                GunslingerDodgeProneAbilityLogic deliveryLogic =
+                AbilityEffectRunAction deliveryLogic =
                     gunslinger.Dodge.ProneAbility.ComponentsArray
-                        .OfType<GunslingerDodgeProneAbilityLogic>().Single();
+                        .OfType<AbilityEffectRunAction>().Single();
                 resourceLogic.Spend(data);
                 var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
                     data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(defender), null);
-                IEnumerator<AbilityDeliveryTarget> delivery = deliveryLogic.Deliver(
-                    execution, new TargetWrapper(defender));
-                while (delivery.MoveNext()) { }
+                deliveryLogic.Apply(execution, new TargetWrapper(defender));
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
