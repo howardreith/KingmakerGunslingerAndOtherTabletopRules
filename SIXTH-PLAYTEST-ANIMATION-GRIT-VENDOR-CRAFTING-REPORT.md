@@ -42,9 +42,28 @@ used a shoulder crossbow holster. The qualified Pistol mapping was prefab
   `20260804T1237039801982Z-disposable-gunslinger-comprehensive-acceptance` PASS.
 - Comprehensive crafting-inclusive run:
   `20260804T1240496957011Z-disposable-gunslinger-comprehensive-acceptance` PASS.
+- Post-commit comprehensive run:
+  `20260804T1248487401307Z-disposable-gunslinger-comprehensive-acceptance` PASS
+  with 33 slices and 194 assertions.
+- Canonical working-save runs:
+  `20260804T1250280019663Z-working-save-smoke` and
+  `20260804T1252146835864Z-working-save-smoke` PASS.
+- Two same-commit package builds were byte-identical.
+- Final functional HEAD: `448e0d13d44574a66ea034632374264cee56e8d1`.
+- Package SHA-256:
+  `32D6269BAD730F3715DA20DB817268A435027CAE1FF2F7F9DCA80355C685DD7E`.
+- DLL SHA-256:
+  `D74A42CB9FCD8B2471E8CC169736501D3400AF5E63419DD8ADD49077CA92C931`.
+- DLL MVID: `7451652c-4a85-4e0f-8db3-657abcb1f8d7`.
+- Firearm bundle SHA-256:
+  `1D72CE9067B9B30929CC77F5BC2E1778AA26CA860CF83449A2E2F0EAD7F2CDA3`.
+- Live DLL and bundle hashes exactly match the qualified build.
+- Git diff, tracked-save, staged-content, credential/private-material, and
+  generated-package tracking audits found no release blocker.
 
-Final hashes, deterministic repeat runs, working-save runs, and audit results
-are appended after the final clean package qualification.
+The repository-restricted GitHub checkpoint publisher was invoked exactly as
+required after the checkpoint commit, but workstation network security rejected
+the operation categorically. No raw push or workaround was attempted.
 
 ## Remaining authority
 

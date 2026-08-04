@@ -1,5 +1,16 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-04 sixth-playtest external gates
+
+- Functional 0.0.66 qualification is complete at `448e0d1`, including two
+  comprehensive runs and two canonical working-save smokes. The remaining
+  grip/pose/holster, bolt visibility, audible layering, and shop-UI claims
+  require the consolidated supervised human checklist.
+- The exact repository-restricted checkpoint publication script was invoked
+  after the commit. Workstation security categorically rejected network access;
+  raw `git push` and policy workarounds remain prohibited. This is an external
+  publication boundary, not a mod functionality failure.
+
 The Sprint 83 human-input gate is resolved by explicit authorization of option
 1. Other bounded gates remain independently documented.
 

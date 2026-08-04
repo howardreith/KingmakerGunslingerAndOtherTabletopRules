@@ -1,5 +1,12 @@
 # Autonomous Gunslinger resume handoff
 
+## Sixth-playtest resume point (2026-08-04)
+
+Version 0.0.66 is functionally qualified at `448e0d1`; package SHA-256 begins
+`32D6269B`. Automated work is complete. Resume only from concrete findings in
+`SIXTH-PLAYTEST-VISUAL-AUDIO-CHECKLIST.md`, or retry the exact policy publisher
+after the external workstation network restriction changes.
+
 ## Current sixth-playtest state
 
 - Branch `codex/sixth-playtest-btsl-animation-grit-crafting`, version 0.0.66.
