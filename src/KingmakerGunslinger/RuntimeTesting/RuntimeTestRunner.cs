@@ -4307,7 +4307,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (toolsBefore == 0) player.Inventory.Add(tool, 1);
                 if (seededMoney > 0) player.GainMoney(seededMoney);
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                logic.Complete(unit.Descriptor);
+                unit.Descriptor.AddFact(crafting.Ability);
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    unit.Descriptor.Abilities.GetAbility(crafting.Ability);
+                if (granted == null) throw new InvalidOperationException(
+                    "Craft Basic Firearm Ammunition was not granted to the fixture.");
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
+                var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
+                    data, new TargetWrapper(unit));
+                if (!command.CanStart || !data.IsAvailable) throw new InvalidOperationException(
+                    "Native crafting command was not available to the fixture.");
+                var context = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(unit), null);
+                IEnumerator<AbilityDeliveryTarget> delivery = logic.Deliver(
+                    context, new TargetWrapper(unit));
+                while (delivery.MoveNext()) { }
                 powderAfter = player.Inventory.Count(ammo.BlackPowder);
                 ballsAfter = player.Inventory.Count(ammo.LeadBall);
                 moneyAfter = player.Money;
@@ -4315,8 +4330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ballsAfter == ballsBefore + 20 &&
                     moneyAfter == moneyBefore + seededMoney - logic.GoldCost &&
                     unit.Descriptor.HasFact(crafting.UsedMarker);
-                try { logic.Complete(unit.Descriptor); }
-                catch (InvalidOperationException) { duplicateRejected = true; }
+                duplicateRejected = !data.IsAvailable;
             }
             finally
             {
@@ -4343,7 +4357,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Assertion("craft-basic-ammunition", "20 powder;20 balls;22 gp;marker",
                     observed, crafted && logic.GoldCost == 22,
-                    "production atomic completion adapter"),
+                    "native command construction and production ability delivery"),
                 Assertion("craft-once-per-rest", "second completion rejected with no grant",
                     observed, duplicateRejected, "persisted entitlement marker"),
                 Assertion("craft-request-cleanup", "inventory and money restored exactly",
@@ -10828,12 +10842,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 initial = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedBefore = !defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
-                defender.Descriptor.Resources.Spend(grit, 1);
-                var dodgeContext = new MechanicsContext(defender,
-                    defender.Descriptor, gunslinger.Dodge.ProneAbility, null,
-                    new TargetWrapper(defender));
-                defender.Descriptor.Buffs.AddBuff(gunslinger.Dodge.ArmorClassBuff,
-                    dodgeContext, TimeSpan.FromSeconds(6d));
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    defender.Descriptor.Abilities.GetAbility(
+                        gunslinger.Dodge.ProneAbility);
+                if (granted == null) throw new InvalidOperationException(
+                    "Gunslinger's Dodge was not granted by the level-up path.");
+                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
+                var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
+                    data, new TargetWrapper(defender));
+                if (!command.CanStart || !data.IsAvailable) throw new InvalidOperationException(
+                    "Native Dodge command was not available for the leveled unit.");
+                DodgeGritResourceLogic resourceLogic = gunslinger.Dodge.ProneAbility
+                    .ComponentsArray.OfType<DodgeGritResourceLogic>().Single();
+                GunslingerDodgeProneAbilityLogic deliveryLogic =
+                    gunslinger.Dodge.ProneAbility.ComponentsArray
+                        .OfType<GunslingerDodgeProneAbilityLogic>().Single();
+                resourceLogic.Spend(data);
+                var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
+                    data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                    new TargetWrapper(defender), null);
+                IEnumerator<AbilityDeliveryTarget> delivery = deliveryLogic.Deliver(
+                    execution, new TargetWrapper(defender));
+                while (delivery.MoveNext()) { }
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
@@ -10848,7 +10878,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 defender.Descriptor.Resources.Spend(grit, afterApplied);
                 afterRejected = defender.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedProne = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
-                rejectedConsumed = true;
+                rejectedConsumed = !data.IsAvailable;
                 rejectedAc = 20;
             }
             catch (Exception exception)
