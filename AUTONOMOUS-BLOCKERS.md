@@ -231,3 +231,12 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   live-area registration. All historical retry-count ceilings in this ledger,
   the journal, resume notes, and qualification records are evidence-history
   only and impose no current stop. Scatter is an active engineering gate.
+- Current external-input boundary: exact `f3f3ab0` has completed every
+  deterministic, package, guarded mechanical, comprehensive, and working-save
+  gate, including native combat-log notification coverage for every condition
+  transition. The remaining claims are perceptual: rendered UI readability,
+  live doll socket/scale/orientation and mesh suppression, projectile appearance,
+  and audible quality/layering. Repository policy forbids automated visual/OCR/UI
+  evidence as proof. One human must complete
+  `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`; no autonomous engineering
+  alternative remains unless that session reports a concrete failure.

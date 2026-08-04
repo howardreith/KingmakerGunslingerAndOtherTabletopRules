@@ -12,13 +12,16 @@ final rendered UI readability/refresh.
 
 - 880/880 deterministic tests pass.
 - Comprehensive fresh-process PASS pair:
-  `20260804T0021240668392Z` / `20260804T0022573382219Z`.
+  `20260804T0127055727006Z` / `20260804T0128458736571Z` (190 assertions each).
 - Canonical working-save PASS pair:
-  `20260804T0024344255556Z` / `20260804T0026123359766Z`.
+  `20260804T0130335785001Z` / `20260804T0132153365435Z`.
 - Structural presentation and asset observers:
-  `20260804T0018308614483Z` / `20260804T0019578736107Z`.
-- Package/DLL/bundle SHA-256: `dff6891d...9a02a` /
-  `f804c5c1...10b6e` / `D902F279...FBFD`.
+  `20260804T0124121027946Z` / `20260804T0125380338184Z`.
+- Package/DLL/bundle SHA-256: `3aca9eab...45b9d` /
+  `2864feb2...6c242` / `D902F279...FBFD`.
+- Exact qualified commit: `f3f3ab0ff713e4992ec5eaa96fab280fe13daa3d`.
+- Native combat-log notifications are runtime-proven for ordinary, Dead Shot,
+  Scatter Shot, Quick Clear, Repair, and Overhaul condition transitions.
 
 ## Why autonomous evidence cannot resolve it
 

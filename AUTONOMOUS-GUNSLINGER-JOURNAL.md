@@ -3569,3 +3569,23 @@
   runs used the exact same named-save fingerprint and observed no save write.
 - Only one consolidated human-perception pass remains; use
   `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`.
+
+# Fourth playtest condition-log closure and final requalification (2026-08-03)
+
+- Added one native `IWarningNotificationUIHandler` publication after every
+  committed firearm condition transition. Kingmaker's `BattleLogManager`
+  consumes that event; rejected and Expert Loading-suppressed attempts log none.
+- Focused guarded PASS runs proved Overhaul/Repair, Quick Clear, Dead Shot,
+  Scatter Shot, and ordinary Broken -> Wrecked misfire notification counts and
+  messages. The 880/880 domain suite, exact-reference Release build, and strict
+  package validation pass.
+- Exact `f3f3ab0` definitive evidence: mod load
+  `20260804T0122437045614Z`, presentation `20260804T0124121027946Z`, assets and
+  qualities `20260804T0125380338184Z`, 190-assertion comprehensive pair
+  `20260804T0127055727006Z` / `20260804T0128458736571Z`, and working-save pair
+  `20260804T0130335785001Z` / `20260804T0132153365435Z`.
+- Two clean builds were byte-identical. Package/DLL/bundle hashes are
+  `3aca9eab...45b9d` / `2864feb2...6c242` / `D902F279...FBFD`. Both working-save
+  runs observed the same fingerprint and no save-writing API.
+- Autonomous mechanical work is complete. The only remaining acceptance step is
+  the single human visual/audio session in the consolidated checklist.
