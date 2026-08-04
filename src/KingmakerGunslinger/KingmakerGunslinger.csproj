@@ -231,6 +231,7 @@
     <Compile Include="Firearms\FirearmCondition.cs" />
     <Compile Include="Firearms\FirearmConditionPresentation.cs" />
     <Compile Include="Firearms\FirearmConditionTooltipPatch.cs" />
+    <Compile Include="Firearms\FirearmQualitiesTooltipPatch.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUseDecision.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginComponent.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginRuntime.cs" />

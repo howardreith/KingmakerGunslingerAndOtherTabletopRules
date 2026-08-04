@@ -1081,6 +1081,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => FirearmConditionPresentation.Describe((FirearmCondition)99),
                 "Unknown firearm conditions must fail closed.");
+            FirearmDefinition pistol = FirearmDefinitions.CreateEarlyPistol();
+            string normalQualities = FirearmConditionPresentation.DescribeQualities(
+                pistol, FirearmState.CreateEmpty());
+            string brokenQualities = FirearmConditionPresentation.DescribeQualities(
+                pistol, FirearmStateMachine.ApplyMisfireDamage(
+                    FirearmState.CreateEmpty()));
+            Assertions.True(normalQualities.Contains("Firearm, Early, One-Handed") &&
+                normalQualities.Contains("Capacity 1") &&
+                normalQualities.Contains("Condition: Normal") &&
+                !normalQualities.Contains("<null>"),
+                "Normal firearm qualities are incomplete.");
+            Assertions.True(brokenQualities.Contains("Misfire 5") &&
+                brokenQualities.Contains("Condition: Broken") &&
+                !brokenQualities.Contains("<null>"),
+                "Broken firearm qualities are incomplete.");
+            Assertions.Throws<ArgumentNullException>(() =>
+                FirearmConditionPresentation.DescribeQualities(null,
+                    FirearmState.CreateEmpty()),
+                "Null firearm definition qualities must fail closed.");
+            Assertions.Throws<ArgumentNullException>(() =>
+                FirearmConditionPresentation.DescribeQualities(pistol, null),
+                "Null firearm state qualities must fail closed.");
             string quickClear = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs");
             Assertions.True(quickClear.Contains("exactly one Broken firearm") &&

@@ -3536,3 +3536,20 @@
   Native Bonus Combat Feat is not repainted.
 - Repository validation, 880/880 tests, exact Release, and strict package pass;
   package/DLL hashes are `efae7436...8c2dd` / `8bc39668...04f1a2`.
+
+# Fourth playtest firearm descriptions and qualities (2026-08-03)
+
+- Replaced obsolete placeholder/crossbow description wording and the firearm
+  `<null>, <null>` qualities with scoped semantic firearm metadata including
+  live effective misfire and condition.
+- Global tooltip patches timed out before guarded request acceptance at
+  `20260803T2359504427346Z` (PID 15468) and `20260804T0004138320330Z`
+  (PID 19340); both auto-exit processes were explicitly terminated. Narrowing
+  the patch to `DescriptionTemplatesItem.ItemQualities` restored startup.
+- Fresh guarded bootstrap `20260804T0008070526912Z-mod-load-smoke` and feature
+  observer `20260804T0009378520857Z-observe-production-firearm-fallbacks` pass.
+  The latter observed a Broken pistol as `Firearm, Early, One-Handed, Capacity
+  1, 20 ft. Range, Misfire 5, Condition: Broken`, with no `<null>` text.
+- Repository validation, 880/880 tests, exact Release, and strict package pass;
+  package/DLL hashes are `c6a6b206...bbb2b4` / `b43890a9...5395f`.
+- Preserve final supervised tooltip layout and live-refresh acceptance.

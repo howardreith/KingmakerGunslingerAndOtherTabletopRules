@@ -183,9 +183,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             string localizationStem = "KMG.Item." + spec.DisplayName.Replace(" ", string.Empty);
             string eraName = spec.Definition.Era == FirearmEra.Advanced ? "advanced" : "early";
-            string descriptionText = spec.IsPlayerFireable
-                ? "An " + eraName + " firearm using approved crossbow-compatible placeholder visuals. Its firearm marker, not the inherited presentation category, controls firearm rules."
-                : "An early scatter firearm using approved crossbow-compatible placeholder visuals. It cannot be equipped until special-range scatter execution is implemented.";
+            string descriptionText = spec.Definition.IsScatter
+                ? "An early scatter firearm that throws a close cone of shot. It uses black powder and lead balls, can misfire, and must be reloaded after firing."
+                : "An " + eraName + " firearm with a black-powder mechanism. It uses powder and lead shot, can misfire, and must be reloaded as its capacity is spent.";
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
             var description = LocalizationService.Create(
                 localizationStem + ".Description",

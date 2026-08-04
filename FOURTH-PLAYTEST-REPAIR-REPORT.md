@@ -320,3 +320,36 @@ loaded-doll firearm socket/projectile/audio presentation, integrated reload auto
 condition transition combat-log and Quick Clear presentation, Winchester attribution,
 comprehensive regression/runtime runs,
 and final player-visible acceptance remain incomplete.
+
+## Firearm description and qualities checkpoint
+
+Production firearm descriptions no longer describe approved placeholder or
+crossbow-compatible visuals. The native item-qualities template now intercepts
+only resolved firearms and presents firearm era, handedness, capacity, range or
+scatter mode, effective misfire value, and current condition instead of the
+observed `<null>, <null>` qualities.
+
+Two broader patch attempts were rejected. Run
+`20260803T2359504427346Z-observe-production-firearm-fallbacks` timed out during
+bootstrap with PID 15468 after patching the global tooltip text overload; run
+`20260804T0004138320330Z-mod-load-smoke` similarly timed out with PID 19340
+after using an exact global target method. Both requested automatic exit and
+both processes were explicitly terminated. The replacement is a narrow
+`DescriptionTemplatesItem.ItemQualities` prefix; it passed fresh guarded
+bootstrap at `20260804T0008070526912Z-mod-load-smoke`.
+
+Final evidence:
+
+- repository validation and 880/880 domain/reflection tests: PASS;
+- clean exact-reference Release and strict package validation: PASS;
+- package/DLL SHA-256:
+  `c6a6b206f1eab54af986118ff2746ee1a0b01829bca89f07ae9e1b7a4fbbb2b4` /
+  `b43890a9e9bcbdcdc16b42fc0ff6bf9c96c001f612135782bcfae76dc536395f`;
+- guarded Steam-backed PASS:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20260804T0009378520857Z-observe-production-firearm-fallbacks`.
+
+The final observer resolved a detached production pistol in Broken state and
+reported `Firearm, Early, One-Handed, Capacity 1, 20 ft. Range, Misfire 5,
+Condition: Broken`, with no placeholder, crossbow, or `<null>` wording. It also
+passed all five asset mappings and cleanup. Actual rendered tooltip wrapping,
+placement, and live condition refresh remain final supervised UI acceptance.

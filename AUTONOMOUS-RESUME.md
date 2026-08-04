@@ -859,6 +859,17 @@ hashes are `efae7436...8c2dd` / `8bc39668...04f1a2`. Preserve the generated
 source and deterministic exporter; continue with loaded doll/audio, integrated
 auto-use visibility, and final Grit/condition UI acceptance.
 
+Firearm descriptions and native item qualities are runtime-qualified at
+`20260804T0009378520857Z-observe-production-firearm-fallbacks`, following fresh
+bootstrap PASS `20260804T0008070526912Z-mod-load-smoke`. Two rejected global
+tooltip patch strategies timed out at `20260803T2359504427346Z` (PID 15468) and
+`20260804T0004138320330Z` (PID 19340); both were explicitly terminated. The
+scoped item-qualities patch reports semantic firearm metadata and live
+condition without `<null>` text. Package/DLL hashes are
+`c6a6b206...bbb2b4` / `b43890a9...5395f`. Continue loaded doll/audio and
+integrated final UI acceptance; rendered tooltip wrapping and refresh remain
+unproven.
+
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
 `20260802T1822316079053Z`. The player-sale direction is `AddForSell` /

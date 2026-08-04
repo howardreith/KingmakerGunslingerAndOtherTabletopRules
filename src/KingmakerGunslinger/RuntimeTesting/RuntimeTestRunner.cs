@@ -3700,6 +3700,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (instance != null) UnityEngine.Object.Destroy(instance);
                 approvedBundle &= resolved;
             }
+            string qualities = "<unobserved>";
+            ItemEntityWeapon tooltipItem = null;
+            try
+            {
+                tooltipItem = new ItemEntityWeapon(catalog.Pistol.Item);
+                FirearmRuntimeState.Service.Set(tooltipItem,
+                    FirearmStateMachine.ApplyMisfireDamage(
+                        FirearmState.CreateEmpty()));
+                FirearmItemStateSnapshot tooltipState =
+                    FirearmRuntimeState.Service.GetOrCreate(tooltipItem);
+                qualities = FirearmConditionPresentation.DescribeQualities(
+                    tooltipState.Definition, tooltipState.Repository.State);
+            }
+            finally
+            {
+                if (tooltipItem != null)
+                {
+                    FirearmRuntimeState.Service.Forget(tooltipItem);
+                    tooltipItem.Dispose();
+                }
+            }
+            bool descriptionsRepaired = catalog.Entries.All(value =>
+                !string.IsNullOrWhiteSpace(value.Item.Description) &&
+                value.Item.Description.IndexOf("placeholder",
+                    StringComparison.OrdinalIgnoreCase) < 0 &&
+                value.Item.Description.IndexOf("crossbow",
+                    StringComparison.OrdinalIgnoreCase) < 0);
             string observed = string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3721,10 +3748,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(" | ", resolvedAssets.ToArray()),
                     approvedBundle,
                     "FirearmAssetRuntime bundle cache and instantiated renderer/material dependencies"),
+                Assertion("firearm-description-and-qualities",
+                    "no placeholder/crossbow wording; qualities identify firearm, era, handedness, capacity, range, effective misfire, and condition",
+                    "descriptions=" + descriptionsRepaired + ";qualities=" + qualities,
+                    descriptionsRepaired && !string.IsNullOrWhiteSpace(qualities) &&
+                        qualities.Contains("Firearm, Early, One-Handed") &&
+                        qualities.Contains("Capacity 1") &&
+                        qualities.Contains("Misfire 5") &&
+                        qualities.Contains("Condition: Broken") &&
+                        qualities.IndexOf("<null>",
+                            StringComparison.OrdinalIgnoreCase) < 0,
+                    "exact production descriptions, runtime item state, and ItemQualities patch presentation"),
                 Assertion("fallback-observation-only",
-                    "no blueprint, unit, inventory, or save mutation; temporary prefab instances are destroyed",
-                    "read-only blueprint comparison plus five transient prefab instances", true,
-                    "scenario mutates no persistent game state"),
+                    "no blueprint, unit, inventory, or save mutation; temporary prefabs and detached tooltip item are destroyed",
+                    "read-only blueprint comparison, five transient prefabs, and one detached item", true,
+                    "scenario mutates no persistent game state and forgets detached item state"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace KingmakerGunslinger.Firearms
 {
@@ -19,6 +20,27 @@ namespace KingmakerGunslinger.Firearms
                 default:
                     throw new ArgumentOutOfRangeException("condition");
             }
+        }
+
+        internal static string DescribeQualities(FirearmDefinition definition,
+            FirearmState state)
+        {
+            if (definition == null) throw new ArgumentNullException("definition");
+            if (state == null) throw new ArgumentNullException("state");
+            string handedness = definition.Kind == FirearmKind.Pistol ||
+                definition.Kind == FirearmKind.Revolver
+                    ? "One-Handed" : "Two-Handed";
+            string range = definition.HasFixedRangeIncrement
+                ? definition.RangeIncrementFeet.ToString(
+                    CultureInfo.InvariantCulture) + " ft. Range"
+                : "Scatter Cone";
+            int misfire = Math.Min(FirearmDefinition.MaximumMisfireValue,
+                definition.MisfireValue +
+                    (state.Condition == FirearmCondition.Broken ? 4 : 0));
+            return string.Format(CultureInfo.InvariantCulture,
+                "Firearm, {0}, {1}, Capacity {2}, {3}, Misfire {4}, Condition: {5}",
+                definition.Era, handedness, definition.Capacity, range,
+                misfire, state.Condition);
         }
     }
 }
