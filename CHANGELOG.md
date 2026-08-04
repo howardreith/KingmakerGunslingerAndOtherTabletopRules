@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.65 - Fifth-playtest visual and native-feat repair
+
+- Appends all five firearm parameters through the native level-up UI's actual
+  `ExtractSelectionItems` path while retaining the original native feat identity.
+- Assigns approved firearm models to both weapon-type and equipped item visual
+  parameters so the doll no longer instantiates the inherited crossbow model.
+- Plays mapped firearm discharge clips from a persistent, non-spatial unit
+  emitter and keeps inherited crossbow combat sounds suppressed.
+- Strengthens runtime presentation observation to reject inherited item-level
+  crossbow visuals.
+
 ## 0.0.64 - Fourth-playtest runtime and UX repair
 
 - Restored five firearm parameters inside native Weapon Focus and dependent

@@ -73,6 +73,10 @@
       <HintPath>$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.AudioModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>

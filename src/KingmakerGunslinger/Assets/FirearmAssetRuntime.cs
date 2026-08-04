@@ -16,7 +16,11 @@ namespace KingmakerGunslinger.Assets
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
         private static readonly Dictionary<FirearmKind, AudioClip> Shots = new Dictionary<FirearmKind, AudioClip>();
         private static long _shotEvents;
+        private static bool _lastEmitterReady;
+        private static string _lastClipName;
         internal static long ShotEvents { get { lock (Sync) return _shotEvents; } }
+        internal static bool LastEmitterReady { get { lock (Sync) return _lastEmitterReady; } }
+        internal static string LastClipName { get { lock (Sync) return _lastClipName; } }
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
 
         internal static void Configure(ModContext context)
@@ -76,7 +80,29 @@ namespace KingmakerGunslinger.Assets
             {
                 AudioClip clip;
                 if (wielder == null || !Shots.TryGetValue(kind, out clip) || clip == null) return false;
-                AudioSource.PlayClipAtPoint(clip, wielder.Position, 0.75f);
+                GameObject anchor = wielder.View == null ? null : wielder.View.gameObject;
+                if (anchor == null) return false;
+                Transform emitterTransform = anchor.transform.Find("KMG_FirearmAudio");
+                GameObject emitter;
+                if (emitterTransform == null)
+                {
+                    emitter = new GameObject("KMG_FirearmAudio");
+                    emitter.transform.SetParent(anchor.transform, false);
+                }
+                else emitter = emitterTransform.gameObject;
+                AudioSource source = emitter.GetComponent<AudioSource>();
+                if (source == null) source = emitter.AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                source.loop = false;
+                source.spatialBlend = 0f;
+                source.volume = 1f;
+                source.PlayOneShot(clip, 1f);
+                // Headless/guarded Unity runs can report isPlaying=false when no
+                // audio output device is available.  Record that the persistent
+                // emitter accepted the invocation without treating hardware
+                // playback state as mechanical evidence.
+                _lastEmitterReady = source.enabled && emitter.activeInHierarchy;
+                _lastClipName = clip.name;
                 _shotEvents++; return true;
             }
         }

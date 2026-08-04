@@ -199,6 +199,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("third-playtest.empty-command-preconstruction", ThirdPlaytestEmptyPreconstruction),
             Case("fourth-playtest.overhaul-maintenance", FourthPlaytestOverhaulMaintenance),
             Case("fourth-playtest.condition-presentation", FourthPlaytestConditionPresentation),
+            Case("fifth-playtest.item-visual-model", FifthPlaytestItemVisualModel),
+            Case("fifth-playtest.audible-shot-emitter", FifthPlaytestAudibleShotEmitter),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -965,6 +967,8 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs");
             Assertions.True(source.Contains("new FeatureParam(parameter)") &&
                 source.Contains("GetFullSelectionItems") &&
+                source.Contains("\"ExtractSelectionItems\"") &&
+                source.Contains("IEnumerable<IFeatureSelectionItem>") &&
                 source.Contains("NativeFirearmParametrizedBonus") &&
                 source.Contains("OrderBy(value => value == null ? string.Empty : value.Name") &&
                 source.Contains("StringComparer.CurrentCultureIgnoreCase") &&
@@ -1134,6 +1138,31 @@ namespace KingmakerGunslinger.DomainTests
                 repair.Contains("FirearmConditionCombatLog.Publish") &&
                 overhaul.Contains("FirearmConditionCombatLog.Publish"),
                 "Not every production condition transition publishes one native combat-log notification.");
+        }
+
+        private static void FifthPlaytestItemVisualModel()
+        {
+            string production = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs");
+            string observer = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            Assertions.True(production.Contains(
+                    "FirearmWeaponPresentation.Apply(clone, spec.Definition);") &&
+                observer.Contains("itemVisual=\" + itemVisual") &&
+                observer.Contains("itemMatch && itemVisual && itemIconDistinct"),
+                "Firearm item-level hand-slot visuals can regress to the inherited crossbow model.");
+        }
+
+        private static void FifthPlaytestAudibleShotEmitter()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
+            Assertions.True(source.Contains("KMG_FirearmAudio") &&
+                source.Contains("source.spatialBlend = 0f") &&
+                source.Contains("source.PlayOneShot(clip, 1f)") &&
+                source.Contains("_lastEmitterReady = source.enabled && emitter.activeInHierarchy") &&
+                !source.Contains("AudioSource.PlayClipAtPoint"),
+                "Firearm discharge still relies on an unverified transient spatial AudioSource.");
         }
 
         private static TestCase Case(string name, Action body)

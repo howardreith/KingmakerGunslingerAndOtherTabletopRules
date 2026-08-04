@@ -22,7 +22,7 @@ def validate(root: Path) -> None:
     # Retain every 0.0.63 structural contract while supplying the coherent
     # candidate identity to the shared historical validator.
     validate_playtest63.validate_sprint60.validate(
-        root, VERSION, INFORMATIONAL_VERSION, 863, 183, 184)
+        root, VERSION, INFORMATIONAL_VERSION, 865, 183, 184)
     validate_playtest63.require(
         root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
         "GetFullSelectionItems", "new FeatureParam(parameter)",

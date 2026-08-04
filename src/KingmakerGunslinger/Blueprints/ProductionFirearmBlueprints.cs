@@ -221,6 +221,7 @@ namespace KingmakerGunslinger.Blueprints
                         flavor,
                         spec.CostGold,
                         spec.WeightPounds);
+                    FirearmWeaponPresentation.Apply(clone, spec.Definition);
                     AppendProficiencyRestriction(clone, firearmProficiency);
                     if (!spec.IsPlayerFireable)
                     {

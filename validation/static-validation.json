@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.64-fourth-playtest-runtime-ux-repair",
-  "version": "0.0.64",
+  "milestone": "0.0.65-fifth-playtest-visual-native-feat-repair",
+  "version": "0.0.65",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 863,
+    "testCount": 865,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,

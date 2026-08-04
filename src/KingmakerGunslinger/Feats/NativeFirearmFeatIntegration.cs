@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 
@@ -183,6 +184,20 @@ namespace KingmakerGunslinger.Feats
             ref IEnumerable<FeatureUIData> __result)
         {
             __result = NativeFirearmFeatIntegration.Append(__instance, __result);
+        }
+    }
+
+    [HarmonyPatch(typeof(BlueprintParametrizedFeature), "ExtractSelectionItems")]
+    internal static class NativeFirearmFeatLevelUpMenuPatch
+    {
+        private static void Postfix(BlueprintParametrizedFeature __instance,
+            UnitDescriptor beforeLevelUpUnit, UnitDescriptor previewUnit,
+            ref IEnumerable<IFeatureSelectionItem> __result)
+        {
+            IEnumerable<FeatureUIData> source = (__result ??
+                Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();
+            __result = NativeFirearmFeatIntegration.Append(__instance, source)
+                .Cast<IFeatureSelectionItem>();
         }
     }
 }

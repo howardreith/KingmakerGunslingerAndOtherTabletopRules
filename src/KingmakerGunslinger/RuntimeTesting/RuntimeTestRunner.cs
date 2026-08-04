@@ -2829,6 +2829,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !fighter.AllFeatures.Contains(selection));
             string[] expectedFirearmNames = { "Blunderbuss", "Musket", "Pistol",
                 "Revolver", "Rifle" };
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var menuUnit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+            bool levelUpMenus;
+            bool levelUpCommit;
+            try
+            {
+                levelUpMenus = native.All(feature =>
+                {
+                    FeatureUIData[] menu = feature.ExtractSelectionItems(
+                            menuUnit.Descriptor, menuUnit.Descriptor)
+                        .OfType<FeatureUIData>().ToArray();
+                    string[] firearmNames = menu.Where(item => item != null &&
+                            item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
+                                "KMG_WeaponFocus_", StringComparison.Ordinal))
+                        .Select(item => item.Name).ToArray();
+                    return firearmNames.SequenceEqual(expectedFirearmNames);
+                });
+                BlueprintParametrizedFeature weaponFocus = native[0];
+                FeatureUIData pistolChoice = weaponFocus.ExtractSelectionItems(
+                        menuUnit.Descriptor, menuUnit.Descriptor)
+                    .OfType<FeatureUIData>().Single(item => item.Name == "Pistol");
+                var selectionState = new Kingmaker.UnitLogic.Class.LevelUp.FeatureSelectionState(
+                    null, weaponFocus, weaponFocus, 0, 0);
+                selectionState.Select(pistolChoice, null);
+                levelUpCommit = ReferenceEquals(selectionState.SelectedItem, pistolChoice) &&
+                    pistolChoice.Param.Blueprint != null && string.Equals(
+                        pistolChoice.Param.Blueprint.name, "KMG_WeaponFocus_Pistol",
+                        StringComparison.Ordinal);
+            }
+            finally { menuUnit.Dispose(); }
             bool nativeMenus = native.All(feature =>
             {
                 FeatureUIData[] menu = feature.GetFullSelectionItems().ToArray();
@@ -2855,7 +2885,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 choices[2].ComponentsArray.OfType<
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>().Count() == 2;
 
-            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             var attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
             var target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
             ItemEntityWeapon pistol = null, musket = null, crossbow = null;
@@ -2913,7 +2942,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "catalog=" + catalog + ";prerequisites=" + prerequisites +
                 ";effects=" + effects + ";isolation=" + isolation +
-                ";nativeMenus=" + nativeMenus + ";legacyHidden=" + legacy.HideInUI;
+                ";nativeMenus=" + nativeMenus + ";levelUpMenus=" + levelUpMenus +
+                ";levelUpCommit=" + levelUpCommit +
+                ";legacyHidden=" + legacy.HideInUI;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("dependent-feat-catalog", "obsolete wrappers hidden and absent from native catalogs", observed,
@@ -2922,6 +2953,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Blunderbuss, Musket, Pistol, Revolver, and Rifle alphabetically inside each native feat submenu",
                     observed, nativeMenus,
                     "BlueprintParametrizedFeature.GetFullSelectionItems"),
+                Assertion("native-firearm-level-up-parameter-menus",
+                    "all five firearms appear through the actual unit-aware native level-up enumeration path",
+                    observed, levelUpMenus,
+                    "BlueprintParametrizedFeature.ExtractSelectionItems(beforeLevelUpUnit, previewUnit)"),
+                Assertion("native-weapon-focus-level-up-commit",
+                    "the native Weapon Focus selection state commits the Pistol parameter",
+                    observed, levelUpCommit,
+                    "FeatureSelectionState.Select with the unit-aware native menu item"),
                 Assertion("dependent-feat-prerequisites", "native level/BAB shapes plus exact firearm dependency", observed,
                     prerequisites, "cloned native prerequisites and project feature dependency"),
                 Assertion("dependent-feat-effects", "+1 attack, +4 combined specialization damage, doubled critical edge", observed,
@@ -3758,6 +3797,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.OrdinalIgnoreCase) < 0 &&
                 value.Item.Description.IndexOf("crossbow",
                     StringComparison.OrdinalIgnoreCase) < 0);
+            Kingmaker.Blueprints.BlueprintProjectile leadProjectile =
+                ResourcesLibrary.TryGetBlueprint<Kingmaker.Blueprints.BlueprintProjectile>(
+                    "0f083f2598b3e6441992ebadbc0325aa");
+            string leadIdentity = leadProjectile == null ? "<missing>" :
+                leadProjectile.name + ";view=" +
+                Convert.ToString(leadProjectile.View,
+                    System.Globalization.CultureInfo.InvariantCulture);
             string observed = string.Join(" | ", records.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -3770,10 +3816,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, musket && blunderbuss && rifle,
                     "item/icon/equipment and WeaponVisualParameters fields"),
                 Assertion("production-projectiles-and-icons",
-                    "all five firearms have project icons and nonempty inherited projectile sequences",
+                    "all five firearms have project icons and suppress the inherited crossbow-bolt projectile",
                     observed, catalog.Entries.All(value => value.Item.Icon != null &&
-                        GetProjectileCount(value.WeaponType) > 0),
+                        GetProjectileCount(value.WeaponType) == 0),
                     "registered firearm public icon and visual projectile fields"),
+                Assertion("candidate-lead-projectile-local-identity",
+                    "reject the prospective projectile because local identity proves it is ArrowCrossBow00",
+                    leadIdentity, leadProjectile != null &&
+                        string.Equals(leadProjectile.name, "ArrowCrossBow00",
+                            StringComparison.Ordinal),
+                    "installed ResourcesLibrary exact BlueprintProjectile GUID"),
                 Assertion("approved-firearm-asset-bundle",
                     "Unity 2018.4.10f1 bundle loads renderable Pistol, Musket, Blunderbuss, Revolver, and Rifle prefabs with resolved materials",
                     string.Join(" | ", resolvedAssets.ToArray()),
@@ -4226,7 +4278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "m_InventoryPutSound", "m_InventoryTakeSound" };
             bool itemMatch = itemFields.All(name => EquivalentPresentationValue(
                 ReadField(firearm.Item, name), ReadField(sourceItem, name)));
-            itemMatch = itemMatch && VisualParametersEqual(
+            bool itemVisual = RepairedFirearmVisualParameters(firearm,
                 ReadField(firearm.Item, "m_VisualParameters"),
                 ReadField(sourceItem, "m_VisualParameters"));
             bool typeIcon = EquivalentPresentationValue(
@@ -4242,11 +4294,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReadField(firearm.Item, "m_Icon"), ReadField(sourceItem, "m_Icon"));
             int projectiles = GetProjectileCount(firearm.WeaponType);
             records.Add("entry=" + label + ";item=" + itemMatch +
+                ";itemVisual=" + itemVisual +
                 ";typeIcon=" + typeIcon + ";typeVisual=" + typeVisual +
                 ";itemIconDistinct=" + itemIconDistinct +
                 ";projectiles=" + projectiles + ";icon=" +
                 (firearm.Item.Icon != null));
-            return itemMatch && itemIconDistinct && typeIcon && typeVisual;
+            return itemMatch && itemVisual && itemIconDistinct && typeIcon && typeVisual;
         }
 
         private static bool RepairedFirearmVisualParameters(
@@ -4256,9 +4309,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (visual == null || source == null || ReferenceEquals(visual, source))
                 return false;
             Array projectiles = ReadField(visual, "m_Projectiles") as Array;
-            Array sourceProjectiles = ReadField(source, "m_Projectiles") as Array;
-            bool projectilesPreserved = projectiles != null &&
-                sourceProjectiles != null && projectiles.Length == sourceProjectiles.Length;
+            bool inheritedProjectileSuppressed = projectiles != null &&
+                projectiles.Length == 0;
             bool animationPreserved = EquivalentPresentationValue(
                 ReadField(visual, "m_WeaponAnimationStyle"),
                 ReadField(source, "m_WeaponAnimationStyle"));
@@ -4277,7 +4329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 System.Globalization.CultureInfo.InvariantCulture));
             bool noPrototypeFallback = ReadField(visual,
                 "<Prototype>k__BackingField") == null;
-            return projectilesPreserved && animationPreserved && customModel &&
+            return inheritedProjectileSuppressed && animationPreserved && customModel &&
                 noInheritedModels && noNativeCombatSound && noPrototypeFallback;
         }
 
@@ -8889,6 +8941,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
             long shotEventsBefore = -1, shotEventsAfter = -1;
+            bool shotEmitterReady = false;
+            string shotClipName = null;
             string stage = "progression";
             try
             {
@@ -8941,6 +8995,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(ordinary);
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
                 shotEventsAfter = Assets.FirearmAssetRuntime.ShotEvents;
+                shotEmitterReady = Assets.FirearmAssetRuntime.LastEmitterReady;
+                shotClipName = Assets.FirearmAssetRuntime.LastClipName;
                 RuleDealDamage ordinaryDamage = ordinary.MeleeDamage;
                 if (ordinaryDamage == null && ordinary.AttackRoll != null &&
                     ordinary.AttackRoll.IsHit)
@@ -9086,6 +9142,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";successStunned=" + successStunned +
                 ";immunityStunned=" + immunityStunned + ";shotEvents=" +
                 shotEventsBefore + "->" + shotEventsAfter + ";cleaned=" + cleaned;
+            observed += ";shotEmitterReady=" + shotEmitterReady +
+                ";shotClipName=" + shotClipName;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("stunning-shot-progression-and-arming",
@@ -9100,8 +9158,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("successful-discharge-audio-exactly-once",
                     "one approved Pistol shot event for one successful ordinary discharge",
                     observed, shotEventsBefore >= 0 &&
-                        shotEventsAfter == shotEventsBefore + 1,
-                    "post-misfire FirearmAssetRuntime shot boundary"),
+                        shotEventsAfter == shotEventsBefore + 1 &&
+                        shotEmitterReady && !string.IsNullOrWhiteSpace(shotClipName) &&
+                        shotClipName.IndexOf("flintlock", StringComparison.OrdinalIgnoreCase) >= 0,
+                    "post-misfire FirearmAssetRuntime emitter and mapped Pistol clip"),
                 Assertion("stunning-shot-save-failure",
                     "natural 1 Fortitude spends the effective grit cost and applies one-round Stunned",
                     observed, failureMarkerConsumed && gritAfterFailure == 4 - deedCost &&

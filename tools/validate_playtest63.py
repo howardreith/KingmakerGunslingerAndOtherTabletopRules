@@ -18,7 +18,7 @@ def require(path: Path, *tokens: str) -> None:
 
 def validate(root: Path) -> None:
     validate_sprint60.validate(root, VERSION, INFORMATIONAL_VERSION,
-                               863, 183, 184)
+                               865, 183, 184)
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs",
             "wrapper.HideInUI = true", "set.RapidReload }",
             "NativeFirearmFeatIntegration.Configure")

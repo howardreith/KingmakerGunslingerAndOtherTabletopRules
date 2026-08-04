@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.Development
         private static void OnGui(UnityModManager.ModEntry modEntry)
         {
             ImmediateModeGui.Label(
-                "Kingmaker Gunslinger - 0.0.64 fourth-playtest runtime/UX repair");
+                "Kingmaker Gunslinger - 0.0.65 fifth-playtest visual/native-feat repair");
             ImmediateModeGui.Label(
                 "Use only a disposable campaign. Production inventory icons are project-owned; the temporary crossbow doll model remains pending the separately tracked 3D asset checkpoint.");
             ImmediateModeGui.Label(

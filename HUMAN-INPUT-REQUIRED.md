@@ -3,7 +3,8 @@
 ## Exact blocker
 
 All deterministic, build, package, guarded runtime, comprehensive, and
-working-save gates for `0.0.64` pass. The only remaining acceptance claims
+working-save gates for the prior `0.0.64` baseline pass. The `0.0.65` repair's
+remaining acceptance claims
 depend on human perception: live doll socket/scale/orientation and visible mesh
 suppression, projectile appearance, audible firearm quality/exact layering, and
 final rendered UI readability/refresh.
@@ -34,8 +35,8 @@ manufacture confidence rather than establish the observed player experience.
 
 ## Smallest precise question
 
-Does the `0.0.64` candidate pass every box in
-`FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md` during one supervised session?
+Does the `0.0.65` candidate pass every box in
+`FIFTH-PLAYTEST-VISUAL-NATIVE-FEAT-ACCEPTANCE-CHECKLIST.md` during one supervised session?
 
 ## Choices
 
@@ -52,7 +53,7 @@ boxes without saving the game.
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.64 `
+  -ExpectedVersion 0.0.65 `
   -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$false `
   -Confirm:$false
