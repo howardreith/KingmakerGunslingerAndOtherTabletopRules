@@ -27,6 +27,9 @@
 *.trx
 *.log
 
+# Human playtest screenshots remain local evidence and are never packaged.
+/evidence/screenshots/
+
 # OS files
 .DS_Store
 Thumbs.db
