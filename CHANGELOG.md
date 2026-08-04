@@ -904,3 +904,6 @@
 - Resolved Reload Firearm to a fixed native action variant before command construction so matching Rapid Reload choices govern actual action consumption.
 - Replaced generic firearm mesh-axis inference with explicit per-model transforms and restored the stable crossbow animation contract without inherited crossbow renderers.
 - Added listener and playback diagnostics and a persistent 2D firearm-audio fallback for Kingmaker's active listener configuration.
+- Restored clickable Reload Firearm by preserving the granted parent ability through native command construction; action economy now changes only the final command-type argument.
+- Added the native True-Grit-aware Dodge resource cost calculator and removed manual component invocation from command-path acceptance.
+- Preserved the accepted drawn-Pistol wrapper, added separate Pistol/Musket/Blunderbuss belt/back wrappers, and recalibrated Musket and Blunderbuss equipped transforms.

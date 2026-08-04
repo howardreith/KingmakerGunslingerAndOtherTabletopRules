@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.Assets
         private static readonly object Sync = new object();
         private static AssetBundle _bundle;
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
+        private static readonly Dictionary<FirearmKind, GameObject> BeltPrefabs = new Dictionary<FirearmKind, GameObject>();
         private static readonly Dictionary<FirearmKind, AudioClip> Shots = new Dictionary<FirearmKind, AudioClip>();
         private static long _shotEvents;
         private static bool _lastEmitterReady;
@@ -42,6 +43,9 @@ namespace KingmakerGunslinger.Assets
                     LoadPrefab(FirearmKind.Pistol, "pistol"); LoadPrefab(FirearmKind.Musket, "musket");
                     LoadPrefab(FirearmKind.Blunderbuss, "blunderbuss"); LoadPrefab(FirearmKind.Revolver, "revolver");
                     LoadPrefab(FirearmKind.Rifle, "rifle");
+                    LoadBeltPrefab(FirearmKind.Pistol, "pistolbelt");
+                    LoadBeltPrefab(FirearmKind.Musket, "musketbelt");
+                    LoadBeltPrefab(FirearmKind.Blunderbuss, "blunderbussbelt");
                     LoadShot(FirearmKind.Pistol, "gunantq_flintlock fire_cs_usc.wav");
                     LoadShot(FirearmKind.Musket, "gunantq_musket shots_cs_usc.wav");
                     LoadShot(FirearmKind.Blunderbuss, "gunshotg_classic western shotgun blast with reverb_cs_usc.wav");
@@ -66,6 +70,13 @@ namespace KingmakerGunslinger.Assets
             if (clip == null) throw new InvalidDataException("Missing firearm audio: " + name);
             Shots[kind] = clip;
         }
+        private static void LoadBeltPrefab(FirearmKind kind, string name)
+        {
+            string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name + ".prefab", StringComparison.OrdinalIgnoreCase));
+            GameObject prefab = _bundle.LoadAsset<GameObject>(path);
+            if (prefab == null) throw new InvalidDataException("Missing firearm belt prefab: " + name);
+            BeltPrefabs[kind] = prefab;
+        }
         internal static GameObject InstantiatePrefab(FirearmKind kind)
         {
             lock (Sync) { GameObject prefab; return Prefabs.TryGetValue(kind, out prefab) && prefab != null ? UnityEngine.Object.Instantiate(prefab) : null; }
@@ -76,6 +87,14 @@ namespace KingmakerGunslinger.Assets
             {
                 GameObject prefab;
                 return Prefabs.TryGetValue(kind, out prefab) ? prefab : null;
+            }
+        }
+        internal static GameObject GetBeltPrefab(FirearmKind kind)
+        {
+            lock (Sync)
+            {
+                GameObject prefab;
+                return BeltPrefabs.TryGetValue(kind, out prefab) ? prefab : null;
             }
         }
         internal static bool PlayShot(FirearmKind kind, UnitEntityData wielder)

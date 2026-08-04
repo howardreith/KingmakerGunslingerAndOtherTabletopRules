@@ -11,13 +11,21 @@ public static class BuildFirearmBundles
     {
         if (!Application.unityVersion.Equals("2018.4.10f1", StringComparison.Ordinal))
             throw new InvalidOperationException("Exact Unity 2018.4.10f1 is required; observed " + Application.unityVersion);
-        CreatePrefab("Pistol", new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 0f), 0.24f, 0.264f);
-        CreatePrefab("Musket", new Vector3(-0.0067338f, 0.0326295f, -1.0392216f), new Vector3(0f, 90f, 0f), 4.8088603f, 0.8525f);
-        CreatePrefab("Blunderbuss", new Vector3(0.0009311f, 0f, 0.0921176f), new Vector3(0f, 90f, 0f), 0.2946390f, 0.6875f);
-        CreatePrefab("Revolver", new Vector3(-0.0460553f, -0.1052241f, 0.1857974f), new Vector3(0f, 90f, 0f), 0.01719849f, 0.264f);
-        CreatePrefab("Rifle", new Vector3(0f, 0f, -0.651f), new Vector3(0f, 90f, 0f), 1.5401387f, 0.8525f);
+        // Preserve the human-accepted drawn Pistol transform. Holstered/idle
+        // wrappers are separate assets because belt/back sockets do not share
+        // the hand socket's coordinate contract.
+        CreatePrefab("Pistol", "Pistol", new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 0f), 0.24f, 0.264f);
+        CreatePrefab("PistolBelt", "Pistol", new Vector3(0f, 0f, 0f), new Vector3(0f, 90f, 90f), 0.24f, 0.264f);
+        CreatePrefab("Musket", "Musket", new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f, 0.8525f);
+        CreatePrefab("MusketBelt", "Musket", new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), 2.0f, 0.8525f);
+        CreatePrefab("Blunderbuss", "Blunderbuss", new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f, 0.6875f);
+        CreatePrefab("BlunderbussBelt", "Blunderbuss", new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), 0.5f, 0.6875f);
+        CreatePrefab("Revolver", "Revolver", new Vector3(-0.0460553f, -0.1052241f, 0.1857974f), new Vector3(0f, 90f, 0f), 0.01719849f, 0.264f);
+        CreatePrefab("Rifle", "Rifle", new Vector3(0f, 0f, -0.651f), new Vector3(0f, 90f, 0f), 1.5401387f, 0.8525f);
         string[] approved = { "Assets/ApprovedModels/Pistol.prefab",
+            "Assets/ApprovedModels/PistolBelt.prefab",
             "Assets/ApprovedModels/Musket.prefab", "Assets/ApprovedModels/Blunderbuss.prefab",
+            "Assets/ApprovedModels/MusketBelt.prefab", "Assets/ApprovedModels/BlunderbussBelt.prefab",
             "Assets/ApprovedModels/Revolver.prefab", "Assets/ApprovedModels/Rifle.prefab" };
         foreach (string path in approved)
         {
@@ -48,13 +56,13 @@ public static class BuildFirearmBundles
             BuildTarget.StandaloneWindows64);
     }
 
-    private static void CreatePrefab(string name, Vector3 localPosition,
+    private static void CreatePrefab(string name, string family, Vector3 localPosition,
         Vector3 localEuler, float uniformScale, float muzzleDistance)
     {
-        string folder = "Assets/ApprovedModels/" + name;
+        string folder = "Assets/ApprovedModels/" + family;
         string[] modelGuids = AssetDatabase.FindAssets("t:Model", new[] { folder });
         if (modelGuids.Length != 1)
-            throw new InvalidOperationException(name + " requires exactly one model; observed " + modelGuids.Length);
+            throw new InvalidOperationException(family + " requires exactly one model; observed " + modelGuids.Length);
         GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(
             AssetDatabase.GUIDToAssetPath(modelGuids[0]));
         GameObject root = new GameObject(name);
@@ -66,7 +74,7 @@ public static class BuildFirearmBundles
             UnityEngine.Object.DestroyImmediate(value.gameObject);
         Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0) throw new InvalidOperationException(name + " has no renderer.");
-        ApplyMaterials(name, renderers);
+        ApplyMaterials(family, renderers);
         visual.transform.localPosition = localPosition;
         visual.transform.localRotation = Quaternion.Euler(localEuler);
         visual.transform.localScale = Vector3.one * uniformScale;

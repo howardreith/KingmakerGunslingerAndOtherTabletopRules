@@ -3633,3 +3633,23 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   and change only the final constructor's command-type argument.
 - Gunslinger's Dodge remains unqualified: prior evidence manually invoked its
   resource and effect components instead of completing the native command.
+
+## Seventh playtest repair continuation (2026-08-04)
+
+- `disposable-reload-autocast` guarded runtime request
+  `20260804T2234282497948Z-disposable-reload-autocast` passed after restoring
+  the granted parent ability contract. Installed reflection identified both the
+  two-argument convenience constructor and the authoritative
+  `(CommandType, AbilityData, TargetWrapper)` constructor.
+- Dodge now uses native `AbilityResourceLogic` plus a True-Grit-aware
+  `IAbilityResourceCostCalculator`. The honest detached-unit command run
+  `20260804T2238332259430Z-disposable-gunslinger-dodge` interrupted before
+  execution because the fixture has no live view/animation lifecycle; no
+  component was manually invoked and no player-path PASS is claimed.
+- Reviewed five human screenshots. The accepted Pistol draw alignment was
+  retained. Separate belt/back wrapper prefabs were added for Pistol, Musket,
+  and Blunderbuss. Musket's rejected approximately -1.039 Z / 4.81 scale
+  wrapper was replaced, and Blunderbuss received a larger, socket-centered
+  equipped wrapper. The duplicate asset builder was removed; `tools/unity` is
+  now canonical. Rebuilt bundle SHA-256 is
+  `4C5C3FA991332CDBFE8A47BBA68DC4D8D293104E248EB596C9FBD44274DC848D`.

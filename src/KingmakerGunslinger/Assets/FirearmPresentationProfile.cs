@@ -25,9 +25,9 @@ namespace KingmakerGunslinger.Assets
         internal FirearmKind Kind { get; private set; }
         internal WeaponAnimationStyle? Animation { get; private set; }
         internal bool OverrideAttachSlots { get; private set; }
-        internal string HolsterPolicy { get { return "hidden"; } }
+        internal string HolsterPolicy { get { return BeltModel == null ? "native" : "explicit-belt/back"; } }
         internal GameObject EquippedModel { get { return FirearmAssetRuntime.GetPrefab(Kind); } }
-        internal GameObject BeltModel { get { return null; } }
+        internal GameObject BeltModel { get { return FirearmAssetRuntime.GetBeltPrefab(Kind); } }
         internal GameObject SheathModel { get { return null; } }
 
         internal static FirearmPresentationProfile Require(FirearmKind kind)
