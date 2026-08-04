@@ -3653,3 +3653,18 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   equipped wrapper. The duplicate asset builder was removed; `tools/unity` is
   now canonical. Rebuilt bundle SHA-256 is
   `4C5C3FA991332CDBFE8A47BBA68DC4D8D293104E248EB596C9FBD44274DC848D`.
+# Seventh playtest firearm-kill Grit failure (2026-08-04)
+
+- Human playtest killed three active goblins with firearms below maximum Grit
+  and received no recovery immediately, at round end, or later in combat.
+- Installed reflection confirmed ranged completion uses
+  `RuleAttackWithWeaponResolve(RuleAttackWithWeapon, RuleDealDamage)` with its
+  own `Damage` field. The rejected adapter instead required identity with
+  `RuleAttackWithWeapon.MeleeDamage`.
+- Killing-blow recovery now observes `RuleAttackWithWeaponResolve.OnTrigger`
+  completion, verifies the exact firearm and real ranged damage/attack/target
+  graph, detects the applied-damage HP zero crossing, and deduplicates through
+  the existing exact attack/target context. Confirmed-critical recovery remains
+  independent.
+- The detached recovery scenario no longer constructs `MeleeDamage`, mutates
+  target HP, or calls damage hooks as false player-path evidence.

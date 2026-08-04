@@ -72,8 +72,9 @@ def validate(root: Path, version: str = VERSION,
          "TargetHitDice * 2 < request.CharacterLevel"],
         "Sprint 35 grit recovery policy")
     require_tokens(read(root, "src/KingmakerGunslinger/Grit/FirearmGritRecoveryRuntime.cs"),
-        ["AfterAttackRoll", "BeforeDamage", "AfterDamage", "TryMarkCritical",
-         "TryMarkKillingBlow", "ReferenceEquals(weaponAttack.MeleeDamage, damage)"],
+        ["AfterAttackRoll", "AfterWeaponResolve", "RuleAttackWithWeaponResolve",
+         "TryMarkCritical", "TryMarkKillingBlow",
+         "target.HPLeft + damage.Damage > 0"],
         "Sprint 35 firearm grit recovery runtime")
     require_tokens(read(root, "scripts/Test-Sprint35DisposableGritRecovery.ps1"),
         ["critical-reference-dedupe", "kill-reference-dedupe",

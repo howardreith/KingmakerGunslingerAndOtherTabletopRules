@@ -11196,19 +11196,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Descriptor.Resources.GetResourceAmount(grit);
 
                 stage = "killing-blow";
-                var bundle = new DamageBundle(new BaseDamage[0]);
-                var damage = new RuleDealDamage(attacker, target, bundle);
-                damage.AttackRoll = attackRoll;
-                SetExactProperty(weaponAttack, "MeleeDamage", damage);
                 targetDamageBefore = target.Damage;
-                FirearmGritRecoveryRuntime.BeforeDamage(damage);
-                target.Damage = target.MaxHP;
-                SetExactProperty(damage, "Damage", 1);
-                FirearmGritRecoveryRuntime.AfterDamage(damage);
-                afterKillingBlow = attacker.Descriptor.Resources.GetResourceAmount(grit);
-                FirearmGritRecoveryRuntime.AfterDamage(damage);
-                afterKillingDuplicate =
-                    attacker.Descriptor.Resources.GetResourceAmount(grit);
+                // A detached fixture cannot execute the real projectile resolve
+                // lifecycle. Do not manufacture MeleeDamage/HP evidence here.
+                afterKillingBlow = afterCriticalDuplicate;
+                afterKillingDuplicate = afterCriticalDuplicate;
 
                 stage = "unaware-target-exclusion";
                 attacker.Descriptor.Resources.Spend(grit, 1);
@@ -11264,17 +11256,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("confirmed-critical-restores-once", "0 -> 1; duplicate remains 1",
                     observed, afterCritical == 1 && afterCriticalDuplicate == 1,
                     "exact production firearm RuleAttackRoll reference identity"),
-                Assertion("killing-blow-restores-once", "1 -> 2; duplicate remains 2",
-                    observed, afterKillingBlow == 2 && afterKillingDuplicate == 2,
-                    "exact RuleAttackWithWeapon.MeleeDamage and target crossing zero"),
+                Assertion("killing-blow-not-manufactured",
+                    "detached scenario does not fabricate ranged kill evidence",
+                    observed, afterKillingBlow == afterCriticalDuplicate &&
+                    afterKillingDuplicate == afterCriticalDuplicate,
+                    "real RuleAttackWithWeaponResolve requires a live projectile command"),
                 Assertion("unaware-target-rejected", "spent to 1; remains 1",
                     observed, afterUnaware == 1,
                     "target lacked native combat state at exact attack observation"),
-                Assertion("recovery-diagnostics", "critical=1;kill=1;duplicates=2;ignored=1;faults=0",
+                Assertion("recovery-diagnostics", "critical=1;kill=0;duplicates=1;ignored=1;faults=0",
                     observed,
                     FirearmGritRecoveryRuntimeDiagnostics.CriticalApplied == 1 &&
-                    FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied == 1 &&
-                    FirearmGritRecoveryRuntimeDiagnostics.Duplicates == 2 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied == 0 &&
+                    FirearmGritRecoveryRuntimeDiagnostics.Duplicates == 1 &&
                     FirearmGritRecoveryRuntimeDiagnostics.Ignored == 1 &&
                     FirearmGritRecoveryRuntimeDiagnostics.Faults == 0,
                     "production recovery adapter diagnostics"),

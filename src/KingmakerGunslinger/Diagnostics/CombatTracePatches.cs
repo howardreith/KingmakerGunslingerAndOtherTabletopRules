@@ -128,12 +128,19 @@ namespace KingmakerGunslinger.Diagnostics
         {
             RuleDealDamage damage = __instance as RuleDealDamage;
             Scatter.ScatterVolleyRuntime.SuppressPrecisionDamage(damage);
-            FirearmGritRecoveryRuntime.BeforeDamage(damage);
         }
 
-        private static void Postfix(object __instance)
+        private static void Postfix(object __instance) { }
+    }
+
+    [HarmonyPatch(typeof(Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve),
+        "OnTrigger")]
+    internal static class RuleAttackWithWeaponResolveGritRecoveryPatch
+    {
+        private static void Postfix(
+            Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve __instance)
         {
-            FirearmGritRecoveryRuntime.AfterDamage(__instance as RuleDealDamage);
+            FirearmGritRecoveryRuntime.AfterWeaponResolve(__instance);
         }
     }
 

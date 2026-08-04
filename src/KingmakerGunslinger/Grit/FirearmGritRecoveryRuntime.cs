@@ -23,9 +23,6 @@ namespace KingmakerGunslinger.Grit
         private static readonly ConditionalWeakTable<RuleAttackRoll, AttackRecoveryContext>
             AttackContexts =
                 new ConditionalWeakTable<RuleAttackRoll, AttackRecoveryContext>();
-        private static readonly ConditionalWeakTable<RuleDealDamage, DamageObservation>
-            DamageObservations =
-                new ConditionalWeakTable<RuleDealDamage, DamageObservation>();
         private static readonly GritRecoveryService Service = new GritRecoveryService();
 
         internal static void AfterAttackRoll(RuleAttackRoll attackRoll)
@@ -61,50 +58,19 @@ namespace KingmakerGunslinger.Grit
             }
         }
 
-        internal static void BeforeDamage(RuleDealDamage damage)
+        internal static void AfterWeaponResolve(RuleAttackWithWeaponResolve resolve)
         {
-            if (damage == null)
-                return;
+            if (resolve == null || resolve.Damage == null ||
+                resolve.AttackRoll == null) return;
 
             try
             {
+                RuleDealDamage damage = resolve.Damage;
+                RuleAttackRoll attackRoll = resolve.AttackRoll;
                 UnitEntityData target = damage.Target;
-                var observation = new DamageObservation(
-                    target,
-                    target == null ? 0 : target.HPLeft,
-                    target != null && target.IsInCombat,
-                    target != null && target.Descriptor != null &&
-                        target.Descriptor.State != null &&
-                        target.Descriptor.State.IsHelpless,
-                    CharacterLevel(target));
-                lock (ContextGate)
-                {
-                    DamageObservation ignored;
-                    if (!DamageObservations.TryGetValue(damage, out ignored))
-                        DamageObservations.Add(damage, observation);
-                }
-            }
-            catch (Exception exception)
-            {
-                FirearmGritRecoveryRuntimeDiagnostics.RecordFault(
-                    GritRecoveryEventKind.KillingBlow, exception);
-                LogFault("killing-blow-observation.failed", exception);
-            }
-        }
-
-        internal static void AfterDamage(RuleDealDamage damage)
-        {
-            if (damage == null)
-                return;
-
-            try
-            {
-                DamageObservation observation;
-                if (!DamageObservations.TryGetValue(damage, out observation))
-                    return;
-
-                RuleAttackRoll attackRoll = damage.AttackRoll;
-                if (!IsExactWeaponDamage(damage, attackRoll, observation.Target))
+                if (target == null || !ReferenceEquals(target, attackRoll.Target) ||
+                    !ReferenceEquals(damage.AttackRoll, attackRoll) ||
+                    !FirearmMarkerLookup.ReadFromRuleEvent(resolve).IsExactFirearm)
                 {
                     FirearmGritRecoveryRuntimeDiagnostics.RecordIgnored(
                         GritRecoveryEventKind.KillingBlow,
@@ -113,19 +79,24 @@ namespace KingmakerGunslinger.Grit
                 }
 
                 AttackRecoveryContext context = GetAttackContext(attackRoll);
-                if (!context.TryMarkKillingBlow(observation.Target))
+                if (!context.TryMarkKillingBlow(target))
                 {
                     FirearmGritRecoveryRuntimeDiagnostics.RecordDuplicate(
                         GritRecoveryEventKind.KillingBlow);
                     return;
                 }
 
-                bool killingBlow = observation.HitPointsBefore > 0 &&
-                    observation.Target.HPLeft <= 0 && damage.Damage > 0;
-                EvaluateAndRestore(attackRoll, observation.Target,
+                // RuleAttackWithWeaponResolve is raised after its real ranged
+                // RuleDealDamage. Reconstruct the exact pre-hit HP boundary
+                // from the applied damage instead of relying on MeleeDamage.
+                bool killingBlow = damage.Damage > 0 && target.HPLeft <= 0 &&
+                    target.HPLeft + damage.Damage > 0;
+                EvaluateAndRestore(attackRoll, target,
                     GritRecoveryEventKind.KillingBlow, killingBlow,
-                    observation.WasInCombat, observation.WasHelpless,
-                    observation.CharacterLevel);
+                    target.IsInCombat,
+                    target.Descriptor != null && target.Descriptor.State != null &&
+                        target.Descriptor.State.IsHelpless,
+                    CharacterLevel(target));
             }
             catch (Exception exception)
             {
@@ -192,20 +163,6 @@ namespace KingmakerGunslinger.Grit
                     FirearmGritRecoveryRuntimeDiagnostics.LastAppliedSequence);
         }
 
-        private static bool IsExactWeaponDamage(RuleDealDamage damage,
-            RuleAttackRoll attackRoll, UnitEntityData observedTarget)
-        {
-            if (attackRoll == null || observedTarget == null ||
-                !ReferenceEquals(damage.Target, observedTarget) ||
-                !ReferenceEquals(damage.Initiator, attackRoll.Initiator) ||
-                !ReferenceEquals(damage.Target, attackRoll.Target))
-                return false;
-            RuleAttackWithWeapon weaponAttack = attackRoll.RuleAttackWithWeapon;
-            return weaponAttack != null &&
-                ReferenceEquals(weaponAttack.AttackRoll, attackRoll) &&
-                ReferenceEquals(weaponAttack.MeleeDamage, damage);
-        }
-
         private static int CharacterLevel(UnitEntityData unit)
         {
             return unit == null || unit.Descriptor == null ||
@@ -258,25 +215,6 @@ namespace KingmakerGunslinger.Grit
                 if (target == null) return false;
                 lock (this) { return _killingBlowTargets.Add(target); }
             }
-        }
-
-        private sealed class DamageObservation
-        {
-            internal DamageObservation(UnitEntityData target, int hitPointsBefore,
-                bool wasInCombat, bool wasHelpless, int characterLevel)
-            {
-                Target = target;
-                HitPointsBefore = hitPointsBefore;
-                WasInCombat = wasInCombat;
-                WasHelpless = wasHelpless;
-                CharacterLevel = characterLevel;
-            }
-
-            internal UnitEntityData Target { get; private set; }
-            internal int HitPointsBefore { get; private set; }
-            internal bool WasInCombat { get; private set; }
-            internal bool WasHelpless { get; private set; }
-            internal int CharacterLevel { get; private set; }
         }
 
         private sealed class ReferenceComparer : IEqualityComparer<UnitEntityData>
