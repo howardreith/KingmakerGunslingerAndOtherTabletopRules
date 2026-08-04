@@ -4447,7 +4447,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     System.Globalization.CultureInfo.InvariantCulture);
             bool customModel = ReferenceEquals(ReadField(visual, "m_WeaponModel"),
                 Assets.FirearmAssetRuntime.GetPrefab(firearm.Spec.Definition.Kind));
-            bool noInheritedModels = ReadField(visual, "m_WeaponBeltModel") == null &&
+            Assets.FirearmPresentationProfile profile =
+                Assets.FirearmPresentationProfile.Require(
+                    firearm.Spec.Definition.Kind);
+            bool noInheritedModels = ReferenceEquals(
+                    ReadField(visual, "m_WeaponBeltModel"), profile.BeltModel) &&
                 ReadField(visual, "m_WeaponSheathModel") == null;
             bool noNativeCombatSound = string.Equals(Convert.ToString(
                 ReadField(visual, "m_SoundType"),
