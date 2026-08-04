@@ -3,7 +3,6 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Utility;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands.Base;
-using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Reloading
@@ -37,20 +36,18 @@ namespace KingmakerGunslinger.Reloading
         }
     }
 
-    // Resolve the stable public action to a native fixed-action variant before
-    // Kingmaker constructs the command. This makes command action consumption
-    // authoritative instead of relying only on UI-facing AbilityData getters.
+    // The two-argument convenience constructor chains into this authoritative
+    // constructor. Preserve the granted AbilityData and alter only the action
+    // argument consumed by UnitUseAbility.
     [HarmonyPatch(typeof(UnitUseAbility), MethodType.Constructor,
-        typeof(AbilityData), typeof(TargetWrapper))]
-    internal static class ReloadAbilityCommandVariantPatch
+        typeof(UnitCommand.CommandType), typeof(AbilityData), typeof(TargetWrapper))]
+    internal static class ReloadAbilityCommandTypePatch
     {
-        private static void Prefix(ref AbilityData spell)
+        private static void Prefix(ref UnitCommand.CommandType __0, AbilityData __1)
         {
             EffectiveReloadAction action;
-            if (!ReloadAbilityPresentation.TryAction(spell, out action)) return;
-            spell = new AbilityData(
-                ReloadTestMusketAbilityBlueprints.ResolveVariant(action),
-                spell.Caster);
+            if (ReloadAbilityPresentation.TryAction(__1, out action))
+                __0 = ReloadAbilityPresentation.Command(action);
         }
     }
 

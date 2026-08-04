@@ -16,7 +16,6 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static class ReloadTestMusketAbilityBlueprints
     {
-        private static BlueprintAbility[] s_Variants;
         internal const string Symbol = "KMG.Test.ReloadAbility";
         internal const string InternalName = "KMG_ReloadTestMusket_Ability";
         internal const string DisplayName = "Reload Firearm";
@@ -49,25 +48,12 @@ namespace KingmakerGunslinger.Blueprints
             }
             BlueprintAbility parent = registry.Register<BlueprintAbility>(Symbol,
                 () => CreateParent(iconSource, blackPowder, leadBall));
-            s_Variants = variants;
             ValidateParent(parent, variants);
             logger.Info("reload", "ability.ready", string.Format(
                 CultureInfo.InvariantCulture,
                 "Registered one public Reload Firearm guid={0}; hidden compatibility helpers={1}.",
                 registry.ResolveGuid(Symbol), variants.Length));
             return parent;
-        }
-
-        internal static BlueprintAbility ResolveVariant(EffectiveReloadAction action)
-        {
-            int index = action == EffectiveReloadAction.Free ? 0 :
-                action == EffectiveReloadAction.Move ? 1 :
-                action == EffectiveReloadAction.Standard ? 2 :
-                action == EffectiveReloadAction.FullRound ? 3 : -1;
-            if (index < 0 || s_Variants == null || s_Variants.Length != 4)
-                throw new InvalidOperationException(
-                    "Reload Firearm command variant graph is unavailable.");
-            return s_Variants[index];
         }
 
         private static BlueprintAbility CreateParent(BlueprintItemWeapon iconSource,

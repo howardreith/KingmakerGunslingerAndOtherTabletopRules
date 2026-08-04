@@ -3619,3 +3619,17 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   runs observed the same fingerprint and no save-writing API.
 - Autonomous mechanical work is complete. The only remaining acceptance step is
   the single human visual/audio session in the consolidated checklist.
+# Seventh playtest 0.0.67 reload and presentation failure (2026-08-04)
+
+- Human playtest authoritatively reports that Reload Firearm is a no-op for all
+  five firearm families. Immediate ammunition crafting remains a human PASS and
+  is frozen, as is the previously accepted standalone BTSL vendor path.
+- Human presentation evidence partially accepts the current Pistol drawn
+  transform, but rejects its disappearing idle state, the oversized/offset
+  Musket presentation, and the invisible Blunderbuss presentation.
+- Root-cause audit identified the seventh-playtest `UnitUseAbility` convenience-
+  constructor patch replacing the real granted parent `AbilityData` with an
+  ungranted hidden-variant instance. The repair must preserve the granted fact
+  and change only the final constructor's command-type argument.
+- Gunslinger's Dodge remains unqualified: prior evidence manually invoked its
+  resource and effect components instead of completing the native command.

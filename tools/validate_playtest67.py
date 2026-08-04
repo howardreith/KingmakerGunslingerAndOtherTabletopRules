@@ -17,7 +17,8 @@ def validate(root: Path) -> None:
     validate_playtest66.validate(root)
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs",
-        "ReloadAbilityCommandVariantPatch", "ResolveVariant(action)")
+        "ReloadAbilityCommandTypePatch", "ref UnitCommand.CommandType __0",
+        "ReloadAbilityPresentation.Command(action)")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Diagnostics/CombatTracePatches.cs",
         "FirearmDischargeRuntime.BeforeAttackRoll")
