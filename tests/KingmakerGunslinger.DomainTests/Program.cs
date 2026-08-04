@@ -1161,11 +1161,12 @@ namespace KingmakerGunslinger.DomainTests
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
             Assertions.True(source.Contains("KMG_FirearmAudio") &&
-                source.Contains("source.spatialBlend = 1f") &&
+                source.Contains("source.spatialBlend = 0f") &&
                 source.Contains("source.PlayOneShot(clip, 1f)") &&
+                source.Contains("FindObjectOfType<AudioListener>") &&
                 source.Contains("_lastEmitterReady = source.enabled && emitter.activeInHierarchy") &&
                 !source.Contains("AudioSource.PlayClipAtPoint"),
-                "Firearm discharge still relies on an unverified transient spatial AudioSource.");
+                "Firearm discharge lacks the persistent 2D diagnostic fallback and listener evidence.");
         }
 
         private static TestCase Case(string name, Action body)

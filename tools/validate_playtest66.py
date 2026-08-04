@@ -28,15 +28,15 @@ def validate(root: Path) -> None:
             "FirearmWeaponPresentation.Apply(clone, spec.Definition,",
             "FirearmProjectileBlueprints.Register(registry, lightType)")
     require(root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs",
-            "KMG_FirearmAudio", "spatialBlend = 1f", "PlayOneShot(clip, 1f)")
+            "KMG_FirearmAudio", "spatialBlend = 0f", "PlayOneShot(clip, 1f)")
     require(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
             "itemVisual", "itemMatch && itemVisual && itemIconDistinct")
     require(root / "src/KingmakerGunslinger/Blueprints/BeneathStolenLandsVendorBlueprints.cs",
             "StandaloneHonestGuyTableGuid", "CampaignXellirenTableGuid", "200, 200, 10, 5, 1")
     require(root / "src/KingmakerGunslinger/Gunsmithing/CraftBasicAmmunitionAbilityLogic.cs",
-            "BatchSize = 20", "WorkDurationSeconds = 60f", "SpendMoney(cost)", "GainMoney(cost)")
+            "BatchSize = 20", "Complete(context.Caster.Descriptor)", "SpendMoney(cost)", "GainMoney(cost)")
     require(root / "src/KingmakerGunslinger/Deeds/DeadeyeAbilityLogic.cs",
-            "Spend(set.Grit.Resource", "AddBuff(m_ArmedBuff")
+            "class DeadeyeGritResourceLogic", "Spend(RequiredResource", "AddBuff(m_ArmedBuff")
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmProjectileBlueprints.cs",
             "KMG.Firearms.Projectile", "BlueprintCloneService.Clone(source")
     require(root / "src/KingmakerGunslinger/Assets/FirearmProjectileVisualPatch.cs",

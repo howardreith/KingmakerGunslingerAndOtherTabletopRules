@@ -18,9 +18,13 @@ namespace KingmakerGunslinger.Assets
         private static long _shotEvents;
         private static bool _lastEmitterReady;
         private static string _lastClipName;
+        private static bool _lastListenerPresent;
+        private static bool _lastSourcePlaying;
         internal static long ShotEvents { get { lock (Sync) return _shotEvents; } }
         internal static bool LastEmitterReady { get { lock (Sync) return _lastEmitterReady; } }
         internal static string LastClipName { get { lock (Sync) return _lastClipName; } }
+        internal static bool LastListenerPresent { get { lock (Sync) return _lastListenerPresent; } }
+        internal static bool LastSourcePlaying { get { lock (Sync) return _lastSourcePlaying; } }
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
 
         internal static void Configure(ModContext context)
@@ -94,7 +98,10 @@ namespace KingmakerGunslinger.Assets
                 if (source == null) source = emitter.AddComponent<AudioSource>();
                 source.playOnAwake = false;
                 source.loop = false;
-                source.spatialBlend = 1f;
+                // Kingmaker's camera/listener and detached unit views make fully
+                // spatial raw clips unreliable. Use an audible 2D SFX fallback
+                // until the approved clips are authored into a native Wwise bank.
+                source.spatialBlend = 0f;
                 source.volume = 1f;
                 source.PlayOneShot(clip, 1f);
                 // Headless/guarded Unity runs can report isPlaying=false when no
@@ -102,6 +109,8 @@ namespace KingmakerGunslinger.Assets
                 // emitter accepted the invocation without treating hardware
                 // playback state as mechanical evidence.
                 _lastEmitterReady = source.enabled && emitter.activeInHierarchy;
+                _lastListenerPresent = UnityEngine.Object.FindObjectOfType<AudioListener>() != null;
+                _lastSourcePlaying = source.isPlaying;
                 _lastClipName = clip.name;
                 _shotEvents++; return true;
             }
