@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.66-sixth-playtest-btsl-animation-grit-crafting",
-  "version": "0.0.66",
+  "milestone": "0.0.67-seventh-playtest-player-path-repair",
+  "version": "0.0.67",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

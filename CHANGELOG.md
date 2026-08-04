@@ -896,3 +896,11 @@
 ## Sprint 1 — 2026-07-12 — `0.0.1-s01-architecture`
 
 - Established the target runtime, architecture, stable-ID policy, reference audit, blueprint discovery plan, persistence candidates, and risk gates.
+## 0.0.67 - Seventh-playtest player-path repair
+
+- Prevented ordinary Blunderbuss attacks from consuming a chamber; Scatter Shot is now the sole guarded 15-foot cone firing path.
+- Moved Dodge and Deadeye spending and buff application onto Kingmaker's native ability resource/action pipeline.
+- Made basic ammunition crafting immediate while preserving its atomic cost, output, tool, and once-per-rest rules.
+- Resolved Reload Firearm to a fixed native action variant before command construction so matching Rapid Reload choices govern actual action consumption.
+- Replaced generic firearm mesh-axis inference with explicit per-model transforms and restored the stable crossbow animation contract without inherited crossbow renderers.
+- Added listener and playback diagnostics and a persistent 2D firearm-audio fallback for Kingmaker's active listener configuration.
