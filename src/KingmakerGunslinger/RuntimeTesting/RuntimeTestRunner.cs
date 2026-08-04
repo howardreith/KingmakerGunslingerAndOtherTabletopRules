@@ -4348,9 +4348,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (visual == null || source == null || ReferenceEquals(visual, source))
                 return false;
             Array projectiles = ReadField(visual, "m_Projectiles") as Array;
-            Array sourceProjectiles = ReadField(source, "m_Projectiles") as Array;
             bool projectilesPreserved = projectiles != null &&
-                sourceProjectiles != null && projectiles.Length == sourceProjectiles.Length;
+                projectiles.Length == 1 && ReferenceEquals(projectiles.GetValue(0),
+                    FirearmProjectileBlueprints.Projectile);
             bool shortFirearm = firearm.Spec.Definition.Kind == FirearmKind.Pistol ||
                 firearm.Spec.Definition.Kind == FirearmKind.Revolver;
             bool animationPreserved = shortFirearm
