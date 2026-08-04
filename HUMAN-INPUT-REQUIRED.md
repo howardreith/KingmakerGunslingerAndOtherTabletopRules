@@ -17,9 +17,10 @@ final rendered UI readability/refresh.
   `20260804T0130335785001Z` / `20260804T0132153365435Z`.
 - Structural presentation and asset observers:
   `20260804T0124121027946Z` / `20260804T0125380338184Z`.
-- Package/DLL/bundle SHA-256: `3aca9eab...45b9d` /
-  `2864feb2...6c242` / `D902F279...FBFD`.
-- Exact qualified commit: `f3f3ab0ff713e4992ec5eaa96fab280fe13daa3d`.
+- Functional source checkpoint: `f3f3ab0`; see the external
+  `FOURTH-PLAYTEST-RUNTIME-UX-REPAIR-REPORT.md` for the current clean HEAD,
+  package/DLL hashes, MVID, and definitive post-handoff runtime IDs.
+- AssetBundle SHA-256: `D902F279...FBFD`.
 - Native combat-log notifications are runtime-proven for ordinary, Dead Shot,
   Scatter Shot, Quick Clear, Repair, and Overhaul condition transitions.
 

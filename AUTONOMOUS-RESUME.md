@@ -881,7 +881,7 @@ No save-writing API was observed. Next and only remaining action is the single
 supervised perception session in `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`;
 do not split it into piecemeal review requests.
 
-Superseding exact checkpoint: `f3f3ab0` adds native player-facing combat-log
+Superseding functional source checkpoint: `f3f3ab0` adds native player-facing combat-log
 notifications for all firearm condition transitions. The 880/880 suite and two
 deterministic Release builds pass. Final clean-commit evidence is mod load
 `20260804T0122437045614Z`, presentation `20260804T0124121027946Z`, firearm
@@ -890,6 +890,10 @@ assets/qualities `20260804T0125380338184Z`, 190-assertion comprehensive pair
 pair `20260804T0130335785001Z` / `20260804T0132153365435Z`. The working-save
 fingerprint is identical and no save-writing API was observed. Only the one
 consolidated human perception session remains.
+
+The external `FOURTH-PLAYTEST-RUNTIME-UX-REPAIR-REPORT.md` is authoritative for
+the clean post-handoff HEAD, package/DLL/MVID identity, and definitive runtime
+IDs. Do not infer the current final Git identity from this committed resume file.
 
 Current checkpoint: exact `d7fe62a` native vendor staging is runtime-qualified
 by fresh working-save PASS pair `20260802T1820527823172Z` /
