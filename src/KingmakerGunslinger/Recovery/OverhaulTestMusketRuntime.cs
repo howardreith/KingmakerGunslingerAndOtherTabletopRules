@@ -136,10 +136,17 @@ namespace KingmakerGunslinger.Recovery
                 .TryOverhaulWreckedToBroken(stateStore, inventory);
             FirearmItemStateSnapshot after =
                 FirearmRuntimeState.Service.GetOrCreate(availability.Weapon);
-            return new FirearmOverhaulRuntimeResult(
+            var result = new FirearmOverhaulRuntimeResult(
                 transaction,
                 availability.Firearm,
                 after);
+            if (result.Succeeded)
+                FirearmConditionCombatLog.Publish(
+                    after.ItemDisplayName,
+                    result.Transaction.BeforeState.Condition,
+                    result.Transaction.AfterState.Condition,
+                    "Overhaul Firearm");
+            return result;
         }
 
         private static bool TryResolveSingleEquippedTestMusket(

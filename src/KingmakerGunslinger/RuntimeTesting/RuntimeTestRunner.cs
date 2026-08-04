@@ -3297,13 +3297,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
             bool delayed = false, interruptionAtomic = false,
-                combatBlocked = false, exactCompletion = false, cleaned = false;
+                combatBlocked = false, exactCompletion = false,
+                repairCompletion = false, cleaned = false;
+            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            string overhaulLog = null, repairLog = null;
             try
             {
                 object ignored;
                 string method;
                 if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { repairKit }, new object[] { repairKit, 1 } },
+                    new[] { new object[] { repairKit, 2 }, new object[] { repairKit } },
                     out ignored, out method))
                     throw new InvalidOperationException(
                         "Temporary Firearm Repair Kit could not be added.");
@@ -3348,6 +3351,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
                     player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                overhaulLog = FirearmConditionCombatLog.LastMessage;
+                FirearmRepairRuntimeResult repaired =
+                    RepairTestMusketRuntime.Execute(
+                        unit.Descriptor, pistol, repairKit);
+                repairCompletion = repaired.Succeeded &&
+                    repaired.BeforeFirearm.Repository.State.Condition ==
+                        FirearmCondition.Broken &&
+                    repaired.AfterFirearm.Repository.State.Condition ==
+                        FirearmCondition.Normal &&
+                    player.Inventory.Count(repairKit) == kitsAtStart - 2;
+                repairLog = FirearmConditionCombatLog.LastMessage;
             }
             finally
             {
@@ -3368,7 +3382,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "duration=" + blueprint.LocalizedDuration +
                 ";delayed=" + delayed + ";interruptionAtomic=" + interruptionAtomic +
                 ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
-                ";cleaned=" + cleaned;
+                ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
+                ";conditionLogs=" +
+                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("overhaul-one-minute-delay",
@@ -3382,6 +3399,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit",
                     observed, exactCompletion,
                     "existing exact-item atomic transaction after maintenance gate"),
+                Assertion("overhaul-condition-combat-log",
+                    "one native player log only after completed Wrecked -> Broken",
+                    observed,
+                    overhaulLog != null && overhaulLog.Contains(
+                        "Wrecked -> Broken (Overhaul Firearm)"),
+                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                Assertion("repair-condition-combat-log",
+                    "completed Broken -> Normal consumes second kit and logs once",
+                    observed,
+                    repairCompletion &&
+                    FirearmConditionCombatLog.Published == conditionLogsBefore + 2 &&
+                    repairLog != null && repairLog.Contains(
+                        "Broken -> Normal (Repair Firearm)"),
+                    "exact repair transaction and native warning/log event"),
                 Assertion("request-local-cleanup", "repair-kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -7164,6 +7195,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Deeds.DeadShotExecutionResult mixed = null;
             Deeds.DeadShotExecutionResult allMisfire = null;
             int gritBefore = -1, gritAfterMixed = -1, gritAfterMisfire = -1;
+            long conditionLogsBefore = FirearmConditionCombatLog.Published;
             bool cleaned = false;
             int targetDamageBefore = 0;
             string stage = "blueprint-contract";
@@ -7240,7 +7272,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";allMisfire=" + allMisfire.Outcome.Misfires +
                 ";misfireCondition=" + allMisfire.After.Condition +
                 ";grit=" + gritBefore + "->" + gritAfterMixed +
-                "->" + gritAfterMisfire;
+                "->" + gritAfterMisfire + ";conditionLogs=" +
+                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             bool mixedContract = mixed != null && mixed.Probes.Length == 3 &&
                 mixed.Decision.AttackBonuses.SequenceEqual(new[] { 11, 6, 1 }) &&
                 mixed.Probes.Select(value => value.Roll.Value)
@@ -7271,6 +7305,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "three natural 1 rolls; one chamber; Normal -> Broken",
                     observed, misfireContract,
                     "aggregate misfire and exact item-state transition"),
+                Assertion("dead-shot-condition-combat-log",
+                    "one native player log: Normal -> Broken (Dead Shot misfire)",
+                    observed,
+                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.LastMessage != null &&
+                    FirearmConditionCombatLog.LastMessage.Contains(
+                        "Normal -> Broken (Dead Shot misfire)"),
+                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
                 Assertion("dead-shot-cost", "one grit per accepted delivery",
                     observed, gritBefore > 0 && gritAfterMixed == gritBefore - 1 &&
                     gritAfterMisfire == gritAfterMixed,
@@ -7307,6 +7349,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int targetCount = -1, registeredCount = -1;
             bool firstRegistered = false, secondRegistered = false,
                 cleaned = false;
+            long conditionLogsBefore = FirearmConditionCombatLog.Published;
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
@@ -7387,7 +7430,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mixed.Volley.MisfireRollCount +
                 ";mixedCondition=" + mixed.After.Condition +
                 ";allMisfires=" + allMisfire.Volley.MisfireRollCount +
-                ";allCondition=" + allMisfire.After.Condition;
+                ";allCondition=" + allMisfire.After.Condition +
+                ";conditionLogs=" +
+                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             bool transaction = registeredCount == 2 && mixed != null &&
                 allMisfire != null &&
                 mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
@@ -7402,6 +7448,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("scatter-native-transaction",
                     "two native cone targets; rolls 10,1 preserve Normal; rolls 1,1 produce Broken",
                     observed, transaction, "registered Scatter Shot native delivery"),
+                Assertion("scatter-condition-combat-log",
+                    "one native player log: Normal -> Broken (scatter misfire)",
+                    observed,
+                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.LastMessage != null &&
+                    FirearmConditionCombatLog.LastMessage.Contains(
+                        "Normal -> Broken (scatter misfire)"),
+                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -7731,6 +7785,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             FirearmCondition ordinaryCondition = FirearmCondition.Normal;
             long scheduledBefore = -1, scheduledSuppressed = -1,
                 scheduledAfter = -1;
+            long conditionLogsBefore = FirearmConditionCombatLog.Published;
             bool markerConsumed = false, cleaned = false;
             string stage = "blueprint-contract";
             bool blueprintContract = gunslinger.Progression.LevelEntries[10]
@@ -7819,7 +7874,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "," + ordinaryCondition + ";rounds=" + suppressedRounds +
                 "," + ordinaryRounds + ";scheduled=" + scheduledBefore +
                 "->" + scheduledSuppressed + "->" + scheduledAfter +
-                ";markerConsumed=" + markerConsumed;
+                ";markerConsumed=" + markerConsumed + ";conditionLogs=" +
+                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("expert-loading-progression",
@@ -7838,6 +7895,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ordinaryRounds == 0 &&
                         scheduledAfter == scheduledSuppressed + 1,
                     "ordinary Broken-to-Wrecked explosion pipeline"),
+                Assertion("misfire-condition-combat-log",
+                    "suppressed attempt logs nothing; ordinary Broken -> Wrecked logs once",
+                    observed,
+                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.LastMessage != null &&
+                    FirearmConditionCombatLog.LastMessage.Contains(
+                        "Broken -> Wrecked (misfire)"),
+                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
                 Assertion("external-isolation",
                     "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
                     cleaned, "item state forgotten and disposables disposed"),
@@ -10303,6 +10368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 moveCondition = FirearmCondition.Wrecked,
                 rejectedCondition = FirearmCondition.Wrecked;
             bool cleaned = false; string stage = "construct-disposable";
+            long conditionLogsBefore = FirearmConditionCombatLog.Published;
             bool nativePresentation = false, brokenAvailable = false,
                 wreckedRejected = false, zeroGritRejected = false;
             QuickClearRuntimeDiagnostics.Reset();
@@ -10424,7 +10490,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 QuickClearRuntimeDiagnostics.Faults + ";presentation=" +
                 nativePresentation + ";brokenAvailable=" + brokenAvailable +
                 ";wreckedRejected=" + wreckedRejected + ";zeroGritRejected=" +
-                zeroGritRejected;
+                zeroGritRejected + ";conditionLogs=" +
+                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("quick-clear-standard", "grit 2 unchanged; Broken -> Normal",
@@ -10450,6 +10518,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     QuickClearRuntimeDiagnostics.Rejected == 1 &&
                     QuickClearRuntimeDiagnostics.Faults == 0,
                     "production deed diagnostics"),
+                Assertion("quick-clear-condition-combat-log",
+                    "two native player logs; rejected attempt logs nothing",
+                    observed,
+                    FirearmConditionCombatLog.Published == conditionLogsBefore + 2 &&
+                    FirearmConditionCombatLog.LastMessage != null &&
+                    FirearmConditionCombatLog.LastMessage.Contains(
+                        "Broken -> Normal (Quick Clear)"),
+                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "firearm forgotten and detached unit disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

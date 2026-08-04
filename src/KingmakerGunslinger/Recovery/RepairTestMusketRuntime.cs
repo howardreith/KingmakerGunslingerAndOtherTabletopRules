@@ -140,10 +140,17 @@ namespace KingmakerGunslinger.Recovery
                 .TryRepairBrokenToNormal(stateStore, inventory);
             FirearmItemStateSnapshot after =
                 FirearmRuntimeState.Service.GetOrCreate(availability.Weapon);
-            return new FirearmRepairRuntimeResult(
+            var result = new FirearmRepairRuntimeResult(
                 transaction,
                 availability.Firearm,
                 after);
+            if (result.Succeeded)
+                FirearmConditionCombatLog.Publish(
+                    after.ItemDisplayName,
+                    result.Transaction.BeforeState.Condition,
+                    result.Transaction.AfterState.Condition,
+                    "Repair Firearm");
+            return result;
         }
 
         private static bool TryResolveSingleEquippedTestMusket(

@@ -55,7 +55,13 @@ namespace KingmakerGunslinger.Deeds
                 var store = new FirearmItemRepairStateStore(FirearmRuntimeState.Service,
                     firearm.Weapon);
                 before = store.Read();
-                store.Replace(before, FirearmStateMachine.Repair(before));
+                FirearmState after = FirearmStateMachine.Repair(before);
+                store.Replace(before, after);
+                FirearmConditionCombatLog.Publish(
+                    firearm.Firearm.ItemDisplayName,
+                    before.Condition,
+                    after.Condition,
+                    "Quick Clear");
                 QuickClearRuntimeDiagnostics.Record(decision);
                 return decision;
             }

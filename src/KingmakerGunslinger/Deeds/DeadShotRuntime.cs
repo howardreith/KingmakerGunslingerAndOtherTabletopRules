@@ -137,6 +137,11 @@ namespace KingmakerGunslinger.Deeds
                         FirearmItemStateSnapshot changed = Transition(firearm,
                             expectedCurrent, condition.After);
                         expectedCurrent = changed.Repository.State;
+                        FirearmConditionCombatLog.Publish(
+                            changed.ItemDisplayName,
+                            condition.Before.Condition,
+                            condition.After.Condition,
+                            "Dead Shot misfire");
                     }
                 }
 

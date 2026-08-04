@@ -1109,6 +1109,31 @@ namespace KingmakerGunslinger.DomainTests
                 quickClear.Contains("at least 1 Grit") &&
                 quickClear.Contains("Wrecked firearms require Overhaul Firearm"),
                 "Quick Clear unavailable guidance is not player-readable.");
+            string combatLog = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Firearms/FirearmConditionCombatLog.cs");
+            string misfire = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs");
+            string deadShot = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/DeadShotRuntime.cs");
+            string scatter = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Scatter/ScatterShotRuntime.cs");
+            string quickClearRuntime = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/QuickClearRuntime.cs");
+            string repair = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs");
+            string overhaul = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
+            Assertions.True(combatLog.Contains(
+                    "EventBus.RaiseEvent<IWarningNotificationUIHandler>") &&
+                combatLog.Contains("handler.HandleWarning(message, false)") &&
+                combatLog.Contains("condition: {1} -> {2} ({3}).") &&
+                misfire.Contains("FirearmConditionCombatLog.Publish") &&
+                deadShot.Contains("FirearmConditionCombatLog.Publish") &&
+                scatter.Contains("FirearmConditionCombatLog.Publish") &&
+                quickClearRuntime.Contains("FirearmConditionCombatLog.Publish") &&
+                repair.Contains("FirearmConditionCombatLog.Publish") &&
+                overhaul.Contains("FirearmConditionCombatLog.Publish"),
+                "Not every production condition transition publishes one native combat-log notification.");
         }
 
         private static TestCase Case(string name, Action body)

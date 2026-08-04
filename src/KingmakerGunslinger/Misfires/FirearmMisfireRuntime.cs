@@ -459,6 +459,12 @@ namespace KingmakerGunslinger.Misfires
                 throw new InvalidOperationException(
                     "The misfire condition transition committed through a different repository identity than the discharged firearm.");
             }
+
+            FirearmConditionCombatLog.Publish(
+                committed.ItemDisplayName,
+                condition.Before.Condition,
+                condition.After.Condition,
+                "misfire");
         }
 
         private static RulebookEvent.RollEntry WithForcedNaturalRoll(

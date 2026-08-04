@@ -157,6 +157,11 @@ namespace KingmakerGunslinger.Scatter
                     {
                         Transition(firearm, expected, condition.After);
                         expected = condition.After;
+                        FirearmConditionCombatLog.Publish(
+                            firearm.Firearm.ItemDisplayName,
+                            condition.Before.Condition,
+                            condition.After.Condition,
+                            "scatter misfire");
                     }
                     FirearmExplosionDecision explosion =
                         Explosions.Evaluate(condition);
