@@ -4,6 +4,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -36,15 +37,17 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ArmedMarkerSymbol = "KMG.Deeds.DeadeyeArmed";
         internal const string ArmedBuffSymbol = "KMG.Deeds.DeadeyeArmedBuff";
 
-        internal static DeadeyeBlueprintSet Register(BlueprintRegistry registry)
+        internal static DeadeyeBlueprintSet Register(BlueprintRegistry registry,
+            BlueprintAbilityResource grit)
         {
             if (registry == null) throw new ArgumentNullException("registry");
+            if (grit == null) throw new ArgumentNullException("grit");
             BlueprintFeature marker = registry.Register<BlueprintFeature>(
                 ArmedMarkerSymbol, CreateMarker);
             BlueprintBuff armedBuff = registry.Register<BlueprintBuff>(
                 ArmedBuffSymbol, CreateArmedBuff);
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                AbilitySymbol, () => CreateAbility(marker, armedBuff));
+                AbilitySymbol, () => CreateAbility(marker, armedBuff, grit));
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
                 FeatureSymbol, () => CreateFeature(ability));
             Validate(feature, ability, marker, armedBuff);
@@ -75,7 +78,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintAbility CreateAbility(BlueprintFeature marker,
-            BlueprintBuff armedBuff)
+            BlueprintBuff armedBuff, BlueprintAbilityResource grit)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = "KMG_Deadeye_Ability";
@@ -98,8 +101,9 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Deadeye.Ability.Duration", "1 round or until the next firearm shot");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Deadeye.Ability.SavingThrow", "None");
-            result.ComponentsArray = new BlueprintComponent[]
-                { DeadeyeAbilityLogic.Create(marker, armedBuff) };
+            result.ComponentsArray = new BlueprintComponent[] {
+                DeadeyeGritResourceLogic.Create(grit),
+                DeadeyeAbilityLogic.Create(marker, armedBuff) };
             return result;
         }
 

@@ -6,6 +6,7 @@ using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
@@ -40,15 +41,17 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ArmorClassBuffSymbol =
             "KMG.Deeds.GunslingerDodgeArmorClassBuff";
 
-        internal static GunslingerDodgeBlueprintSet Register(BlueprintRegistry registry)
+        internal static GunslingerDodgeBlueprintSet Register(BlueprintRegistry registry,
+            BlueprintAbilityResource grit)
         {
             if (registry == null) throw new ArgumentNullException("registry");
+            if (grit == null) throw new ArgumentNullException("grit");
             BlueprintFeature marker = registry.Register<BlueprintFeature>(
                 ArmedProneSymbol, CreateMarker);
             BlueprintBuff acBuff = registry.Register<BlueprintBuff>(
                 ArmorClassBuffSymbol, CreateArmorClassBuff);
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                ProneAbilitySymbol, () => CreateAbility(marker, acBuff));
+                ProneAbilitySymbol, () => CreateAbility(marker, acBuff, grit));
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
                 FeatureSymbol, () => CreateFeature(ability));
             Validate(feature, ability, marker, acBuff);
@@ -84,7 +87,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintAbility CreateAbility(BlueprintFeature marker,
-            BlueprintBuff armorClassBuff)
+            BlueprintBuff armorClassBuff, BlueprintAbilityResource grit)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = "KMG_GunslingerDodge_ProneAbility";
@@ -108,8 +111,9 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Dodge.Prone.Duration", "1 round");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Dodge.Prone.SavingThrow", "None");
-            result.ComponentsArray = new BlueprintComponent[]
-                { GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff) };
+            result.ComponentsArray = new BlueprintComponent[] {
+                DodgeGritResourceLogic.Create(grit),
+                GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff) };
             return result;
         }
 

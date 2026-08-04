@@ -8,6 +8,11 @@ using KingmakerGunslinger.Bootstrap;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints;
 using Kingmaker.Utility;
 using UnityEngine;
 
@@ -54,33 +59,43 @@ namespace KingmakerGunslinger.Deeds
                 context.Caster.Descriptor == null)
                 throw new InvalidOperationException("Dodge delivery lacks its caster or marker.");
             UnitDescriptor caster = context.Caster.Descriptor;
-            GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
-            if (set == null) throw new InvalidOperationException("Dodge Grit blueprint is unavailable.");
-            TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(caster,
-                TrueGritDeed.GunslingersDodge, 1, false);
-            int before = caster.Resources.GetResourceAmount(set.Grit.Resource);
-            if (!trueGrit.Available || before < trueGrit.EffectiveCost)
-                throw new InvalidOperationException("Gunslinger's Dodge requires enough Grit.");
             if (caster.HasFact(m_ArmedMarker)) caster.RemoveFact(m_ArmedMarker);
-            caster.Resources.Spend(set.Grit.Resource, trueGrit.EffectiveCost);
-            try
-            {
-                var buffContext = new MechanicsContext(context.Caster, caster,
-                    context.Ability.Blueprint, null, new TargetWrapper(context.Caster));
-                if (caster.Buffs.AddBuff(m_ArmorClassBuff, buffContext,
-                    TimeSpan.FromSeconds(6d)) == null)
-                    throw new InvalidOperationException("Gunslinger's Dodge buff was not created.");
-            }
-            catch
-            {
-                caster.Resources.Restore(set.Grit.Resource, trueGrit.EffectiveCost);
-                throw;
-            }
+            var buffContext = new MechanicsContext(context.Caster, caster,
+                context.Ability.Blueprint, null, new TargetWrapper(context.Caster));
+            if (caster.Buffs.AddBuff(m_ArmorClassBuff, buffContext,
+                TimeSpan.FromSeconds(6d)) == null)
+                throw new InvalidOperationException("Gunslinger's Dodge buff was not created.");
             yield return new AbilityDeliveryTarget(target);
         }
 
         public override void Cleanup(AbilityExecutionContext context) { }
         internal BlueprintUnitFact ArmedMarker { get { return m_ArmedMarker; } }
         internal BlueprintBuff ArmorClassBuff { get { return m_ArmorClassBuff; } }
+    }
+
+    internal sealed class DodgeGritResourceLogic : AbilityResourceLogic
+    {
+        internal static DodgeGritResourceLogic Create(BlueprintAbilityResource grit)
+        {
+            var value = ScriptableObject.CreateInstance<DodgeGritResourceLogic>();
+            value.name = "$KMG_DodgeNativeGrit";
+            value.RequiredResource = grit;
+            value.IsSpendResource = true;
+            value.CostIsCustom = true;
+            value.Amount = 0;
+            return value;
+        }
+
+        public override void Spend(AbilityData ability)
+        {
+            if (ability == null || ability.Caster == null) return;
+            TrueGritDecision cost = TrueGritRuntime.Evaluate(ability.Caster,
+                TrueGritDeed.GunslingersDodge, 1, false);
+            if (!cost.Available || ability.Caster.Resources.GetResourceAmount(
+                    RequiredResource) < cost.EffectiveCost)
+                throw new InvalidOperationException(
+                    "Gunslinger's Dodge requires enough Grit.");
+            ability.Caster.Resources.Spend(RequiredResource, cost.EffectiveCost);
+        }
     }
 }

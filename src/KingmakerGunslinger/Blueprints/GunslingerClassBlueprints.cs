@@ -192,9 +192,10 @@ namespace KingmakerGunslinger.Blueprints
                 ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
                     startingPistol, blackPowder, leadBall, gunsmithKit));
             GritBlueprintSet grit = GritBlueprints.Register(registry, characterClass);
-            DeadeyeBlueprintSet deadeye = DeadeyeBlueprints.Register(registry);
+            DeadeyeBlueprintSet deadeye = DeadeyeBlueprints.Register(registry,
+                grit.Resource);
             GunslingerDodgeBlueprintSet dodge =
-                GunslingerDodgeBlueprints.Register(registry);
+                GunslingerDodgeBlueprints.Register(registry, grit.Resource);
             QuickClearBlueprintSet quickClear = QuickClearBlueprints.Register(registry);
             NimbleBlueprintSet nimble = NimbleBlueprints.Register(registry);
             BlueprintFeature initiative = GunslingerInitiativeBlueprints.Register(

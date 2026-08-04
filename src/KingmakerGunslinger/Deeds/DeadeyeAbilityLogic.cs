@@ -4,6 +4,11 @@ using System.Linq;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
@@ -58,28 +63,12 @@ namespace KingmakerGunslinger.Deeds
                 context.Caster.Descriptor == null)
                 throw new InvalidOperationException("Deadeye delivery is missing its caster or marker.");
             UnitDescriptor caster = context.Caster.Descriptor;
-            GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
-            if (set == null) throw new InvalidOperationException("Deadeye Grit blueprint is unavailable.");
-            TrueGritDecision cost = TrueGritRuntime.Evaluate(caster,
-                TrueGritDeed.Deadeye, 1, false);
-            int before = caster.Resources.GetResourceAmount(set.Grit.Resource);
-            if (!cost.Available || before < cost.EffectiveCost)
-                throw new InvalidOperationException("Deadeye requires enough Grit.");
             if (caster.HasFact(m_ArmedMarker)) caster.RemoveFact(m_ArmedMarker);
-            caster.Resources.Spend(set.Grit.Resource, cost.EffectiveCost);
-            try
-            {
-                var buffContext = new MechanicsContext(context.Caster, caster,
-                    context.Ability.Blueprint, null, new TargetWrapper(context.Caster));
-                if (caster.Buffs.AddBuff(m_ArmedBuff, buffContext,
-                    TimeSpan.FromSeconds(6d)) == null)
-                    throw new InvalidOperationException("Deadeye Armed buff was not created.");
-            }
-            catch
-            {
-                caster.Resources.Restore(set.Grit.Resource, cost.EffectiveCost);
-                throw;
-            }
+            var buffContext = new MechanicsContext(context.Caster, caster,
+                context.Ability.Blueprint, null, new TargetWrapper(context.Caster));
+            if (caster.Buffs.AddBuff(m_ArmedBuff, buffContext,
+                TimeSpan.FromSeconds(6d)) == null)
+                throw new InvalidOperationException("Deadeye Armed buff was not created.");
             yield return new AbilityDeliveryTarget(target);
         }
 
@@ -87,5 +76,28 @@ namespace KingmakerGunslinger.Deeds
 
         internal BlueprintUnitFact ArmedMarker { get { return m_ArmedMarker; } }
         internal BlueprintBuff ArmedBuff { get { return m_ArmedBuff; } }
+    }
+
+    internal sealed class DeadeyeGritResourceLogic : AbilityResourceLogic
+    {
+        internal static DeadeyeGritResourceLogic Create(BlueprintAbilityResource grit)
+        {
+            var value = ScriptableObject.CreateInstance<DeadeyeGritResourceLogic>();
+            value.name = "$KMG_DeadeyeNativeGrit";
+            value.RequiredResource = grit; value.IsSpendResource = true;
+            value.CostIsCustom = true; value.Amount = 0;
+            return value;
+        }
+
+        public override void Spend(AbilityData ability)
+        {
+            if (ability == null || ability.Caster == null) return;
+            TrueGritDecision cost = TrueGritRuntime.Evaluate(ability.Caster,
+                TrueGritDeed.Deadeye, 1, false);
+            if (!cost.Available || ability.Caster.Resources.GetResourceAmount(
+                    RequiredResource) < cost.EffectiveCost)
+                throw new InvalidOperationException("Deadeye requires enough Grit.");
+            ability.Caster.Resources.Spend(RequiredResource, cost.EffectiveCost);
+        }
     }
 }
