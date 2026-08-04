@@ -7541,6 +7541,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
                 weapon = new ItemEntityWeapon(blunderbuss);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
+                var combat = new Kingmaker.Controllers.Combat.UnitCombatState(attacker);
+                SetExactProperty(attacker, "CombatState", combat);
                 firstRegistered = Kingmaker.Game.Instance.State.Units.All.Add(first);
                 if (!firstRegistered) throw new InvalidOperationException(
                     "First disposable scatter target was already registered.");
@@ -7579,13 +7581,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
                     data, new TargetWrapper(first));
                 command.IgnoreCooldown(TimeSpan.Zero);
-                attacker.Commands.AddToQueue(command);
+                command.SuppressAnimation();
+                attacker.Commands.Run(command);
                 for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
                     command.Tick();
                 commandFinished = command.IsFinished;
                 mixed = Scatter.ScatterShotRuntime.LastAbilityResult;
                 if (mixed == null) throw new InvalidOperationException(
-                    "Native Scatter Shot command completed without production delivery.");
+                    "Native Scatter Shot command completed without production delivery; " +
+                    "result=" + command.Result + "; canStart=" + command.CanStart +
+                    "; abilityAvailable=" + data.IsAvailable + ".");
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
@@ -7609,6 +7614,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
+                if (attacker != null) SetExactProperty(attacker, "CombatState", null);
                 if (secondRegistered &&
                     !Kingmaker.Game.Instance.State.Units.All.Remove(second))
                     throw new InvalidOperationException(
