@@ -48,7 +48,7 @@ def validate(root: Path, version: str = VERSION,
         ["KMG.Classes.GunslingerClass", "FullBaseAttackGuid",
          "SimpleWeaponGuid", "LightArmorGuid", "CreateLevelEntries",
          "GunslingerClassCatalogPublication", "CharacterClasses = published",
-         "startingPistol, blackPowder, leadBall", "StartingItems.Length != 3"],
+         "startingPistol, blackPowder, leadBall", "StartingItems.Length != 4"],
         "Sprint 34 production class blueprints")
     require_tokens(read(root, "scripts/Test-Sprint34ProductionClass.ps1"),
         ["exact-native-progression-identities", "level-one-grants-aggregate",

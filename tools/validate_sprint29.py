@@ -176,7 +176,7 @@ def validate(
         proficiency,
         [
             "BlueprintAbility repairAbility",
-            "grants[0].Facts.Length != 2",
+            "grants[0].Facts.Length != 3",
             "grants[0].Facts[0], overhaulAbility",
             "grants[0].Facts[1], repairAbility",
             "DoNotRestoreMissingFacts = false",

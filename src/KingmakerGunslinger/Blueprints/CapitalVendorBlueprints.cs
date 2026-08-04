@@ -15,6 +15,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string TableGuid = "afa2c7f292b8e1c4d9c835f0e8047dd3";
         internal const int WeaponCount = 1;
         internal const int ConsumableCount = 99;
+        internal const int AmmunitionCount = 200;
         private const BindingFlags Flags = BindingFlags.Instance |
             BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -23,12 +24,14 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintCatalog firearms,
             BasicAmmunitionBlueprintSet ammunition,
             BlueprintItem repairKit,
+            GunsmithingSupplyBlueprintSet gunsmithingSupplies,
             ModLogger logger)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (firearms == null) throw new ArgumentNullException("firearms");
             if (ammunition == null) throw new ArgumentNullException("ammunition");
             if (repairKit == null) throw new ArgumentNullException("repairKit");
+            if (gunsmithingSupplies == null) throw new ArgumentNullException("gunsmithingSupplies");
             if (logger == null) throw new ArgumentNullException("logger");
 
             BlueprintSharedVendorTable table =
@@ -43,12 +46,14 @@ namespace KingmakerGunslinger.Blueprints
                 firearms.AdvancedRevolver.Item,
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
-                repairKit
+                repairKit,
+                gunsmithingSupplies.OverhaulKit,
+                gunsmithingSupplies.GunsmithKit
             };
             int[] counts =
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
-                ConsumableCount, ConsumableCount, ConsumableCount
+                AmmunitionCount, AmmunitionCount, 10, 5, WeaponCount
             };
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
@@ -95,7 +100,7 @@ namespace KingmakerGunslinger.Blueprints
             return (int)field.GetValue(component);
         }
 
-        private static LootItemsPackFixed CreateFixedEntry(BlueprintItem item, int count)
+        internal static LootItemsPackFixed CreateFixedEntry(BlueprintItem item, int count)
         {
             if (item == null) throw new ArgumentNullException("item");
             FieldInfo wrapperItem = typeof(LootItem).GetField("m_Item", Flags);

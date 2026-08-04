@@ -32,51 +32,9 @@ namespace KingmakerGunslinger.Deeds
                 if (target != null && target.Descriptor != null && dodge != null &&
                     target.Descriptor.HasFact(dodge.ArmedProneMarker))
                 {
-                    UnitDescriptor descriptor = target.Descriptor;
-                    bool ranged = attackRoll.Weapon != null &&
-                        attackRoll.Weapon.Blueprint != null &&
-                        attackRoll.Weapon.Blueprint.Type != null &&
-                        attackRoll.Weapon.Blueprint.Type.IsRanged;
-                    if (ranged)
-                    {
-                        int grit = descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource);
-                        TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(descriptor,
-                            TrueGritDeed.GunslingersDodge, 1, false);
-                        int evaluationGrit = trueGrit.Available ? Math.Max(1, grit) : grit;
-                        GunslingerDodgeDecision decision = Service.Evaluate(
-                            new GunslingerDodgeRequest(true,
-                                GunslingerDodgeMode.DropProne, true,
-                                ReadArmor(descriptor), ReadLoad(descriptor), evaluationGrit,
-                                !descriptor.State.HasCondition(UnitCondition.Prone)));
-                        descriptor.RemoveFact(dodge.ArmedProneMarker);
-                        if (decision.ShouldApply)
-                        {
-                            descriptor.Resources.Spend(gunslinger.Grit.Resource,
-                                trueGrit.EffectiveCost);
-                            try
-                            {
-                                var buffContext = new MechanicsContext(target,
-                                    descriptor, dodge.ProneAbility, null,
-                                    new TargetWrapper(target));
-                                if (descriptor.Buffs.AddBuff(dodge.ArmorClassBuff,
-                                    buffContext, TimeSpan.FromSeconds(6d)) == null &&
-                                    !descriptor.Buffs.RawFacts.Any(value =>
-                                        ReferenceEquals(value.Blueprint,
-                                            dodge.ArmorClassBuff)))
-                                    throw new InvalidOperationException(
-                                        "Gunslinger's Dodge AC buff was not created.");
-                            }
-                            catch
-                            {
-                                descriptor.Resources.Restore(gunslinger.Grit.Resource,
-                                    trueGrit.EffectiveCost);
-                                descriptor.AddFact(dodge.ArmedProneMarker);
-                                throw;
-                            }
-                            authorized = true;
-                        }
-                        GunslingerDodgeRuntimeDiagnostics.Record(decision);
-                    }
+                    // Migration cleanup only: 0.0.65 persisted an armed marker.
+                    // The 0.0.66 ability spends and applies AC at activation.
+                    target.Descriptor.RemoveFact(dodge.ArmedProneMarker);
                 }
             }
             catch (Exception exception)

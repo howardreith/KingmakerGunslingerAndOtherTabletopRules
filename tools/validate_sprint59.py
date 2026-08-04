@@ -70,7 +70,14 @@ def validate(root: Path, version: str = VERSION,
         "Deeds/StunningShotAttackHandler.cs": "TrueGritDeed.StunningShot",
     }
     for relative, token in adapters.items():
-        require_tokens(read(root, "src/KingmakerGunslinger/" + relative),
+        adapter_source = read(root, "src/KingmakerGunslinger/" + relative)
+        if relative == "Deeds/GunslingerDodgeRuntime.cs":
+            adapter_source += read(root,
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs")
+        if relative == "Deeds/DeadeyeRuntime.cs":
+            adapter_source += read(root,
+                "src/KingmakerGunslinger/Deeds/DeadeyeAbilityLogic.cs")
+        require_tokens(adapter_source,
                        ["TrueGritRuntime.Evaluate", token],
                        "Sprint 59 deed adapter " + relative)
     luck = read(root, "src/KingmakerGunslinger/Deeds/SlingersLuckSavingThrowReroll.cs") + read(

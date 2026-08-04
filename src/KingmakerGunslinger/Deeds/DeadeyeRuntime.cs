@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
@@ -28,7 +29,11 @@ namespace KingmakerGunslinger.Deeds
                 if (blueprints == null || initiator == null || target == null ||
                     initiator.Descriptor == null) return;
                 UnitDescriptor descriptor = initiator.Descriptor;
-                bool armed = descriptor.HasFact(blueprints.ArmedMarker);
+                if (descriptor.HasFact(blueprints.ArmedMarker))
+                    descriptor.RemoveFact(blueprints.ArmedMarker);
+                var armedBuff = descriptor.Buffs.RawFacts.FirstOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, blueprints.ArmedBuff));
+                bool armed = armedBuff != null;
                 if (!armed) return;
 
                 FirearmMarkerSnapshot marker = FirearmMarkerLookup.ReadFromRuleEvent(attackRoll);
@@ -37,23 +42,14 @@ namespace KingmakerGunslinger.Deeds
                 DeadeyeDecision decision = Service.Evaluate(new DeadeyeRequest(
                     true, marker.IsExactFirearm, marker.MarkerCount, marker.Definition,
                     initiator.DistanceTo(target), int.MaxValue));
-                TrueGritDecision trueGrit = TrueGritRuntime.Evaluate(descriptor,
-                    TrueGritDeed.Deadeye, decision.GritCost, false);
-                if (!trueGrit.Available)
-                    decision = Service.Evaluate(new DeadeyeRequest(true,
-                        marker.IsExactFirearm, marker.MarkerCount, marker.Definition,
-                        initiator.DistanceTo(target), grit));
 
                 // The native persisted marker applies to the next firearm attack only.
                 // Non-firearm actions leave it armed; any exact firearm shot consumes it.
                 if (!marker.IsExactFirearm) return;
                 if (!FirearmMisfireRuntime.IsEligibleAttack(attackRoll)) return;
-                descriptor.RemoveFact(blueprints.ArmedMarker);
+                descriptor.Buffs.RemoveFact(armedBuff);
                 if (decision.UsesTouchArmorClass)
                 {
-                    descriptor.Resources.Spend(
-                        BlueprintBootstrap.GunslingerClass.Grit.Resource,
-                        trueGrit.EffectiveCost);
                     lock (Decisions) { Decisions.Add(attackRoll, decision); }
                 }
                 DeadeyeRuntimeDiagnostics.Record(decision);

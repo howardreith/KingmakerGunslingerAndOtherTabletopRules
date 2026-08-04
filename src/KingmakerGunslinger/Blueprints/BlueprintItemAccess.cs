@@ -93,6 +93,13 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureCore(item, name, description, flavor, cost, weight, false);
         }
 
+        internal void ConfigureNonStackable(
+            BlueprintItem item, LocalizedString name, LocalizedString description,
+            LocalizedString flavor, int cost, float weight)
+        {
+            ConfigureCore(item, name, description, flavor, cost, weight, false);
+        }
+
         private void ConfigureCore(
             BlueprintItem item,
             LocalizedString name,

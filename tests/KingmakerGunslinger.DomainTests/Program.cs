@@ -1008,9 +1008,11 @@ namespace KingmakerGunslinger.DomainTests
         private static void ThirdPlaytestDodgeNoProne()
         {
             string source = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs");
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs") +
+                ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs");
             Assertions.True(!source.Contains("AddCondition(UnitCondition.Prone") &&
-                source.Contains("dodge.ArmorClassBuff"),
+                source.Contains("m_ArmorClassBuff"),
                 "Gunslinger's Dodge still applies Prone.");
         }
 
@@ -1019,7 +1021,7 @@ namespace KingmakerGunslinger.DomainTests
             string blueprints = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs");
             string runtime = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs");
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs");
             Assertions.True(blueprints.Contains("bonus.Value = 2") &&
                 blueprints.Contains("ModifierDescriptor.Dodge") &&
                 runtime.Contains("TimeSpan.FromSeconds(6d)"),

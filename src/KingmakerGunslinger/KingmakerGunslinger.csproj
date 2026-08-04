@@ -109,6 +109,7 @@
     <Compile Include="Blueprints\BasicAmmunitionBlueprints.cs" />
     <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
+    <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
@@ -203,6 +204,8 @@
     <Compile Include="Blueprints\NimbleBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerInitiativeBlueprints.cs" />
     <Compile Include="Blueprints\GunsmithingBlueprints.cs" />
+    <Compile Include="Blueprints\GunsmithingSupplyBlueprints.cs" />
+    <Compile Include="Blueprints\GunsmithingCraftingBlueprints.cs" />
     <Compile Include="Blueprints\PistolWhipBlueprints.cs" />
     <Compile Include="Blueprints\PlayerFacingPresentation.cs" />
     <Compile Include="Blueprints\UtilityShotBlueprints.cs" />
@@ -247,6 +250,9 @@
     <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
     <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs" />
+    <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
+    <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmRuntimeUseResolver.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmSaleValueRuntime.cs" />
     <Compile Include="Blueprints\BatteredFirearmOriginBlueprints.cs" />

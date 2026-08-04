@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBuff acBuff = registry.Register<BlueprintBuff>(
                 ArmorClassBuffSymbol, CreateArmorClassBuff);
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                ProneAbilitySymbol, () => CreateAbility(marker));
+                ProneAbilitySymbol, () => CreateAbility(marker, acBuff));
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
                 FeatureSymbol, () => CreateFeature(ability));
             Validate(feature, ability, marker, acBuff);
@@ -83,7 +83,8 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static BlueprintAbility CreateAbility(BlueprintFeature marker)
+        private static BlueprintAbility CreateAbility(BlueprintFeature marker,
+            BlueprintBuff armorClassBuff)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = "KMG_GunslingerDodge_ProneAbility";
@@ -91,7 +92,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Dodge.Reaction.Name",
                     "Gunslinger's Dodge"),
                 LocalizationService.Create("KMG.Dodge.Reaction.Description",
-                    "Arm a reaction to the next ranged weapon attack. When triggered, spend 1 grit and gain a +2 dodge bonus to AC for one round. This adaptation causes no movement and does not make you prone."),
+                    "As a swift action, immediately spend 1 grit and gain a +2 dodge bonus to AC for one round. This adaptation causes no movement and does not make you prone."),
                 null);
             result.Type = AbilityType.Extraordinary; result.Range = AbilityRange.Personal;
             result.CanTargetSelf = true;
@@ -101,14 +102,14 @@ namespace KingmakerGunslinger.Blueprints
             result.EffectOnAlly = AbilityEffectOnUnit.Helpful;
             result.EffectOnEnemy = AbilityEffectOnUnit.None;
             result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
-            result.ActionType = UnitCommand.CommandType.Free;
+            result.ActionType = UnitCommand.CommandType.Swift;
             result.ResourceAssetIds = Array.Empty<string>();
             result.LocalizedDuration = LocalizationService.Create(
-                "KMG.Dodge.Prone.Duration", "Armed until triggered; bonus lasts 1 round");
+                "KMG.Dodge.Prone.Duration", "1 round");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Dodge.Prone.SavingThrow", "None");
             result.ComponentsArray = new BlueprintComponent[]
-                { GunslingerDodgeProneAbilityLogic.Create(marker) };
+                { GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff) };
             return result;
         }
 
@@ -125,7 +126,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Dodge.Feature.Name", "Gunslinger's Dodge"),
                 LocalizationService.Create("KMG.Dodge.Feature.AdaptedDescription",
-                    "Spend 1 grit when the armed reaction is triggered by a ranged weapon attack to gain a +2 dodge bonus to AC for one round. You remain standing and may act normally."), null);
+                    "As a swift action, immediately spend 1 grit to gain a +2 dodge bonus to AC for one round. You remain standing and may act normally."), null);
             return result;
         }
 
@@ -134,8 +135,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             var logic = ability.ComponentsArray.OfType<GunslingerDodgeProneAbilityLogic>().Single();
             var grant = feature.ComponentsArray.OfType<AddFacts>().Single();
-            if (ability.ActionType != UnitCommand.CommandType.Free ||
+            if (ability.ActionType != UnitCommand.CommandType.Swift ||
                 !ReferenceEquals(logic.ArmedMarker, marker) || grant.Facts.Length != 1 ||
+                !ReferenceEquals(logic.ArmorClassBuff, acBuff) ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI ||
                 acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray.OfType<AddStatBonus>().Single().Value != 2)

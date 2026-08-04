@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 183;
+        internal const int ExpectedRegisteredBlueprintCount = 188;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -31,6 +31,8 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintAbility _overhaulTestMusketAbility;
         private static BlueprintAbility _repairTestMusketAbility;
         private static BlueprintItem _firearmRepairKit;
+        private static GunsmithingSupplyBlueprintSet _gunsmithingSupplies;
+        private static GunsmithingCraftingBlueprintSet _gunsmithingCrafting;
         private static BlueprintWeaponType _testMusketWeaponType;
         private static BlueprintItemWeapon _testMusketItem;
         private static BlueprintWeaponType _nativeHeavyCrossbowWeaponType;
@@ -118,6 +120,15 @@ namespace KingmakerGunslinger.Bootstrap
                     return _firearmRepairKit;
                 }
             }
+        }
+
+        internal static GunsmithingSupplyBlueprintSet GunsmithingSupplies
+        {
+            get { lock (Gate) return _gunsmithingSupplies; }
+        }
+        internal static GunsmithingCraftingBlueprintSet GunsmithingCrafting
+        {
+            get { lock (Gate) return _gunsmithingCrafting; }
         }
 
         internal static bool IsInitialized
@@ -419,6 +430,8 @@ namespace KingmakerGunslinger.Bootstrap
                     _overhaulTestMusketAbility = result.OverhaulTestMusketAbility;
                     _repairTestMusketAbility = result.RepairTestMusketAbility;
                     _firearmRepairKit = result.FirearmRepairKit;
+                    _gunsmithingSupplies = result.GunsmithingSupplies;
+                    _gunsmithingCrafting = result.GunsmithingCrafting;
                     _testMusketWeaponType = result.TestMusket.WeaponType;
                     _testMusketItem = result.TestMusket.Item;
                     _nativeHeavyCrossbowWeaponType =
@@ -503,6 +516,7 @@ namespace KingmakerGunslinger.Bootstrap
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
+            BeneathStolenLandsVendorPublication btslVendorPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
             try
             {
@@ -547,6 +561,9 @@ namespace KingmakerGunslinger.Bootstrap
                         registry,
                         context.Logger);
 
+                GunsmithingSupplyBlueprintSet gunsmithingSupplies =
+                    GunsmithingSupplyBlueprints.Register(library, registry);
+
                 BlueprintAbility reloadTestMusketAbility =
                     ReloadTestMusketAbilityBlueprints.Register(
                         registry,
@@ -560,7 +577,7 @@ namespace KingmakerGunslinger.Bootstrap
                         registry,
                         context.Logger,
                         testMusket.Item,
-                        firearmRepairKit);
+                        gunsmithingSupplies.OverhaulKit);
 
                 BlueprintAbility repairTestMusketAbility =
                     RepairTestMusketAbilityBlueprints.Register(
@@ -572,20 +589,26 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintAbility scatterShotAbility =
                     ScatterShotBlueprints.Register(registry);
 
+                GunsmithingCraftingBlueprintSet gunsmithingCrafting =
+                    GunsmithingCraftingBlueprints.Register(registry,
+                        basicAmmunition, gunsmithingSupplies.GunsmithKit);
+
                 FirearmProficiencyBlueprints.AttachReload(
                     firearmProficiency,
                     reloadTestMusketAbility,
                     scatterShotAbility);
 
                 BlueprintFeature gunsmithing = GunsmithingBlueprints.Register(
-                    registry, overhaulTestMusketAbility, repairTestMusketAbility);
+                    registry, overhaulTestMusketAbility, repairTestMusketAbility,
+                    gunsmithingCrafting.Ability);
 
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
                         library, registry, firearmProficiency, gunsmithing,
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
-                        basicAmmunition.LeadBall);
+                        basicAmmunition.LeadBall,
+                        gunsmithingSupplies.GunsmithKit);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
                     library, gunslingerClassBlueprints.Grit.Resource,
                     gunslingerClassBlueprints.Dodge.ProneAbility);
@@ -601,7 +624,10 @@ namespace KingmakerGunslinger.Bootstrap
 
                 capitalVendorPublication = CapitalVendorBlueprints.Publish(
                     library, productionFirearms, basicAmmunition,
-                    firearmRepairKit, context.Logger);
+                    firearmRepairKit, gunsmithingSupplies, context.Logger);
+                btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
+                    library, productionFirearms, basicAmmunition,
+                    firearmRepairKit, gunsmithingSupplies, context.Logger);
 
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {
@@ -626,6 +652,8 @@ namespace KingmakerGunslinger.Bootstrap
                     overhaulTestMusketAbility,
                     repairTestMusketAbility,
                     firearmRepairKit,
+                    gunsmithingSupplies,
+                    gunsmithingCrafting,
                     testMusket,
                     productionFirearms,
                     firearmStateTokens,
@@ -650,6 +678,17 @@ namespace KingmakerGunslinger.Bootstrap
                         "blueprints", "native-firearm-feats.rollback-failed",
                         "Blueprint initialization failed and native firearm feat integration rollback was refused.",
                         nativeFeatRollbackException);
+                }
+                if (btslVendorPublication != null)
+                {
+                    try { btslVendorPublication.Rollback(); }
+                    catch (Exception vendorRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "btsl-vendors.rollback-failed",
+                            "Blueprint initialization failed and BTSL vendor rollback was refused.",
+                            vendorRollbackException);
+                    }
                 }
                 if (capitalVendorPublication != null)
                 {
@@ -746,6 +785,8 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintAbility overhaulTestMusketAbility,
                 BlueprintAbility repairTestMusketAbility,
                 BlueprintItem firearmRepairKit,
+                GunsmithingSupplyBlueprintSet gunsmithingSupplies,
+                GunsmithingCraftingBlueprintSet gunsmithingCrafting,
                 TestMusketBlueprintSet testMusket,
                 ProductionFirearmBlueprintCatalog productionFirearms,
                 FirearmStateTokenBlueprintSet firearmStateTokens,
@@ -759,6 +800,8 @@ namespace KingmakerGunslinger.Bootstrap
                 OverhaulTestMusketAbility = overhaulTestMusketAbility ?? throw new ArgumentNullException("overhaulTestMusketAbility");
                 RepairTestMusketAbility = repairTestMusketAbility ?? throw new ArgumentNullException("repairTestMusketAbility");
                 FirearmRepairKit = firearmRepairKit ?? throw new ArgumentNullException("firearmRepairKit");
+                GunsmithingSupplies = gunsmithingSupplies ?? throw new ArgumentNullException("gunsmithingSupplies");
+                GunsmithingCrafting = gunsmithingCrafting ?? throw new ArgumentNullException("gunsmithingCrafting");
                 TestMusket = testMusket ?? throw new ArgumentNullException("testMusket");
                 ProductionFirearms = productionFirearms ?? throw new ArgumentNullException("productionFirearms");
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
@@ -779,6 +822,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintAbility RepairTestMusketAbility { get; private set; }
 
             internal BlueprintItem FirearmRepairKit { get; private set; }
+            internal GunsmithingSupplyBlueprintSet GunsmithingSupplies { get; private set; }
+            internal GunsmithingCraftingBlueprintSet GunsmithingCrafting { get; private set; }
 
             internal TestMusketBlueprintSet TestMusket { get; private set; }
 

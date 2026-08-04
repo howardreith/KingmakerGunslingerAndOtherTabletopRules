@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-Playtest 0.0.63 extends the append-only contract to 184 stable identifiers: 183 active and one reserved. The prior wrapper identities remain hidden for compatibility, while firearm parameters are presented inside the unchanged native weapon-feat parents. The one-round Gunslinger's Dodge AC buff is the only new stable blueprint.
+Sixth playtest 0.0.66 extends the append-only contract to 189 stable identifiers: 188 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility, while the five new identities provide the visible Deadeye Armed buff, Gunsmith's Kit, Firearm Overhaul Kit, basic-ammunition crafting action, and once-per-rest marker.
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.
