@@ -22,15 +22,15 @@ def reject(path: Path, *tokens: str) -> None:
 def validate(root: Path) -> None:
     validate_playtest66.VERSION = VERSION
     validate_playtest66.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    validate_playtest66.validate(root, 871)
+    validate_playtest66.validate(root, 872)
 
     program = (root / "tests/KingmakerGunslinger.DomainTests/Program.cs")
     declared_tests = len(re.findall(
         r'Case\("[^"]+",\s*[A-Za-z0-9_]+\)',
         program.read_text(encoding="utf-8")))
-    if declared_tests != 871:
+    if declared_tests != 872:
         raise AssertionError(
-            f"Expected 871 declared source tests; observed {declared_tests}.")
+            f"Expected 872 declared source tests; observed {declared_tests}.")
 
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs",

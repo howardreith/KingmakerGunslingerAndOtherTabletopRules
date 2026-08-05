@@ -92,6 +92,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("dodge.insufficient-atomic", GunslingerDodgeInsufficientAtomic),
             Case("dodge.invalid-input", GunslingerDodgeInvalidInput),
             Case("dodge.already-prone", GunslingerDodgeAlreadyProneRejected),
+            Case("dodge.native-round-removal-structure", DodgeNativeRoundRemovalStructure),
             Case("quick-clear.standard-exact", QuickClearStandardExact),
             Case("quick-clear.move-exact", QuickClearMoveExact),
             Case("quick-clear.grit-required", QuickClearGritRequired),
@@ -1050,6 +1051,51 @@ namespace KingmakerGunslinger.DomainTests
                 modifier.Contains("Owner.Stats.AC.AddModifier") &&
                 modifier.Contains("Owner.Stats.AC.RemoveModifier"),
                 "The adapted Dodge bonus is not +2 dodge AC for one round.");
+        }
+
+        private static void DodgeNativeRoundRemovalStructure()
+        {
+            string blueprints = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs");
+            string delivery = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs");
+            string modifier = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs");
+            string manifest = ThirdPlaytestSource("blueprints/blueprints.json");
+            string forbidden = blueprints + delivery;
+
+            Assertions.True(
+                blueprints.Contains("bonus, expireNextRound }") &&
+                blueprints.Contains("ScriptableObject.CreateInstance<NewRoundTrigger>()") &&
+                blueprints.Contains("new GameAction[] { removeSelf }") &&
+                blueprints.Contains("ContextActionRemoveSelf") &&
+                blueprints.Contains("ComponentsArray.Length != 2") &&
+                blueprints.Contains("OfType<NewRoundTrigger>().Count() != 1") &&
+                blueprints.Contains("Actions.Length != 1") &&
+                manifest.Split(new[] { "KMG.Deeds.GunslingerDodgeArmorClassBuff" },
+                    StringSplitOptions.None).Length == 2 &&
+                manifest.Contains("bbd7d42117cc4c23b3e22af3a71621d9") &&
+                manifest.Contains("9eec64400c8c47c5924552279ce45c77") &&
+                manifest.Contains("f26ad67ad83b465daf688805199cd4cb") &&
+                blueprints.Contains("ability.ComponentsArray.Length != 3") &&
+                blueprints.Contains("$KMG_GunslingerDodge_NativeGrit") &&
+                blueprints.Contains("IsSpendResource = true") &&
+                blueprints.Contains("CostIsCustom = true") &&
+                blueprints.Contains("$KMG_GunslingerDodge_TrueGritCost") &&
+                delivery.Contains("new TimeSpan?(OneRoundDuration)") &&
+                delivery.Contains("TimeSpan.FromSeconds(6d)") &&
+                modifier.Contains("internal const int Bonus = 2") &&
+                modifier.Contains("ModifierDescriptor.Dodge") &&
+                modifier.Contains("Owner.Stats.AC.RemoveModifier(_modifier)") &&
+                !forbidden.Contains("Task.Delay") &&
+                !forbidden.Contains("Thread.Sleep") &&
+                !forbidden.Contains("DateTime.Now") &&
+                !forbidden.Contains("IEnumerator Expire") &&
+                !forbidden.Contains("buff.EndTime =") &&
+                !forbidden.Contains("UpdateNextEvent()") &&
+                !forbidden.Contains("BuffCollection.Tick") &&
+                !forbidden.Contains("dodge-forensics.enabled"),
+                "Dodge native round removal or its frozen delivery contract changed.");
         }
 
         private static void ThirdPlaytestGritSharedUi()

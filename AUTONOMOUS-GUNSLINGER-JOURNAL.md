@@ -3902,3 +3902,19 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 - Immediate Grit spending, immediate +2 Dodge AC, visible icon, stable GUIDs, and
   all unrelated qualified systems remain unchanged. Expiration and exact AC
   restoration remain human-gated.
+
+# Dodge native round self-removal candidate (2026-08-05)
+
+- Accepted human evidence proves the existing duration-aware Dodge delivery,
+  one-Grit spend, visible countdown, and exact +2 Dodge AC application work,
+  while native EndTime expiration leaves the Buff attached. No further forensic
+  collection is requested or required for this repair.
+- The existing Dodge Buff now also owns one native `NewRoundTrigger` with one
+  `ContextActionRemoveSelf`. Exact installed metadata identifies the trigger as
+  `IUnitNewCombatRoundHandler` (the separate installed `ITickEachRound` contract
+  exposes `OnNewRound()`); its action resolves the executing Buff context and
+  calls `Buff.Remove()`. This is the shared native combat-round event used by
+  real-time and turn-based play and has no activation-time callback.
+- The registration-static metric is now 872. Expiration, AC restoration, pause
+  behavior, and next-turn behavior remain human acceptance gates; structural
+  tests do not claim runtime expiration acceptance or Sprint 30 entry.

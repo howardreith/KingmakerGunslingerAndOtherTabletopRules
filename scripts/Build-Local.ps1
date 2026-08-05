@@ -56,6 +56,10 @@ if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit
     -ReferenceBundleDir $ReferenceBundleDir -KingmakerInstallDir $KingmakerInstallDir
 if ($LASTEXITCODE -ne 0) { throw 'Exact-reference Dodge Harmony compatibility validation failed.' }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+    (Join-Path $PSScriptRoot 'Test-DodgeNativeRoundRemoval.ps1') `
+    -ReferenceBundleDir $ReferenceBundleDir
+if ($LASTEXITCODE -ne 0) { throw 'Exact-reference Dodge native round-removal validation failed.' }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
     (Join-Path $PSScriptRoot 'Test-DodgeJsonlSerialization.ps1') `
     -ModAssemblyPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll') `
     -ReferenceBundleDir $ReferenceBundleDir -KingmakerInstallDir $KingmakerInstallDir

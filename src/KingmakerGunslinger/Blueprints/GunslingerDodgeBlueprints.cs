@@ -3,11 +3,14 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Deeds;
 using UnityEngine;
@@ -74,7 +77,24 @@ namespace KingmakerGunslinger.Blueprints
             var bonus = ScriptableObject.CreateInstance<
                 GunslingerDodgeArmorClassBonus>();
             bonus.name = "$KMG_GunslingerDodge_AC";
-            result.ComponentsArray = new BlueprintComponent[] { bonus };
+            var removeSelf = ScriptableObject.CreateInstance<
+                ContextActionRemoveSelf>();
+            removeSelf.name = "$KMG_GunslingerDodge_RemoveSelf";
+            var expireNextRound = ScriptableObject.CreateInstance<NewRoundTrigger>();
+            expireNextRound.name = "$KMG_GunslingerDodge_ExpireNextRound";
+            expireNextRound.NewRoundActions = new ActionList {
+                Actions = new GameAction[] { removeSelf }
+            };
+            // Native Assembly-CSharp contract: NewRoundTrigger implements
+            // IUnitNewCombatRoundHandler.HandleNewCombatRound(UnitEntityData),
+            // exposes ActionList NewRoundActions, and runs it only from that
+            // combat-round event (not OnTurnOn). ContextActionRemoveSelf.RunAction()
+            // resolves Buff.Data from the action context and calls Buff.Remove().
+            // This event is the shared real-time/turn-based native round boundary.
+            // Construction precedent: KingmakerRebalance 1332fb0, Rebalance.cs
+            // (MIT), using the same native NewRoundTrigger/remove-self graph.
+            result.ComponentsArray = new BlueprintComponent[] {
+                bonus, expireNextRound };
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Dodge.Buff.Name", "Gunslinger's Dodge"),
                 LocalizationService.Create("KMG.Dodge.Buff.Description",
@@ -149,6 +169,8 @@ namespace KingmakerGunslinger.Blueprints
                 .OfType<DodgeGritCostCalculator>().Single();
             GunslingerDodgeProneAbilityLogic delivery = ability.ComponentsArray
                 .OfType<GunslingerDodgeProneAbilityLogic>().Single();
+            NewRoundTrigger roundTrigger = acBuff.ComponentsArray
+                .OfType<NewRoundTrigger>().Single();
             var grant = feature.ComponentsArray.OfType<AddFacts>().Single();
             if (ability.ActionType != UnitCommand.CommandType.Swift ||
                 ability.Animation !=
@@ -167,6 +189,13 @@ namespace KingmakerGunslinger.Blueprints
                 acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray
                     .OfType<GunslingerDodgeArmorClassBonus>().Count() != 1 ||
+                acBuff.ComponentsArray.Length != 2 ||
+                acBuff.ComponentsArray.OfType<NewRoundTrigger>().Count() != 1 ||
+                roundTrigger.NewRoundActions == null ||
+                roundTrigger.NewRoundActions.Actions == null ||
+                roundTrigger.NewRoundActions.Actions.Length != 1 ||
+                !(roundTrigger.NewRoundActions.Actions[0] is
+                    ContextActionRemoveSelf) ||
                 GunslingerDodgeArmorClassBonus.Bonus != 2)
                 throw new InvalidOperationException("Gunslinger's Dodge blueprints are incomplete.");
         }
