@@ -1033,17 +1033,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(blueprints.Contains("GunslingerDodgeArmorClassBonus") &&
                 blueprints.Contains("ability.ComponentsArray.Length != 3") &&
                 !blueprints.Contains("AbilityEffectRunAction") &&
-                runtime.Contains("ContextActionApplyBuff") &&
-                runtime.Contains("context.GetDataScope") &&
-                runtime.Contains("DurationRate.Rounds") &&
-                runtime.Contains("BonusValue = 1") &&
-                runtime.Contains("IsNotDispelable = true") &&
+                runtime.Contains("caster.Buffs.AddBuff") &&
+                runtime.Contains("TimeSpan.FromSeconds(6d)") &&
+                runtime.Contains("new MechanicsContext") &&
+                runtime.Contains("RecordDeliveryEntered") &&
+                runtime.Contains("RecordDeliveryApplied") &&
+                runtime.Contains("RecordDeliveryFault") &&
+                !runtime.Contains("ContextActionApplyBuff") &&
+                !runtime.Contains("m_ApplyBuffActions.Run") &&
                 modifier.Contains("internal const int Bonus = 2") &&
                 modifier.Contains("ModifierDescriptor.Dodge") &&
                 modifier.Contains("Owner.Stats.AC.AddModifier") &&
-                modifier.Contains("Owner.Stats.AC.RemoveModifier") &&
-                !runtime.Contains("TimeSpan.FromSeconds") &&
-                !runtime.Contains("caster.Buffs.AddBuff"),
+                modifier.Contains("Owner.Stats.AC.RemoveModifier"),
                 "The adapted Dodge bonus is not +2 dodge AC for one round.");
         }
 

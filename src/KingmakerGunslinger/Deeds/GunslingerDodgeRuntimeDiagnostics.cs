@@ -1,7 +1,7 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Kingmaker.UnitLogic.Buffs;
-using System.Runtime.CompilerServices;
 
 namespace KingmakerGunslinger.Deeds
 {
@@ -21,17 +21,36 @@ namespace KingmakerGunslinger.Deeds
         }
         internal static void RecordDuplicate() { Interlocked.Increment(ref _duplicates); }
         internal static void RecordFault(Exception ignored) { Interlocked.Increment(ref _faults); }
-        internal static void RecordDelivery(Buff buff, int acBefore, int acAfter)
+
+        internal static void RecordDeliveryEntered(int acBefore)
+        {
+            _deliveryEvidence = "deliverEntered=true;buffCreated=false;" +
+                "deliveryFault=false;acBeforeDeliver=" + acBefore;
+        }
+
+        internal static void RecordDeliveryApplied(Buff buff, int acBefore, int acAfter)
         {
             _deliveryEvidence = "deliverEntered=true;buffCreated=" + (buff != null) +
-                ";buffRuntimeIdentity=" + (buff == null ? "null" :
-                    RuntimeHelpers.GetHashCode(buff).ToString()) +
+                ";deliveryFault=false;buffRuntimeIdentity=" +
+                (buff == null ? "null" : RuntimeHelpers.GetHashCode(buff).ToString()) +
                 ";buffStart=" + (buff == null ? TimeSpan.Zero :
                     buff.EndTime - buff.TimeLeft) +
                 ";buffEnd=" + (buff == null ? TimeSpan.Zero : buff.EndTime) +
                 ";buffRemaining=" + (buff == null ? TimeSpan.Zero : buff.TimeLeft) +
                 ";acBeforeDeliver=" + acBefore + ";acAfterDeliver=" + acAfter;
         }
+
+        internal static void RecordDeliveryFault(
+            Exception exception, int acBefore, int acAfter)
+        {
+            Interlocked.Increment(ref _faults);
+            _deliveryEvidence = "deliverEntered=true;buffCreated=false;" +
+                "deliveryFault=true;exception=" +
+                (exception == null ? "<null>" : exception.GetType().FullName) +
+                ";message=" + (exception == null ? "<null>" : exception.Message) +
+                ";acBeforeDeliver=" + acBefore + ";acAfterDeliver=" + acAfter;
+        }
+
         internal static void Reset()
         {
             Interlocked.Exchange(ref _applied, 0); Interlocked.Exchange(ref _rejected, 0);

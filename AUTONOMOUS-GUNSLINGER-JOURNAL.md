@@ -3848,3 +3848,21 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   missing focused live-command evidence. No commit or final clean-tree package
   was created; the entire integrated candidate remains preserved in the working
   tree.
+
+# Pro Dodge delivery recovery after failed native-action embedding (2026-08-05)
+
+- Human playtesting of the uncommitted stabilization candidate reports that
+  Gunslinger's Dodge still spends Grit but creates no visible buff and changes
+  no AC.
+- The failed candidate embedded `ContextActionApplyBuff` and an `ActionList`
+  inside `AbilityCustomLogic`. Its diagnostic did not record entry until after
+  the action succeeded, so `deliverEntered=false` could not distinguish a
+  command interruption from a fault inside the embedded action.
+- Restore the previously human-proven direct `BuffCollection.AddBuff` delivery
+  with an exact six-second bounded duration and `MechanicsContext`, while
+  retaining native resource spending, the True Grit calculator, the owned +2
+  Dodge modifier, the explicit project icon, and all stable blueprint GUIDs.
+- New diagnostics record delivery entry before mutation, successful Buff
+  creation and AC change separately, and the exact exception when delivery
+  faults. Live command, icon, duration, expiration, and UI acceptance remain
+  human-gated.

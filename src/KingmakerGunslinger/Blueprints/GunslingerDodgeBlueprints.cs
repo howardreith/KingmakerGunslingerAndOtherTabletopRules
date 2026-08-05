@@ -162,7 +162,7 @@ namespace KingmakerGunslinger.Blueprints
                 calculator == null || delivery == null ||
                 !ReferenceEquals(delivery.ArmedMarker, marker) ||
                 !ReferenceEquals(delivery.ArmorClassBuff, acBuff) ||
-                !delivery.HasOneRoundTimedBuffAction ||
+                delivery.Duration != TimeSpan.FromSeconds(6d) ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI ||
                 acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray

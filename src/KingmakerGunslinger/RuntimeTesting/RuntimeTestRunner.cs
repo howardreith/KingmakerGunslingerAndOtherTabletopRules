@@ -10990,7 +10990,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     buffRank == 1 && buffEndTime - buffStartTime ==
                         TimeSpan.FromSeconds(6d) && buffRemaining > TimeSpan.Zero &&
                     buffRemaining <= TimeSpan.FromSeconds(6d),
-                    "ContextActionApplyBuff one-round native duration"),
+                    "BuffCollection.AddBuff bounded six-second duration"),
                 Assertion("dodge-modifier-lifecycle",
                     "one OnTurnOn and one OnTurnOff; AC returns exactly to baseline",
                     observed, GunslingerDodgeArmorClassBonus.TurnedOn == 1 &&

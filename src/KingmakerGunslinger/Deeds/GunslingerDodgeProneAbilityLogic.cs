@@ -1,22 +1,20 @@
 using System;
 using System.Collections.Generic;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
-using Kingmaker.UnitLogic.Buffs.Blueprints;
-using Kingmaker.UnitLogic.Buffs;
-using KingmakerGunslinger.Blueprints;
-using KingmakerGunslinger.Bootstrap;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
-using Kingmaker.UnitLogic.Abilities.Components.Base;
-using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
-using Kingmaker.Blueprints.Classes.Spells;
-using Kingmaker.Blueprints.Classes;
-using Kingmaker.Blueprints;
-using Kingmaker.Utility;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
-using Kingmaker.UnitLogic.Mechanics.Actions;
-using Kingmaker.ElementsSystem;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Deeds
@@ -25,10 +23,11 @@ namespace KingmakerGunslinger.Deeds
     public sealed class GunslingerDodgeProneAbilityLogic : AbilityCustomLogic,
         IAbilityAvailabilityProvider
     {
+        internal static readonly TimeSpan OneRoundDuration =
+            TimeSpan.FromSeconds(6d);
+
         [SerializeField] private BlueprintUnitFact m_ArmedMarker;
         [SerializeField] private BlueprintBuff m_ArmorClassBuff;
-        [SerializeField] private ContextActionApplyBuff m_ApplyBuff;
-        [SerializeField] private ActionList m_ApplyBuffActions;
 
         internal static GunslingerDodgeProneAbilityLogic Create(
             BlueprintUnitFact armedMarker, BlueprintBuff armorClassBuff)
@@ -39,20 +38,6 @@ namespace KingmakerGunslinger.Deeds
             result.name = "$KMG_GunslingerDodge_ImmediateDelivery";
             result.m_ArmedMarker = armedMarker;
             result.m_ArmorClassBuff = armorClassBuff;
-            result.m_ApplyBuff = new ContextActionApplyBuff
-            {
-                Buff = armorClassBuff,
-                DurationValue = new ContextDurationValue
-                {
-                    Rate = DurationRate.Rounds,
-                    BonusValue = 1
-                },
-                IsNotDispelable = true
-            };
-            result.m_ApplyBuffActions = new ActionList
-            {
-                Actions = new GameAction[] { result.m_ApplyBuff }
-            };
             return result;
         }
 
@@ -80,36 +65,49 @@ namespace KingmakerGunslinger.Deeds
                 context == null || context.Caster == null ||
                 context.Caster.Descriptor == null)
                 throw new InvalidOperationException("Dodge delivery lacks its caster or marker.");
+
             UnitDescriptor caster = context.Caster.Descriptor;
-            if (caster.HasFact(m_ArmorClassBuff))
-                throw new InvalidOperationException(
-                    "Gunslinger's Dodge is already active on the caster.");
-            if (caster.HasFact(m_ArmedMarker)) caster.RemoveFact(m_ArmedMarker);
             int acBefore = caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue;
-            using (context.GetDataScope(new TargetWrapper(context.Caster)))
-                m_ApplyBuffActions.Run();
-            Buff buff = caster.Buffs.GetBuff(m_ArmorClassBuff);
-            if (buff == null)
-                throw new InvalidOperationException("Gunslinger's Dodge buff was not created.");
-            GunslingerDodgeRuntimeDiagnostics.RecordDelivery(
-                buff, acBefore, caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue);
+            GunslingerDodgeRuntimeDiagnostics.RecordDeliveryEntered(acBefore);
+
+            try
+            {
+                if (caster.HasFact(m_ArmorClassBuff))
+                    throw new InvalidOperationException(
+                        "Gunslinger's Dodge is already active on the caster.");
+                if (caster.HasFact(m_ArmedMarker)) caster.RemoveFact(m_ArmedMarker);
+
+                var buffContext = new MechanicsContext(context.Caster, caster,
+                    context.Ability.Blueprint, null,
+                    new TargetWrapper(context.Caster));
+                Buff buff = caster.Buffs.AddBuff(
+                    m_ArmorClassBuff,
+                    buffContext,
+                    OneRoundDuration);
+                if (buff == null)
+                    throw new InvalidOperationException(
+                        "Gunslinger's Dodge buff was not created.");
+
+                int acAfter = caster.Stats == null ? 0 :
+                    caster.Stats.AC.ModifiedValue;
+                GunslingerDodgeRuntimeDiagnostics.RecordDeliveryApplied(
+                    buff, acBefore, acAfter);
+            }
+            catch (Exception exception)
+            {
+                GunslingerDodgeRuntimeDiagnostics.RecordDeliveryFault(
+                    exception, acBefore,
+                    caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue);
+                throw;
+            }
+
             yield return new AbilityDeliveryTarget(new TargetWrapper(context.Caster));
         }
 
         public override void Cleanup(AbilityExecutionContext context) { }
         internal BlueprintUnitFact ArmedMarker { get { return m_ArmedMarker; } }
         internal BlueprintBuff ArmorClassBuff { get { return m_ArmorClassBuff; } }
-        internal bool HasOneRoundTimedBuffAction
-        {
-            get
-            {
-                return m_ApplyBuff != null &&
-                    ReferenceEquals(m_ApplyBuff.Buff, m_ArmorClassBuff) &&
-                    !m_ApplyBuff.Permanent && m_ApplyBuff.IsNotDispelable &&
-                    m_ApplyBuff.DurationValue.Rate == DurationRate.Rounds &&
-                    m_ApplyBuff.DurationValue.BonusValue.Value == 1;
-            }
-        }
+        internal TimeSpan Duration { get { return OneRoundDuration; } }
     }
 
     internal sealed class DodgeGritCostCalculator : BlueprintComponent,

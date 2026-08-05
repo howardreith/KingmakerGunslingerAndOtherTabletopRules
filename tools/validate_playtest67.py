@@ -47,14 +47,13 @@ def validate(root: Path) -> None:
         "AbilityEffectRunAction")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "ContextActionApplyBuff", "context.GetDataScope",
-        "DurationRate.Rounds", "BonusValue = 1", "IsNotDispelable = true")
-    validate_playtest66.require(
-        root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
+        "caster.Buffs.AddBuff", "TimeSpan.FromSeconds(6d)",
+        "new MechanicsContext", "RecordDeliveryEntered",
+        "RecordDeliveryApplied", "RecordDeliveryFault",
         "new AbilityDeliveryTarget(new TargetWrapper(context.Caster))")
     reject(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "TimeSpan.FromSeconds", "caster.Buffs.AddBuff")
+        "ContextActionApplyBuff", "m_ApplyBuffActions.Run")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs",
         "Owner.Stats.AC.AddModifier", "ModifierDescriptor.Dodge",
