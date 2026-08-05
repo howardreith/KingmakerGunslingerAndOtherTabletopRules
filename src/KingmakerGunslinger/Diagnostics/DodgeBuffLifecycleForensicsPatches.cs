@@ -15,29 +15,29 @@ namespace KingmakerGunslinger.Diagnostics
     [HarmonyPatch(typeof(BuffCollection), "TriggerRuleApplyBuff", new[] { typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
     internal static class DodgeForensicsTriggerRuleApplyBuffPatch
     {
-        private static void Prefix(BlueprintBuff blueprint, MechanicsContext context, TimeSpan? duration)
-        { DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-prefix", blueprint, context, duration, null, null, null); }
-        private static void Postfix(BlueprintBuff blueprint, MechanicsContext context, TimeSpan? duration, Buff __result)
-        { DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-postfix", blueprint, context, duration, __result, __result != null, null); }
-        private static Exception Finalizer(BlueprintBuff blueprint, MechanicsContext context, TimeSpan? duration, Exception __exception)
-        { if (__exception != null) DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-exception", blueprint, context, duration, null, false, __exception); return __exception; }
+        private static void Prefix(BlueprintBuff __0, MechanicsContext __1, TimeSpan? __2)
+        { BlueprintBuff blueprint = __0; MechanicsContext context = __1; TimeSpan? duration = __2; DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-prefix", blueprint, context, duration, null, null, null); }
+        private static void Postfix(BlueprintBuff __0, MechanicsContext __1, TimeSpan? __2, Buff __result)
+        { BlueprintBuff blueprint = __0; MechanicsContext context = __1; TimeSpan? duration = __2; DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-postfix", blueprint, context, duration, __result, __result != null, null); }
+        private static Exception Finalizer(BlueprintBuff __0, MechanicsContext __1, TimeSpan? __2, Exception __exception)
+        { BlueprintBuff blueprint = __0; MechanicsContext context = __1; TimeSpan? duration = __2; if (__exception != null) DodgeBuffLifecycleForensics.RecordCreation("trigger-rule-apply-buff-exception", blueprint, context, duration, null, false, __exception); return __exception; }
     }
 
     [HarmonyPatch(typeof(BuffCollection), "AddBuffInternal", new[] { typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
     internal static class DodgeForensicsAddBuffInternalPatch
     {
-        private static void Prefix(BlueprintBuff blueprint, MechanicsContext context, TimeSpan? duration)
-        { DodgeBuffLifecycleForensics.RecordCreation("add-buff-internal-prefix", blueprint, context, duration, null, true, null); }
-        private static void Postfix(BlueprintBuff blueprint, MechanicsContext context, TimeSpan? duration, Buff __result)
-        { DodgeBuffLifecycleForensics.RecordCreation("add-buff-internal-postfix", blueprint, context, duration, __result, true, null); }
+        private static void Prefix(BlueprintBuff __0, MechanicsContext __1, TimeSpan? __2)
+        { BlueprintBuff blueprint = __0; MechanicsContext context = __1; TimeSpan? duration = __2; DodgeBuffLifecycleForensics.RecordCreation("add-buff-internal-prefix", blueprint, context, duration, null, true, null); }
+        private static void Postfix(BlueprintBuff __0, MechanicsContext __1, TimeSpan? __2, Buff __result)
+        { BlueprintBuff blueprint = __0; MechanicsContext context = __1; TimeSpan? duration = __2; DodgeBuffLifecycleForensics.RecordCreation("add-buff-internal-postfix", blueprint, context, duration, __result, true, null); }
     }
 
     [HarmonyPatch(typeof(BuffCollection), "OnFactCreated", new[] { typeof(Fact) })]
     internal static class DodgeForensicsOnFactCreatedPatch
-    { private static void Postfix(Fact fact, BuffCollection __instance) { DodgeBuffLifecycleForensics.Record("on-fact-created", fact as Buff, __instance, null, null, null); } }
+    { private static void Postfix(BuffCollection __instance, Fact __0) { Fact newFact = __0; DodgeBuffLifecycleForensics.Record("on-fact-created", newFact as Buff, __instance, null, null, null); } }
     [HarmonyPatch(typeof(BuffCollection), "OnFactAdded", new[] { typeof(Fact) })]
     internal static class DodgeForensicsOnFactAddedPatch
-    { private static void Postfix(Fact fact, BuffCollection __instance) { DodgeBuffLifecycleForensics.Record("on-fact-added", fact as Buff, __instance, null, null, null); } }
+    { private static void Postfix(BuffCollection __instance, Fact __0) { Fact newFact = __0; DodgeBuffLifecycleForensics.Record("on-fact-added", newFact as Buff, __instance, null, null, null); } }
     [HarmonyPatch(typeof(BuffCollection), "UpdateNextEvent")]
     internal static class DodgeForensicsUpdateNextEventPatch
     {
@@ -53,12 +53,12 @@ namespace KingmakerGunslinger.Diagnostics
     [HarmonyPatch(typeof(FactCollection), "RemoveFact", new[] { typeof(Fact) })]
     internal static class DodgeForensicsRemoveFactPatch
     {
-        private static void Prefix(Fact fact) { var b = fact as Buff; DodgeBuffLifecycleForensics.Record("remove-fact-prefix", b, b == null || b.Owner == null ? null : b.Owner.Buffs, null, null, null); }
-        private static void Postfix(Fact fact) { var b = fact as Buff; DodgeBuffLifecycleForensics.Record("remove-fact-postfix", b, b == null || b.Owner == null ? null : b.Owner.Buffs, null, null, null); }
+        private static void Prefix(Fact __0) { Fact fact = __0; var b = fact as Buff; DodgeBuffLifecycleForensics.Record("remove-fact-prefix", b, b == null || b.Owner == null ? null : b.Owner.Buffs, null, null, null); }
+        private static void Postfix(Fact __0) { Fact fact = __0; var b = fact as Buff; DodgeBuffLifecycleForensics.Record("remove-fact-postfix", b, b == null || b.Owner == null ? null : b.Owner.Buffs, null, null, null); }
     }
     [HarmonyPatch(typeof(BuffCollection), "OnFactRemoved", new[] { typeof(Fact) })]
     internal static class DodgeForensicsOnFactRemovedPatch
-    { private static void Prefix(Fact fact, BuffCollection __instance) { DodgeBuffLifecycleForensics.Record("on-fact-removed", fact as Buff, __instance, null, null, null); } }
+    { private static void Prefix(BuffCollection __instance, Fact __0) { Fact fact = __0; DodgeBuffLifecycleForensics.Record("on-fact-removed", fact as Buff, __instance, null, null, null); } }
     [HarmonyPatch(typeof(Buff), "OnRemove")]
     internal static class DodgeForensicsBuffOnRemovePatch
     { private static void Prefix(Buff __instance) { DodgeBuffLifecycleForensics.Record("buff-on-remove-prefix", __instance, null, null, null, null); } private static void Postfix(Buff __instance) { DodgeBuffLifecycleForensics.Record("buff-on-remove-postfix", __instance, null, null, null, null); } }

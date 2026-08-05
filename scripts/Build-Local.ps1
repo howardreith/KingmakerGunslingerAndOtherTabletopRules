@@ -50,6 +50,11 @@ $exactRoot = Join-Path $localRoot 'exact-build'
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
     --configuration Release --git-commit $git.Commit
 if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit code $LASTEXITCODE." }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+    (Join-Path $PSScriptRoot 'Test-DodgeHarmonyPatchCompatibility.ps1') `
+    -ModAssemblyPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll') `
+    -ReferenceBundleDir $ReferenceBundleDir -KingmakerInstallDir $KingmakerInstallDir
+if ($LASTEXITCODE -ne 0) { throw 'Exact-reference Dodge Harmony compatibility validation failed.' }
 
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'blueprints') -Force | Out-Null
