@@ -10,6 +10,8 @@ This branch changes Gunslinger's Dodge from a manually attached timed `Buff` to 
 
 Call of the Wild is **not** a build or runtime dependency for this implementation.
 
+The downloadable revised-repository archive is **source-only** and deliberately excludes historical `artifacts` output so an older DLL cannot be mistaken for this fix. Build the repository before attempting to install it.
+
 ## Prerequisites
 
 Use the Windows machine on which Pathfinder: Kingmaker is installed.
