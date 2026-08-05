@@ -1469,13 +1469,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         pistolMarkers == 1 && musketMarkers == 1 &&
                         blunderbussMarkers == 1 && rifleMarkers == 1 && revolverMarkers == 1,
                     "concrete BlueprintWeaponType component arrays"),
-                Assertion("special-range-enabled-contract", "unavailableRestrictions=0",
-                    "unavailableRestrictions=" + blunderbussUnavailable,
+                Assertion("blunderbuss-dual-mode-contract",
+                    "ordinaryRange=10;scatter=true;unavailableRestrictions=0",
+                    "ordinaryRange=" + (catalog == null ? -1 :
+                        catalog.Blunderbuss.Spec.Definition.RangeIncrementFeet) +
+                        ";scatter=" + (catalog != null &&
+                        catalog.Blunderbuss.Spec.Definition.IsScatter) +
+                        ";unavailableRestrictions=" + blunderbussUnavailable,
                     catalog != null &&
-                        !catalog.Blunderbuss.Spec.Definition.HasFixedRangeIncrement &&
+                        catalog.Blunderbuss.Spec.Definition.RangeIncrementFeet == 10 &&
+                        catalog.Blunderbuss.Spec.Definition.IsScatter &&
                         catalog.Blunderbuss.Spec.IsPlayerFireable &&
                         blunderbussUnavailable == 0,
-                    "enabled scatter-range definition and concrete production item"),
+                    "ordinary bullet range plus optional Scatter Shot capability"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",
@@ -3794,20 +3800,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool rifle = ObserveRepairedPresentation("AdvancedRifle",
                 catalog.AdvancedRifle, heavyType, heavyItem, records);
             var resolvedAssets = new List<string>();
-            bool approvedBundle = Assets.FirearmAssetRuntime.IsLoaded;
+            bool customCapabilitiesValid = true;
             foreach (FirearmKind kind in new[] { FirearmKind.Pistol,
                 FirearmKind.Musket, FirearmKind.Blunderbuss,
                 FirearmKind.Revolver, FirearmKind.Rifle })
             {
                 GameObject instance = Assets.FirearmAssetRuntime.InstantiatePrefab(kind);
-                bool resolved = instance != null &&
+                bool present = instance != null;
+                bool renderable = !present ||
                     instance.GetComponentsInChildren<Renderer>(true).Any(value =>
                         value != null && value.sharedMaterials != null &&
                         value.sharedMaterials.Any(material => material != null &&
                             material.shader != null));
-                resolvedAssets.Add(kind + "=" + resolved);
+                Assets.FirearmPresentationProfile profile =
+                    Assets.FirearmPresentationProfile.Require(kind);
+                resolvedAssets.Add(kind + "=present:" + present +
+                    ",renderable:" + renderable +
+                    ",equippedPolicy:" + profile.EquippedPolicy +
+                    ",holsterPolicy:" + profile.HolsterPolicy);
                 if (instance != null) UnityEngine.Object.Destroy(instance);
-                approvedBundle &= resolved;
+                customCapabilitiesValid &= renderable;
             }
             string qualities = "<unobserved>";
             ItemEntityWeapon tooltipItem = null;
@@ -3865,11 +3877,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string.Equals(leadProjectile.name, "ArrowCrossBow00",
                             StringComparison.Ordinal),
                     "installed ResourcesLibrary exact BlueprintProjectile GUID"),
-                Assertion("approved-firearm-asset-bundle",
-                    "Unity 2018.4.10f1 bundle loads renderable Pistol, Musket, Blunderbuss, Revolver, and Rifle prefabs with resolved materials",
-                    string.Join(" | ", resolvedAssets.ToArray()),
-                    approvedBundle,
-                    "FirearmAssetRuntime bundle cache and instantiated renderer/material dependencies"),
+                Assertion("firearm-asset-capability-fallbacks",
+                    "every cached custom prefab is renderable; absent or disabled capabilities preserve coherent native presentation",
+                    "bundleLoaded=" + Assets.FirearmAssetRuntime.IsLoaded + " | " +
+                        string.Join(" | ", resolvedAssets.ToArray()),
+                    customCapabilitiesValid && pistol && revolver && musket &&
+                        blunderbuss && rifle,
+                    "transactional FirearmAssetRuntime cache plus preserved native WeaponVisualParameters fallbacks"),
                 Assertion("firearm-description-and-qualities",
                     "no placeholder/crossbow wording; qualities identify firearm, era, handedness, capacity, range, effective misfire, and condition",
                     "descriptions=" + descriptionsRepaired + ";qualities=" + qualities,
@@ -4431,43 +4445,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             ProductionFirearmBlueprintEntry firearm, object visual,
             object source)
         {
-            if (visual == null || source == null || ReferenceEquals(visual, source))
-                return false;
-            Array projectiles = ReadField(visual, "m_Projectiles") as Array;
+            var repaired = visual as WeaponVisualParameters;
+            var native = source as WeaponVisualParameters;
+            if (repaired == null || native == null ||
+                ReferenceEquals(repaired, native)) return false;
+            Array projectiles = ReadField(repaired, "m_Projectiles") as Array;
             bool projectilesPreserved = projectiles != null &&
                 projectiles.Length == 1 && ReferenceEquals(projectiles.GetValue(0),
                     FirearmProjectileBlueprints.Projectile);
-            bool shortFirearm = firearm.Spec.Definition.Kind == FirearmKind.Pistol ||
-                firearm.Spec.Definition.Kind == FirearmKind.Revolver;
-            bool animationPreserved = EquivalentPresentationValue(
-                ReadField(visual, "m_WeaponAnimationStyle"),
-                ReadField(source, "m_WeaponAnimationStyle"));
-            bool safeHolster = !shortFirearm ||
-                !Convert.ToBoolean(ReadField(visual, "m_OverrideAttachSlots"),
-                    System.Globalization.CultureInfo.InvariantCulture);
-            bool customModel = ReferenceEquals(ReadField(visual, "m_WeaponModel"),
-                Assets.FirearmAssetRuntime.GetPrefab(firearm.Spec.Definition.Kind));
+            bool animationPreserved = repaired.AnimStyle == native.AnimStyle;
+            bool attachSlotsPreserved = EquivalentPresentationValue(
+                repaired.AttachSlots, native.AttachSlots);
             Assets.FirearmPresentationProfile profile =
                 Assets.FirearmPresentationProfile.Require(
                     firearm.Spec.Definition.Kind);
-            bool noInheritedModels = ReferenceEquals(
-                    ReadField(visual, "m_WeaponBeltModel"), profile.BeltModel) &&
-                ReadField(visual, "m_WeaponSheathModel") == null;
-            bool noNativeCombatSound = string.Equals(Convert.ToString(
-                ReadField(visual, "m_SoundType"),
-                System.Globalization.CultureInfo.InvariantCulture),
-                "None", StringComparison.Ordinal) && string.Equals(Convert.ToString(
-                ReadField(visual, "m_MissSoundType"),
-                System.Globalization.CultureInfo.InvariantCulture),
-                "None", StringComparison.Ordinal) && string.IsNullOrEmpty(Convert.ToString(
-                ReadField(visual, "m_WhooshSound"),
-                System.Globalization.CultureInfo.InvariantCulture));
-            bool noPrototypeFallback = ReadField(visual,
-                "<Prototype>k__BackingField") == null || ReferenceEquals(
-                    ReadField(visual, "<Prototype>k__BackingField"),
-                    ReadField(source, "<Prototype>k__BackingField"));
-            return projectilesPreserved && animationPreserved && safeHolster && customModel &&
-                noInheritedModels && noNativeCombatSound && noPrototypeFallback;
+            object customEquipped = profile.EquippedModel;
+            bool equippedModelCoherent = customEquipped == null
+                ? ReferenceEquals(repaired.Model, native.Model)
+                : ReferenceEquals(repaired.Model, customEquipped);
+            object customBelt = profile.BeltModel;
+            bool beltModelCoherent = customBelt == null
+                ? ReferenceEquals(repaired.BeltModel, native.BeltModel)
+                : ReferenceEquals(repaired.BeltModel, customBelt);
+            bool sheathModelCoherent = profile.SheathModel == null
+                ? ReferenceEquals(repaired.SheathModel, native.SheathModel)
+                : ReferenceEquals(repaired.SheathModel,
+                    profile.SheathModel);
+            bool nativeSoundFallbackPreserved =
+                repaired.SoundSize == native.SoundSize &&
+                repaired.SoundType == native.SoundType &&
+                repaired.MissSoundType == native.MissSoundType &&
+                string.Equals(repaired.WhooshSound, native.WhooshSound,
+                    StringComparison.Ordinal) &&
+                string.Equals(repaired.EquipSound, native.EquipSound,
+                    StringComparison.Ordinal) &&
+                string.Equals(repaired.UnequipSound, native.UnequipSound,
+                    StringComparison.Ordinal);
+            bool prototypePreserved = ReferenceEquals(
+                repaired.Prototype, native.Prototype);
+            return projectilesPreserved && animationPreserved &&
+                attachSlotsPreserved && equippedModelCoherent &&
+                beltModelCoherent && sheathModelCoherent &&
+                nativeSoundFallbackPreserved && prototypePreserved;
         }
 
         private static bool VisualParametersEqual(object left, object right)
@@ -7537,8 +7556,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
             int targetCount = -1, registeredCount = -1;
             bool firstRegistered = false, secondRegistered = false,
-                cleaned = false, commandFinished = false,
-                ordinaryPreserved = false;
+                cleaned = false, commandConstructed = false;
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             try
             {
@@ -7574,10 +7592,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                var ordinary = new RuleAttackWithWeapon(attacker, first, weapon, 0);
-                Kingmaker.RuleSystem.Rulebook.Trigger(ordinary);
-                ordinaryPreserved = FirearmRuntimeState.Service.GetOrCreate(weapon)
-                    .Repository.State.LoadedRounds == 1;
 
                 BlueprintAbility scatterAbility = BlueprintBootstrap.FirearmProficiency
                     .ComponentsArray.OfType<AddFacts>().Single().Facts
@@ -7596,7 +7610,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // command would test fixture interruption rather than player
                 // delivery. Record construction/availability separately; the
                 // transaction below remains explicitly non-acceptance evidence.
-                commandFinished = command.CanStart && data.IsAvailable &&
+                commandConstructed = command.CanStart && data.IsAvailable &&
                     ReferenceEquals(command.Spell.Blueprint, scatterAbility);
                 mixed = Scatter.ScatterShotRuntime.Execute(
                     attacker, first,
@@ -7647,8 +7661,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = mixed == null || allMisfire == null ? "missing" :
                 "registered=" + registeredCount + ";targets=" + targetCount +
-                ";commandFinished=" + commandFinished +
-                ";ordinaryPreserved=" + ordinaryPreserved +
+                ";commandConstructed=" + commandConstructed +
                 ";mixedMisfires=" +
                 mixed.Volley.MisfireRollCount +
                 ";mixedCondition=" + mixed.After.Condition +
@@ -7657,8 +7670,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
-            bool transaction = registeredCount == 2 && commandFinished &&
-                ordinaryPreserved && mixed != null &&
+            bool transaction = registeredCount == 2 && commandConstructed &&
+                mixed != null &&
                 allMisfire != null &&
                 mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
                 mixed.Attacks.Length == 2 && allMisfire.After.IsEmpty &&
@@ -7667,10 +7680,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 allMisfire.Volley.AllRollsMisfire;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("scatter-native-transaction",
-                    "ordinary attack preserves chamber; real command resolves and transaction service attacks two targets",
+                Assertion("scatter-command-contract-and-transaction",
+                    "granted command constructs; isolated transaction attacks two targets",
                     observed, transaction,
-                    "native command construction plus explicitly isolated transaction evidence"),
+                    "command construction is not delivery evidence; direct transaction remains mechanics-only"),
                 Assertion("scatter-condition-combat-log",
                     "one native player log: Normal -> Broken (scatter misfire)",
                     observed,
@@ -10773,7 +10786,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             BlueprintAbilityResource grit = gunslinger.Grit.Resource;
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
             BlueprintItemArmor lightArmor = BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintItemArmor>()
                 .Where(value => value.Type != null && value.Type.IsArmor &&
@@ -10785,21 +10797,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             object allUnits = ReadExactMember(state, "AllUnits");
             object[] partyBefore = SnapshotReferences(party);
             object[] unitsBefore = SnapshotReferences(allUnits);
-            Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData defender = null;
+            Kingmaker.EntitySystem.SceneEntitiesState disposableScene = null;
             object controller = null;
-            int initial = -1, afterApplied = -1, acAfter = -1,
-                acDuplicate = -1, afterRejected = -1, rejectedAc = -1;
+            int initial = -1, afterApplied = -1, acBefore = -1,
+                acAfter = -1, acAfterRemoval = -1, afterRejected = -1,
+                rejectedAc = -1;
             bool armedBefore = false, armedAfter = true, proneAfter = false,
                 armorClassBuffAfter = false,
                 rejectedProne = true, rejectedConsumed = false, cleaned = false;
+            TimeSpan buffStartTime = TimeSpan.Zero, buffEndTime = TimeSpan.Zero,
+                buffRemaining = TimeSpan.Zero;
+            bool buffPermanent = true, exactBuffBlueprint = false,
+                buffIcon = false, activeReactivationUnavailable = false;
+            int buffRank = -1;
+            long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
+            int gritAfterActiveReactivation = -1;
             string stage = "construct-disposables";
             try
             {
                 if (lightArmor == null) throw new InvalidOperationException(
                     "No exact native light armor blueprint was available.");
-                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                defender = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                disposableScene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Dodge_Runtime_Fixture");
+                defender = Kingmaker.Game.Instance.EntityCreator.SpawnUnit(
+                    source, Vector3.zero, Quaternion.identity, disposableScene);
+                if (defender == null || defender.View == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not produce a live unit view.");
                 defender.Descriptor.Stats.Wisdom.BaseValue = 14;
                 Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
                 MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
@@ -10837,7 +10862,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "activate-immediate-dodge";
                 GunslingerDodgeRuntimeDiagnostics.Reset();
+                GunslingerDodgeArmorClassBonus.ResetDiagnostics();
                 initial = defender.Descriptor.Resources.GetResourceAmount(grit);
+                acBefore = defender.Descriptor.Stats.AC.ModifiedValue;
+                buffStartTime = Kingmaker.Game.Instance.TimeController.GameTime;
                 armedBefore = !defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
                 Kingmaker.UnitLogic.Abilities.Ability granted =
@@ -10865,16 +10893,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 proneAfter = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
                 armorClassBuffAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmorClassBuff);
-                acAfter = armorClassBuffAfter ? 22 : 20;
-                acDuplicate = acAfter;
+                acAfter = defender.Descriptor.Stats.AC.ModifiedValue;
+                Buff liveBuff = defender.Descriptor.Buffs.GetBuff(
+                    gunslinger.Dodge.ArmorClassBuff);
+                if (liveBuff == null) throw new InvalidOperationException(
+                    "The native Dodge command completed without its timed Buff fact.");
+                buffEndTime = liveBuff.EndTime;
+                buffRemaining = liveBuff.TimeLeft;
+                buffPermanent = liveBuff.IsPermanent;
+                buffRank = liveBuff.GetRank();
+                exactBuffBlueprint = ReferenceEquals(liveBuff.Blueprint,
+                    gunslinger.Dodge.ArmorClassBuff);
+                buffIcon = liveBuff.Blueprint.Icon != null &&
+                    string.Equals(liveBuff.Blueprint.Icon.name,
+                        "KMG_Icon_gunslingers-dodge", StringComparison.Ordinal);
+                ownedModifiersWhileActive =
+                    GunslingerDodgeArmorClassBonus.ActiveModifiers;
+                var activeData = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
+                activeReactivationUnavailable = !activeData.IsAvailable;
+                gritAfterActiveReactivation = defender.Descriptor.Resources
+                    .GetResourceAmount(grit);
 
                 stage = "insufficient-rejection";
+                if (defender.Descriptor.HasFact(gunslinger.Dodge.ArmorClassBuff))
+                    defender.Descriptor.RemoveFact(
+                        gunslinger.Dodge.ArmorClassBuff);
+                acAfterRemoval = defender.Descriptor.Stats.AC.ModifiedValue;
+                ownedModifiersAfterRemoval =
+                    GunslingerDodgeArmorClassBonus.ActiveModifiers;
                 defender.Descriptor.State.RemoveCondition(UnitCondition.Prone);
                 defender.Descriptor.Resources.Spend(grit, afterApplied);
                 afterRejected = defender.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedProne = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
-                rejectedConsumed = !data.IsAvailable;
-                rejectedAc = 20;
+                var rejectedData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                    granted);
+                rejectedConsumed = !rejectedData.IsAvailable;
+                rejectedAc = defender.Descriptor.Stats.AC.ModifiedValue;
             }
             catch (Exception exception)
             {
@@ -10891,43 +10945,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                     defender.Body.Armor != null && defender.Body.Armor.HasArmor)
                     defender.Body.Armor.RemoveItem(false);
                 if (defender != null) defender.Dispose();
-                if (attacker != null) attacker.Dispose();
+                if (disposableScene != null) disposableScene.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
-                    (attacker == null || !ContainsReference(allUnits, attacker)) &&
                     (defender == null || !ContainsReference(allUnits, defender));
             }
             string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
                 ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
                 ";proneAfter=" + proneAfter + ";acBuff=" + armorClassBuffAfter +
-                ";acAfter=" + acAfter +
-                ";acDuplicate=" + acDuplicate + ";afterRejected=" + afterRejected +
+                ";acBefore=" + acBefore + ";acAfter=" + acAfter +
+                ";acAfterRemoval=" + acAfterRemoval +
+                ";afterRejected=" + afterRejected +
                 ";rejectedProne=" + rejectedProne + ";rejectedConsumed=" +
                 rejectedConsumed + ";rejectedAc=" + rejectedAc + ";applied=" +
                 GunslingerDodgeRuntimeDiagnostics.Applied + ";rejected=" +
                 GunslingerDodgeRuntimeDiagnostics.Rejected + ";duplicates=" +
                 GunslingerDodgeRuntimeDiagnostics.Duplicates + ";faults=" +
-                GunslingerDodgeRuntimeDiagnostics.Faults;
+                GunslingerDodgeRuntimeDiagnostics.Faults +
+                ";buffStart=" + buffStartTime + ";buffEnd=" + buffEndTime +
+                ";buffRemaining=" + buffRemaining + ";buffPermanent=" +
+                buffPermanent + ";buffRank=" + buffRank + ";exactBuff=" +
+                exactBuffBlueprint + ";buffIcon=" + buffIcon +
+                ";modifierTurnedOn=" + GunslingerDodgeArmorClassBonus.TurnedOn +
+                ";modifierTurnedOff=" + GunslingerDodgeArmorClassBonus.TurnedOff +
+                ";ownedModifiersWhileActive=" + ownedModifiersWhileActive +
+                ";ownedModifiersAfterRemoval=" + ownedModifiersAfterRemoval +
+                ";activeReactivationUnavailable=" + activeReactivationUnavailable +
+                ";gritAfterActiveReactivation=" + gritAfterActiveReactivation +
+                ";delivery=" + GunslingerDodgeRuntimeDiagnostics.DeliveryEvidence;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("dodge-native-reaction", "armed; grit 2 -> 1; standing with +2 dodge buff",
                     observed, initial == 2 && armedBefore && afterApplied == 1 &&
                     !armedAfter && !proneAfter && armorClassBuffAfter,
                     "persisted marker, exact shared grit, one-round BlueprintBuff"),
-                Assertion("dodge-trigger-ac", "native +2 Dodge buff; no direct unbounded AC mutation",
-                    observed, acAfter == 22 && acDuplicate == 22,
-                    "AddStatBonus ModifierDescriptor.Dodge on one-round buff"),
+                Assertion("dodge-trigger-ac",
+                    "actual AC increases by exactly 2 and returns after buff removal",
+                    observed, acAfter == acBefore + 2 &&
+                    acAfterRemoval == acBefore,
+                    "GunslingerDodgeArmorClassBonus owned buff component"),
+                Assertion("dodge-native-timed-buff",
+                    "exact visible non-permanent rank-1 buff with six seconds remaining",
+                    observed, exactBuffBlueprint && buffIcon && !buffPermanent &&
+                    buffRank == 1 && buffEndTime - buffStartTime ==
+                        TimeSpan.FromSeconds(6d) && buffRemaining > TimeSpan.Zero &&
+                    buffRemaining <= TimeSpan.FromSeconds(6d),
+                    "ContextActionApplyBuff one-round native duration"),
+                Assertion("dodge-modifier-lifecycle",
+                    "one OnTurnOn and one OnTurnOff; AC returns exactly to baseline",
+                    observed, GunslingerDodgeArmorClassBonus.TurnedOn == 1 &&
+                    GunslingerDodgeArmorClassBonus.TurnedOff == 1 &&
+                    ownedModifiersWhileActive == 1 &&
+                    ownedModifiersAfterRemoval == 0 &&
+                    acAfterRemoval == acBefore,
+                    "Buff-owned modifier lifecycle"),
+                Assertion("dodge-active-reactivation-atomic",
+                    "active Dodge is unavailable and spends no Grit", observed,
+                    activeReactivationUnavailable &&
+                    gritAfterActiveReactivation == afterApplied,
+                    "IAbilityAvailabilityProvider active exact-buff rejection"),
                 Assertion("dodge-insufficient-atomic",
-                    "grit 0; marker consumed; standing; AC remains 20", observed,
+                    "grit 0; unavailable; standing; AC remains at baseline", observed,
                     afterRejected == 0 && rejectedConsumed && !rejectedProne &&
-                    rejectedAc == 20, "production fail-closed reaction adapter"),
+                    rejectedAc == acBefore,
+                    "native AbilityResourceLogic availability and exact AC state"),
                 Assertion("dodge-no-legacy-reaction",
                     "no legacy armed marker or reaction mutation", observed,
                     armedBefore && !armedAfter && !proneAfter,
                     "immediate one-round BlueprintBuff contract"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
-                    "armor removed and detached units disposed"),
+                    "armor removed and detached unit disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

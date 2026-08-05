@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.Firearms
                 FirearmEra.Early,
                 FirearmKind.Blunderbuss,
                 1,
-                null,
+                10,
                 2,
                 10,
                 new ReloadProfile(ReloadActionType.FullRound, true, 1),

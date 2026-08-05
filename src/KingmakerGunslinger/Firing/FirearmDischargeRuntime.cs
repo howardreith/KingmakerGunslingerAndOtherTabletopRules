@@ -6,7 +6,6 @@ using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Gunsmithing;
 using Kingmaker.Items;
-using Kingmaker.PubSubSystem;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -61,14 +60,6 @@ namespace KingmakerGunslinger.Firing
                 }
 
                 recognizedFirearm = true;
-                if (marker.Definition.IsScatter)
-                {
-                    ForceMiss(attackRoll);
-                    PublishScatterOnlyWarning(marker.Weapon);
-                    FirearmDischargeRuntimeDiagnostics.RecordIgnored(
-                        "An ordinary scatter-firearm attack was rejected before chamber consumption; use Scatter Shot.");
-                    return;
-                }
                 object weapon;
                 if (!FirearmMarkerLookup.TryResolveWeapon(ruleEvent, out weapon) || weapon == null)
                 {
@@ -162,16 +153,6 @@ namespace KingmakerGunslinger.Firing
             // therefore required for an empty firearm to fail even on auto-hit attacks.
             attackRoll.AutoHit = false;
             attackRoll.AutoMiss = true;
-        }
-
-        private static void PublishScatterOnlyWarning(string weaponName)
-        {
-            string name = string.IsNullOrWhiteSpace(weaponName)
-                ? "Blunderbuss" : weaponName;
-            string message = name +
-                " cannot make an ordinary attack. Use Scatter Shot; the loaded chamber was preserved.";
-            EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                handler => handler.HandleWarning(message, false));
         }
 
         private static void LogDecision(

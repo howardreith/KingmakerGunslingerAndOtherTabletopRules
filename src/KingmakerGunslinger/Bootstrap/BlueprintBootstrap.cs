@@ -587,7 +587,7 @@ namespace KingmakerGunslinger.Bootstrap
                         firearmRepairKit);
 
                 BlueprintAbility scatterShotAbility =
-                    ScatterShotBlueprints.Register(registry);
+                    ScatterShotBlueprints.Register(library, registry);
 
                 GunsmithingCraftingBlueprintSet gunsmithingCrafting =
                     GunsmithingCraftingBlueprints.Register(registry,

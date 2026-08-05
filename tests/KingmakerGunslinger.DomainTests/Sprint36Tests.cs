@@ -190,13 +190,19 @@ namespace KingmakerGunslinger.DomainTests
                     30d * 0.3048d, 2)).Status, "Non-firearm Deadeye activated.");
         }
 
-        private static void DeadeyeSpecialAndInvalidRangeFailClosed()
+        private static void DeadeyeBlunderbussOrdinaryRangeAndInvalidDistance()
         {
             var service = new DeadeyeService();
-            Assertions.Equal(DeadeyeStatus.UnsupportedRange,
-                service.Evaluate(new DeadeyeRequest(true, true, 1,
-                    ProductionFirearmCatalog.CreateBlunderbuss().Definition, 10d, 5)).Status,
-                "Special-range firearm guessed a Deadeye cost.");
+            DeadeyeDecision blunderbuss = service.Evaluate(new DeadeyeRequest(
+                true, true, 1,
+                ProductionFirearmCatalog.CreateBlunderbuss().Definition,
+                15d * 0.3048d, 5));
+            Assertions.Equal(DeadeyeStatus.Eligible, blunderbuss.Status,
+                "The ordinary Blunderbuss bullet mode did not support Deadeye.");
+            Assertions.Equal(2, blunderbuss.RangeIncrement,
+                "Blunderbuss Deadeye increment mismatch.");
+            Assertions.Equal(1, blunderbuss.GritCost,
+                "Second-increment Blunderbuss Deadeye cost mismatch.");
             Assertions.Equal(DeadeyeStatus.UnsupportedRange,
                 service.Evaluate(new DeadeyeRequest(true, true, 1,
                     ProductionFirearmCatalog.CreatePistol().Definition, double.NaN, 5)).Status,

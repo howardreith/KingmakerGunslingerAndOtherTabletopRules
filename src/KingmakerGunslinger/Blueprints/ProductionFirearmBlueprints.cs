@@ -138,7 +138,7 @@ namespace KingmakerGunslinger.Blueprints
                 "production-catalog.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered production Pistol={0}/{1}, Musket={2}/{3}, non-fireable Blunderbuss={4}/{5}, Advanced Rifle={6}/{7}, and Advanced Revolver={8}/{9}; native presentation sources remained unchanged.",
+                    "Registered production Pistol={0}/{1}, Musket={2}/{3}, dual-mode Blunderbuss={4}/{5}, Advanced Rifle={6}/{7}, and Advanced Revolver={8}/{9}; native presentation sources remained unchanged.",
                     registry.ResolveGuid(PistolWeaponTypeSymbol),
                     registry.ResolveGuid(PistolItemSymbol),
                     registry.ResolveGuid(MusketWeaponTypeSymbol),
@@ -190,7 +190,7 @@ namespace KingmakerGunslinger.Blueprints
             string localizationStem = "KMG.Item." + spec.DisplayName.Replace(" ", string.Empty);
             string eraName = spec.Definition.Era == FirearmEra.Advanced ? "advanced" : "early";
             string descriptionText = spec.Definition.IsScatter
-                ? "An early scatter firearm that throws a close cone of shot. It uses black powder and lead balls, can misfire, and must be reloaded after firing."
+                ? "An early firearm that can fire an ordinary lead ball at a 10-foot range increment or use Scatter Shot to fire pellets in a 15-foot cone. It uses black powder and lead balls, can misfire, and must be reloaded after firing."
                 : "An " + eraName + " firearm with a black-powder mechanism. It uses powder and lead shot, can misfire, and must be reloaded as its capacity is spent.";
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
             var description = LocalizationService.Create(

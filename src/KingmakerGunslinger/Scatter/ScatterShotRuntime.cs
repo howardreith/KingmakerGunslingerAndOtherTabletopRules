@@ -61,6 +61,9 @@ namespace KingmakerGunslinger.Scatter
         {
             if (context == null || context.MaybeCaster == null)
                 throw new ArgumentNullException("context");
+            // A failed activation must never leave a stale success result from an
+            // earlier shot available to diagnostics or continuation code.
+            LastAbilityResult = null;
             LastAbilityResult = Execute(context.MaybeCaster, aimedPoint,
                 delegate(RuleAttackWithWeapon attack) { Rulebook.Trigger(attack); });
             return LastAbilityResult;
@@ -73,6 +76,27 @@ namespace KingmakerGunslinger.Scatter
         {
             if (caster == null) throw new ArgumentNullException("caster");
             if (aimedTarget == null) throw new ArgumentNullException("aimedTarget");
+            return ExecuteResolved(caster, Targets.Resolve(caster, aimedTarget),
+                trigger, forcedNaturalRolls);
+        }
+
+        internal static ScatterShotExecutionResult Execute(
+            UnitEntityData caster, UnityEngine.Vector3 aimedPoint,
+            Action<RuleAttackWithWeapon> trigger,
+            int[] forcedNaturalRolls = null)
+        {
+            if (caster == null) throw new ArgumentNullException("caster");
+            return ExecuteResolved(caster, Targets.Resolve(caster, aimedPoint),
+                trigger, forcedNaturalRolls);
+        }
+
+        private static ScatterShotExecutionResult ExecuteResolved(
+            UnitEntityData caster, UnitEntityData[] nativeTargets,
+            Action<RuleAttackWithWeapon> trigger,
+            int[] forcedNaturalRolls)
+        {
+            if (caster == null) throw new ArgumentNullException("caster");
+            if (nativeTargets == null) throw new ArgumentNullException("nativeTargets");
             if (trigger == null) throw new ArgumentNullException("trigger");
             string reason;
             ExactEquippedFirearmContext firearm;
@@ -82,10 +106,10 @@ namespace KingmakerGunslinger.Scatter
                 throw new InvalidOperationException(
                     "Scatter Shot is unavailable: " + reason);
 
-            UnitEntityData[] nativeTargets = Targets.Resolve(caster, aimedTarget);
             var candidates = new List<ScatterTargetCandidate>(nativeTargets.Length);
             foreach (UnitEntityData unit in nativeTargets)
             {
+                if (unit == null) continue;
                 if (string.IsNullOrWhiteSpace(unit.UniqueId))
                     throw new InvalidOperationException(
                         "A native scatter target exposed no stable unit identity.");
@@ -96,9 +120,10 @@ namespace KingmakerGunslinger.Scatter
                     ScatterGeometryDisposition.Inside));
             }
             ScatterTargetPlan plan = Plans.Build(caster, candidates);
-            if (plan.TargetCount == 0)
-                throw new InvalidOperationException(
-                    "The selected direction contains no exact native cone target.");
+            // Firing into an empty direction is still a completed discharge.
+            // Native cone abilities permit an empty area, and the tabletop weapon
+            // expends its loaded shot even when no creature happens to be caught.
+            // The pure ScatterDischargeService already qualifies this exact case.
             if (forcedNaturalRolls != null &&
                 forcedNaturalRolls.Length != plan.TargetCount)
                 throw new ArgumentException(
@@ -112,105 +137,81 @@ namespace KingmakerGunslinger.Scatter
             if (discharge.Status != ScatterDischargeStatus.Fired)
                 throw new InvalidOperationException(
                     "Eligible Scatter Shot did not produce one discharge.");
-            bool transitioned = false;
-            try
+            // Committing the chamber transition is the point of discharge. Once
+            // it succeeds, later projectile/rule failures must not manufacture the
+            // loaded round back into the weapon after targets may already have taken
+            // irreversible damage. All reversible target-plan validation occurs above.
+            Transition(firearm, expected, discharge.After);
+            expected = discharge.After;
+
+            int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
+                firearm.Definition.MisfireValue, firearm.EffectiveCondition,
+                HasGunTraining(caster, firearm.Definition.Kind));
+            var attacks = new RuleAttackWithWeapon[plan.TargetCount];
+            var observations = new ScatterAttackRollObservation[plan.TargetCount];
+            for (int index = 0; index < plan.TargetCount; index++)
             {
-                Transition(firearm, expected, discharge.After);
-                expected = discharge.After;
-                transitioned = true;
-
-                int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
-                    firearm.Definition.MisfireValue, firearm.EffectiveCondition,
-                    HasGunTraining(caster, firearm.Definition.Kind));
-                var attacks = new RuleAttackWithWeapon[plan.TargetCount];
-                var observations = new ScatterAttackRollObservation[plan.TargetCount];
-                for (int index = 0; index < plan.TargetCount; index++)
+                ScatterTargetCandidate target = plan.Targets[index];
+                var attack = new RuleAttackWithWeapon(caster,
+                    (UnitEntityData)target.Unit, firearm.Weapon,
+                    ScatterAttackVolleyDecision.AttackPenalty);
+                ScatterVolleyRuntime.Register(attack, target.Unit,
+                    target.StableIdentity, threshold,
+                    forcedNaturalRolls == null ? (int?)null :
+                        forcedNaturalRolls[index]);
+                try
                 {
-                    ScatterTargetCandidate target = plan.Targets[index];
-                    var attack = new RuleAttackWithWeapon(caster,
-                        (UnitEntityData)target.Unit, firearm.Weapon,
-                        ScatterAttackVolleyDecision.AttackPenalty);
-                    ScatterVolleyRuntime.Register(attack, target.Unit,
-                        target.StableIdentity, threshold,
-                        forcedNaturalRolls == null ? (int?)null :
-                            forcedNaturalRolls[index]);
-                    try
-                    {
-                        trigger(attack);
-                        observations[index] = ScatterVolleyRuntime.Consume(attack);
-                    }
-                    catch
-                    {
-                        ScatterVolleyRuntime.Cancel(attack);
-                        throw;
-                    }
-                    attacks[index] = attack;
+                    trigger(attack);
+                    observations[index] = ScatterVolleyRuntime.Consume(attack);
                 }
-
-                ScatterAttackVolleyDecision volley = Volleys.Evaluate(
-                    firearm.Definition, plan, observations);
-                FirearmMisfireConditionDecision condition = null;
-                if (volley.AllRollsMisfire)
+                catch
                 {
-                    condition = Conditions.Evaluate(firearm.Definition,
-                        Misfires.Evaluate(observations[0].NaturalRoll,
-                            threshold, false), expected,
-                        firearm.EffectiveCondition);
-                    if (condition.ChangesCondition)
-                    {
-                        Transition(firearm, expected, condition.After);
-                        expected = condition.After;
-                        FirearmConditionCombatLog.Publish(
-                            firearm.Firearm.ItemDisplayName,
-                            condition.Before.Condition,
-                            condition.After.Condition,
-                            "scatter misfire");
-                    }
-                    FirearmExplosionDecision explosion =
-                        Explosions.Evaluate(condition);
-                    ScatterExplosionDamageDecision scatterExplosion =
-                        new ScatterExplosionDamageService().Evaluate(
-                            firearm.Definition, explosion, volley);
-                    if (scatterExplosion.ShouldApply)
-                        FirearmExplosionRuntime.Apply(
-                            attacks[attacks.Length - 1].AttackRoll,
-                            firearm.Weapon, caster,
-                            firearm.Firearm.Repository.RepositoryIdentity,
-                            firearm.Definition.MisfireBurstRadiusFeet,
-                            firearm.Firearm.ItemDisplayName,
-                            scatterExplosion.BaseDamageMultiplier);
+                    ScatterVolleyRuntime.Cancel(attack);
+                    throw;
                 }
-                else
-                {
-                    // Scatter is one qualified discharge even though it resolves
-                    // one attack event per cone target.  Audio therefore belongs
-                    // here, after the volley proves that a discharge occurred,
-                    // rather than inside the per-target loop.
-                    Assets.FirearmAssetRuntime.PlayShot(
-                        FirearmKind.Blunderbuss, caster);
-                }
-                return new ScatterShotExecutionResult(plan, discharge, volley,
-                    attacks, condition, before, expected);
+                attacks[index] = attack;
             }
-            catch
+
+            ScatterAttackVolleyDecision volley = Volleys.Evaluate(
+                firearm.Definition, plan, observations);
+            FirearmMisfireConditionDecision condition = null;
+            if (volley.AllRollsMisfire)
             {
-                if (transitioned) Transition(firearm, expected, before);
-                throw;
+                condition = Conditions.Evaluate(firearm.Definition,
+                    Misfires.Evaluate(observations[0].NaturalRoll,
+                        threshold, false), expected,
+                    firearm.EffectiveCondition);
+                if (condition.ChangesCondition)
+                {
+                    Transition(firearm, expected, condition.After);
+                    expected = condition.After;
+                    FirearmConditionCombatLog.Publish(
+                        firearm.Firearm.ItemDisplayName,
+                        condition.Before.Condition,
+                        condition.After.Condition,
+                        "scatter misfire");
+                }
+                FirearmExplosionDecision explosion =
+                    Explosions.Evaluate(condition);
+                ScatterExplosionDamageDecision scatterExplosion =
+                    new ScatterExplosionDamageService().Evaluate(
+                        firearm.Definition, explosion, volley);
+                if (scatterExplosion.ShouldApply)
+                    FirearmExplosionRuntime.Apply(
+                        attacks[attacks.Length - 1].AttackRoll,
+                        firearm.Weapon, caster,
+                        firearm.Firearm.Repository.RepositoryIdentity,
+                        firearm.Definition.MisfireBurstRadiusFeet,
+                        firearm.Firearm.ItemDisplayName,
+                        scatterExplosion.BaseDamageMultiplier);
             }
-        }
-
-        internal static ScatterShotExecutionResult Execute(
-            UnitEntityData caster, UnityEngine.Vector3 aimedPoint,
-            Action<RuleAttackWithWeapon> trigger,
-            int[] forcedNaturalRolls = null)
-        {
-            if (caster == null) throw new ArgumentNullException("caster");
-            if (trigger == null) throw new ArgumentNullException("trigger");
-            UnitEntityData[] nativeTargets = Targets.Resolve(caster, aimedPoint);
-            if (nativeTargets.Length == 0)
-                throw new InvalidOperationException(
-                    "The selected 15-foot direction contains no native cone target.");
-            return Execute(caster, nativeTargets[0], trigger, forcedNaturalRolls);
+            else
+            {
+                Assets.FirearmAssetRuntime.PlayShot(
+                    FirearmKind.Blunderbuss, caster);
+            }
+            return new ScatterShotExecutionResult(plan, discharge, volley,
+                attacks, condition, before, expected);
         }
 
         private static void Transition(ExactEquippedFirearmContext firearm,

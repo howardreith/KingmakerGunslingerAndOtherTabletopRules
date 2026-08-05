@@ -40,7 +40,7 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Sprint36Tests.cs"),
         ["DeadeyeSecondIncrementCostsOne", "DeadeyeCostScalesBeyondFirst",
          "DeadeyeInsufficientGritFailsAtomic",
-         "DeadeyeSpecialAndInvalidRangeFailClosed"],
+         "DeadeyeBlunderbussOrdinaryRangeAndInvalidDistance"],
         "Sprint 36 Deadeye tests")
     require_tokens(read(root, "src/KingmakerGunslinger/Deeds/GunslingerDodgeService.cs"),
         ["NotRangedAttack", "UnsupportedArmor", "Overloaded",
