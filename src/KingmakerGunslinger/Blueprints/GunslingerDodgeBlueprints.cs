@@ -3,11 +3,15 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Deeds;
 using UnityEngine;
@@ -49,7 +53,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBuff acBuff = registry.Register<BlueprintBuff>(
                 ArmorClassBuffSymbol, CreateArmorClassBuff);
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                ProneAbilitySymbol, () => CreateAbility(marker, acBuff, grit));
+                ProneAbilitySymbol, () => CreateAbility(acBuff, grit));
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
                 FeatureSymbol, () => CreateFeature(ability));
             Validate(feature, ability, marker, acBuff, grit);
@@ -69,7 +73,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_GunslingerDodge_ArmorClass_Buff";
-            result.IsClassFeature = true;
+            result.IsClassFeature = false;
             result.Stacking = StackingType.Replace;
             var bonus = ScriptableObject.CreateInstance<
                 GunslingerDodgeArmorClassBonus>();
@@ -82,7 +86,7 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static BlueprintAbility CreateAbility(BlueprintFeature marker,
+        private static BlueprintAbility CreateAbility(
             BlueprintBuff armorClassBuff, BlueprintAbilityResource grit)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
@@ -108,17 +112,45 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Dodge.Prone.Duration", "1 round");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.Dodge.Prone.SavingThrow", "None");
+
             var resource = ScriptableObject.CreateInstance<AbilityResourceLogic>();
             resource.name = "$KMG_GunslingerDodge_NativeGrit";
             resource.RequiredResource = grit;
             resource.IsSpendResource = true;
             resource.CostIsCustom = true;
             resource.Amount = 0;
+
             var calculator = ScriptableObject.CreateInstance<DodgeGritCostCalculator>();
             calculator.name = "$KMG_GunslingerDodge_TrueGritCost";
+
+            var availability = ScriptableObject.CreateInstance<AbilityCasterHasNoFacts>();
+            availability.name = "$KMG_GunslingerDodge_NotAlreadyActive";
+            availability.Facts = new BlueprintUnitFact[] { armorClassBuff };
+
+            var applyBuff = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            applyBuff.name = "$KMG_GunslingerDodge_ApplyBuff";
+            applyBuff.Buff = armorClassBuff;
+            applyBuff.Permanent = false;
+            applyBuff.DurationValue = new ContextDurationValue
+            {
+                Rate = DurationRate.Rounds,
+                BonusValue = 1
+            };
+            applyBuff.IsFromSpell = false;
+            applyBuff.IsNotDispelable = true;
+            applyBuff.UseDurationSeconds = false;
+            applyBuff.AsChild = false;
+            applyBuff.ToCaster = true;
+
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.name = "$KMG_GunslingerDodge_RunAction";
+            effect.Actions = new ActionList
+            {
+                Actions = new GameAction[] { applyBuff }
+            };
+
             result.ComponentsArray = new BlueprintComponent[] {
-                resource, calculator,
-                GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff) };
+                resource, calculator, availability, effect };
             return result;
         }
 
@@ -147,24 +179,34 @@ namespace KingmakerGunslinger.Blueprints
                 .OfType<AbilityResourceLogic>().Single();
             DodgeGritCostCalculator calculator = ability.ComponentsArray
                 .OfType<DodgeGritCostCalculator>().Single();
-            GunslingerDodgeProneAbilityLogic delivery = ability.ComponentsArray
-                .OfType<GunslingerDodgeProneAbilityLogic>().Single();
+            AbilityCasterHasNoFacts availability = ability.ComponentsArray
+                .OfType<AbilityCasterHasNoFacts>().Single();
+            AbilityEffectRunAction effect = ability.ComponentsArray
+                .OfType<AbilityEffectRunAction>().Single();
+            ContextActionApplyBuff applyBuff = effect.Actions.Actions
+                .OfType<ContextActionApplyBuff>().Single();
             var grant = feature.ComponentsArray.OfType<AddFacts>().Single();
             if (ability.ActionType != UnitCommand.CommandType.Swift ||
                 ability.Animation !=
                     UnitAnimationActionCastSpell.CastAnimationStyle.Immediate ||
                 !ability.HasFastAnimation || ability.Range != AbilityRange.Personal ||
-                !ability.CanTargetSelf || ability.ComponentsArray.Length != 3 ||
+                !ability.CanTargetSelf || ability.ComponentsArray.Length != 4 ||
                 grant.Facts.Length != 1 ||
                 !resource.IsSpendResource || !resource.CostIsCustom ||
                 resource.Amount != 0 ||
                 !ReferenceEquals(resource.RequiredResource, grit) ||
-                calculator == null || delivery == null ||
-                !ReferenceEquals(delivery.ArmedMarker, marker) ||
-                !ReferenceEquals(delivery.ArmorClassBuff, acBuff) ||
-                delivery.Duration != TimeSpan.FromSeconds(6d) ||
+                calculator == null ||
+                availability.Facts.Length != 1 ||
+                !ReferenceEquals(availability.Facts[0], acBuff) ||
+                effect.Actions.Actions.Length != 1 ||
+                !ReferenceEquals(applyBuff.Buff, acBuff) ||
+                applyBuff.Permanent || !applyBuff.IsNotDispelable ||
+                applyBuff.IsFromSpell || applyBuff.UseDurationSeconds ||
+                applyBuff.AsChild || !applyBuff.ToCaster ||
+                applyBuff.DurationValue.Rate != DurationRate.Rounds ||
+                applyBuff.DurationValue.BonusValue.Value != 1 ||
                 !ReferenceEquals(grant.Facts[0], ability) || !marker.HideInUI ||
-                acBuff.Stacking != StackingType.Replace ||
+                acBuff.IsClassFeature || acBuff.Stacking != StackingType.Replace ||
                 acBuff.ComponentsArray
                     .OfType<GunslingerDodgeArmorClassBonus>().Count() != 1 ||
                 GunslingerDodgeArmorClassBonus.Bonus != 2)
