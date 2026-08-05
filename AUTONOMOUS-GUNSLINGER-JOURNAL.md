@@ -3681,3 +3681,14 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   `RuleAttackRoll` construction to the character's real granted Scatter Shot
   ability. Empty attacks retain the accepted reload continuation and are
   reevaluated after reload.
+# Seventh playtest Dodge timing failure (2026-08-04)
+
+- Human playtest confirms Gunslinger's Dodge still did not change displayed AC
+  immediately. The ability had retained an ordinary self-cast animation, so
+  native resource spending and the buff action remained behind cast delivery.
+- The stable ability now uses Kingmaker's `Immediate` fast personal animation
+  contract while preserving native resource logic, the True-Grit cost
+  calculator, the existing one-round +2 Dodge buff, and all stable GUIDs.
+- The guarded command scenario no longer suppresses animation. Detached units
+  remain incapable of proving live view/UI refresh timing, so visual timing is
+  not self-qualified.

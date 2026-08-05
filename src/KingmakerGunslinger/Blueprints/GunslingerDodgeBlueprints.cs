@@ -107,7 +107,8 @@ namespace KingmakerGunslinger.Blueprints
             result.ActionBarAutoFillIgnored = false; result.NeedEquipWeapons = false;
             result.EffectOnAlly = AbilityEffectOnUnit.Helpful;
             result.EffectOnEnemy = AbilityEffectOnUnit.None;
-            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
+            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
+            result.HasFastAnimation = true;
             result.ActionType = UnitCommand.CommandType.Swift;
             result.ResourceAssetIds = Array.Empty<string>();
             result.LocalizedDuration = LocalizationService.Create(

@@ -10851,7 +10851,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!command.CanStart || !data.IsAvailable) throw new InvalidOperationException(
                     "Native Dodge command was not available for the leveled unit.");
                 command.IgnoreCooldown(TimeSpan.Zero);
-                command.SuppressAnimation();
                 defender.Commands.Run(command);
                 for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
                     command.Tick();
