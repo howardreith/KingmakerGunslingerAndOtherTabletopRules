@@ -1,0 +1,68 @@
+name: Package Pro Gunslinger Dodge Fix
+
+on:
+  push:
+    branches:
+      - pro/gunslinger-dodge-native-action-expiration-20260805
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify native Dodge action graph
+        shell: pwsh
+        run: |
+          $path = 'src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs'
+          $source = Get-Content -LiteralPath $path -Raw
+          $required = @(
+            'AbilityEffectRunAction',
+            'ContextActionApplyBuff',
+            'AbilityCasterHasNoFacts',
+            'DurationRate.Rounds',
+            'applyBuff.ToCaster = true',
+            'result.IsClassFeature = false'
+          )
+          foreach ($value in $required) {
+            if (-not $source.Contains($value)) {
+              throw "Required native Dodge implementation fragment is missing: $value"
+            }
+          }
+          if ($source.Contains('GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff)')) {
+            throw 'The legacy custom Dodge delivery is still attached to the ability.'
+          }
+
+      - name: Create patch and full source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          root_name='KingmakerGunslingerAndOtherTabletopRules-pro-dodge-native-action-expiration-20260805'
+          mkdir -p package/"$root_name"
+          rsync -a \
+            --exclude '.git/' \
+            --exclude 'package/' \
+            ./ package/"$root_name"/
+          git diff --binary backup/dodge-native-application-no-removal-20260805-122335...HEAD \
+            > package/Gunslinger-Dodge-native-action-expiration.patch
+          cp src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs \
+            package/GunslingerDodgeBlueprints.cs
+          (cd package && zip -r ../KingmakerGunslingerAndOtherTabletopRules-pro-dodge-native-action-expiration-20260805.zip "$root_name")
+
+      - name: Upload revised repository and overlay files
+        uses: actions/upload-artifact@v4
+        with:
+          name: KingmakerGunslinger-pro-dodge-native-action-expiration
+          path: |
+            KingmakerGunslingerAndOtherTabletopRules-pro-dodge-native-action-expiration-20260805.zip
+            package/Gunslinger-Dodge-native-action-expiration.patch
+            package/GunslingerDodgeBlueprints.cs
+          if-no-files-found: error
+          retention-days: 30
