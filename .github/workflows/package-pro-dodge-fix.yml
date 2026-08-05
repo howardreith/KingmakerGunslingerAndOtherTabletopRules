@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - pro/gunslinger-dodge-native-action-expiration-20260805
+  pull_request:
+    branches:
+      - pro/gunslinger-dodge-native-action-expiration-20260805
   workflow_dispatch:
 
 permissions:
