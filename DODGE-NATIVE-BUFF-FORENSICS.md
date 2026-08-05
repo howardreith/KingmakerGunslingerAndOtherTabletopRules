@@ -338,3 +338,22 @@ and identities. Human acceptance then repeats the new-character scenario and
 confirms Grit `-1`, AC `+2` during the effect, icon/countdown presentation, buff
 removal, and AC restoration after one round, with built/package/live DLL hashes
 matching. An ambiguous result is failure.
+
+## Opt-in manual lifecycle trace
+
+The diagnostic package now includes a passive manual observer gated by the
+`dodge-forensics.enabled` marker in the installed mod directory. With no marker,
+it creates no JSONL file, attaches no sampler, and every lifecycle callback
+returns without recording. With the marker present, it observes the player's
+actual activation of `KMG_GunslingerDodge_ProneAbility` and the exact Dodge Buff
+(`bbd7d42117cc4c23b3e22af3a71621d9`,
+`KMG_GunslingerDodge_ArmorClass_Buff`). It never applies or removes a fact and
+does not alter scheduler, AC, Grit, command, or save state.
+
+The built-in `TotalDefenseAbility` / `TotalDefenseBuff` pair is the selected
+finite native control. The player activates it through the ordinary
+all-character Total Defense action. Lifecycle records and the read-only
+quarter-second sampler are written as immediately flushed JSON Lines beneath
+`Application.persistentDataPath\KingmakerGunslinger\Diagnostics`. The trace is
+diagnostic evidence only; its build and source tests do not establish which
+expiration case occurs.

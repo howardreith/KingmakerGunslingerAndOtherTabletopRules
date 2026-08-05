@@ -4,6 +4,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
 using System.Threading;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.Deeds
 {
@@ -33,6 +34,8 @@ namespace KingmakerGunslinger.Deeds
 
         public override void OnTurnOn()
         {
+            DodgeBuffLifecycleForensics.Record("armor-class-on-turn-on", Fact as
+                Kingmaker.UnitLogic.Buffs.Buff, null, null, null, null);
             Interlocked.Increment(ref _turnedOn);
             Remove();
             if (Owner == null || Owner.Stats == null) return;
@@ -41,11 +44,15 @@ namespace KingmakerGunslinger.Deeds
                 Fact,
                 GetType().FullName,
                 ModifierDescriptor.Dodge);
+            DodgeBuffLifecycleForensics.Record("modifier-created", Fact as
+                Kingmaker.UnitLogic.Buffs.Buff, null, null, null, null);
             if (_modifier != null) Interlocked.Increment(ref _activeModifiers);
         }
 
         public override void OnTurnOff()
         {
+            DodgeBuffLifecycleForensics.Record("armor-class-on-turn-off", Fact as
+                Kingmaker.UnitLogic.Buffs.Buff, null, null, null, null);
             Interlocked.Increment(ref _turnedOff);
             Remove();
         }
@@ -63,6 +70,8 @@ namespace KingmakerGunslinger.Deeds
             {
                 if (Owner != null && Owner.Stats != null)
                     Owner.Stats.AC.RemoveModifier(_modifier);
+                DodgeBuffLifecycleForensics.Record("modifier-removed", Fact as
+                    Kingmaker.UnitLogic.Buffs.Buff, null, null, null, null);
                 Interlocked.Decrement(ref _activeModifiers);
             }
             _modifier = null;
