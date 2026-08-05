@@ -3866,3 +3866,21 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   creation and AC change separately, and the exact exception when delivery
   faults. Live command, icon, duration, expiration, and UI acceptance remain
   human-gated.
+
+# Pro Dodge native expiration scheduling repair (2026-08-05)
+
+- Human playtesting on a brand-new game and character proves the direct delivery
+  candidate now creates the visible Dodge buff and immediately changes AC from
+  15 to 17, but the effect remains indefinitely through more than ten minutes of
+  unpaused game time. Built and live DLL SHA-256 values were identical, so this
+  is a real duration defect rather than stale deployment or save state.
+- The direct `BuffCollection.AddBuff(BlueprintBuff, MechanicsContext, TimeSpan)`
+  seam successfully creates and activates the buff but does not produce a
+  scheduled expiration in this custom-delivery context.
+- The narrow repair preserves that human-proven delivery, then sets the live
+  buff's absolute `EndTime` to `Game.Instance.TimeController.GameTime + 6s` and
+  calls `BuffCollection.UpdateNextEvent()`. This follows the public Kingmaker
+  Turn-Based mod precedent for changing a live buff duration and keeps native
+  buff removal responsible for `OnTurnOff` and exact AC-modifier cleanup.
+- Visual icon, immediate AC, exact one-round expiration, and AC restoration remain
+  human-gated. No unrelated feature behavior is changed.

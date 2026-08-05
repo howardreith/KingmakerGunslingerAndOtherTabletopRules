@@ -48,6 +48,8 @@ def validate(root: Path) -> None:
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
         "caster.Buffs.AddBuff", "TimeSpan.FromSeconds(6d)",
+        "Game.Instance.TimeController.GameTime",
+        "buff.EndTime = scheduledEnd", "caster.Buffs.UpdateNextEvent()",
         "new MechanicsContext", "RecordDeliveryEntered",
         "RecordDeliveryApplied", "RecordDeliveryFault",
         "new AbilityDeliveryTarget(new TargetWrapper(context.Caster))")

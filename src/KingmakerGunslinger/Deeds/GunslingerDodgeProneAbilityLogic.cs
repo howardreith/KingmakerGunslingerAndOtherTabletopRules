@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -87,6 +88,23 @@ namespace KingmakerGunslinger.Deeds
                 if (buff == null)
                     throw new InvalidOperationException(
                         "Gunslinger's Dodge buff was not created.");
+
+                // Kingmaker accepted the fact and its AC component but did not
+                // schedule expiration when this overload was called from custom
+                // ability delivery.  Set the absolute native game-time deadline
+                // and refresh the BuffCollection event queue explicitly.  This is
+                // the same lifecycle seam used by the Kingmaker Turn-Based mod
+                // when changing a live Buff's duration.
+                TimeSpan scheduledEnd = Game.Instance.TimeController.GameTime +
+                    OneRoundDuration;
+                buff.EndTime = scheduledEnd;
+                caster.Buffs.UpdateNextEvent();
+                if (buff.IsPermanent || buff.EndTime != scheduledEnd ||
+                    buff.TimeLeft <= TimeSpan.Zero ||
+                    buff.TimeLeft > OneRoundDuration)
+                    throw new InvalidOperationException(
+                        "Gunslinger's Dodge buff did not retain its bounded " +
+                        "one-round native expiration.");
 
                 int acAfter = caster.Stats == null ? 0 :
                     caster.Stats.AC.ModifiedValue;

@@ -1035,6 +1035,9 @@ namespace KingmakerGunslinger.DomainTests
                 !blueprints.Contains("AbilityEffectRunAction") &&
                 runtime.Contains("caster.Buffs.AddBuff") &&
                 runtime.Contains("TimeSpan.FromSeconds(6d)") &&
+                runtime.Contains("Game.Instance.TimeController.GameTime") &&
+                runtime.Contains("buff.EndTime = scheduledEnd") &&
+                runtime.Contains("caster.Buffs.UpdateNextEvent()") &&
                 runtime.Contains("new MechanicsContext") &&
                 runtime.Contains("RecordDeliveryEntered") &&
                 runtime.Contains("RecordDeliveryApplied") &&
