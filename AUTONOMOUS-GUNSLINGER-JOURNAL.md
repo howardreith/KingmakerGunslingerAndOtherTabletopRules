@@ -283,7 +283,7 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   missing rolls, duplicate rolls, and unplanned targets reject explicitly.
 - Added ten focused tests. Repository validation and clean Release domain suite
   passed 644/644; exact private-reference compile and strict package validation
-  passed.
+  passed as run `20260805T0403022529444Z-f39b05ba45894e65aaaf51ed80f42562`.
 - Candidate package SHA-256:
   `a1110e94d47cef39a3dfed6f45d33858d9de9bc1757bd91e1a7b51e27d02dee3`.
   Candidate DLL SHA-256:
@@ -3692,3 +3692,159 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 - The guarded command scenario no longer suppresses animation. Detached units
   remain incapable of proving live view/UI refresh timing, so visual timing is
   not self-qualified.
+
+## 2026-08-04 Pro source-only stabilization handoff
+
+- Created local branch `pro/stabilization-repair` from the user-uploaded
+  `0.0.67` source baseline `368164d12c9807b1d2fb6740cb600e9efe8ef9d2`.
+- Froze the current human-observed passes: manual Reload Firearm, immediate
+  basic-ammunition crafting, Beneath the Stolen Lands vendor publication, and
+  immediate firearm killing-blow Grit recovery.
+- Reworked Gunslinger's Dodge to retain native Grit spending while delivering
+  the stable one-round buff through the actual ability component. The buff now
+  owns an explicit `+2` Dodge modifier through the same lifecycle pattern used
+  by the qualified Nimble implementation. The ability is configured as an
+  immediate fast Swift action. This is source implementation only; live AC and
+  UI timing remain human-gated.
+- Restored the Blunderbuss as a dual-mode firearm: ordinary attacks use a
+  10-foot range increment, while Scatter Shot remains a separate 15-foot-cone
+  ability. Removed both the automatic ordinary-attack-to-Scatter conversion and
+  the late harmless forced-miss path.
+- Rebuilt Scatter Shot around the installed native Burning Hands cone-delivery
+  presentation contract. Point selection remains the authoritative direction,
+  an empty cone still consumes the loaded chamber, and direct transaction tests
+  are explicitly classified as mechanics-only rather than clickable-command or
+  visual evidence.
+- Added a narrow `UnitAttack.OnAction` extension for later iterative attacks.
+  The same exact firearm may reload inside the existing native full-attack
+  command only when its effective reload action is genuinely Free; non-Free,
+  Wrecked, unavailable, or failed cases end the remaining attacks before an
+  empty fake shot. This does not promote Move or Standard reloads to Free.
+- Disabled all currently rejected custom firearm wrappers and preserved the
+  complete cloned native Light/Heavy Crossbow presentation as the visible
+  fallback. Asset-bundle loading is now transactional and optional custom
+  capabilities cannot replace a visible native model, belt, sheath, animation,
+  or sound with `null`.
+- Source validation passed through `tools/validate_playtest67.py` and
+  `tools/validate_repository.py`; `git diff --check` reported only the existing
+  PowerShell CRLF normalization notices. Static compile-include and delimiter
+  checks also passed.
+- No Kingmaker private assemblies, Windows build chain, Steam runtime, live
+  character view, audio device, or save-backed qualification environment was
+  available in this workspace. No compile, package, runtime, visual, audible,
+  or UI acceptance is claimed. A fresh Codex integration branch must apply and
+  review the patch, run the complete Windows workflow, and stop before commit if
+  any source, build, package, runtime, or human gate fails.
+
+## 2026-08-05 Pro stabilization integration qualification (uncommitted)
+
+- Integration branch `codex/pro-stabilization-integration` started from
+  `66dfa41fc86871a08a69f9634303d786f27665d9`. The applied working tree remains
+  uncommitted because mandatory runtime gates are not all green.
+- Repaired validator integration so the inherited 0.0.66 validator accepts the
+  current 871-registration static metric and the 0.0.67 validator uses the
+  repository's registration regex. Updated the stale Dodge source-contract test
+  to require the owned `+2` Dodge modifier lifecycle. The complete executable
+  domain suite passed 888/888.
+- Exact-reference compilation exposed and repaired missing owned-component
+  namespaces and definite assignment in the iterative reload patch. The reload
+  adapter now receives the exact equipped firearm blueprint rather than the
+  Musket catalog blueprint. Clean main-project Release compilation, build-output
+  validation, and strict package validation pass.
+- Guarded mod-load attempts `20260805T0354262076197Z-85a2a653a11342d4b31fd9738be14a32`
+  and its diagnostic successor failed before final result because Kingmaker
+  exposes an exact 10-foot crossbow-derived weapon type as a six-foot melee
+  weapon. The narrow installed-API adaptation stores 10.001 feet internally;
+  the authoritative domain and public `Feet.Value` remain 10. Guarded mod-load
+  run under evidence directory `20260805T0403022348998Z-mod-load-smoke` then
+  passed.
+- Focused Dodge run
+  `20260805T0404328666905Z-5c8ed455523544588573d7e98dd76ee5` returned ERROR:
+  the actual granted `UnitUseAbility` command on the detached `ChargenUnit`
+  finished `Interrupt` before delivery. No AC, buff, Grit, UI, or timing PASS is
+  claimed. A live-view or working-save-backed request-local fixture is required.
+- Focused Scatter run
+  `20260805T0406375463523Z-3048de93f9cc451f938bc0ab46d21111` under evidence
+  directory `20260805T0406375303504Z-disposable-gunslinger-scatter-shot` passed its
+  automated command-contract and mechanical transaction assertions. This is not
+  human evidence of cone appearance or orientation.
+- The applied handoff contains no focused runtime scenario that executes an
+  ordinary Blunderbuss attack through the native command, and no focused scenario
+  that executes the new free reload between attacks of a native iterative full
+  attack. Those mandatory gates remain missing, not passed. Comprehensive and
+  `KMG_AUTOMATION_WORKING` regressions were not run after the earlier mandatory
+  Dodge failure because they cannot cure the missing focused evidence.
+- Human checks remain pending for immediate displayed Dodge AC, Scatter cone
+  appearance, all firearm visibility/grip/scale/clipping/draw/attack/holster
+  behavior, and audible firearm report.
+
+## 2026-08-05 Gunslinger's Dodge timed-buff review gate (uncommitted)
+
+- Human evidence accepts immediate Grit spending and immediate `+2` Dodge AC,
+  but rejects the apparent duration and missing visible timed condition.
+- Pre-change source inspection found the buff had one owned
+  `GunslingerDodgeArmorClassBonus`, `StackingType.Replace`, and no icon. Custom
+  delivery called `BuffCollection.AddBuff` with a raw
+  `TimeSpan.FromSeconds(6d)` rather than the native round-duration action.
+  Installed reflection confirmed live `Buff` exposes absolute `EndTime`,
+  `TimeLeft`, `IsPermanent`, and `GetRank`, while the collection overload accepts
+  a nullable `TimeSpan`; no prior runtime result had recorded those values.
+- The candidate now uses `AbilityEffectRunAction` with
+  `ContextActionApplyBuff`, `ContextDurationValue`, `DurationRate.Rounds`,
+  `BonusValue = 1`, and `IsNotDispelable = true`. The custom logic only returns
+  the immediate self-delivery target. The existing buff still owns the exact
+  `+2 ModifierDescriptor.Dodge` modifier and its `OnTurnOff` removes that exact
+  modifier. The project `gunslingers-dodge` icon is explicitly applied to the
+  buff.
+- Source validation, 888/888 deterministic tests, exact-reference compilation,
+  and strict local-runtime packaging pass through the guarded build workflow.
+- Focused live-view attempt
+  `20260805T1205051093900Z-38fc32dfcb484d6bb191539fa7bc9c44`
+  failed safely because native `SpawnUnit` requires a non-null
+  `SceneEntitiesState`. A request-local disposable state was added and disposed.
+- Follow-up focused attempt
+  `20260805T1207074149189Z-0d9e7e6032724a819e7ed70ed97ca401`
+  created a real `UnitEntityView`, but the actual granted `UnitUseAbility`
+  command still finished `Interrupt` at the main-menu runtime stage. No delivery,
+  duration, expiration, or modifier-lifecycle PASS is claimed.
+- The next required engineering step is a guarded working-save-backed Dodge
+  scenario using the loaded live unit and actual granted action. It must record
+  game-time start, `EndTime`, `TimeLeft`, permanence, rank, icon, reactivation
+  rejection, and owned modifier `OnTurnOn`/`OnTurnOff`, then observe natural
+  turn-based and unpaused real-time expiration without saving. Comprehensive and
+  canonical working-save regressions remain pending. No commit or push is
+  authorized while this mandatory gate is red.
+
+## 2026-08-05 Gunslinger's Dodge human-observed failure at `66dfa41`
+
+- The currently granted player action immediately consumed 1 Grit, created no
+  visible condition icon, and produced no observable AC bonus. This fails player
+  acceptance; Grit spending and command completion are not evidence that the
+  effect was delivered.
+- A prior candidate did immediately increase AC by exactly 2, but its duration
+  and visible condition presentation were not qualified. The repair must recover
+  that immediate AC change and prove a genuine visible one-round buff through the
+  actual granted `UnitUseAbility` command path.
+
+## 2026-08-05 Gunslinger's Dodge custom-delivery runtime gate (uncommitted)
+
+- The narrow candidate removes `AbilityEffectRunAction` and gives the ability
+  exactly `AbilityResourceLogic`, `DodgeGritCostCalculator`, and
+  `GunslingerDodgeProneAbilityLogic`. The custom delivery runs native
+  `ContextActionApplyBuff` under the exact `AbilityExecutionContext` data scope;
+  the existing buff owns the `+2 ModifierDescriptor.Dodge` lifecycle component
+  and receives the exact `KMG_Icon_gunslingers-dodge` sprite.
+- Source validation, all 888 deterministic tests, clean exact-reference Release
+  compilation, build-output validation, and strict preliminary package
+  validation passed.
+- Guarded Steam run ID
+  `20260805T1235578594742Z-bc47ad1a00ac425f8ba56fc51582e794`
+  (`20260805T1235578404371Z-disposable-gunslinger-dodge`) returned `ERROR` at
+  `activate-immediate-dodge`: the actual granted `UnitUseAbility` on the detached
+  live-view fixture finished `Interrupt` before custom delivery. This is not live
+  timing evidence and proves no Grit, buff, AC, icon, or duration behavior.
+- The mandatory focused runtime gate remains red. Comprehensive and canonical
+  `KMG_AUTOMATION_WORKING` regressions were not run because they cannot cure the
+  missing focused live-command evidence. No commit or final clean-tree package
+  was created; the entire integrated candidate remains preserved in the working
+  tree.

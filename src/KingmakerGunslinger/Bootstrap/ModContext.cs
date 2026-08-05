@@ -156,6 +156,7 @@ namespace KingmakerGunslinger.Bootstrap
                 HarmonyInstance harmony = HarmonyInstance.Create(ModId);
                 harmony.PatchAll(Assembly);
                 Firing.EmptyFirearmAttackCommandPatch.Install(harmony);
+                Firing.FreeActionFullAttackReloadPatch.Install(harmony);
 
                 lock (_stateGate)
                 {

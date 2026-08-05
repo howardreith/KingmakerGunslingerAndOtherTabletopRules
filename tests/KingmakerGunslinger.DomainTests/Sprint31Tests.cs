@@ -23,8 +23,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             ProductionFirearmWeaponSpec spec = ProductionFirearmCatalog.CreateBlunderbuss();
             AssertWeaponSpec(spec, "blunderbuss", "Blunderbuss", FirearmKind.Blunderbuss, 1, 8, 2, true, 2000, 8f, true);
-            Assertions.False(spec.Definition.HasFixedRangeIncrement,
-                "Blunderbuss catalog entry invented a numeric range.");
+            Assertions.Equal(10, spec.Definition.RangeIncrementFeet,
+                "Blunderbuss ordinary bullet range mismatch.");
         }
 
         private static void CatalogFactoriesAreFresh()
@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(first, second, "Fresh canonical specs must compare equal.");
         }
 
-        private static void CatalogSpecialRangeCannotBeFireable()
+        private static void CatalogBlunderbussDualModeFireable()
         {
             ProductionFirearmWeaponSpec blunderbuss = ProductionFirearmCatalog.CreateBlunderbuss();
             ProductionFirearmWeaponSpec qualified =
@@ -52,8 +52,9 @@ namespace KingmakerGunslinger.DomainTests
                     blunderbuss.CostGold,
                     blunderbuss.WeightPounds,
                     true);
-            Assertions.True(qualified.IsPlayerFireable && qualified.Definition.IsScatter,
-                "Qualified special-range scatter content remained unavailable.");
+            Assertions.True(qualified.IsPlayerFireable && qualified.Definition.IsScatter &&
+                qualified.Definition.RangeIncrementFeet == 10,
+                "The dual-mode Blunderbuss must remain player-fireable.");
         }
 
         private static void CatalogHandednessMismatchRejected()

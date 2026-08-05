@@ -78,6 +78,8 @@ namespace KingmakerGunslinger.Blueprints
             ApplyFact(feats.WeaponFocus, visited);
             ApplyFact(feats.RapidReload, visited);
             ApplyFact(gunslinger.QuickClear.Feature, visited);
+            BlueprintUnitFactAccess.Resolve().SetIcon(
+                gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge"));
             ApplyFact(reload, visited); ApplyFact(repair, visited); ApplyFact(overhaul, visited);
             BlueprintItemAccess items = BlueprintItemAccess.Resolve();
             items.SetIcon(firearms.Pistol.Item, Require("early-pistol"));

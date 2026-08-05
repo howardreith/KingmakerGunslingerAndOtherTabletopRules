@@ -45,7 +45,9 @@
     <Compile Include="Sprint104Tests.cs" />
     <Compile Include="Sprint105Tests.cs" />
     <Compile Include="PlaytestRepairTests.cs" />
+    <Compile Include="ProStabilizationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Reloading\ReloadActionEconomy.cs"><Link>Reloading\ReloadActionEconomy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FullAttackAutoReloadPolicy.cs"><Link>Reloading\FullAttackAutoReloadPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\EmptyFirearmAttackPolicy.cs"><Link>Firing\EmptyFirearmAttackPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>

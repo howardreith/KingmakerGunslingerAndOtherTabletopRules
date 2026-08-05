@@ -71,12 +71,18 @@ namespace KingmakerGunslinger.DomainTests
             Case("grit.recovery-target-exclusions", GritRecoveryTargetExclusions),
             Case("grit.recovery-half-level-boundary", GritRecoveryHalfLevelBoundary),
             Case("grit.recovery-invalid-request", GritRecoveryInvalidRequestRejected),
+            Case("full-attack-reload.free-eligible", FullAttackAutoReloadEligibleFreeAction),
+            Case("full-attack-reload.nonfree-ended", FullAttackAutoReloadInterruptsNonFreeActions),
+            Case("full-attack-reload.loaded-capacity", FullAttackAutoReloadContinuesLoadedCapacity),
+            Case("full-attack-reload.same-weapon-next-attack", FullAttackAutoReloadRequiresSameWeaponAndNextAttack),
+            Case("full-attack-reload.wrecked-ended", FullAttackAutoReloadInterruptsWreckedFirearm),
+            Case("full-attack-reload.invalid-inputs", FullAttackAutoReloadRejectsInvalidInputs),
             Case("deadeye.second-increment-cost-one", DeadeyeSecondIncrementCostsOne),
             Case("deadeye.cost-scales", DeadeyeCostScalesBeyondFirst),
             Case("deadeye.first-increment-no-spend", DeadeyeFirstIncrementDoesNotSpend),
             Case("deadeye.insufficient-atomic", DeadeyeInsufficientGritFailsAtomic),
             Case("deadeye.context-fail-closed", DeadeyeContextFailsClosed),
-            Case("deadeye.range-fail-closed", DeadeyeSpecialAndInvalidRangeFailClosed),
+            Case("deadeye.blunderbuss-and-invalid-distance", DeadeyeBlunderbussOrdinaryRangeAndInvalidDistance),
             Case("deadeye.invalid-input", DeadeyeInvalidInputRejected),
             Case("dodge.move-exact", GunslingerDodgeMoveExact),
             Case("dodge.prone-exact", GunslingerDodgeProneExact),
@@ -225,13 +231,13 @@ namespace KingmakerGunslinger.DomainTests
             Case("factory.early-pistol-fresh-instances", FactoryEarlyPistolFreshInstances),
             Case("factory.early-pistol-canonical-equality", FactoryEarlyPistolCanonicalEquality),
             Case("factory.early-blunderbuss-fresh-instances", FactoryEarlyBlunderbussFreshInstances),
-            Case("factory.early-blunderbuss-special-range", FactoryEarlyBlunderbussSpecialRange),
-            Case("factory.early-blunderbuss-fixed-range-rejected", FactoryEarlyBlunderbussFixedRangeRejected),
+            Case("factory.early-blunderbuss-ordinary-range", FactoryEarlyBlunderbussOrdinaryRange),
+            Case("factory.early-blunderbuss-fixed-range-accessible", FactoryEarlyBlunderbussFixedRangeAccessible),
             Case("catalog.pistol-exact", CatalogPistolExact),
             Case("catalog.musket-exact", CatalogMusketExact),
             Case("catalog.blunderbuss-exact", CatalogBlunderbussExact),
             Case("catalog.factories-fresh", CatalogFactoriesAreFresh),
-            Case("catalog.special-range-nonfireable", CatalogSpecialRangeCannotBeFireable),
+            Case("catalog.blunderbuss-dual-mode-fireable", CatalogBlunderbussDualModeFireable),
             Case("catalog.handedness-rejected", CatalogHandednessMismatchRejected),
             Case("catalog.format", CatalogFormattingDeterministic),
             Case("scatter.plan-empty", ScatterPlanEmpty),
@@ -840,7 +846,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("ac.equal-no-write", ArmorClassEqualValuesRequireNoWrite),
             Case("ac.already-applied", ArmorClassAlreadyAppliedIsSkipped),
             Case("ac.advanced-fails-closed", ArmorClassAdvancedFirearmFailsClosed),
-            Case("ac.special-range-fails-closed", ArmorClassSpecialRangeFailsClosed),
+            Case("ac.blunderbuss-first-increment-touch", ArmorClassBlunderbussFirstIncrementTouch),
             Case("ac.invalid-distance", ArmorClassInvalidDistanceFailsClosed),
             Case("ac.negative-distance", ArmorClassNegativeDistanceFailsClosed),
             Case("ac.infinite-distance", ArmorClassInfiniteDistanceFailsClosed),
@@ -1022,9 +1028,22 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs");
             string runtime = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs");
-            Assertions.True(blueprints.Contains("bonus.Value = 2") &&
-                blueprints.Contains("ModifierDescriptor.Dodge") &&
-                runtime.Contains("TimeSpan.FromSeconds(6d)"),
+            string modifier = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs");
+            Assertions.True(blueprints.Contains("GunslingerDodgeArmorClassBonus") &&
+                blueprints.Contains("ability.ComponentsArray.Length != 3") &&
+                !blueprints.Contains("AbilityEffectRunAction") &&
+                runtime.Contains("ContextActionApplyBuff") &&
+                runtime.Contains("context.GetDataScope") &&
+                runtime.Contains("DurationRate.Rounds") &&
+                runtime.Contains("BonusValue = 1") &&
+                runtime.Contains("IsNotDispelable = true") &&
+                modifier.Contains("internal const int Bonus = 2") &&
+                modifier.Contains("ModifierDescriptor.Dodge") &&
+                modifier.Contains("Owner.Stats.AC.AddModifier") &&
+                modifier.Contains("Owner.Stats.AC.RemoveModifier") &&
+                !runtime.Contains("TimeSpan.FromSeconds") &&
+                !runtime.Contains("caster.Buffs.AddBuff"),
                 "The adapted Dodge bonus is not +2 dodge AC for one round.");
         }
 
@@ -2391,33 +2410,32 @@ namespace KingmakerGunslinger.DomainTests
                 "Fresh canonical blunderbuss definitions must compare equal.");
         }
 
-        private static void FactoryEarlyBlunderbussSpecialRange()
+        private static void FactoryEarlyBlunderbussOrdinaryRange()
         {
             FirearmDefinition definition = FirearmDefinitions.CreateEarlyBlunderbuss();
             Assertions.Equal(FirearmEra.Early, definition.Era, "Era mismatch.");
             Assertions.Equal(FirearmKind.Blunderbuss, definition.Kind, "Kind mismatch.");
             Assertions.Equal(1, definition.Capacity, "Capacity mismatch.");
-            Assertions.False(definition.HasFixedRangeIncrement,
-                "The authoritative blunderbuss special range must not become numeric.");
-            Assertions.Equal<int?>(null, definition.FixedRangeIncrementFeet,
-                "A special-range blunderbuss exposed an invented increment.");
+            Assertions.True(definition.HasFixedRangeIncrement,
+                "The ordinary Blunderbuss bullet mode must expose its 10-foot increment.");
+            Assertions.Equal<int?>(10, definition.FixedRangeIncrementFeet,
+                "Blunderbuss ordinary range mismatch.");
             Assertions.Equal(2, definition.MisfireValue, "Misfire mismatch.");
             Assertions.Equal(10, definition.MisfireBurstRadiusFeet, "Burst mismatch.");
             Assertions.Equal(ReloadActionType.FullRound, definition.Reload.BaseAction,
                 "Reload mismatch.");
             Assertions.True(definition.IsScatter, "Blunderbuss must be scatter.");
             Assertions.Equal(
-                "Early Blunderbuss; capacity=1; range=special; misfire=1-2; misfireBurst=10ft; reload=(FullRound; freeHand=True; roundsPerAction=1); scatter=True",
+                "Early Blunderbuss; capacity=1; range=10ft; misfire=1-2; misfireBurst=10ft; reload=(FullRound; freeHand=True; roundsPerAction=1); scatter=True",
                 definition.ToString(),
-                "Special-range formatting changed.");
+                "Dual-mode Blunderbuss formatting changed.");
         }
 
-        private static void FactoryEarlyBlunderbussFixedRangeRejected()
+        private static void FactoryEarlyBlunderbussFixedRangeAccessible()
         {
             FirearmDefinition definition = FirearmDefinitions.CreateEarlyBlunderbuss();
-            Assertions.Throws<InvalidOperationException>(
-                () => { int ignored = definition.RangeIncrementFeet; },
-                "A special-range firearm must reject fixed-range access.");
+            Assertions.Equal(10, definition.RangeIncrementFeet,
+                "Ordinary Blunderbuss bullet mode must use a 10-foot increment.");
         }
 
         private static void ValidEarlyMusket()
@@ -7324,7 +7342,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("advanced-firearm-not-implemented", decision.Reason, "Advanced-firearm reason mismatch.");
         }
 
-        private static void ArmorClassSpecialRangeFailsClosed()
+        private static void ArmorClassBlunderbussFirstIncrementTouch()
         {
             FirearmArmorClassDecision decision = SelectArmorClass(
                 true,
@@ -7335,10 +7353,10 @@ namespace KingmakerGunslinger.DomainTests
                 12,
                 20,
                 false);
-            Assertions.False(decision.UsesTouchArmorClass,
-                "A special-range firearm must retain ordinary AC until scatter is implemented.");
-            Assertions.Equal("special-range-not-implemented", decision.Reason,
-                "Special-range fail-closed reason mismatch.");
+            Assertions.True(decision.UsesTouchArmorClass,
+                "An ordinary Blunderbuss bullet inside its first increment must use touch AC.");
+            Assertions.Equal("touch-ac-first-range-increment", decision.Reason,
+                "Blunderbuss first-increment reason mismatch.");
         }
 
         private static void ArmorClassInvalidDistanceFailsClosed()

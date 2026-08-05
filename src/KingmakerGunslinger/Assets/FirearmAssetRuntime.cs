@@ -31,51 +31,139 @@ namespace KingmakerGunslinger.Assets
         internal static void Configure(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
-            string path = Path.Combine(context.ModEntry.Path, "assets", "bundles", "kingmakergunslinger.firearms");
+            string path = Path.Combine(context.ModEntry.Path, "assets", "bundles",
+                "kingmakergunslinger.firearms");
+            if (!File.Exists(path))
+            {
+                context.Logger.Warning("assets", "bundle.missing",
+                    "Firearm bundle unavailable; cloned native weapon models remain active: " + path);
+                return;
+            }
+
+            AssetBundle candidate = null;
             try
             {
-                if (!File.Exists(path)) { context.Logger.Warning("assets", "bundle.missing", "Firearm bundle unavailable; safe native fallbacks remain active: " + path); return; }
-                AssetBundle bundle = AssetBundle.LoadFromFile(path);
-                if (bundle == null) throw new InvalidDataException("Unity rejected the firearm bundle.");
+                candidate = AssetBundle.LoadFromFile(path);
+                if (candidate == null)
+                    throw new InvalidDataException("Unity rejected the firearm bundle.");
+                string[] names = candidate.GetAllAssetNames();
+                var prefabs = new Dictionary<FirearmKind, GameObject>();
+                var beltPrefabs = new Dictionary<FirearmKind, GameObject>();
+                var shots = new Dictionary<FirearmKind, AudioClip>();
+
+                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Pistol, "pistol", context);
+                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Musket, "musket", context);
+                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Blunderbuss, "blunderbuss", context);
+                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Revolver, "revolver", context);
+                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Rifle, "rifle", context);
+                TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Pistol,
+                    "pistolbelt", context);
+                TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Musket,
+                    "musketbelt", context);
+                TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Blunderbuss,
+                    "blunderbussbelt", context);
+                TryLoadShot(candidate, names, shots, FirearmKind.Pistol,
+                    "gunantq_flintlock fire_cs_usc.wav", context);
+                TryLoadShot(candidate, names, shots, FirearmKind.Musket,
+                    "gunantq_musket shots_cs_usc.wav", context);
+                TryLoadShot(candidate, names, shots, FirearmKind.Blunderbuss,
+                    "gunshotg_classic western shotgun blast with reverb_cs_usc.wav", context);
+                TryLoadShot(candidate, names, shots, FirearmKind.Revolver,
+                    "gunpis_exterior pistol shot_cs_usc.wav", context);
+                TryLoadShot(candidate, names, shots, FirearmKind.Rifle,
+                    "gunantq_flintlock rifle fire_cs_usc.wav", context);
+
+                AssetBundle previous;
                 lock (Sync)
                 {
-                    _bundle = bundle;
-                    LoadPrefab(FirearmKind.Pistol, "pistol"); LoadPrefab(FirearmKind.Musket, "musket");
-                    LoadPrefab(FirearmKind.Blunderbuss, "blunderbuss"); LoadPrefab(FirearmKind.Revolver, "revolver");
-                    LoadPrefab(FirearmKind.Rifle, "rifle");
-                    LoadBeltPrefab(FirearmKind.Pistol, "pistolbelt");
-                    LoadBeltPrefab(FirearmKind.Musket, "musketbelt");
-                    LoadBeltPrefab(FirearmKind.Blunderbuss, "blunderbussbelt");
-                    LoadShot(FirearmKind.Pistol, "gunantq_flintlock fire_cs_usc.wav");
-                    LoadShot(FirearmKind.Musket, "gunantq_musket shots_cs_usc.wav");
-                    LoadShot(FirearmKind.Blunderbuss, "gunshotg_classic western shotgun blast with reverb_cs_usc.wav");
-                    LoadShot(FirearmKind.Revolver, "gunpis_exterior pistol shot_cs_usc.wav");
-                    LoadShot(FirearmKind.Rifle, "gunantq_flintlock rifle fire_cs_usc.wav");
+                    previous = _bundle;
+                    _bundle = candidate;
+                    candidate = null;
+                    Replace(Prefabs, prefabs);
+                    Replace(BeltPrefabs, beltPrefabs);
+                    Replace(Shots, shots);
                 }
-                context.Logger.Info("assets", "bundle.loaded", "Loaded five approved firearm prefabs and five approved CC0 shot mappings.");
+                if (previous != null) previous.Unload(false);
+                context.Logger.Info("assets", "bundle.loaded",
+                    "Published firearm bundle transactionally; equippedPrefabs=" +
+                    prefabs.Count + ";beltPrefabs=" + beltPrefabs.Count +
+                    ";audioClips=" + shots.Count +
+                    ". Missing or rejected capabilities retain native presentation fallbacks.");
             }
-            catch (Exception exception) { context.Logger.Failure("assets", "bundle.load-failed", "Firearm bundle failed safely; native fallbacks remain active.", exception); }
+            catch (Exception exception)
+            {
+                context.Logger.Failure("assets", "bundle.load-failed",
+                    "Firearm bundle was not published; cloned native weapon models remain active.",
+                    exception);
+            }
+            finally
+            {
+                if (candidate != null) candidate.Unload(false);
+            }
         }
-        private static void LoadPrefab(FirearmKind kind, string name)
+
+        private static void TryLoadPrefab(AssetBundle bundle, string[] names,
+            IDictionary<FirearmKind, GameObject> destination,
+            FirearmKind kind, string name, ModContext context)
         {
-            string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name + ".prefab", StringComparison.OrdinalIgnoreCase));
-            GameObject prefab = _bundle.LoadAsset<GameObject>(path);
-            if (prefab == null) throw new InvalidDataException("Missing firearm prefab: " + name);
-            Prefabs[kind] = prefab;
+            string suffix = "/" + name + ".prefab";
+            string[] matches = names.Where(value => value.EndsWith(
+                suffix, StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (matches.Length != 1)
+            {
+                context.Logger.Warning("assets", "prefab.skipped",
+                    "kind=" + kind + ";name=" + name +
+                    ";matches=" + matches.Length + ";nativeFallback=true");
+                return;
+            }
+            GameObject prefab = bundle.LoadAsset<GameObject>(matches[0]);
+            Renderer[] renderers = prefab == null
+                ? Array.Empty<Renderer>()
+                : prefab.GetComponentsInChildren<Renderer>(true);
+            bool renderable = renderers.Any(renderer => renderer != null &&
+                renderer.sharedMaterials != null &&
+                renderer.sharedMaterials.Any(material => material != null &&
+                    material.shader != null));
+            if (!renderable)
+            {
+                context.Logger.Warning("assets", "prefab.skipped",
+                    "kind=" + kind + ";name=" + name +
+                    ";renderable=false;nativeFallback=true");
+                return;
+            }
+            destination[kind] = prefab;
         }
-        private static void LoadShot(FirearmKind kind, string name)
+
+        private static void TryLoadShot(AssetBundle bundle, string[] names,
+            IDictionary<FirearmKind, AudioClip> destination,
+            FirearmKind kind, string name, ModContext context)
         {
-            string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name, StringComparison.OrdinalIgnoreCase));
-            AudioClip clip = _bundle.LoadAsset<AudioClip>(path);
-            if (clip == null) throw new InvalidDataException("Missing firearm audio: " + name);
-            Shots[kind] = clip;
+            string suffix = "/" + name;
+            string[] matches = names.Where(value => value.EndsWith(
+                suffix, StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (matches.Length != 1)
+            {
+                context.Logger.Warning("assets", "audio.skipped",
+                    "kind=" + kind + ";name=" + name +
+                    ";matches=" + matches.Length);
+                return;
+            }
+            AudioClip clip = bundle.LoadAsset<AudioClip>(matches[0]);
+            if (clip == null)
+            {
+                context.Logger.Warning("assets", "audio.skipped",
+                    "kind=" + kind + ";name=" + name + ";loaded=false");
+                return;
+            }
+            destination[kind] = clip;
         }
-        private static void LoadBeltPrefab(FirearmKind kind, string name)
+
+        private static void Replace<T>(IDictionary<FirearmKind, T> destination,
+            IDictionary<FirearmKind, T> source)
         {
-            string path = _bundle.GetAllAssetNames().Single(value => value.EndsWith("/" + name + ".prefab", StringComparison.OrdinalIgnoreCase));
-            GameObject prefab = _bundle.LoadAsset<GameObject>(path);
-            if (prefab == null) throw new InvalidDataException("Missing firearm belt prefab: " + name);
-            BeltPrefabs[kind] = prefab;
+            destination.Clear();
+            foreach (KeyValuePair<FirearmKind, T> entry in source)
+                destination[entry.Key] = entry.Value;
         }
         internal static GameObject InstantiatePrefab(FirearmKind kind)
         {

@@ -6,28 +6,78 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Assets
 {
+    /// <summary>
+    /// Declares which custom presentation capabilities are trusted for each
+    /// firearm. A disabled or unavailable capability preserves the cloned native
+    /// Light/Heavy Crossbow presentation instead of replacing it with null.
+    /// </summary>
     internal sealed class FirearmPresentationProfile
     {
         private static readonly Dictionary<FirearmKind, FirearmPresentationProfile>
             Profiles = new Dictionary<FirearmKind, FirearmPresentationProfile>
             {
-                { FirearmKind.Pistol, new FirearmPresentationProfile(FirearmKind.Pistol, null, false) },
-                { FirearmKind.Revolver, new FirearmPresentationProfile(FirearmKind.Revolver, null, false) },
-                { FirearmKind.Musket, new FirearmPresentationProfile(FirearmKind.Musket, null, false) },
-                { FirearmKind.Blunderbuss, new FirearmPresentationProfile(FirearmKind.Blunderbuss, null, false) },
-                { FirearmKind.Rifle, new FirearmPresentationProfile(FirearmKind.Rifle, null, false) }
+                // Every custom firearm wrapper has failed at least one supervised
+                // visibility, grip, orientation, clipping, or idle-state check.
+                // Stabilization therefore keeps the cloned native presentation for
+                // all five weapons until an individual replacement is human-approved.
+                { FirearmKind.Pistol, new FirearmPresentationProfile(
+                    FirearmKind.Pistol, false, false, null, false) },
+                { FirearmKind.Revolver, new FirearmPresentationProfile(
+                    FirearmKind.Revolver, false, false, null, false) },
+
+                // Long-gun wrappers have repeatedly been invisible, inverted, or
+                // body-clipping. Preserve visible native crossbow fallbacks until
+                // each replacement is calibrated and human-approved.
+                { FirearmKind.Musket, new FirearmPresentationProfile(
+                    FirearmKind.Musket, false, false, null, false) },
+                { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
+                    FirearmKind.Blunderbuss, false, false, null, false) },
+                { FirearmKind.Rifle, new FirearmPresentationProfile(
+                    FirearmKind.Rifle, false, false, null, false) }
             };
 
         private FirearmPresentationProfile(FirearmKind kind,
+            bool useCustomEquippedModel, bool useCustomBeltModel,
             WeaponAnimationStyle? animation, bool overrideAttachSlots)
-        { Kind = kind; Animation = animation; OverrideAttachSlots = overrideAttachSlots; }
+        {
+            Kind = kind;
+            UseCustomEquippedModel = useCustomEquippedModel;
+            UseCustomBeltModel = useCustomBeltModel;
+            Animation = animation;
+            OverrideAttachSlots = overrideAttachSlots;
+        }
 
         internal FirearmKind Kind { get; private set; }
+        internal bool UseCustomEquippedModel { get; private set; }
+        internal bool UseCustomBeltModel { get; private set; }
         internal WeaponAnimationStyle? Animation { get; private set; }
         internal bool OverrideAttachSlots { get; private set; }
-        internal string HolsterPolicy { get { return BeltModel == null ? "native" : "explicit-belt/back"; } }
-        internal GameObject EquippedModel { get { return FirearmAssetRuntime.GetPrefab(Kind); } }
-        internal GameObject BeltModel { get { return FirearmAssetRuntime.GetBeltPrefab(Kind); } }
+        internal string EquippedPolicy
+        {
+            get { return EquippedModel == null ? "native-fallback" : "custom"; }
+        }
+        internal string HolsterPolicy
+        {
+            get { return BeltModel == null ? "native-fallback" : "custom-belt/back"; }
+        }
+        internal GameObject EquippedModel
+        {
+            get
+            {
+                return UseCustomEquippedModel
+                    ? FirearmAssetRuntime.GetPrefab(Kind)
+                    : null;
+            }
+        }
+        internal GameObject BeltModel
+        {
+            get
+            {
+                return UseCustomBeltModel
+                    ? FirearmAssetRuntime.GetBeltPrefab(Kind)
+                    : null;
+            }
+        }
         internal GameObject SheathModel { get { return null; } }
 
         internal static FirearmPresentationProfile Require(FirearmKind kind)

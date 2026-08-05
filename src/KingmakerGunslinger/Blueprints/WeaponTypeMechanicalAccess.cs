@@ -70,9 +70,17 @@ namespace KingmakerGunslinger.Blueprints
             _magicDescription.SetValue(weaponType, description);
             if (spec.Definition.HasFixedRangeIncrement)
             {
+                // Kingmaker treats an exact 10-foot BlueprintWeaponType range as
+                // non-ranged and exposes the six-foot melee reach instead.  A
+                // sub-display-foot epsilon keeps the native crossbow attack in
+                // the ranged pipeline while Feet.Value and the authoritative
+                // firearm definition remain exactly 10 feet.
+                float nativeRange = spec.Definition.RangeIncrementFeet == 10
+                    ? 10.001f
+                    : spec.Definition.RangeIncrementFeet;
                 _attackRange.SetValue(
                     weaponType,
-                    new Feet(spec.Definition.RangeIncrementFeet));
+                    new Feet(nativeRange));
             }
             _baseDamage.SetValue(
                 weaponType,
@@ -120,7 +128,9 @@ namespace KingmakerGunslinger.Blueprints
                 weaponType.AttackRange.Value != spec.Definition.RangeIncrementFeet)
             {
                 throw new InvalidOperationException(
-                    "Production firearm attack range did not persist.");
+                    "Production firearm attack range did not persist: expected=" +
+                    spec.Definition.RangeIncrementFeet + ";actual=" +
+                    weaponType.AttackRange.Value + ".");
             }
         }
 

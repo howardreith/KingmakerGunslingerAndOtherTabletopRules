@@ -18,9 +18,9 @@ def require(path: Path, *tokens: str) -> None:
         raise AssertionError(f"{path.name} lacks {missing}")
 
 
-def validate(root: Path) -> None:
+def validate(root: Path, test_count: int = 865) -> None:
     validate_playtest64.validate_playtest63.validate_sprint60.validate(
-        root, VERSION, INFORMATIONAL_VERSION, 865, 189, 190)
+        root, VERSION, INFORMATIONAL_VERSION, test_count, 189, 190)
     require(root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
             "ExtractSelectionItems", "IEnumerable<IFeatureSelectionItem>",
             "NativeFirearmFeatLevelUpMenuPatch")

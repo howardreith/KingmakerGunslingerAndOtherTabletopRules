@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
-using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Buffs;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Kingmaker.UnitLogic;
@@ -14,6 +14,9 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints;
 using Kingmaker.Utility;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.ElementsSystem;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Deeds
@@ -24,6 +27,8 @@ namespace KingmakerGunslinger.Deeds
     {
         [SerializeField] private BlueprintUnitFact m_ArmedMarker;
         [SerializeField] private BlueprintBuff m_ArmorClassBuff;
+        [SerializeField] private ContextActionApplyBuff m_ApplyBuff;
+        [SerializeField] private ActionList m_ApplyBuffActions;
 
         internal static GunslingerDodgeProneAbilityLogic Create(
             BlueprintUnitFact armedMarker, BlueprintBuff armorClassBuff)
@@ -31,14 +36,31 @@ namespace KingmakerGunslinger.Deeds
             if (armedMarker == null) throw new ArgumentNullException("armedMarker");
             if (armorClassBuff == null) throw new ArgumentNullException("armorClassBuff");
             var result = ScriptableObject.CreateInstance<GunslingerDodgeProneAbilityLogic>();
+            result.name = "$KMG_GunslingerDodge_ImmediateDelivery";
             result.m_ArmedMarker = armedMarker;
             result.m_ArmorClassBuff = armorClassBuff;
+            result.m_ApplyBuff = new ContextActionApplyBuff
+            {
+                Buff = armorClassBuff,
+                DurationValue = new ContextDurationValue
+                {
+                    Rate = DurationRate.Rounds,
+                    BonusValue = 1
+                },
+                IsNotDispelable = true
+            };
+            result.m_ApplyBuffActions = new ActionList
+            {
+                Actions = new GameAction[] { result.m_ApplyBuff }
+            };
             return result;
         }
 
         public bool IsAvailableFor(AbilityData ability)
         {
-            if (ability == null || ability.Caster == null || m_ArmorClassBuff == null)
+            if (ability == null || ability.Caster == null ||
+                m_ArmorClassBuff == null ||
+                ability.Caster.HasFact(m_ArmorClassBuff))
                 return false;
             GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
             return set != null && ability.Caster.Resources.GetResourceAmount(
@@ -48,7 +70,7 @@ namespace KingmakerGunslinger.Deeds
 
         public string GetReason()
         {
-            return "Requires enough Grit to pay the immediate 1 Grit cost.";
+            return "Requires enough Grit and no active Gunslinger's Dodge buff.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -59,18 +81,35 @@ namespace KingmakerGunslinger.Deeds
                 context.Caster.Descriptor == null)
                 throw new InvalidOperationException("Dodge delivery lacks its caster or marker.");
             UnitDescriptor caster = context.Caster.Descriptor;
+            if (caster.HasFact(m_ArmorClassBuff))
+                throw new InvalidOperationException(
+                    "Gunslinger's Dodge is already active on the caster.");
             if (caster.HasFact(m_ArmedMarker)) caster.RemoveFact(m_ArmedMarker);
-            var buffContext = new MechanicsContext(context.Caster, caster,
-                context.Ability.Blueprint, null, new TargetWrapper(context.Caster));
-            if (caster.Buffs.AddBuff(m_ArmorClassBuff, buffContext,
-                TimeSpan.FromSeconds(6d)) == null)
+            int acBefore = caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue;
+            using (context.GetDataScope(new TargetWrapper(context.Caster)))
+                m_ApplyBuffActions.Run();
+            Buff buff = caster.Buffs.GetBuff(m_ArmorClassBuff);
+            if (buff == null)
                 throw new InvalidOperationException("Gunslinger's Dodge buff was not created.");
-            yield return new AbilityDeliveryTarget(target);
+            GunslingerDodgeRuntimeDiagnostics.RecordDelivery(
+                buff, acBefore, caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue);
+            yield return new AbilityDeliveryTarget(new TargetWrapper(context.Caster));
         }
 
         public override void Cleanup(AbilityExecutionContext context) { }
         internal BlueprintUnitFact ArmedMarker { get { return m_ArmedMarker; } }
         internal BlueprintBuff ArmorClassBuff { get { return m_ArmorClassBuff; } }
+        internal bool HasOneRoundTimedBuffAction
+        {
+            get
+            {
+                return m_ApplyBuff != null &&
+                    ReferenceEquals(m_ApplyBuff.Buff, m_ArmorClassBuff) &&
+                    !m_ApplyBuff.Permanent && m_ApplyBuff.IsNotDispelable &&
+                    m_ApplyBuff.DurationValue.Rate == DurationRate.Rounds &&
+                    m_ApplyBuff.DurationValue.BonusValue.Value == 1;
+            }
+        }
     }
 
     internal sealed class DodgeGritCostCalculator : BlueprintComponent,

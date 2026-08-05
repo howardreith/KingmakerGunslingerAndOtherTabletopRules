@@ -86,9 +86,9 @@ def validate(
         [
             'Case("factory.early-pistol-fresh-instances"',
             'Case("factory.early-pistol-canonical-equality"',
-            'Case("factory.early-blunderbuss-special-range"',
-            'Case("factory.early-blunderbuss-fixed-range-rejected"',
-            'Case("ac.special-range-fails-closed"',
+            'Case("factory.early-blunderbuss-ordinary-range"',
+            'Case("factory.early-blunderbuss-fixed-range-accessible"',
+            'Case("ac.blunderbuss-first-increment-touch"',
         ],
         "Sprint 31 definition tests",
     )

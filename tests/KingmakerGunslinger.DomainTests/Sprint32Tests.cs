@@ -299,7 +299,16 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void ScatterDischargeZeroTargetsOnce()
         {
-            AssertScatterFiredOnce(ScatterPlan());
+            ScatterTargetPlan plan = ScatterPlan();
+            AssertScatterFiredOnce(plan);
+            ScatterAttackVolleyDecision volley =
+                new ScatterAttackVolleyService().Evaluate(
+                    FirearmDefinitions.CreateEarlyBlunderbuss(), plan,
+                    new ScatterAttackRollObservation[0]);
+            Assertions.Equal(0, volley.TargetCount,
+                "An empty Scatter direction invented an attack target.");
+            Assertions.False(volley.AllRollsMisfire,
+                "An empty Scatter direction was misclassified as an all-roll misfire.");
         }
 
         private static void ScatterDischargeOneTargetOnce()

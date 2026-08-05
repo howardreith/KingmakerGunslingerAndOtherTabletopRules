@@ -166,6 +166,7 @@
     <Compile Include="Deeds\GunslingerDodgeRequest.cs" />
     <Compile Include="Deeds\GunslingerDodgeService.cs" />
     <Compile Include="Deeds\GunslingerDodgeStatus.cs" />
+    <Compile Include="Deeds\GunslingerDodgeArmorClassBonus.cs" />
     <Compile Include="Deeds\GunslingerDodgeProneAbilityLogic.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntime.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntimeDiagnostics.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="Firing\FirearmDischargeRuntime.cs" />
     <Compile Include="Firing\EmptyFirearmAttackPolicy.cs" />
     <Compile Include="Firing\EmptyFirearmAttackCommandPatch.cs" />
+    <Compile Include="Firing\FreeActionFullAttackReloadPatch.cs" />
     <Compile Include="Firing\FirearmDischargeRuntimeDiagnostics.cs" />
     <Compile Include="Firing\FirearmDischargeService.cs" />
     <Compile Include="Firing\FirearmDischargeStatus.cs" />
@@ -476,6 +478,7 @@
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
+    <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />

@@ -4,9 +4,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Abilities;
-using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Actions;
-using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Reloading;
 using System.Collections.Generic;
@@ -77,24 +75,6 @@ namespace KingmakerGunslinger.Firing
                         "Firearm attack rejected: equipped firearms are ambiguous.",
                         ref __result);
                 return true;
-            }
-            if (firearm.Definition.IsScatter &&
-                firearm.Firearm.Repository.State.LoadedRounds == 1 && __1 != null)
-            {
-                BlueprintAbility scatter = BlueprintLibraryLookup
-                    .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
-                        "3bf6d00c24d94d32a69c1f700a6eeb36",
-                        "Scatter Shot ability");
-                Kingmaker.UnitLogic.Abilities.Ability granted =
-                    executor.Descriptor.Abilities.GetAbility(scatter);
-                if (granted == null)
-                    return Reject(executor, __1,
-                        EmptyFirearmCommandDisposition.RejectUnloaded,
-                        "Blunderbuss attack requires the granted Scatter Shot ability.",
-                        ref __result);
-                __result = new UnitUseAbility(new AbilityData(granted),
-                    new Kingmaker.Utility.TargetWrapper(__1.Position, 0f));
-                return false;
             }
             bool autoReload = IsReloadAutoUse(executor);
             bool reloadLegal = autoReload &&
