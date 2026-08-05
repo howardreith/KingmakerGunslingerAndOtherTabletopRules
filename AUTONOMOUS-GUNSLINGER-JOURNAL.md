@@ -3668,3 +3668,16 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   independent.
 - The detached recovery scenario no longer constructs `MeleeDamage`, mutates
   target HP, or calls damage hooks as false player-path evidence.
+# Seventh playtest Scatter command failure (2026-08-04)
+
+- Human playtest confirms the prior Scatter Shot UI exposed a large Close-range
+  circle and generic throwing animation, then produced no damage or discharge
+  when its separately enforced 15-foot internal cone was empty.
+- Scatter Shot now uses an exact `AbilityRange.Custom` 15-foot point target and
+  directional animation contract. Ability delivery derives cone direction from
+  that point before the existing exactly-once discharge and independent attack
+  transactions.
+- A loaded ordinary Blunderbuss attack is redirected before `UnitAttack` or
+  `RuleAttackRoll` construction to the character's real granted Scatter Shot
+  ability. Empty attacks retain the accepted reload continuation and are
+  reevaluated after reload.

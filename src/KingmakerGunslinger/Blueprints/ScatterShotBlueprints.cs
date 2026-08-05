@@ -4,6 +4,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Scatter;
 using UnityEngine;
 
@@ -31,21 +32,19 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ScatterShot.Description",
                     "Fire one Blunderbuss pellet load in a 15-foot cone. Make a separate attack at -2 against each creature; the weapon misfires only if every attack roll misfires."), null);
             result.Type = AbilityType.Extraordinary;
-            // The Blunderbuss intentionally has no ordinary weapon range. Close
-            // keeps native unit targeting available while production delivery
-            // applies the authoritative fixed 15-foot cone predicate.
-            result.Range = AbilityRange.Close;
-            result.CanTargetEnemies = true;
-            result.CanTargetFriends = true;
+            result.Range = AbilityRange.Custom;
+            result.CustomRange = new Feet(15f);
+            result.CanTargetEnemies = false;
+            result.CanTargetFriends = false;
             result.CanTargetSelf = false;
-            result.CanTargetPoint = false;
+            result.CanTargetPoint = true;
             result.SpellResistance = false;
             result.Hidden = false;
             result.ActionBarAutoFillIgnored = false;
             result.NeedEquipWeapons = true;
             result.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
             result.EffectOnAlly = AbilityEffectOnUnit.Harmful;
-            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Special;
+            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Directional;
             result.ActionType = UnitCommand.CommandType.Standard;
             result.ResourceAssetIds = Array.Empty<string>();
             result.ComponentsArray = new BlueprintComponent[] {
@@ -56,8 +55,10 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Validate(BlueprintAbility ability)
         {
             if (ability == null || ability.ActionType != UnitCommand.CommandType.Standard ||
-                ability.Range != AbilityRange.Close || !ability.CanTargetEnemies ||
-                !ability.CanTargetFriends || ability.CanTargetSelf ||
+                ability.Range != AbilityRange.Custom ||
+                ability.CustomRange.Value != 15 ||
+                ability.CanTargetEnemies || ability.CanTargetFriends ||
+                ability.CanTargetSelf || !ability.CanTargetPoint ||
                 ability.ComponentsArray.OfType<ScatterShotAbilityLogic>().Count() != 1)
                 throw new InvalidOperationException(
                     "Scatter Shot ability blueprint contract is incomplete.");

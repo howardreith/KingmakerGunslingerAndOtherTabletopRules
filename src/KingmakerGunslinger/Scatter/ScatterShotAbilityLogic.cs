@@ -30,11 +30,10 @@ namespace KingmakerGunslinger.Scatter
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context, TargetWrapper target)
         {
-            if (context == null || context.MaybeCaster == null || target == null ||
-                target.Unit == null)
+            if (context == null || context.MaybeCaster == null || target == null)
                 throw new InvalidOperationException(
-                    "Scatter Shot requires a caster and a unit direction target.");
-            ScatterShotRuntime.ExecuteFromAbility(context, target.Unit);
+                    "Scatter Shot requires a caster and a direction point.");
+            ScatterShotRuntime.ExecuteFromAbility(context, target.Point);
             yield return new AbilityDeliveryTarget(target);
         }
 

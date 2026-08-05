@@ -27,7 +27,14 @@ namespace KingmakerGunslinger.Scatter
         {
             if (caster == null) throw new ArgumentNullException("caster");
             if (aimedTarget == null) throw new ArgumentNullException("aimedTarget");
-            Vector3 offset = aimedTarget.EyePosition - caster.EyePosition;
+            return Resolve(caster, aimedTarget.EyePosition);
+        }
+
+        internal UnitEntityData[] Resolve(UnitEntityData caster,
+            Vector3 aimedPoint)
+        {
+            if (caster == null) throw new ArgumentNullException("caster");
+            Vector3 offset = aimedPoint - caster.EyePosition;
             var direction = new Vector2(offset.x, offset.z);
             if (direction.sqrMagnitude <= 0f)
                 throw new InvalidOperationException(

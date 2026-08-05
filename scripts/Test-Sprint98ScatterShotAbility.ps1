@@ -7,8 +7,9 @@ $logic = Get-Content -Raw (Join-Path $root 'src\KingmakerGunslinger\Scatter\Scat
 $proficiency = Get-Content -Raw (Join-Path $root 'src\KingmakerGunslinger\Blueprints\FirearmProficiencyBlueprints.cs')
 $bootstrap = Get-Content -Raw (Join-Path $root 'src\KingmakerGunslinger\Bootstrap\BlueprintBootstrap.cs')
 $manifest = Get-Content -Raw (Join-Path $root 'blueprints\blueprints.json')
-foreach ($token in @('AbilityRange.Close', 'CommandType.Standard',
-  'ScatterShotAbilityLogic.Create()', 'CanTargetPoint = false')) {
+foreach ($token in @('AbilityRange.Custom', 'CustomRange = new Feet(15f)',
+  'CommandType.Standard', 'ScatterShotAbilityLogic.Create()',
+  'CanTargetPoint = true', 'CastAnimationStyle.Directional')) {
   if (-not $ability.Contains($token)) { throw "Missing Scatter Shot ability token: $token" }
 }
 if (-not $logic.Contains('ScatterShotRuntime.ExecuteFromAbility') -or

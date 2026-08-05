@@ -57,11 +57,11 @@ namespace KingmakerGunslinger.Scatter
 
         internal static ScatterShotExecutionResult ExecuteFromAbility(
             Kingmaker.UnitLogic.Abilities.AbilityExecutionContext context,
-            UnitEntityData aimedTarget)
+            UnityEngine.Vector3 aimedPoint)
         {
             if (context == null || context.MaybeCaster == null)
                 throw new ArgumentNullException("context");
-            LastAbilityResult = Execute(context.MaybeCaster, aimedTarget,
+            LastAbilityResult = Execute(context.MaybeCaster, aimedPoint,
                 delegate(RuleAttackWithWeapon attack) { Rulebook.Trigger(attack); });
             return LastAbilityResult;
         }
@@ -197,6 +197,20 @@ namespace KingmakerGunslinger.Scatter
                 if (transitioned) Transition(firearm, expected, before);
                 throw;
             }
+        }
+
+        internal static ScatterShotExecutionResult Execute(
+            UnitEntityData caster, UnityEngine.Vector3 aimedPoint,
+            Action<RuleAttackWithWeapon> trigger,
+            int[] forcedNaturalRolls = null)
+        {
+            if (caster == null) throw new ArgumentNullException("caster");
+            if (trigger == null) throw new ArgumentNullException("trigger");
+            UnitEntityData[] nativeTargets = Targets.Resolve(caster, aimedPoint);
+            if (nativeTargets.Length == 0)
+                throw new InvalidOperationException(
+                    "The selected 15-foot direction contains no native cone target.");
+            return Execute(caster, nativeTargets[0], trigger, forcedNaturalRolls);
         }
 
         private static void Transition(ExactEquippedFirearmContext firearm,
