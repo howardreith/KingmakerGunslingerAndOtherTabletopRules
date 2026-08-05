@@ -3884,3 +3884,21 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   buff removal responsible for `OnTurnOff` and exact AC-modifier cleanup.
 - Visual icon, immediate AC, exact one-round expiration, and AC restoration remain
   human-gated. No unrelated feature behavior is changed.
+
+# Pro Dodge canonical duration-application repair (2026-08-05)
+
+- Human playtesting with the exact built, packaged, and installed DLL proves the
+  live Dodge buff now displays a six-second countdown, but remains attached and
+  continues granting +2 AC after the countdown reaches zero. The built, packaged,
+  and live DLL SHA-256 values were identical, so deployment is excluded.
+- The rejected candidate attached the Buff through `BuffCollection.AddBuff`, then
+  mutated `EndTime` and called `UpdateNextEvent` after attachment. That updated the
+  UI timer but did not enroll the Buff in native expiration removal.
+- The narrow repair now uses Kingmaker's canonical duration-aware
+  `UnitDescriptor.AddBuff(BlueprintBuff, MechanicsContext, TimeSpan?)` seam. The
+  one-round deadline is supplied before fact attachment so the BuffCollection can
+  schedule native removal and `OnTurnOff` modifier cleanup. Post-attach `EndTime`
+  mutation is removed.
+- Immediate Grit spending, immediate +2 Dodge AC, visible icon, stable GUIDs, and
+  all unrelated qualified systems remain unchanged. Expiration and exact AC
+  restoration remain human-gated.

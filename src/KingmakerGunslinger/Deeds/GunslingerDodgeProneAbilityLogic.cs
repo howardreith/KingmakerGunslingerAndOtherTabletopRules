@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -81,26 +80,20 @@ namespace KingmakerGunslinger.Deeds
                 var buffContext = new MechanicsContext(context.Caster, caster,
                     context.Ability.Blueprint, null,
                     new TargetWrapper(context.Caster));
-                Buff buff = caster.Buffs.AddBuff(
+                // Use Kingmaker's UnitDescriptor duration-aware application
+                // seam.  This establishes the expiration before the Buff fact is
+                // attached, allowing BuffCollection to schedule the native removal
+                // event.  Post-attach EndTime mutation displayed a countdown but
+                // did not enroll this dynamically-created buff in the expiration
+                // queue.
+                Buff buff = caster.AddBuff(
                     m_ArmorClassBuff,
                     buffContext,
-                    OneRoundDuration);
+                    new TimeSpan?(OneRoundDuration));
                 if (buff == null)
                     throw new InvalidOperationException(
                         "Gunslinger's Dodge buff was not created.");
-
-                // Kingmaker accepted the fact and its AC component but did not
-                // schedule expiration when this overload was called from custom
-                // ability delivery.  Set the absolute native game-time deadline
-                // and refresh the BuffCollection event queue explicitly.  This is
-                // the same lifecycle seam used by the Kingmaker Turn-Based mod
-                // when changing a live Buff's duration.
-                TimeSpan scheduledEnd = Game.Instance.TimeController.GameTime +
-                    OneRoundDuration;
-                buff.EndTime = scheduledEnd;
-                caster.Buffs.UpdateNextEvent();
-                if (buff.IsPermanent || buff.EndTime != scheduledEnd ||
-                    buff.TimeLeft <= TimeSpan.Zero ||
+                if (buff.IsPermanent || buff.TimeLeft <= TimeSpan.Zero ||
                     buff.TimeLeft > OneRoundDuration)
                     throw new InvalidOperationException(
                         "Gunslinger's Dodge buff did not retain its bounded " +

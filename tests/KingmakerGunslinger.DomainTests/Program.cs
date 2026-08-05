@@ -1033,11 +1033,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(blueprints.Contains("GunslingerDodgeArmorClassBonus") &&
                 blueprints.Contains("ability.ComponentsArray.Length != 3") &&
                 !blueprints.Contains("AbilityEffectRunAction") &&
-                runtime.Contains("caster.Buffs.AddBuff") &&
+                runtime.Contains("caster.AddBuff") &&
+                runtime.Contains("new TimeSpan?(OneRoundDuration)") &&
                 runtime.Contains("TimeSpan.FromSeconds(6d)") &&
-                runtime.Contains("Game.Instance.TimeController.GameTime") &&
-                runtime.Contains("buff.EndTime = scheduledEnd") &&
-                runtime.Contains("caster.Buffs.UpdateNextEvent()") &&
+                !runtime.Contains("caster.Buffs.AddBuff") &&
+                !runtime.Contains("buff.EndTime = scheduledEnd") &&
+                !runtime.Contains("caster.Buffs.UpdateNextEvent()") &&
                 runtime.Contains("new MechanicsContext") &&
                 runtime.Contains("RecordDeliveryEntered") &&
                 runtime.Contains("RecordDeliveryApplied") &&
