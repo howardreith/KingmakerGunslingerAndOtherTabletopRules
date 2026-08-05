@@ -350,10 +350,30 @@ actual activation of `KMG_GunslingerDodge_ProneAbility` and the exact Dodge Buff
 `KMG_GunslingerDodge_ArmorClass_Buff`). It never applies or removes a fact and
 does not alter scheduler, AC, Grit, command, or save state.
 
-The built-in `TotalDefenseAbility` / `TotalDefenseBuff` pair is the selected
-finite native control. The player activates it through the ordinary
-all-character Total Defense action. Lifecycle records and the read-only
-quarter-second sampler are written as immediately flushed JSON Lines beneath
+No native control is required for the next trace. Lifecycle records and the
+read-only quarter-second sampler are written as immediately flushed JSON Lines beneath
 `Application.persistentDataPath\KingmakerGunslinger\Diagnostics`. The trace is
 diagnostic evidence only; its build and source tests do not establish which
 expiration case occurs.
+
+### JSONL evidence-boundary repair
+
+The first manual trace from diagnostic commit `fa5c7a5` was invalid: its 6,816
+physical lines contained one complete enable record followed by 6,815
+`{"$id":"1"}` reference stubs. The DTO was newly constructed for every event;
+record reuse was not the cause. The writer used the two-argument
+`JsonConvert.SerializeObject` overload, which inherited Kingmaker's process-wide
+Newtonsoft reference-preservation settings and persistent resolver state.
+
+The writer now supplies explicit per-record settings:
+`PreserveReferencesHandling.None`, `ReferenceLoopHandling.Error`, and
+`NullValueHandling.Include`. Each snapshot is flattened to scalars before it is
+serialized under the sequence/write lock. A write failure logs once, disables
+forensics for that launch, and does not escape into gameplay or bootstrap.
+
+Total Defense is no longer a required native control. Kingmaker does not expose
+a usable Total Defense action through normal gameplay, and Fighting Defensively
+is not an equivalent finite-duration effect. The collector validates a
+Dodge-only trace and refuses reference metadata, malformed or incomplete
+records, invalid sequences, missing actual Dodge delivery/application, or a
+missing post-EndTime sample before creating an evidence ZIP.

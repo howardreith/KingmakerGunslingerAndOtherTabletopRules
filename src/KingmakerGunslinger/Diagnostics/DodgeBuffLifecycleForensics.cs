@@ -26,14 +26,20 @@ namespace KingmakerGunslinger.Diagnostics
         internal const string MarkerName = "dodge-forensics.enabled";
         internal const string DodgeGuid = "bbd7d42117cc4c23b3e22af3a71621d9";
         internal const string DodgeName = "KMG_GunslingerDodge_ArmorClass_Buff";
-        // Kingmaker's built-in Total Defense is the all-character finite control.
-        internal const string ControlAbilityName = "TotalDefenseAbility";
-        internal const string ControlBuffName = "TotalDefenseBuff";
+        private static readonly JsonSerializerSettings JsonLineSettings =
+            new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.None,
+                ReferenceLoopHandling = ReferenceLoopHandling.Error,
+                NullValueHandling = NullValueHandling.Include
+            };
         private static readonly object Gate = new object();
         private static StreamWriter _writer;
         private static long _sequence;
         private static int _gameThreadId;
         private static bool _enabled;
+        private static bool _writeFailureLogged;
+        private static ModLogger _logger;
         private static readonly PropertyInfo NextTick = typeof(Buff).GetProperty(
             "NextTickTime", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         private static readonly FieldInfo NextEvent = typeof(BuffCollection).GetField(
@@ -48,6 +54,8 @@ namespace KingmakerGunslinger.Diagnostics
             if (!File.Exists(marker)) return;
             try
             {
+                _logger = context.Logger;
+                _writeFailureLogged = false;
                 _gameThreadId = Thread.CurrentThread.ManagedThreadId;
                 string directory = Path.Combine(Application.persistentDataPath,
                     "KingmakerGunslinger", "Diagnostics");
@@ -79,16 +87,10 @@ namespace KingmakerGunslinger.Diagnostics
                 string.Equals(blueprint.name, DodgeName, StringComparison.Ordinal);
         }
 
-        internal static bool IsControl(BlueprintBuff blueprint)
-        {
-            return blueprint != null && string.Equals(blueprint.name,
-                ControlBuffName, StringComparison.Ordinal);
-        }
-
         internal static bool Relevant(Buff buff)
         {
             return _enabled && buff != null &&
-                (IsExact(buff.Blueprint) || IsControl(buff.Blueprint));
+                IsExact(buff.Blueprint);
         }
 
         internal static bool Relevant(BuffCollection collection)
@@ -118,7 +120,7 @@ namespace KingmakerGunslinger.Diagnostics
             MechanicsContext context, TimeSpan? duration, Buff result, bool? allowed,
             Exception exception)
         {
-            if (!_enabled || (!IsExact(blueprint) && !IsControl(blueprint))) return;
+            if (!_enabled || !IsExact(blueprint)) return;
             string detail = "allowed=" + (allowed.HasValue ? allowed.Value.ToString() : "unknown") +
                 ";sourceAbility=" + BlueprintIdentity(ReadMember(context, "SourceAbility"));
             try
@@ -141,10 +143,29 @@ namespace KingmakerGunslinger.Diagnostics
         {
             lock (Gate)
             {
-                record.sequence = ++_sequence;
-                _writer.WriteLine(JsonConvert.SerializeObject(record, Formatting.None));
-                _writer.Flush();
-                _writer.BaseStream.Flush();
+                if (!_enabled || _writer == null) return;
+                try
+                {
+                    record.sequence = ++_sequence;
+                    string line = JsonConvert.SerializeObject(record,
+                        Formatting.None, JsonLineSettings);
+                    _writer.WriteLine(line);
+                    _writer.Flush();
+                    _writer.BaseStream.Flush();
+                }
+                catch (Exception exception)
+                {
+                    _enabled = false;
+                    try { _writer.Dispose(); } catch { }
+                    _writer = null;
+                    if (!_writeFailureLogged && _logger != null)
+                    {
+                        _writeFailureLogged = true;
+                        _logger.Failure("diagnostics", "dodge-forensics.write-failed",
+                            "Manual Dodge forensics disabled after a JSONL write failure.",
+                            exception);
+                    }
+                }
             }
         }
 
@@ -164,9 +185,11 @@ namespace KingmakerGunslinger.Diagnostics
                 eventName = eventName,
                 threadId = Thread.CurrentThread.ManagedThreadId,
                 onGameThread = Thread.CurrentThread.ManagedThreadId == _gameThreadId,
+                isGameThread = Thread.CurrentThread.ManagedThreadId == _gameThreadId,
                 gameTimeTicks = gameTime.Ticks,
                 gameTimeSeconds = gameTime == TimeSpan.MinValue ? (double?)null : gameTime.TotalSeconds,
-                turnBasedCombatActive = IsTurnBased(), currentTurnUnitIdentity = CurrentTurnIdentity(),
+                turnBasedCombatActive = IsTurnBased(), turnBasedState = IsTurnBased(),
+                currentTurnUnitIdentity = CurrentTurnIdentity(),
                 ownerIdentity = UnitIdentity(owner), ownerCharacterName = OwnerName(owner),
                 buffRuntimeReferenceId = buff == null ? null : RuntimeHelpers.GetHashCode(buff).ToString("X8"),
                 buffRuntimeUniqueId = Value(ReadMember(buff, "UniqueId")),
@@ -232,8 +255,10 @@ namespace KingmakerGunslinger.Diagnostics
     internal sealed class DodgeBuffLifecycleRecord
     {
         public long sequence; public string utcTimestamp; public string eventName;
-        public int threadId; public bool onGameThread; public long gameTimeTicks;
+        public int threadId; public bool onGameThread; public bool isGameThread;
+        public long gameTimeTicks;
         public double? gameTimeSeconds; public bool turnBasedCombatActive;
+        public bool turnBasedState;
         public string currentTurnUnitIdentity; public string ownerIdentity;
         public string ownerCharacterName; public string buffRuntimeReferenceId;
         public string buffRuntimeUniqueId; public string blueprintGuid;
