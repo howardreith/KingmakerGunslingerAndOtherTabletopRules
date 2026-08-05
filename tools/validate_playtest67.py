@@ -37,26 +37,26 @@ def validate(root: Path) -> None:
         "ReloadAbilityCommandTypePatch", "ref UnitCommand.CommandType __0",
         "ReloadAbilityPresentation.Command(action)")
 
+    dodge_blueprints = root / (
+        "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs")
     validate_playtest66.require(
-        root / "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs",
+        dodge_blueprints,
         "CastAnimationStyle.Immediate", "HasFastAnimation = true",
-        "GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff)",
-        "GunslingerDodgeArmorClassBonus", "ability.ComponentsArray.Length != 3")
+        "AbilityCasterHasNoFacts", "AbilityEffectRunAction",
+        "ContextActionApplyBuff", "DurationRate.Rounds",
+        "applyBuff.ToCaster = true", "applyBuff.Permanent = false",
+        "applyBuff.IsNotDispelable = true", "applyBuff.AsChild = false",
+        "result.IsClassFeature = false",
+        "ability.ComponentsArray.Length != 4",
+        "GunslingerDodgeArmorClassBonus")
     reject(
-        root / "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs",
-        "AbilityEffectRunAction")
+        dodge_blueprints,
+        "GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff)",
+        "delivery.Duration != TimeSpan.FromSeconds(6d)")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "caster.AddBuff", "new TimeSpan?(OneRoundDuration)",
-        "TimeSpan.FromSeconds(6d)", "new MechanicsContext",
-        "RecordDeliveryEntered",
-        "RecordDeliveryApplied", "RecordDeliveryFault",
-        "new AbilityDeliveryTarget(new TargetWrapper(context.Caster))")
-    reject(
-        root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "ContextActionApplyBuff", "m_ApplyBuffActions.Run",
-        "caster.Buffs.AddBuff", "buff.EndTime = scheduledEnd",
-        "caster.Buffs.UpdateNextEvent()")
+        "class DodgeGritCostCalculator", "IAbilityResourceCostCalculator",
+        "TrueGritDeed.GunslingersDodge")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs",
         "Owner.Stats.AC.AddModifier", "ModifierDescriptor.Dodge",
