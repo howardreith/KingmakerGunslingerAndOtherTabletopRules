@@ -13,13 +13,16 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--expected-file-count", required=True, type=int, choices=(40, 42))
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_dir() or source.name != "KingmakerGunslinger":
         raise RuntimeError("Source must be the staged KingmakerGunslinger directory.")
     files = sorted((path for path in source.rglob("*") if path.is_file()), key=lambda p: p.as_posix())
-    if len(files) != 40:
-        raise RuntimeError(f"Expected exactly 40 staged package files, observed {len(files)}.")
+    if len(files) != args.expected_file_count:
+        raise RuntimeError(
+            f"Expected exactly {args.expected_file_count} staged package files, observed {len(files)}."
+        )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(
         args.output,

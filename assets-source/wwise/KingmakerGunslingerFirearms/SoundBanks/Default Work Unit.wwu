@@ -3,9 +3,9 @@
 	<SoundBanks>
 		<WorkUnit Name="Default Work Unit" ID="{3B8B0014-0C3E-410C-B57D-1E3AD63BAF4F}" PersistMode="Standalone">
 			<ChildrenList>
-				<Folder Name="PC_General_Voice_Reactions" ID="{C0017FAB-1334-442E-86AE-17D727CA7846}">
+				<Folder Name="PC_General_Voice_Reactions" ID="{C0017FAB-1334-442E-86AE-17D727CA7846}" ShortID="715216939">
 					<ChildrenList>
-						<Folder Name="Additional" ID="{C731545E-A94E-40E8-9457-4C2C4E7F769A}">
+						<Folder Name="Additional" ID="{C731545E-A94E-40E8-9457-4C2C4E7F769A}" ShortID="783295039">
 							<ChildrenList>
 								<SoundBank Name="KMGWwiseSeed_GVR_ENG" ID="{29D85760-8015-42A6-BA82-E1B41BAE390A}">
 									<ObjectInclusionList/>
@@ -16,6 +16,17 @@
 						</Folder>
 					</ChildrenList>
 				</Folder>
+				<SoundBank Name="KMG_Firearms" ID="{FD2AA5F6-74D1-432A-8B00-D3A75C6DD9A1}">
+					<ObjectInclusionList>
+						<ObjectRef Name="KMG_Firearm_Pistol_Shot" ID="{54E88251-46AD-4336-99E9-9C6A2A4AF54A}" WorkUnitID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="KMG_Firearm_Rifle_Shot" ID="{13E99ACF-9C9F-45AF-BD42-A9C270C15CFF}" WorkUnitID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="KMG_Firearm_Musket_Shot" ID="{148AD9B0-050C-4C61-A839-1368D89A9F6F}" WorkUnitID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="KMG_Firearm_Revolver_Shot" ID="{F415BD49-0FD8-4CCB-88DD-D3D58355FA60}" WorkUnitID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="KMG_Firearm_Blunderbuss_Shot" ID="{EE332D98-984C-4F66-BC5E-565BBBB98CB6}" WorkUnitID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
 			</ChildrenList>
 		</WorkUnit>
 	</SoundBanks>

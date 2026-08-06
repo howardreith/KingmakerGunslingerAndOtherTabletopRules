@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased - Native Wwise firearm reports
+
+- Replaces the ineffective Unity firearm-audio fallback with a native
+  Kingmaker-compatible Wwise 2016.2.6.6153 SoundBank.
+- Routes ordinary attacks and all custom firearm deeds at their exact committed
+  discharge boundaries while preserving zero normal reports for misfires and
+  rollback/rejection paths.
+- Packages exactly one embedded-media `KMG_Firearms.bnk`; never packages or
+  replaces `Init.bnk`.
+
 ## 0.0.70 - Focused Aim repair
 
 - Adds an original Focused Aim toolbar/status icon.

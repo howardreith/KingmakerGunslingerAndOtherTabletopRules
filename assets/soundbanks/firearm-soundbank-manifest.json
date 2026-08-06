@@ -1,0 +1,16 @@
+{
+    "schemaVersion":  1,
+    "bankName":  "KMG_Firearms",
+    "bankFileName":  "KMG_Firearms.bnk",
+    "platform":  "Windows",
+    "wwiseVersion":  "2016.2.6.6153",
+    "sha256":  "FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4",
+    "mediaEmbedded":  true,
+    "events":  {
+                   "Pistol":  "KMG_Firearm_Pistol_Shot",
+                   "Musket":  "KMG_Firearm_Musket_Shot",
+                   "Blunderbuss":  "KMG_Firearm_Blunderbuss_Shot",
+                   "Revolver":  "KMG_Firearm_Revolver_Shot",
+                   "Rifle":  "KMG_Firearm_Rifle_Shot"
+               }
+}

@@ -87,7 +87,8 @@ def validate(root: Path) -> None:
         'ValidateDistinctSupplyIcons', 'ValidateSupplyPublication')
     validate_playtest66.require(
         root / "tools/create_deterministic_package.py",
-        "if len(files) != 40", "Expected exactly 40 staged package files")
+        'parser.add_argument("--expected-file-count", required=True',
+        "Expected exactly {args.expected_file_count} staged package files")
 
     full_attack = root / (
         "src/KingmakerGunslinger/Firing/FreeActionFullAttackReloadPatch.cs")

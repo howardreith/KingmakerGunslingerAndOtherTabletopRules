@@ -1,6 +1,6 @@
 # Third-party notices
 
-This source milestone contains original Kingmaker Gunslinger code and documentation under the repository license. The planned custom SoundBank is derived solely from the five approved SSE Library: GUNS CC0 recordings documented in `THIRD-PARTY-ASSETS.md`. The current source-only checkpoint contains no generated SoundBank. It does not redistribute Pathfinder: Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft.Json, Wwise authoring tools or SDK binaries, Call of the Wild, Cowboys and Demons, or BlueprintCore.
+This source milestone contains original Kingmaker Gunslinger code and documentation under the repository license. The custom `KMG_Firearms.bnk` is generated solely from the five approved SSE Library: GUNS CC0 recordings documented in `THIRD-PARTY-ASSETS.md`. The package redistributes that project-owned derivative bank, but does not redistribute Wwise authoring tools, SDK binaries, or generated `Init.bnk`. It also does not redistribute Pathfinder: Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft.Json, Call of the Wild, Cowboys and Demons, or BlueprintCore.
 
 ## Build-time references
 

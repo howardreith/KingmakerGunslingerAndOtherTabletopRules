@@ -3,7 +3,7 @@
 	<AudioObjects>
 		<WorkUnit Name="Default Work Unit" ID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}" PersistMode="Standalone">
 			<ChildrenList>
-				<ActorMixer Name="Voices_Root" ID="{003E2AE7-AC8E-4E8A-99E9-42828D3CD5DA}">
+				<ActorMixer Name="Voices_Root" ID="{003E2AE7-AC8E-4E8A-99E9-42828D3CD5DA}" ShortID="720865731">
 					<PropertyList>
 						<Property Name="PositioningType" Type="int16" Value="1"/>
 					</PropertyList>
@@ -19,11 +19,11 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<ActorMixer Name="Asks" ID="{E82CBAED-731A-4347-B7AD-20DFF433727F}">
+						<ActorMixer Name="Asks" ID="{E82CBAED-731A-4347-B7AD-20DFF433727F}" ShortID="984607792">
 							<PropertyList>
 								<Property Name="MakeUpGain" Type="Real64">
 									<RTPCList>
-										<RTPC Name="" ID="{7E094BA5-3897-4EAE-927A-F3426F1C3F4E}">
+										<RTPC Name="" ID="{7E094BA5-3897-4EAE-927A-F3426F1C3F4E}" ShortID="759930483">
 											<ReferenceList>
 												<Reference Name="ControlInput">
 													<ObjectRef Name="VOICELEVEL" ID="{4C1E37F5-5DFD-44CA-91EC-ADFA057C45A9}" WorkUnitID="{FE3990F8-0E72-455D-9A01-6839F856F218}"/>
@@ -70,7 +70,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<ActorMixer Name="KMGWwiseSeed" ID="{526D2E7E-82E5-42FF-9F2F-EB97F325FFA2}">
+								<ActorMixer Name="KMGWwiseSeed" ID="{526D2E7E-82E5-42FF-9F2F-EB97F325FFA2}" ShortID="311285614">
 									<PropertyList>
 										<Property Name="IgnoreParentMaxSoundInstance" Type="bool" Value="True"/>
 										<Property Name="MaxSoundPerInstance" Type="int16">
@@ -93,7 +93,7 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_01" ID="{0EA99792-8EDD-4649-952A-AD703A1D012E}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_01" ID="{0EA99792-8EDD-4649-952A-AD703A1D012E}" ShortID="820047080">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -106,7 +106,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_02" ID="{F96FF062-3583-4B7A-9168-BE0AE685DDED}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_02" ID="{F96FF062-3583-4B7A-9168-BE0AE685DDED}" ShortID="168562465">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -119,7 +119,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_03" ID="{085A7038-13B2-44CB-86A1-8DF93C283FD2}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_03" ID="{085A7038-13B2-44CB-86A1-8DF93C283FD2}" ShortID="574419762">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -132,7 +132,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_04" ID="{2047424D-39A6-40EE-951A-CEB874D4DA4E}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_04" ID="{2047424D-39A6-40EE-951A-CEB874D4DA4E}" ShortID="651067339">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -145,7 +145,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_AttackShort" ID="{D7E83310-9836-4DDC-AB30-431CDA9D7B57}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackShort" ID="{D7E83310-9836-4DDC-AB30-431CDA9D7B57}" ShortID="123946111">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -158,7 +158,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_01" ID="{5D57773C-6920-4618-A5F4-1B8D320B969D}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_01" ID="{5D57773C-6920-4618-A5F4-1B8D320B969D}" ShortID="258160788">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -171,7 +171,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_02" ID="{30FB73A6-9D6E-43AE-AB08-72E6C72111E6}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_02" ID="{30FB73A6-9D6E-43AE-AB08-72E6C72111E6}" ShortID="39301943">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -184,7 +184,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_03" ID="{2FD0D950-C5E3-4F89-A1E6-89FC3E03A372}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_03" ID="{2FD0D950-C5E3-4F89-A1E6-89FC3E03A372}" ShortID="214361149">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -197,7 +197,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_CoupDeGrace" ID="{8F13B44A-1361-47F0-BEAF-3C337E6E3A60}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_CoupDeGrace" ID="{8F13B44A-1361-47F0-BEAF-3C337E6E3A60}" ShortID="463735802">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -210,7 +210,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_Death" ID="{79FD9D58-B419-4A29-91D2-65E819C87A54}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_Death" ID="{79FD9D58-B419-4A29-91D2-65E819C87A54}" ShortID="942714411">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -223,7 +223,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_01" ID="{C9F2B481-6DDB-4FAF-A63A-144411423D0C}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_01" ID="{C9F2B481-6DDB-4FAF-A63A-144411423D0C}" ShortID="859168495">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -236,7 +236,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_02" ID="{45FA203E-904F-4DC2-9DF8-2856389B53F0}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_02" ID="{45FA203E-904F-4DC2-9DF8-2856389B53F0}" ShortID="791175416">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -249,7 +249,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_Pain" ID="{80CF2720-D717-4BE8-A271-78DBFC933E76}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_Pain" ID="{80CF2720-D717-4BE8-A271-78DBFC933E76}" ShortID="799875780">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -262,7 +262,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_StealthMode" ID="{6608E04A-DC26-43FE-B7D0-42E506D2E3EA}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_StealthMode" ID="{6608E04A-DC26-43FE-B7D0-42E506D2E3EA}" ShortID="85422481">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -275,7 +275,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<RandomSequenceContainer Name="KMGWwiseSeed_Unconscious" ID="{1CB8D245-39E0-4885-9125-4A8D59A364CF}">
+										<RandomSequenceContainer Name="KMGWwiseSeed_Unconscious" ID="{1CB8D245-39E0-4885-9125-4A8D59A364CF}" ShortID="423635441">
 											<PropertyList>
 												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 											</PropertyList>
@@ -288,7 +288,7 @@
 												</Reference>
 											</ReferenceList>
 										</RandomSequenceContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CantCast" ID="{DB8ED668-0925-44B6-9800-93DC8B3C034C}">
+										<SwitchContainer Name="KMGWwiseSeed_CantCast" ID="{DB8ED668-0925-44B6-9800-93DC8B3C034C}" ShortID="185637083">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -298,7 +298,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}" ShortID="843161018">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -311,7 +311,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}" ShortID="648652069">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -330,29 +330,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
+														<ItemRef Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}"/>
+														<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CantEquip_01" ID="{391D3150-4D50-40C0-BED9-DF04E1A2AED5}">
+										<SwitchContainer Name="KMGWwiseSeed_CantEquip_01" ID="{391D3150-4D50-40C0-BED9-DF04E1A2AED5}" ShortID="314161">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -362,7 +362,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}" ShortID="64247250">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -375,7 +375,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}" ShortID="935616393">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -394,29 +394,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}"/>
+														<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
+														<ItemRef Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CantEquip_02" ID="{2CDD6E0E-1FC0-4AE7-898A-E39D57477282}">
+										<SwitchContainer Name="KMGWwiseSeed_CantEquip_02" ID="{2CDD6E0E-1FC0-4AE7-898A-E39D57477282}" ShortID="528568754">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -426,7 +426,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}" ShortID="534940390">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -439,7 +439,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}" ShortID="765100658">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -458,29 +458,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
+														<ItemRef Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}"/>
+														<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CharCrit_01" ID="{7EB83337-B8FA-44D1-9D7A-583E79B9F5F4}">
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_01" ID="{7EB83337-B8FA-44D1-9D7A-583E79B9F5F4}" ShortID="848838580">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -490,7 +490,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}" ShortID="278494676">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -503,7 +503,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}" ShortID="176237114">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -530,21 +530,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CharCrit_02" ID="{02070C81-385F-401C-8A51-0C3A04B6AF05}">
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_02" ID="{02070C81-385F-401C-8A51-0C3A04B6AF05}" ShortID="810803994">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -554,7 +554,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}" ShortID="608657116">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -567,7 +567,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}" ShortID="97452346">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -594,21 +594,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CharCrit_03" ID="{917CDC16-DA48-4640-8300-0A8777F1478D}">
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_03" ID="{917CDC16-DA48-4640-8300-0A8777F1478D}" ShortID="328699">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -618,7 +618,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}" ShortID="597005537">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -631,7 +631,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}" ShortID="186715611">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -658,21 +658,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CheckFail_01" ID="{85EF85B6-E125-4899-817F-24DFB3E629E6}">
+										<SwitchContainer Name="KMGWwiseSeed_CheckFail_01" ID="{85EF85B6-E125-4899-817F-24DFB3E629E6}" ShortID="676776214">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -682,7 +682,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}" ShortID="536857964">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -695,7 +695,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}" ShortID="595098876">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -722,21 +722,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CheckFail_02" ID="{C699AFAD-9188-4448-A465-F6ECFF70D285}">
+										<SwitchContainer Name="KMGWwiseSeed_CheckFail_02" ID="{C699AFAD-9188-4448-A465-F6ECFF70D285}" ShortID="251091479">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -746,7 +746,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}" ShortID="820441014">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -759,7 +759,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}" ShortID="768745493">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -786,21 +786,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_01" ID="{D5B2199C-16DE-4587-905A-7085B1B26F52}">
+										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_01" ID="{D5B2199C-16DE-4587-905A-7085B1B26F52}" ShortID="386395126">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -810,7 +810,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}" ShortID="75167240">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -823,7 +823,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}" ShortID="583655044">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -850,21 +850,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_02" ID="{F20BE8D9-AFF3-47C6-9D4C-5CD0E8121463}">
+										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_02" ID="{F20BE8D9-AFF3-47C6-9D4C-5CD0E8121463}" ShortID="487029134">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -874,7 +874,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}" ShortID="285307336">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -887,7 +887,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}" ShortID="336231401">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -914,21 +914,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Discovery_01" ID="{7B4979B1-758B-436F-9722-2DDF0FA64E47}">
+										<SwitchContainer Name="KMGWwiseSeed_Discovery_01" ID="{7B4979B1-758B-436F-9722-2DDF0FA64E47}" ShortID="718210543">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -938,7 +938,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}" ShortID="451785799">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -951,7 +951,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}" ShortID="217598589">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -978,21 +978,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Discovery_02" ID="{7292839E-B762-4BD5-8FD0-394F5471E4BD}">
+										<SwitchContainer Name="KMGWwiseSeed_Discovery_02" ID="{7292839E-B762-4BD5-8FD0-394F5471E4BD}" ShortID="767709672">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1002,7 +1002,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}" ShortID="855915755">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1015,7 +1015,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}" ShortID="35291346">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1034,29 +1034,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}"/>
+														<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
+														<ItemRef Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Fatigue" ID="{A32876FC-69E2-43FA-8A0C-A21DB5E1D29E}">
+										<SwitchContainer Name="KMGWwiseSeed_Fatigue" ID="{A32876FC-69E2-43FA-8A0C-A21DB5E1D29E}" ShortID="293345433">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1066,7 +1066,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<SwitchContainer Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}">
+												<SwitchContainer Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}" ShortID="212914694">
 													<ReferenceList>
 														<Reference Name="Conversion">
 															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1076,7 +1076,7 @@
 														</Reference>
 													</ReferenceList>
 													<ChildrenList>
-														<RandomSequenceContainer Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}">
+														<RandomSequenceContainer Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}" ShortID="229134932">
 															<PropertyList>
 																<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 																<Property Name="PositioningType" Type="int16" Value="1"/>
@@ -1104,7 +1104,7 @@
 																<Position Name="" ID="{F7235240-23DC-4606-8594-1C30C2D8AA8E}"/>
 															</PositioningInfo>
 														</RandomSequenceContainer>
-														<RandomSequenceContainer Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}">
+														<RandomSequenceContainer Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}" ShortID="658983418">
 															<PropertyList>
 																<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 																<Property Name="PositioningType" Type="int16" Value="1"/>
@@ -1138,29 +1138,29 @@
 														<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 														<GroupingBehaviorList>
 															<GroupingBehavior>
-																<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
+																<ItemRef Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}"/>
 															</GroupingBehavior>
 															<GroupingBehavior>
-																<ItemRef Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}"/>
+																<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
 															</GroupingBehavior>
 														</GroupingBehaviorList>
 														<GroupingList>
-															<Grouping>
-																<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-																<ItemList>
-																	<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
-																</ItemList>
-															</Grouping>
 															<Grouping>
 																<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 																<ItemList>
 																	<ItemRef Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}"/>
 																</ItemList>
 															</Grouping>
+															<Grouping>
+																<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+																<ItemList>
+																	<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
+																</ItemList>
+															</Grouping>
 														</GroupingList>
 													</GroupingInfo>
 												</SwitchContainer>
-												<RandomSequenceContainer Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}">
+												<RandomSequenceContainer Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}" ShortID="815806762">
 													<PropertyList>
 														<Property Name="PositioningType" Type="int16" Value="1"/>
 														<Property Name="UserAuxSendVolume0" Type="Real64">
@@ -1193,13 +1193,25 @@
 												<DefaultSwitchRef Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
+														<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="KINGDOM" ID="{C2995D3A-5949-40AF-94D2-CCF6D0DC009E}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
 													<Grouping>
 														<SwitchRef Name="BOOKQUEST" ID="{DDDD335F-54A6-4E6A-A30C-8DBD29EE9377}"/>
 														<ItemList>
@@ -1207,7 +1219,13 @@
 														</ItemList>
 													</Grouping>
 													<Grouping>
-														<SwitchRef Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+														<SwitchRef Name="INGAMEMENU" ID="{FFCE7669-73F3-4D02-8743-05A47D55F1EA}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
 														<ItemList>
 															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 														</ItemList>
@@ -1225,25 +1243,7 @@
 														</ItemList>
 													</Grouping>
 													<Grouping>
-														<SwitchRef Name="CUTSCENE" ID="{F8F190DD-D344-4DD9-AA37-4B1D733300F5}"/>
-														<ItemList>
-															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
-														<SwitchRef Name="LOADINGSCREEN" ID="{385184AB-B4D0-48CA-AE01-5F017162AF61}"/>
-														<ItemList>
-															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
-														<SwitchRef Name="INGAMEMENU" ID="{FFCE7669-73F3-4D02-8743-05A47D55F1EA}"/>
-														<ItemList>
-															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
-														<SwitchRef Name="INGAMEPAUSE" ID="{3CFE6BB5-D6D0-4570-AD69-519C0AE70652}"/>
+														<SwitchRef Name="REST" ID="{D0255881-1A59-444E-92B3-8F09CEF70C17}"/>
 														<ItemList>
 															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 														</ItemList>
@@ -1255,7 +1255,19 @@
 														</ItemList>
 													</Grouping>
 													<Grouping>
-														<SwitchRef Name="REST" ID="{D0255881-1A59-444E-92B3-8F09CEF70C17}"/>
+														<SwitchRef Name="GLOBALMAP" ID="{77EC95A2-CE54-4EA5-9F0E-A63EA8DD2B39}"/>
+														<ItemList>
+															<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="LOADINGSCREEN" ID="{385184AB-B4D0-48CA-AE01-5F017162AF61}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="INGAMEPAUSE" ID="{3CFE6BB5-D6D0-4570-AD69-519C0AE70652}"/>
 														<ItemList>
 															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 														</ItemList>
@@ -1267,25 +1279,13 @@
 														</ItemList>
 													</Grouping>
 													<Grouping>
-														<SwitchRef Name="KINGDOM" ID="{C2995D3A-5949-40AF-94D2-CCF6D0DC009E}"/>
+														<SwitchRef Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
 														<ItemList>
 															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 														</ItemList>
 													</Grouping>
 													<Grouping>
-														<SwitchRef Name="GLOBALMAP" ID="{77EC95A2-CE54-4EA5-9F0E-A63EA8DD2B39}"/>
-														<ItemList>
-															<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
-														<SwitchRef Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
-														<ItemList>
-															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
-														<SwitchRef Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+														<SwitchRef Name="CUTSCENE" ID="{F8F190DD-D344-4DD9-AA37-4B1D733300F5}"/>
 														<ItemList>
 															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
 														</ItemList>
@@ -1293,7 +1293,7 @@
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_01" ID="{D5CD0C7B-8859-42A3-9AEE-DCC0D9E0CD8E}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_01" ID="{D5CD0C7B-8859-42A3-9AEE-DCC0D9E0CD8E}" ShortID="54633594">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1303,7 +1303,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}" ShortID="742919841">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1316,7 +1316,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}" ShortID="478713564">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1343,21 +1343,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_02" ID="{78E693BE-4175-4D20-880D-A1C200A45AFD}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_02" ID="{78E693BE-4175-4D20-880D-A1C200A45AFD}" ShortID="1045028651">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1367,7 +1367,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}" ShortID="382675376">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1380,7 +1380,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}" ShortID="597462323">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1407,21 +1407,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_03" ID="{62909638-1B02-4E8D-B375-D9DC1A81A934}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_03" ID="{62909638-1B02-4E8D-B375-D9DC1A81A934}" ShortID="245352659">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1431,7 +1431,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}" ShortID="598057573">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1444,7 +1444,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}" ShortID="45010959">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1471,21 +1471,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_04" ID="{2F3EA96D-C522-41B4-96A5-18AB77061FF0}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_04" ID="{2F3EA96D-C522-41B4-96A5-18AB77061FF0}" ShortID="288267860">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1495,7 +1495,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}" ShortID="981202699">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1508,7 +1508,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}" ShortID="374596982">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1535,21 +1535,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_05" ID="{8C35FB66-CD5C-49FA-B777-8312D8CE0E6C}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_05" ID="{8C35FB66-CD5C-49FA-B777-8312D8CE0E6C}" ShortID="684703145">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1559,7 +1559,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}" ShortID="799504192">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1572,7 +1572,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}" ShortID="863477173">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1591,29 +1591,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}"/>
+														<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
+														<ItemRef Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_06" ID="{C507EF03-263A-433B-ABAA-FD42146F65CF}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_06" ID="{C507EF03-263A-433B-ABAA-FD42146F65CF}" ShortID="389302141">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1623,7 +1623,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}" ShortID="941691840">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1636,7 +1636,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}" ShortID="97064770">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1655,29 +1655,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}"/>
+														<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
+														<ItemRef Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Move_07" ID="{69B84BBA-16B8-41FD-8AC9-F416A7426F3F}">
+										<SwitchContainer Name="KMGWwiseSeed_Move_07" ID="{69B84BBA-16B8-41FD-8AC9-F416A7426F3F}" ShortID="165652645">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1687,7 +1687,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}" ShortID="982873257">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1700,7 +1700,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}" ShortID="189667739">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1719,29 +1719,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
+														<ItemRef Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}"/>
+														<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_01" ID="{33D96F3B-F645-400B-A8F2-A8519282206F}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_01" ID="{33D96F3B-F645-400B-A8F2-A8519282206F}" ShortID="876604565">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1751,7 +1751,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}" ShortID="433878358">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1764,7 +1764,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}" ShortID="248049670">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1783,29 +1783,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
+														<ItemRef Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}"/>
+														<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_02" ID="{914C5B8F-C6F0-4D15-91E6-2E9559BB345A}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_02" ID="{914C5B8F-C6F0-4D15-91E6-2E9559BB345A}" ShortID="301305479">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1815,7 +1815,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}" ShortID="1045850802">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1828,7 +1828,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}" ShortID="226629308">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1847,29 +1847,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
+														<ItemRef Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}"/>
+														<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_03" ID="{8CB7EE18-E650-4EF3-82C0-2B15CB199A7E}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_03" ID="{8CB7EE18-E650-4EF3-82C0-2B15CB199A7E}" ShortID="1051236039">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1879,7 +1879,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}" ShortID="110018300">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1892,7 +1892,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}" ShortID="827364419">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1919,21 +1919,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_04" ID="{09146CFB-A266-4C59-8A0F-706B2DDC080C}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_04" ID="{09146CFB-A266-4C59-8A0F-706B2DDC080C}" ShortID="1050388950">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -1943,7 +1943,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}" ShortID="945729110">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1956,7 +1956,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}" ShortID="89994625">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -1975,29 +1975,29 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}"/>
+														<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
+														<ItemRef Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}"/>
 													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_05" ID="{3408C0C0-7708-4D6F-A47A-91DBC0B52D21}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_05" ID="{3408C0C0-7708-4D6F-A47A-91DBC0B52D21}" ShortID="223778250">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2007,7 +2007,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}" ShortID="624744986">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2020,7 +2020,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}" ShortID="296235458">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2047,21 +2047,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_Select_06" ID="{D5D5BA29-6D08-4B9C-939B-9B0167CABF0E}">
+										<SwitchContainer Name="KMGWwiseSeed_Select_06" ID="{D5D5BA29-6D08-4B9C-939B-9B0167CABF0E}" ShortID="51104543">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2071,7 +2071,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}" ShortID="105355845">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2084,7 +2084,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}" ShortID="502748713">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2111,21 +2111,21 @@
 												</GroupingBehaviorList>
 												<GroupingList>
 													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}"/>
-														</ItemList>
-													</Grouping>
-													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}"/>
 														</ItemList>
 													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}"/>
+														</ItemList>
+													</Grouping>
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_SelectJoke" ID="{FF2D9F1E-48EF-42C6-B4A5-93CBE221B498}">
+										<SwitchContainer Name="KMGWwiseSeed_SelectJoke" ID="{FF2D9F1E-48EF-42C6-B4A5-93CBE221B498}" ShortID="58120582">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2135,7 +2135,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{81862808-8125-4DEC-B4A4-70F80EE04EAA}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{81862808-8125-4DEC-B4A4-70F80EE04EAA}" ShortID="411956072">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2167,7 +2167,7 @@
 												</GroupingList>
 											</GroupingInfo>
 										</SwitchContainer>
-										<SwitchContainer Name="KMGWwiseSeed_CastChant" ID="{65ED6389-D449-4F95-9603-E5D4A145089D}">
+										<SwitchContainer Name="KMGWwiseSeed_CastChant" ID="{65ED6389-D449-4F95-9603-E5D4A145089D}" ShortID="949267538">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2177,7 +2177,7 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<RandomSequenceContainer Name="CastEmpty" ID="{37A22E31-B5A3-4BB9-9722-3C93E1196BA6}">
+												<RandomSequenceContainer Name="CastEmpty" ID="{37A22E31-B5A3-4BB9-9722-3C93E1196BA6}" ShortID="1039336521">
 													<ReferenceList>
 														<Reference Name="Conversion">
 															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2187,7 +2187,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}">
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}" ShortID="445250605">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2200,7 +2200,7 @@
 														</Reference>
 													</ReferenceList>
 												</RandomSequenceContainer>
-												<RandomSequenceContainer Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}">
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}" ShortID="235461155">
 													<PropertyList>
 														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
 													</PropertyList>
@@ -2219,26 +2219,26 @@
 												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
 												<GroupingBehaviorList>
 													<GroupingBehavior>
-														<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
-													</GroupingBehavior>
-													<GroupingBehavior>
 														<ItemRef Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}"/>
 													</GroupingBehavior>
 													<GroupingBehavior>
 														<ItemRef Name="CastEmpty" ID="{37A22E31-B5A3-4BB9-9722-3C93E1196BA6}"/>
 													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
+													</GroupingBehavior>
 												</GroupingBehaviorList>
 												<GroupingList>
-													<Grouping>
-														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
-														<ItemList>
-															<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
-														</ItemList>
-													</Grouping>
 													<Grouping>
 														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
 														<ItemList>
 															<ItemRef Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
 														</ItemList>
 													</Grouping>
 												</GroupingList>
@@ -2248,7 +2248,7 @@
 								</ActorMixer>
 							</ChildrenList>
 						</ActorMixer>
-						<ActorMixer Name="Character_Creator_Sample" ID="{1CA5C20E-7C90-472F-8348-CCAB99006F39}">
+						<ActorMixer Name="Character_Creator_Sample" ID="{1CA5C20E-7C90-472F-8348-CCAB99006F39}" ShortID="428476779">
 							<PropertyList>
 								<Property Name="IgnoreParentMaxSoundInstance" Type="bool" Value="True"/>
 								<Property Name="MakeUpGain" Type="Real64">
@@ -2287,7 +2287,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<RandomSequenceContainer Name="KMGWwiseSeed_Test" ID="{89A1851E-61B9-4A58-94FB-ECC43E22CCCA}">
+								<RandomSequenceContainer Name="KMGWwiseSeed_Test" ID="{89A1851E-61B9-4A58-94FB-ECC43E22CCCA}" ShortID="760580550">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
@@ -2303,6 +2303,113 @@
 					<PositioningInfo>
 						<Position Name="" ID="{97CE5BDE-7DD0-4414-A150-2776FFEB2C86}"/>
 					</PositioningInfo>
+				</ActorMixer>
+				<ActorMixer Name="KMG_Firearms_SFX" ID="{6EB609C9-DAC9-4654-88D9-14D3B67557AA}" ShortID="727884062">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="WEAPONS" ID="{90EB9CC7-BB9C-42E0-9B57-62AC34459906}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="KMG_Pistol_Shot" ID="{3CE072D6-80BB-433A-B62C-4CB30CAA82A4}" ShortID="11884808" Type="SoundFX">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="GUNAntq_Flintlock fire_CS_USC" ID="{4D35F5E0-704E-4894-9B6F-4AA4DF22D1A2}" ShortID="143254508">
+									<Language>SFX</Language>
+									<AudioFile>GUNAntq_Flintlock fire_CS_USC.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="GUNAntq_Flintlock fire_CS_USC" ID="{4D35F5E0-704E-4894-9B6F-4AA4DF22D1A2}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="KMG_Rifle_Shot" ID="{5F84C5D9-B943-46F0-850C-A269A60036BE}" ShortID="825140170" Type="SoundFX">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="GUNAntq_Flintlock rifle fire_CS_USC" ID="{CACF928D-D226-4720-ADB0-906F67BBF96B}" ShortID="333012400">
+									<Language>SFX</Language>
+									<AudioFile>GUNAntq_Flintlock rifle fire_CS_USC.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="GUNAntq_Flintlock rifle fire_CS_USC" ID="{CACF928D-D226-4720-ADB0-906F67BBF96B}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="KMG_Musket_Shot" ID="{6106B724-394B-44B2-8709-5F98D23282E5}" ShortID="807197213" Type="SoundFX">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="GUNAntq_Musket shots_CS_USC" ID="{748901A2-A964-4FC2-A21A-8932BE8AE47C}" ShortID="973484285">
+									<Language>SFX</Language>
+									<AudioFile>GUNAntq_Musket shots_CS_USC.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="GUNAntq_Musket shots_CS_USC" ID="{748901A2-A964-4FC2-A21A-8932BE8AE47C}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="KMG_Revolver_Shot" ID="{C0BFDE48-8354-4D8E-82C4-FB53380D43CA}" ShortID="302231460" Type="SoundFX">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="GUNPis_Exterior pistol shot_CS_USC" ID="{14742A54-5E95-48BA-9B45-2E7DD308531E}" ShortID="125073074">
+									<Language>SFX</Language>
+									<AudioFile>GUNPis_Exterior pistol shot_CS_USC.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="GUNPis_Exterior pistol shot_CS_USC" ID="{14742A54-5E95-48BA-9B45-2E7DD308531E}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="KMG_Blunderbuss_Shot" ID="{41E41471-5AA7-462A-86C8-9AE26491730F}" ShortID="993833978" Type="SoundFX">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="GUNShotg_Classic western shotgun blast with reverb_CS_USC" ID="{C2BE2FC3-6948-45D8-AB43-2B64F630AA2C}" ShortID="268960472">
+									<Language>SFX</Language>
+									<AudioFile>GUNShotg_Classic western shotgun blast with reverb_CS_USC.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="GUNShotg_Classic western shotgun blast with reverb_CS_USC" ID="{C2BE2FC3-6948-45D8-AB43-2B64F630AA2C}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
 				</ActorMixer>
 			</ChildrenList>
 		</WorkUnit>

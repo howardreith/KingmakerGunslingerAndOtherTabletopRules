@@ -92,5 +92,8 @@ copied, and distribution attribution is not required.
 The native firearm-audio design authors the same five approved processed SSE
 Library: GUNS CC0 recordings into project-owned `KMG_Firearms.bnk`. Wwise
 2016.2.x authoring is an external proprietary tool and is not redistributed.
-No authentic bank has yet been generated in this source-only checkpoint. The
+The authentic Windows bank was generated with Wwise 2016.2.6.6153 from those
+five hash-verified processed WAVs. It is 1,208,670 bytes with SHA-256
+`FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4`.
+Media is embedded; no `.wem` or generated `Init.bnk` is distributed. The
 existing Unity bundle's legacy embedded clips remain unused cleanup debt.

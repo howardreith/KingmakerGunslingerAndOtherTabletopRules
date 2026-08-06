@@ -52,7 +52,7 @@ try {
     if(Test-Path -LiteralPath $packagedBank -PathType Leaf){
         $expected += @('assets\soundbanks\KMG_Firearms.bnk','assets\soundbanks\firearm-soundbank-manifest.json')
         $manifest=Get-Content -LiteralPath (Join-Path $modDirectory 'assets\soundbanks\firearm-soundbank-manifest.json') -Raw | ConvertFrom-Json
-        if((Get-KmgSha256 -Path $packagedBank) -cne $manifest.sha256){throw 'Packaged firearm SoundBank hash mismatch.'}
+        if((Get-KmgSha256 -Path $packagedBank).ToUpperInvariant() -cne $manifest.sha256){throw 'Packaged firearm SoundBank hash mismatch.'}
     } elseif(-not $AllowMissingFirearmSoundBank){throw 'Release package is missing authentic KMG_Firearms.bnk.'}
     $actual = @(
         Get-ChildItem -LiteralPath $modDirectory -Recurse -File |

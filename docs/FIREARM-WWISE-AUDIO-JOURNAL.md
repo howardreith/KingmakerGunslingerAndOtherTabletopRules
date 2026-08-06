@@ -157,3 +157,58 @@ Authoring checkpoint commit:
 script completed successfully and verified
 `origin/codex/firearm-wwise-audio` at that exact commit. No alternate push
 mechanism was used.
+
+## 2026-08-06 — authentic SoundBank and release-package checkpoint
+
+The human-authored project validator passed with `-RequireAuthoredObjects`.
+Wwise 2016.2.6.6153 generated the Windows banks with zero warnings/errors. The
+generated `Init.bnk` remains only in the ignored authoring output and was never
+curated, staged, or packaged.
+
+Independent generated-metadata evidence:
+
+- `KMG_Firearms.txt` lists exactly five canonical Events and five in-memory
+  `KMG_Firearms_SFX` objects.
+- `SoundbanksInfo.xml` identifies Windows, SoundBank format version 120,
+  exactly one `KMG_Firearms.bnk` entry, all five canonical Events, and five
+  `IncludedMemoryFiles` matching the approved source map.
+- `StreamedFiles` and `MediaFilesNotInAnyBank` are empty.
+- The generated Windows directory contains no `.wem` files.
+- Each Wwise `Originals\SFX` WAV hashes exactly to its approved processed hash
+  in `audio-manifest.json`.
+- `KMG_Firearms_SFX` routes to the exact native `WEAPONS` bus
+  `{90EB9CC7-BB9C-42E0-9B57-62AC34459906}` and contains five non-streaming
+  Sound SFX objects.
+
+Production artifacts:
+
+- `KMG_Firearms.bnk`: 1,208,670 bytes.
+- Bank SHA-256:
+  `FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4`.
+- Manifest SHA-256:
+  `DAEC8B174E3586ED20DD31C4146C651AEDFB79E76F74EB3FAEC4687F870935A9`.
+
+Added deterministic metadata/source validation and curation. Real release data
+exposed and fixed dormant uppercase-hash comparison and event-list parenthesis
+bugs in the production validator, plus the deterministic packager's old fixed
+40-file source-only count. Release packages now require the explicit 42-file
+layout when bank+manifest are present and retain 40 only for an explicitly
+acknowledged source-only build.
+
+Qualification evidence:
+
+- Authored-project validator: PASS.
+- Production SoundBank validator: PASS.
+- Repository validator: PASS.
+- Domain/reflection suite: PASS, 898/898.
+- Exact-reference clean Release build and build-output validation: PASS.
+- Strict bank-present package creation and validation: PASS.
+- Release package SHA-256:
+  `CA1A41CD2A787B45D967C3464097DB78141208A75A9AE3BD121EA234C5A121D4`.
+- DLL SHA-256:
+  `B549CC7605123443F60DE8A131E6026244FD96F22F1561EFB81C43E6CFFEDED6`.
+- Package inspection: one `assets\soundbanks\KMG_Firearms.bnk`, one manifest,
+  zero `Init.bnk`, zero other `.bnk`, zero `.wem`, and no authoring files/cache.
+
+Next: commit/push this authentic-bank checkpoint, then deploy only through the
+guarded runtime tooling and execute `disposable-firearm-wwise-audio`.

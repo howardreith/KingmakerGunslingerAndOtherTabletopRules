@@ -1,7 +1,9 @@
 .cache/
 .backup/
 GeneratedSoundBanks/
+IncrementalSoundBankData.xml
 Logs/
+Originals/**/*.akd
 *.wsettings
 *.prof
 *.validationcache

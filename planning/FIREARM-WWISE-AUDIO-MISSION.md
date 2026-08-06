@@ -33,14 +33,13 @@ exactly one supported event. Mechanical behavior must remain unchanged.
 - [x] Remove Unity firearm playback.
 - [x] Create reproducible Wwise 2016.2.6 authoring project and generation validation.
 - [x] Preserve the template's exact Kingmaker Master Mixer and `WEAPONS` bus.
-- [ ] Generate and validate `KMG_Firearms.bnk` if compatible authoring exists.
+- [x] Generate and validate authentic `KMG_Firearms.bnk` with Wwise 2016.2.6.6153.
 - [x] Integrate strict build/package validation with explicit source-only gate.
 - [x] Add guarded runtime scenario and development controls.
-- [ ] Run all source/build/package/runtime gates.
+- [ ] Run all source/build/package/runtime gates (source/build/release package pass; runtime pending).
 - [ ] Complete human auditory acceptance.
 
 ## Next concrete action
 
-Open the curated project in Wwise 2016.2.6.6153 and perform the minimal GUI
-import/event/bank operations documented in the authoring README. Wwise must
-generate the new object GUIDs; they will not be invented in source XML.
+Commit and publish the authentic bank checkpoint, then deploy through the safe
+runtime harness and run `disposable-firearm-wwise-audio`.
