@@ -1,5 +1,11 @@
 # Asset provenance
 
+## Mysterious Stranger icon
+
+The Focused Aim icon under `assets-source/original-icons/mysterious-stranger/`
+is original AI-assisted project artwork. It contains no third-party source pixels
+and carries no external attribution requirement.
+
 ## Sixth-playtest presentation processing
 
 The 0.0.66 bundle remains limited to the previously approved five model and

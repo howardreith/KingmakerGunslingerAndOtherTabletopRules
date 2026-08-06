@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.70 - Focused Aim repair
+
+- Adds an original Focused Aim toolbar/status icon.
+- Replaces null duration, saving-throw, status, and terse activation presentation.
+- Fixes firearm detection during weapon-stat calculation so Focused Aim adds its Charisma bonus to damage rolls as specified; it does not add to attack rolls.
+
 ## 0.0.69 - Mysterious Stranger
 
 - Adds Mysterious Stranger as a selectable Gunslinger archetype.

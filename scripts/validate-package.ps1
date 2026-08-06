@@ -45,7 +45,7 @@ try {
         'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
         'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
         'rifle','revolver','lead-ball','black-powder','repair-kit',
-        'gunsmith-kit','overhaul-kit')
+        'gunsmith-kit','overhaul-kit','focused-aim')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
     $actual = @(
         Get-ChildItem -LiteralPath $modDirectory -Recurse -File |

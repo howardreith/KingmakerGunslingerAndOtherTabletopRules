@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.Development
         private static void OnGui(UnityModManager.ModEntry modEntry)
         {
             ImmediateModeGui.Label(
-                "Kingmaker Gunslinger - 0.0.69 MYSTERIOUS-STRANGER / DODGE-EXPIRATION-R3");
+                "Kingmaker Gunslinger - 0.0.70 FOCUSED-AIM-REPAIR / DODGE-EXPIRATION-R3");
             ImmediateModeGui.Label(
                 "Dodge duration graph: native ContextActionApplyBuff plus a blueprint-scoped expired-fact removal guard.");
             ImmediateModeGui.Label(

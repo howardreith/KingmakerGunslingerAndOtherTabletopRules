@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.69-mysterious-stranger",
-  "version": "0.0.69",
+  "milestone": "0.0.70-focused-aim-repair",
+  "version": "0.0.70",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

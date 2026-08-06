@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+import json, hashlib, struct
 from pathlib import Path
 
 def validate(root: Path) -> None:
@@ -21,6 +21,20 @@ def validate(root: Path) -> None:
     if len(entries)!=17: raise AssertionError(f"Expected 17 archetype assets, found {len(entries)}")
     if len({e["guid"] for e in ledger["entries"]})!=len(ledger["entries"]):
         raise AssertionError("Blueprint GUIDs are not unique")
+    if "FirearmDefinitionComponent>().Count() != 1" not in mechanics:
+        raise AssertionError("Focused Aim does not use exact weapon-type firearm identity")
+    for token in ["LocalizedDuration", '"Until the end of your turn"',
+                  "LocalizedSavingThrow", '"None"', "not attack rolls"]:
+        if token not in source: raise AssertionError(f"Focused Aim presentation lacks {token}")
+    icon=root/"assets/game/icons/focused-aim.png"
+    data=icon.read_bytes()
+    if data[:8]!=b"\x89PNG\r\n\x1a\n" or struct.unpack(">II",data[16:24])!=(128,128):
+        raise AssertionError("Focused Aim icon is not a valid 128x128 PNG")
+    if hashlib.sha256(data).hexdigest()!="ba962ad9dbd58f52fad6097dd973508f98ac000db8629f698126c7c5026ec7a8":
+        raise AssertionError("Focused Aim icon export changed")
+    icon_code=(root/"src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs").read_text(encoding="utf-8")
+    if icon_code.count('Require("focused-aim")') != 3:
+        raise AssertionError("Focused Aim feature, ability, and buff icon mapping changed")
 
 if __name__=="__main__":
     validate(Path(__file__).resolve().parents[1])

@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.Blueprints
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
-                "gunsmith-kit", "overhaul-kit" };
+                "gunsmith-kit", "overhaul-kit", "focused-aim" };
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -81,6 +81,15 @@ namespace KingmakerGunslinger.Blueprints
             ApplyFact(feats.WeaponFocus, visited);
             ApplyFact(feats.RapidReload, visited);
             ApplyFact(gunslinger.QuickClear.Feature, visited);
+            BlueprintUnitFactAccess facts = BlueprintUnitFactAccess.Resolve();
+            facts.SetIcon(gunslinger.MysteriousStranger.FocusedAim,
+                Require("focused-aim"));
+            facts.SetIcon(gunslinger.MysteriousStranger.FocusedAimBuff,
+                Require("focused-aim"));
+            AddFacts focusedGrant = gunslinger.MysteriousStranger.FocusedAim
+                .ComponentsArray.OfType<AddFacts>().Single();
+            facts.SetIcon((BlueprintUnitFact)focusedGrant.Facts.Single(),
+                Require("focused-aim"));
             BlueprintUnitFactAccess.Resolve().SetIcon(
                 gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge"));
             ApplyFact(reload, visited); ApplyFact(repair, visited); ApplyFact(overhaul, visited);

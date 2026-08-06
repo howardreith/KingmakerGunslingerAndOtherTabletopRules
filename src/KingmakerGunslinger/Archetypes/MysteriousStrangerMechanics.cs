@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Firearms;
 using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.Archetypes
@@ -23,8 +24,9 @@ namespace KingmakerGunslinger.Archetypes
         public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
         {
             if (evt == null || evt.Initiator == null || evt.Weapon == null ||
-                evt.AttackWithWeapon == null ||
-                !FirearmMarkerLookup.ReadFromRuleEvent(evt.AttackWithWeapon).IsExactFirearm) return;
+                evt.Weapon.Blueprint == null || evt.Weapon.Blueprint.Type == null ||
+                evt.Weapon.Blueprint.Type.ComponentsArray.OfType<
+                    FirearmDefinitionComponent>().Count() != 1) return;
             evt.AddBonusDamage(MysteriousStrangerPolicy.FocusedAimBonus(
                 evt.Initiator.Stats.Charisma.Bonus,
                 Deeds.DeadShotRuntime.FocusedAimMultiplier(evt.AttackWithWeapon)));
