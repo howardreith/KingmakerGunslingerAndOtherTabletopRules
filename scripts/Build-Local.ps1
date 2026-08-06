@@ -18,8 +18,15 @@ Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
 
 if (-not $ReferenceBundleDir) {
-    $labRoot = [IO.Path]::GetFullPath((Join-Path $root '..\..'))
-    $ReferenceBundleDir = Join-Path $labRoot 'private\extracted-references\KingmakerGunslinger-private-build-references'
+    $cursor = [IO.DirectoryInfo]$root
+    for ($depth = 0; $depth -lt 6 -and $cursor; $depth++) {
+        $candidate = Join-Path $cursor.FullName 'private\extracted-references\KingmakerGunslinger-private-build-references'
+        if (Test-Path -LiteralPath $candidate -PathType Container) {
+            $ReferenceBundleDir = $candidate
+            break
+        }
+        $cursor = $cursor.Parent
+    }
 }
 if (-not (Test-Path -LiteralPath $ReferenceBundleDir -PathType Container)) {
     throw "Qualified private reference bundle is missing: $ReferenceBundleDir"
