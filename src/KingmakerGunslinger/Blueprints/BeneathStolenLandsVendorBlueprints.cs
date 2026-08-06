@@ -17,6 +17,8 @@ namespace KingmakerGunslinger.Blueprints
         internal void Validate() { foreach (var table in _tables) table.Validate(); }
         internal void Rollback() { for (int i = _tables.Count - 1; i >= 0; i--) _tables[i].Rollback(); }
         internal int Count { get { return _tables.Count; } }
+        internal bool ContainsExact(BlueprintItem item)
+        { return _tables.All(table => table.ContainsExact(item)); }
     }
 
     internal static class BeneathStolenLandsVendorBlueprints

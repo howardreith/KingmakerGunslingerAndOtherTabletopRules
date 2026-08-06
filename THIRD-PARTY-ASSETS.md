@@ -72,3 +72,11 @@ resamples the 64-by-64 game asset. No third-party source art was supplied or
 copied, and distribution attribution is not required.
 
 The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.
+
+The Gunsmith's Kit and Firearm Overhaul Kit inventory icons are original
+AI-assisted project artwork generated specifically for Kingmaker Gunslinger
+with the built-in OpenAI image tool. The preserved high-resolution chroma
+sources, exact prompt record, deterministic export record, and hashes are under
+`assets-source/original-icons/supply-icons/`. Existing project icon sheets were
+used only as style references; no third-party source pixels were supplied or
+copied, and distribution attribution is not required.

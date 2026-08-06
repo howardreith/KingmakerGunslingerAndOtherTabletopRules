@@ -101,6 +101,9 @@ namespace KingmakerGunslinger.Gunsmithing
 
         public override void Cleanup(AbilityExecutionContext context) { }
         internal BlueprintUnitFact UsedMarker { get { return m_UsedMarker; } }
+        internal BlueprintItem BlackPowder { get { return m_BlackPowder; } }
+        internal BlueprintItem LeadBall { get { return m_LeadBall; } }
+        internal BlueprintItem GunsmithKit { get { return m_GunsmithKit; } }
         internal void Validate()
         {
             if (m_BlackPowder == null || m_LeadBall == null ||

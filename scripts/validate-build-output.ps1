@@ -23,7 +23,8 @@ $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit'
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
     'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
     'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
-    'rifle','revolver','lead-ball','black-powder','repair-kit')
+    'rifle','revolver','lead-ball','black-powder','repair-kit',
+    'gunsmith-kit','overhaul-kit')
 foreach ($name in $requiredIcons) {
     $requiredFiles += "assets\icons\$name.png"
 }

@@ -1,0 +1,4 @@
+261a2d63c13d0f9835831433f2ce1ea315cd35202b2ba63f5df7796129a2218b  gunsmith-kit-chroma-source.png
+1dfdb83623eeeaf87050d0ffdbad7dca11ed7850cf2e4d70e18a86592b05d57d  overhaul-kit-chroma-source.png
+56cb9e3415b9866d85fc6c7d402cdd4bcd29368495a25c631027dcf50a7776f8  ../../../../assets/game/icons/gunsmith-kit.png
+b0e423f50d1c1ee0cccf497097ec0ff3032c7c13ccd4eeba30ec6409fc3b5dfc  ../../../../assets/game/icons/overhaul-kit.png

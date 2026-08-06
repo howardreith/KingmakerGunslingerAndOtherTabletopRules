@@ -167,6 +167,14 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
+        internal bool ContainsExact(BlueprintItem item)
+        {
+            return _items.Count(value => ReferenceEquals(value, item)) == 1 &&
+                (_table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), item)) == 1;
+        }
+
         internal void Rollback()
         {
             if (!Changed) return;

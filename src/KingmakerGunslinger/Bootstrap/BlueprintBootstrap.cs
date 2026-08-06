@@ -617,6 +617,7 @@ namespace KingmakerGunslinger.Bootstrap
                     gritUiAbilities + " deed abilities.");
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
                     productionFirearms, basicAmmunition, firearmRepairKit,
+                    gunsmithingSupplies,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
                 classPublication = GunslingerClassBlueprints.Publish(
@@ -628,6 +629,10 @@ namespace KingmakerGunslinger.Bootstrap
                 btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                     library, productionFirearms, basicAmmunition,
                     firearmRepairKit, gunsmithingSupplies, context.Logger);
+                ProjectAssetIcons.ValidateSupplyPublication(registry,
+                    basicAmmunition, firearmRepairKit, gunsmithingSupplies,
+                    gunsmithingCrafting, capitalVendorPublication,
+                    btslVendorPublication, context.Logger);
 
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {

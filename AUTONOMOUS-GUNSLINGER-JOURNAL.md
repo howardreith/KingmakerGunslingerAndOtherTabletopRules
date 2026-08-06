@@ -3917,3 +3917,27 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 - The report is human runtime acceptance. Individual UMM counter values and a
   machine-readable scenario transcript were not supplied in the chat and are
   therefore not reconstructed or claimed here.
+
+# Distinct Gunslinger supply item icons (2026-08-05)
+
+- The authoritative ammunition and maintenance items are isolated native
+  Diamond Dust clones. Lead Ball, Black Powder Charge, and Firearm Repair Kit
+  already had late centralized icon assignments; Gunsmith's Kit and Firearm
+  Overhaul Kit were omitted from that explicit map and therefore retained the
+  inherited template sprite. No duplicate blueprint or ItemEntity icon cache
+  exists: installed Kingmaker `ItemEntity.Icon` reads its exact
+  `m_Blueprint.Icon`, which directly reads `BlueprintItem.m_Icon`.
+- Added two original AI-assisted, project-owned kit icons with preserved
+  high-resolution chroma sources, exact prompt and deterministic processing
+  records. All five supply exports are distinct 128-by-128 alpha PNGs.
+- Bootstrap now assigns and verifies five explicit mappings before vendor
+  publication, then fail-closes unless capital/BTSL vendor and crafting paths
+  retain the exact registered blueprint references. It logs one concise final
+  identity record per supply item. Native Diamond Dust is only captured for
+  comparison and is never repainted.
+- Repository validation, focused PNG/source/ordering checks, installed-reference
+  `BlueprintItem.m_Icon` readback, all 888 deterministic domain tests, clean
+  exact-reference Release compilation, build-output validation, deterministic
+  packaging, and strict package validation passed. Visual inventory acceptance
+  remains human-gated; Gunslinger's Dodge and unrelated mechanics were not
+  modified.

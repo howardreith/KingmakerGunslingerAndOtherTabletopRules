@@ -11,6 +11,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Gunsmithing;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -32,7 +33,8 @@ namespace KingmakerGunslinger.Blueprints
                 "weapon-focus-firearm", "deadeye", "gunslingers-dodge",
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
-                "rifle", "revolver", "lead-ball", "black-powder", "repair-kit" };
+                "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
+                "gunsmith-kit", "overhaul-kit" };
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -67,6 +69,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Apply(GunslingerClassBlueprintSet gunslinger,
             FirearmFeatBlueprintSet feats, ProductionFirearmBlueprintCatalog firearms,
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
+            GunsmithingSupplyBlueprintSet supplies,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -90,6 +93,81 @@ namespace KingmakerGunslinger.Blueprints
             items.SetIcon(ammunition.LeadBall, Require("lead-ball"));
             items.SetIcon(ammunition.BlackPowder, Require("black-powder"));
             items.SetIcon(repairKit, Require("repair-kit"));
+            items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"));
+            items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"));
+            ValidateDistinctSupplyIcons(ammunition, repairKit, supplies);
+        }
+
+        internal static void ValidateSupplyPublication(
+            BlueprintRegistry registry, BasicAmmunitionBlueprintSet ammunition,
+            BlueprintItem repairKit, GunsmithingSupplyBlueprintSet supplies,
+            GunsmithingCraftingBlueprintSet crafting,
+            CapitalVendorPublication capitalVendor,
+            BeneathStolenLandsVendorPublication btslVendors,
+            ModLogger logger)
+        {
+            if (registry == null || ammunition == null || repairKit == null ||
+                supplies == null || crafting == null || capitalVendor == null ||
+                btslVendors == null || logger == null)
+                throw new ArgumentNullException("Supply icon publication inputs are incomplete.");
+            var craft = crafting.Ability.ComponentsArray
+                .OfType<CraftBasicAmmunitionAbilityLogic>().Single();
+            var mappings = new[]
+            {
+                new SupplyIconMapping(BasicAmmunitionBlueprints.LeadBallSymbol,
+                    ammunition.LeadBall, "lead-ball", craft.LeadBall),
+                new SupplyIconMapping(BasicAmmunitionBlueprints.BlackPowderSymbol,
+                    ammunition.BlackPowder, "black-powder", craft.BlackPowder),
+                new SupplyIconMapping(FirearmRepairKitBlueprints.Symbol,
+                    repairKit, "repair-kit", null),
+                new SupplyIconMapping(GunsmithingSupplyBlueprints.GunsmithKitSymbol,
+                    supplies.GunsmithKit, "gunsmith-kit", craft.GunsmithKit),
+                new SupplyIconMapping(GunsmithingSupplyBlueprints.OverhaulKitSymbol,
+                    supplies.OverhaulKit, "overhaul-kit", null)
+            };
+            foreach (SupplyIconMapping mapping in mappings)
+            {
+                Sprite expected = Require(mapping.IconKey);
+                bool capitalExact = capitalVendor.ContainsExact(mapping.Item);
+                bool btslExact = btslVendors.ContainsExact(mapping.Item);
+                bool craftExact = mapping.CraftingItem == null ||
+                    ReferenceEquals(mapping.CraftingItem, mapping.Item);
+                if (!ReferenceEquals(mapping.Item.Icon, expected) ||
+                    !capitalExact || !btslExact || !craftExact)
+                    throw new InvalidOperationException(
+                        "Supply icon publication did not preserve exact blueprint identity: " +
+                        mapping.Symbol);
+                logger.Info("presentation", "supply-icon.published",
+                    string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        "name={0};guid={1};iconKey={2};sprite={3};vendorExact={4};craftingExact={5}",
+                        mapping.Item.name, registry.ResolveGuid(mapping.Symbol),
+                        mapping.IconKey, expected.name, capitalExact && btslExact,
+                        craftExact));
+            }
+        }
+
+        private static void ValidateDistinctSupplyIcons(
+            BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
+            GunsmithingSupplyBlueprintSet supplies)
+        {
+            BlueprintItem[] items = { ammunition.LeadBall, ammunition.BlackPowder,
+                repairKit, supplies.GunsmithKit, supplies.OverhaulKit };
+            if (items.Any(item => item == null || item.Icon == null) ||
+                items.Select(item => item.Icon).Distinct().Count() != items.Length ||
+                items.Any(item => ReferenceEquals(item.Icon, ammunition.Source.Icon)))
+                throw new InvalidOperationException(
+                    "Every Gunslinger supply item must have one distinct non-template icon.");
+        }
+
+        private sealed class SupplyIconMapping
+        {
+            internal SupplyIconMapping(string symbol, BlueprintItem item,
+                string iconKey, BlueprintItem craftingItem)
+            { Symbol = symbol; Item = item; IconKey = iconKey; CraftingItem = craftingItem; }
+            internal string Symbol { get; private set; }
+            internal BlueprintItem Item { get; private set; }
+            internal string IconKey { get; private set; }
+            internal BlueprintItem CraftingItem { get; private set; }
         }
 
         internal static Sprite RequireIcon(string name)

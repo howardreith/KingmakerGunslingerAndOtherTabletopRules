@@ -78,7 +78,16 @@ def validate(root: Path) -> None:
         "DODGE-EXPIRATION-R3", "Dodge expiration guard:")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
-        'gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge")')
+        'gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge")',
+        'items.SetIcon(ammunition.LeadBall, Require("lead-ball"))',
+        'items.SetIcon(ammunition.BlackPowder, Require("black-powder"))',
+        'items.SetIcon(repairKit, Require("repair-kit"))',
+        'items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"))',
+        'items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"))',
+        'ValidateDistinctSupplyIcons', 'ValidateSupplyPublication')
+    validate_playtest66.require(
+        root / "tools/create_deterministic_package.py",
+        "if len(files) != 39", "Expected exactly 39 staged package files")
 
     full_attack = root / (
         "src/KingmakerGunslinger/Firing/FreeActionFullAttackReloadPatch.cs")
