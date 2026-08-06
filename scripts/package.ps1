@@ -3,7 +3,8 @@ param(
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release',
 
-    [switch]$IncludeSymbols
+    [switch]$IncludeSymbols,
+    [switch]$AllowMissingFirearmSoundBank
 )
 
 Set-StrictMode -Version Latest
@@ -18,6 +19,7 @@ if ($IncludeSymbols) {
 }
 
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration $Configuration
+& (Join-Path $PSScriptRoot 'Validate-FirearmSoundBank.ps1') -AllowMissing:$AllowMissingFirearmSoundBank
 
 $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger"
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
@@ -61,6 +63,13 @@ $bundleDestination = Join-Path $modDirectory 'assets\bundles'
 New-Item -ItemType Directory -Path $bundleDestination -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.firearms') -Destination $bundleDestination
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\asset-bundle-manifest.json') -Destination $bundleDestination
+$soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
+if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
+    $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
+    New-Item -ItemType Directory -Path $soundBankDestination -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -Destination $soundBankDestination
+    Copy-Item -LiteralPath (Join-Path $soundBankSource 'firearm-soundbank-manifest.json') -Destination $soundBankDestination
+}
 
 if (Test-Path -LiteralPath $packagePath) {
     Remove-Item -LiteralPath $packagePath -Force
@@ -70,7 +79,7 @@ if (Test-Path -LiteralPath $checksumPath) {
 }
 
 Compress-Archive -LiteralPath $modDirectory -DestinationPath $packagePath -CompressionLevel Optimal
-& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath
+& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
 
 $checksum = Get-KmgSha256 -Path $packagePath
 Set-Content -LiteralPath $checksumPath -Value "$checksum  $([IO.Path]::GetFileName($packagePath))" -Encoding ASCII

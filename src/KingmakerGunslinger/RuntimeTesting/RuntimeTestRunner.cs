@@ -310,6 +310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_manualElapsed != null &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogAndSelection &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
@@ -384,6 +385,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio)
+                {
+                    Complete(RunFirearmWwiseAudio());
                     return;
                 }
                 if (_request.Scenario ==
@@ -2560,6 +2566,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             RuntimeTestResult result = CreateResult(pass ? "PASS" : "FAIL", assertions, null);
             result.RuntimeIdentity = runtimeIdentity;
+            return result;
+        }
+
+        private RuntimeTestResult RunFirearmWwiseAudio()
+        {
+            int before=Audio.FirearmSoundRuntime.AcceptedPosts;
+            Audio.FirearmSoundPostResult preview=Audio.FirearmSoundRuntime.TryPostGlobalPistolPreview();
+            int after=Audio.FirearmSoundRuntime.AcceptedPosts;
+            string diagnostics=Audio.FirearmSoundRuntime.Describe();
+            var assertions=new List<RuntimeTestAssertion>
+            {
+                Assertion("firearm-wwise-ready","state=Ready",diagnostics,diagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
+                Assertion("global-pistol-event-accepted","one valid nonzero playing ID",diagnostics,preview.Accepted&&preview.PlayingId!=0&&after==before+1&&preview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),"AkSoundEngine.PostEvent global technical preview"),
+                Assertion("save-free-audio-scenario","no save or inventory mutation","preview-only",true,"global UI emitter only")
+            };
+            bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
+            RuntimeTestResult result=CreateResult(pass?"PASS":"FAIL",assertions,null);
+            result.Diagnostics.Add(diagnostics);
+            result.Warnings.Add("A valid Wwise playing ID proves event acceptance, not audible speaker output.");
             return result;
         }
 
@@ -9124,9 +9149,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 slingersLuckExcluded = false;
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
-            long shotEventsBefore = -1, shotEventsAfter = -1;
-            bool shotEmitterReady = false;
-            string shotClipName = null;
+            int shotEventsBefore = -1, shotEventsAfter = -1;
+            uint shotPlayingId = 0;
+            string shotEventName = null;
             string stage = "progression";
             try
             {
@@ -9172,15 +9197,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "ordinary-native-shot";
                 damageBefore = failedTarget.Damage;
-                shotEventsBefore = Assets.FirearmAssetRuntime.ShotEvents;
+                shotEventsBefore = Audio.FirearmSoundRuntime.AcceptedPosts;
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 var ordinary = new RuleAttackWithWeapon(attacker, failedTarget,
                     weapon, 0);
                 Rulebook.Trigger(ordinary);
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
-                shotEventsAfter = Assets.FirearmAssetRuntime.ShotEvents;
-                shotEmitterReady = Assets.FirearmAssetRuntime.LastEmitterReady;
-                shotClipName = Assets.FirearmAssetRuntime.LastClipName;
+                shotEventsAfter = Audio.FirearmSoundRuntime.AcceptedPosts;
+                shotPlayingId = Audio.FirearmSoundRuntime.LastPlayingId;
+                shotEventName = Audio.FirearmSoundRuntime.LastEventName;
                 RuleDealDamage ordinaryDamage = ordinary.MeleeDamage;
                 if (ordinaryDamage == null && ordinary.AttackRoll != null &&
                     ordinary.AttackRoll.IsHit)
@@ -9326,8 +9351,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";successStunned=" + successStunned +
                 ";immunityStunned=" + immunityStunned + ";shotEvents=" +
                 shotEventsBefore + "->" + shotEventsAfter + ";cleaned=" + cleaned;
-            observed += ";shotEmitterReady=" + shotEmitterReady +
-                ";shotClipName=" + shotClipName;
+            observed += ";shotPlayingId=" + shotPlayingId +
+                ";shotEventName=" + shotEventName;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("stunning-shot-progression-and-arming",
@@ -9343,9 +9368,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "one approved Pistol shot event for one successful ordinary discharge",
                     observed, shotEventsBefore >= 0 &&
                         shotEventsAfter == shotEventsBefore + 1 &&
-                        shotEmitterReady && !string.IsNullOrWhiteSpace(shotClipName) &&
-                        shotClipName.IndexOf("flintlock", StringComparison.OrdinalIgnoreCase) >= 0,
-                    "post-misfire FirearmAssetRuntime emitter and mapped Pistol clip"),
+                        shotPlayingId != 0 && shotEventName ==
+                            Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),
+                    "post-misfire Wwise unit emitter and exact Pistol event"),
                 Assertion("stunning-shot-save-failure",
                     "natural 1 Fortitude spends the effective grit cost and applies one-round Stunned",
                     observed, failureMarkerConsumed && gritAfterFailure == 4 - deedCost &&

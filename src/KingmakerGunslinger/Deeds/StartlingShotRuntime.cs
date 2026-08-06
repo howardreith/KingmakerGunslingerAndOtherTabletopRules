@@ -74,6 +74,8 @@ namespace KingmakerGunslinger.Deeds
                     throw new InvalidOperationException(
                         "Startling Shot flat-footed buff was not created.");
                 StartlingShotRuntimeDiagnostics.RecordApplied();
+                Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                    firearm.Definition.Kind, caster.Unit, "startling-shot");
                 return new StartlingShotResult(decision, applied);
             }
             catch

@@ -54,3 +54,30 @@ event-acceptance evidence; audibility remains a human judgment.
 - Native `WeaponVisualParameters` combat-sound getter/call sites. Current
   production presentation already reports inherited crossbow sound fallback as
   cleared; this mission will verify rather than broaden that mutation.
+
+## Completed IL inspection
+
+`AkSoundEngine.PostEvent(string, UnityEngine.GameObject)` returns `uint`. The
+installed integration also exposes the event-ID overload and callback/flag/
+external-source variants; the two-argument string/GameObject overload is the
+narrow gameplay contract. `AkSoundEngine.AK_INVALID_PLAYING_ID` is the literal
+`uint 0`. The wrapper constructs an `AkAutoObject` around the supplied
+GameObject before its native call, so the integration performs the required
+temporary registration handling; the mod must not attach duplicate `AkGameObj`
+components to every unit.
+
+`Kingmaker.Sound.SoundBanksManager` maintains a private
+`Dictionary<string,int> s_LoadCount`, uses `AkBankManager.LoadBankAsync`, and
+calls manager unload when its count reaches the relevant boundary. This is
+curated corroboration, not a stable public success API. The selected custom
+path therefore loads through `AkBankManager` once and treats only a nonzero
+PostEvent playing ID as event acceptance.
+
+`WeaponVisualParameters` stores private `m_SoundType`, `m_WhooshSound`, and
+`m_MissSoundType`. Their getters fall back through `Prototype` when the local
+enum is zero or the local whoosh string is empty. Clearing only those locals
+would therefore not suppress inherited combat audio while Prototype remains.
+Equip/unequip/inventory sounds are separate fields. Because preserving
+Prototype is required for the qualified firearm presentation, no speculative
+field clearing is implemented; layered crossbow sound remains a manual
+auditory/targeted-runtime follow-up after the authentic bank exists.

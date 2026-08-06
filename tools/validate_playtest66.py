@@ -27,8 +27,11 @@ def validate(root: Path, test_count: int = 865) -> None:
     require(root / "src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs",
             "FirearmWeaponPresentation.Apply(clone, spec.Definition,",
             "FirearmProjectileBlueprints.Register(registry, lightType)")
-    require(root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs",
-            "KMG_FirearmAudio", "spatialBlend = 0f", "PlayOneShot(clip, 1f)")
+    require(root / "src/KingmakerGunslinger/Audio/FirearmSoundRuntime.cs",
+            "AkSoundEngine.PostEvent", "AkBankManager.LoadBank", "id!=0")
+    legacy = (root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs").read_text(encoding="utf-8")
+    if any(token in legacy for token in ("AudioSource", "AudioClip", "PlayOneShot", "KMG_FirearmAudio")):
+        raise AssertionError("obsolete Unity firearm audio backend remains")
     require(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
             "itemVisual", "itemMatch && itemVisual && itemIconDistinct")
     require(root / "src/KingmakerGunslinger/Blueprints/BeneathStolenLandsVendorBlueprints.cs",

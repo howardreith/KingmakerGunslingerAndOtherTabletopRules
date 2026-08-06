@@ -70,6 +70,8 @@ namespace KingmakerGunslinger.Deeds
                 discharged = true;
                 target.Descriptor.Buffs.RemoveFact(bleed);
                 StopBleedingRuntimeDiagnostics.RecordApplied();
+                Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                    firearm.Definition.Kind, casterEntity, "stop-bleeding");
                 return new StopBleedingResult(decision, bleed);
             }
             catch

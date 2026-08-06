@@ -444,3 +444,11 @@ Availability remains read-only. Repair starts no transaction before `Deliver`, a
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
 The blueprint ledger contains 207 stable IDs: 206 active and one reserved. Sixth-playtest additions are append-only: a visible Deadeye Armed buff, Gunsmith's Kit, Firearm Overhaul Kit, basic-ammunition crafting action, once-per-rest marker, and clone-derived renderer-free firearm projectile. The Mysterious Stranger extension adds one subordinate Gunslinger archetype and sixteen supporting feature, ability, buff, and resource identities. Existing firearm, feat, item, resource, and save identities remain unchanged. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
+# Native firearm audio boundary
+
+`Audio.FirearmSoundRuntime` is a fail-soft side-effect adapter outside the pure
+firearm domain. It validates and stages only `KMG_Firearms.bnk`, waits for
+`AkSoundEngine.IsInitialized()`, requests one process-lifetime manager load,
+and accepts an event only when `PostEvent` returns a nonzero playing ID.
+Gameplay calls occur only after existing transactions have committed; audio
+failure never participates in mechanical rollback.

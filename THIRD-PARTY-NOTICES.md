@@ -1,6 +1,6 @@
 # Third-party notices
 
-This source milestone contains original Kingmaker Gunslinger code and documentation under the repository license. It does not redistribute Pathfinder: Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft.Json, Call of the Wild, Cowboys and Demons, BlueprintCore, or any third-party art or audio.
+This source milestone contains original Kingmaker Gunslinger code and documentation under the repository license. The planned custom SoundBank is derived solely from the five approved SSE Library: GUNS CC0 recordings documented in `THIRD-PARTY-ASSETS.md`. The current source-only checkpoint contains no generated SoundBank. It does not redistribute Pathfinder: Kingmaker, Unity, Unity Mod Manager, Harmony, Newtonsoft.Json, Wwise authoring tools or SDK binaries, Call of the Wild, Cowboys and Demons, or BlueprintCore.
 
 ## Build-time references
 

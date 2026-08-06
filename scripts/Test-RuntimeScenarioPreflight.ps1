@@ -33,6 +33,12 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 
 $expected = @(
     'mod-load-smoke',
+    'disposable-firearm-wwise-audio',
+    'disposable-empty-firearm-command',
+    'disposable-firearm-dependent-feats',
+    'disposable-overhaul-maintenance',
+    'disposable-reload-autocast',
+    'observe-native-weapon-feat-contracts',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
     'observe-vendor-table-contracts',
@@ -276,7 +282,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.60'
+    ExpectedVersion = '0.0.70'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -309,7 +315,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.60' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.70' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -364,7 +370,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.60' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.70' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

@@ -88,6 +88,8 @@ namespace KingmakerGunslinger.Deeds
                 foreach (UnitEntityData unit in LivingTargets(context.Caster))
                     yield return new AbilityDeliveryTarget(new TargetWrapper(unit));
                 completed = true;
+                Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                    firearm.Definition.Kind, context.Caster, "menacing-shot");
             }
             finally
             {

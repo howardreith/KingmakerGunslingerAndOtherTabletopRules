@@ -72,14 +72,14 @@ if ((Get-KmgSha256 -Path $bundleSource) -ne $bundleManifest.sha256) { throw 'Fir
 Copy-Item -LiteralPath $bundleSource -Destination (Join-Path $buildOutput 'assets\bundles\kingmakergunslinger.firearms') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
+& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -AllowMissingFirearmSoundBank
 
 $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
-& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath
+& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank
 
 $dllPath = Join-Path $buildOutput 'KingmakerGunslinger.dll'
 $manifest = [ordered]@{

@@ -98,6 +98,11 @@ namespace KingmakerGunslinger.Development
             ImmediateModeGui.Label("Repair runtime: " + RepairRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("Firearm attack enforcement: " + FirearmDischargeRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("Natural-roll misfires: " + FirearmMisfireRuntime.Describe());
+            ImmediateModeGui.Label("Firearm Wwise audio: " + Audio.FirearmSoundRuntime.Describe());
+            if (ImmediateModeGui.Button("Print firearm Wwise diagnostics")) Run(DevelopmentControls.DescribeFirearmAudio);
+            if (ImmediateModeGui.Button("Retry newly installed firearm Wwise bank (development)")) Run(DevelopmentControls.RetryFirearmAudio);
+            if (ImmediateModeGui.Button("Play global Pistol Wwise preview (non-spatial)")) Run(DevelopmentControls.PreviewGlobalPistolAudio);
+            if (ImmediateModeGui.Button("Play selected equipped firearm Wwise preview")) Run(DevelopmentControls.PreviewSelectedFirearmAudio);
             ImmediateModeGui.Label("Second-misfire explosion: " + FirearmExplosionRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("State-token native reconciliation: " + FirearmStateTokenReconciliationDiagnostics.Describe());
 

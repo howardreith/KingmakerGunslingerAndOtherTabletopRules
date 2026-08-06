@@ -84,3 +84,11 @@ Never test removal against the only copy of a valued save.
 When diagnosing a conflict, reproduce it first on a copied save with only
 Unity Mod Manager and Kingmaker Gunslinger enabled. A clean mod load does not
 by itself prove campaign or cross-mod compatibility.
+# Custom firearm SoundBank
+
+The release audio asset is copied only to
+`Kingmaker_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows\KMG_Firearms.bnk`.
+The mod hash-verifies the packaged source and existing destination and never
+writes `Init.bnk` or another bank. To uninstall this optional native-audio
+artifact, remove only `KMG_Firearms.bnk`; do not remove any vanilla bank.
+Missing or rejected custom audio does not disable firearm mechanics.

@@ -23,17 +23,17 @@ exactly one supported event. Mechanical behavior must remain unchanged.
 ## Checklist
 
 - [x] Preserve Git isolation and verify qualified ancestry.
-- [ ] Curate exact local Wwise/Kingmaker runtime contract.
-- [ ] Complete discharge-to-audio matrix.
-- [ ] Implement strict manifest and staging contract with tests.
-- [ ] Implement Wwise lifecycle and diagnostics.
-- [ ] Route ordinary, Scatter, Dead Shot, Startling Shot, Menacing Shot, and
+- [x] Curate exact local Wwise/Kingmaker runtime contract.
+- [x] Complete discharge-to-audio matrix.
+- [x] Implement strict manifest and staging contract with tests.
+- [x] Implement Wwise lifecycle and diagnostics.
+- [x] Route ordinary, Scatter, Dead Shot, Startling Shot, Menacing Shot, and
   Stop Bleeding committed discharges.
-- [ ] Remove Unity firearm playback.
-- [ ] Create reproducible Wwise 2016.2 project and generation validation.
+- [x] Remove Unity firearm playback.
+- [x] Create reproducible Wwise 2016.2 authoring handoff and generation validation.
 - [ ] Generate and validate `KMG_Firearms.bnk` if compatible authoring exists.
-- [ ] Integrate strict build/package validation.
-- [ ] Add guarded runtime proof and development controls.
+- [x] Integrate strict build/package validation with explicit source-only gate.
+- [x] Add guarded runtime scenario and development controls.
 - [ ] Run all source/build/package/runtime gates.
 - [ ] Complete human auditory acceptance.
 

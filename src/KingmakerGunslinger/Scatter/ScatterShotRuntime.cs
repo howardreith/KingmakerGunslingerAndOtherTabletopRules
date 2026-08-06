@@ -207,8 +207,8 @@ namespace KingmakerGunslinger.Scatter
             }
             else
             {
-                Assets.FirearmAssetRuntime.PlayShot(
-                    FirearmKind.Blunderbuss, caster);
+                Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                    FirearmKind.Blunderbuss, caster, "scatter-shot");
             }
             return new ScatterShotExecutionResult(plan, discharge, volley,
                 attacks, condition, before, expected);

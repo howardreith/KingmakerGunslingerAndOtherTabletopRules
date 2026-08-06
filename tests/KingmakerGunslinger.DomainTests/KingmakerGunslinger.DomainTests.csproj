@@ -34,8 +34,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundEventCatalog.cs"><Link>Audio\FirearmSoundEventCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifest.cs"><Link>Audio\FirearmSoundBankManifest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifestValidator.cs"><Link>Audio\FirearmSoundBankManifestValidator.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankStager.cs"><Link>Audio\FirearmSoundBankStager.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundStateMachine.cs"><Link>Audio\FirearmSoundStateMachine.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmWeaponFeatPolicy.cs"><Link>Domain\FirearmWeaponFeatPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmConditionPresentation.cs"><Link>Domain\FirearmConditionPresentation.cs</Link></Compile>
     <Compile Include="Sprint55Tests.cs" />

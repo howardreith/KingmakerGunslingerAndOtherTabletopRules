@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.Audio
     {
         internal FirearmSoundBankStageResult Stage(string modRoot, string dataPath, FirearmSoundBankManifest manifest)
         {
-            FirearmSoundBankManifestLoader.Validate(manifest);
+            FirearmSoundBankManifestValidator.Validate(manifest);
             string sourceRoot=Full(Path.Combine(modRoot,"assets","soundbanks")), destinationRoot=Full(Path.Combine(dataPath,"StreamingAssets","Audio","GeneratedSoundBanks","Windows"));
             string source=Full(Path.Combine(sourceRoot,FirearmSoundEventCatalog.BankFileName)), destination=Full(Path.Combine(destinationRoot,FirearmSoundEventCatalog.BankFileName)); RequireChild(sourceRoot,source); RequireChild(destinationRoot,destination);
             if (!File.Exists(source)) throw new FileNotFoundException("Packaged firearm bank missing.",source); string hash=Hash(source); if (hash != manifest.Sha256) throw new InvalidDataException("Source bank hash mismatch."); Directory.CreateDirectory(destinationRoot);

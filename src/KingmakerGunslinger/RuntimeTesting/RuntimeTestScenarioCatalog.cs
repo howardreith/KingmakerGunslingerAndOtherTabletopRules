@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string DisposableFirearmWwiseAudio = "disposable-firearm-wwise-audio";
         internal const string ObserveClassBlueprintContracts =
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
@@ -173,6 +174,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerLevelUpPreview,
                 DisposableGunslingerLevelUpCommit,
                 DisposableGunslingerCreationCommit,
+                DisposableFirearmWwiseAudio,
                 DisposableGunslingerLevelTwentyProgression,
                 DisposableGunslingerEvaluatedChassis,
                 DisposableGunslingerMulticlassPreview,

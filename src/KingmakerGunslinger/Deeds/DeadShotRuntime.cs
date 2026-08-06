@@ -172,6 +172,9 @@ namespace KingmakerGunslinger.Deeds
                 }
                 FirearmDischargeRuntimeDiagnostics.Record(discharge,
                     firearm.Firearm.ItemDisplayName);
+                if (!outcome.Misfires)
+                    Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                        firearm.Definition.Kind, casterEntity, "dead-shot");
                 return new DeadShotExecutionResult(decision, outcome, probes,
                     delivery, before, expectedCurrent);
             }

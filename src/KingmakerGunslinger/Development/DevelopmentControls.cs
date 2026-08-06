@@ -6,6 +6,8 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Misfires;
+using Kingmaker.UI.Selection;
+using KingmakerGunslinger.Actions;
 
 namespace KingmakerGunslinger.Development
 {
@@ -16,6 +18,27 @@ namespace KingmakerGunslinger.Development
     /// </summary>
     internal static class DevelopmentControls
     {
+        internal static DevelopmentActionResult DescribeFirearmAudio()
+        { return DevelopmentActionResult.Success(Audio.FirearmSoundRuntime.Describe()); }
+        internal static DevelopmentActionResult RetryFirearmAudio()
+        { return DevelopmentActionResult.Success(Audio.FirearmSoundRuntime.RetryConfigurationForDevelopment()); }
+
+        internal static DevelopmentActionResult PreviewGlobalPistolAudio()
+        {
+            Audio.FirearmSoundPostResult result=Audio.FirearmSoundRuntime.TryPostGlobalPistolPreview();
+            return result.Accepted ? DevelopmentActionResult.Success("Global non-spatial Wwise preview accepted; playingId="+result.PlayingId+".") : DevelopmentActionResult.Failure(result.Fault+" "+Audio.FirearmSoundRuntime.Describe());
+        }
+
+        internal static DevelopmentActionResult PreviewSelectedFirearmAudio()
+        {
+            SelectionManager selection=SelectionManager.Instance;
+            Kingmaker.EntitySystem.Entities.UnitEntityData unit=selection==null?null:selection.GetSingleSelectedUnit();
+            if(unit==null) return DevelopmentActionResult.Failure("Select exactly one unit with a supported equipped firearm.");
+            ExactEquippedFirearmContext firearm; string reason;
+            if(!ExactEquippedFirearmResolver.TryResolve(unit.Descriptor,out firearm,out reason)) return DevelopmentActionResult.Failure(reason);
+            Audio.FirearmSoundPostResult result=Audio.FirearmSoundRuntime.TryPostCommittedDischarge(firearm.Definition.Kind,unit,"development-selected-preview");
+            return result.Accepted?DevelopmentActionResult.Success("Selected-unit Wwise preview accepted; event="+result.EventName+";playingId="+result.PlayingId+"."):DevelopmentActionResult.Failure(result.Fault);
+        }
         internal static DevelopmentActionResult GrantFirearmProficiency()
         {
             return Execute("grant-proficiency", bridge => bridge.GrantFirearmProficiency());

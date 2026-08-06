@@ -86,3 +86,11 @@ sources, exact prompt record, deterministic export record, and hashes are under
 `assets-source/original-icons/supply-icons/`. Existing project icon sheets were
 used only as style references; no third-party source pixels were supplied or
 copied, and distribution attribution is not required.
+
+## Native Wwise firearm bank
+
+The native firearm-audio design authors the same five approved processed SSE
+Library: GUNS CC0 recordings into project-owned `KMG_Firearms.bnk`. Wwise
+2016.2.x authoring is an external proprietary tool and is not redistributed.
+No authentic bank has yet been generated in this source-only checkpoint. The
+existing Unity bundle's legacy embedded clips remain unused cleanup debt.

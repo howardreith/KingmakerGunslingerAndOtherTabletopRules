@@ -270,7 +270,8 @@ namespace KingmakerGunslinger.Misfires
                 if (fortuneIgnored)
                 {
                     nativeResult = nativeSuccess;
-                    Assets.FirearmAssetRuntime.PlayShot(context.Kind, context.Wielder);
+                    Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                        context.Kind, context.Wielder, "ordinary-attack-fortune-ignored");
                     LogInfo("natural-roll.fortune-ignored",
                         "Stranger's Fortune ignored the armed firearm misfire.");
                     return;
@@ -318,8 +319,8 @@ namespace KingmakerGunslinger.Misfires
                     context.Firearm,
                     context.Forced);
                 if (!decision.IsMisfire)
-                    Assets.FirearmAssetRuntime.PlayShot(context.Kind,
-                        context.Wielder);
+                    Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                        context.Kind, context.Wielder, "ordinary-attack");
                 LogInfo(
                     decision.IsMisfire
                         ? "natural-roll.misfire"

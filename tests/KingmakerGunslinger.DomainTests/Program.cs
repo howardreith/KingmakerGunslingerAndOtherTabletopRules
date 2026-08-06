@@ -25,6 +25,11 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
+            Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
+            Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
+            Case("audio.state-machine", FirearmAudioTests.StateMachineLifecycle),
+            Case("audio.discharge-route-shape", FirearmAudioDischargeRouteShape),
             Case("vendor-publication.append", VendorPublicationAppendsExactReferences),
             Case("vendor-publication.idempotent", VendorPublicationIsIdempotent),
             Case("vendor-publication.ambiguity", VendorPublicationRejectsAmbiguity),
@@ -1195,14 +1200,33 @@ namespace KingmakerGunslinger.DomainTests
         private static void FifthPlaytestAudibleShotEmitter()
         {
             string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Audio/FirearmSoundRuntime.cs");
+            string assets = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
-            Assertions.True(source.Contains("KMG_FirearmAudio") &&
-                source.Contains("source.spatialBlend = 0f") &&
-                source.Contains("source.PlayOneShot(clip, 1f)") &&
-                source.Contains("FindObjectOfType<AudioListener>") &&
-                source.Contains("_lastEmitterReady = source.enabled && emitter.activeInHierarchy") &&
-                !source.Contains("AudioSource.PlayClipAtPoint"),
-                "Firearm discharge lacks the persistent 2D diagnostic fallback and listener evidence.");
+            Assertions.True(source.Contains("AkSoundEngine.PostEvent") &&
+                source.Contains("AkBankManager.LoadBank") &&
+                source.Contains("AK_INVALID_PLAYING_ID") == false &&
+                source.Contains("id!=0") &&
+                !assets.Contains("AudioSource") && !assets.Contains("AudioClip") &&
+                !assets.Contains("PlayOneShot") && !assets.Contains("KMG_FirearmAudio"),
+                "Firearm discharge must use native Wwise and retain no Unity playback backend.");
+        }
+
+        private static void FirearmAudioDischargeRouteShape()
+        {
+            string ordinary=ThirdPlaytestSource("src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs");
+            string scatter=ThirdPlaytestSource("src/KingmakerGunslinger/Scatter/ScatterShotRuntime.cs");
+            string dead=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/DeadShotRuntime.cs");
+            string startling=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/StartlingShotRuntime.cs");
+            string menacing=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/MenacingShotAbilityLogic.cs");
+            string bleeding=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/StopBleedingRuntime.cs");
+            Assertions.True(ordinary.Contains("ordinary-attack") && ordinary.Contains("if (!decision.IsMisfire)") &&
+                scatter.Contains("scatter-shot") && scatter.Contains("if (volley.AllRollsMisfire)") &&
+                dead.Contains("if (!outcome.Misfires)") && dead.Contains("\"dead-shot\"") &&
+                startling.Contains("RecordApplied();") && startling.Contains("\"startling-shot\"") &&
+                menacing.Contains("completed = true;") && menacing.Contains("\"menacing-shot\"") &&
+                bleeding.Contains("RecordApplied();") && bleeding.Contains("\"stop-bleeding\""),
+                "A committed physical discharge route is missing its post-commit Wwise notification gate.");
         }
 
         private static TestCase Case(string name, Action body)

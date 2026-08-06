@@ -76,10 +76,6 @@
       <HintPath>$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.AudioModule">
-      <HintPath>$(KingmakerManagedDir)\UnityEngine.AudioModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
@@ -101,7 +97,11 @@
     <Compile Include="Audio\FirearmSoundEventCatalog.cs" />
     <Compile Include="Audio\FirearmSoundBankManifest.cs" />
     <Compile Include="Audio\FirearmSoundBankManifestLoader.cs" />
+    <Compile Include="Audio\FirearmSoundBankManifestValidator.cs" />
     <Compile Include="Audio\FirearmSoundBankStager.cs" />
+    <Compile Include="Audio\FirearmSoundPostResult.cs" />
+    <Compile Include="Audio\FirearmSoundRuntime.cs" />
+    <Compile Include="Audio\FirearmSoundStateMachine.cs" />
     <Compile Include="Assets\FirearmProjectileVisualPatch.cs" />
     <Compile Include="Assets\FirearmPresentationProfile.cs" />
     <Compile Include="Assets\FirearmVisualEquipmentHandler.cs" />

@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [string]$PackagePath
+    [string]$PackagePath,
+    [switch]$AllowMissingFirearmSoundBank
 )
 
 Set-StrictMode -Version Latest
@@ -47,6 +48,12 @@ try {
         'rifle','revolver','lead-ball','black-powder','repair-kit',
         'gunsmith-kit','overhaul-kit','focused-aim')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
+    $packagedBank=Join-Path $modDirectory 'assets\soundbanks\KMG_Firearms.bnk'
+    if(Test-Path -LiteralPath $packagedBank -PathType Leaf){
+        $expected += @('assets\soundbanks\KMG_Firearms.bnk','assets\soundbanks\firearm-soundbank-manifest.json')
+        $manifest=Get-Content -LiteralPath (Join-Path $modDirectory 'assets\soundbanks\firearm-soundbank-manifest.json') -Raw | ConvertFrom-Json
+        if((Get-KmgSha256 -Path $packagedBank) -cne $manifest.sha256){throw 'Packaged firearm SoundBank hash mismatch.'}
+    } elseif(-not $AllowMissingFirearmSoundBank){throw 'Release package is missing authentic KMG_Firearms.bnk.'}
     $actual = @(
         Get-ChildItem -LiteralPath $modDirectory -Recurse -File |
             ForEach-Object { $_.FullName.Substring($modDirectory.Length).TrimStart('\', '/') } |
@@ -87,6 +94,9 @@ try {
             throw "Install package contains a private or foreign runtime assembly: $name"
         }
     }
+    $audioArtifacts=@(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Extension -in @('.bnk','.wem')})
+    if($audioArtifacts.Count -gt 1 -or ($audioArtifacts.Count -eq 1 -and $audioArtifacts[0].Name -cne 'KMG_Firearms.bnk')){throw 'Package contains forbidden or unexpected Wwise artifacts.'}
+    if(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Name -ieq 'Init.bnk'}){throw 'Package contains forbidden Init.bnk.'}
 }
 finally {
     if (Test-Path -LiteralPath $tempDirectory) {

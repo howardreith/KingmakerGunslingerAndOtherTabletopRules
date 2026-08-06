@@ -55,3 +55,49 @@ Evidence:
 
 The package intentionally contains no Wwise bank yet. Next: add exhaustive
 manifest/staging tests and finish exact PostEvent/lifecycle inspection.
+
+## 2026-08-06 — source-complete external-authoring gate
+
+The authorized push script now parses but refused checkpoint `36efee6` because
+its configured expected origin remains the placeholder
+`git@github-kmg:OWNER/REPOSITORY.git`, while this worktree's origin is
+`git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git`.
+No direct push or alternate network path was used.
+
+Implemented native Wwise runtime, fail-soft diagnostics/retry, global and
+selected-unit previews, exact post-commit routing for ordinary attacks,
+Scatter, Dead Shot, Startling Shot, Menacing Shot, and Stop Bleeding, and
+removed Unity firearm playback plus the AudioModule reference. Added the
+save-free `disposable-firearm-wwise-audio` guarded scenario. Native sound-field
+IL inspection proves local zero/empty values fall back through Prototype, so
+crossbow combat sound suppression is intentionally pending authentic-bank
+auditory evidence rather than risking qualified presentation.
+
+Added deterministic Wwise source preparation, 2016.2 authoring handoff,
+production bank validator, strict release/source-only package modes, package
+hash validation, and forbidden `Init.bnk`/extra `.bnk`/`.wem` rejection.
+
+Final source evidence:
+
+- Runtime scenario preflight: PASS, 86 checks.
+- Repository validator: PASS.
+- Domain/reflection suite: PASS, 898/898.
+- Exact-reference clean Release compile: PASS.
+- Build-output validation: PASS.
+- Source-only deterministic package and strict package validation: PASS.
+- Package SHA-256: `6c3b74ed5ca1dc32d87c3677ac8232005013ae5243bf81312b98dd800fa25669`.
+- DLL SHA-256: `451e5a7c89bd5193b72feaade29a4214814b69f4528041bb6d48648058940fab`.
+- Deterministic five-WAV preparation: PASS.
+- `git diff --check`: PASS (line-ending notices only).
+
+No Wwise authoring/CLI executable is present in PATH or the standard
+`C:\Program Files (x86)\Audiokinetic` and `C:\Program Files\Audiokinetic`
+trees. No bank or production manifest was fabricated. Runtime execution is not
+meaningful until a genuine 2016.2.x bank exists; the dedicated scenario will
+otherwise fail closed with explicit diagnostics.
+
+Next external action: make an actual Wwise 2016.2.x authoring/CLI installation
+available, run `scripts/audio/Prepare-FirearmWwiseSources.ps1`, author and
+generate the exact Windows `KMG_Firearms` bank per the handoff, curate the bank
+and manifest, run `scripts/Validate-FirearmSoundBank.ps1`, then resume Codex for
+release packaging and guarded repeated runtime qualification.
