@@ -98,6 +98,10 @@
     <Compile Include="Actions\ExactEquippedFirearmContext.cs" />
     <Compile Include="Actions\ExactEquippedFirearmResolver.cs" />
     <Compile Include="Assets\FirearmAssetRuntime.cs" />
+    <Compile Include="Audio\FirearmSoundEventCatalog.cs" />
+    <Compile Include="Audio\FirearmSoundBankManifest.cs" />
+    <Compile Include="Audio\FirearmSoundBankManifestLoader.cs" />
+    <Compile Include="Audio\FirearmSoundBankStager.cs" />
     <Compile Include="Assets\FirearmProjectileVisualPatch.cs" />
     <Compile Include="Assets\FirearmPresentationProfile.cs" />
     <Compile Include="Assets\FirearmVisualEquipmentHandler.cs" />
