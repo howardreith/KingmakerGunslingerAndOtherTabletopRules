@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.67-seventh-playtest-player-path-repair",
-  "version": "0.0.67",
+  "milestone": "0.0.68-supply-item-icons",
+  "version": "0.0.68",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

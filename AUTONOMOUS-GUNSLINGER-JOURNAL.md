@@ -3941,3 +3941,13 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   packaging, and strict package validation passed. Visual inventory acceptance
   remains human-gated; Gunslinger's Dodge and unrelated mechanics were not
   modified.
+
+## 0.0.68 identity checkpoint
+
+- Bumped the supply-icon candidate to `0.0.68-supply-item-icons` so UMM and the
+  development panel distinguish it from the accepted 0.0.67 Dodge R3 package.
+  The panel now leads with `0.0.68 SUPPLY-ITEM-ICONS` while retaining the Dodge
+  R3 diagnostic label and implementation unchanged.
+- Repository validation, focused supply-icon/exact-reference validation, all
+  888 domain tests, exact-reference Release compilation, build-output checks,
+  deterministic packaging, and strict package validation passed before commit.

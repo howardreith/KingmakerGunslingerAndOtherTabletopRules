@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.68 - Distinct Gunslinger supply item icons
+
+- Assigns five explicit, distinct project sprites to the authoritative Lead
+  Ball, Black Powder Charge, Firearm Repair Kit, Gunsmith's Kit, and Firearm
+  Overhaul Kit blueprints before vendor publication.
+- Adds original project artwork for the two previously unmapped gunsmithing
+  kits and fail-closed registry/vendor/crafting identity validation.
+- Preserves the accepted Gunslinger's Dodge R3 implementation unchanged while
+  displaying an unambiguous `0.0.68 SUPPLY-ITEM-ICONS` build label in UMM.
+
 ## 0.0.66 - Sixth-playtest repair and BTSL testing support
 
 - Makes Gunslinger's Dodge spend immediately and grant +2 dodge AC for one round.
