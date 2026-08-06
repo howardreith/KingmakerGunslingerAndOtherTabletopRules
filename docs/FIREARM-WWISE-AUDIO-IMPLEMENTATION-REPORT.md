@@ -25,3 +25,7 @@ Previous source-complete commit: `3cbfe4a`; documentation checkpoint:
 `e34c1a0`. Both are present on `origin/codex/firearm-wwise-audio`. Mod version
 remains `0.0.70`; no release version bump was made because the authentic bank
 and runtime qualification are absent.
+
+Owlcat authoring-project checkpoint:
+`4b8cf93afa8d2797815eb26df4325936229abe68`, successfully pushed and verified
+through the repository-authorized policy script.
