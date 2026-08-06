@@ -2573,17 +2573,89 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             int before=Audio.FirearmSoundRuntime.AcceptedPosts;
             Audio.FirearmSoundPostResult preview=Audio.FirearmSoundRuntime.TryPostGlobalPistolPreview();
-            int after=Audio.FirearmSoundRuntime.AcceptedPosts;
-            string diagnostics=Audio.FirearmSoundRuntime.Describe();
+            int afterGlobal=Audio.FirearmSoundRuntime.AcceptedPosts;
+            string globalDiagnostics=Audio.FirearmSoundRuntime.Describe();
+            BlueprintUnit source=BlueprintRoot.Instance.DefaultPlayerCharacter;
+            object state=ReadExactMember(Kingmaker.Game.Instance,"State");
+            object allUnits=ReadExactMember(state,"AllUnits");
+            object[] unitsBefore=SnapshotReferences(allUnits);
+            Kingmaker.EntitySystem.Entities.UnitEntityData attacker=null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData target=null;
+            Kingmaker.EntitySystem.SceneEntitiesState disposableScene=null;
+            ItemEntityWeapon weapon=null;
+            Audio.FirearmSoundPostResult selectedPreview=null;
+            int afterSelected=-1,afterOrdinary=-1,afterMisfire=-1;
+            uint ordinaryPlayingId=0;
+            string selectedDiagnostics="<not-run>",ordinaryDiagnostics="<not-run>",
+                misfireDiagnostics="<not-run>";
+            bool cleaned=false;
+            try
+            {
+                disposableScene=new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Firearm_Wwise_Audio_Fixture");
+                attacker=Kingmaker.Game.Instance.EntityCreator.SpawnUnit(
+                    source,Vector3.zero,Quaternion.identity,disposableScene);
+                target=Kingmaker.Game.Instance.EntityCreator.SpawnUnit(
+                    source,new Vector3(1f,0f,0f),Quaternion.identity,disposableScene);
+                if(attacker==null||attacker.View==null||target==null||target.View==null)
+                    throw new InvalidOperationException("Native entity creation did not produce live unit views.");
+                weapon=new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon,new FirearmState(
+                    FirearmState.CurrentSchemaVersion,1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
+
+                selectedPreview=Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
+                    FirearmKind.Pistol,attacker,"development-selected-preview");
+                afterSelected=Audio.FirearmSoundRuntime.AcceptedPosts;
+                selectedDiagnostics=Audio.FirearmSoundRuntime.Describe();
+
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+                Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
+                afterOrdinary=Audio.FirearmSoundRuntime.AcceptedPosts;
+                ordinaryPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
+                ordinaryDiagnostics=Audio.FirearmSoundRuntime.Describe();
+
+                FirearmRuntimeState.Service.Set(weapon,new FirearmState(
+                    FirearmState.CurrentSchemaVersion,1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(1);
+                Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
+                afterMisfire=Audio.FirearmSoundRuntime.AcceptedPosts;
+                misfireDiagnostics=Audio.FirearmSoundRuntime.Describe();
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if(weapon!=null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if(attacker!=null&&attacker.Body.PrimaryHand.MaybeItem!=null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                if(target!=null)target.Dispose();
+                if(attacker!=null)attacker.Dispose();
+                if(disposableScene!=null)disposableScene.Dispose();
+                cleaned=SameReferences(unitsBefore,SnapshotReferences(allUnits))&&
+                    (attacker==null||!ContainsReference(allUnits,attacker))&&
+                    (target==null||!ContainsReference(allUnits,target));
+            }
             var assertions=new List<RuntimeTestAssertion>
             {
-                Assertion("firearm-wwise-ready","state=Ready",diagnostics,diagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
-                Assertion("global-pistol-event-accepted","one valid nonzero playing ID",diagnostics,preview.Accepted&&preview.PlayingId!=0&&after==before+1&&preview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),"AkSoundEngine.PostEvent global technical preview"),
-                Assertion("save-free-audio-scenario","no save or inventory mutation","preview-only",true,"global UI emitter only")
+                Assertion("firearm-wwise-ready","state=Ready",globalDiagnostics,globalDiagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
+                Assertion("global-pistol-event-accepted","one valid nonzero playing ID",globalDiagnostics,preview.Accepted&&preview.PlayingId!=0&&afterGlobal==before+1&&preview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),"AkSoundEngine.PostEvent global technical preview"),
+                Assertion("unit-emitter-pistol-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
+                Assertion("ordinary-discharge-event-accepted","accepted count +1; exact pistol event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol)==Audio.FirearmSoundRuntime.LastEventName&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
+                Assertion("misfire-no-normal-event","accepted count unchanged",misfireDiagnostics,afterMisfire==afterOrdinary,"forced natural 1 through RuleAttackWithWeapon"),
+                Assertion("save-free-audio-scenario","no save/inventory mutation and detached fixtures cleaned","cleaned="+cleaned,cleaned,"disposable SceneEntitiesState and exact global-unit snapshot")
             };
             bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
             RuntimeTestResult result=CreateResult(pass?"PASS":"FAIL",assertions,null);
-            result.Diagnostics.Add(diagnostics);
+            result.Diagnostics.Add(globalDiagnostics);
+            result.Diagnostics.Add(selectedDiagnostics);
+            result.Diagnostics.Add(ordinaryDiagnostics);
+            result.Diagnostics.Add(misfireDiagnostics);
             result.Warnings.Add("A valid Wwise playing ID proves event acceptance, not audible speaker output.");
             return result;
         }
