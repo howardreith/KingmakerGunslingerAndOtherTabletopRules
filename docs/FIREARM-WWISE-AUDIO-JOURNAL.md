@@ -101,3 +101,8 @@ available, run `scripts/audio/Prepare-FirearmWwiseSources.ps1`, author and
 generate the exact Windows `KMG_Firearms` bank per the handoff, curate the bank
 and manifest, run `scripts/Validate-FirearmSoundBank.ps1`, then resume Codex for
 release packaging and guarded repeated runtime qualification.
+
+Source-complete checkpoint commit: `3cbfe4a`. The authorized push attempt
+failed with the same policy remote mismatch (placeholder expected origin versus
+the repository's actual origin). The commit is local and unpushed; no direct
+push was attempted.
