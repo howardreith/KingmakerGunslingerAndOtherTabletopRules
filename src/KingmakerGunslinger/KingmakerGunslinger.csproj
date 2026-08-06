@@ -40,6 +40,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
+    <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
+    <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

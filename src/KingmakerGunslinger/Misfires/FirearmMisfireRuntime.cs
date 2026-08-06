@@ -257,10 +257,24 @@ namespace KingmakerGunslinger.Misfires
                 }
 
                 bool firstEvaluation = context.TryBeginEvaluation();
+                bool nativeSuccess = nativeResult;
                 FirearmMisfireDecision decision = Service.Evaluate(
                     naturalRoll,
                     context.MisfireValue,
                     nativeResult);
+                bool fortuneIgnored = firstEvaluation && decision.IsMisfire &&
+                    BlueprintBootstrap.GunslingerClass != null &&
+                    BlueprintBootstrap.GunslingerClass.MysteriousStranger != null &&
+                    BlueprintBootstrap.GunslingerClass.MysteriousStranger.TryIgnoreMisfire(
+                        context.Wielder == null ? null : context.Wielder.Descriptor);
+                if (fortuneIgnored)
+                {
+                    nativeResult = nativeSuccess;
+                    Assets.FirearmAssetRuntime.PlayShot(context.Kind, context.Wielder);
+                    LogInfo("natural-roll.fortune-ignored",
+                        "Stranger's Fortune ignored the armed firearm misfire.");
+                    return;
+                }
                 nativeResult = decision.FinalSuccess;
 
                 if (!firstEvaluation)

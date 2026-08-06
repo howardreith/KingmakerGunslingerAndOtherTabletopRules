@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.69 - Mysterious Stranger
+
+- Adds Mysterious Stranger as a selectable Gunslinger archetype.
+- Replaces Wisdom-based Grit, Quick Clear, Nimble, Gun Training 1, and Bleeding Wound with Charisma-based Grit, Focused Aim, Lucky, Stranger's Fortune, and Clipping Shot respectively.
+- Preserves later Gun Training choices and every unrelated Gunslinger deed and class feature.
+
 ## 0.0.68 - Distinct Gunslinger supply item icons
 
 - Assigns five explicit, distinct project sprites to the authoritative Lead

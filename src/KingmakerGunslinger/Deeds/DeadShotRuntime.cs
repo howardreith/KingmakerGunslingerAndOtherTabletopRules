@@ -157,7 +157,7 @@ namespace KingmakerGunslinger.Deeds
                 }
                 RegisterDelivery(delivery, deliveryHit,
                     outcome.ThreatCount > 0 && deliveryHit,
-                    outcome.ConfirmationPenalty ?? 0);
+                    outcome.ConfirmationPenalty ?? 0, Math.Max(1, outcome.BaseDamageDicePackets));
                 try { triggerDelivery(delivery); }
                 finally { CancelDelivery(delivery); }
 
@@ -261,14 +261,15 @@ namespace KingmakerGunslinger.Deeds
         }
 
         internal static void RegisterDelivery(RuleAttackWithWeapon attack,
-            bool shouldHit, bool criticalThreat, int confirmationPenalty)
+            bool shouldHit, bool criticalThreat, int confirmationPenalty,
+            int hitCount = 1)
         {
             if (attack == null) throw new ArgumentNullException("attack");
             lock (Gate)
             {
                 Deliveries.Remove(attack);
                 Deliveries.Add(attack, new DeliveryMarker(shouldHit,
-                    criticalThreat, confirmationPenalty));
+                    criticalThreat, confirmationPenalty, hitCount));
             }
         }
 
@@ -276,6 +277,14 @@ namespace KingmakerGunslinger.Deeds
         {
             if (attack == null) return;
             lock (Gate) { Deliveries.Remove(attack); }
+        }
+
+        internal static int FocusedAimMultiplier(RuleAttackWithWeapon attack)
+        {
+            if (attack == null) return 1;
+            DeliveryMarker marker;
+            lock (Gate) { return Deliveries.TryGetValue(attack, out marker) ?
+                marker.HitCount : 1; }
         }
 
         internal static bool ShouldBypassDischarge(RuleAttackRoll attackRoll)
@@ -394,15 +403,17 @@ namespace KingmakerGunslinger.Deeds
         private sealed class DeliveryMarker
         {
             internal DeliveryMarker(bool shouldHit, bool criticalThreat,
-                int confirmationPenalty)
+                int confirmationPenalty, int hitCount)
             {
                 ShouldHit = shouldHit;
                 CriticalThreat = criticalThreat;
                 ConfirmationPenalty = confirmationPenalty;
+                HitCount = hitCount;
             }
             internal bool ShouldHit { get; private set; }
             internal bool CriticalThreat { get; private set; }
             internal int ConfirmationPenalty { get; private set; }
+            internal int HitCount { get; private set; }
         }
     }
 }

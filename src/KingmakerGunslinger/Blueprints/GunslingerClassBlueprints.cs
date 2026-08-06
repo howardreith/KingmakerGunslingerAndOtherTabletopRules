@@ -108,7 +108,8 @@ namespace KingmakerGunslinger.Blueprints
         internal DeathsShotBlueprintSet DeathsShot { get; private set; }
         internal StunningShotBlueprintSet StunningShot { get; private set; }
         internal TrueGritBlueprintSet TrueGrit { get; private set; }
-        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count; } }
+        internal MysteriousStrangerBlueprintSet MysteriousStranger { get; set; }
+        internal int Count { get { return 5 + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count + (MysteriousStranger == null ? 0 : MysteriousStranger.Count); } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -286,12 +287,16 @@ namespace KingmakerGunslinger.Blueprints
             Validate(characterClass, progression, proficiencies, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall, gunsmithKit,
                 simple, martial, lightArmor, firearmProficiency);
-            return new GunslingerClassBlueprintSet(characterClass, progression,
+            var set = new GunslingerClassBlueprintSet(characterClass, progression,
                 proficiencies, gunsmithing, grit, deadeye, dodge, quickClear, nimble, initiative,
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
                 targetingArms, targetingHead, targetingTorso, targetingLegs, bleedingWound,
                 expertLoading, lightningReload, evasive, menacingShot,
                 slingersLuck, cheatDeath, deathsShot, stunningShot, trueGrit);
+            set.MysteriousStranger = MysteriousStrangerBlueprints.Register(registry,
+                characterClass, grit, quickClear.Feature, nimble.Features,
+                gunTraining.Selection, bleedingWound.Feature);
+            return set;
         }
 
         internal static GunslingerClassCatalogPublication Publish(

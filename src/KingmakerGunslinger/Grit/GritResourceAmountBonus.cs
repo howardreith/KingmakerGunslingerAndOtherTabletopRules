@@ -1,3 +1,4 @@
+using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
@@ -14,6 +15,8 @@ namespace KingmakerGunslinger.Grit
         IResourceAmountBonusHandler, IUnitSubscriber
     {
         public BlueprintAbilityResource Resource;
+        public StatType Attribute = StatType.Wisdom;
+        public int Minimum = 1;
 
         public void CalculateMaxResourceAmount(BlueprintAbilityResource resource, ref int bonus)
         {
@@ -22,14 +25,16 @@ namespace KingmakerGunslinger.Grit
                 Owner == null || Owner.Stats == null)
                 return;
 
-            ModifiableValueAttributeStat wisdom =
-                Owner.Stats.GetStat(StatType.Wisdom) as ModifiableValueAttributeStat;
-            if (wisdom == null)
+            ModifiableValueAttributeStat stat =
+                Owner.Stats.GetStat(Attribute) as ModifiableValueAttributeStat;
+            if (stat == null)
                 return;
 
-            int wisdomModifier = wisdom.Bonus;
-            if (wisdomModifier > 1)
-                bonus += wisdomModifier - 1;
+            // For the base configuration this remains exactly wisdomModifier - 1;
+            // archetypes may select another attribute and floor explicitly.
+            int modifier = Math.Max(Minimum, stat.Bonus);
+            if (modifier > Minimum)
+                bonus += modifier - Minimum;
         }
     }
 }

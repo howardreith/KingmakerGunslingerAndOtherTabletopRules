@@ -47,6 +47,33 @@ namespace KingmakerGunslinger.Blueprints
             return new GritBlueprintSet(resource, feature, marker);
         }
 
+        internal static BlueprintFeature CreateAlternateFeature(
+            BlueprintAbilityResource resource, BlueprintCharacterClass gunslingerClass,
+            BlueprintFeature marker, Kingmaker.EntitySystem.Stats.StatType attribute,
+            string displayName)
+        {
+            BlueprintFeature feature = CreateFeature(resource, gunslingerClass, marker);
+            feature.name = "KMG_" + displayName.Replace(" ", "_") + "_Feature";
+            var bonus = (GritResourceAmountBonus)feature.ComponentsArray[1];
+            bonus.Attribute = attribute;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG." + displayName + ".Name", displayName),
+                LocalizationService.Create("KMG." + displayName + ".Description",
+                    "At the start of each day, your grit equals your Charisma modifier (minimum 1)."), null);
+            return feature;
+        }
+
+        internal static BlueprintAbilityResource CreateAttributeResource(string name,
+            Kingmaker.EntitySystem.Stats.StatType attribute)
+        {
+            var resource = ScriptableObject.CreateInstance<BlueprintAbilityResource>();
+            resource.name = "KMG_" + name.Replace(" ", "_").Replace("'", "") + "_Resource";
+            resource.LocalizedName = LocalizationService.Create("KMG." + name + ".Resource.Name", name);
+            resource.LocalizedDescription = LocalizationService.Create("KMG." + name + ".Resource.Description", name + " uses remaining today.");
+            ConfigureBaseAmount(resource, 0);
+            return resource;
+        }
+
         private static BlueprintAbilityResource CreateResource()
         {
             var resource = ScriptableObject.CreateInstance<BlueprintAbilityResource>();

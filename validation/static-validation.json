@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.68-supply-item-icons",
-  "version": "0.0.68",
+  "milestone": "0.0.69-mysterious-stranger",
+  "version": "0.0.69",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 871,
+    "testCount": 876,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,
