@@ -22,45 +22,60 @@ def reject(path: Path, *tokens: str) -> None:
 def validate(root: Path) -> None:
     validate_playtest66.VERSION = VERSION
     validate_playtest66.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    validate_playtest66.validate(root, 872)
+    validate_playtest66.validate(root, 871)
 
     program = (root / "tests/KingmakerGunslinger.DomainTests/Program.cs")
     declared_tests = len(re.findall(
         r'Case\("[^"]+",\s*[A-Za-z0-9_]+\)',
         program.read_text(encoding="utf-8")))
-    if declared_tests != 872:
+    if declared_tests != 871:
         raise AssertionError(
-            f"Expected 872 declared source tests; observed {declared_tests}.")
+            f"Expected 871 declared source tests; observed {declared_tests}.")
 
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs",
         "ReloadAbilityCommandTypePatch", "ref UnitCommand.CommandType __0",
         "ReloadAbilityPresentation.Command(action)")
 
+    dodge_blueprints = root / (
+        "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs")
     validate_playtest66.require(
-        root / "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs",
+        dodge_blueprints,
         "CastAnimationStyle.Immediate", "HasFastAnimation = true",
-        "GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff)",
-        "GunslingerDodgeArmorClassBonus", "ability.ComponentsArray.Length != 3")
+        "AbilityCasterHasNoFacts", "AbilityEffectRunAction",
+        "ContextActionApplyBuff", "DurationRate.Rounds",
+        "DiceType.Zero", "DiceCountValue = 0", "BonusValue = 1",
+        "applyBuff.ToCaster = true", "applyBuff.Permanent = false",
+        "applyBuff.IsNotDispelable = true", "applyBuff.AsChild = false",
+        "result.IsClassFeature = false",
+        "ability.ComponentsArray.Length != 4",
+        "GunslingerDodgeArmorClassBonus")
     reject(
-        root / "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs",
-        "AbilityEffectRunAction")
+        dodge_blueprints,
+        "GunslingerDodgeProneAbilityLogic.Create(marker, armorClassBuff)",
+        "delivery.Duration != TimeSpan.FromSeconds(6d)")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "caster.AddBuff", "new TimeSpan?(OneRoundDuration)",
-        "TimeSpan.FromSeconds(6d)", "new MechanicsContext",
-        "RecordDeliveryEntered",
-        "RecordDeliveryApplied", "RecordDeliveryFault",
-        "new AbilityDeliveryTarget(new TargetWrapper(context.Caster))")
-    reject(
-        root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs",
-        "ContextActionApplyBuff", "m_ApplyBuffActions.Run",
-        "caster.Buffs.AddBuff", "buff.EndTime = scheduledEnd",
-        "caster.Buffs.UpdateNextEvent()")
+        "class DodgeGritCostCalculator", "IAbilityResourceCostCalculator",
+        "TrueGritDeed.GunslingersDodge")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs",
         "Owner.Stats.AC.AddModifier", "ModifierDescriptor.Dodge",
         "internal const int Bonus = 2", "Owner.Stats.AC.RemoveModifier")
+    validate_playtest66.require(
+        root / "src/KingmakerGunslinger/Deeds/GunslingerDodgeExpirationPatch.cs",
+        'HarmonyPatch(typeof(BuffCollection), "Tick")',
+        "using KingmakerGunslinger.Blueprints;",
+        "__instance.GetBuff(dodge.ArmorClassBuff)",
+        "expiredByTimeLeft", "expiredByEndTime",
+        "__instance.RemoveFact(buff)",
+        "expiration.guard.removed")
+    validate_playtest66.require(
+        root / "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+        'Compile Include="Deeds\\GunslingerDodgeExpirationPatch.cs"')
+    validate_playtest66.require(
+        root / "src/KingmakerGunslinger/Development/DevelopmentUi.cs",
+        "DODGE-EXPIRATION-R3", "Dodge expiration guard:")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
         'gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge")')

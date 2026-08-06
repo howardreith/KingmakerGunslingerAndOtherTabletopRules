@@ -3903,18 +3903,17 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
   all unrelated qualified systems remain unchanged. Expiration and exact AC
   restoration remain human-gated.
 
-# Dodge native round self-removal candidate (2026-08-05)
+# Dodge expiration R3 accepted (2026-08-05)
 
-- Accepted human evidence proves the existing duration-aware Dodge delivery,
-  one-Grit spend, visible countdown, and exact +2 Dodge AC application work,
-  while native EndTime expiration leaves the Buff attached. No further forensic
-  collection is requested or required for this repair.
-- The existing Dodge Buff now also owns one native `NewRoundTrigger` with one
-  `ContextActionRemoveSelf`. Exact installed metadata identifies the trigger as
-  `IUnitNewCombatRoundHandler` (the separate installed `ITickEachRound` contract
-  exposes `OnNewRound()`); its action resolves the executing Buff context and
-  calls `Buff.Remove()`. This is the shared native combat-round event used by
-  real-time and turn-based play and has no activation-time callback.
-- The registration-static metric is now 872. Expiration, AC restoration, pause
-  behavior, and next-turn behavior remain human acceptance gates; structural
-  tests do not claim runtime expiration acceptance or Sprint 30 entry.
+- The human playtester reported that the installed
+  `KingmakerGunslinger-0.0.67-complete-maintenance-loop-smoke-test.zip` R3 build
+  finally worked. This accepts the narrowly scoped `BuffCollection.Tick`
+  expiration guard as the successful replacement for the unsuccessful native
+  round self-removal candidate.
+- The accepted installed package SHA-256 is
+  `7674219b862ca2f8848e13a2d4366610f5f63f37cf2b3e08057185f1601ac951`; the
+  installed `KingmakerGunslinger.dll` SHA-256 is
+  `0692d7c99f8e473fc10824aad193fc2049289185c3da3b95b690f98cdaac2cad`.
+- The report is human runtime acceptance. Individual UMM counter values and a
+  machine-readable scenario transcript were not supplied in the chat and are
+  therefore not reconstructed or claimed here.

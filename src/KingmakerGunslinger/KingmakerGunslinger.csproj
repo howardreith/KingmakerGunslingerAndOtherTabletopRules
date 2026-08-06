@@ -167,9 +167,7 @@
     <Compile Include="Deeds\GunslingerDodgeService.cs" />
     <Compile Include="Deeds\GunslingerDodgeStatus.cs" />
     <Compile Include="Deeds\GunslingerDodgeArmorClassBonus.cs" />
-    <Compile Include="Diagnostics\DodgeBuffLifecycleForensics.cs" />
-    <Compile Include="Diagnostics\DodgeBuffLifecycleForensicsPatches.cs" />
-    <Compile Include="Diagnostics\DodgeBuffLifecycleForensicsSampler.cs" />
+    <Compile Include="Deeds\GunslingerDodgeExpirationPatch.cs" />
     <Compile Include="Deeds\GunslingerDodgeProneAbilityLogic.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntime.cs" />
     <Compile Include="Deeds\GunslingerDodgeRuntimeDiagnostics.cs" />

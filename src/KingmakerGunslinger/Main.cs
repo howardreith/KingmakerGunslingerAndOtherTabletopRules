@@ -69,7 +69,6 @@ namespace KingmakerGunslinger
                 // UI attachment, or runtime-request parsing.
                 RuntimeTestRunner.RecordEarlyIdentity(context);
                 context.InstallPatches();
-                Diagnostics.DodgeBuffLifecycleForensics.Initialize(context);
 
                 // A LoadDictionary call observed during PatchAll is retained and processed
                 // only after the context reports that patch installation completed.

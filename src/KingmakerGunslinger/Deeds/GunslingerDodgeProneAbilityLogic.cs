@@ -15,7 +15,6 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
-using KingmakerGunslinger.Diagnostics;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Deeds
@@ -68,9 +67,6 @@ namespace KingmakerGunslinger.Deeds
                 throw new InvalidOperationException("Dodge delivery lacks its caster or marker.");
 
             UnitDescriptor caster = context.Caster.Descriptor;
-            DodgeBuffLifecycleForensics.Record("dodge-delivery-entry", null,
-                caster.Buffs, OneRoundDuration, null,
-                new System.Diagnostics.StackTrace(true).ToString());
             int acBefore = caster.Stats == null ? 0 : caster.Stats.AC.ModifiedValue;
             GunslingerDodgeRuntimeDiagnostics.RecordDeliveryEntered(acBefore);
 
