@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{FE3990F8-0E72-455D-9A01-6839F856F218}" SchemaVersion="75">
+	<GameParameters>
+		<WorkUnit Name="Default Work Unit" ID="{FE3990F8-0E72-455D-9A01-6839F856F218}" PersistMode="Standalone">
+			<ChildrenList>
+				<GameParameter Name="AMBIENCELEVEL" ID="{1FE357E1-08AD-473E-BBA8-2EB305657835}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="AUDIBILITY" ID="{538B2D8E-8F9F-46E8-9940-6214147D4490}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="1"/>
+						<Property Name="Max" Type="Real64" Value="1"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="AUDIOLEVEL" ID="{B7CA6D4F-80B0-428D-8BC3-1BFAD9914F2E}"/>
+				<GameParameter Name="CAMERAZOOM" ID="{9E0FD41A-E318-464C-B18E-536BBD9AC2FE}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="CHANTSLEVEL" ID="{7EE484E7-682F-437A-9797-E6BCCA3D1950}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="COMBATSPEED" ID="{A9CED119-394A-45AA-97F8-2765B85BFD7D}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="1"/>
+						<Property Name="Max" Type="Real64" Value="1"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="DISTANCE" ID="{E479F252-A4D4-4C89-B4FE-B3CB5F1B8E6A}">
+					<PropertyList>
+						<Property Name="BindToBuiltInParam" Type="int16" Value="1"/>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="IMPORTANCE" ID="{B8F9FBA7-8B49-4698-94F5-B9073DD7FA06}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="1"/>
+						<Property Name="Max" Type="Real64" Value="1"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="MUSICLEVEL" ID="{63E9EB5D-09D3-4CBE-9F51-71151B96B3DF}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_RPM" ID="{26934927-37B2-4133-88CC-1CFE8746A82E}"/>
+				<GameParameter Name="SS_AIR_FURY" ID="{0A7ABA25-64B2-4632-B669-765379D9AEEF}"/>
+				<GameParameter Name="VOICELEVEL" ID="{4C1E37F5-5DFD-44CA-91EC-ADFA057C45A9}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_FEAR" ID="{475E2CD0-BECF-4035-AD68-90395C0C5836}"/>
+				<GameParameter Name="RAININTENSITY" ID="{331F7315-9D49-47E5-B328-A1B9CF6EB783}">
+					<PropertyList>
+						<Property Name="FilterTimeUp" Type="Real64" Value="1"/>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+						<Property Name="RTPCRamping" Type="int16" Value="2"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SNOWINTENSITY" ID="{75A0FD79-D8E5-4BDD-8C4A-A5B7AC50155E}">
+					<PropertyList>
+						<Property Name="FilterTimeUp" Type="Real64" Value="1"/>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+						<Property Name="RTPCRamping" Type="int16" Value="2"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SPELLPITCH" ID="{4AFB154D-C1AD-4E2A-AB62-6036656368BD}"/>
+				<GameParameter Name="SOUNDLAYERDELAY" ID="{64704C7E-AA95-41C8-AB84-E098A3175C4F}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="PARTYBANTERPOSITIONING" ID="{8C2E8FE9-B14D-4692-8CDF-FA00C6074A6E}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_MONTH" ID="{FBCC2621-5D60-4B50-A0CB-D50F219B5DBE}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="6"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="STEALTH" ID="{89552866-DF20-4E32-AAC7-59D53AA87EFA}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SPELLGAIN" ID="{C111FDF6-A07D-47AD-9EBE-CC3C4621F230}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_FREEFALL" ID="{C262EBBA-260C-489B-8ACA-DC95B0483EB9}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="75"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SPELLCASTTIME" ID="{3517C962-919E-4391-A298-578B2DDDBAAB}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="0"/>
+						<Property Name="RTPCRamping" Type="int16" Value="1"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_SIZE" ID="{416E04C4-33AA-4B2D-A31E-73C205EDC034}"/>
+				<GameParameter Name="SS_AIR_TIMEOFDAY" ID="{0F22B4F4-4A72-49C1-8164-4236D27A751B}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="6"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="PETSVOLUME" ID="{65F610BC-8CB0-4818-9DA2-30E736F24CFE}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_STORM" ID="{7E0EC138-22D9-467B-BAA3-36320172849D}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="75"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_PRESENCE" ID="{EF715616-CDB1-43F8-A3EA-676022172175}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="75"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SS_AIR_TURBULENCE" ID="{F3B97166-A135-4C7F-B234-71C6020EEB20}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="6"/>
+					</PropertyList>
+				</GameParameter>
+			</ChildrenList>
+		</WorkUnit>
+	</GameParameters>
+</WwiseDocument>

@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{F315925E-BB52-43FD-901E-D4C23D70B4DC}" SchemaVersion="75">
+	<Queries>
+		<WorkUnit Name="Factory Queries" ID="{F315925E-BB52-43FD-901E-D4C23D70B4DC}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="Audio Source" ID="{1646E37E-3D95-4467-9606-AD4FA1036BA4}">
+					<ChildrenList>
+						<Query Name="Audio Source - Original Channels = Stereo" ID="{C590815D-9E49-4271-ACCE-E7D649E3724C}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels" ID="{0AF3D41F-128B-4099-A653-1430B4EB5974}" SearchOperationID="{6522CA94-EC49-40B0-9ED6-7233FB492492}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="0"/>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="2"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="2"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Original Channels = Mono" ID="{5FE3971B-69E5-4A11-8935-FEB1B44D4B9E}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels" ID="{EE6C756D-96DB-4CDA-8860-73D307946AE8}" SearchOperationID="{6522CA94-EC49-40B0-9ED6-7233FB492492}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="0"/>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="1"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="2"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Format = Vorbis" ID="{5DD94923-F1CE-4048-B72D-13D9BB3006C6}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceAudio Format" ID="{3D71A181-0FE1-4BE2-A98A-C918A10A56C8}" SearchOperationID="{CC205606-CDB4-44CF-8986-7BAA6AE7DBA5}">
+									<PropertyList>
+										<Property Name="SourceAudioFormat" Type="string" Value="Vorbis"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Original Channels = More than Stereo" ID="{E97539DC-CFF4-44D4-97A2-4AE563E0DC61}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels" ID="{EC011011-2F00-4282-8B0E-4B0CF91ECB5C}" SearchOperationID="{6522CA94-EC49-40B0-9ED6-7233FB492492}">
+									<PropertyList>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="2"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="4"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Original has LFE" ID="{07963B97-BDED-4069-B092-2D4828C27CCF}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels" ID="{2A562CB1-88E3-4440-AF45-FE073427D086}" SearchOperationID="{6522CA94-EC49-40B0-9ED6-7233FB492492}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="1"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Format = PCM" ID="{C2AA972A-B4ED-4E98-8777-F73B51A46531}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="300"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SourceAudio Format" ID="{C5709064-A659-4D7A-9588-44E3FB3BE3F1}" SearchOperationID="{CC205606-CDB4-44CF-8986-7BAA6AE7DBA5}">
+									<PropertyList>
+										<Property Name="SourceAudioFormat" Type="string" Value="PCM"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted Channels = Mono" ID="{2A619DE5-1D82-4FF8-A708-FF2466B19315}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels (Converted)" ID="{F8DCA1C2-989B-4020-BD53-3CE1B6BE3939}" SearchOperationID="{13604DB5-D248-40E7-A232-A353DDA9FE57}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="0"/>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="1"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="2"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted Channels = More than Stereo" ID="{041E1AD4-5F5D-4CC2-BF7D-C9BD671B8B6F}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels (Converted)" ID="{2C02122C-6872-4849-9FB8-F7D9C03657A3}" SearchOperationID="{13604DB5-D248-40E7-A232-A353DDA9FE57}">
+									<PropertyList>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="2"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="4"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted Channels = Stereo" ID="{0156AEB8-B57C-48A2-90C3-1B9E9D4344C0}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels (Converted)" ID="{771D4D9B-6A05-4AB9-82A4-25A842C094CA}" SearchOperationID="{13604DB5-D248-40E7-A232-A353DDA9FE57}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="0"/>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="2"/>
+										<Property Name="SourceChannelsOthersOption" Type="int32" Value="2"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted has LFE" ID="{BBED6680-9098-46EF-8898-73827CDA0140}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceChannels (Converted)" ID="{0A220163-80A7-4A15-8B2C-355A338693F8}" SearchOperationID="{13604DB5-D248-40E7-A232-A353DDA9FE57}">
+									<PropertyList>
+										<Property Name="SourceChannelsLFEOption" Type="int32" Value="1"/>
+										<Property Name="SourceChannelsOthersCount" Type="int32" Value="1"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Original Sample Rate = 48000" ID="{BFF6AFDE-9100-49C5-A866-6A0A2F1BAC8D}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceSample Rate (Original)" ID="{6D3B197F-3554-463D-A143-8CF37D1E25AA}" SearchOperationID="{A7829943-8CE2-4BA1-86D3-1546D5717043}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="48000"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Original Sample Rate Less than 48000" ID="{556E743F-317D-4056-B894-D8592DF3A73C}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceSample Rate (Original)" ID="{6536C045-5897-415E-A61E-C5C3B13007F1}" SearchOperationID="{A7829943-8CE2-4BA1-86D3-1546D5717043}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="48000"/>
+										<Property Name="NumericOperator" Type="int16" Value="1"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted Sample Rate = 48000" ID="{FD049DDF-3119-461D-BCAC-F3D203CDFF20}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceSample Rate (Converted)" ID="{2A5DA635-25D4-4445-BF48-26397E09470D}" SearchOperationID="{9E28EAAB-474F-4A7F-A302-C39916B208AA}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="48000"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Audio Source - Converted Sample Rate Less than 48000" ID="{26DBFB04-1D05-4CB4-84F6-EC7C26B32F2E}">
+							<ChildrenList>
+								<SearchCriteria Name="SourceSample Rate (Converted)" ID="{4D5207E9-4AEC-4F27-A981-DAB0DA6EC035}" SearchOperationID="{9E28EAAB-474F-4A7F-A302-C39916B208AA}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="48000"/>
+										<Property Name="NumericOperator" Type="int16" Value="1"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Sound" ID="{4A2A0A53-5AAD-4749-B7E3-97139751B124}">
+					<ChildrenList>
+						<Query Name="Sound = Voice" ID="{48AA5555-48C2-4FAB-BD23-283A690B01FF}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="GeneralSound Type" ID="{52E80DAC-FE9C-4605-BEAA-0B1C78B3B68A}" SearchOperationID="{A28F61AD-1705-4E72-9B2F-9941911ABD29}">
+									<PropertyList>
+										<Property Name="SoundType" Type="int16" Value="1"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Sound = SFX" ID="{9F1D8911-77CD-4AAC-8064-F928EDFE8492}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="GeneralSound Type" ID="{90A765A5-69AF-4CA6-84D4-05958362B060}" SearchOperationID="{A28F61AD-1705-4E72-9B2F-9941911ABD29}"/>
+							</ChildrenList>
+						</Query>
+						<Query Name="Looping Sound" ID="{F633D791-92F5-41BA-8114-2F0DF5022026}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{335A6812-F0ED-4CD3-A789-CE5794041F56}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="IsLoopingEnabled"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Streaming Sound" ID="{B35898B9-E67F-4F8B-B79B-71E0669A8950}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{B4DC603F-E2EF-4A0B-8ACF-F32AA0CD21B7}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="IsStreamingEnabled"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Sound - LFE higher than -96,3 dB" ID="{8EF24BA0-C5EE-450E-A866-40CFC3A20DB9}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{B06C7CC3-CA67-4893-8A93-EEA3D7AAB06E}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="-96.3"/>
+										<Property Name="NumericOperator" Type="int16" Value="2"/>
+										<Property Name="PropertyName" Type="string" Value="LFEVolume"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Zero Latency" ID="{6C44B61B-756C-471E-BE91-408B82132C6E}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="800"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{6C610E75-9C00-46E1-933D-E3DF11AF68B8}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="IsZeroLantency"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Interactive Music" ID="{D19624EF-6B1C-47DB-8D6C-429D646E607C}">
+					<ChildrenList>
+						<Query Name="Streaming Tracks" ID="{5FAF329F-40F6-46A4-A685-A94BA4A03821}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="665"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{26548634-5232-4AA9-81D9-58EE4CF7E208}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="IsStreamingEnabled"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="2D Positioning" ID="{C8BA772D-B1DD-4B60-BD20-387F491DE7F2}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="620"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{27CA80C9-42DC-4427-9FF5-2627B7EC903F}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="2D Positioning + Panner" ID="{6DF1E3AE-CBD2-468C-839B-2B589AEFAB5D}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="620"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{17F2A2ED-3543-4AF4-9406-AD1AAF61938C}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{550ADBE8-AA9E-47D0-8A30-43743EE5346F}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="EnablePanner"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Time Signature - Switch = 4-4" ID="{CEB2B4B2-E313-4A01-B5CC-B4243CF614E6}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="660"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{E6652D1F-FFF6-4077-A733-B57BC78E0E71}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureUpper"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{65C032E9-D3ED-4AE2-B1DB-ED9F6F281C4B}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureLower"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Time Signature - Segment = 4-4" ID="{396512BC-39A2-42C1-812A-B26E81787936}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="650"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{B3534445-621A-4B16-96E9-752D18A6FC38}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureUpper"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{2C9ACDF9-BB98-4E46-B9F9-2DB70FAC4A29}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureLower"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Tempo - Switch = 120 BPM" ID="{D6F58D77-2914-4F35-9A9C-43F4F13B09EC}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="660"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{456CFAC9-C0C2-42F2-8E78-B62867640386}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="120"/>
+										<Property Name="PropertyName" Type="string" Value="Tempo"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Tempo - Playlist = 120 BPM" ID="{71489F04-B4FB-4A6B-919F-7ABF0B3C2DE5}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="645"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{A7EAA3BD-5447-40B4-95D9-295F1693B25D}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="120"/>
+										<Property Name="PropertyName" Type="string" Value="Tempo"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Tempo - Segment = 120 BPM" ID="{0DB195C9-D068-4A74-A4D2-786E90019536}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="650"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{403B37A3-35E8-4ADA-BA98-8D11FB1A0982}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="120"/>
+										<Property Name="PropertyName" Type="string" Value="Tempo"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Time Signature - Playlist = 4-4" ID="{7DDF7E62-53B0-42CE-829F-1744C985BD2F}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="645"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{0FD06DAB-AFD0-4250-9E69-02373C320E9D}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureUpper"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{FB620B71-46A4-445B-9AD7-4AAA15B8E2AB}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="4"/>
+										<Property Name="PropertyName" Type="string" Value="TimeSignatureLower"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Look-ahead time - Higher than 100 ms" ID="{55A38DCE-DEBF-4695-B88B-126E75F9A693}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="665"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{AF85A93E-E634-4AC1-8576-CF2A486F7CFF}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="100"/>
+										<Property Name="NumericOperator" Type="int16" Value="2"/>
+										<Property Name="PropertyName" Type="string" Value="LookAheadTime"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Empty Switch Assignation" ID="{98448EF1-A28D-41C3-9F96-A5B366F19AE8}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="660"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SwitchAssignation" ID="{B0FE1A1E-2EA2-42D1-A118-1B1BC2723FF5}" SearchOperationID="{B474E408-1895-4AED-A4BF-E37237CF20E2}"/>
+							</ChildrenList>
+						</Query>
+						<Query Name="Objects with Unlinked Properties" ID="{199FE388-887D-43BE-AAB4-62C513AA91A6}">
+							<PropertyList>
+								<Property Name="LogicalOperator" Type="int16" Value="1"/>
+								<Property Name="ObjectType" Type="int32" Value="620"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{6F00E255-3FEC-40A4-94AD-5B81A6BABB9F}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="Volume"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{B45480C8-B0D8-4253-9A5D-857BD5047FE6}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="LFEVolume"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{2583A7AE-B105-4D3C-836F-6F36A4D8A5C4}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="Lowpass"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Actor-Mixer Hierarchy" ID="{6BA6AA5C-58A6-43B4-B815-DE182873C956}">
+					<ChildrenList>
+						<Query Name="2D Positioning" ID="{07E6A4AE-8835-4224-A219-055A01BBFC83}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{5AC5B304-137D-4018-B109-1947A9A160FC}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="2D Positioning + Panner" ID="{A4DE6B6C-2608-464B-99B1-A8801FD896E7}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{884E4E9F-8FDA-40EC-8703-CBFFF5553A43}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{5C814710-DACF-435B-ADB6-A920355835C5}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="EnablePanner"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="3D Positioning - User-defined" ID="{2693A3D4-F947-482D-BC5D-80590ACB5289}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{A3057721-2790-41D8-9138-7C1EFFBE1B20}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="1"/>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{29C18C01-4A41-45C1-9447-C17FD966CDA6}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="PropertyName" Type="string" Value="3DPositionSource"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="3D Positioning - Game-defined" ID="{ED8F2305-9037-47DE-A50A-B54A375BD546}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{47F66BAB-335D-455E-8D92-82EF88F663AA}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="1"/>
+										<Property Name="PropertyName" Type="string" Value="PositioningType"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyValue" ID="{BBFE014F-8F32-4516-B973-AF56DC08D6B6}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="LeftValue" Type="Real64" Value="1"/>
+										<Property Name="PropertyName" Type="string" Value="3DPositionSource"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Objects using Effect" ID="{AE3E65D2-96E0-4DA9-8F0F-33289DED7D20}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="EffectGeneral Usage" ID="{978AC1A0-35E1-4342-B740-D6BF7EBAF22A}" SearchOperationID="{A57045CD-9270-4D9A-9654-230C565C9CAA}">
+									<PropertyList>
+										<Property Name="IsUsed" Type="bool" Value="True"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Objects with Unlinked Properties" ID="{ADD62EC6-AABF-4046-A411-016B520C7C86}">
+							<PropertyList>
+								<Property Name="LogicalOperator" Type="int16" Value="1"/>
+								<Property Name="ObjectType" Type="int32" Value="200"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{4081ED19-F773-464B-B538-DC7D5F1C486B}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="Volume"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{DFF940E7-39B9-42F5-BFF0-F4DA0EDA0BAB}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="LFEVolume"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{B08C9632-A0C6-445C-B381-7242B7152EFF}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="Pitch"/>
+									</PropertyList>
+								</SearchCriteria>
+								<SearchCriteria Name="PropertyLinkUnlink" ID="{9A51AED9-F4F2-4F05-836E-D76FA37DFC9A}" SearchOperationID="{B0FFF01D-1411-47EC-98A6-5E5936478618}">
+									<PropertyList>
+										<Property Name="IsLinked" Type="bool" Value="False"/>
+										<Property Name="PropertyName" Type="string" Value="Lowpass"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Empty Switch Assignation" ID="{D21D0479-C9CA-420F-8672-8C7D9D77DD31}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="1000"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="SwitchAssignation" ID="{012B66B9-5BA8-4668-B37C-18630A2094F6}" SearchOperationID="{B474E408-1895-4AED-A4BF-E37237CF20E2}"/>
+							</ChildrenList>
+						</Query>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Master-Mixer Hierarchy" ID="{2DCC7144-316F-4DD9-8D23-3AC1F7770CFE}">
+					<ChildrenList>
+						<Query Name="Busses using Effect" ID="{8B169607-8A4F-4F0E-84BE-378430913601}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="500"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="EffectGeneral Usage" ID="{B5DE2C11-897F-490E-A07A-81E800A5724E}" SearchOperationID="{A57045CD-9270-4D9A-9654-230C565C9CAA}">
+									<PropertyList>
+										<Property Name="IsUsed" Type="bool" Value="True"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Environmental bus" ID="{B3DC9A97-0426-453D-9128-E7B14C4E1AC8}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="500"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{869E5180-3863-4FAE-8D7C-5CDE58C52475}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="IsEnvironmental"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+						<Query Name="Background Music bus" ID="{D78D1377-0C43-4BBB-A361-54F52EBFF423}">
+							<PropertyList>
+								<Property Name="ObjectType" Type="int32" Value="500"/>
+							</PropertyList>
+							<ChildrenList>
+								<SearchCriteria Name="PropertyValue" ID="{A46ACFB1-769E-4FB2-B43C-712A1A76BA37}" SearchOperationID="{1EAD0EBD-95E4-4CE1-B141-B9EB76EA17E4}">
+									<PropertyList>
+										<Property Name="IsChecked" Type="bool" Value="True"/>
+										<Property Name="PropertyName" Type="string" Value="UsedForBackgroundMusic"/>
+									</PropertyList>
+								</SearchCriteria>
+							</ChildrenList>
+						</Query>
+					</ChildrenList>
+				</Folder>
+				<Query Name="Notes - Contains" ID="{4E42FC08-CA73-4E94-B8D4-3DAC0951BB8C}">
+					<ChildrenList>
+						<SearchCriteria Name="GeneralNote" ID="{208378F5-BF5B-435D-B780-2390225C201D}" SearchOperationID="{8D4910BE-3C64-4E72-84D3-00E37AE18698}">
+							<PropertyList>
+								<Property Name="UserString" Type="string" Value="*Note text here*"/>
+							</PropertyList>
+						</SearchCriteria>
+					</ChildrenList>
+				</Query>
+				<Query Name="Notes - Exact name" ID="{1529CAC5-F872-474E-A58C-9B6FB116D6CA}">
+					<ChildrenList>
+						<SearchCriteria Name="GeneralNote" ID="{8878740D-9FD0-43FC-B87B-AEC80034F720}" SearchOperationID="{8D4910BE-3C64-4E72-84D3-00E37AE18698}">
+							<PropertyList>
+								<Property Name="UserString" Type="string" Value="Note text here"/>
+							</PropertyList>
+						</SearchCriteria>
+					</ChildrenList>
+				</Query>
+				<Query Name="Name - Contains" ID="{A329ACD9-4437-4841-B4AF-1AE0C371788F}">
+					<ChildrenList>
+						<SearchCriteria Name="GeneralName" ID="{FE6EDB81-B75D-45B6-832B-9428AF76BEDC}" SearchOperationID="{D74A5F27-E5AF-4F53-BEF7-1D300BA187CC}">
+							<PropertyList>
+								<Property Name="UserString" Type="string" Value="*Object name here*"/>
+							</PropertyList>
+						</SearchCriteria>
+					</ChildrenList>
+				</Query>
+				<Query Name="Name - Exact name" ID="{C1B9B72F-D262-4599-9A2D-48D23F532F56}">
+					<ChildrenList>
+						<SearchCriteria Name="GeneralName" ID="{91BE0BAD-643E-4862-A56A-14A50AA8C89A}" SearchOperationID="{D74A5F27-E5AF-4F53-BEF7-1D300BA187CC}">
+							<PropertyList>
+								<Property Name="UserString" Type="string" Value="Object name here"/>
+							</PropertyList>
+						</SearchCriteria>
+					</ChildrenList>
+				</Query>
+				<Query Name="Platform Excluded Objects" ID="{1A8B0F18-4FFF-4B0A-A5D6-033EF751829D}">
+					<ChildrenList>
+						<SearchCriteria Name="GeneralPlatform Inclusion" ID="{2568D505-DF06-40FE-B6DB-BE0BD16F7CAC}" SearchOperationID="{F3358DBE-C871-40A4-B05E-0C93181FCB8C}"/>
+					</ChildrenList>
+				</Query>
+			</ChildrenList>
+		</WorkUnit>
+	</Queries>
+</WwiseDocument>

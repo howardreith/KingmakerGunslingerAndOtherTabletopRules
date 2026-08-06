@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" SchemaVersion="75">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{5CCB1FD0-A2CA-4BA7-92DE-D466723B2BC0}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="Voices" ID="{DFBE44F3-E9F7-4FF5-B10F-7F5525E51D70}">
+					<ChildrenList>
+						<Folder Name="IngameVoices_ENG" ID="{435D42B8-AF4C-4F52-A4F1-15FDAB9A5A9C}">
+							<ChildrenList>
+								<Folder Name="PlayableCharacters" ID="{C2428184-BBF4-48F1-81F3-FC303A3EFB01}">
+									<ChildrenList>
+										<Folder Name="KMGWwiseSeed" ID="{9EA12EB8-0A7F-4610-99D2-954D32B08A80}">
+											<ChildrenList>
+												<Folder Name="Asks" ID="{1A4A0A29-7313-4931-BC7D-769A8C22B814}">
+													<ChildrenList>
+														<Event Name="KMGWwiseSeed_AttackOrder_01" ID="{45B928F0-8389-4ECA-A5E1-585041B7C38C}">
+															<ChildrenList>
+																<Action Name="Play" ID="{3112FFC7-27F1-4D9F-9484-49E0F1AF7648}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{3117AF77-D3A3-4214-860A-46A2D9405F2C}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_AttackOrder_01" ID="{0EA99792-8EDD-4649-952A-AD703A1D012E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_AttackOrder_02" ID="{9D2E5CAB-8969-4634-A5CA-23147A35483D}">
+															<ChildrenList>
+																<Action Name="Play" ID="{C0789C2E-7A3B-4E8F-B6DC-21139A1084D8}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{C9464B7F-0F19-4597-9394-485806ECF939}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_AttackOrder_02" ID="{F96FF062-3583-4B7A-9168-BE0AE685DDED}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_AttackOrder_03" ID="{D2A4DC5C-7B0F-4E8E-B803-6AD642254E78}">
+															<ChildrenList>
+																<Action Name="Play" ID="{4072D1D4-BB32-44DE-8DB9-53C6DD1683B2}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{A7B02FE0-FAD4-4D04-AF44-EC0B9D186E9D}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_AttackOrder_03" ID="{085A7038-13B2-44CB-86A1-8DF93C283FD2}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_AttackOrder_04" ID="{56584931-E365-4560-8B03-9BEA655F9594}">
+															<ChildrenList>
+																<Action Name="Play" ID="{6CF16D23-320E-4034-8C8E-CEE4C1A27E12}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{A19C72E1-3833-4E2B-9C55-454372D46378}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_AttackOrder_04" ID="{2047424D-39A6-40EE-951A-CEB874D4DA4E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CantCast" ID="{0E75BE93-C2B0-4215-BFB6-3644374AEF35}">
+															<ChildrenList>
+																<Action Name="Play" ID="{F4F23E4E-F684-49E0-B9B9-B8AB6B281949}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{CEDB9AE6-ADE2-48FF-BDC5-B28B1E4FECDF}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CantCast" ID="{DB8ED668-0925-44B6-9800-93DC8B3C034C}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CantEquip_01" ID="{5AA95B59-22D4-4999-9D32-5D2BEE672686}">
+															<ChildrenList>
+																<Action Name="Play" ID="{304AE390-EB0F-4422-A9CB-DF6EC83D60C0}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{38F5F17B-B65A-4801-BEA1-A4B5E64DDD5F}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CantEquip_01" ID="{391D3150-4D50-40C0-BED9-DF04E1A2AED5}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CantEquip_02" ID="{F73341CB-1369-4D56-8748-B7DD71F44683}">
+															<ChildrenList>
+																<Action Name="Play" ID="{E0CCC984-A345-4229-8B59-28270F7F774C}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{9A245A3C-1905-49B2-971A-2682756B6464}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CantEquip_02" ID="{2CDD6E0E-1FC0-4AE7-898A-E39D57477282}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CharCrit_01" ID="{79F461BD-1A51-4E10-9619-A006623D3050}">
+															<ChildrenList>
+																<Action Name="Play" ID="{61108812-6579-4B01-A830-23CE158BD59A}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{F71F7747-E593-4B28-B01B-59975EE796F1}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CharCrit_01" ID="{7EB83337-B8FA-44D1-9D7A-583E79B9F5F4}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CharCrit_02" ID="{FF4455F1-6385-46BD-A5FF-963D42BF4F43}">
+															<ChildrenList>
+																<Action Name="Play" ID="{9462866B-F8A5-46A5-802B-F312F773D561}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{0AF15609-D942-483B-BB4D-5B1383BD4ED9}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CharCrit_02" ID="{02070C81-385F-401C-8A51-0C3A04B6AF05}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CharCrit_03" ID="{12844385-AB79-4FF4-AA50-C1307BF5A6C4}">
+															<ChildrenList>
+																<Action Name="Play" ID="{EADBE95B-8CB3-444F-8301-D2A861D2566E}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{C911A92B-5619-4996-A5D1-E0C11B4C9907}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CharCrit_03" ID="{917CDC16-DA48-4640-8300-0A8777F1478D}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CheckFail_01" ID="{812B67DA-E70C-4525-A447-1E364FC22229}">
+															<ChildrenList>
+																<Action Name="Play" ID="{3C3BDCF7-9526-47C1-BA4D-259E9AFB6F1B}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{7EBEEF35-0AE5-4443-B855-5A513AC71EB1}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CheckFail_01" ID="{85EF85B6-E125-4899-817F-24DFB3E629E6}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CheckFail_02" ID="{00D5EDBB-B0AB-424A-8C8B-3CBF6FE4EF2A}">
+															<ChildrenList>
+																<Action Name="Play" ID="{9DADA88B-7D62-4F08-842D-1211BE5D68B1}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{76F1F588-8719-4D1D-9D32-1D57E01B408F}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CheckFail_02" ID="{C699AFAD-9188-4448-A465-F6ECFF70D285}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CheckSuccess_01" ID="{06789A0B-F8F9-4366-A305-7054C1E9D15B}">
+															<ChildrenList>
+																<Action Name="Play" ID="{F4122386-E6EA-47A8-8BA3-E81E99A860F3}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{48E555EC-DB98-4BEC-AE31-FDE038A62AE2}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CheckSuccess_01" ID="{D5B2199C-16DE-4587-905A-7085B1B26F52}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CheckSuccess_02" ID="{75D00524-8F8B-4DFE-9956-A53C2EF4865E}">
+															<ChildrenList>
+																<Action Name="Play" ID="{49FB2E06-D302-426B-821A-41ABB4A5EB5B}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{CAE32D27-939F-4F5F-BCF7-A3A2B469F908}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CheckSuccess_02" ID="{F20BE8D9-AFF3-47C6-9D4C-5CD0E8121463}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CombatStart_01" ID="{DFB95DA1-6882-425E-B4AC-496C9EF47766}">
+															<ChildrenList>
+																<Action Name="Play" ID="{B2E7C847-4C75-4032-AD84-5F8EBC46FF82}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{EB1028F3-5693-4878-A687-F30713B43AE8}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CombatStart_01" ID="{5D57773C-6920-4618-A5F4-1B8D320B969D}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CombatStart_02" ID="{4BE16511-D6C9-4A05-B5F6-CCFD7CBD7412}">
+															<ChildrenList>
+																<Action Name="Play" ID="{BA9E834C-44A1-4B61-96EA-9B787D77A6DE}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{D5902A9F-4187-4B23-993A-4B96CD4EE332}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CombatStart_02" ID="{30FB73A6-9D6E-43AE-AB08-72E6C72111E6}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CombatStart_03" ID="{C04CDF50-9EDD-4C7F-9301-544C70AB92FE}">
+															<ChildrenList>
+																<Action Name="Play" ID="{C42F8B61-9350-4D83-AC1C-1AB352AEB99E}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{0854BBA6-B421-47BB-8B30-E87D719809D1}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CombatStart_03" ID="{2FD0D950-C5E3-4F89-A1E6-89FC3E03A372}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Discovery_01" ID="{504CF3A8-634F-4561-A41E-E966D872B51E}">
+															<ChildrenList>
+																<Action Name="Play" ID="{E62FEE1E-EDAA-406C-B070-4366D7C9BA51}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{CD8C8FC6-CF1C-4BD0-9EF5-A780A0E00F5F}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Discovery_01" ID="{7B4979B1-758B-436F-9722-2DDF0FA64E47}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Discovery_02" ID="{764D6A3B-AE19-4555-BE7B-90E6DEFA7F26}">
+															<ChildrenList>
+																<Action Name="Play" ID="{553B48CC-86F9-4290-BDE6-0C6257CAB282}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{A781A648-15F9-4B4A-8966-FDB14F30F254}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Discovery_02" ID="{7292839E-B762-4BD5-8FD0-394F5471E4BD}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Fatigue" ID="{3FAED487-4FB4-45DC-A087-B818C72316B7}">
+															<ChildrenList>
+																<Action Name="Play" ID="{A8F6F06E-06C1-4AEA-94D3-6FF440A940F7}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{13147D82-A36B-4874-9DDE-2E6B2439D3B6}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Fatigue" ID="{A32876FC-69E2-43FA-8A0C-A21DB5E1D29E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_LowHealth_01" ID="{3B250037-839F-4146-9BB1-62747CFF9B32}">
+															<ChildrenList>
+																<Action Name="Play" ID="{F8BC7544-48F5-4BE5-A2B4-92BAD0EC110C}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{06C1041B-8B6B-4B19-A156-F41A111F3E86}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_LowHealth_01" ID="{C9F2B481-6DDB-4FAF-A63A-144411423D0C}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_LowHealth_02" ID="{E1CD3DD5-2A5C-4C5E-9A03-3195BC2A8452}">
+															<ChildrenList>
+																<Action Name="Play" ID="{6E7B0153-2336-4E5A-92A5-0F61D4475DA9}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{233FDE03-75D2-4A45-8B2D-CF174E76D2D9}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_LowHealth_02" ID="{45FA203E-904F-4DC2-9DF8-2856389B53F0}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_01" ID="{B026FF45-B1AA-446E-BAE6-6D0D95FB34E5}">
+															<ChildrenList>
+																<Action Name="Play" ID="{9047C216-9C73-4B52-B805-68FC17411117}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{4EA75E60-F95F-495D-834D-0A76C8975B13}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_01" ID="{D5CD0C7B-8859-42A3-9AEE-DCC0D9E0CD8E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_02" ID="{C1980565-27BE-4EE9-9372-A4D67B25A24D}">
+															<ChildrenList>
+																<Action Name="Play" ID="{B62B52C4-CE7F-4CF6-8A9A-2907E51FC73D}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{690327E4-7CDA-4A4A-BBC9-68D1732319B0}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_02" ID="{78E693BE-4175-4D20-880D-A1C200A45AFD}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_03" ID="{10D11C12-C01D-4E20-9906-EE6608E0D75E}">
+															<ChildrenList>
+																<Action Name="Play" ID="{308173CE-D518-42AF-8A05-39EB1D3C5D43}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{0D17DE57-4815-455F-8DAA-5D870A4B447F}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_03" ID="{62909638-1B02-4E8D-B375-D9DC1A81A934}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_04" ID="{86AB5CE3-78F7-441B-86F4-8224B1D33ADB}">
+															<ChildrenList>
+																<Action Name="Play" ID="{3651AD95-62D1-4172-B5E6-7FBBFC9E221F}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{5D267555-B461-475F-8EDC-F04473691D05}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_04" ID="{2F3EA96D-C522-41B4-96A5-18AB77061FF0}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_05" ID="{EE54536E-F1D1-4060-A4CE-B3A87166E1DD}">
+															<ChildrenList>
+																<Action Name="Play" ID="{9D051CC2-5E78-46E4-87AF-A52745403319}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{56652FA3-5E2D-42A8-A31A-457CB7A2A3D4}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_05" ID="{8C35FB66-CD5C-49FA-B777-8312D8CE0E6C}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_06" ID="{CDC37174-1CA6-437A-B941-93639219EC84}">
+															<ChildrenList>
+																<Action Name="Play" ID="{8D924601-138D-48B9-BE79-80E12B4C3051}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{0067FD29-88FA-45B4-86EE-36931799473E}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_06" ID="{C507EF03-263A-433B-ABAA-FD42146F65CF}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Move_07" ID="{C2853264-76A3-4B8D-AE03-E02C9C2B173F}">
+															<ChildrenList>
+																<Action Name="Play" ID="{0DA70B6A-4E9E-4699-8F1B-34DCC5073EEE}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{C2E44842-86F4-49C4-BF5E-74355998983C}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Move_07" ID="{69B84BBA-16B8-41FD-8AC9-F416A7426F3F}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_SelectJoke" ID="{2B4EFA9B-F9ED-4B1A-B7BF-F88605BDBD2F}">
+															<ChildrenList>
+																<Action Name="Play" ID="{8A36E94E-78A7-463A-BD6D-695FA458B948}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{5B34B54A-5C7E-44BC-A3F5-1D322513F0DB}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_SelectJoke" ID="{FF2D9F1E-48EF-42C6-B4A5-93CBE221B498}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_01" ID="{49A8189E-0EBD-48C6-AF1D-1B0B095A9D57}">
+															<ChildrenList>
+																<Action Name="Play" ID="{B32FB29B-303C-4AFD-B6A1-180367DD7B2A}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{9D0445B5-26DA-487F-AA86-34ADC5C6E023}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_01" ID="{33D96F3B-F645-400B-A8F2-A8519282206F}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_02" ID="{FBE6EF60-7F53-4A4C-810E-6AC080E0B086}">
+															<ChildrenList>
+																<Action Name="Play" ID="{A208782E-DD51-47E8-AAB0-0F0CB6149D59}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{72AE7DA8-A633-4EBB-A7EE-01AEF0FFE961}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_02" ID="{914C5B8F-C6F0-4D15-91E6-2E9559BB345A}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_03" ID="{F79BBE17-0DA5-448A-A34D-1453154A0209}">
+															<ChildrenList>
+																<Action Name="Play" ID="{F943CC4F-A2AF-469B-B5E5-3F470B1E77D2}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{885F2622-F481-45EA-A2FD-819D250A265C}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_03" ID="{8CB7EE18-E650-4EF3-82C0-2B15CB199A7E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_04" ID="{71FE6C1B-74A5-4DFF-A7E3-220A59F8E64C}">
+															<ChildrenList>
+																<Action Name="Play" ID="{0E11AB46-9CD1-49D1-B088-86130F6A12CA}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{1DD2A854-FEE5-406E-BADF-FBB4E5ABE670}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_04" ID="{09146CFB-A266-4C59-8A0F-706B2DDC080C}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_05" ID="{E80B7BA0-071C-42CD-BD68-8C503E93FA56}">
+															<ChildrenList>
+																<Action Name="Play" ID="{C7B30A96-8A72-43A6-91F8-2FB2FE566A42}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{B6FBE2AA-C1C4-4681-B6FF-A4975564F3C3}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_05" ID="{3408C0C0-7708-4D6F-A47A-91DBC0B52D21}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Select_06" ID="{6E7B0608-FDF1-4DF9-94BB-41EE413C082F}">
+															<ChildrenList>
+																<Action Name="Play" ID="{0C87D195-60F9-4A1D-9DB8-6766F8D37972}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{D73E47D3-0E98-4431-ACC8-26D5315F3E68}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Select_06" ID="{D5D5BA29-6D08-4B9C-939B-9B0167CABF0E}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_StealthMode" ID="{24942DEB-BB76-4DBD-BD3D-32D5DEF7F6CD}">
+															<ChildrenList>
+																<Action Name="Play" ID="{8A58A4A3-BD62-48C6-AC7D-E0C5DE63B7DB}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{9067436A-B519-4FCA-AF2B-369D037D8CD0}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_StealthMode" ID="{6608E04A-DC26-43FE-B7D0-42E506D2E3EA}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Unconscious" ID="{0CAD6D79-7739-4306-9DFA-F913CD834ED5}">
+															<ChildrenList>
+																<Action Name="Play" ID="{C86EC33F-112E-4806-B929-64E300584AE4}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{214722B6-51E4-433E-9728-2CB7A78F2A9E}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Unconscious" ID="{1CB8D245-39E0-4885-9125-4A8D59A364CF}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+													</ChildrenList>
+												</Folder>
+												<Folder Name="CombatShouts" ID="{A3CBE6C9-EFD1-4C7F-A314-4372854DCB53}">
+													<ChildrenList>
+														<Event Name="KMGWwiseSeed_AttackShort" ID="{D44FFECE-2E84-4F17-8FEB-78A02DF386E3}">
+															<ChildrenList>
+																<Action Name="Play" ID="{3B24C314-BDE8-4339-B0E2-F3607DA11FEE}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{445C1E9B-72CA-43FC-AF97-12897316B697}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_AttackShort" ID="{D7E83310-9836-4DDC-AB30-431CDA9D7B57}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CoupDeGrace" ID="{B25F7D2A-E713-4830-B622-905CF9DE32B0}">
+															<ChildrenList>
+																<Action Name="Play" ID="{BB501577-3C2E-4479-9014-847816F0F086}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{0A952D13-6AC3-40EF-BB2B-7348446FD2F0}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_CoupDeGrace" ID="{8F13B44A-1361-47F0-BEAF-3C337E6E3A60}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Death" ID="{67EFEA3D-336D-4F37-9864-3FA8F5C48A21}">
+															<ChildrenList>
+																<Action Name="Play" ID="{415D5BCA-4383-452B-A04B-48029742F7AE}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{55AF3729-2A76-4D0B-AFB3-98AF627E5F02}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Death" ID="{79FD9D58-B419-4A29-91D2-65E819C87A54}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Pain" ID="{8BBAE944-3AFB-4783-A1F5-3193EB968336}">
+															<ChildrenList>
+																<Action Name="Play" ID="{553BA7F0-CE38-4185-8036-BD3BFEE615F9}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{8DA5223A-D4EE-48F3-B5C4-6A1A65EDBBEB}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Pain" ID="{80CF2720-D717-4BE8-A271-78DBFC933E76}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+													</ChildrenList>
+												</Folder>
+												<Folder Name="Chants" ID="{CFED745F-6769-4D23-8654-9ABF0EB558E8}">
+													<ChildrenList>
+														<Event Name="KMGWwiseSeed_Cast" ID="{D5D63154-70B3-45C4-ADC3-07F5180535A1}">
+															<ChildrenList>
+																<Action Name="Play" ID="{A9F33247-6D8A-435A-8F07-29921E0E56A4}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CastDirect" ID="{0F343864-A987-49E0-8672-9ABB79EA9874}">
+															<ChildrenList>
+																<Action Name="Play" ID="{00DA6453-8919-4DD4-BEB2-4E2B4F093685}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CastLong" ID="{A275145D-0E74-4BA5-9113-73E06659011F}">
+															<ChildrenList>
+																<Action Name="Play" ID="{70DBD443-4345-4723-8A8D-5D18395D6A9B}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CastShort" ID="{3DC8EC4A-AD9D-4E30-AC5F-11292A5F08D4}">
+															<ChildrenList>
+																<Action Name="Play" ID="{A0E309EB-38F3-4DBE-A7A3-E9F8800650E3}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CastTouch" ID="{FE3F539F-53FD-4AB0-82B7-8EFBD860E6A4}">
+															<ChildrenList>
+																<Action Name="Play" ID="{235535E7-7D69-44F3-AE6D-11D3CE7BADB7}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_CastYourself" ID="{9326F85F-75EA-4286-93C5-309908302765}">
+															<ChildrenList>
+																<Action Name="Play" ID="{0572BAB5-4F98-45CF-81C9-BD3929C4D432}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Omnicast" ID="{7F9D0846-7684-42A2-BF6F-7A6ADF67049E}">
+															<ChildrenList>
+																<Action Name="Play" ID="{E36964D2-FB6F-4402-81CD-EDFD6341058E}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+														<Event Name="KMGWwiseSeed_Precast" ID="{B4A29B07-0EAE-45E5-9D5C-185E0417355F}">
+															<ChildrenList>
+																<Action Name="Play" ID="{057CD5B8-89E8-4936-A467-C02C1583C48E}" Type="Play" Scope="One" Global="false"/>
+															</ChildrenList>
+														</Event>
+													</ChildrenList>
+												</Folder>
+												<Folder Name="Demos" ID="{4ACF4E03-B9D7-488F-A452-EED9435F02B9}">
+													<ChildrenList>
+														<Event Name="KMGWwiseSeed_Test" ID="{2A5C8B93-B8F2-452B-9482-8ECC1B045084}">
+															<ChildrenList>
+																<Action Name="Play" ID="{C4C05612-9689-440F-AE24-4D8CABC154BB}" Type="Play" Scope="One" Global="false">
+																	<ElementList>
+																		<Element ID="{E897634B-C1DD-4AF2-AD64-BBACF2095FF4}" Global="false">
+																			<ObjectRef Name="KMGWwiseSeed_Test" ID="{89A1851E-61B9-4A58-94FB-ECC43E22CCCA}" WorkUnitID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}"/>
+																		</Element>
+																	</ElementList>
+																</Action>
+															</ChildrenList>
+														</Event>
+													</ChildrenList>
+												</Folder>
+											</ChildrenList>
+										</Folder>
+									</ChildrenList>
+								</Folder>
+							</ChildrenList>
+						</Folder>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

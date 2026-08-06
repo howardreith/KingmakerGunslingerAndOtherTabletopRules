@@ -1,0 +1,2310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}" SchemaVersion="75">
+	<AudioObjects>
+		<WorkUnit Name="Default Work Unit" ID="{CADB322F-3568-4DFA-9F1A-BCF4A75527D1}" PersistMode="Standalone">
+			<ChildrenList>
+				<ActorMixer Name="Voices_Root" ID="{003E2AE7-AC8E-4E8A-99E9-42828D3CD5DA}">
+					<PropertyList>
+						<Property Name="PositioningType" Type="int16" Value="1"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Pseudo_Inverse_Square_25m" ID="{F9F2AFFC-4525-4CC6-A712-0ADFED82BB02}" WorkUnitID="{5B16A11B-D41F-4113-9D98-0660707CDAEC}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="3DVOICES" ID="{2D7D658A-D422-4C9B-9CBD-BDE5AE4A8E66}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<ActorMixer Name="Asks" ID="{E82CBAED-731A-4347-B7AD-20DFF433727F}">
+							<PropertyList>
+								<Property Name="MakeUpGain" Type="Real64">
+									<RTPCList>
+										<RTPC Name="" ID="{7E094BA5-3897-4EAE-927A-F3426F1C3F4E}">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="VOICELEVEL" ID="{4C1E37F5-5DFD-44CA-91EC-ADFA057C45A9}" WorkUnitID="{FE3990F8-0E72-455D-9A01-6839F856F218}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{46F0B02D-5C52-43DC-9912-0B0141848C9A}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="3"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-1</YPos>
+														<Flags>5</Flags>
+														<SegmentShape>Exp2</SegmentShape>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>0</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+								<Property Name="UserAuxSendVolume0" Type="Real64">
+									<ValueList>
+										<Value>-27</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="COMBATASKS" ID="{606234B0-EA17-41F6-AA05-9B46D94C4D35}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+								<Reference Name="UserAuxSend0">
+									<ObjectRef Name="DELAY_OPENSPACE_DIALOGS" ID="{68DDBB0C-0400-4E3E-952D-6200DE36AAA4}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<ActorMixer Name="KMGWwiseSeed" ID="{526D2E7E-82E5-42FF-9F2F-EB97F325FFA2}">
+									<PropertyList>
+										<Property Name="IgnoreParentMaxSoundInstance" Type="bool" Value="True"/>
+										<Property Name="MaxSoundPerInstance" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="UseMaxSoundPerInstance" Type="bool">
+											<ValueList>
+												<Value>True</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_01" ID="{0EA99792-8EDD-4649-952A-AD703A1D012E}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_02" ID="{F96FF062-3583-4B7A-9168-BE0AE685DDED}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_03" ID="{085A7038-13B2-44CB-86A1-8DF93C283FD2}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackOrder_04" ID="{2047424D-39A6-40EE-951A-CEB874D4DA4E}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_AttackShort" ID="{D7E83310-9836-4DDC-AB30-431CDA9D7B57}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_01" ID="{5D57773C-6920-4618-A5F4-1B8D320B969D}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_02" ID="{30FB73A6-9D6E-43AE-AB08-72E6C72111E6}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_CombatStart_03" ID="{2FD0D950-C5E3-4F89-A1E6-89FC3E03A372}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_CoupDeGrace" ID="{8F13B44A-1361-47F0-BEAF-3C337E6E3A60}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_Death" ID="{79FD9D58-B419-4A29-91D2-65E819C87A54}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_01" ID="{C9F2B481-6DDB-4FAF-A63A-144411423D0C}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_LowHealth_02" ID="{45FA203E-904F-4DC2-9DF8-2856389B53F0}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_Pain" ID="{80CF2720-D717-4BE8-A271-78DBFC933E76}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_StealthMode" ID="{6608E04A-DC26-43FE-B7D0-42E506D2E3EA}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="KMGWwiseSeed_Unconscious" ID="{1CB8D245-39E0-4885-9125-4A8D59A364CF}">
+											<PropertyList>
+												<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+										</RandomSequenceContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CantCast" ID="{DB8ED668-0925-44B6-9800-93DC8B3C034C}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{6B0324AD-F5F5-43FE-A81B-A404D4E2084C}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{0CCA0763-695F-4977-9FD2-2FBD8B73004A}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CantEquip_01" ID="{391D3150-4D50-40C0-BED9-DF04E1A2AED5}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{E5E5247D-8AE2-45FF-951C-60C55B2D8C62}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{2F607A80-B121-411C-8886-A512CDAEB889}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CantEquip_02" ID="{2CDD6E0E-1FC0-4AE7-898A-E39D57477282}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AAB411E2-6A0C-49E4-B158-859E0A72CB5D}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{A87C289A-3EDD-4145-9ECF-A19F71051796}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_01" ID="{7EB83337-B8FA-44D1-9D7A-583E79B9F5F4}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{9252089A-9420-45E3-843C-4469F76BCFAF}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{94FE9A90-C62E-4AD5-B71B-2B7EBC56CB57}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_02" ID="{02070C81-385F-401C-8A51-0C3A04B6AF05}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{532BD41E-EFCB-4BE1-AE7C-2A88896BB731}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{CE6A9A97-0F45-49FB-BD9B-D3098C9CF21B}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CharCrit_03" ID="{917CDC16-DA48-4640-8300-0A8777F1478D}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{4B056101-13B4-4406-990F-A4F2310D2FC5}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{6FD67624-7077-48F3-99F7-AE045D787BC4}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CheckFail_01" ID="{85EF85B6-E125-4899-817F-24DFB3E629E6}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{F8B6835F-1B60-47AC-8C47-339887899389}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{BD6EA8C1-67A0-4BBA-9B32-F377BC205B71}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CheckFail_02" ID="{C699AFAD-9188-4448-A465-F6ECFF70D285}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{15205968-7060-407E-9B2D-25F4B712B7EE}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{1C12E9E4-A5B7-4451-A063-8C2CCA77FE8D}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_01" ID="{D5B2199C-16DE-4587-905A-7085B1B26F52}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{4531A3C8-9A00-43CD-B0DC-FCD71C029CB3}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{D42FD3A6-279B-42C7-984D-460B94D970B4}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CheckSuccess_02" ID="{F20BE8D9-AFF3-47C6-9D4C-5CD0E8121463}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{95E2FBD0-A3A1-4E2D-BBE5-B8C384BFA777}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{B4765E7F-46C1-49F0-9D81-185E1224A119}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Discovery_01" ID="{7B4979B1-758B-436F-9722-2DDF0FA64E47}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{640AE82C-A58A-4AEA-8FB7-E25B9B82E57C}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{D316FB8E-D757-4A25-AB74-0F06EFE3E038}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Discovery_02" ID="{7292839E-B762-4BD5-8FD0-394F5471E4BD}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{79B41344-80B5-41C6-83F9-481763E0AA73}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{B9185EA3-4298-4F67-9247-B8AD0BBE4110}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Fatigue" ID="{A32876FC-69E2-43FA-8A0C-A21DB5E1D29E}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<SwitchContainer Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}">
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<RandomSequenceContainer Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}">
+															<PropertyList>
+																<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+																<Property Name="PositioningType" Type="int16" Value="1"/>
+																<Property Name="UserAuxSendVolume0" Type="Real64">
+																	<ValueList>
+																		<Value>-27</Value>
+																	</ValueList>
+																</Property>
+															</PropertyList>
+															<ReferenceList>
+																<Reference Name="Attenuation">
+																	<ObjectRef Name="Pseudo_Inverse_Square_25m" ID="{F9F2AFFC-4525-4CC6-A712-0ADFED82BB02}" WorkUnitID="{5B16A11B-D41F-4113-9D98-0660707CDAEC}"/>
+																</Reference>
+																<Reference Name="Conversion">
+																	<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+																</Reference>
+																<Reference Name="OutputBus">
+																	<ObjectRef Name="COMBATASKS" ID="{606234B0-EA17-41F6-AA05-9B46D94C4D35}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+																</Reference>
+																<Reference Name="UserAuxSend0">
+																	<ObjectRef Name="DELAY_OPENSPACE_DIALOGS" ID="{68DDBB0C-0400-4E3E-952D-6200DE36AAA4}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+																</Reference>
+															</ReferenceList>
+															<PositioningInfo>
+																<Position Name="" ID="{F7235240-23DC-4606-8594-1C30C2D8AA8E}"/>
+															</PositioningInfo>
+														</RandomSequenceContainer>
+														<RandomSequenceContainer Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}">
+															<PropertyList>
+																<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+																<Property Name="PositioningType" Type="int16" Value="1"/>
+																<Property Name="UserAuxSendVolume0" Type="Real64">
+																	<ValueList>
+																		<Value>-27</Value>
+																	</ValueList>
+																</Property>
+															</PropertyList>
+															<ReferenceList>
+																<Reference Name="Attenuation">
+																	<ObjectRef Name="Pseudo_Inverse_Square_25m" ID="{F9F2AFFC-4525-4CC6-A712-0ADFED82BB02}" WorkUnitID="{5B16A11B-D41F-4113-9D98-0660707CDAEC}"/>
+																</Reference>
+																<Reference Name="Conversion">
+																	<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+																</Reference>
+																<Reference Name="OutputBus">
+																	<ObjectRef Name="COMBATASKS" ID="{606234B0-EA17-41F6-AA05-9B46D94C4D35}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+																</Reference>
+																<Reference Name="UserAuxSend0">
+																	<ObjectRef Name="DELAY_OPENSPACE_DIALOGS" ID="{68DDBB0C-0400-4E3E-952D-6200DE36AAA4}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+																</Reference>
+															</ReferenceList>
+															<PositioningInfo>
+																<Position Name="" ID="{4193E0EE-091A-448B-A830-4A2918B17659}"/>
+															</PositioningInfo>
+														</RandomSequenceContainer>
+													</ChildrenList>
+													<GroupingInfo>
+														<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+														<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<GroupingBehaviorList>
+															<GroupingBehavior>
+																<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
+															</GroupingBehavior>
+															<GroupingBehavior>
+																<ItemRef Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}"/>
+															</GroupingBehavior>
+														</GroupingBehaviorList>
+														<GroupingList>
+															<Grouping>
+																<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+																<ItemList>
+																	<ItemRef Name="Random_StealthOff" ID="{1DA7B670-8E58-44C2-A39E-EB3715FB659B}"/>
+																</ItemList>
+															</Grouping>
+															<Grouping>
+																<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+																<ItemList>
+																	<ItemRef Name="Random_StealthOn" ID="{1AFA4A35-6128-40FA-B70C-BEB12CCD6B4A}"/>
+																</ItemList>
+															</Grouping>
+														</GroupingList>
+													</GroupingInfo>
+												</SwitchContainer>
+												<RandomSequenceContainer Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}">
+													<PropertyList>
+														<Property Name="PositioningType" Type="int16" Value="1"/>
+														<Property Name="UserAuxSendVolume0" Type="Real64">
+															<ValueList>
+																<Value>-27</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Pseudo_Inverse_Square_25m" ID="{F9F2AFFC-4525-4CC6-A712-0ADFED82BB02}" WorkUnitID="{5B16A11B-D41F-4113-9D98-0660707CDAEC}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="COMBATASKS" ID="{606234B0-EA17-41F6-AA05-9B46D94C4D35}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+														<Reference Name="UserAuxSend0">
+															<ObjectRef Name="DELAY_OPENSPACE_DIALOGS" ID="{68DDBB0C-0400-4E3E-952D-6200DE36AAA4}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+													<PositioningInfo>
+														<Position Name="" ID="{E5525DB4-6446-4D4F-8F00-D3FB12936426}"/>
+													</PositioningInfo>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="GAMEAUDIOSTATE" ID="{39085CA2-3A25-4C25-ABB4-02E94B453CFA}"/>
+												<DefaultSwitchRef Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="BOOKQUEST" ID="{DDDD335F-54A6-4E6A-A30C-8DBD29EE9377}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="DEATH" ID="{820BA979-9D32-4E85-8DAE-E1FC97EDE3F8}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="CUTSCENE" ID="{F8F190DD-D344-4DD9-AA37-4B1D733300F5}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="LOADINGSCREEN" ID="{385184AB-B4D0-48CA-AE01-5F017162AF61}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="INGAMEMENU" ID="{FFCE7669-73F3-4D02-8743-05A47D55F1EA}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="INGAMEPAUSE" ID="{3CFE6BB5-D6D0-4570-AD69-519C0AE70652}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="MAINMENU" ID="{164A6A8A-B8E3-4670-BA6D-347876433E3E}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="REST" ID="{D0255881-1A59-444E-92B3-8F09CEF70C17}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="NARRATOR" ID="{7CA999C6-3EBB-4A46-A619-72BB0AEC3FD6}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="KINGDOM" ID="{C2995D3A-5949-40AF-94D2-CCF6D0DC009E}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="GLOBALMAP" ID="{77EC95A2-CE54-4EA5-9F0E-A63EA8DD2B39}"/>
+														<ItemList>
+															<ItemRef Name="Random_World_Map" ID="{0B35993F-A7D8-47DD-AA93-CE206224D217}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+														<ItemList>
+															<ItemRef Name="Switch_Stealth" ID="{4FD99E73-A3CF-4389-BD54-8CD277D843FC}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_01" ID="{D5CD0C7B-8859-42A3-9AEE-DCC0D9E0CD8E}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{EEB3E26F-79D7-45AE-9D2A-F9E655BB18C8}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{FF7CD527-FF81-4A0E-A5BB-01A714003941}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_02" ID="{78E693BE-4175-4D20-880D-A1C200A45AFD}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{BE0D0480-44B0-4711-B0E9-3B3583988284}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{B74FEBBF-259E-4E13-BB4E-DE7004EEAC76}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_03" ID="{62909638-1B02-4E8D-B375-D9DC1A81A934}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{CC78F371-9A1C-4F51-81D7-385D3675787E}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{77243937-0A92-4E94-8C82-8B4A1060B4B6}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_04" ID="{2F3EA96D-C522-41B4-96A5-18AB77061FF0}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{A6D1CF93-9B82-471F-95D0-9D71C71D74F2}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{EC9F4705-D3CA-490E-A849-EF0A7C195955}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_05" ID="{8C35FB66-CD5C-49FA-B777-8312D8CE0E6C}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{B1313D95-77A6-4E34-9C4D-11AF56977607}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{3CCE7FE0-E24F-4B6A-B010-6D56EA05399D}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_06" ID="{C507EF03-263A-433B-ABAA-FD42146F65CF}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{34381D10-CD5B-4913-91CC-040ABA389D3F}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{CD5CF27A-36DD-44D1-9D90-5613828C8234}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Move_07" ID="{69B84BBA-16B8-41FD-8AC9-F416A7426F3F}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{B59910D6-D6DD-4F44-9E2C-3ECC29E0D339}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{97F13C86-4CEC-4E10-90FF-475814479970}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_01" ID="{33D96F3B-F645-400B-A8F2-A8519282206F}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AA09FA88-F52A-459E-86A5-B5EDBFC902A9}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{57D6D438-B5E4-4583-AAD6-E286E88481EA}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_02" ID="{914C5B8F-C6F0-4D15-91E6-2E9559BB345A}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{8CA49F8D-AE1D-4BEF-B422-0D15A36678A5}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{207AC256-D33E-4B09-9CE4-97A968DD469E}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_03" ID="{8CB7EE18-E650-4EF3-82C0-2B15CB199A7E}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{AAF40423-4F59-428E-AC16-4F9239F7CD3F}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{E0E3DFDF-4EEA-4F91-BF0D-A853FBF490E8}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_04" ID="{09146CFB-A266-4C59-8A0F-706B2DDC080C}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{69D28507-FB3A-4163-BE0B-CB4CD774D85A}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{4E17F877-C405-495D-BC0C-85F54F7C865F}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_05" ID="{3408C0C0-7708-4D6F-A47A-91DBC0B52D21}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{7777B0DF-91CD-4168-AA5B-521E7AABEDAE}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{3FAF5DBF-1ABE-4919-8662-A48DC4A023F3}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_Select_06" ID="{D5D5BA29-6D08-4B9C-939B-9B0167CABF0E}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{82668C5C-D78E-467F-8584-18FB0E53A464}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{6E5CC7D1-59F2-4B05-82D1-BA325908E9A4}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_SelectJoke" ID="{FF2D9F1E-48EF-42C6-B4A5-93CBE221B498}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{81862808-8125-4DEC-B4A4-70F80EE04EAA}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{81862808-8125-4DEC-B4A4-70F80EE04EAA}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{81862808-8125-4DEC-B4A4-70F80EE04EAA}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+										<SwitchContainer Name="KMGWwiseSeed_CastChant" ID="{65ED6389-D449-4F95-9603-E5D4A145089D}">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<RandomSequenceContainer Name="CastEmpty" ID="{37A22E31-B5A3-4BB9-9722-3C93E1196BA6}">
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+												<RandomSequenceContainer Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}">
+													<PropertyList>
+														<Property Name="NormalOrShuffle" Type="int16" Value="0"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+														</Reference>
+													</ReferenceList>
+												</RandomSequenceContainer>
+											</ChildrenList>
+											<GroupingInfo>
+												<GroupRef Name="STEALTHASKS" ID="{93EE3649-BF05-482F-8228-7ED2A2B1980D}"/>
+												<DefaultSwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+												<GroupingBehaviorList>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}"/>
+													</GroupingBehavior>
+													<GroupingBehavior>
+														<ItemRef Name="CastEmpty" ID="{37A22E31-B5A3-4BB9-9722-3C93E1196BA6}"/>
+													</GroupingBehavior>
+												</GroupingBehaviorList>
+												<GroupingList>
+													<Grouping>
+														<SwitchRef Name="STEALTHOFF" ID="{351159F2-9498-4894-8597-45719FB73B26}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOff" ID="{E26BB951-D43F-4FE9-83F2-334C1F8C0E40}"/>
+														</ItemList>
+													</Grouping>
+													<Grouping>
+														<SwitchRef Name="STEALTHON" ID="{43929131-5562-4D11-A18D-9F053C8E9270}"/>
+														<ItemList>
+															<ItemRef Name="Random_StealthOn" ID="{1F72BF0B-3860-48D7-88EF-8D7D494A1778}"/>
+														</ItemList>
+													</Grouping>
+												</GroupingList>
+											</GroupingInfo>
+										</SwitchContainer>
+									</ChildrenList>
+								</ActorMixer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="Character_Creator_Sample" ID="{1CA5C20E-7C90-472F-8348-CCAB99006F39}">
+							<PropertyList>
+								<Property Name="IgnoreParentMaxSoundInstance" Type="bool" Value="True"/>
+								<Property Name="MakeUpGain" Type="Real64">
+									<ValueList>
+										<Value>-3</Value>
+									</ValueList>
+								</Property>
+								<Property Name="MaxSoundPerInstance" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+								<Property Name="UseMaxSoundPerInstance" Type="bool">
+									<ValueList>
+										<Value>True</Value>
+									</ValueList>
+								</Property>
+								<Property Name="UserAuxSendVolume0" Type="Real64">
+									<ValueList>
+										<Value>-30</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="VOICETESTCLIPS" ID="{3A880676-58CA-47F7-BA25-C26393AFAF5A}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+								<Reference Name="UserAuxSend0">
+									<ObjectRef Name="DELAY_OPENSPACE_DIALOGS" ID="{68DDBB0C-0400-4E3E-952D-6200DE36AAA4}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="KMGWwiseSeed_Test" ID="{89A1851E-61B9-4A58-94FB-ECC43E22CCCA}">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{68C52C75-D243-4413-88E2-6A3E6CE13BB9}" WorkUnitID="{F117831A-6280-48B5-959F-47E08F8EE753}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B228688F-22DF-4CF7-B1A2-E115C75354E0}"/>
+										</Reference>
+									</ReferenceList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+					</ChildrenList>
+					<PositioningInfo>
+						<Position Name="" ID="{97CE5BDE-7DD0-4414-A150-2776FFEB2C86}"/>
+					</PositioningInfo>
+				</ActorMixer>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

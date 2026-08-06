@@ -106,3 +106,48 @@ Source-complete checkpoint commit: `3cbfe4a`. The authorized push attempt
 failed with the same policy remote mismatch (placeholder expected origin versus
 the repository's actual origin). The commit is local and unpushed; no direct
 push was attempted.
+
+## 2026-08-06 — Owlcat authoring project checkpoint
+
+Resumed from `e34c1a0`. The branch and worktree were clean, and
+`origin/codex/firearm-wwise-audio` also pointed to `e34c1a0`.
+
+Verified Wwise 2016.2.6.6153 under
+`C:\Audiokinetic\Wwise_2016.2.6.6153`; both x64 `Wwise.exe` and `WwiseCLI.exe`
+report file/product version `2016.2.6.6153`.
+
+Curated only the `.wproj` and 23 `.wwu` files from the user-generated
+Owlcat.Templates 1.14.4 `kmsoundvoicemod` seed. No generated mod binary or UMM
+source was copied. All copied Work Units hash-identically to the seed. The
+project declares schema 75, Wwise `v2016.2.6`, build `6153`, one Windows
+platform, and native `WEAPONS` bus
+`{90EB9CC7-BB9C-42E0-9B57-62AC34459906}`.
+
+The project name was curated from `KMTemplate` to
+`KingmakerGunslingerFirearms`; all supplied GUIDs were preserved. The new
+validator checks version/platform, exact bus identity, canonical source-map
+events, and absence of generated `.bnk`/`.wem`/`Init.bnk` artifacts. Its
+optional `-RequireAuthoredObjects` gate intentionally fails until Wwise creates
+the five events and `KMG_Firearms` bank.
+
+`WwiseCLI.exe -help` did not return during a bounded 20-second noninteractive
+probe and was terminated by timeout. No GUI automation was attempted. Next is
+the minimal human Wwise GUI sequence in the authoring README.
+
+Checkpoint validation:
+
+- Authoring scaffold validator: PASS.
+- Byte-for-byte comparison of all 23 copied Work Units to seed: PASS.
+- Authored-object gate: expected FAIL, missing first canonical event; confirms
+  the seed is not falsely represented as an authored bank.
+- Repository validator: PASS.
+- Initial sandboxed clean domain run: FAIL only at isolated temporary-bank
+  `File.Replace` with `UnauthorizedAccessException`; rerun with repository test
+  filesystem permission: PASS, 898/898.
+- Exact-reference clean Release build and focused blueprint tests: PASS.
+- Build-output validation: PASS.
+- Source-only package creation and strict validation: PASS.
+- Source-only package SHA-256:
+  `0EC7343BAECE3A97F5426A2FFEB0B39630D83D264B98759F32C6C533D4E26B17`.
+- Built DLL SHA-256:
+  `ede0b47f79b428bacfa5cedb78ba5ff971283a62597baf2ad25133f4a0044ca5`.

@@ -1,19 +1,16 @@
-# Kingmaker Gunslinger firearm SoundBank authoring handoff
+# Kingmaker Gunslinger firearm SoundBank authoring project
 
-Target authoring generation: Wwise 2016.2.x for Windows. This directory is a
-source scaffold, not a generated SoundBank and not evidence that authoring has
-occurred.
+This is the curated Kingmaker Wwise project seed from the
+`Owlcat.Templates` 1.14.4 `kmsoundvoicemod` template. Its project and Work Unit
+identities target Wwise 2016.2.6 build 6153. The copied Master Mixer is the
+template's exact Kingmaker hierarchy; in particular, the native `WEAPONS` bus
+is `{90EB9CC7-BB9C-42E0-9B57-62AC34459906}`. Do not replace or regenerate that
+hierarchy and never ship this project's generated `Init.bnk`.
 
-Project name: `KingmakerGunslingerFirearms`. Create one non-streamed, in-memory
-sound object and Play event for each row in `source-map.json`, then assign all
-five events to one bank named `KMG_Firearms`. Media must be embedded in that
-bank. Do not distribute generated `Init.bnk` or separate `.wem` files.
-
-Use the exact Kingmaker/Owlcat 2016.2 template bus identities. The release goal
-is the native SFX/effects bus. Do not invent a bus that requires a replacement
-Init bank. If the exact SFX bus identity remains unproven, leave routing as an
-explicit authoring/manual-acceptance item rather than generating against a
-made-up master hierarchy.
+The project file is `KingmakerGunslingerFirearms.wproj`. Its name was curated
+from `KMTemplate`; its supplied project, platform, Work Unit, and bus IDs were
+preserved. The five firearm objects, Play events, and `KMG_Firearms` bank are
+not hand-authored in XML because Wwise must create their object IDs.
 
 Preparation:
 
@@ -21,12 +18,35 @@ Preparation:
 .\scripts\audio\Prepare-FirearmWwiseSources.ps1
 ```
 
-After a genuine 2016.2.x authoring project has been completed, query that
-installation's own CLI help and generate the Windows bank. The expected 2016
-command shape is:
+## Minimal Wwise 2016.2 GUI completion
+
+1. Open `KingmakerGunslingerFirearms.wproj` in Wwise 2016.2.6.6153. Decline any
+   project conversion if a different Wwise version opens it.
+2. In **Audio**, import the five prepared files from
+   `artifacts\wwise-source-staging` as five **Sound SFX** objects in the
+   Actor-Mixer Hierarchy. Use the event/source pairs in `source-map.json` as
+   the authoritative mapping. Allow Wwise to copy the media into `Originals`.
+3. For each sound, set **Output Bus** to the supplied `WEAPONS` bus. Leave
+   **Stream** disabled. Use uncompressed PCM conversion for the first release.
+4. For each sound, use Wwise's **New Event > Play** command and rename the
+   event to its exact `KMG_Firearm_*_Shot` name from `source-map.json`. This
+   lets Wwise create every new GUID.
+5. In **SoundBanks**, create one bank named exactly `KMG_Firearms`. Add all
+   five Play events to it and confirm their media is included in the bank.
+6. Save all Work Units, select only **Windows** and `KMG_Firearms`, then
+   generate SoundBanks. Do not curate or package `Init.bnk`.
+
+After saving, run the authoring validator. It fails until all five events and
+the bank exist:
 
 ```powershell
-& '<Wwise-2016.2-path>\WwiseCLI.exe' `
+.\scripts\audio\Validate-FirearmWwiseAuthoringProject.ps1 -RequireAuthoredObjects
+```
+
+Then generate the bank from the installed 2016.2.6 CLI:
+
+```powershell
+& 'C:\Audiokinetic\Wwise_2016.2.6.6153\Authoring\x64\Release\bin\WwiseCLI.exe' `
   '<project-path>\KingmakerGunslingerFirearms.wproj' `
   -GenerateSoundBanks -Platform Windows -Bank KMG_Firearms
 ```
@@ -40,5 +60,7 @@ manifest and curate only the bank plus manifest beneath `assets/soundbanks`.
 .\scripts\Validate-FirearmSoundBank.ps1
 ```
 
-The exact CLI flags must be confirmed from the located 2016.2 executable; this
-document intentionally does not assert that a newer Wwise CLI is compatible.
+The CLI's `-help` invocation did not return in a bounded noninteractive run, so
+the generation flags remain an execution-time check: use the GUI's generated
+command/log if this documented 2016-era command shape is rejected. Never use a
+newer Wwise generation as a substitute.

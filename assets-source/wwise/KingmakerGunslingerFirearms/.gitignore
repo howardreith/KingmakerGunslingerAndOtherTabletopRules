@@ -1,0 +1,7 @@
+.cache/
+.backup/
+GeneratedSoundBanks/
+Logs/
+*.wsettings
+*.prof
+*.validationcache

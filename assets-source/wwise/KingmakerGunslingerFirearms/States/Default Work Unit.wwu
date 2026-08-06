@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{CB6E1C8B-90DD-4C7E-BE2E-CAD133528D2D}" SchemaVersion="75">
+	<States>
+		<WorkUnit Name="Default Work Unit" ID="{CB6E1C8B-90DD-4C7E-BE2E-CAD133528D2D}" PersistMode="Standalone">
+			<ChildrenList>
+				<StateGroup Name="DIALOGSCENE" ID="{D31CB814-EE0E-402A-B47C-2BFDDEE8D45F}">
+					<ChildrenList>
+						<State Name="None" ID="{1502AD0B-CFBA-4A24-A00C-C222E805EEE6}"/>
+						<State Name="ON" ID="{630D7863-1429-4518-B2AB-BD5DAA4461F9}"/>
+						<State Name="OFF" ID="{621A86FC-3E30-4111-A35F-AF526579C07B}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="GAMEAUDIOSTATE" ID="{39085CA2-3A25-4C25-ABB4-02E94B453CFA}">
+					<ChildrenList>
+						<State Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+						<State Name="BOOKQUEST" ID="{DDDD335F-54A6-4E6A-A30C-8DBD29EE9377}"/>
+						<State Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+						<State Name="CUTSCENE" ID="{F8F190DD-D344-4DD9-AA37-4B1D733300F5}"/>
+						<State Name="DEATH" ID="{820BA979-9D32-4E85-8DAE-E1FC97EDE3F8}"/>
+						<State Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+						<State Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
+						<State Name="GLOBALMAP" ID="{77EC95A2-CE54-4EA5-9F0E-A63EA8DD2B39}"/>
+						<State Name="INGAMEMENU" ID="{FFCE7669-73F3-4D02-8743-05A47D55F1EA}"/>
+						<State Name="INGAMEPAUSE" ID="{3CFE6BB5-D6D0-4570-AD69-519C0AE70652}"/>
+						<State Name="KINGDOM" ID="{C2995D3A-5949-40AF-94D2-CCF6D0DC009E}"/>
+						<State Name="LOADINGSCREEN" ID="{385184AB-B4D0-48CA-AE01-5F017162AF61}"/>
+						<State Name="MAINMENU" ID="{164A6A8A-B8E3-4670-BA6D-347876433E3E}"/>
+						<State Name="NARRATOR" ID="{7CA999C6-3EBB-4A46-A619-72BB0AEC3FD6}"/>
+						<State Name="REST" ID="{D0255881-1A59-444E-92B3-8F09CEF70C17}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<EndState Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+							<Time>2</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+							<EndState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<Time>2</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<EndState Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+							<EndState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+							<EndState Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+							<Time>2</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="None" ID="{F3C0D9D7-9CD7-4622-8A7E-FFED0C3CD1F0}"/>
+							<EndState Name="COMBAT" ID="{4873A47D-B230-4732-BE7B-BE0EB1139FE4}"/>
+							<Time>2</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="BOOKQUEST" ID="{DDDD335F-54A6-4E6A-A30C-8DBD29EE9377}"/>
+							<EndState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<EndState Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
+							<Time>3</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="DIALOG" ID="{AED94372-8AE3-4AD4-851B-98BB5BD13C76}"/>
+							<EndState Name="DEFAULT" ID="{6118C331-90AE-4C87-8BF6-DE12BCAE22A4}"/>
+							<Time>3</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="GLOBALAMBIENCESTATE" ID="{6487AA34-C5EE-4F41-82D2-25BE19517E42}">
+					<ChildrenList>
+						<State Name="None" ID="{56C536A5-18B4-4B14-AACD-54219488D2BE}"/>
+						<State Name="HALFOPEN" ID="{A333F56D-0FFD-4198-9273-4DB8CF682BCD}"/>
+						<State Name="INTERIOR" ID="{DD97C45F-B029-4B64-AB06-CE688FA20DB6}"/>
+						<State Name="MUTED" ID="{F47E86C0-5652-4105-9E9C-B3F1C0235109}"/>
+						<State Name="NORMAL" ID="{A528DAEF-BAA0-4EC1-93E4-CAAA784B5C26}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="HALFOPEN" ID="{A333F56D-0FFD-4198-9273-4DB8CF682BCD}"/>
+							<EndState Name="NORMAL" ID="{A528DAEF-BAA0-4EC1-93E4-CAAA784B5C26}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="NORMAL" ID="{A528DAEF-BAA0-4EC1-93E4-CAAA784B5C26}"/>
+							<EndState Name="HALFOPEN" ID="{A333F56D-0FFD-4198-9273-4DB8CF682BCD}"/>
+							<Time>1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="MUTED" ID="{F47E86C0-5652-4105-9E9C-B3F1C0235109}"/>
+							<EndState Name="NORMAL" ID="{A528DAEF-BAA0-4EC1-93E4-CAAA784B5C26}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="NORMAL" ID="{A528DAEF-BAA0-4EC1-93E4-CAAA784B5C26}"/>
+							<EndState Name="MUTED" ID="{F47E86C0-5652-4105-9E9C-B3F1C0235109}"/>
+							<Time>1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="KINGDOMALIGNMENT" ID="{FB0F3A30-4876-44A4-A1A5-CE24CA97701D}">
+					<ChildrenList>
+						<State Name="None" ID="{74FDE218-CD05-4F6D-90C3-B6AA8E7CC911}"/>
+						<State Name="CHAOTICEVIL" ID="{32A3B0C1-7BB4-4208-A298-624B411524DF}"/>
+						<State Name="CHAOTICGOOD" ID="{31D5B1D6-254C-44E9-95DA-BFDD45F976A7}"/>
+						<State Name="CHAOTICNEUTRAL" ID="{EAD897AE-999B-4CE9-9C40-90A57EFF7A60}"/>
+						<State Name="LAWFULEVIL" ID="{C56C1584-28AA-4844-B082-953B906C1C19}"/>
+						<State Name="LAWFULGOOD" ID="{21CAC380-3436-4815-9872-24C0D9B33F26}"/>
+						<State Name="LAWFULNEUTRAL" ID="{4E76DA4E-0958-4BC2-BACF-9C041660F748}"/>
+						<State Name="NEUTRALEVIL" ID="{32C55CED-08C2-4A78-91E8-89C030FC703D}"/>
+						<State Name="NEUTRALGOOD" ID="{A4A3525A-718E-4DB1-8A50-2408766D6237}"/>
+						<State Name="TRUENEUTRAL" ID="{17AEA32E-0D2B-4317-A215-BFA75ADD5BD5}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="LK_COMBATPHASE" ID="{451B5E1D-E2DA-4091-97B0-021A29D3445F}">
+					<ChildrenList>
+						<State Name="None" ID="{98D38F9B-856B-40C4-B369-71264FFD8476}"/>
+						<State Name="CURSEDIALOGUE" ID="{D1E79801-CFBB-482C-8247-90935E12CCAD}"/>
+						<State Name="DOOMSAYER" ID="{39CC3C8D-245F-4CA8-9AC7-1F3DEC51F623}"/>
+						<State Name="HORNEDHUNTER" ID="{CFF40835-5F8A-42FA-9633-0DA0053A761E}"/>
+						<State Name="TRUEFORM" ID="{6313061A-3768-4C0A-889C-DD8C76BBF5AD}"/>
+						<State Name="WISEMAN" ID="{ECB46F82-A304-42DC-9C2A-C1C2B66E38CD}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="LOCATIONSTATE" ID="{D28E5916-E4AC-48A0-ABAF-E59C472D9C96}">
+					<ChildrenList>
+						<State Name="None" ID="{90908940-86CF-43E6-B3CA-A5C7418A667B}"/>
+						<State Name="BLOOM" ID="{3D4BBDA0-74EA-45BA-AA2E-A803618EDCCB}"/>
+						<State Name="KINGDOM" ID="{1E49130E-1C3F-4718-9FDC-C25B16A3F458}"/>
+						<State Name="NEUTRAL" ID="{0C967002-0DD4-48ED-B3FF-EFBEC85697FA}"/>
+						<State Name="SEIZED" ID="{69A1D730-0341-4A73-A0C2-23884AA0437F}"/>
+						<State Name="WILD" ID="{1C84A564-F668-47CB-82F2-8F9D0DFFCD81}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="MENUMUSIC" ID="{66C45202-F064-451C-AF99-4A5659E2E692}">
+					<ChildrenList>
+						<State Name="None" ID="{48696436-B05E-4201-8898-3E375FA129BB}"/>
+						<State Name="INTRO" ID="{42339107-484C-41E7-A549-136FD613D7CA}"/>
+						<State Name="MAIN" ID="{106C9272-01F4-4130-81FF-B76318A7B6E3}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="INTRO" ID="{42339107-484C-41E7-A549-136FD613D7CA}"/>
+							<EndState Name="MAIN" ID="{106C9272-01F4-4130-81FF-B76318A7B6E3}"/>
+							<Time>3</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="MUSICCOMBATSTATE" ID="{3F92D302-D74B-45FC-86D1-A566F6DD6248}">
+					<ChildrenList>
+						<State Name="None" ID="{7DF31977-8F4F-41C1-95BB-DCF7E54000FA}"/>
+						<State Name="BOSS" ID="{FDF84891-4510-40C5-8133-CA125AFCCAB8}"/>
+						<State Name="IGNORE" ID="{7285F2D1-0F03-4E6D-A947-0595BD10C6E6}"/>
+						<State Name="NORMAL" ID="{F8035C75-0291-428A-938F-AAE8BA470D70}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="MUSICKEY" ID="{BA28E4EB-2303-44DA-80E6-A860B747AEBC}">
+					<ChildrenList>
+						<State Name="None" ID="{DEB8FB28-8BDD-4BCF-A37A-9DFCE161C2C0}"/>
+						<State Name="B" ID="{985DA4E0-36FC-4013-A8C3-E4E675504581}"/>
+						<State Name="D" ID="{D8D8BC57-C010-46A9-AA3E-82696D7CE75D}"/>
+						<State Name="E" ID="{950F89AA-1D00-4776-AF86-37102532310F}"/>
+						<State Name="F" ID="{378EBB41-F2B2-415B-84E7-4C5A0BDE421F}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="MUSICMANUALMUTE" ID="{B0F20422-75DC-43EF-A254-5206B55046AF}">
+					<ChildrenList>
+						<State Name="None" ID="{F2246AA0-FB67-4354-A3D8-402AD55CB641}"/>
+						<State Name="ON" ID="{AF095E6E-41BB-42DE-9910-D163BCB05237}"/>
+						<State Name="OFF" ID="{5720F792-3377-4162-917F-8383CE328A86}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="MUSICSTATE" ID="{8C645844-B3C7-4EE4-8009-A93543839C2C}">
+					<ChildrenList>
+						<State Name="None" ID="{50369DE1-34BE-485E-B0A4-F33CFAEE1F77}"/>
+						<State Name="EXPLORATION" ID="{FD7F74EB-B1F7-4886-B2A0-C8C214338106}"/>
+						<State Name="COMBAT" ID="{7A5AB28F-C960-4799-98B7-F4D7C71D57FF}"/>
+						<State Name="DEATH" ID="{5801A148-E883-42DC-ADD0-5F7AE9C9E277}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="EXPLORATION" ID="{FD7F74EB-B1F7-4886-B2A0-C8C214338106}"/>
+							<EndState Name="COMBAT" ID="{7A5AB28F-C960-4799-98B7-F4D7C71D57FF}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="COMBAT" ID="{7A5AB28F-C960-4799-98B7-F4D7C71D57FF}"/>
+							<EndState Name="None" ID="{50369DE1-34BE-485E-B0A4-F33CFAEE1F77}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="None" ID="{50369DE1-34BE-485E-B0A4-F33CFAEE1F77}"/>
+							<EndState Name="COMBAT" ID="{7A5AB28F-C960-4799-98B7-F4D7C71D57FF}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="EXPLORATION" ID="{FD7F74EB-B1F7-4886-B2A0-C8C214338106}"/>
+							<EndState Name="None" ID="{50369DE1-34BE-485E-B0A4-F33CFAEE1F77}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="None" ID="{50369DE1-34BE-485E-B0A4-F33CFAEE1F77}"/>
+							<EndState Name="EXPLORATION" ID="{FD7F74EB-B1F7-4886-B2A0-C8C214338106}"/>
+							<Time>0.05</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="MUSICTBM" ID="{B8A67008-899B-4AC3-A6C6-7EF40954E31D}">
+					<ChildrenList>
+						<State Name="None" ID="{B927FD93-3BF7-412B-9D7C-1C9CD9B32247}"/>
+						<State Name="RTWP" ID="{052EB120-C490-49AE-9D03-38BF42477FD6}"/>
+						<State Name="TBM" ID="{E46D6415-E03A-45CE-A61A-638B98935B9F}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="SUBMUSICSTATE" ID="{FEC50D20-B883-4B66-B82A-E019971A0EF5}">
+					<ChildrenList>
+						<State Name="None" ID="{70AEF8B2-A2B6-46A7-AD7D-049987EB218C}"/>
+						<State Name="OFF" ID="{6B537415-2DA2-4122-A7C1-07E58618AEA0}"/>
+						<State Name="ON" ID="{48677EA6-99F9-49A8-A16E-A4CDF0E0708F}"/>
+						<State Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="OFF" ID="{6B537415-2DA2-4122-A7C1-07E58618AEA0}"/>
+							<EndState Name="ON" ID="{48677EA6-99F9-49A8-A16E-A4CDF0E0708F}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="ON" ID="{48677EA6-99F9-49A8-A16E-A4CDF0E0708F}"/>
+							<EndState Name="OFF" ID="{6B537415-2DA2-4122-A7C1-07E58618AEA0}"/>
+							<Time>0.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="OFF" ID="{6B537415-2DA2-4122-A7C1-07E58618AEA0}"/>
+							<EndState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<EndState Name="OFF" ID="{6B537415-2DA2-4122-A7C1-07E58618AEA0}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="ON" ID="{48677EA6-99F9-49A8-A16E-A4CDF0E0708F}"/>
+							<EndState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<EndState Name="ON" ID="{48677EA6-99F9-49A8-A16E-A4CDF0E0708F}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="None" ID="{70AEF8B2-A2B6-46A7-AD7D-049987EB218C}"/>
+							<EndState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="MUTED" ID="{DE5E360D-82A9-4C8C-B7C7-250CB67E5117}"/>
+							<EndState Name="None" ID="{70AEF8B2-A2B6-46A7-AD7D-049987EB218C}"/>
+							<Time>0.1</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="TIMEOFDAY" ID="{7521DB0F-D761-49A7-8244-0E687D69E48B}">
+					<ChildrenList>
+						<State Name="None" ID="{D177FF40-EDF5-4D54-87C2-09ED829959F5}"/>
+						<State Name="DAY" ID="{B9233067-7170-4AAF-B00E-47C3D32730C6}"/>
+						<State Name="EVENING" ID="{F9D97930-0AA4-4098-A281-BB7BF26B8184}"/>
+						<State Name="MORNING" ID="{44B0AB82-2E4A-41DA-A534-90900848B918}"/>
+						<State Name="NIGHT" ID="{13D9CE03-2588-4D66-B7F1-971128B88FA8}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="WALTZSTATE" ID="{22EA969F-1287-4AB3-A17D-9B3C8758B954}">
+					<ChildrenList>
+						<State Name="None" ID="{452D2137-287D-4B39-BB89-76C829EC7A49}"/>
+						<State Name="ON" ID="{F3FAB730-5A05-49F1-A8C9-7DA90A0B3441}"/>
+						<State Name="OFF" ID="{A4B7D989-301A-4D3A-AC1A-DE134E4C60AB}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="WEATHER" ID="{A823B7F1-660C-473D-8C65-CBDEB75999B6}">
+					<ChildrenList>
+						<State Name="None" ID="{BD5DF38B-30E2-4F29-BF4A-19804BA1E4CD}"/>
+						<State Name="RAIN" ID="{A88E1233-8EF4-4BE9-9ADC-8C6EF17B6F57}"/>
+						<State Name="SNOW" ID="{BDFA740A-CDA9-46F8-A124-522C9A5A3604}"/>
+						<State Name="DEFAULT" ID="{8478177E-18DE-4521-8E18-1582F665248C}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="WEATHEROVERRIDE" ID="{80AB065F-64D9-4B40-8307-DE925F6F2316}">
+					<ChildrenList>
+						<State Name="None" ID="{B50795BA-1E2F-4B3E-9480-BD62B22AC96D}"/>
+						<State Name="ON" ID="{99BB928F-9B37-4D09-9A68-FDAC7B3B55A6}"/>
+						<State Name="OFF" ID="{AAB6DFBA-9897-483E-B0BF-7D6C6B435AEE}"/>
+					</ChildrenList>
+				</StateGroup>
+			</ChildrenList>
+		</WorkUnit>
+	</States>
+</WwiseDocument>

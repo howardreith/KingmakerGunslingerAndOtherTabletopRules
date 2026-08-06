@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{3B8B0014-0C3E-410C-B57D-1E3AD63BAF4F}" SchemaVersion="75">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{3B8B0014-0C3E-410C-B57D-1E3AD63BAF4F}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="PC_General_Voice_Reactions" ID="{C0017FAB-1334-442E-86AE-17D727CA7846}">
+					<ChildrenList>
+						<Folder Name="Additional" ID="{C731545E-A94E-40E8-9457-4C2C4E7F769A}">
+							<ChildrenList>
+								<SoundBank Name="KMGWwiseSeed_GVR_ENG" ID="{29D85760-8015-42A6-BA82-E1B41BAE390A}">
+									<ObjectInclusionList/>
+									<ObjectExclusionList/>
+									<GameSyncExclusionList/>
+								</SoundBank>
+							</ChildrenList>
+						</Folder>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>
