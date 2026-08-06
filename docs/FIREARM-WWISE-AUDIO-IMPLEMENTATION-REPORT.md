@@ -1,15 +1,16 @@
 # Firearm Wwise audio implementation report
 
-Status: authentic bank and strict release package qualified; runtime and human
-auditory qualification pending. Automated `PostEvent` acceptance will not be
-represented as proof of audible output.
+Status: automated implementation, strict release package, and guarded runtime
+Event-acceptance qualification complete; human auditory qualification pending.
+Automated `PostEvent` acceptance is not proof of audible output.
 
 Implemented source-complete architecture now includes strict validation and
 staging, one-time readiness/load state, Wwise posting and diagnostics, global
 and selected-unit preview controls, all six required discharge routes, Unity
 playback removal, source-only/release package gates, deterministic WAV staging,
 an authoring project, authentic embedded-media bank, and a save-free guarded
-runtime scenario. Runtime PASS evidence and listening remain pending.
+runtime scenario. Two consecutive fresh-launch scenario passes and all six
+mechanical discharge-path scenarios are recorded below. Listening remains.
 
 Wwise 2016.2.6.6153 is verified at
 `C:\Audiokinetic\Wwise_2016.2.6.6153`. The repository now contains the curated
@@ -31,9 +32,45 @@ Release DLL SHA-256:
 
 Previous source-complete commit: `3cbfe4a`; documentation checkpoint:
 `e34c1a0`. Both are present on `origin/codex/firearm-wwise-audio`. Mod version
-remains `0.0.70`; no release version bump has been made because runtime and
-auditory qualification are still pending.
+remains `0.0.70`; no release version bump has been made because human auditory
+qualification is still pending.
 
 Owlcat authoring-project checkpoint:
 `4b8cf93afa8d2797815eb26df4325936229abe68`, successfully pushed and verified
 through the repository-authorized policy script.
+
+## Guarded runtime qualification
+
+The final runtime-qualified build at commit
+`147c412485215cccb9da655b85293d7e7d24c3cc` has local-runtime package SHA-256
+`24E2AC4CBF468B19143C361C220AD1EE90F343DE4E85AA2D2A4BB593E5973AC1`, DLL
+SHA-256 `8BC7C6264629715050D1D57B87E9EEB5E2AB73D22C3BB1981A35C8DE1F6158F4`,
+and strict release-package SHA-256
+`CA93B06093DDCA57A4811562CB3AB6E2FC23E69854500E647A20A6D816C534E3`.
+Strict validation requires exactly one firearm bank plus its manifest, no
+`Init.bnk`, no other bank, no `.wem`, and no authoring/cache content.
+
+The save-free scenario passed twice on consecutive fresh Steam launches. The
+second run ID was
+`20260806T2235554614335Z-d28d626bce5449f398c1adc4145168a4` (result SHA-256
+`AE112B7524E48153EB292D1ACABFF715A7B8E68CB13A1B634A7213AB724A47E4`).
+It recorded state `Ready`, one bank-load attempt, exact expected/observed bank
+hashes, global pistol Event acceptance on `Canvas` with playing ID 2,
+live-unit acceptance on `Human_Fighter_Baron(Clone)` with playing ID 3, and an
+ordinary committed pistol discharge with playing ID 4. A forced misfire left
+attempts and accepted posts unchanged at three.
+
+The same commit passed guarded Scatter Shot, Dead Shot, Startling Shot,
+Menacing Shot, Stop Bleeding, and firearm presentation/fallback scenarios.
+Those deed scenarios qualify their mechanical commit/rollback behavior;
+exact once/zero audio routing for every path is enforced by the 898-test
+domain/reflection suite. They do not claim a valid playing ID where a detached
+fixture lacked a usable live view.
+
+Native crossbow combat-sound suppression remains deliberately unimplemented.
+Exact local inspection shows the sound getters fall back through
+`WeaponVisualParameters.Prototype` when local fields are empty. Blindly
+clearing `m_SoundType`, `m_WhooshSound`, or `m_MissSoundType` would therefore
+not prove suppression and could risk the qualified presentation chain. The
+fallback scenario confirmed all five models, projectiles, icons, and native
+presentation fallbacks. Layered crossbow sound is a human listening question.

@@ -212,3 +212,46 @@ Qualification evidence:
 
 Next: commit/push this authentic-bank checkpoint, then deploy only through the
 guarded runtime tooling and execute `disposable-firearm-wwise-audio`.
+
+## 2026-08-06 — guarded native-Wwise runtime qualification
+
+Fixed isolated-worktree reference discovery after the first guarded invocation
+safely stopped before deployment. Commit `9315f41` passed the build gates and
+was published with the policy script. Commit `147c412` strengthened the
+save-free scenario with a live disposable attacker/target, selected-unit
+preview, ordinary committed attack, and forced misfire; it passed 898/898
+tests, repository validation, exact-reference Release build, build-output
+validation, and the authorized push.
+
+Two consecutive fresh-launch `disposable-firearm-wwise-audio` runs passed:
+
+- `20260806T2234249930950Z-9d5cad71fc464a3eb642c7524e5b7871`, result SHA-256
+  `7C7D26AC009B3A9C355AC47D8744D5505AA7647A5A88B14E9A0F483857DD2063`.
+- `20260806T2235554614335Z-d28d626bce5449f398c1adc4145168a4`, result SHA-256
+  `AE112B7524E48153EB292D1ACABFF715A7B8E68CB13A1B634A7213AB724A47E4`.
+
+Both observed `Ready`, matching source/staged bank hashes, one bank-load
+attempt, and exact pistol Event posts: global `Canvas` playing ID 2, live unit
+`Human_Fighter_Baron(Clone)` playing ID 3, and ordinary committed discharge
+playing ID 4. The forced natural-1 misfire did not increment post attempts or
+accepted posts. Fixture cleanup and collection isolation passed.
+
+Audio-enabled deed scenarios also passed on `147c412`: Scatter Shot run
+`f81b9c9ce8494a07a9a275523be298e0`, Dead Shot
+`57e656e309194c6da903a94c3b76dbc6`, Startling Shot
+`cd849e255d2143e1b1d0c09ee7fa80ac`, Menacing Shot
+`6b819a9beb4b43778ac30ce4936086e5`, and Stop Bleeding
+`22d88393020546c684fe12dd6dd4e14f`. Production fallback run
+`a51a8b54958c4e21b0aa895c4db60d6b` passed all eight assertions and preserved
+all five firearm visual/projectile/presentation fallbacks.
+
+Current runtime package SHA-256:
+`24E2AC4CBF468B19143C361C220AD1EE90F343DE4E85AA2D2A4BB593E5973AC1`;
+DLL SHA-256:
+`8BC7C6264629715050D1D57B87E9EEB5E2AB73D22C3BB1981A35C8DE1F6158F4`;
+strict release package SHA-256:
+`CA93B06093DDCA57A4811562CB3AB6E2FC23E69854500E647A20A6D816C534E3`.
+
+Automated work is complete. A nonzero playing ID proves Wwise accepted the
+Event, not audible speaker output. Audibility, mapping, mix/spatial behavior,
+blunderbuss tail, and inherited crossbow overlap remain human judgments.

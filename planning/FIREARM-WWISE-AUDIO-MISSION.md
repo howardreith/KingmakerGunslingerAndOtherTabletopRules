@@ -36,10 +36,12 @@ exactly one supported event. Mechanical behavior must remain unchanged.
 - [x] Generate and validate authentic `KMG_Firearms.bnk` with Wwise 2016.2.6.6153.
 - [x] Integrate strict build/package validation with explicit source-only gate.
 - [x] Add guarded runtime scenario and development controls.
-- [ ] Run all source/build/package/runtime gates (source/build/release package pass; runtime pending).
+- [x] Run all source/build/package/runtime gates, including two consecutive
+  fresh-launch native-Wwise scenario passes and all deed/presentation scenarios.
 - [ ] Complete human auditory acceptance.
 
 ## Next concrete action
 
-Commit and publish the authentic bank checkpoint, then deploy through the safe
-runtime harness and run `disposable-firearm-wwise-audio`.
+Human listener runs `docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md`.
+Automated implementation and runtime Event-acceptance qualification are
+complete; speaker output and inherited crossbow overlap require listening.
