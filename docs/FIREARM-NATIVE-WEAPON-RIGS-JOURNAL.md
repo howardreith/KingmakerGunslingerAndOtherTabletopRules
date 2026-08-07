@@ -715,3 +715,35 @@ Entries are append-only in spirit.
   mechanical regression; it cannot prove reduced clipping. Next action:
   commit/push, rebuild exact published identity, run guarded rig/switching and
   frozen regressions, then request the narrow Musket/Blunderbuss visual check.
+
+## 2026-08-07T23:30:00Z - Published clipping candidate qualification
+
+- Implementation commit: published
+  `5a37f16a176b54a71d18924c42f769caea5c92c2`.
+- Exact package/DLL/AssetBundle/rig-manifest SHA-256:
+  `3296604A13F738DC4E8388F3FD8320AB9BA520BD7C9B6ABC04B16B2C114E6B99` /
+  `00C19F621AD6184EED6B000ACD76D9C5DC19F5616F8DF91AFA7A1C171A32AF14` /
+  `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E` /
+  `15A1B3D6E821A96C1DF64FBF80752254AA3C498CE2871ADC2BB434EE5502B3FC`.
+- Exact published rebuild: PASS repository validation, 911/911 tests,
+  exact-reference Release, build-output, SoundBank, and strict package gates.
+- Guarded PASS run/result hashes: visual rigs
+  `20260807T1453008879992Z-disposable-firearm-visual-rigs` /
+  `A14D875713AE859907367B4BA3D8F831F8578123EA9112BEA155A0F9367ADDDE`;
+  switching `20260807T1454571052269Z-disposable-production-firearm-switching` /
+  `5411EDCACDE80BC5F1B74341B4162681E5FFEE9E39C7B78C45E89784C4006321`;
+  Targeting Arms `20260807T1456435671775Z-disposable-gunslinger-targeting-arms` /
+  `4186D6D5F52209F7521E466C88F4E1ADE43B3801063A97FCC4FD9461C2F09BDF`;
+  Wwise `20260807T1458093478502Z-disposable-firearm-wwise-audio` /
+  `23D813195452E8CF878981E1D64F78919E785E8415419F6E703114FD5E7A60BB`;
+  Scatter `20260807T1459345133932Z-disposable-gunslinger-scatter-shot` /
+  `23C8BD0EB4767B293E9DE8F4B73EEEF62485635C9DE75CE7B85BA8E7C6A353DC`;
+  reload `20260807T1500590643378Z-disposable-reload-autocast` /
+  `9E39C73152180EEDA22757A4AD9DD7166B215EE72C53BFE772D71C1EF92F4E51`.
+- A first overlap attempt was refused before launch while Kingmaker was still
+  exiting; explicit process-exit gates resolved it. The final wrapper inherited
+  a nonzero native exit state after all structured results were PASS; the six
+  independently hashed JSON results above are authoritative.
+- Result: **AutonomousCandidate mechanical/structural pass**. No save-writing
+  API was observed and `KMG_AUTOMATION_BASELINE` was not overwritten. Whether
+  the 0.020 clearance visibly reduces torso clipping remains a human gate.

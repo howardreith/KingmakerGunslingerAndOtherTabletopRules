@@ -212,3 +212,15 @@ Two exact Unity builds are byte-identical at
 repository validation, 911/911 tests, Release build, build-output, and strict
 package validation pass. Automated checks do not establish that torso clipping
 looks improved; that remains the next narrow human comparison.
+
+Published implementation commit is
+`5a37f16a176b54a71d18924c42f769caea5c92c2`. Candidate package
+`artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`
+has SHA-256
+`3296604A13F738DC4E8388F3FD8320AB9BA520BD7C9B6ABC04B16B2C114E6B99`;
+DLL `00C19F621AD6184EED6B000ACD76D9C5DC19F5616F8DF91AFA7A1C171A32AF14`;
+AssetBundle `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`;
+rig manifest `15A1B3D6E821A96C1DF64FBF80752254AA3C498CE2871ADC2BB434EE5502B3FC`.
+Guarded visual rigs, switching, Targeting Arms/projectile, Wwise, Scatter, and
+reload scenarios all PASS with exact run IDs/hashes in the journal. The only
+remaining uncertainty for this pass is the human-perceived clipping delta.

@@ -6,7 +6,12 @@ does not accept unobserved Pistol lifecycle/body/holster states and does not set
 the global readiness to `HumanAccepted`. Its Cyril43 source, equipped transform,
 scale, and `PiercingOneHanded` animation are frozen for this pass.
 
-Current micro-calibration review: compare only Musket and Blunderbuss against
+Current micro-calibration candidate: implementation
+`5a37f16a176b54a71d18924c42f769caea5c92c2`; package SHA-256
+`3296604A13F738DC4E8388F3FD8320AB9BA520BD7C9B6ABC04B16B2C114E6B99`;
+DLL `00C19F621AD6184EED6B000ACD76D9C5DC19F5616F8DF91AFA7A1C171A32AF14`;
+AssetBundle `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`.
+Compare only Musket and Blunderbuss against
 the prior semantic-anchor package. The candidate moves each complete held rig
 approximately `0.020` local units outward; it does not alter length, scale,
 rotation, animation, Pistol, Rifle, or holsters. Accept minor residual clipping
