@@ -4880,7 +4880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 assertions.Add(Assertion(label + ".execution",
                     "qualified slice completes without exception",
-                    exception.GetType().Name + ": " + exception.Message, false,
+                    exception.ToString(), false,
                     "slice-owned cleanup plus comprehensive fail-closed aggregation"));
             }
         }
@@ -11822,8 +11822,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, afterKillingBlow == afterCriticalDuplicate &&
                     afterKillingDuplicate == afterCriticalDuplicate,
                     "real RuleAttackWithWeaponResolve requires a live projectile command"),
-                Assertion("unaware-target-rejected", "spent to 1; remains 1",
-                    observed, afterUnaware == 1,
+                Assertion("unaware-target-rejected", "spent to 0; remains 0",
+                    observed, afterUnaware == 0,
                     "target lacked native combat state at exact attack observation"),
                 Assertion("recovery-diagnostics", "critical=1;kill=0;duplicates=1;ignored=1;faults=0",
                     observed,

@@ -19,6 +19,7 @@ param(
         'disposable-firearm-visual-rigs',
         'disposable-production-firearm-switching',
         'disposable-gunslinger-targeting-arms',
+        'disposable-gunslinger-dodge',
         'disposable-firearm-wwise-audio',
         'disposable-gunslinger-scatter-shot',
         'disposable-reload-autocast',

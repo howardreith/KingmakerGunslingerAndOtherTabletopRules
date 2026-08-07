@@ -84,6 +84,13 @@ Its first `mod-load-smoke` passed under transaction
 typed ValidateSet in `Invoke-KingmakerRuntimeTest.ps1`, and restoration verified.
 The allowlist is repaired. Source-qualify/publish, then rerun the combined
 matrix beginning with the observer (load smoke is already evidenced).
+The qualified combination passed observer plus all targeted high-risk scenarios
+but comprehensive acceptance failed on two fixtures; standalone reproduced
+both. The Grit fixture's impossible post-spend expectation is corrected. Full
+inner Dodge exceptions are now preserved and the dedicated Dodge scenario is
+allowed by the profile wrapper. Source-qualify/publish, run standalone Dodge,
+then make only an evidence-backed fixture or Gunslinger repair and rerun
+standalone before the combined comprehensive repetition.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

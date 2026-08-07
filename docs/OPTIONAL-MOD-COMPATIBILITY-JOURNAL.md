@@ -257,3 +257,22 @@
   the top-level guarded launcher retained its own six-profile `ValidateSet`.
   Restoration verified. The new ID is now added to that final typed allowlist
   and tested; no arbitrary profile input is accepted.
+
+## 2026-08-07 - Qualified-combined comprehensive diagnosis
+
+- Transaction `compat-20260807T203235Z-07bfd9da0b29` passed the exact observer,
+  presentation, visual rigs, production switching, Targeting Arms, Wwise,
+  Scatter Shot, and reload scenarios. Comprehensive run
+  `20260807T2044246940174Z-c8aab2a7b41049a9bc9b218d4b49ab61` failed two
+  fixture slices; restoration verified.
+- Standalone control run
+  `20260807T2046415501631Z-13a6f5a8855e44d099e312eed7348018` reproduced the
+  same Grit-recovery and Dodge fixture failures under transaction
+  `compat-20260807T204615Z-d788273d6ced`, proving they are not optional-mod
+  interaction defects. Restoration again verified.
+- The Grit fixture spent its only restored point from 1 to 0 before the
+  unaware-target call, yet asserted it remained 1. The assertion now matches
+  the actual fail-closed contract: it remains 0 and diagnostics record one
+  ignored event. The comprehensive aggregator now preserves the full inner
+  exception chain, and the established dedicated Dodge scenario is admitted
+  by the typed profile wrapper for exact diagnosis.

@@ -63,4 +63,12 @@ $launcher = Get-Content -LiteralPath (Join-Path $root `
 if (-not $launcher.Contains("'gunslinger-qualified-combined'")) {
     throw 'Guarded runtime launcher does not allow the committed qualified-combined profile.'
 }
+$runnerSource = Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs') -Raw
+foreach ($contract in @('"spent to 0; remains 0"', 'afterUnaware == 0',
+    'exception.ToString()')) {
+    if (-not $runnerSource.Contains($contract)) {
+        throw "Compatibility diagnostic fixture contract missing: $contract"
+    }
+}
 Write-Host 'Optional-mod compatibility observer allowlist and source contracts passed.'
