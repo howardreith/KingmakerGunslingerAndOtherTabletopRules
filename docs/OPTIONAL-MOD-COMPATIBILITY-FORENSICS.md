@@ -26,8 +26,10 @@ project-owned GUID or UMM/assembly identity collisions are critical.
 
 ## Reference inventory
 
-Read-only inventory run `20260807T1740349239015Z` classified all 12 immediate
-children. The raw full manifest remains ignored under
+The original read-only inventory run `20260807T1740349239015Z` classified 12
+immediate children. After the user supplied `KingmakerRebalance-2.1`, read-only
+run `20260807T2126452736628Z` classified all 13 immediate children. The raw
+full manifests remain ignored under
 `artifacts/compatibility/reference-inventory`.
 
 Compiled loadable roots:
@@ -55,6 +57,10 @@ Source-only roots:
 - `KingmakerRebalance-master` declares CallOfTheWild 1.14.5, which does not
   match the compiled local 1.14.4c-2.1 version; it is related source authority,
   not an exact source twin of the runtime DLL.
+- `KingmakerRebalance-2.1` is also source-only and declares CallOfTheWild
+  1.15.0. Its `Helpers.cs` is byte-identical to the 1.14.5 tree, including
+  class-catalog replacement logic, but it is farther from the compiled
+  1.14.4c-2.1 identity and is supporting evidence only.
 - `KingmakerToggleCustomSoundpacksMod-master` declares the same UMM identity
   and version as the compiled root, but no supplied build output proves byte
   identity.
@@ -99,3 +105,18 @@ Curated high-risk observations beyond exact shared targets:
 The scanner is intentionally lexical and labels its findings accordingly. It
 does not claim compiled-only targets, overload signatures, dynamically selected
 targets, or runtime patch order until exact Harmony12 introspection is added.
+
+## Exact Call of the Wild class-catalog IL
+
+Read-only reflection over exact compiled `CallOfTheWild.dll` SHA-256
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`,
+MVID `8caab254-aacf-4811-8093-44b9184e6e53`, proves
+`CallOfTheWild.Helpers.RegisterClass` reads and replaces the array reached via
+`CallOfTheWild.Main.library.Root.Progression.CharacterClasses`.
+
+Read-only reflection over exact installed Kingmaker 2.1.7b proves both
+`CharBPhaseClass.get_m_ClassesCollection` and
+`CharBPhaseClassInChargen.get_m_ClassesCollection` are identical 21-byte IL
+getters reading `Game.Instance.BlueprintRoot.Progression.CharacterClasses`.
+Gunslinger currently publishes through static `BlueprintRoot.Instance`.
+Runtime snapshots must prove whether these roots diverge before repair.

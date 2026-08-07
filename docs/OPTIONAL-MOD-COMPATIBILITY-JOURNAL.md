@@ -316,3 +316,27 @@
   replacement, or another exact compiled-DLL behavior before repairing.
 - This conflict is independent of the standalone detached Gunslinger's Dodge
   fixture. Neither result is evidence for the other.
+
+## 2026-08-07 - Call of the Wild catalog instrumentation
+
+- Read-only inventory `20260807T2126452736628Z` classified the newly supplied
+  `KingmakerRebalance-2.1` as source-only CallOfTheWild 1.15.0 and all 13
+  immediate reference children. Its `Helpers.cs` matches the 1.14.5 supporting
+  tree byte-for-byte; neither is the exact 1.14.4c-2.1 compiled authority.
+- Exact compiled IL proves CotW replaces the catalog reached through
+  `Main.library.Root`; exact game IL proves chargen reads through
+  `Game.Instance.BlueprintRoot`; Gunslinger publishes through
+  `BlueprintRoot.Instance`.
+- Added diagnostic-only snapshots after registration, before/after publication,
+  at the Gunslinger postfix return, first idle update, and before/after the
+  chargen getter. They capture all root/array identities, ordered class GUIDs,
+  Gunslinger/library/archetype state, UMM order, and Harmony LoadDictionary
+  owner/order.
+- The observer now distinguishes blueprint registration, final root catalog,
+  and chargen input. With CotW loaded it reflects compiled `Helpers.classes`
+  and requires every registered CotW class to remain present.
+- No repair or catalog mutation is present. Repository validation, observer
+  contracts, 911/911 tests, exact Release build, SoundBank, and strict package
+  validation pass. Diagnostic package/DLL SHA-256 are
+  `E17C269AD6BF475793E6CB80911416F413673007CB3F79A22416F94F0FC8CBBC` /
+  `1A3CC75C10684BC6C9CE5CAA63DB396D11F2410479CB1F8FA91D32EA57CF9E84`.

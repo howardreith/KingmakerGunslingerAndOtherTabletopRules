@@ -82,3 +82,10 @@ character creation and publishes its own added classes while Gunslinger is
 absent from the selector. This is `CONFLICT-CONFIRMED`, not merely slow startup.
 Root/selector lifecycle forensics are pending; no production repair has yet
 been selected.
+
+The diagnostic candidate snapshots all required lifecycle boundaries and the
+exact Kingmaker 2.1.7b chargen collection getter without mutating the catalog.
+Installed IL proves CotW writes through `Main.library.Root`, chargen reads
+through `Game.Instance.BlueprintRoot`, and pre-repair Gunslinger publishes
+through `BlueprintRoot.Instance`. The next materially different CotW run will
+determine whether those objects or arrays actually diverge at runtime.

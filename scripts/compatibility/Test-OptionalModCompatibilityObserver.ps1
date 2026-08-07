@@ -38,10 +38,26 @@ foreach ($parameters in $rejected) {
 $observer = Get-Content -LiteralPath (Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\OptionalModCompatibilityObserver.cs') -Raw
 foreach ($contract in @('currentEntry.GetType().DeclaringType', 'GetField("modEntries"', 'GetPatchedMethods()',
-    'GetPatchInfo(method)', 'gunslinger-class-singular',
+    'GetPatchInfo(method)', 'gunslinger-blueprint-registered',
+    'gunslinger-root-catalog-published', 'gunslinger-class-selector-input',
+    'call-of-the-wild-final-classes', 'CallOfTheWild.Helpers',
     'mysterious-stranger-replacement-rows', 'production-firearm-identities',
     'save-free-observer')) {
     if (-not $observer.Contains($contract)) { throw "Observer contract missing: $contract" }
+}
+$catalogDiagnostics = Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Compatibility\ClassCatalogDiagnostics.cs') -Raw
+$catalogDiagnostics += Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Bootstrap\BlueprintBootstrap.cs') -Raw
+$catalogDiagnostics += Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Bootstrap\BlueprintLifecyclePatch.cs') -Raw
+foreach ($contract in @('after-registration', 'before-publish', 'after-publish',
+    'gunslinger-postfix-return', 'first-idle-update', 'before-chargen-selector',
+    'chargen-selector-result', 'Game.Instance.BlueprintRoot',
+    'BlueprintRoot.Instance', 'observed.Root', 'GetPatchInfo(target)')) {
+    if (-not $catalogDiagnostics.Contains($contract)) {
+        throw "Class-catalog diagnostic contract missing: $contract"
+    }
 }
 foreach ($forbidden in @('QuickSave', 'SaveGame', 'LoadGame(', 'StartNewGame')) {
     if ($observer.Contains($forbidden)) {

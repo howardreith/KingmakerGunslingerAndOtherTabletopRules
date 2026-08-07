@@ -5,9 +5,13 @@
 New human authority: exact Call of the Wild 1.14.4c-2.1 reaches character
 creation with its added classes visible, but Gunslinger absent. This is
 `CONFLICT-CONFIRMED`, superseding timeout-only classification for the
-player-facing catalog. Keep it independent from detached Dodge. Next action:
-inspect exact compiled CallOfTheWild.dll catalog writes and add checkpointed
-root/selector diagnostics before any reconciliation repair.
+player-facing catalog. Keep it independent from detached Dodge. Exact compiled
+IL now proves CotW writes `Main.library.Root` while exact game chargen reads
+`Game.Instance.BlueprintRoot`; Gunslinger publishes through
+`BlueprintRoot.Instance`. Diagnostic-only lifecycle/root/catalog snapshots are
+source-qualified with 911/911 tests and strict packaging. Commit/push/rebuild,
+then run one materially different guarded CotW profile and inspect structured
+catalog evidence before implementing reconciliation.
 
 Branch `codex/postbase-archetypes-compatibility` starts from clean integrated
 `master` commit `d03dfe9eae65f5cd1395df7337f21dfdb4357661`, version `0.0.71`.

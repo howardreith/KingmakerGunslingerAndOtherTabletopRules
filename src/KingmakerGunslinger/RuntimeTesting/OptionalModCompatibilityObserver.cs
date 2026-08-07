@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using Harmony12;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
@@ -69,15 +70,34 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             BlueprintCharacterClass cls = gunslinger == null ? null : gunslinger.CharacterClass;
-            BlueprintCharacterClass[] classes = BlueprintRoot.Instance == null ||
-                BlueprintRoot.Instance.Progression == null ? new BlueprintCharacterClass[0] :
-                BlueprintRoot.Instance.Progression.CharacterClasses;
+            BlueprintCharacterClass[] classes = Game.Instance == null ||
+                Game.Instance.BlueprintRoot == null ||
+                Game.Instance.BlueprintRoot.Progression == null
+                ? new BlueprintCharacterClass[0] :
+                Game.Instance.BlueprintRoot.Progression.CharacterClasses;
             Add(assertions, "blueprint-bootstrap", "initialized", BlueprintBootstrap.IsInitialized.ToString(),
                 BlueprintBootstrap.IsInitialized && gunslinger != null, "BlueprintBootstrap state");
-            Add(assertions, "gunslinger-class-singular", "exactly one project class reference",
-                "referenceCount=" + classes.Count(value => ReferenceEquals(value, cls)),
-                cls != null && classes.Count(value => ReferenceEquals(value, cls)) == 1,
-                "BlueprintRoot progression class catalog");
+            bool libraryRegistered = cls != null && BlueprintBootstrap.Library != null &&
+                BlueprintBootstrap.Library.BlueprintsByAssetId != null &&
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(cls.AssetGuid,
+                    out BlueprintScriptableObject libraryClass) &&
+                ReferenceEquals(libraryClass, cls);
+            Add(assertions, "gunslinger-blueprint-registered", "exact project class in library",
+                libraryRegistered ? cls.AssetGuid + "/" + cls.name : "missing-or-foreign",
+                libraryRegistered, "LibraryScriptableObject.BlueprintsByAssetId exact reference");
+            int referenceCount = classes.Count(value => ReferenceEquals(value, cls));
+            int guidCount = cls == null ? 0 : classes.Count(value => value != null &&
+                string.Equals(value.AssetGuid, cls.AssetGuid, StringComparison.Ordinal));
+            Add(assertions, "gunslinger-root-catalog-published", "exactly one project class by reference and GUID",
+                "referenceCount=" + referenceCount + ";guidCount=" + guidCount +
+                    ";count=" + classes.Length,
+                cls != null && referenceCount == 1 && guidCount == 1,
+                "Game.Instance.BlueprintRoot.Progression.CharacterClasses final player catalog");
+            Add(assertions, "gunslinger-class-selector-input", "Gunslinger exactly once",
+                "referenceCount=" + referenceCount + ";guidCount=" + guidCount,
+                cls != null && referenceCount == 1 && guidCount == 1,
+                "Kingmaker 2.1.7b CharBPhaseClassInChargen.m_ClassesCollection exact getter reads Game.Instance.BlueprintRoot.Progression.CharacterClasses");
+            AddCallOfTheWildCatalogAssertions(assertions, entries, classes);
             bool progression = gunslinger != null && gunslinger.Progression != null &&
                 gunslinger.Progression.LevelEntries != null &&
                 gunslinger.Progression.LevelEntries.Length == 20 &&
@@ -210,6 +230,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OfType<GritResourceAmountBonus>().Any(value => value.Attribute == StatType.Charisma);
             Add(assertions, "mysterious-stranger-charisma-grit", "Charisma", charisma ? "Charisma" : "changed",
                 charisma, "GritResourceAmountBonus.Attribute");
+        }
+
+        private static void AddCallOfTheWildCatalogAssertions(
+            List<RuntimeTestAssertion> assertions, IEnumerable<UnityModManager.ModEntry> entries,
+            BlueprintCharacterClass[] classes)
+        {
+            UnityModManager.ModEntry entry = entries.FirstOrDefault(value =>
+                string.Equals(value.Info.Id, "CallOfTheWild", StringComparison.Ordinal));
+            if (entry == null) return;
+            Type helpers = entry.Assembly == null ? null :
+                entry.Assembly.GetType("CallOfTheWild.Helpers", false, false);
+            FieldInfo field = helpers == null ? null : helpers.GetField("classes",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            IEnumerable registered = field == null ? null : field.GetValue(null) as IEnumerable;
+            var expected = new List<BlueprintCharacterClass>();
+            if (registered != null)
+                foreach (object value in registered)
+                {
+                    BlueprintCharacterClass characterClass = value as BlueprintCharacterClass;
+                    if (characterClass != null) expected.Add(characterClass);
+                }
+            string[] missing = expected.Where(value => !classes.Any(candidate =>
+                ReferenceEquals(candidate, value) || candidate != null &&
+                string.Equals(candidate.AssetGuid, value.AssetGuid, StringComparison.Ordinal)))
+                .Select(value => value.AssetGuid + "/" + value.name).ToArray();
+            Add(assertions, "call-of-the-wild-final-classes", "all Helpers.classes entries retained",
+                "expected=" + expected.Count + ";missing=" +
+                    (missing.Length == 0 ? "none" : string.Join(",", missing)),
+                expected.Count > 0 && missing.Length == 0,
+                "exact loaded CallOfTheWild.dll Helpers.classes reflected without compile dependency");
         }
 
         private static bool Rows(LevelEntry[] actual, int[] levels, BlueprintFeatureBase[][] features)
