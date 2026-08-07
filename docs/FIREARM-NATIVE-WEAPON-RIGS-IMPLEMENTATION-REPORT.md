@@ -2,6 +2,14 @@
 
 ## Outcome
 
+Finishing-pass audit: Pistol is deterministically bound to the intended Cyril43
+flintlock `model.dae`, distinct from Revolver's Navy Colt source. Revolver
+authoring removes 53 numeric-suffix duplicate preview objects. The failed custom
+long-gun shader is retired in favor of opaque Standard materials and generated
+reverse-wound backfaces. Exact bounds corrected Blunderbuss source-unit collapse
+and Rifle placement behind the grip; Musket's good held transform was preserved.
+Long-gun holsters remain hidden, so the awkward backpack pose is not shipped.
+
 All five equipped firearm rigs are enabled as `AutonomousCandidate` after
 deterministic bundle, runtime capability, exact native IK, projectile and guarded
 save-free regression qualification. Belt/back models remain independently

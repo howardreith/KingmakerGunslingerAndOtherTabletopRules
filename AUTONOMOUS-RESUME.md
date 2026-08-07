@@ -2,24 +2,20 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` starts this targeted repair at
-published commit `cf03ba8fd4834153fe03d8008a66cd7592c44950`, candidate version `0.0.71`.
-Active phase: targeted repair automated qualification complete; human visual
-review remains. Published implementation commit
-`d7b6bc1756ae89f5e043c5b3362a46e8fe614e8f` passed the guarded visual-rig,
-Wwise, and Targeting Arms scenarios while preserving current grips and
-animations. Exact Unity
-2018.4.10f1 produced two byte-identical bundles at
-`62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`.
-Musket/Blunderbuss diagnostics found no LODGroups, no mirrored scales, enabled
-renderers, and complete normal arrays; their held models alone now use Cull Off.
-Pistol's Visual child alone has the 180-degree roll correction. Belt/back models
-remain independently hidden. Exact published package/DLL SHA-256 are
-`6B3E85517C945B7CB6096E83C2946706749B91C142FA5C7412044EBDD5A03D81` /
-`B1C181740DF76179B145D5C9A03B420DADDB71E6AA938445FDBAA5351660CE5F`.
-Next action: supervised priority checklist in
-`docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`; no weapon is
-HumanAccepted. The
+Branch `codex/firearm-native-weapon-rigs` is at published handoff
+`8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49`, candidate version `0.0.71`.
+Active phase: finishing-pass source/package qualification complete; publication
+and guarded runtime qualification pending. Pistol is proven bound to Cyril43
+`model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
+preview objects are removed. Musket retains its good transform; Blunderbuss's
+proven `0.024 m` unit collapse and Rifle's proven behind-grip offset are
+corrected. Opaque Standard materials and generated reverse-wound backfaces
+replace the failed custom shader. Two exact Unity builds match at
+`4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
+Repository validation, 911/911 tests, exact-reference Release, build-output, and
+strict package validation pass. Next action: commit/push, rebuild exact published
+identity, then run guarded rig, switching, projectile, Wwise, Scatter, and
+reload scenarios. No weapon is HumanAccepted. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are

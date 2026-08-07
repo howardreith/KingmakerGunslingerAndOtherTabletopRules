@@ -196,18 +196,19 @@ namespace KingmakerGunslinger.Assets
                     Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(
                         true);
                     bool renderable = renderers.Any(renderer => renderer != null &&
+                        renderer.enabled && renderer.gameObject.activeSelf &&
                         renderer.sharedMaterials != null &&
                         renderer.sharedMaterials.Length > 0 &&
                         renderer.sharedMaterials.All(material => material != null &&
                             material.shader != null));
                     if (!renderable) failure = "renderable-materials-missing";
-                    else if ((kind == FirearmKind.Musket ||
-                        kind == FirearmKind.Blunderbuss) && renderers.Any(
-                            renderer => renderer.sharedMaterials.Any(material =>
-                                material == null || material.shader == null ||
-                                material.shader.name !=
-                                    "KingmakerGunslinger/DoubleSidedDiffuse")))
-                        failure = "held-long-gun-backface-culling-enabled";
+                    else if (renderers.Any(renderer => !renderer.enabled ||
+                        !renderer.gameObject.activeSelf))
+                        failure = "renderer-disabled-or-inactive";
+                    else if (renderers.Any(renderer =>
+                        renderer.sharedMaterials.Any(material =>
+                            material.shader.name != "Standard")))
+                        failure = "non-opaque-standard-shader";
                 }
                 if (failure == null && requiresTwoHandRig)
                 {

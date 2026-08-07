@@ -12,6 +12,7 @@ public static class BuildFirearmBundles
     {
         internal string Name;
         internal string Family;
+        internal string SourceModelFile;
         internal bool IsBeltOrBackModel;
         internal bool RequiresTwoHandRig;
         internal Vector3 VisualPosition;
@@ -30,37 +31,37 @@ public static class BuildFirearmBundles
 
     private static readonly FirearmPrefabSpec[] Specs =
     {
-        Spec("Pistol", "Pistol", false, false,
+        Spec("Pistol", "Pistol", "model.dae", false, false,
             new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 180f), 0.24f,
             new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
             "Crossbow", "autonomous-candidate; equipped-visual-roll-corrected"),
-        Spec("PistolBelt", "Pistol", true, false,
+        Spec("PistolBelt", "Pistol", "model.dae", true, false,
             Vector3.zero, new Vector3(0f, 90f, 90f), 0.24f,
             Vector3.zero, 0.264f, 0.15f, 0.45f,
             "None", "disabled; independent-holster-calibration-pending"),
-        Spec("Musket", "Musket", false, true,
+        Spec("Musket", "Musket", "Musket 01.fbx", false, true,
             new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f,
             new Vector3(0f, 0f, 0.8525f), 0.8525f, 0.55f, 1.60f,
             "Crossbow", "autonomous-calibration-candidate"),
-        Spec("MusketBelt", "Musket", true, false,
+        Spec("MusketBelt", "Musket", "Musket 01.fbx", true, false,
             Vector3.zero, Vector3.zero, 2.0f, Vector3.zero,
             0.8525f, 0.55f, 1.60f, "None",
             "disabled; independent-back-calibration-pending"),
-        Spec("Blunderbuss", "Blunderbuss", false, true,
-            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f,
+        Spec("Blunderbuss", "Blunderbuss", "Blunderbuss_Low_Poly.fbx", false, true,
+            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 20f,
             new Vector3(0f, 0f, 0.6875f), 0.6875f, 0.40f, 1.30f,
             "Crossbow", "autonomous-calibration-candidate"),
-        Spec("BlunderbussBelt", "Blunderbuss", true, false,
+        Spec("BlunderbussBelt", "Blunderbuss", "Blunderbuss_Low_Poly.fbx", true, false,
             Vector3.zero, Vector3.zero, 0.5f, Vector3.zero,
             0.6875f, 0.40f, 1.30f, "None",
             "disabled; independent-back-calibration-pending"),
-        Spec("Revolver", "Revolver", false, false,
+        Spec("Revolver", "Revolver", "Final2 Sketchfab.fbx", false, false,
             new Vector3(-0.0460553f, -0.1052241f, 0.1857974f),
             new Vector3(0f, 90f, 0f), 0.01719849f,
             new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
             "Crossbow", "source-unit-normalization-required"),
-        Spec("Rifle", "Rifle", false, true,
-            new Vector3(0f, 0f, -0.651f), new Vector3(0f, 90f, 0f),
+        Spec("Rifle", "Rifle", "fusilALevier.fbx", false, true,
+            new Vector3(0f, 0f, 0.20f), new Vector3(0f, 90f, 0f),
             1.5401387f, new Vector3(0f, 0f, 0.8525f),
             0.8525f, 0.55f, 1.60f, "Crossbow",
             "autonomous-calibration-candidate")
@@ -97,11 +98,14 @@ public static class BuildFirearmBundles
         string output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Builds/Windows"));
         Directory.CreateDirectory(output);
         BuildPipeline.BuildAssetBundles(output,
-            BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.DeterministicAssetBundle,
+            BuildAssetBundleOptions.ChunkBasedCompression |
+            BuildAssetBundleOptions.DeterministicAssetBundle |
+            BuildAssetBundleOptions.ForceRebuildAssetBundle,
             BuildTarget.StandaloneWindows64);
     }
 
     private static FirearmPrefabSpec Spec(string name, string family,
+        string sourceModelFile,
         bool isBeltOrBackModel, bool requiresTwoHandRig, Vector3 visualPosition,
         Vector3 visualEuler, float visualScale, Vector3 muzzlePosition,
         float expectedLengthMeters, float minimumLengthMeters,
@@ -112,6 +116,7 @@ public static class BuildFirearmBundles
         {
             Name = name,
             Family = family,
+            SourceModelFile = sourceModelFile,
             IsBeltOrBackModel = isBeltOrBackModel,
             RequiresTwoHandRig = requiresTwoHandRig,
             VisualPosition = visualPosition,
@@ -136,11 +141,23 @@ public static class BuildFirearmBundles
         ValidateSpec(spec);
         string folder = "Assets/ApprovedModels/" + spec.Family;
         string[] modelGuids = AssetDatabase.FindAssets("t:Model", new[] { folder });
-        if (modelGuids.Length != 1)
+        string[] modelPaths = Array.ConvertAll(modelGuids,
+            AssetDatabase.GUIDToAssetPath);
+        string[] matches = Array.FindAll(modelPaths, path =>
+            Path.GetFileName(path).Equals(spec.SourceModelFile,
+                StringComparison.OrdinalIgnoreCase));
+        if (matches.Length != 1)
             throw new InvalidOperationException(spec.Family +
-                " requires exactly one model; observed " + modelGuids.Length);
+                " requires exact source model " + spec.SourceModelFile +
+                "; observed matches=" + matches.Length + ";models=" +
+                string.Join("|", modelPaths));
         GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(
-            AssetDatabase.GUIDToAssetPath(modelGuids[0]));
+            matches[0]);
+        Debug.Log("KMG_RIG_BINDING name=" + spec.Name + ";family=" +
+            spec.Family + ";source=" + matches[0] + ";sourceGuid=" +
+            AssetDatabase.AssetPathToGUID(matches[0]) +
+            ";prefab=Assets/ApprovedModels/" + spec.Name + ".prefab" +
+            ";bundle=" + Bundle);
         GameObject root = new GameObject(spec.Name);
         GameObject visual = UnityEngine.Object.Instantiate(source, root.transform);
         visual.name = "Visual";
@@ -148,9 +165,13 @@ public static class BuildFirearmBundles
             UnityEngine.Object.DestroyImmediate(value.gameObject);
         foreach (Light value in visual.GetComponentsInChildren<Light>(true))
             UnityEngine.Object.DestroyImmediate(value.gameObject);
-        if (!spec.IsBeltOrBackModel &&
-            (spec.Family == "Musket" || spec.Family == "Blunderbuss"))
+        if (spec.Family == "Revolver")
+            RemoveDuplicatePreviewGeometry(visual, spec);
+        if (!spec.IsBeltOrBackModel && spec.RequiresTwoHandRig)
+        {
             RetainHighestDetailRenderers(visual, spec);
+            MakeHeldLongGunMeshesTwoSided(visual, spec);
+        }
         Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0)
             throw new InvalidOperationException(spec.Name + " has no renderer.");
@@ -160,6 +181,7 @@ public static class BuildFirearmBundles
         visual.transform.localPosition = spec.VisualPosition;
         visual.transform.localRotation = Quaternion.Euler(spec.VisualEuler);
         visual.transform.localScale = Vector3.one * spec.VisualScale;
+        LogHierarchyDiagnostics(visual, spec, renderers);
         GameObject muzzle = new GameObject("Muzzle");
         muzzle.transform.SetParent(root.transform, false);
         muzzle.transform.localPosition = spec.MuzzlePosition;
@@ -182,6 +204,102 @@ public static class BuildFirearmBundles
             ".prefab", root,
             ReplacePrefabOptions.ReplaceNameBased);
         UnityEngine.Object.DestroyImmediate(root);
+    }
+
+    private static void RemoveDuplicatePreviewGeometry(GameObject visual,
+        FirearmPrefabSpec spec)
+    {
+        int removed = 0;
+        Transform[] children = visual.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in children)
+        {
+            if (child == visual.transform) continue;
+            string name = child.name;
+            int dot = name.LastIndexOf('.');
+            int suffix;
+            if (dot > 0 && int.TryParse(name.Substring(dot + 1), out suffix))
+            {
+                UnityEngine.Object.DestroyImmediate(child.gameObject);
+                removed++;
+            }
+        }
+        Debug.Log("KMG_RIG_CLEANUP name=" + spec.Name +
+            ";removedDuplicatePreviewObjects=" + removed +
+            ";policy=retain-unsuffixed-low-poly-assembly");
+        if (removed == 0)
+            throw new InvalidOperationException(
+                "Revolver duplicate preview cleanup found no suffixed objects.");
+    }
+
+    private static void MakeHeldLongGunMeshesTwoSided(GameObject visual,
+        FirearmPrefabSpec spec)
+    {
+        string folder = "Assets/ApprovedModels/GeneratedMeshes";
+        if (!AssetDatabase.IsValidFolder(folder))
+            AssetDatabase.CreateFolder("Assets/ApprovedModels", "GeneratedMeshes");
+        int converted = 0;
+        foreach (MeshFilter filter in visual.GetComponentsInChildren<MeshFilter>(true))
+        {
+            Mesh source = filter.sharedMesh;
+            if (source == null) continue;
+            Mesh mesh = UnityEngine.Object.Instantiate(source);
+            mesh.name = spec.Name + "_" + Sanitize(TransformPath(
+                filter.transform, visual.transform)) + "_TwoSided";
+            for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+            {
+                int[] front = mesh.GetTriangles(submesh);
+                int[] both = new int[front.Length * 2];
+                Array.Copy(front, both, front.Length);
+                for (int index = 0; index < front.Length; index += 3)
+                {
+                    both[front.Length + index] = front[index];
+                    both[front.Length + index + 1] = front[index + 2];
+                    both[front.Length + index + 2] = front[index + 1];
+                }
+                mesh.SetTriangles(both, submesh);
+            }
+            mesh.RecalculateBounds();
+            string path = folder + "/" + Sanitize(mesh.name) + ".asset";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CreateAsset(mesh, path);
+            filter.sharedMesh = mesh;
+            converted++;
+        }
+        if (converted == 0)
+            throw new InvalidOperationException(spec.Name +
+                " has no MeshFilter eligible for two-sided held geometry.");
+        Debug.Log("KMG_RIG_CULLING name=" + spec.Name +
+            ";convertedMeshes=" + converted +
+            ";policy=opaque-standard-with-reversed-backfaces");
+    }
+
+    private static void LogHierarchyDiagnostics(GameObject visual,
+        FirearmPrefabSpec spec, Renderer[] renderers)
+    {
+        foreach (Transform child in visual.GetComponentsInChildren<Transform>(true))
+        {
+            string components = string.Join("|", Array.ConvertAll(
+                child.GetComponents<Component>(), value => value == null ?
+                    "<null>" : value.GetType().Name));
+            Debug.Log("KMG_RIG_TRANSFORM name=" + spec.Name + ";path=" +
+                TransformPath(child, visual.transform) + ";position=" +
+                child.localPosition.ToString("R") + ";rotation=" +
+                child.localEulerAngles.ToString("R") + ";scale=" +
+                child.localScale.ToString("R") + ";components=" + components);
+        }
+        Bounds bounds = CalculateBounds(renderers);
+        Debug.Log("KMG_RIG_BOUNDS name=" + spec.Name + ";center=" +
+            bounds.center.ToString("R") + ";size=" + bounds.size.ToString("R") +
+            ";magnitude=" + bounds.size.magnitude.ToString("R") +
+            ";renderers=" + renderers.Length);
+        if (!spec.IsBeltOrBackModel && spec.RequiresTwoHandRig &&
+            (bounds.size.magnitude < spec.MinimumLengthMeters ||
+             bounds.size.magnitude > spec.MaximumLengthMeters))
+            throw new InvalidOperationException(spec.Name +
+                " rendered bounds magnitude is outside its long-gun contract: " +
+                bounds.size.magnitude.ToString("R") + " not in [" +
+                spec.MinimumLengthMeters.ToString("R") + "," +
+                spec.MaximumLengthMeters.ToString("R") + "]");
     }
 
     private static void RetainHighestDetailRenderers(GameObject visual,
@@ -342,8 +460,6 @@ public static class BuildFirearmBundles
         Renderer[] renderers)
     {
         string family = spec.Family;
-        bool doubleSidedHeldLongGun = !spec.IsBeltOrBackModel &&
-            (family == "Musket" || family == "Blunderbuss");
         string materialFolder = "Assets/ApprovedModels/GeneratedMaterials";
         if (!AssetDatabase.IsValidFolder(materialFolder))
             AssetDatabase.CreateFolder("Assets/ApprovedModels", "GeneratedMaterials");
@@ -354,8 +470,7 @@ public static class BuildFirearmBundles
             for (int index = 0; index < source.Length; index++)
             {
                 string key = source[index] == null ? "material" + index : source[index].name;
-                string path = materialFolder + "/" + family +
-                    (doubleSidedHeldLongGun ? "_Held_" : "_") +
+                string path = materialFolder + "/" + family + "_" +
                     Sanitize(key) + ".mat";
                 Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (material == null)
@@ -367,16 +482,16 @@ public static class BuildFirearmBundles
                     material.SetFloat("_Glossiness", 0.25f);
                     AssetDatabase.CreateAsset(material, path);
                 }
-                if (doubleSidedHeldLongGun)
-                {
-                    Shader doubleSided = Shader.Find(
-                        "KingmakerGunslinger/DoubleSidedDiffuse");
-                    if (doubleSided == null)
-                        throw new InvalidOperationException(
-                            "Bundled double-sided held-weapon shader is unavailable.");
-                    material.shader = doubleSided;
-                    EditorUtility.SetDirty(material);
-                }
+                material.shader = Shader.Find("Standard");
+                material.SetFloat("_Mode", 0f);
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = -1;
+                EditorUtility.SetDirty(material);
                 assigned[index] = material;
             }
             renderer.sharedMaterials = assigned;

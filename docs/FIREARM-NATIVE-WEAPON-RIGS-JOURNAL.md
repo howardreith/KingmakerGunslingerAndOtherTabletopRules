@@ -506,3 +506,54 @@ Entries are append-only in spirit.
   all camera-angle disappearance and whether Pistol is upright with a visually
   correct muzzle. No weapon is HumanAccepted.
 - Next action: follow the priority order in the manual acceptance document.
+
+## 2026-08-07T18:10:00Z - Human-screenshot finishing-pass plan
+
+- Branch/commit before work: `codex/firearm-native-weapon-rigs` /
+  `8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49` (published, clean).
+- Human evidence: regular Pistol is broadly acceptable but reads like Revolver;
+  Advanced Revolver exposes garbage/helper-like geometry; all three custom held
+  long guns are effectively invisible; Musket back placement remains bad.
+- Frozen baseline: preserve every held grip root, Visual transform, long-gun
+  support target, muzzle, and animation unless exact binding/renderer evidence
+  requires an isolated correction. Do not solve belt placement through held rigs.
+- Plan: (1) add deterministic source-to-runtime prefab identity audit; (2) dump
+  all approved hierarchy/components/renderers and remove only proven helper
+  geometry; (3) trace long-gun renderer/material/LOD/scale/bounds publication and
+  repair the narrow failure, validating runtime visible-renderer capability;
+  (4) verify native left-hand IK remains present without retuning it; (5) keep
+  long-gun belt models hidden unless a separately proven clean calibration exists;
+  (6) run exact Unity determinism, full source/package gates, and guarded rig,
+  switching, projectile, Wwise, Scatter, and reload regressions.
+- Next action: inspect the exact builder import/spec mapping and staged source
+  hierarchies before changing production behavior.
+
+## 2026-08-07T19:00:00Z - Exact binding and renderer-cause audit
+
+- Branch/commit before experiment: `8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49`.
+- Exact Unity logs: `finishing-pass-audit.log` and
+  `finishing-pass-repair-{2,3}.log` under the approved Unity build root.
+- Binding proof: Pistol -> Cyril43
+  `Assets/ApprovedModels/Pistol/model/model.dae` GUID
+  `a8e1a1da7d7120046b38ce3d758c8eed`; Revolver -> Navy Colt
+  `Assets/ApprovedModels/Revolver/source/Final2 Sketchfab.fbx` GUID
+  `a60608927a6bcfd458cb2d4b03b93fde`. They are distinct families/prefabs.
+- Revolver: removed 53 numeric-suffix duplicate preview objects; retained 51
+  unsuffixed low-poly renderers.
+- Long-gun evidence: Musket bounds were healthy at `0.6529304 m`; Blunderbuss
+  was a `0.024450602 m` speck; Rifle was `1.57617009 m` but centered at
+  `z=-0.651` behind the grip. Named fore-end/stock transforms confirmed axis.
+- Narrow repair: retire failed custom shader; opaque Standard materials plus
+  generated reverse-wound backfaces; Blunderbuss Visual scale `0.5 -> 20`;
+  Rifle Visual z `-0.651 -> 0.20`. Musket transform, grip roots, IK targets,
+  muzzles, animations, and hidden holsters are unchanged.
+- Repaired bounds: Musket `0.6529304 m`, Blunderbuss `0.978023946 m`, Rifle
+  `1.57617021 m`. Two forced builds matched at AssetBundle SHA-256
+  `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
+- Source/package result: **pass** repository validation, 911/911 tests,
+  exact-reference Release, build-output, and strict package validation.
+  Provisional package/DLL SHA-256:
+  `6A9EE18170CC301BBF4F5F8C0FEA666C7F9D17E19D49520A8462AD659893E3E6` /
+  `349E2B788BFD1F1DACADB3510DEE3A5F878E9FC4417EBCADF43A9BF567AD2959`.
+- Next action: publish, rebuild exact identity, then guarded presentation and
+  frozen-contract regressions.

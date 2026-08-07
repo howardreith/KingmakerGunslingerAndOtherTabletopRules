@@ -4177,6 +4177,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             return string.Join("/", names.ToArray());
         }
 
+        private static string DescribeFirearmRenderers(Renderer[] renderers,
+            out bool visiblyRenderable)
+        {
+            Renderer[] values = renderers ?? Array.Empty<Renderer>();
+            int visible = values.Count(value => value != null && value.enabled &&
+                value.gameObject.activeInHierarchy);
+            bool materials = values.Length > 0 && values.All(value =>
+                value != null && value.sharedMaterials != null &&
+                value.sharedMaterials.Length > 0 &&
+                value.sharedMaterials.All(material => material != null &&
+                    material.shader != null && material.shader.name == "Standard"));
+            Bounds bounds = values.Length == 0 ? new Bounds() : values[0].bounds;
+            for (int index = 1; index < values.Length; index++)
+                bounds.Encapsulate(values[index].bounds);
+            string shaders = string.Join("|", values.SelectMany(value =>
+                    value.sharedMaterials).Select(material => material.shader.name)
+                .Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray());
+            visiblyRenderable = visible == values.Length && materials &&
+                bounds.size.sqrMagnitude > 0.01f;
+            return "rendererCount=" + values.Length + ";visibleCount=" + visible +
+                ";shaders=" + shaders + ";boundsCenter=" +
+                bounds.center.ToString("R") + ";boundsSize=" +
+                bounds.size.ToString("R");
+        }
+
         private RuntimeTestResult RunDisposableFirearmVisualRigs()
         {
             var assertions = new List<RuntimeTestAssertion>();
@@ -4217,7 +4242,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
                 EquipmentOffsets offsets = instance == null ? null : instance.GetComponent<EquipmentOffsets>();
                 Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
-                string observed = capability.Describe() + ";renderers=" + renderers.Length;
+                bool visiblyRenderable;
+                string rendererSummary = DescribeFirearmRenderers(renderers,
+                    out visiblyRenderable);
+                string observed = capability.Describe() + ";" + rendererSummary;
                 assertions.Add(Assertion(id + "-readiness", "AutonomousCandidate pending human review",
                     profile.EquippedPolicy, profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate && profile.EquippedModel != null,
                     "exact per-kind profile and validated capability"));
@@ -4225,6 +4253,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, instance != null && visual != null && muzzle != null && support != null && renderers.Length > 0 &&
                         instance.transform.localPosition == Vector3.zero && instance.transform.localRotation == Quaternion.identity && instance.transform.localScale == Vector3.one,
                     "transient custom long-gun instance"));
+                assertions.Add(Assertion(id + "-visible-renderers",
+                    "all enabled and active; opaque Standard materials; nontrivial bounds",
+                    rendererSummary, visiblyRenderable,
+                    "runtime-loaded AssetBundle prefab renderer/material/bounds audit"));
                 assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
                     observed, offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
                     "exact installed Kingmaker EquipmentOffsets"));
@@ -4261,9 +4293,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
                 Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
                 Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
+                bool visiblyRenderable;
+                string rendererSummary = DescribeFirearmRenderers(renderers,
+                    out visiblyRenderable);
                 WeaponVisualParameters effective = ReadField(item, "m_VisualParameters") as WeaponVisualParameters;
                 int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
-                string observed = capability.Describe() + ";renderers=" + renderers.Length + ";anim=" +
+                string observed = capability.Describe() + ";" + rendererSummary + ";anim=" +
                     (effective == null ? "<null>" : effective.AnimStyle.ToString());
                 assertions.Add(Assertion(id + "-readiness", "AutonomousCandidate pending human review",
                     profile.EquippedPolicy, profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate && profile.EquippedModel != null,
@@ -4272,6 +4307,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, instance != null && visual != null && muzzle != null && support == null && renderers.Length > 0 &&
                         instance.transform.localPosition == Vector3.zero && instance.transform.localRotation == Quaternion.identity && instance.transform.localScale == Vector3.one,
                     "transient custom one-handed instance"));
+                assertions.Add(Assertion(id + "-visible-renderers",
+                    "all enabled and active; opaque Standard materials; nontrivial bounds",
+                    rendererSummary, visiblyRenderable,
+                    "runtime-loaded AssetBundle prefab renderer/material/bounds audit"));
                 assertions.Add(Assertion(id + "-animation-candidate", "PiercingOneHanded",
                     observed, effective != null && effective.AnimStyle == WeaponAnimationStyle.PiercingOneHanded,
                     "effective production item visual parameters"));

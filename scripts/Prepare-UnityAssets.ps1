@@ -14,11 +14,6 @@ $editor = Join-Path $ProjectPath 'Assets\Editor'
 New-Item -ItemType Directory -Force -Path $editor | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'tools\unity\BuildFirearmBundles.cs') `
     -Destination (Join-Path $editor 'BuildFirearmBundles.cs') -Force
-$approvedShaders = Join-Path $ProjectPath 'Assets\ApprovedShaders'
-New-Item -ItemType Directory -Force -Path $approvedShaders | Out-Null
-Copy-Item -LiteralPath (Join-Path $root 'tools\unity\KmgDoubleSidedDiffuse.shader') `
-    -Destination (Join-Path $approvedShaders 'KmgDoubleSidedDiffuse.shader') -Force
-
 $staging = @(
     @{ Name='Pistol'; Source=(Join-Path $models 'cyril43-flintlock-pistol\source\pistol.zip'); Zip=$true },
     @{ Name='Musket'; Source=(Join-Path $models 'mesh-masters-rifle-musket'); Zip=$false },

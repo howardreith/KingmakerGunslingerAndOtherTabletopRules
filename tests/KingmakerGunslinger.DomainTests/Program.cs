@@ -1399,32 +1399,48 @@ namespace KingmakerGunslinger.DomainTests
             string builder = ThirdPlaytestSource("tools/unity/BuildFirearmBundles.cs");
             string runtime = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
+            string runner = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
             Assertions.True(builder.Contains(
                     "new Vector3(0f, 180f, 180f), 0.24f") &&
                 builder.Contains("RetainHighestDetailRenderers(visual, spec)") &&
                 builder.Contains("policy=retain-lod0-and-remove-lodgroup") &&
                 builder.Contains("KMG_RIG_RENDERER") &&
                 builder.Contains("mesh=") && builder.Contains("materials=") &&
-                builder.Contains("doubleSidedHeldLongGun") &&
-                builder.Contains("KingmakerGunslinger/DoubleSidedDiffuse") &&
+                builder.Contains("MakeHeldLongGunMeshesTwoSided") &&
+                builder.Contains("policy=opaque-standard-with-reversed-backfaces") &&
+                builder.Contains("material.shader = Shader.Find(\"Standard\")") &&
                 builder.Contains("vertices=") && builder.Contains("normals=") &&
                 builder.Contains("ValidateVisibleScales") &&
+                builder.Contains("KMG_RIG_BINDING") &&
+                builder.Contains("KMG_RIG_TRANSFORM") &&
+                builder.Contains("KMG_RIG_BOUNDS") &&
+                builder.Contains("RemoveDuplicatePreviewGeometry") &&
+                builder.Contains("retain-unsuffixed-low-poly-assembly") &&
+                builder.Contains("\"model.dae\"") &&
+                builder.Contains("\"Final2 Sketchfab.fbx\"") &&
                 builder.Contains("Pistol equipped Visual must carry the isolated 180-degree roll correction") &&
                 runtime.Contains("lod-group-present") &&
                 runtime.Contains("negative-mirrored-zero-or-nonfinite-scale") &&
-                runtime.Contains("held-long-gun-backface-culling-enabled"),
-                "Visibility repair must isolate Pistol roll, retain LOD0 for held long guns, log renderer contracts, and reject mirrored scales at build and runtime.");
+                runtime.Contains("renderer-disabled-or-inactive") &&
+                runtime.Contains("non-opaque-standard-shader") &&
+                runner.Contains("DescribeFirearmRenderers") &&
+                runner.Contains("-visible-renderers") &&
+                runner.Contains("visibleCount=") &&
+                runner.Contains("boundsSize=") &&
+                runner.Contains("runtime-loaded AssetBundle prefab renderer/material/bounds audit"),
+                "Finishing repair must prove source binding, isolate Pistol roll, clean Revolver duplicates, retain LOD0, generate opaque two-sided long-gun geometry, audit hierarchy/bounds, and reject inactive renderers.");
             Assertions.True(builder.Contains(
-                    "Spec(\"Musket\", \"Musket\", false, true,\n            new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f") &&
+                    "Spec(\"Musket\", \"Musket\", \"Musket 01.fbx\", false, true,\n            new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f") &&
                 builder.Contains(
-                    "Spec(\"Blunderbuss\", \"Blunderbuss\", false, true,\n            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f"),
-                "Held Musket and Blunderbuss grip transforms changed during renderer isolation.");
-            string shader = ThirdPlaytestSource(
-                "tools/unity/KmgDoubleSidedDiffuse.shader");
-            Assertions.True(shader.Contains("Cull Off") &&
-                shader.Contains("RenderType\"=\"Opaque") &&
-                shader.Contains("#pragma surface surf Lambert"),
-                "Held-only visibility shader must be opaque, diffuse, and explicitly double-sided.");
+                    "Spec(\"Blunderbuss\", \"Blunderbuss\", \"Blunderbuss_Low_Poly.fbx\", false, true,\n            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 20f") &&
+                builder.Contains(
+                    "Spec(\"Rifle\", \"Rifle\", \"fusilALevier.fbx\", false, true,\n            new Vector3(0f, 0f, 0.20f)"),
+                "Held Musket baseline or evidence-derived Blunderbuss/Rifle visibility calibration is missing.");
+            Assertions.True(!System.IO.File.Exists(System.IO.Path.Combine(
+                Environment.CurrentDirectory,
+                "tools/unity/KmgDoubleSidedDiffuse.shader")),
+                "The runtime-invisible custom held shader must remain retired.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

@@ -18,10 +18,14 @@ def validate(root:Path)->None:
     if (root/"src/KingmakerGunslinger/Assets/FirearmVisualEquipmentHandler.cs").exists():raise AssertionError("obsolete renderer scan returned")
     builder=(root/"tools/unity/BuildFirearmBundles.cs").read_text(encoding="utf-8")
     for token in ("RetainHighestDetailRenderers", "KMG_RIG_RENDERER",
-                  "ValidateVisibleScales", "doubleSidedHeldLongGun",
-                  "KingmakerGunslinger/DoubleSidedDiffuse",
+                  "ValidateVisibleScales", "MakeHeldLongGunMeshesTwoSided",
+                  "policy=opaque-standard-with-reversed-backfaces",
+                  "KMG_RIG_BINDING", "KMG_RIG_TRANSFORM", "KMG_RIG_BOUNDS",
+                  "RemoveDuplicatePreviewGeometry", "model.dae",
+                  "Final2 Sketchfab.fbx",
                   "new Vector3(0f, 180f, 180f), 0.24f"):
         if token not in builder:raise AssertionError(f"visibility repair missing: {token}")
+    if (root/"tools/unity/KmgDoubleSidedDiffuse.shader").exists():raise AssertionError("runtime-invisible custom shader returned")
 def main()->int:
     p=argparse.ArgumentParser();p.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1]);a=p.parse_args()
     try:validate(a.root.resolve())

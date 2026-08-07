@@ -40,3 +40,10 @@ Do not use this lever-action model as the early Musket.
   `D902F279D8E745BC7852ABDEF6F7C03B97128C92F38641101D5DFC140E39FBFD`,
   reproduced by two consecutive builds. Packaged output hashes are recorded in
   the release report.
+
+## 2026-08-07 held visibility correction
+
+Exact hierarchy/bounds evidence showed the `1.57617009 m` rifle centered at rig
+z `-0.651`, placing almost all geometry behind the grip. Visual z is corrected
+to `0.20`; opaque Standard materials and generated reverse-wound backfaces are
+used. Grip root, support target, muzzle, animation, and original source are unchanged.
