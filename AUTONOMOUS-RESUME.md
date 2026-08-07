@@ -95,6 +95,10 @@ Dedicated Dodge run `20260807T2050596684740Z-855d97503f97488086afa4b2c7268038`
 still lacked its inner exception because the top-level summary truncated it.
 The central summary now preserves the full exception chain. Qualify/publish and
 run exactly one more standalone Dodge diagnostic before choosing a repair.
+The full exception proves a finished detached command reports `Interrupt`.
+The fixture now records the enum and evaluates the actual strict Dodge effects.
+Qualify/publish and rerun standalone Dodge once; its effect assertions will
+decide whether further repair is required.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

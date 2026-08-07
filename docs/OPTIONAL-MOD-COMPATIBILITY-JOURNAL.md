@@ -282,3 +282,10 @@
   inner exceptions and the exact game log contained no nested trace.
   `ExceptionSummary` now preserves `Exception.ToString()` so the next single
   diagnostic run can identify the actual native command failure.
+- Full-chain Dodge run
+  `20260807T2054129739533Z-dcc9e8bb415c491f80cd306230dde85f` identified the
+  exact nested condition: the detached native command finished with
+  `result=Interrupt`. The fixture now records that result and continues to its
+  existing strict mechanical assertions instead of treating the result enum as
+  the behavior. Missing Grit spend, buff, AC, availability, or cleanup still
+  fails closed.

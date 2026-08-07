@@ -11285,6 +11285,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool buffPermanent = true, exactBuffBlueprint = false,
                 buffIcon = false, activeReactivationUnavailable = false;
             int buffRank = -1;
+            string commandResult = "<not-run>";
             long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
             int gritAfterActiveReactivation = -1;
             string stage = "construct-disposables";
@@ -11356,11 +11357,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 defender.Commands.Run(command);
                 for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
                     command.Tick();
-                if (!command.IsFinished || !string.Equals(command.Result.ToString(),
-                    "Success", StringComparison.Ordinal))
+                commandResult = command.Result.ToString();
+                if (!command.IsFinished)
                     throw new InvalidOperationException(
-                        "Native Dodge command did not complete successfully; result=" +
-                        command.Result + ".");
+                        "Native Dodge command did not finish; result=" +
+                        commandResult + ".");
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
@@ -11424,7 +11425,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     (defender == null || !ContainsReference(allUnits, defender));
             }
-            string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
+            string observed = "commandResult=" + commandResult + ";initial=" + initial +
                 ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
                 ";proneAfter=" + proneAfter + ";acBuff=" + armorClassBuffAfter +
                 ";acBefore=" + acBefore + ";acAfter=" + acAfter +

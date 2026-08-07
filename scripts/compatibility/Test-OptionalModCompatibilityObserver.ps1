@@ -66,7 +66,7 @@ if (-not $launcher.Contains("'gunslinger-qualified-combined'")) {
 $runnerSource = Get-Content -LiteralPath (Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs') -Raw
 foreach ($contract in @('"spent to 0; remains 0"', 'afterUnaware == 0',
-    'return exception.ToString();')) {
+    'return exception.ToString();', '"commandResult=" + commandResult')) {
     if (-not $runnerSource.Contains($contract)) {
         throw "Compatibility diagnostic fixture contract missing: $contract"
     }
