@@ -347,3 +347,28 @@ Entries are append-only in spirit.
   `395278EA216126828FC361C126FBBD1C0AB87FB6459323509910DF3A69112D2D`.
 - Result: **pass**. The dangerous renderer scan is absent and cannot be compiled.
 - Next action: commit/push, rerun all-five rig runtime, then frozen regressions.
+
+## 2026-08-07T08:45:00Z - All-five published runtime and frozen regressions
+
+- Branch/commit before experiment: published `54eeeea460844e66d1fff286b0b494ceeb27e6a2`.
+- Question: do all five candidate rigs and frozen Wwise/projectile/Scatter/reload/
+  switching contracts pass on consecutive fresh guarded Steam launches?
+- Commands: `disposable-firearm-visual-rigs`, `disposable-firearm-wwise-audio`,
+  `disposable-gunslinger-scatter-shot`, `disposable-gunslinger-targeting-arms`,
+  `disposable-reload-autocast`, `disposable-production-firearm-switching`.
+- Evidence: all PASS. Run/result SHA-256 pairs:
+  - rigs `20260807T0434551954973Z-4133c90579c64263a335b8c204cf324c` /
+    `83ABC30BAC60F8A7421A57F4BFD4D0997F5DE4A53420E1782A5218483C9ADED2`;
+  - Wwise `20260807T0436296097402Z-6e9bf6f1c99d40178aa87dcf83503ce0` /
+    `39B0A0C04686F89BCB2F87E78E6D0C4EBA6E7DCA07436BE1EB46BF224F5CB048`;
+  - Scatter `20260807T0438026145108Z-9ebe4496e4564c6abcddc40009259765` /
+    `5B7AA2628DB301EA9662612631357D70F76D599A1675852F2FA77EF44F126AE9`;
+  - Targeting Arms `20260807T0439386747600Z-42a04e5453d541ce9ad2384333ee26f7` /
+    `D3F2AC530EEDEACF4A1B143E3B8FC5F472C439CAF0527C2AB037A29D21749167`;
+  - reload `20260807T0441122052582Z-911155a36df8478fae5987f4f7f7fc54` /
+    `B8DAE899E2AC41F4C06FB246BF379F1B828097B9909CA86E2AF51D8FCD41B5AA`;
+  - switching `20260807T0442452610862Z-0f5acf42894c424aafbdb68db55d1c3f` /
+    `9AA564F9B3AB1208E5D8BEF065FB547931AD54AC9CA2550A423913FF4A792A60`.
+- Result: **pass**. No save was used or written. These are structural/mechanical
+  results only; appearance remains unaccepted.
+- Next action: exact slot-scoped sheath/quiver lifecycle and doll refresh.

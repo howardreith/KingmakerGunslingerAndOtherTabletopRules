@@ -14,7 +14,9 @@ All five firearms are `AutonomousCandidate`; none is `HumanAccepted`;
 no visual acceptance is claimed. Published commit `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`
 passed guarded smoke and `disposable-firearm-visual-rigs`; exact evidence is in
 the journal. Next command: commit/push long-gun source, then run guarded visual
-rig scenario for all five on the scan-retirement commit, then run frozen regressions.
+rig scenario and frozen regressions passed on the scan-retirement commit. Next
+action: commit/push curated evidence/report, then implement exact slot-scoped
+sheath/quiver lifecycle and inventory-doll refresh before final 0.0.71 identity.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at

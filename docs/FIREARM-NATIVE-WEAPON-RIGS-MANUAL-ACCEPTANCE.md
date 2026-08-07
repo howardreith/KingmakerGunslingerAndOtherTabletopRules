@@ -1,11 +1,17 @@
 # Firearm native weapon rigs manual acceptance
 
-Candidate identity is pending. Before use, fill exact version, commit, package
-path/SHA-256, DLL SHA-256, AssetBundle SHA-256, rig-manifest SHA-256,
-installation path, and authorized save (`KMG_AUTOMATION_WORKING`). Never use or
-overwrite `KMG_AUTOMATION_BASELINE`.
+Candidate: version `0.0.70`, commit
+`54eeeea460844e66d1fff286b0b494ceeb27e6a2`. Package
+`artifacts/local-runtime/0.0.70/KingmakerGunslinger-0.0.70-local-runtime.zip`,
+SHA-256 `655B4C2A59DF09A689A5C49A70B818650DFBD1276BB5A99A2982D1D3331B94AB`;
+DLL `395278EA216126828FC361C126FBBD1C0AB87FB6459323509910DF3A69112D2D`;
+AssetBundle `88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`;
+rig manifest `2DD5D5F69C99925B8D390292B1FC3045BC7775CBB04B3D136FF0938D04BF9CA6`.
+Install to the guarded script-selected Kingmaker UMM mod directory. Use only
+`KMG_AUTOMATION_WORKING`; never overwrite `KMG_AUTOMATION_BASELINE`.
 
-For each Pistol, Musket, Blunderbuss, Rifle, and Revolver:
+Repeat this block separately for Pistol, Musket, Blunderbuss, Rifle, and
+Revolver; record the firearm beside every checked result:
 
 - [ ] Inventory doll and world models are visible; intended firing-hand grip,
   outward muzzle, credible scale, acceptable peaceful/combat idle, draw, and
@@ -22,6 +28,14 @@ For each Pistol, Musket, Blunderbuss, Rifle, and Revolver:
   dwarf, small race, half-orc, enlarged/reduced, and practical death/revival or
   equipment-disable lifecycle are acceptable; native crossbows remain normal.
 
+Completion rows:
+
+- [ ] Pistol block complete; `PiercingOneHanded` does not read as throwing or stabbing.
+- [ ] Musket block complete; support hand remains on the fore-end.
+- [ ] Blunderbuss block complete; support hand is on wood, not the flared muzzle; Scatter is clean.
+- [ ] Rifle block complete; stock, fore-end and muzzle alignment are credible.
+- [ ] Revolver block complete; scale is credible and independently calibrated from Pistol.
+
 ## Failure report
 
 Record firearm, body/race, state, action, camera, symptom, screenshot/video if
@@ -33,4 +47,3 @@ Screenshots are supporting visual evidence only, never mechanical proof.
 After candidate identities are filled, load only `KMG_AUTOMATION_WORKING`
 through the normal authorized UI, open the inventory doll, and evaluate the
 Musket model/rig checklist first using the native/custom calibration toggle.
-
