@@ -30,13 +30,14 @@ namespace KingmakerGunslinger.Blueprints
                     .OfType<AbilityDeliverProjectile>()
                     .Single(value => value.Type == AbilityProjectileType.Cone);
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                Symbol, () => Create(burningHands, nativeCone));
+                Symbol, () => Create(burningHands, nativeCone,
+                    FirearmProjectileBlueprints.Projectile));
             Validate(ability);
             return ability;
         }
 
         private static BlueprintAbility Create(BlueprintAbility burningHands,
-            AbilityDeliverProjectile nativeCone)
+            AbilityDeliverProjectile nativeCone, BlueprintProjectile firearmProjectile)
         {
             var result = ScriptableObject.CreateInstance<BlueprintAbility>();
             result.name = "KMG_ScatterShot_Ability";
@@ -67,7 +68,7 @@ namespace KingmakerGunslinger.Blueprints
                 ? Array.Empty<string>()
                 : (string[])burningHands.ResourceAssetIds.Clone();
             result.ComponentsArray = new BlueprintComponent[] {
-                ScatterShotAbilityLogic.Create(nativeCone) };
+                ScatterShotAbilityLogic.Create(nativeCone, firearmProjectile) };
             return result;
         }
 

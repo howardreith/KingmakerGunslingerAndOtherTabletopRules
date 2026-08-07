@@ -13,4 +13,20 @@ bank hash, game version, audio device, and observer.
 - [ ] Blunderbuss baked-in reverb is acceptable.
 - [ ] Equip, unequip, and inventory sounds remain intact.
 
+## 2026-08-06 observed results before auditory-polish fixes
+
+- [x] Pistol custom report is correct and sounds good.
+- [x] Musket custom report is correct and sounds excellent.
+- [x] Blunderbuss custom report exists and maps to the shotgun recording.
+- [ ] Blunderbuss timing failed: the approved processed source's blast began
+  around 2.20 seconds. A deterministic 2.180-second trim is now implemented
+  and requires fresh listening.
+- [ ] Blunderbuss misfire exposed an inherited crossbow release. Firearm
+  presentation now severs prototype fallback after resolving protected fields
+  and clears only the release/whoosh Event; requires fresh listening.
+- [x] Scatter posts the custom Blunderbuss report.
+- [ ] Scatter also played borrowed Burning Hands audio. Its cone geometry now
+  uses the firearm projectile rather than the spell projectile; requires fresh
+  listening and visual confirmation.
+
 A nonzero Wwise playing ID is not evidence that any checklist item was heard.

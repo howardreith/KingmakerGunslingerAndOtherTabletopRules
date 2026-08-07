@@ -122,16 +122,14 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/FirearmWeaponPresentation.cs")
     validate_playtest66.require(
         presentation,
-        "complete cloned native presentation contract",
-        "including Prototype",
+        "Resolve every prototype-backed presentation value",
+        'Set(visual, "m_WhooshSound", string.Empty)',
+        'Set(visual, "<Prototype>k__BackingField", null)',
         'Set(visual, "m_Projectiles"',
         "if (equipped != null)",
         "if (belt != null)",
         "if (sheath != null)")
-    reject(
-        presentation,
-        "WeaponSoundType.None", "WeaponMissSoundType.None",
-        "FlattenResolvedNativePresentation", "<Prototype>k__BackingField")
+    reject(presentation, "WeaponSoundType.None", "WeaponMissSoundType.None")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs",
         "AssetBundle candidate", "Published firearm bundle transactionally",
@@ -168,12 +166,13 @@ def validate(root: Path) -> None:
         "4783c3709a74a794dbe7c8e7e0b1b038",
         "native Burning Hands cone presentation",
         "AbilityRange.Custom", "CustomRange = new Feet(15f)",
-        "CanTargetPoint = true", "ScatterShotAbilityLogic.Create(nativeCone)",
+        "CanTargetPoint = true", "ScatterShotAbilityLogic.Create(nativeCone,",
         "burningHands.ResourceAssetIds")
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Scatter/ScatterShotAbilityLogic.cs",
         "class ScatterShotAbilityLogic : AbilityDeliverProjectile",
-        "nativeCone.Length.Value != 15", "base.Deliver(context, target)",
+        "nativeCone.Length.Value != 15", "new[] { firearmProjectile }",
+        "base.Deliver(context, target)",
         "presentation.failed", "ScatterShotRuntime.ExecuteFromAbility")
 
     validate_playtest66.require(

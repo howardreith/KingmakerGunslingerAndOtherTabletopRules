@@ -8,7 +8,7 @@
   "events": [
     { "event": "KMG_Firearm_Pistol_Shot", "source": "GUNAntq_Flintlock fire_CS_USC.wav" },
     { "event": "KMG_Firearm_Musket_Shot", "source": "GUNAntq_Musket shots_CS_USC.wav" },
-    { "event": "KMG_Firearm_Blunderbuss_Shot", "source": "GUNShotg_Classic western shotgun blast with reverb_CS_USC.wav" },
+    { "event": "KMG_Firearm_Blunderbuss_Shot", "source": "GUNShotg_Classic western shotgun blast with reverb_CS_USC.wav", "derivation": "remove exactly 2.180 seconds (104640 frames at 48000 Hz) from approved processed PCM WAV; retain remaining reverb tail", "derivedFromProcessedSha256": "E210953771458F867A9E5D314E9857CE442AF649E86E6BA541EEBA2DE54CF53F", "derivedSha256": "F3F1E94701C86D946679DAD5F1AE4577553D0DED23404D356E9ADC71ED9488E3" },
     { "event": "KMG_Firearm_Revolver_Shot", "source": "GUNPis_Exterior pistol shot_CS_USC.wav" },
     { "event": "KMG_Firearm_Rifle_Shot", "source": "GUNAntq_Flintlock rifle fire_CS_USC.wav" }
   ]

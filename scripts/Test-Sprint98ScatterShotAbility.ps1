@@ -9,7 +9,7 @@ $bootstrap = Get-Content -Raw (Join-Path $root 'src\KingmakerGunslinger\Bootstra
 $manifest = Get-Content -Raw (Join-Path $root 'blueprints\blueprints.json')
 foreach ($token in @('BurningHandsGuid', 'AbilityRange.Custom',
   'CustomRange = new Feet(15f)', 'CommandType.Standard',
-  'ScatterShotAbilityLogic.Create(nativeCone)', 'CanTargetPoint = true',
+  'ScatterShotAbilityLogic.Create(nativeCone,', 'CanTargetPoint = true',
   'AbilityProjectileType.Cone',
   'burningHands.ResourceAssetIds')) {
   if (-not $ability.Contains($token)) { throw "Missing Scatter Shot ability token: $token" }

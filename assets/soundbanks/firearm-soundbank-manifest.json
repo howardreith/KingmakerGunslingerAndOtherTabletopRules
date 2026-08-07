@@ -4,7 +4,7 @@
     "bankFileName":  "KMG_Firearms.bnk",
     "platform":  "Windows",
     "wwiseVersion":  "2016.2.6.6153",
-    "sha256":  "FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4",
+    "sha256":  "0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18",
     "mediaEmbedded":  true,
     "events":  {
                    "Pistol":  "KMG_Firearm_Pistol_Shot",

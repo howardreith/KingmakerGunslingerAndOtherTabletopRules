@@ -2599,14 +2599,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     source,new Vector3(1f,0f,0f),Quaternion.identity,disposableScene);
                 if(attacker==null||attacker.View==null||target==null||target.View==null)
                     throw new InvalidOperationException("Native entity creation did not produce live unit views.");
-                weapon=new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                weapon=new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
 
                 selectedPreview=Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
-                    FirearmKind.Pistol,attacker,"development-selected-preview");
+                    FirearmKind.Blunderbuss,attacker,"development-selected-preview");
                 afterSelected=Audio.FirearmSoundRuntime.AcceptedPosts;
                 selectedDiagnostics=Audio.FirearmSoundRuntime.Describe();
 
@@ -2645,9 +2645,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Assertion("firearm-wwise-ready","state=Ready",globalDiagnostics,globalDiagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
                 Assertion("global-pistol-event-accepted","one valid nonzero playing ID",globalDiagnostics,preview.Accepted&&preview.PlayingId!=0&&afterGlobal==before+1&&preview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),"AkSoundEngine.PostEvent global technical preview"),
-                Assertion("unit-emitter-pistol-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
-                Assertion("ordinary-discharge-event-accepted","accepted count +1; exact pistol event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol)==Audio.FirearmSoundRuntime.LastEventName&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
-                Assertion("misfire-no-normal-event","accepted count unchanged",misfireDiagnostics,afterMisfire==afterOrdinary,"forced natural 1 through RuleAttackWithWeapon"),
+                Assertion("unit-emitter-blunderbuss-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
+                Assertion("ordinary-discharge-event-accepted","accepted count +1; exact Blunderbuss event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)==Audio.FirearmSoundRuntime.LastEventName&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
+                Assertion("blunderbuss-misfire-no-normal-event","accepted count unchanged; live misfire available for inherited-release listening",misfireDiagnostics,afterMisfire==afterOrdinary,"forced Blunderbuss natural 1 through RuleAttackWithWeapon"),
                 Assertion("save-free-audio-scenario","no save/inventory mutation and detached fixtures cleaned","cleaned="+cleaned,cleaned,"disposable SceneEntitiesState and exact global-unit snapshot")
             };
             bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
@@ -4568,22 +4568,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? ReferenceEquals(repaired.SheathModel, native.SheathModel)
                 : ReferenceEquals(repaired.SheathModel,
                     profile.SheathModel);
-            bool nativeSoundFallbackPreserved =
+            bool nonReleaseSoundsPreserved =
                 repaired.SoundSize == native.SoundSize &&
                 repaired.SoundType == native.SoundType &&
                 repaired.MissSoundType == native.MissSoundType &&
-                string.Equals(repaired.WhooshSound, native.WhooshSound,
-                    StringComparison.Ordinal) &&
+                string.IsNullOrEmpty(repaired.WhooshSound) &&
                 string.Equals(repaired.EquipSound, native.EquipSound,
                     StringComparison.Ordinal) &&
                 string.Equals(repaired.UnequipSound, native.UnequipSound,
                     StringComparison.Ordinal);
-            bool prototypePreserved = ReferenceEquals(
-                repaired.Prototype, native.Prototype);
+            bool prototypeSevered = repaired.Prototype == null;
             return projectilesPreserved && animationPreserved &&
                 attachSlotsPreserved && equippedModelCoherent &&
                 beltModelCoherent && sheathModelCoherent &&
-                nativeSoundFallbackPreserved && prototypePreserved;
+                nonReleaseSoundsPreserved && prototypeSevered;
         }
 
         private static bool VisualParametersEqual(object left, object right)

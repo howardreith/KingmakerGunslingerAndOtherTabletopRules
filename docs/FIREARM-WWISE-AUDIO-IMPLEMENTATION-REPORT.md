@@ -21,8 +21,9 @@ and bank GUIDs. `SoundbanksInfo.xml` and `KMG_Firearms.txt` independently show
 the five canonical events and five in-memory media files, with no streamed or
 external `.wem` media.
 
-Authentic bank: 1,208,670 bytes; SHA-256
-`FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4`.
+Current authentic bank after deterministic Blunderbuss repair: 999,390 bytes;
+SHA-256
+`0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 Production manifest SHA-256:
 `DAEC8B174E3586ED20DD31C4146C651AEDFB79E76F74EB3FAEC4687F870935A9`.
 Strict release package SHA-256:
@@ -74,3 +75,27 @@ clearing `m_SoundType`, `m_WhooshSound`, or `m_MissSoundType` would therefore
 not prove suppression and could risk the qualified presentation chain. The
 fallback scenario confirmed all five models, projectiles, icons, and native
 presentation fallbacks. Layered crossbow sound is a human listening question.
+
+## Auditory-polish repair checkpoint
+
+Human listening confirmed Pistol and Musket and exposed three focused defects.
+The approved processed Blunderbuss parent remains unchanged. Preparation now
+drops exactly 2.180 seconds (104,640 frames at 48 kHz), producing a 174,764-byte
+derivative with SHA-256
+`F3F1E94701C86D946679DAD5F1AE4577553D0DED23404D356E9ADC71ED9488E3`.
+Wwise 2016.2.6.6153 regenerated the bank without changing object, Event,
+SoundBank, or native `WEAPONS` routing identities.
+
+Firearm presentation now materializes protected resolved values into its owned
+instance, severs Prototype, and clears only the release/whoosh string. Scatter
+retains native cone geometry but uses the firearm projectile instead of Burning
+Hands projectile media. The guarded Wwise scenario now uses a live Blunderbuss
+for selected preview, ordinary success, and forced misfire.
+
+Pre-runtime qualification passed: focused tests, authored-project and bank
+validation, repository validation, 898/898 domain/reflection tests,
+exact-reference Release build, build-output validation, strict release package
+and validation, and `git diff --check`. Pre-commit strict package SHA-256:
+`4DB98D3E7F36126C58C0F772B769BF459687912F6C9FF823808CAC0A3C9E4435`;
+manifest SHA-256:
+`20908FBB97AE465075B53491D5C7103E5C5520B5A481CDCC0CB2B8399A61F517`.

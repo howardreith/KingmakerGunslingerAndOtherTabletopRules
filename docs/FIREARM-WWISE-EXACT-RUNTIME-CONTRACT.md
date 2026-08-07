@@ -78,6 +78,10 @@ PostEvent playing ID as event acceptance.
 enum is zero or the local whoosh string is empty. Clearing only those locals
 would therefore not suppress inherited combat audio while Prototype remains.
 Equip/unequip/inventory sounds are separate fields. Because preserving
-Prototype is required for the qualified firearm presentation, no speculative
-field clearing is implemented; layered crossbow sound remains a manual
-auditory/targeted-runtime follow-up after the authentic bank exists.
+Human testing subsequently proved an inherited crossbow release on a
+Blunderbuss misfire. The firearm presentation now materializes the resolved
+model, belt, sheath, animation, attachment, sound-size/type, miss, equip,
+unequip, and inventory values into the firearm-owned instance before severing
+Prototype. Only `m_WhooshSound` is emptied. This is the narrow testable
+intervention for the release/twang hypothesis; human listening remains the
+authority for whether the overlap is gone.

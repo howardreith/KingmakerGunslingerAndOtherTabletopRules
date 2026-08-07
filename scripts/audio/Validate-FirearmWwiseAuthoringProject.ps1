@@ -58,6 +58,13 @@ if($actualEvents.Count -ne 5 -or (Compare-Object $expectedEvents $actualEvents))
 if($map.bank -ne 'KMG_Firearms' -or $map.platform -ne 'Windows' -or $map.streaming -ne $false -or $map.mediaEmbedded -ne $true) {
     throw 'source-map.json does not match the release authoring contract.'
 }
+$blunderbuss = @($map.events | Where-Object { $_.event -eq 'KMG_Firearm_Blunderbuss_Shot' })
+if($blunderbuss.Count -ne 1 -or $blunderbuss[0].derivedSha256 -cne
+    'F3F1E94701C86D946679DAD5F1AE4577553D0DED23404D356E9ADC71ED9488E3' -or
+    $blunderbuss[0].derivedFromProcessedSha256 -cne
+    'E210953771458F867A9E5D314E9857CE442AF649E86E6BA541EEBA2DE54CF53F') {
+    throw 'The deterministic 2.180-second Blunderbuss derivation contract is missing.'
+}
 
 if($RequireAuthoredObjects) {
     [xml]$actorMixer = Get-Content -LiteralPath (Join-Path $projectRoot 'Actor-Mixer Hierarchy\Default Work Unit.wwu') -Raw

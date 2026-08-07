@@ -14,7 +14,7 @@ namespace KingmakerGunslinger.Scatter
         IAbilityAvailabilityProvider
     {
         internal static ScatterShotAbilityLogic Create(
-            AbilityDeliverProjectile nativeCone)
+            AbilityDeliverProjectile nativeCone, BlueprintProjectile firearmProjectile)
         {
             if (nativeCone == null) throw new ArgumentNullException("nativeCone");
             if (nativeCone.Type != AbilityProjectileType.Cone ||
@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.Scatter
                 throw new ArgumentException(
                     "Scatter Shot requires the exact native 15-foot, no-attack-roll cone presentation.",
                     "nativeCone");
+            if (firearmProjectile == null)
+                throw new ArgumentNullException("firearmProjectile");
 
             var result = UnityEngine.ScriptableObject.CreateInstance<
                 ScatterShotAbilityLogic>();
@@ -31,8 +33,9 @@ namespace KingmakerGunslinger.Scatter
             // contract as public fields in the installed Kingmaker build. Copy the
             // proven Burning Hands values rather than attempting to reconstruct the
             // cone projectile, timing, or line-width contract independently.
-            result.Projectiles = (BlueprintProjectile[])
-                nativeCone.Projectiles.Clone();
+            // Preserve the native cone delivery geometry while replacing the
+            // Burning Hands projectile presentation that carries spell audio.
+            result.Projectiles = new[] { firearmProjectile };
             result.Type = nativeCone.Type;
             result.IsHandOfTheApprentice = nativeCone.IsHandOfTheApprentice;
             result.Length = nativeCone.Length;

@@ -59,6 +59,13 @@ preserved byte-for-byte under
 16-bit PCM runtime derivatives and their complete hashes are recorded in the
 adjacent `audio-manifest.json`. Credit is retained as project policy.
 
+Wwise authoring uses those processed files directly except for the
+Blunderbuss mapping. Its reproducible authoring derivative removes exactly
+2.180 seconds (104,640 frames at 48 kHz) of measured pre-blast lead-in and
+retains the remaining reverb tail. The approved processed parent remains
+unchanged; `assets-source/wwise/KingmakerGunslingerFirearms/source-map.json`
+records parent and derived hashes.
+
 No mlsulli/Freesound binary was supplied, processed, mapped, or required.
 
 The Windows bundle `kingmakergunslinger.firearms` contains derivatives of the
@@ -93,7 +100,8 @@ The native firearm-audio design authors the same five approved processed SSE
 Library: GUNS CC0 recordings into project-owned `KMG_Firearms.bnk`. Wwise
 2016.2.x authoring is an external proprietary tool and is not redistributed.
 The authentic Windows bank was generated with Wwise 2016.2.6.6153 from those
-five hash-verified processed WAVs. It is 1,208,670 bytes with SHA-256
-`FF9245DDCEEAC12CF9759EE9BF34E79A817F1A07B2E82ED01C7516EF3666D9F4`.
+four byte-identical processed WAVs and the documented Blunderbuss derivative.
+It is 999,390 bytes with SHA-256
+`0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 Media is embedded; no `.wem` or generated `Init.bnk` is distributed. The
 existing Unity bundle's legacy embedded clips remain unused cleanup debt.

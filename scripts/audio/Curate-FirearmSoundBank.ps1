@@ -74,8 +74,19 @@ foreach($sourceName in $expectedSources) {
     $originalPath = Join-Path $projectRoot (Join-Path 'Originals\SFX' $sourceName)
     if(-not (Test-Path -LiteralPath $originalPath -PathType Leaf)) { throw "Wwise original is missing: $sourceName" }
     $originalHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $originalPath).Hash.ToUpperInvariant()
-    if($originalHash -cne [string]$records[0].processedSha256) {
-        throw "Wwise original does not match its approved processed SHA-256: $sourceName"
+    $mapRecord = @($sourceMap.events | Where-Object { $_.source -ceq $sourceName })
+    $expectedHash = [string]$records[0].processedSha256
+    $derivedProperty = if($mapRecord.Count -eq 1) {
+        $mapRecord[0].PSObject.Properties['derivedSha256']
+    } else { $null }
+    if($derivedProperty -and $derivedProperty.Value) {
+        if([string]$mapRecord[0].derivedFromProcessedSha256 -cne $expectedHash) {
+            throw "Derived Wwise source does not identify its approved processed parent: $sourceName"
+        }
+        $expectedHash = [string]$mapRecord[0].derivedSha256
+    }
+    if($originalHash -cne $expectedHash) {
+        throw "Wwise original does not match its approved or deterministic derived SHA-256: $sourceName"
     }
 }
 $bankText = Get-Content -LiteralPath $bankTextPath -Raw

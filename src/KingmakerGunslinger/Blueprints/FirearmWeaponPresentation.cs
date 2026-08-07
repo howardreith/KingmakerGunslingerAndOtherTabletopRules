@@ -53,6 +53,26 @@ namespace KingmakerGunslinger.Blueprints
                     field.SetValue(visual, field.GetValue(source));
             }
 
+            // Resolve every prototype-backed presentation value that the runtime
+            // scenarios protect before removing the crossbow Prototype. This
+            // preserves visible/equip/inventory behavior while preventing empty
+            // local combat-audio values from falling back to the cloned crossbow.
+            Materialize(visual, "m_WeaponModel", source.Model);
+            Materialize(visual, "m_WeaponBeltModel", source.BeltModel);
+            Materialize(visual, "m_WeaponSheathModel", source.SheathModel);
+            Materialize(visual, "m_WeaponAnimationStyle", source.AnimStyle);
+            Materialize(visual, "m_PossibleAttachSlots", source.AttachSlots);
+            Materialize(visual, "m_SoundSize", source.SoundSize);
+            Materialize(visual, "m_SoundType", source.SoundType);
+            Materialize(visual, "m_MissSoundType", source.MissSoundType);
+            Materialize(visual, "m_EquipSound", source.EquipSound);
+            Materialize(visual, "m_UnequipSound", source.UnequipSound);
+            Materialize(visual, "m_InventoryEquipSound", source.InventoryEquipSound);
+            Materialize(visual, "m_InventoryPutSound", source.InventoryPutSound);
+            Materialize(visual, "m_InventoryTakeSound", source.InventoryTakeSound);
+            Set(visual, "m_WhooshSound", string.Empty);
+            Set(visual, "<Prototype>k__BackingField", null);
+
             if (source.Model == null)
                 throw new InvalidOperationException(
                     "The cloned native firearm presentation has no visible equipped-model fallback.");
@@ -68,6 +88,11 @@ namespace KingmakerGunslinger.Blueprints
                 Set(visual, "m_WeaponAnimationStyle", profile.Animation.Value);
 
             Set(owner, "m_VisualParameters", visual);
+        }
+
+        private static void Materialize(object instance, string name, object value)
+        {
+            Set(instance, name, value);
         }
 
         private static object Read(object instance, string name)

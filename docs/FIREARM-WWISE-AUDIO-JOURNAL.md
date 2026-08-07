@@ -255,3 +255,31 @@ strict release package SHA-256:
 Automated work is complete. A nonzero playing ID proves Wwise accepted the
 Event, not audible speaker output. Audibility, mapping, mix/spatial behavior,
 blunderbuss tail, and inherited crossbow overlap remain human judgments.
+
+## 2026-08-06 — focused auditory-polish implementation
+
+Human listening passed Pistol and Musket and confirmed the Blunderbuss/Scatter
+custom report. It failed Blunderbuss timing, heard a crossbow release on a
+misfire with zero custom posts, and heard borrowed Burning Hands audio on
+Scatter. Waveform evidence located the Blunderbuss transient around 2.20 s.
+
+Implemented a standard-library RIFF/PCM trim of exactly 2.180 s (104,640 frames
+at 48 kHz), retaining 20 ms before the measured rise and the remaining tail.
+Derived WAV: 174,764 bytes, SHA-256
+`F3F1E94701C86D946679DAD5F1AE4577553D0DED23404D356E9ADC71ED9488E3`.
+The other four sources remain byte-identical. Wwise 2016.2.6.6153 CLI generation
+succeeded. New bank: 999,390 bytes, SHA-256
+`0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`;
+manifest SHA-256
+`20908FBB97AE465075B53491D5C7103E5C5520B5A481CDCC0CB2B8399A61F517`.
+
+Materialized protected resolved presentation/equip/inventory/non-release sound
+values before severing firearm Prototype fallback, then cleared only
+`m_WhooshSound`. Scatter preserves native 15-foot cone geometry but uses the
+firearm projectile. The audio scenario now exercises a live Blunderbuss
+preview, ordinary success, and forced misfire.
+
+Focused test PASS; authoring/bank validators PASS; repository validator PASS;
+domain/reflection 898/898 PASS; exact-reference Release build, build-output,
+strict packaging and package validation PASS; `git diff --check` PASS. Next:
+checkpoint/push and guarded Wwise, Scatter, and presentation scenarios.

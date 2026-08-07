@@ -18,6 +18,12 @@ Preparation:
 .\scripts\audio\Prepare-FirearmWwiseSources.ps1
 ```
 
+Preparation preserves four approved processed WAVs byte-for-byte. For the
+Blunderbuss only, it removes exactly 2.180 seconds (104,640 frames at 48 kHz)
+from the approved processed source so the measured blast transient begins
+near time zero while retaining its reverb tail. `source-map.json` records both
+the approved parent and deterministic derived SHA-256 values.
+
 ## Minimal Wwise 2016.2 GUI completion
 
 1. Open `KingmakerGunslingerFirearms.wproj` in Wwise 2016.2.6.6153. Decline any
