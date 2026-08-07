@@ -247,7 +247,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int index = 0; index < patches.Length; index++)
             {
                 Patch patch = patches[index];
-                string targetName = target.DeclaringType.FullName + "." + target.Name;
+                string targetName = target.DeclaringType.FullName + "." + target.Name +
+                    "(" + string.Join(",", target.GetParameters().Select(value =>
+                        value.ParameterType.FullName).ToArray()) + ")";
                 string patchName = patch.patch == null ? "missing" :
                     patch.patch.DeclaringType.FullName + "." + patch.patch.Name;
                 records.Add("target=" + targetName + ";role=" + role + ";order=" + index +

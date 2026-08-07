@@ -41,6 +41,10 @@ The live-type rerun identified the final exact mismatch: UMM 0.32.4 declares
 `modEntries` as `Public, Static, InitOnly`, not private. Binding flags now cover
 the proven public field. Transaction `compat-20260807T192017Z-17a2340a5202`
 restored exactly. Source-qualify/publish/rebuild and rerun the observer.
+Run `20260807T1924016022942Z-fce5fc0272f9417a968fbbb87d3fd868`
+then passed every product/UMM assertion and exposed only an overload-collapsing
+Harmony diagnostic false positive. Target identities now include parameter
+types. Source-qualify/publish/rebuild and rerun gunslinger-only observer.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

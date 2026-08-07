@@ -156,3 +156,11 @@
   `modEntries` is `Public, Static, InitOnly` in this UMM 0.32.4 build, contrary
   to the earlier private-field note. The binding now includes `Public` and
   `NonPublic`; restoration again verified exactly.
+- Observer run `20260807T1924016022942Z-fce5fc0272f9417a968fbbb87d3fd868`
+  reached all assertions. UMM identity, class/progression, exact Mysterious
+  Stranger rows and Charisma binding, five firearm pairs, Wwise, and save-free
+  checks PASS. Only Harmony duplicate detection failed: the same Evasive
+  postfix legitimately targets two `Restore` overloads, while the identity key
+  omitted parameters. Patch target identities now include exact parameter type
+  signatures. Transaction `compat-20260807T192334Z-3062c8cc37ab` restored
+  exactly; no gameplay defect was observed.
