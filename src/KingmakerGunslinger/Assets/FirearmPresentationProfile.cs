@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Assets
 {
+    internal enum FirearmPresentationReadiness
+    {
+        NativeFallback = 0,
+        AutonomousCandidate = 1,
+        HumanAccepted = 2
+    }
+
     /// <summary>
     /// Declares which custom presentation capabilities are trusted for each
     /// firearm. A disabled or unavailable capability preserves the cloned native
@@ -21,40 +28,46 @@ namespace KingmakerGunslinger.Assets
                 // Stabilization therefore keeps the cloned native presentation for
                 // all five weapons until an individual replacement is human-approved.
                 { FirearmKind.Pistol, new FirearmPresentationProfile(
-                    FirearmKind.Pistol, false, false, null, false) },
+                    FirearmKind.Pistol, FirearmPresentationReadiness.NativeFallback,
+                    false, null, false) },
                 { FirearmKind.Revolver, new FirearmPresentationProfile(
-                    FirearmKind.Revolver, false, false, null, false) },
+                    FirearmKind.Revolver, FirearmPresentationReadiness.NativeFallback,
+                    false, null, false) },
 
                 // Long-gun wrappers have repeatedly been invisible, inverted, or
                 // body-clipping. Preserve visible native crossbow fallbacks until
                 // each replacement is calibrated and human-approved.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
-                    FirearmKind.Musket, false, false, null, false) },
+                    FirearmKind.Musket, FirearmPresentationReadiness.NativeFallback,
+                    false, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
-                    FirearmKind.Blunderbuss, false, false, null, false) },
+                    FirearmKind.Blunderbuss, FirearmPresentationReadiness.NativeFallback,
+                    false, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
-                    FirearmKind.Rifle, false, false, null, false) }
+                    FirearmKind.Rifle, FirearmPresentationReadiness.NativeFallback,
+                    false, null, false) }
             };
 
         private FirearmPresentationProfile(FirearmKind kind,
-            bool useCustomEquippedModel, bool useCustomBeltModel,
+            FirearmPresentationReadiness equippedReadiness,
+            bool useCustomBeltModel,
             WeaponAnimationStyle? animation, bool overrideAttachSlots)
         {
             Kind = kind;
-            UseCustomEquippedModel = useCustomEquippedModel;
+            EquippedReadiness = equippedReadiness;
             UseCustomBeltModel = useCustomBeltModel;
             Animation = animation;
             OverrideAttachSlots = overrideAttachSlots;
         }
 
         internal FirearmKind Kind { get; private set; }
-        internal bool UseCustomEquippedModel { get; private set; }
+        internal FirearmPresentationReadiness EquippedReadiness { get; private set; }
         internal bool UseCustomBeltModel { get; private set; }
         internal WeaponAnimationStyle? Animation { get; private set; }
         internal bool OverrideAttachSlots { get; private set; }
         internal string EquippedPolicy
         {
-            get { return EquippedModel == null ? "native-fallback" : "custom"; }
+            get { return EquippedReadiness.ToString(); }
         }
         internal string HolsterPolicy
         {
@@ -64,9 +77,10 @@ namespace KingmakerGunslinger.Assets
         {
             get
             {
-                return UseCustomEquippedModel
-                    ? FirearmAssetRuntime.GetPrefab(Kind)
-                    : null;
+                if (EquippedReadiness ==
+                    FirearmPresentationReadiness.NativeFallback) return null;
+                return FirearmAssetRuntime.HasValidatedPrefab(Kind)
+                    ? FirearmAssetRuntime.GetPrefab(Kind) : null;
             }
         }
         internal GameObject BeltModel

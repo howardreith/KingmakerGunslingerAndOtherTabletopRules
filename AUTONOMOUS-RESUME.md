@@ -27,10 +27,13 @@ SHA-256 is
 `4BD296BEC867BC6B44496A07826224DEBF9F61EB3F41CA6F2028BABC9ECAC7A3`;
 DLL SHA-256 is
 `6BBA65B3C22332B6DB8B2F2420E7412195C562B72F45AC7A39A2F4F548A905AB`.
-Next action: runtime rig validation/EquipmentOffsets preparation and guarded
-native donor observation. Publication note: the mandated policy script currently hard-codes the Wwise
-worktree, so it verified `codex/firearm-wwise-audio@2d9d95c` rather than pushing
-this branch's local `da916fb`; do not replace it with arbitrary `git push`.
+Runtime rig validation/EquipmentOffsets preparation and guarded donor observation
+are source-qualified: repository validation, 901/901 tests, runtime preflight 86,
+exact-reference Release, and strict packaging pass. Package/DLL hashes are
+`569B283BD8B40EF57232C5DB05C9EA37DBA4C08217B57425A15E2BE79A43C36B` /
+`EB5AE4153CC0ACD34FEE894F885940CCFB1934FED856E6FB4062F4246923DBCD`.
+All production profiles remain `NativeFallback`. Next action after commit/push:
+exact-commit `mod-load-smoke`, then `observe-native-firearm-rig-contracts`.
 
 ## Sixth-playtest resume point (2026-08-04)
 

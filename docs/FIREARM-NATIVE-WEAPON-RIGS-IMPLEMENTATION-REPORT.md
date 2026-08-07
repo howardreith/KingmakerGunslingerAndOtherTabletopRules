@@ -23,7 +23,25 @@ lifecycle as the likely causes. Exact findings remain pending.
 
 ## Implementation
 
-Pending.
+The Unity builder now uses explicit per-prefab rig specifications and produces
+identity grip roots with `Visual`, `Muzzle`, and long-gun `SupportHandTarget`.
+Runtime loading validates each equipped model independently before publication.
+It rejects nonidentity roots, absent/invalid hierarchy, nonfinite transforms,
+bad +Z muzzle/support ordering, cameras/lights, and invalid materials. For every
+validated long gun it attaches the exact installed `EquipmentOffsets` component
+when absent and assigns `IkTargetLeftHand` to the authored support target.
+Capabilities publish transactionally beside the prefab dictionaries.
+
+Presentation readiness is explicit (`NativeFallback`, `AutonomousCandidate`,
+`HumanAccepted`) and custom selection also requires a validated runtime
+capability. All five weapons currently remain `NativeFallback`; no human status
+is assigned.
+
+The new allowlisted `observe-native-firearm-rig-contracts` scenario is save-free
+and records exact native Light/Heavy Crossbow visual parameters, hierarchy,
+renderers, attach slots, projectile count, belt/sheath identity, EquipmentOffsets,
+left-hand IK target, all custom capability diagnostics, fallback readiness, and
+transient cleanup.
 
 ## Rejected experiments
 
@@ -59,4 +77,3 @@ human visual judgment are all pending.
 
 Inspect exact installed Kingmaker rig contracts and native crossbow donors, then
 add the guarded non-mutating forensic scenario.
-

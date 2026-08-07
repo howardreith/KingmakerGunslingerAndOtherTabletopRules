@@ -217,6 +217,9 @@ namespace KingmakerGunslinger.DomainTests
             Case("fourth-playtest.condition-presentation", FourthPlaytestConditionPresentation),
             Case("fifth-playtest.item-visual-model", FifthPlaytestItemVisualModel),
             Case("fifth-playtest.audible-shot-emitter", FifthPlaytestAudibleShotEmitter),
+            Case("native-rig.runtime-capability", NativeRigRuntimeCapability),
+            Case("native-rig.readiness-fails-closed", NativeRigReadinessFailsClosed),
+            Case("native-rig.observer-guarded", NativeRigObserverGuarded),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1210,6 +1213,55 @@ namespace KingmakerGunslinger.DomainTests
                 !assets.Contains("AudioSource") && !assets.Contains("AudioClip") &&
                 !assets.Contains("PlayOneShot") && !assets.Contains("KMG_FirearmAudio"),
                 "Firearm discharge must use native Wwise and retain no Unity playback backend.");
+        }
+
+        private static void NativeRigRuntimeCapability()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
+            Assertions.True(source.Contains("TryPrepareRig") &&
+                source.Contains("root-not-identity") &&
+                source.Contains("muzzle-not-forward-positive-z") &&
+                source.Contains("support-target-missing") &&
+                source.Contains("support-target-implausible") &&
+                source.Contains("prefab.AddComponent<EquipmentOffsets>()") &&
+                source.Contains("offsets.IkTargetLeftHand = support") &&
+                source.Contains("Replace(Capabilities, capabilities)") &&
+                source.Contains("HasValidatedPrefab"),
+                "Runtime rig preparation must validate each prefab independently and assign exact native left-hand IK before publication.");
+        }
+
+        private static void NativeRigReadinessFailsClosed()
+        {
+            string profile = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
+            Assertions.True(profile.Contains("NativeFallback = 0") &&
+                profile.Contains("AutonomousCandidate = 1") &&
+                profile.Contains("HumanAccepted = 2") &&
+                profile.Contains("FirearmAssetRuntime.HasValidatedPrefab(Kind)") &&
+                profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.NativeFallback") &&
+                !profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.HumanAccepted"),
+                "Presentation readiness must remain native fallback and require validated capability; no weapon may claim human acceptance.");
+        }
+
+        private static void NativeRigObserverGuarded()
+        {
+            string catalog = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
+            string runner = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            string automation = ThirdPlaytestSource(
+                "scripts/RuntimeAutomation.Common.ps1");
+            Assertions.True(catalog.Contains(
+                    "observe-native-firearm-rig-contracts") &&
+                runner.Contains("RunNativeFirearmRigContractObservation") &&
+                runner.Contains("EquipmentOffsets.IkTargetLeftHand") &&
+                runner.Contains("DestroyImmediate(lightInstance)") &&
+                runner.Contains("DestroyImmediate(heavyInstance)") &&
+                runner.Contains("production-readiness-remains-fallback") &&
+                automation.Contains("'observe-native-firearm-rig-contracts'") &&
+                automation.Contains("ReadinessBehavior = 'mod-load'"),
+                "Native donor observation must be allowlisted, save-free, cleanup-owned, and retain production fallback.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

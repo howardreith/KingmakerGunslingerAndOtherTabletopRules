@@ -53,6 +53,7 @@ using KingmakerGunslinger.Classes;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using Kingmaker.View.Equipment;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -366,6 +367,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveNativeFirearmRigContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerComprehensiveAcceptance &&
@@ -432,6 +434,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveNativeFirearmRigContracts)
+                {
+                    Complete(RunNativeFirearmRigContractObservation());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4004,6 +4012,160 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunNativeFirearmRigContractObservation()
+        {
+            BlueprintWeaponType lightType = BlueprintLibraryLookup
+                .RequireExact<BlueprintWeaponType>(BlueprintBootstrap.Library,
+                    ProductionFirearmBlueprints.NativeLightCrossbowWeaponTypeGuid,
+                    "native Light Crossbow weapon type");
+            BlueprintItemWeapon lightItem = BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                    ProductionFirearmBlueprints.NativeStandardLightCrossbowItemGuid,
+                    "native Standard Light Crossbow item");
+            BlueprintWeaponType heavyType = BlueprintLibraryLookup
+                .RequireExact<BlueprintWeaponType>(BlueprintBootstrap.Library,
+                    TestMusketBlueprints.NativeHeavyCrossbowWeaponTypeGuid,
+                    "native Heavy Crossbow weapon type");
+            BlueprintItemWeapon heavyItem = BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                    TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid,
+                    "native Standard Heavy Crossbow item");
+            WeaponVisualParameters light = ReadField(lightType,
+                "m_VisualParameters") as WeaponVisualParameters;
+            WeaponVisualParameters heavy = ReadField(heavyType,
+                "m_VisualParameters") as WeaponVisualParameters;
+            GameObject lightInstance = null;
+            GameObject heavyInstance = null;
+            string lightRig = "<unobserved>";
+            string heavyRig = "<unobserved>";
+            bool lightValid = false;
+            bool heavyValid = false;
+            bool cleaned = false;
+            try
+            {
+                if (light == null || heavy == null || light.Model == null ||
+                    heavy.Model == null)
+                    throw new InvalidOperationException(
+                        "Native crossbow visual parameters or models are absent.");
+                lightInstance = UnityEngine.Object.Instantiate(light.Model);
+                heavyInstance = UnityEngine.Object.Instantiate(heavy.Model);
+                lightRig = DescribeNativeRig(lightInstance, light);
+                heavyRig = DescribeNativeRig(heavyInstance, heavy);
+                lightValid = light.AnimStyle ==
+                        Kingmaker.View.Animation.WeaponAnimationStyle.Crossbow &&
+                    light.Projectiles != null && light.Projectiles.Length > 0 &&
+                    light.AttachSlots != null && lightInstance != null;
+                EquipmentOffsets offsets = heavyInstance == null ? null :
+                    heavyInstance.GetComponent<EquipmentOffsets>();
+                heavyValid = heavy.AnimStyle ==
+                        Kingmaker.View.Animation.WeaponAnimationStyle.Crossbow &&
+                    heavy.Projectiles != null && heavy.Projectiles.Length > 0 &&
+                    heavy.AttachSlots != null && offsets != null &&
+                    offsets.IkTargetLeftHand != null &&
+                    offsets.IkTargetLeftHand.IsChildOf(heavyInstance.transform);
+            }
+            finally
+            {
+                if (lightInstance != null)
+                    UnityEngine.Object.DestroyImmediate(lightInstance);
+                if (heavyInstance != null)
+                    UnityEngine.Object.DestroyImmediate(heavyInstance);
+                cleaned = lightInstance == null || lightInstance.Equals(null);
+                cleaned &= heavyInstance == null || heavyInstance.Equals(null);
+            }
+            string capabilities = string.Join(" | ", new[] {
+                FirearmKind.Pistol, FirearmKind.Musket,
+                FirearmKind.Blunderbuss, FirearmKind.Rifle,
+                FirearmKind.Revolver }.Select(kind =>
+                    Assets.FirearmAssetRuntime.GetCapability(kind).Describe())
+                .ToArray());
+            bool candidatesPrepared = new[] { FirearmKind.Pistol,
+                FirearmKind.Musket, FirearmKind.Blunderbuss,
+                FirearmKind.Rifle, FirearmKind.Revolver }.All(
+                    Assets.FirearmAssetRuntime.HasValidatedPrefab);
+            bool profilesRemainFallback = new[] { FirearmKind.Pistol,
+                FirearmKind.Musket, FirearmKind.Blunderbuss,
+                FirearmKind.Rifle, FirearmKind.Revolver }.All(kind =>
+                    Assets.FirearmPresentationProfile.Require(kind)
+                        .EquippedReadiness == Assets.
+                            FirearmPresentationReadiness.NativeFallback);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("native-light-crossbow-rig",
+                    ProductionFirearmBlueprints.NativeLightCrossbowWeaponTypeGuid +
+                    ";item=" + ProductionFirearmBlueprints.
+                        NativeStandardLightCrossbowItemGuid,
+                    "item=" + lightItem.name + ";" + lightRig, lightValid,
+                    "exact installed blueprint and transient native model"),
+                Assertion("native-heavy-crossbow-two-hand-rig",
+                    TestMusketBlueprints.NativeHeavyCrossbowWeaponTypeGuid +
+                    ";item=" + TestMusketBlueprints.
+                        NativeStandardHeavyCrossbowItemGuid +
+                    ";Crossbow;EquipmentOffsets.IkTargetLeftHand",
+                    "item=" + heavyItem.name + ";" + heavyRig, heavyValid,
+                    "exact installed blueprint, model, and native IK target"),
+                Assertion("custom-rig-capabilities-prepared",
+                    "five independently validated equipped capabilities; long guns have exact native left-hand IK",
+                    capabilities, candidatesPrepared,
+                    "transactional AssetBundle publication and prepared rig diagnostics"),
+                Assertion("production-readiness-remains-fallback",
+                    "all five NativeFallback until per-weapon mechanical qualification",
+                    "fallback=" + profilesRemainFallback,
+                    profilesRemainFallback,
+                    "explicit FirearmPresentationReadiness profiles"),
+                Assertion("native-rig-observation-cleanup",
+                    "transient donor instances destroyed; no item, unit, inventory, blueprint, or save mutation",
+                    "cleaned=" + cleaned, cleaned,
+                    "finally cleanup of two transient model instances"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value =>
+                value.Status == "PASS") ? RuntimeTestStatuses.Pass :
+                RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static string DescribeNativeRig(GameObject instance,
+            WeaponVisualParameters visual)
+        {
+            if (instance == null) return "instance=<null>";
+            EquipmentOffsets offsets = instance.GetComponent<EquipmentOffsets>();
+            string ik = offsets == null || offsets.IkTargetLeftHand == null
+                ? "<null>" : TransformPath(offsets.IkTargetLeftHand,
+                    instance.transform) + "@" +
+                    offsets.IkTargetLeftHand.localPosition.ToString("R");
+            Renderer[] renderers = instance.GetComponentsInChildren<Renderer>(true);
+            string hierarchy = string.Join(",", instance
+                .GetComponentsInChildren<Transform>(true)
+                .Select(value => TransformPath(value, instance.transform))
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray());
+            return "model=" + visual.Model.name + ";anim=" + visual.AnimStyle +
+                ";attachSlots=" + string.Join(",", visual.AttachSlots.Select(
+                    value => value.ToString()).ToArray()) +
+                ";projectiles=" + visual.Projectiles.Length +
+                ";belt=" + (visual.BeltModel == null ? "<null>" :
+                    visual.BeltModel.name) +
+                ";sheath=" + (visual.SheathModel == null ? "<null>" :
+                    visual.SheathModel.name) + ";renderers=" + renderers.Length +
+                ";offsets=" + (offsets != null) + ";ikLeft=" + ik +
+                ";hierarchy=" + hierarchy;
+        }
+
+        private static string TransformPath(Transform value, Transform root)
+        {
+            var names = new List<string>();
+            for (Transform current = value; current != null;
+                current = current.parent)
+            {
+                names.Add(current.name);
+                if (ReferenceEquals(current, root)) break;
+            }
+            names.Reverse();
+            return string.Join("/", names.ToArray());
         }
 
         private RuntimeTestResult RunFirearmItemLifecycleContractObservation()

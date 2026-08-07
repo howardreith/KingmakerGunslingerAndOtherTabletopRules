@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
+using Kingmaker.View.Equipment;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Assets
@@ -14,6 +15,8 @@ namespace KingmakerGunslinger.Assets
         private static AssetBundle _bundle;
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
         private static readonly Dictionary<FirearmKind, GameObject> BeltPrefabs = new Dictionary<FirearmKind, GameObject>();
+        private static readonly Dictionary<FirearmKind, FirearmRigCapability>
+            Capabilities = new Dictionary<FirearmKind, FirearmRigCapability>();
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
 
         internal static void Configure(ModContext context)
@@ -37,12 +40,19 @@ namespace KingmakerGunslinger.Assets
                 string[] names = candidate.GetAllAssetNames();
                 var prefabs = new Dictionary<FirearmKind, GameObject>();
                 var beltPrefabs = new Dictionary<FirearmKind, GameObject>();
+                var capabilities = new Dictionary<FirearmKind,
+                    FirearmRigCapability>();
 
-                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Pistol, "pistol", context);
-                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Musket, "musket", context);
-                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Blunderbuss, "blunderbuss", context);
-                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Revolver, "revolver", context);
-                TryLoadPrefab(candidate, names, prefabs, FirearmKind.Rifle, "rifle", context);
+                TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
+                    FirearmKind.Pistol, "pistol", false, context);
+                TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
+                    FirearmKind.Musket, "musket", true, context);
+                TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
+                    FirearmKind.Blunderbuss, "blunderbuss", true, context);
+                TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
+                    FirearmKind.Revolver, "revolver", false, context);
+                TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
+                    FirearmKind.Rifle, "rifle", true, context);
                 TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Pistol,
                     "pistolbelt", context);
                 TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Musket,
@@ -58,6 +68,7 @@ namespace KingmakerGunslinger.Assets
                     candidate = null;
                     Replace(Prefabs, prefabs);
                     Replace(BeltPrefabs, beltPrefabs);
+                    Replace(Capabilities, capabilities);
                 }
                 if (previous != null) previous.Unload(false);
                 context.Logger.Info("assets", "bundle.loaded",
@@ -77,9 +88,37 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        private static void TryLoadEquippedPrefab(AssetBundle bundle,
+            string[] names, IDictionary<FirearmKind, GameObject> destination,
+            IDictionary<FirearmKind, FirearmRigCapability> capabilities,
+            FirearmKind kind, string name, bool requiresTwoHandRig,
+            ModContext context)
+        {
+            GameObject prefab = TryLoadPrefab(bundle, names, kind, name, context);
+            if (prefab == null) return;
+            FirearmRigCapability capability;
+            if (!TryPrepareRig(prefab, kind, requiresTwoHandRig, out capability))
+            {
+                capabilities[kind] = capability;
+                context.Logger.Warning("assets", "rig.rejected",
+                    capability.Describe() + ";nativeFallback=true");
+                return;
+            }
+            destination[kind] = prefab;
+            capabilities[kind] = capability;
+            context.Logger.Info("assets", "rig.validated", capability.Describe());
+        }
+
         private static void TryLoadPrefab(AssetBundle bundle, string[] names,
             IDictionary<FirearmKind, GameObject> destination,
             FirearmKind kind, string name, ModContext context)
+        {
+            GameObject prefab = TryLoadPrefab(bundle, names, kind, name, context);
+            if (prefab != null) destination[kind] = prefab;
+        }
+
+        private static GameObject TryLoadPrefab(AssetBundle bundle,
+            string[] names, FirearmKind kind, string name, ModContext context)
         {
             string suffix = "/" + name + ".prefab";
             string[] matches = names.Where(value => value.EndsWith(
@@ -89,7 +128,7 @@ namespace KingmakerGunslinger.Assets
                 context.Logger.Warning("assets", "prefab.skipped",
                     "kind=" + kind + ";name=" + name +
                     ";matches=" + matches.Length + ";nativeFallback=true");
-                return;
+                return null;
             }
             GameObject prefab = bundle.LoadAsset<GameObject>(matches[0]);
             Renderer[] renderers = prefab == null
@@ -104,9 +143,106 @@ namespace KingmakerGunslinger.Assets
                 context.Logger.Warning("assets", "prefab.skipped",
                     "kind=" + kind + ";name=" + name +
                     ";renderable=false;nativeFallback=true");
-                return;
+                return null;
             }
-            destination[kind] = prefab;
+            return prefab;
+        }
+
+        private static bool TryPrepareRig(GameObject prefab, FirearmKind kind,
+            bool requiresTwoHandRig, out FirearmRigCapability capability)
+        {
+            string failure = null;
+            Transform root = prefab == null ? null : prefab.transform;
+            Transform visual = root == null ? null : root.Find("Visual");
+            Transform muzzle = root == null ? null : root.Find("Muzzle");
+            Transform support = root == null ? null : root.Find(
+                "SupportHandTarget");
+            EquipmentOffsets offsets = null;
+            try
+            {
+                if (root == null) failure = "prefab-null";
+                else if (!Approximately(root.localPosition, Vector3.zero) ||
+                    !Approximately(root.localRotation, Quaternion.identity) ||
+                    !Approximately(root.localScale, Vector3.one))
+                    failure = "root-not-identity";
+                else if (visual == null) failure = "visual-missing";
+                else if (muzzle == null) failure = "muzzle-missing";
+                else if (!Finite(visual.localPosition) ||
+                    !Finite(visual.localRotation) || !Finite(visual.localScale) ||
+                    !Finite(muzzle.localPosition) || !Finite(muzzle.localRotation))
+                    failure = "transform-nonfinite";
+                else if (muzzle.localPosition.z <= 0f)
+                    failure = "muzzle-not-forward-positive-z";
+                else if (requiresTwoHandRig && support == null)
+                    failure = "support-target-missing";
+                else if (!requiresTwoHandRig && support != null)
+                    failure = "one-handed-support-target-present";
+                else if (requiresTwoHandRig && (!Finite(support.localPosition) ||
+                    !Finite(support.localRotation) ||
+                    support.localPosition.z <= 0f ||
+                    support.localPosition.z >= muzzle.localPosition.z))
+                    failure = "support-target-implausible";
+                else if (prefab.GetComponentsInChildren<Camera>(true).Length != 0 ||
+                    prefab.GetComponentsInChildren<Light>(true).Length != 0)
+                    failure = "camera-or-light-present";
+                else
+                {
+                    Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(
+                        true);
+                    bool renderable = renderers.Any(renderer => renderer != null &&
+                        renderer.sharedMaterials != null &&
+                        renderer.sharedMaterials.Length > 0 &&
+                        renderer.sharedMaterials.All(material => material != null &&
+                            material.shader != null));
+                    if (!renderable) failure = "renderable-materials-missing";
+                }
+                if (failure == null && requiresTwoHandRig)
+                {
+                    offsets = prefab.GetComponent<EquipmentOffsets>();
+                    if (offsets == null) offsets = prefab.AddComponent<EquipmentOffsets>();
+                    offsets.IkTargetLeftHand = support;
+                    if (!ReferenceEquals(offsets.IkTargetLeftHand, support))
+                        failure = "left-hand-ik-assignment-failed";
+                }
+            }
+            catch (Exception exception)
+            {
+                failure = exception.GetType().Name + ":" + exception.Message;
+            }
+            capability = new FirearmRigCapability(kind, failure == null,
+                requiresTwoHandRig, prefab == null ? null : prefab.name,
+                visual == null ? null : visual.name,
+                muzzle == null ? (Vector3?)null : muzzle.localPosition,
+                support == null ? null : (Vector3?)support.localPosition,
+                offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
+                failure);
+            return capability.IsValidated;
+        }
+
+        private static bool Approximately(Vector3 left, Vector3 right)
+        {
+            return (left - right).sqrMagnitude <= 0.000001f;
+        }
+
+        private static bool Approximately(Quaternion left, Quaternion right)
+        {
+            return Mathf.Abs(Quaternion.Dot(left, right)) >= 0.999999f;
+        }
+
+        private static bool Finite(Vector3 value)
+        {
+            return Finite(value.x) && Finite(value.y) && Finite(value.z);
+        }
+
+        private static bool Finite(Quaternion value)
+        {
+            return Finite(value.x) && Finite(value.y) && Finite(value.z) &&
+                Finite(value.w);
+        }
+
+        private static bool Finite(float value)
+        {
+            return !float.IsNaN(value) && !float.IsInfinity(value);
         }
 
         private static void Replace<T>(IDictionary<FirearmKind, T> destination,
@@ -128,6 +264,26 @@ namespace KingmakerGunslinger.Assets
                 return Prefabs.TryGetValue(kind, out prefab) ? prefab : null;
             }
         }
+        internal static FirearmRigCapability GetCapability(FirearmKind kind)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                return Capabilities.TryGetValue(kind, out capability)
+                    ? capability : FirearmRigCapability.Missing(kind);
+            }
+        }
+        internal static bool HasValidatedPrefab(FirearmKind kind)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                GameObject prefab;
+                return Capabilities.TryGetValue(kind, out capability) &&
+                    capability.IsValidated && Prefabs.TryGetValue(kind, out prefab) &&
+                    prefab != null;
+            }
+        }
         internal static GameObject GetBeltPrefab(FirearmKind kind)
         {
             lock (Sync)
@@ -135,6 +291,52 @@ namespace KingmakerGunslinger.Assets
                 GameObject prefab;
                 return BeltPrefabs.TryGetValue(kind, out prefab) ? prefab : null;
             }
+        }
+    }
+
+    internal sealed class FirearmRigCapability
+    {
+        internal FirearmRigCapability(FirearmKind kind, bool isValidated,
+            bool requiresTwoHandRig, string prefabName, string visualName,
+            Vector3? muzzlePosition, Vector3? supportPosition,
+            bool leftHandIkAssigned, string failure)
+        {
+            Kind = kind;
+            IsValidated = isValidated;
+            RequiresTwoHandRig = requiresTwoHandRig;
+            PrefabName = prefabName;
+            VisualName = visualName;
+            MuzzlePosition = muzzlePosition;
+            SupportPosition = supportPosition;
+            LeftHandIkAssigned = leftHandIkAssigned;
+            Failure = failure;
+        }
+        internal FirearmKind Kind { get; private set; }
+        internal bool IsValidated { get; private set; }
+        internal bool RequiresTwoHandRig { get; private set; }
+        internal string PrefabName { get; private set; }
+        internal string VisualName { get; private set; }
+        internal Vector3? MuzzlePosition { get; private set; }
+        internal Vector3? SupportPosition { get; private set; }
+        internal bool LeftHandIkAssigned { get; private set; }
+        internal string Failure { get; private set; }
+        internal static FirearmRigCapability Missing(FirearmKind kind)
+        {
+            return new FirearmRigCapability(kind, false, false, null, null,
+                null, null, false, "capability-missing");
+        }
+        internal string Describe()
+        {
+            return "kind=" + Kind + ";validated=" + IsValidated +
+                ";prefab=" + (PrefabName ?? "<null>") +
+                ";visual=" + (VisualName ?? "<null>") +
+                ";twoHand=" + RequiresTwoHandRig +
+                ";muzzle=" + (MuzzlePosition.HasValue
+                    ? MuzzlePosition.Value.ToString("R") : "<null>") +
+                ";support=" + (SupportPosition.HasValue
+                    ? SupportPosition.Value.ToString("R") : "<null>") +
+                ";ikLeft=" + LeftHandIkAssigned +
+                ";failure=" + (Failure ?? "<none>");
         }
     }
 }

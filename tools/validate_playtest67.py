@@ -19,18 +19,18 @@ def reject(path: Path, *tokens: str) -> None:
         raise AssertionError(f"{path.name} retains rejected token(s): {present}")
 
 
-def validate(root: Path) -> None:
+def validate(root: Path, test_count: int = 877) -> None:
     validate_playtest66.VERSION = VERSION
     validate_playtest66.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    validate_playtest66.validate(root, 877)
+    validate_playtest66.validate(root, test_count)
 
     program = (root / "tests/KingmakerGunslinger.DomainTests/Program.cs")
     declared_tests = len(re.findall(
         r'Case\("[^"]+",\s*[A-Za-z0-9_]+\)',
         program.read_text(encoding="utf-8")))
-    if declared_tests != 877:
+    if declared_tests != test_count:
         raise AssertionError(
-            f"Expected 877 declared source tests; observed {declared_tests}.")
+            f"Expected {test_count} declared source tests; observed {declared_tests}.")
 
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Reloading/ReloadAbilityPresentationPatches.cs",
@@ -110,14 +110,20 @@ def validate(root: Path) -> None:
 
     profile = root / (
         "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs")
-    validate_playtest66.require(
-        profile,
-        "native-fallback",
-        "FirearmKind.Pistol, false, false",
-        "FirearmKind.Revolver, false, false",
-        "FirearmKind.Musket, false, false",
-        "FirearmKind.Blunderbuss, false, false",
-        "FirearmKind.Rifle, false, false")
+    profile_text = profile.read_text(encoding="utf-8")
+    if "FirearmPresentationReadiness" in profile_text:
+        validate_playtest66.require(
+            profile, "NativeFallback = 0", "AutonomousCandidate = 1",
+            "HumanAccepted = 2", "FirearmAssetRuntime.HasValidatedPrefab(Kind)")
+    else:
+        validate_playtest66.require(
+            profile,
+            "native-fallback",
+            "FirearmKind.Pistol, false, false",
+            "FirearmKind.Revolver, false, false",
+            "FirearmKind.Musket, false, false",
+            "FirearmKind.Blunderbuss, false, false",
+            "FirearmKind.Rifle, false, false")
     presentation = root / (
         "src/KingmakerGunslinger/Blueprints/FirearmWeaponPresentation.cs")
     validate_playtest66.require(

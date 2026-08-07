@@ -146,3 +146,38 @@ Entries are append-only in spirit.
 - Next action: commit this checkpoint, invoke policy publisher, then implement
   fail-closed runtime rig validation/EquipmentOffsets preparation and donor
   observation.
+
+## 2026-08-07T04:05:00Z - Runtime rig preparation and donor observer
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  `1b2da2687aefe4487cafa49403aaf1cfd67ee732`.
+- Question: can bundle rigs be validated and long-gun left-hand IK assigned
+  transactionally before publication, while a guarded save-free observer records
+  exact native Light/Heavy Crossbow rig structure without enabling custom art?
+- Inspected: installed `EquipmentOffsets` contract; runtime bundle loader;
+  presentation profile; runtime scenario catalog/dispatch/preflight; native donor
+  blueprint identities and transient model lifecycle.
+- Files changed: asset runtime, presentation readiness, runtime catalog/runner,
+  automation metadata/preflight, focused domain tests, inherited/current
+  validators, and authoritative static test count.
+- Commands: repeated `.\scripts\test-domain.ps1 -Configuration Release -Clean`;
+  `.\scripts\Test-RuntimeScenarioPreflight.ps1`; `.\scripts\Build-Local.ps1`.
+- Evidence: first source run failed before compilation because inherited
+  validation expected 877 declared tests; the validator was parameterized while
+  retaining 877 as its historical default. Second run exposed the matching
+  authoritative static count and it was updated. Final repository validation
+  PASS; runtime preflight PASS 86; complete suite PASS 901/901; exact-reference
+  compile/output/SoundBank/strict packages PASS; package SHA-256
+  `569B283BD8B40EF57232C5DB05C9EA37DBA4C08217B57425A15E2BE79A43C36B`;
+  DLL SHA-256
+  `EB5AE4153CC0ACD34FEE894F885940CCFB1934FED856E6FB4062F4246923DBCD`;
+  bundle remains
+  `88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`.
+- Result: **pass source qualification**. No game launch occurred yet.
+- Meaning: each equipped prefab now fails independently, capability publication
+  is transactional, long guns receive exact native `IkTargetLeftHand`, and all
+  production profiles remain `NativeFallback`. Live donor/capability evidence is
+  the next required gate.
+- Next action: commit/push, run exact-commit `mod-load-smoke`, then run
+  `observe-native-firearm-rig-contracts` and use its structured evidence to
+  refine the Musket proof.
