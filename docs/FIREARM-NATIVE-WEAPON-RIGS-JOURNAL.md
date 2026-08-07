@@ -481,3 +481,28 @@ Entries are append-only in spirit.
   and guarded runtime qualification remain required. Appearance is unaccepted.
 - Next action: commit, push through policy helper, rebuild exact published
   identity, then run the visual-rig and frozen-contract scenarios.
+
+## 2026-08-07T17:30:00Z - Published targeted-repair runtime qualification
+
+- Published implementation: `d7b6bc1756ae89f5e043c5b3362a46e8fe614e8f`.
+- Exact package/DLL SHA-256:
+  `6B3E85517C945B7CB6096E83C2946706749B91C142FA5C7412044EBDD5A03D81` /
+  `B1C181740DF76179B145D5C9A03B420DADDB71E6AA938445FDBAA5351660CE5F`.
+- Commands: guarded Steam launches for `disposable-firearm-visual-rigs`,
+  `disposable-firearm-wwise-audio`, and
+  `disposable-gunslinger-targeting-arms`, all version `0.0.71`.
+- PASS run/result SHA-256:
+  - `20260807T1221537641919Z-disposable-firearm-visual-rigs` /
+    `87FF14C30A7D890F3F75FBB33E20E7E58B3498C08CE38E30827EF68A04A44A9E`;
+  - `20260807T1223275298998Z-disposable-firearm-wwise-audio` /
+    `0CA12AB9D5CAFD2312EB82D80CDC9F34AB34923D79486605B34E1E276A662FC4`;
+  - `20260807T1225036369925Z-disposable-gunslinger-targeting-arms` /
+    `BF1F490C2334D5BDD05533E6807404810FD1EAD66F71A1574A4012DB39A444BC`.
+- Result: **pass structural/mechanical qualification**. Native attachment/IK,
+  custom capability, Wwise, logical projectile, and damage delivery remain
+  intact. No save-writing API was observed and the protected baseline was not
+  selected or overwritten.
+- Remaining uncertainty: human review must determine whether Cull Off resolves
+  all camera-angle disappearance and whether Pistol is upright with a visually
+  correct muzzle. No weapon is HumanAccepted.
+- Next action: follow the priority order in the manual acceptance document.

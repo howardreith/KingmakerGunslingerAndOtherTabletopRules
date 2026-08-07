@@ -115,6 +115,21 @@ Fresh published-commit PASS runs: Wwise
 
 ## Human acceptance required
 
+The exact candidate checklist is
+`docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`. Automated evidence does
+not establish camera-angle visibility, upright visual reading, clipping, scale,
+or animation quality. First inspect held Musket and Blunderbuss from multiple
+camera angles, then Pistol orientation/muzzle, and only then holster policy.
+
+## Targeted repair candidate identity
+
+- Implementation commit: `d7b6bc1756ae89f5e043c5b3362a46e8fe614e8f`.
+- Version: `0.0.71`.
+- Package SHA-256: `6B3E85517C945B7CB6096E83C2946706749B91C142FA5C7412044EBDD5A03D81`.
+- DLL SHA-256: `B1C181740DF76179B145D5C9A03B420DADDB71E6AA938445FDBAA5351660CE5F`.
+- AssetBundle SHA-256: `62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`.
+- Rig manifest SHA-256: `429A4E7A30553C016EFEEA95951598164D6F7A4930218A64977EA7DEBD2C2B7F`.
+
 See `docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`. All checks remain
 pending.
 
