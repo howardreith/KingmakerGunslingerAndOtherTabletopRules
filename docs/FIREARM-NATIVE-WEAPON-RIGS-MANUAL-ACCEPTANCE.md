@@ -57,6 +57,10 @@ If either held long gun remains invisible, report Experiment A FAIL; the next
 isolated step is disabling only `FirearmHiddenHolsterPatch`. Do not infer a pass
 from automated renderer counts.
 
+Human result: **Experiment A PASS.** Held Musket and Blunderbuss are visible
+again. Remaining torso clipping is accepted as good enough for now and may be
+revisited later. The failed empty-slot candidate remains rejected.
+
 Candidate: version `0.0.71`, semantic-anchor implementation commit
 `25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,

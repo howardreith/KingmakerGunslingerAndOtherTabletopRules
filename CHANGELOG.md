@@ -6,6 +6,9 @@
   native `EquipmentOffsets.IkTargetLeftHand` support targets for long guns.
 - Enables all five equipped models as structurally qualified autonomous
   candidates pending human visual acceptance; holstered presentation is hidden.
+- Preserves inherited native attach slots so active Musket and Blunderbuss
+  models remain player-visible; empty forced attach slots are explicitly
+  rejected after human A/B testing.
 - Adds a session-only calibration lab and guarded structural runtime evidence.
 
 ## Unreleased - Native Wwise firearm reports

@@ -4,10 +4,10 @@
 
 Branch `codex/firearm-native-weapon-rigs` has published isolated attach-slot
 experiment A `6e3aa3782eb6328786b60330ae453fa2d5241f6a`, version `0.0.71`. Human testing
-hard-failed implementation `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`:
-held Musket and Blunderbuss are completely invisible despite detached runtime
-renderer assertions. That candidate must not be promoted or merged. Active
-phase: isolated attach-slot A/B repair. The restored human-best anchors remain;
+now **passes** experiment A: held Musket and Blunderbuss are visible again after
+restoring inherited attach slots. The preceding `6b1f5db` empty-slot candidate
+remains a recorded hard failure. The user accepts remaining torso clipping for
+now and authorized merge to `master`. The restored human-best anchors remain;
 the rejected `-0.020` offset remains absent. Remove only Hidden's empty attach
 slots/forced override, preserve inherited attachment values, belt/sheath null,
 equipped models, current sheath patch, Pistol, transforms, scales and animations.
@@ -15,9 +15,9 @@ Exact package/DLL hashes are
 `CE0C03BE2AF4D0BA0BBFF6A975C5733D106716B4BE581F69F44ED46140B2F90D` /
 `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC`.
 Repository validation, 911/911, exact-reference Release, and strict package
-gates pass. Stop now for the narrow human visibility checkpoint before
-experiment B or full regressions. If either held long gun remains invisible,
-disable only `FirearmHiddenHolsterPatch`, rebuild, and test experiment B.
+gates pass. Experiment B is unnecessary. Next action: commit/push this human
+verdict, verify the master worktree is clean and unchanged at the qualified
+source baseline, then perform the explicitly authorized normal merge and push.
 
 Historical candidate context: the rejected `-0.020` micro-offset was replaced by the
 last human-best Musket/Blunderbuss anchor values; no speculative rotation was

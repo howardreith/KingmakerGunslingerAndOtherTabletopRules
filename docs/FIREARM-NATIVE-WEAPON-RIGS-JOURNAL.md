@@ -891,3 +891,23 @@ Entries are append-only in spirit.
   Per explicit human-checkpoint policy, no detached guarded runtime or full
   regression scenarios were run. Next evidence must be actual player-visible
   Pistol/Musket/Blunderbuss and inactive-back observation.
+
+## 2026-08-08T04:00:00Z - Experiment A human PASS and merge authorization
+
+- Installed candidate: experiment A implementation
+  `6e3aa3782eb6328786b60330ae453fa2d5241f6a`, DLL SHA-256
+  `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC`.
+- Human verdict: held Musket and held Blunderbuss are visible again. They still
+  clip, but the user explicitly accepts that limitation as good enough for now
+  and authorized commit/merge to `master`.
+- Root-cause result: experiment A **PASS**. Emptying
+  `m_PossibleAttachSlots` and forcing `m_OverrideAttachSlots=true` broke actual
+  player-visible active held attachment. Restoring the inherited Heavy Crossbow
+  attach-slot contract restored visibility. Detached prefab renderer assertions
+  are not sufficient evidence for player-visible attachment.
+- Accepted state: Pistol remains frozen; human-best Musket/Blunderbuss anchors,
+  scales, lengths and Crossbow animations remain unchanged; no clipping
+  calibration was added. Minor torso clipping is a known accepted limitation,
+  not a claim of perfect presentation.
+- Publication decision: experiment B is unnecessary. The feature branch may be
+  merged normally without history rewriting after final documentation checks.

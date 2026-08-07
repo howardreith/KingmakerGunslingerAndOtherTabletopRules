@@ -275,3 +275,12 @@ DLL `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC`;
 AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
 Its build/package checks pass, but actual held visibility is deliberately
 unclaimed pending the narrow human A/B observation.
+
+Human A/B review subsequently passed experiment A: held Musket and held
+Blunderbuss are visible again. This isolates the invisibility regression to the
+empty/forced attach-slot contract in `6b1f5db`; inherited native attach slots
+are required for player-visible active attachment. Remaining torso clipping is
+accepted as a known limitation for now. The user authorized merging this
+candidate to `master`; this is acceptance of the practical current result, not
+a claim that every body, animation frame, or camera angle is geometrically
+perfect.
