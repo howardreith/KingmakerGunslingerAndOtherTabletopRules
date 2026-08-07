@@ -227,6 +227,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.musket-candidate", NativeRigMusketCandidate),
             Case("native-rig.long-gun-candidates", NativeRigLongGunCandidates),
             Case("native-rig.short-gun-candidates", NativeRigShortGunCandidates),
+            Case("native-rig.obsolete-scan-retired", NativeRigObsoleteScanRetired),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1362,6 +1363,17 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("AppendShortGunRigAssertions(assertions, FirearmKind.Revolver") &&
                 runner.Contains("support == null") && !profile.Contains("ThrownStraight"),
                 "Pistol and Revolver require independent no-support rigs and the allowlisted PiercingOneHanded candidate, never ThrownStraight.");
+        }
+
+        private static void NativeRigObsoleteScanRetired()
+        {
+            string retired = System.IO.Path.Combine(Environment.CurrentDirectory,
+                "src/KingmakerGunslinger/Assets/FirearmVisualEquipmentHandler.cs");
+            string project = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/KingmakerGunslinger.csproj");
+            Assertions.True(!System.IO.File.Exists(retired) &&
+                !project.Contains("FirearmVisualEquipmentHandler"),
+                "The whole-character renderer-name scan must remain deleted and uncompiled.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

@@ -6,15 +6,15 @@ Branch `codex/firearm-native-weapon-rigs` is at published calibration commit
 `f9a799283564c6d0b96d1f78e66abc1c7fa4b924`, version `0.0.70`. Active phase:
 all-five candidate runtime qualification after one-handed integration. The new
 session-isolated per-kind calibration model/UI is source-qualified by repository
-validation, 908/908 tests, runtime preflight 86, exact-reference Release build, build-output and strict
+validation, 909/909 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are
-`9B56A87F4122D72DD699B7AD4A874F83D33DFE4084F3AD7CE6FA1C7135FF3F8B` /
-`CC20FB243D19C35208B746E388B55D6491F949CA3A0B6144C8BAA38D25E2667E`.
+`655B4C2A59DF09A689A5C49A70B818650DFBD1276BB5A99A2982D1D3331B94AB` /
+`395278EA216126828FC361C126FBBD1C0AB87FB6459323509910DF3A69112D2D`.
 All five firearms are `AutonomousCandidate`; none is `HumanAccepted`;
 no visual acceptance is claimed. Published commit `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`
 passed guarded smoke and `disposable-firearm-visual-rigs`; exact evidence is in
 the journal. Next command: commit/push long-gun source, then run guarded visual
-rig scenario for all five, then run frozen regressions.
+rig scenario for all five on the scan-retirement commit, then run frozen regressions.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at

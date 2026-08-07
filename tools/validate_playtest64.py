@@ -29,8 +29,14 @@ def validate(root: Path) -> None:
         "NativeFirearmParametrizedBonus")
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmWeaponPresentation.cs",
             "m_WeaponModel", "m_WeaponBeltModel", "m_WeaponSheathModel")
-    require(root / "src/KingmakerGunslinger/Assets/FirearmVisualEquipmentHandler.cs",
-            "crossbow", "quiver", "renderer.enabled = false")
+    # The historical whole-character renderer-name scan was formally retired by
+    # the native weapon-rig mission. It must not return to source or the project.
+    retired = root / "src/KingmakerGunslinger/Assets/FirearmVisualEquipmentHandler.cs"
+    if retired.exists():
+        raise AssertionError("obsolete whole-character firearm renderer scan returned")
+    project = (root / "src/KingmakerGunslinger/KingmakerGunslinger.csproj").read_text(encoding="utf-8")
+    if "FirearmVisualEquipmentHandler" in project:
+        raise AssertionError("obsolete renderer scan remains compiled")
     require(root / "src/KingmakerGunslinger/Firearms/FirearmQualitiesTooltipPatch.cs",
             "DescriptionTemplatesItem", "ItemQualities", "DescribeQualities")
     require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionPresentation.cs",

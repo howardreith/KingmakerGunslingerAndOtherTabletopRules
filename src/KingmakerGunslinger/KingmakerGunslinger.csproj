@@ -104,7 +104,6 @@
     <Compile Include="Audio\FirearmSoundStateMachine.cs" />
     <Compile Include="Assets\FirearmProjectileVisualPatch.cs" />
     <Compile Include="Assets\FirearmPresentationProfile.cs" />
-    <Compile Include="Assets\FirearmVisualEquipmentHandler.cs" />
     <Compile Include="Actions\FirearmActionDecision.cs" />
     <Compile Include="Actions\FirearmActionKind.cs" />
     <Compile Include="Actions\FirearmActionPolicy.cs" />

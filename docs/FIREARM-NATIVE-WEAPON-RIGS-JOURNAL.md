@@ -332,3 +332,18 @@ Entries are append-only in spirit.
 - Result: **pass source qualification**. The animation is a mechanically testable
   candidate, not a human visual verdict.
 - Next action: commit/push and run the all-five guarded structural scenario.
+
+## 2026-08-07T07:20:00Z - Retire whole-character renderer scan
+
+- Branch/commit before experiment: published `c36474d202b69f5d40dd303c0750321a11a0bb4f`.
+- Question: can the obsolete name-based whole-character quiver/crossbow renderer
+  scan be removed completely without breaking source/package qualification?
+- Files changed: deleted handler, project include removed, historical validator
+  converted to a retirement guard, focused test/counts.
+- Command: `Build-Local.ps1`.
+- Evidence: repository validation PASS; suite PASS 909/909; exact-reference and
+  strict package PASS; package/DLL SHA-256
+  `655B4C2A59DF09A689A5C49A70B818650DFBD1276BB5A99A2982D1D3331B94AB` /
+  `395278EA216126828FC361C126FBBD1C0AB87FB6459323509910DF3A69112D2D`.
+- Result: **pass**. The dangerous renderer scan is absent and cannot be compiled.
+- Next action: commit/push, rerun all-five rig runtime, then frozen regressions.
