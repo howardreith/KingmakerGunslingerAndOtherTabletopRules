@@ -2,21 +2,21 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` is at published calibration commit
-`f9a799283564c6d0b96d1f78e66abc1c7fa4b924`, version `0.0.70`. Active phase:
-all-five candidate runtime qualification after one-handed integration. The new
+Branch `codex/firearm-native-weapon-rigs` is at published holster commit
+`602e48998171cf10c3a474648dff8e57ae97ec07`, now candidate version `0.0.71`.
+Active phase: final published-identity qualification. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are
-`0756F8F78111FAB171F1FD8B77BBFE1A68DB9D71CEEDA89D785C5E2BAF56DEC7` /
-`B0B775467597C716662FCC916B179A96A118AA530870ABAAD5617830F2B6BEBC`.
+`525C5CE6567D7E987FBBD89D388C33D7B6435DA03A8120D0D996E165A1B483FF` /
+`D9E0C48263B800DCD75D53FB1BEB60E65AB5C1324DA1B6C3357FA822930FAE80`.
 All five firearms are `AutonomousCandidate`; none is `HumanAccepted`;
 no visual acceptance is claimed. Published commit `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`
 passed guarded smoke and `disposable-firearm-visual-rigs`; exact evidence is in
 the journal. Next command: commit/push long-gun source, then run guarded visual
 rig scenario and frozen regressions passed on the scan-retirement commit. Next
-action: commit/push exact hidden-holster policy, rerun all-five rig scenario,
-then implement inventory-doll refresh before final 0.0.71 identity.
+action: commit/push version identity, rebuild exact published commit, then run
+critical 0.0.71 scenarios twice before final report.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at

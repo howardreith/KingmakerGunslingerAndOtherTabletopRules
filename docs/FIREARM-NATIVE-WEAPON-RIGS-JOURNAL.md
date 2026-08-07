@@ -389,3 +389,20 @@ Entries are append-only in spirit.
 - Result: **pass source qualification**. All candidate firearms explicitly use
   hidden belt/sheath models; native crossbow objects are unchanged.
 - Next action: commit/push and rerun all-five guarded rig scenario.
+
+## 2026-08-07T09:25:00Z - Candidate version 0.0.71
+
+- Branch/commit before experiment: published `602e48998171cf10c3a474648dff8e57ae97ec07`.
+- Question: can every authoritative version/build/validator surface advance
+  exactly one patch to the independent native-rig candidate identity?
+- Files changed: version properties, UMM metadata, active build/runtime guards,
+  0.0.71 validator/dispatch, UI label, changelog.
+- Commands: repository validation (first found retained historical Dodge label
+  token); corrected additive label; runtime preflight; `Build-Local.ps1`.
+- Evidence: preflight PASS 86; repository validation PASS; suite PASS 910/910;
+  exact-reference and strict 0.0.71 package PASS; provisional package/DLL
+  SHA-256 `525C5CE6567D7E987FBBD89D388C33D7B6435DA03A8120D0D996E165A1B483FF` /
+  `D9E0C48263B800DCD75D53FB1BEB60E65AB5C1324DA1B6C3357FA822930FAE80`.
+- Result: **pass source qualification**. Exact published-commit rebuild/runtime
+  remains pending.
+- Next action: commit/push, rebuild, then critical scenarios twice.

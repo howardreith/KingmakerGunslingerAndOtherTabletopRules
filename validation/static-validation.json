@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.70-focused-aim-repair",
-  "version": "0.0.70",
+  "milestone": "0.0.71-firearm-native-weapon-rigs",
+  "version": "0.0.71",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

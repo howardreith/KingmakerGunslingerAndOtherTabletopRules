@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.71 - Native firearm weapon-rig candidates
+
+- Adds deterministic identity-grip firearm rigs with muzzle transforms and
+  native `EquipmentOffsets.IkTargetLeftHand` support targets for long guns.
+- Enables all five equipped models as structurally qualified autonomous
+  candidates pending human visual acceptance; holstered presentation is hidden.
+- Adds a session-only calibration lab and guarded structural runtime evidence.
+
 ## Unreleased - Native Wwise firearm reports
 
 - Replaces the ineffective Unity firearm-audio fallback with a native
