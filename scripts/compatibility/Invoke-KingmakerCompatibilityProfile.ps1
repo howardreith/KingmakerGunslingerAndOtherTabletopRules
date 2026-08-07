@@ -23,6 +23,8 @@ param(
         'disposable-reload-autocast',
         'disposable-gunslinger-comprehensive-acceptance')]
     [string[]]$Scenario,
+    [ValidateRange(120, 900)]
+    [int]$RuntimeTimeoutSeconds = 300,
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$StateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
@@ -49,8 +51,8 @@ try {
             Scenario = $name
             ExpectedVersion = '0.0.72'
             ExitAfterCompletion = $true
-            TimeoutSeconds = 300
-            ObserverStartupTimeoutSeconds = 300
+            TimeoutSeconds = $RuntimeTimeoutSeconds
+            ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
             Confirm = $false
         }
         if ($name -ceq 'observe-optional-mod-compatibility') {

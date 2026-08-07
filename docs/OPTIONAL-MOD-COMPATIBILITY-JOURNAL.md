@@ -215,3 +215,20 @@
   `2C85B610CB51247F5C45D7EB1803EA6BBE7BF9584FC253A0B5E73DCE120D965D`.
   Runtime evidence remains machine-local; only exact IDs and hashes are
   curated here.
+
+## 2026-08-07 - Combined readiness diagnosis
+
+- High-risk combined transaction `compat-20260807T195748Z-3af2b4bfabb9` and
+  independently named all-loadable transaction
+  `compat-20260807T200349Z-4c435e2e7ee6` each reached structured `TIMEOUT` at
+  the 300-second bound and each restored exactly.
+- Both results report `timeoutStage=request-accepted`: Gunslinger accepts and
+  validates the guarded request immediately, but Unity's main thread does not
+  enter the scenario runner until the deadline. No Gunslinger assertion or
+  runtime exception is emitted. This narrows the observed condition to a long
+  blocking combined bootstrap/readiness path shared with the exact Call of the
+  Wild profile.
+- The wrapper now exposes a bounded 120-900 second timeout, defaulting to 300,
+  for one materially different 600-second Call of the Wild attempt. Profile and
+  scenario allowlists, Steam launch, automatic exit, and restoration semantics
+  are unchanged.

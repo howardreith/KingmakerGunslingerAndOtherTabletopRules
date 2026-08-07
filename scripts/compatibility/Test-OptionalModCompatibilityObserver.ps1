@@ -48,4 +48,14 @@ foreach ($forbidden in @('QuickSave', 'SaveGame', 'LoadGame(', 'StartNewGame')) 
         throw "Observer contains forbidden save/game mutation token: $forbidden"
     }
 }
+$wrapper = Get-Content -LiteralPath (Join-Path $root `
+    'scripts\compatibility\Invoke-KingmakerCompatibilityProfile.ps1') -Raw
+foreach ($contract in @('[ValidateRange(120, 900)]',
+    '[int]$RuntimeTimeoutSeconds = 300',
+    'TimeoutSeconds = $RuntimeTimeoutSeconds',
+    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds')) {
+    if (-not $wrapper.Contains($contract)) {
+        throw "Compatibility wrapper timeout contract missing: $contract"
+    }
+}
 Write-Host 'Optional-mod compatibility observer allowlist and source contracts passed.'

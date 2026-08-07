@@ -63,6 +63,11 @@ Call of the Wild remains `CONFLICT-OBSERVED` at the exact 300-second readiness
 timeout. Next command is the guarded `gunslinger-high-risk-combined`
 `mod-load-smoke` attempt; restore and classify before attempting the separately
 named all-loadable profile. Do not rerun the unchanged individual CotW timeout.
+Both combined profile names reproduced the 300-second `request-accepted`
+timeout and restored exactly. The wrapper now permits a bounded explicit
+timeout. Source-qualify and publish it, then run exactly one Call of the Wild
+`mod-load-smoke` with `-RuntimeTimeoutSeconds 600`. If readiness still does not
+occur, preserve `CONFLICT-OBSERVED` and do not retry unchanged.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-
