@@ -27,8 +27,14 @@ recovery. Restoration quarantines staged data, returns the original directory,
 verifies exact metadata and hashes, restores the bounded SoundBank side effect,
 and deletes only the sentinel-owned quarantine after verification.
 
-Pending: guarded runtime observer, exact UMM/Harmony diagnostics, execution
-matrix, and final reports.
+The guarded optional-mod observer is implemented through the established
+request parser and runner. It accepts only committed runtime-capable profile
+IDs, inventories exact ordered UMM entries and assemblies, records Harmony12
+owners/order on all Gunslinger-patched methods, and verifies the base class,
+20-level progression, Mysterious Stranger rows/Charisma binding, production
+firearm pairs, Wwise state, and save-free boundary.
+
+Pending: transactional execution matrix and final exact-profile reports.
 
 ## Safety and dependency result
 

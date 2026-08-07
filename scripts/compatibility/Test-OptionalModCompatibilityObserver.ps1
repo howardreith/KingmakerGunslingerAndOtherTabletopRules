@@ -1,0 +1,51 @@
+[CmdletBinding()]
+param()
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $root 'scripts\RuntimeAutomation.Common.ps1')
+
+$runtimeProfiles = @(
+    'gunslinger-only', 'gunslinger-call-of-the-wild', 'gunslinger-arms-armor',
+    'gunslinger-toggle-custom-soundpacks', 'gunslinger-high-risk-combined',
+    'gunslinger-all-loadable-local'
+)
+foreach ($profile in $runtimeProfiles) {
+    [void](Assert-KmgRuntimeScenarioPreflight `
+        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.72' `
+        -TimeoutSeconds 120 -Parameters @{ profileId = $profile })
+}
+
+$rejected = @(
+    @{ profileId = 'gunslinger-craft-magic-items' },
+    @{ profileId = 'gunslinger-call-of-the-wild-craft-magic-items' },
+    @{ profileId = 'bag-of-tricks' }, @{ profileId = '../escape' },
+    @{ profileId = 'gunslinger-only'; extra = 'not-allowed' }, @{}
+)
+foreach ($parameters in $rejected) {
+    $failedClosed = $false
+    try {
+        [void](Assert-KmgRuntimeScenarioPreflight `
+            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.72' `
+            -TimeoutSeconds 120 -Parameters $parameters)
+    }
+    catch { $failedClosed = $true }
+    if (-not $failedClosed) {
+        throw "Observer accepted invalid parameters: $($parameters | ConvertTo-Json -Compress)"
+    }
+}
+
+$observer = Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\RuntimeTesting\OptionalModCompatibilityObserver.cs') -Raw
+foreach ($contract in @('GetField("modEntries"', 'GetPatchedMethods()',
+    'GetPatchInfo(method)', 'gunslinger-class-singular',
+    'mysterious-stranger-replacement-rows', 'production-firearm-identities',
+    'save-free-observer')) {
+    if (-not $observer.Contains($contract)) { throw "Observer contract missing: $contract" }
+}
+foreach ($forbidden in @('QuickSave', 'SaveGame', 'LoadGame(', 'StartNewGame')) {
+    if ($observer.Contains($forbidden)) {
+        throw "Observer contains forbidden save/game mutation token: $forbidden"
+    }
+}
+Write-Host 'Optional-mod compatibility observer allowlist and source contracts passed.'

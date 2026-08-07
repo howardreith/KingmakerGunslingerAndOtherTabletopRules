@@ -8,6 +8,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-optional-mod-compatibility' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-firearm-wwise-audio' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -541,6 +547,22 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
         }
     }
+    elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
+        $allowedProfiles = @(
+            'gunslinger-only',
+            'gunslinger-call-of-the-wild',
+            'gunslinger-arms-armor',
+            'gunslinger-toggle-custom-soundpacks',
+            'gunslinger-high-risk-combined',
+            'gunslinger-all-loadable-local'
+        )
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('profileId') -or
+            $Parameters.profileId -isnot [string] -or
+            $Parameters.profileId -cnotin $allowedProfiles) {
+            throw "$Scenario requires exactly one committed runtime-capable profileId."
+        }
+    }
     elseif ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
@@ -635,6 +657,8 @@ function New-KmgRuntimeRequest {
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
         parameters = if ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
+        } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
+            [ordered]@{ profileId = [string]$Parameters.profileId }
         } else { [ordered]@{} }
     }
 }

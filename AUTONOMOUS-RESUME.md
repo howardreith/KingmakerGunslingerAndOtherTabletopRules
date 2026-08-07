@@ -20,11 +20,14 @@ after the external publication policy is resolved:
 implementing the exact profile resolver and transaction framework entirely
 against temporary fixtures. Do not touch the real Mods directory before all
 transaction safety fixtures pass.
-Checkpoint `9da61a4` is published and verified on the identically named origin
-branch. Profile resolution and transaction fixtures now pass. Next action:
-source-qualify and publish the transaction checkpoint, then add the guarded
-`observe-optional-mod-compatibility` scenario before any real Mods mutation or
-Steam launch.
+Checkpoint `1062676` is published and verified on the identically named origin
+branch. Profile resolution and transaction fixtures pass. The guarded
+`observe-optional-mod-compatibility` source is exact-reference qualified with
+911/911 tests and strict package validation. Next action after publishing this
+observer checkpoint: add the compatibility matrix wrapper that enters a
+transaction, invokes the existing Steam/App ID 640820 harness with the typed
+profile ID, and restores in `finally`; then run `gunslinger-only` mod-load and
+observer fresh processes and verify exact restoration before advancing.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

@@ -392,6 +392,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
+                {
+                    Complete(OptionalModCompatibilityObserver.Run(_context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio)
                 {
                     Complete(RunFirearmWwiseAudio());

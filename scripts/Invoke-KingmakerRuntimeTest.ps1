@@ -24,6 +24,14 @@ param(
     [hashtable]$Parameters = @{},
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName,
+    [ValidateSet(
+        'gunslinger-only',
+        'gunslinger-call-of-the-wild',
+        'gunslinger-arms-armor',
+        'gunslinger-toggle-custom-soundpacks',
+        'gunslinger-high-risk-combined',
+        'gunslinger-all-loadable-local')]
+    [string]$CompatibilityProfileId,
     [switch]$AllowDirtyGit,
     [switch]$AllowForceTerminate,
     [switch]$ManualInteractionRequired,
@@ -52,6 +60,18 @@ if ($scenarioMetadata.RequiresSaveName) {
 }
 elseif ($PSBoundParameters.ContainsKey('SaveName')) {
     throw "-SaveName is not valid for scenario '$Scenario'."
+}
+if ($Scenario -ceq 'observe-optional-mod-compatibility') {
+    if ([string]::IsNullOrWhiteSpace($CompatibilityProfileId)) {
+        throw "$Scenario requires explicit -CompatibilityProfileId."
+    }
+    if ($Parameters.Count -ne 0) {
+        throw 'Use the strictly typed -CompatibilityProfileId parameter, not -Parameters.'
+    }
+    $Parameters = @{ profileId = $CompatibilityProfileId }
+}
+elseif ($PSBoundParameters.ContainsKey('CompatibilityProfileId')) {
+    throw "-CompatibilityProfileId is not valid for scenario '$Scenario'."
 }
 
 $requestCatalogTimeout = if ($scenarioMetadata.UsesCatalogTimeout) {

@@ -102,3 +102,26 @@
   and sentinel hash mismatch.
 - No real Kingmaker installation, Mods directory, Steam process, save, or
   SoundBank was touched by these fixture tests.
+
+## 2026-08-07 - Guarded runtime observer source checkpoint
+
+- Added `observe-optional-mod-compatibility` to the existing guarded request
+  parser/runner. Only the six committed runtime-capable profile IDs are
+  accepted; source-only, unavailable, traversal, extra-parameter, and arbitrary
+  values fail closed in the focused fixture.
+- Exact installed contracts are used: UMM 0.32.4 private `modEntries` for
+  ordered entry identities/state and Harmony12 1.2.0.1
+  `GetPatchedMethods`/`GetPatchInfo` for owner, role, priority, before/after,
+  and order evidence.
+- Runtime assertions cover isolated UMM identity, assembly MVID/SHA-256,
+  singular base class and 20-level progression, exact Mysterious Stranger
+  registration/replacement rows/Charisma binding, five production firearm
+  pairs, non-faulted Wwise state, singular Gunslinger patch installation, and
+  the observer's save-free boundary.
+- Focused observer fixture PASS. Full gate PASS: repository validation,
+  911/911 tests, exact-reference Release, SoundBank, and strict package.
+  Candidate package SHA-256
+  `08DA0786E37F1AC4EC97A0166DEC0FEDBAEC7FE9B6E0168A8984EEA62D12DB22`;
+  DLL SHA-256
+  `026B7215DCAC0AA1923B11F5A1E79101D0C70872BD462813FC9703C11918F698`.
+- No real Mods mutation or Kingmaker launch occurred at this checkpoint.
