@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
             "observe-native-firearm-rig-contracts";
+        internal const string DisposableFirearmVisualRigs =
+            "disposable-firearm-visual-rigs";
         internal const string ObserveFirearmItemLifecycleContracts =
             "observe-firearm-item-lifecycle-contracts";
         internal const string DisposableReloadAutocast =
@@ -165,6 +167,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveVendorTableContracts,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
+                DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,
                 DisposableOverhaulMaintenance,

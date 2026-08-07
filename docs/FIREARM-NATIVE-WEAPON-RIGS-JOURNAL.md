@@ -254,3 +254,23 @@ Entries are append-only in spirit.
   `UnitViewHandsEquipment.UpdateAll`; the original model is retained per kind
   and restored explicitly. Doll refresh remains unavailable/fail-closed.
 - Next action: create and qualify the disposable Musket visual-rig scenario.
+
+## 2026-08-07T05:40:00Z - Musket autonomous-candidate source gate
+
+- Branch/commit before experiment: published `f9a799283564c6d0b96d1f78e66abc1c7fa4b924`.
+- Question: can Musket alone advance to `AutonomousCandidate` with a guarded
+  save-free structural/IK/projectile/cleanup scenario and explicit visual gate?
+- Files changed: Musket readiness, scenario catalog/runner/automation/preflight,
+  focused test and validator counts.
+- Commands: runtime preflight (first fingerprint assertion transiently changed,
+  immediate isolated rerun PASS 86); `Build-Local.ps1` (first compile found
+  missing Assets namespace after all 906 tests passed); corrected import; final
+  `Build-Local.ps1`.
+- Evidence: repository validation PASS; suite PASS 906/906; exact-reference and
+  strict package PASS; package/DLL SHA-256
+  `2DEBECF19A3D44D246FA52E94632881BE229102BB0A0B32E39005D405248D2F6` /
+  `3CD68BBC38A55DE491000CBBE648B858958472D02927379832C54C0E27807E37`.
+- Result: **pass source qualification**; runtime result pending published commit.
+- Meaning: Musket is structurally eligible for live candidate review, never
+  `HumanAccepted`. Grip, clipping, pose, scale and animation remain human gates.
+- Next action: commit/push, then guarded smoke and visual-rig scenarios.

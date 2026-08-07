@@ -19,6 +19,7 @@ using Kingmaker.EntitySystem.Stats;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Ammunition;
@@ -368,6 +369,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveNativeFirearmRigContracts &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableFirearmVisualRigs &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveFirearmItemLifecycleContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableProductionFirearmSwitching &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerComprehensiveAcceptance &&
@@ -440,6 +442,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveNativeFirearmRigContracts)
                 {
                     Complete(RunNativeFirearmRigContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableFirearmVisualRigs)
+                {
+                    Complete(RunDisposableFirearmVisualRigs());
                     return;
                 }
                 if (_request.Scenario ==
@@ -4166,6 +4174,77 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             names.Reverse();
             return string.Join("/", names.ToArray());
+        }
+
+        private RuntimeTestResult RunDisposableFirearmVisualRigs()
+        {
+            GameObject instance = null;
+            bool cleaned = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                FirearmRigCapability capability =
+                    FirearmAssetRuntime.GetCapability(FirearmKind.Musket);
+                FirearmPresentationProfile profile =
+                    FirearmPresentationProfile.Require(FirearmKind.Musket);
+                instance = FirearmAssetRuntime.InstantiatePrefab(FirearmKind.Musket);
+                Transform visual = instance == null ? null : instance.transform.Find("Visual");
+                Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
+                Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
+                EquipmentOffsets offsets = instance == null ? null :
+                    instance.GetComponent<EquipmentOffsets>();
+                Renderer[] renderers = instance == null ? Array.Empty<Renderer>() :
+                    instance.GetComponentsInChildren<Renderer>(true);
+                string observed = capability.Describe() + ";instance=" +
+                    (instance == null ? "<null>" : instance.name) +
+                    ";renderers=" + renderers.Length;
+                assertions.Add(Assertion("musket-readiness",
+                    "AutonomousCandidate pending human review",
+                    profile.EquippedPolicy,
+                    profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate &&
+                        profile.EquippedModel != null,
+                    "exact Musket profile and validated capability"));
+                assertions.Add(Assertion("musket-instantiated-rig",
+                    "identity root; Visual; Muzzle; SupportHandTarget; renderers",
+                    observed, instance != null && visual != null && muzzle != null &&
+                        support != null && renderers.Length > 0 &&
+                        instance.transform.localPosition == Vector3.zero &&
+                        instance.transform.localRotation == Quaternion.identity &&
+                        instance.transform.localScale == Vector3.one,
+                    "transient custom Musket instance"));
+                assertions.Add(Assertion("musket-native-left-hand-ik",
+                    "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
+                    observed, offsets != null &&
+                        ReferenceEquals(offsets.IkTargetLeftHand, support),
+                    "exact installed Kingmaker EquipmentOffsets"));
+                WeaponVisualParameters effectiveVisual = ReadField(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                    "m_VisualParameters") as WeaponVisualParameters;
+                int projectileCount = effectiveVisual == null ||
+                    effectiveVisual.Projectiles == null ? -1 :
+                    effectiveVisual.Projectiles.Length;
+                assertions.Add(Assertion("musket-projectile-contract",
+                    "exactly one cloned firearm projectile remains assigned",
+                    "projectiles=" + projectileCount, projectileCount == 1,
+                    "effective production Musket WeaponVisualParameters"));
+                assertions.Add(Assertion("human-visual-gate",
+                    "not mechanically proven",
+                    "grip/clipping/scale/pose/animation require human review", true,
+                    "explicit evidence limitation"));
+            }
+            finally
+            {
+                if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+                cleaned = instance == null || instance.Equals(null);
+            }
+            assertions.Add(Assertion("transient-rig-cleanup", "destroyed", cleaned.ToString(),
+                cleaned, "finally-owned transient GameObject"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunFirearmItemLifecycleContractObservation()

@@ -224,6 +224,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.calibration-export", NativeRigCalibrationExport),
             Case("native-rig.animation-allowlist", NativeRigAnimationAllowlist),
             Case("native-rig.calibration-native-refresh", NativeRigCalibrationNativeRefresh),
+            Case("native-rig.musket-candidate", NativeRigMusketCandidate),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1243,9 +1244,9 @@ namespace KingmakerGunslinger.DomainTests
                 profile.Contains("AutonomousCandidate = 1") &&
                 profile.Contains("HumanAccepted = 2") &&
                 profile.Contains("FirearmAssetRuntime.HasValidatedPrefab(Kind)") &&
-                profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.NativeFallback") &&
+                profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate") &&
                 !profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.HumanAccepted"),
-                "Presentation readiness must remain native fallback and require validated capability; no weapon may claim human acceptance.");
+                "Presentation readiness must require validated capability; Musket is autonomous-candidate only and no weapon may claim human acceptance.");
         }
 
         private static void NativeRigObserverGuarded()
@@ -1314,6 +1315,22 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("native fallback restored") &&
                 !source.Contains("NativeModels[kind] = null"),
                 "Development toggle must retain and restore the non-null native model through the native hands-equipment refresh.");
+        }
+
+        private static void NativeRigMusketCandidate()
+        {
+            string profile = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
+            string runner = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            Assertions.True(profile.Contains(
+                    "FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate") &&
+                !profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.HumanAccepted") &&
+                runner.Contains("RunDisposableFirearmVisualRigs") &&
+                runner.Contains("musket-native-left-hand-ik") &&
+                runner.Contains("human-visual-gate") &&
+                runner.Contains("grip/clipping/scale/pose/animation require human review"),
+                "Musket may be an autonomous candidate only with guarded structural IK evidence and an explicit human visual gate.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

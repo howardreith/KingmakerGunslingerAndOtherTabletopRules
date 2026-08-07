@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.Assets
                 // body-clipping. Preserve visible native crossbow fallbacks until
                 // each replacement is calibrated and human-approved.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
-                    FirearmKind.Musket, FirearmPresentationReadiness.NativeFallback,
+                    FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
                     false, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
                     FirearmKind.Blunderbuss, FirearmPresentationReadiness.NativeFallback,
