@@ -2,6 +2,15 @@
 
 ## Outcome
 
+Semantic-anchor candidate: Regular Pistol held appearance was human-accepted on
+2026-08-07 and its source, equipped transform, scale, and animation are frozen;
+this is not blanket `HumanAccepted` status. Musket, Blunderbuss, and Rifle now
+declare source-space Grip/Support/Butt/Muzzle points. Their identity root is the
+firing-hand grip, Visual translation is derived from GripPoint, and every other
+anchor is derived relative to it. Musket semantic length is `1.349985 m`, versus
+Blunderbuss `0.848 m`; support targets start from the Heavy Crossbow lateral/palm
+offset near `(-0.031,-0.051,...)`. Crossbow animation and hidden holsters are unchanged.
+
 Finishing-pass audit: Pistol is deterministically bound to the intended Cyril43
 flintlock `model.dae`, distinct from Revolver's Navy Colt source. Revolver
 authoring removes 53 numeric-suffix duplicate preview objects. The failed custom

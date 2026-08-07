@@ -47,3 +47,7 @@ Exact hierarchy/bounds evidence showed the `1.57617009 m` rifle centered at rig
 z `-0.651`, placing almost all geometry behind the grip. Visual z is corrected
 to `0.20`; opaque Standard materials and generated reverse-wound backfaces are
 used. Grip root, support target, muzzle, animation, and original source are unchanged.
+
+The semantic-anchor pass declares source Grip `(0.13,0,0)`, Support
+`(-0.1946,-0.0331,-0.0201)`, Butt `(0.503,0,0)`, and Muzzle `(-0.503,0,0)`,
+yielding `1.549379 m` butt-to-muzzle length in the grip frame.

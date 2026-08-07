@@ -4215,6 +4215,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.ProductionFirearms.Pistol.Item);
             AppendShortGunRigAssertions(assertions, FirearmKind.Revolver,
                 BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item);
+            FirearmRigCapability musketCapability = FirearmAssetRuntime.GetCapability(
+                FirearmKind.Musket);
+            FirearmRigCapability blunderbussCapability = FirearmAssetRuntime.GetCapability(
+                FirearmKind.Blunderbuss);
+            float musketLength = SemanticLength(musketCapability);
+            float blunderbussLength = SemanticLength(blunderbussCapability);
+            assertions.Add(Assertion("long-gun-relative-semantic-length",
+                "Musket 1.25-1.45 and longer than Blunderbuss",
+                "musket=" + musketLength.ToString("R") +
+                ";blunderbuss=" + blunderbussLength.ToString("R"),
+                musketLength >= 1.25f && musketLength <= 1.45f &&
+                musketLength > blunderbussLength,
+                "runtime-loaded semantic Butt/Muzzle anchors"));
             assertions.Add(Assertion("human-visual-gate", "not mechanically proven",
                 "grip/clipping/scale/pose/animation require human review", true,
                 "explicit evidence limitation"));
@@ -4224,6 +4237,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Unity Mod Manager ModEntry.Info.Version"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static float SemanticLength(FirearmRigCapability capability)
+        {
+            return capability != null && capability.ButtPosition.HasValue &&
+                capability.MuzzlePosition.HasValue
+                ? Vector3.Distance(capability.ButtPosition.Value,
+                    capability.MuzzlePosition.Value) : -1f;
         }
 
         private void AppendLongGunRigAssertions(List<RuntimeTestAssertion> assertions,
@@ -4240,6 +4261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Transform visual = instance == null ? null : instance.transform.Find("Visual");
                 Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
                 Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
+                Transform butt = instance == null ? null : instance.transform.Find("Butt");
                 EquipmentOffsets offsets = instance == null ? null : instance.GetComponent<EquipmentOffsets>();
                 Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
                 bool visiblyRenderable;
@@ -4250,13 +4272,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     profile.EquippedPolicy, profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate && profile.EquippedModel != null,
                     "exact per-kind profile and validated capability"));
                 assertions.Add(Assertion(id + "-instantiated-rig", "identity root; Visual; Muzzle; SupportHandTarget; renderers",
-                    observed, instance != null && visual != null && muzzle != null && support != null && renderers.Length > 0 &&
+                    observed, instance != null && visual != null && muzzle != null && support != null && butt != null && renderers.Length > 0 &&
                         instance.transform.localPosition == Vector3.zero && instance.transform.localRotation == Quaternion.identity && instance.transform.localScale == Vector3.one,
                     "transient custom long-gun instance"));
                 assertions.Add(Assertion(id + "-visible-renderers",
                     "all enabled and active; opaque Standard materials; nontrivial bounds",
                     rendererSummary, visiblyRenderable,
                     "runtime-loaded AssetBundle prefab renderer/material/bounds audit"));
+                float semanticLength = butt == null || muzzle == null ? -1f :
+                    Vector3.Distance(butt.localPosition, muzzle.localPosition);
+                assertions.Add(Assertion(id + "-semantic-anchors",
+                    "Butt behind grip; support between grip and muzzle; finite semantic length",
+                    "butt=" + (butt == null ? "<null>" : butt.localPosition.ToString("R")) +
+                    ";support=" + (support == null ? "<null>" : support.localPosition.ToString("R")) +
+                    ";muzzle=" + (muzzle == null ? "<null>" : muzzle.localPosition.ToString("R")) +
+                    ";length=" + semanticLength.ToString("R"),
+                    butt != null && support != null && muzzle != null &&
+                    butt.localPosition.z < 0f && support.localPosition.z > 0f &&
+                    support.localPosition.z < muzzle.localPosition.z &&
+                    semanticLength >= 0.4f,
+                    "source-space semantic anchor contract"));
                 assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
                     observed, offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
                     "exact installed Kingmaker EquipmentOffsets"));
@@ -4314,6 +4349,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions.Add(Assertion(id + "-animation-candidate", "PiercingOneHanded",
                     observed, effective != null && effective.AnimStyle == WeaponAnimationStyle.PiercingOneHanded,
                     "effective production item visual parameters"));
+                if (kind == FirearmKind.Pistol)
+                    assertions.Add(Assertion("pistol-human-accepted-held-freeze",
+                        "Cyril43 Pistol; position (0,0,0.1632); euler (0,180,180); scale 0.24; PiercingOneHanded",
+                        observed, visual != null &&
+                        Vector3.Distance(visual.localPosition,
+                            new Vector3(0f, 0f, 0.1632f)) < 0.0001f &&
+                        Vector3.Distance(visual.localScale,
+                            Vector3.one * 0.24f) < 0.0001f &&
+                        Mathf.Abs(Quaternion.Dot(visual.localRotation,
+                            Quaternion.Euler(0f, 180f, 180f))) > 0.9999f &&
+                        effective != null && effective.AnimStyle ==
+                            WeaponAnimationStyle.PiercingOneHanded,
+                        "narrow 2026-08-07 held-appearance freeze; other states unaccepted"));
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
                 assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",

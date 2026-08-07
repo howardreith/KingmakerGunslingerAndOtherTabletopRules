@@ -155,6 +155,7 @@ namespace KingmakerGunslinger.Assets
             Transform root = prefab == null ? null : prefab.transform;
             Transform visual = root == null ? null : root.Find("Visual");
             Transform muzzle = root == null ? null : root.Find("Muzzle");
+            Transform butt = root == null ? null : root.Find("Butt");
             Transform support = root == null ? null : root.Find(
                 "SupportHandTarget");
             EquipmentOffsets offsets = null;
@@ -175,6 +176,8 @@ namespace KingmakerGunslinger.Assets
                     failure = "muzzle-not-forward-positive-z";
                 else if (requiresTwoHandRig && support == null)
                     failure = "support-target-missing";
+                else if (requiresTwoHandRig && butt == null)
+                    failure = "butt-target-missing";
                 else if (!requiresTwoHandRig && support != null)
                     failure = "one-handed-support-target-present";
                 else if (requiresTwoHandRig && (!Finite(support.localPosition) ||
@@ -182,6 +185,10 @@ namespace KingmakerGunslinger.Assets
                     support.localPosition.z <= 0f ||
                     support.localPosition.z >= muzzle.localPosition.z))
                     failure = "support-target-implausible";
+                else if (requiresTwoHandRig && (!Finite(butt.localPosition) ||
+                    butt.localPosition.z >= 0f ||
+                    Vector3.Distance(butt.localPosition, muzzle.localPosition) < 0.4f))
+                    failure = "semantic-length-or-butt-implausible";
                 else if (prefab.GetComponentsInChildren<Camera>(true).Length != 0 ||
                     prefab.GetComponentsInChildren<Light>(true).Length != 0)
                     failure = "camera-or-light-present";
@@ -226,8 +233,12 @@ namespace KingmakerGunslinger.Assets
             capability = new FirearmRigCapability(kind, failure == null,
                 requiresTwoHandRig, prefab == null ? null : prefab.name,
                 visual == null ? null : visual.name,
+                visual == null ? (Vector3?)null : visual.localPosition,
+                visual == null ? (Vector3?)null : visual.localEulerAngles,
+                visual == null ? (float?)null : visual.localScale.x,
                 muzzle == null ? (Vector3?)null : muzzle.localPosition,
                 support == null ? null : (Vector3?)support.localPosition,
+                butt == null ? null : (Vector3?)butt.localPosition,
                 offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
                 failure);
             return capability.IsValidated;
@@ -312,16 +323,21 @@ namespace KingmakerGunslinger.Assets
     {
         internal FirearmRigCapability(FirearmKind kind, bool isValidated,
             bool requiresTwoHandRig, string prefabName, string visualName,
+            Vector3? visualPosition, Vector3? visualEuler, float? visualScale,
             Vector3? muzzlePosition, Vector3? supportPosition,
-            bool leftHandIkAssigned, string failure)
+            Vector3? buttPosition, bool leftHandIkAssigned, string failure)
         {
             Kind = kind;
             IsValidated = isValidated;
             RequiresTwoHandRig = requiresTwoHandRig;
             PrefabName = prefabName;
             VisualName = visualName;
+            VisualPosition = visualPosition;
+            VisualEuler = visualEuler;
+            VisualScale = visualScale;
             MuzzlePosition = muzzlePosition;
             SupportPosition = supportPosition;
+            ButtPosition = buttPosition;
             LeftHandIkAssigned = leftHandIkAssigned;
             Failure = failure;
         }
@@ -330,25 +346,41 @@ namespace KingmakerGunslinger.Assets
         internal bool RequiresTwoHandRig { get; private set; }
         internal string PrefabName { get; private set; }
         internal string VisualName { get; private set; }
+        internal Vector3? VisualPosition { get; private set; }
+        internal Vector3? VisualEuler { get; private set; }
+        internal float? VisualScale { get; private set; }
         internal Vector3? MuzzlePosition { get; private set; }
         internal Vector3? SupportPosition { get; private set; }
+        internal Vector3? ButtPosition { get; private set; }
         internal bool LeftHandIkAssigned { get; private set; }
         internal string Failure { get; private set; }
         internal static FirearmRigCapability Missing(FirearmKind kind)
         {
             return new FirearmRigCapability(kind, false, false, null, null,
-                null, null, false, "capability-missing");
+                null, null, null, null, null, null, false,
+                "capability-missing");
         }
         internal string Describe()
         {
             return "kind=" + Kind + ";validated=" + IsValidated +
                 ";prefab=" + (PrefabName ?? "<null>") +
                 ";visual=" + (VisualName ?? "<null>") +
+                ";visualPosition=" + (VisualPosition.HasValue
+                    ? VisualPosition.Value.ToString("R") : "<null>") +
+                ";visualEuler=" + (VisualEuler.HasValue
+                    ? VisualEuler.Value.ToString("R") : "<null>") +
+                ";visualScale=" + (VisualScale.HasValue
+                    ? VisualScale.Value.ToString("R") : "<null>") +
                 ";twoHand=" + RequiresTwoHandRig +
                 ";muzzle=" + (MuzzlePosition.HasValue
                     ? MuzzlePosition.Value.ToString("R") : "<null>") +
                 ";support=" + (SupportPosition.HasValue
                     ? SupportPosition.Value.ToString("R") : "<null>") +
+                ";butt=" + (ButtPosition.HasValue
+                    ? ButtPosition.Value.ToString("R") : "<null>") +
+                ";semanticLength=" + (ButtPosition.HasValue && MuzzlePosition.HasValue
+                    ? Vector3.Distance(ButtPosition.Value,
+                        MuzzlePosition.Value).ToString("R") : "<null>") +
                 ";ikLeft=" + LeftHandIkAssigned +
                 ";failure=" + (Failure ?? "<none>");
         }

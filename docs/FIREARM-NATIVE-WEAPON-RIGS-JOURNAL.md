@@ -590,3 +590,52 @@ Entries are append-only in spirit.
   Human visibility/pose review is still required; nothing is HumanAccepted.
 - Next action: supervised checklist, prioritizing three held long guns, then
   Revolver cleanup and Pistol family appearance. Holsters are intentionally hidden.
+
+## 2026-08-07T21:00:00Z - Semantic-anchor calibration source gate
+
+- Branch/commit before work: published
+  `1d9a94da43e712c1b4b0a8eb3f69f9f4a6c30f7b`, clean.
+- Human verdict: **Regular Pistol held appearance accepted on 2026-08-07**.
+  Frozen source/spec: Cyril43 `Assets/ApprovedModels/Pistol/model/model.dae`;
+  prefab `Pistol`; Visual position `(0,0,0.1632)`, Euler `(0,180,180)`, scale
+  `0.24`; `PiercingOneHanded`; prior bundle
+  `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
+  This accepts only the observed held appearance, not unobserved lifecycle/body
+  states and not global `HumanAccepted` readiness.
+- Question: can source-space Grip/Support/Butt/Muzzle anchors move the visible
+  long-gun grip to the identity root, preserve Crossbow animation, place the
+  support target outside the mesh, and give Musket semantic length 1.25-1.45 m?
+- Implementation: all held long guns declare four normalized source points;
+  Visual position is derived as negative transformed/scaled GripPoint; Butt,
+  SupportHandTarget, and Muzzle are derived relative to GripPoint. Disabled
+  development marker root names the red/green/blue/yellow points. Calibration
+  state now begins from actual prefab Visual/Support/Butt/Muzzle values rather
+  than zero and can tune/export Butt independently.
+- Exact anchors/results:
+  - Musket source grip/support/butt/muzzle `(0.04,0,0)` /
+    `(-0.10,-0.0122,-0.0074)` / `(0.0805,0,0)` / `(-0.242,0,0)`;
+    runtime-frame butt/support/muzzle `(0,0,-0.169533)` /
+    `(-0.030976,-0.051069,0.586040)` / `(0,0,1.180452)`; length `1.349985`.
+  - Blunderbuss source grip/support/butt/muzzle `(0.01,0,-0.00316)` /
+    `(-0.0125,-0.00255,-0.00471)` / `(0.01565,0,-0.00316)` /
+    `(-0.02675,0,-0.00316)`; runtime-frame butt/support/muzzle
+    `(0,0,-0.113)` / `(-0.031,-0.051,0.45)` / `(0,0,0.735)`; length `0.848`.
+  - Rifle source grip/support/butt/muzzle `(0.13,0,0)` /
+    `(-0.1946,-0.0331,-0.0201)` / `(0.503,0,0)` / `(-0.503,0,0)`;
+    runtime-frame butt/support/muzzle `(0,0,-0.574472)` /
+    `(-0.030957,-0.050979,0.499929)` / `(0,0,0.974908)`; length `1.549379`.
+- Evidence: exact Unity logs `semantic-anchor-pass-{1,2,3}.log`. The first
+  build exposed stale bundle-cache reuse; only the verified generated bundle
+  output was removed, then two clean builds matched at
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+- Source/package result: **pass** repository validation, 911/911 tests,
+  exact-reference Release, build-output, and strict package validation.
+  Provisional package/DLL SHA-256:
+  `4FA2B04D9658F0A192CFF781C30F94434ABD7C2C316C5A3B4CB051AE3570721C` /
+  `ECD2703CD691304DEEAF7D212B47499888E3CA0239B48EE5A7BA3958B7203688`.
+- Avatar renderer isolation: the obsolete whole-avatar renderer scan remains
+  deleted; no firearm visual code disables body/arm/hand renderers. Actual hand
+  bone distances are unavailable in the detached save-free fixture and remain
+  a supervised diagnostic/human gate.
+- Next action: commit/push, exact-identity rebuild, guarded visual-rig and frozen
+  regressions, then human doll/world/attack review.

@@ -18,3 +18,7 @@ changing the accepted held grip, support target, muzzle, or animation.
 The finishing audit retired the custom shader and generated reverse-wound
 backfaces under opaque Standard materials. Musket's held transform was unchanged;
 measured rendered bounds are `0.6529304 m`.
+
+The semantic-anchor pass declares source Grip `(0.04,0,0)`, Support
+`(-0.10,-0.0122,-0.0074)`, Butt `(0.0805,0,0)`, and Muzzle `(-0.242,0,0)`.
+Scale is derived to produce `1.349985 m` butt-to-muzzle length around the grip.

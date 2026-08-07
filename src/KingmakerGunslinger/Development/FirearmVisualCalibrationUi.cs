@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.Development
             {
                 state.SupportPosition = VectorControl("Support position", state.SupportPosition, _step);
                 state.SupportEuler = VectorControl("Support rotation", state.SupportEuler, _step * 100f);
+                state.ButtPosition = VectorControl("Butt position", state.ButtPosition, _step);
             }
             if (kind == FirearmKind.Pistol || kind == FirearmKind.Revolver)
             {

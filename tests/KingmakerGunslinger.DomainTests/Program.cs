@@ -1282,6 +1282,10 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("ExactEquippedFirearmResolver.TryResolve") &&
                 source.Contains("FindUnique") && source.Contains("EquipmentOffsets") &&
                 source.Contains("ReferenceEquals(offsets.IkTargetLeftHand, support)") &&
+                source.Contains("capability.VisualPosition.HasValue") &&
+                source.Contains("capability.VisualScale.HasValue") &&
+                source.Contains("capability.ButtPosition.HasValue") &&
+                source.Contains("butt.localPosition = state.ButtPosition") &&
                 source.Contains("ResetAll()"),
                 "Calibration must be per-kind, exact-firearm filtered, instance-local, native-IK checked, and resettable.");
         }
@@ -1431,12 +1435,24 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("runtime-loaded AssetBundle prefab renderer/material/bounds audit"),
                 "Finishing repair must prove source binding, isolate Pistol roll, clean Revolver duplicates, retain LOD0, generate opaque two-sided long-gun geometry, audit hierarchy/bounds, and reject inactive renderers.");
             Assertions.True(builder.Contains(
-                    "Spec(\"Musket\", \"Musket\", \"Musket 01.fbx\", false, true,\n            new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f") &&
-                builder.Contains(
-                    "Spec(\"Blunderbuss\", \"Blunderbuss\", \"Blunderbuss_Low_Poly.fbx\", false, true,\n            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 20f") &&
-                builder.Contains(
-                    "Spec(\"Rifle\", \"Rifle\", \"fusilALevier.fbx\", false, true,\n            new Vector3(0f, 0f, 0.20f)"),
-                "Held Musket baseline or evidence-derived Blunderbuss/Rifle visibility calibration is missing.");
+                    "Spec(\"Pistol\", \"Pistol\", \"model.dae\", false, false,\n            new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 180f), 0.24f") &&
+                builder.Contains("HasSemanticAnchors") &&
+                builder.Contains("SourceGripPoint") &&
+                builder.Contains("SourceSupportPoint") &&
+                builder.Contains("SourceButtPoint") &&
+                builder.Contains("SourceMuzzlePoint") &&
+                builder.Contains("AnchorRelativeToGrip") &&
+                builder.Contains("KMG_RIG_ANCHORS") &&
+                builder.Contains("new Vector3(0.0400f, 0f, 0f)") &&
+                builder.Contains("new Vector3(-0.1000f, -0.0122f, -0.0074f)") &&
+                builder.Contains("new Vector3(0.0100f, 0f, -0.00316f)") &&
+                builder.Contains("new Vector3(0.1300f, 0f, 0f)") &&
+                runtime.Contains("semantic-length-or-butt-implausible") &&
+                runner.Contains("-semantic-anchors") &&
+                runner.Contains("long-gun-relative-semantic-length") &&
+                runner.Contains("pistol-human-accepted-held-freeze") &&
+                runner.Contains("narrow 2026-08-07 held-appearance freeze; other states unaccepted"),
+                "Accepted Pistol freeze or source-space long-gun semantic anchor contract is missing.");
             Assertions.True(!System.IO.File.Exists(System.IO.Path.Combine(
                 Environment.CurrentDirectory,
                 "tools/unity/KmgDoubleSidedDiffuse.shader")),

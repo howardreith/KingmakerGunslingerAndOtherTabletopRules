@@ -28,6 +28,7 @@ namespace KingmakerGunslinger.Development
         internal Vector3 SupportEuler;
         internal Vector3 MuzzlePosition;
         internal Vector3 MuzzleEuler;
+        internal Vector3 ButtPosition;
         internal WeaponAnimationStyle Animation = WeaponAnimationStyle.Crossbow;
         internal bool UseCustomCandidate = true;
 
@@ -41,7 +42,8 @@ namespace KingmakerGunslinger.Development
             return Finite(VisualPosition) && Finite(VisualEuler) &&
                 Finite(VisualScale) && VisualScale > 0f &&
                 Finite(SupportPosition) && Finite(SupportEuler) &&
-                Finite(MuzzlePosition) && Finite(MuzzleEuler);
+                Finite(MuzzlePosition) && Finite(MuzzleEuler) &&
+                Finite(ButtPosition);
         }
 
         internal string ToJson(string prefabName, string bundleIdentity)
@@ -60,6 +62,7 @@ namespace KingmakerGunslinger.Development
             output.AppendLine("  \"supportEuler\": " + VectorJson(SupportEuler) + ",");
             output.AppendLine("  \"muzzlePosition\": " + VectorJson(MuzzlePosition) + ",");
             output.AppendLine("  \"muzzleEuler\": " + VectorJson(MuzzleEuler) + ",");
+            output.AppendLine("  \"buttPosition\": " + VectorJson(ButtPosition) + ",");
             output.AppendLine("  \"candidateAnimation\": \"" + Animation + "\",");
             output.AppendLine("  \"humanAccepted\": false");
             output.AppendLine("}");
@@ -95,8 +98,12 @@ namespace KingmakerGunslinger.Development
             {
                 FirearmRigCapability capability = FirearmAssetRuntime.GetCapability(kind);
                 var value = new FirearmCalibrationState { Kind = kind };
+                if (capability.VisualPosition.HasValue) value.VisualPosition = capability.VisualPosition.Value;
+                if (capability.VisualEuler.HasValue) value.VisualEuler = capability.VisualEuler.Value;
+                if (capability.VisualScale.HasValue) value.VisualScale = capability.VisualScale.Value;
                 if (capability.MuzzlePosition.HasValue) value.MuzzlePosition = capability.MuzzlePosition.Value;
                 if (capability.SupportPosition.HasValue) value.SupportPosition = capability.SupportPosition.Value;
+                if (capability.ButtPosition.HasValue) value.ButtPosition = capability.ButtPosition.Value;
                 Committed[kind] = value;
                 Session[kind] = value.Clone();
             }
@@ -136,13 +143,16 @@ namespace KingmakerGunslinger.Development
             if (model == null) return SetResult("FAILED: exact active candidate instance was not found uniquely; toggle/refresh through the native equipment lifecycle first.");
             Transform visual = model.Find("Visual"); Transform muzzle = model.Find("Muzzle");
             Transform support = model.Find("SupportHandTarget");
-            if (visual == null || muzzle == null || (capability.RequiresTwoHandRig && support == null))
+            Transform butt = model.Find("Butt");
+            if (visual == null || muzzle == null || (capability.RequiresTwoHandRig &&
+                (support == null || butt == null)))
                 return SetResult("FAILED: active candidate hierarchy is incomplete.");
             visual.localPosition = state.VisualPosition;
             visual.localRotation = Quaternion.Euler(state.VisualEuler);
             visual.localScale = Vector3.one * state.VisualScale;
             muzzle.localPosition = state.MuzzlePosition;
             muzzle.localRotation = Quaternion.Euler(state.MuzzleEuler);
+            if (butt != null) butt.localPosition = state.ButtPosition;
             if (support != null)
             {
                 support.localPosition = state.SupportPosition;

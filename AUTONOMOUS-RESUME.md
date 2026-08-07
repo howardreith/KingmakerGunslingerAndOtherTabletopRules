@@ -4,8 +4,9 @@
 
 Branch `codex/firearm-native-weapon-rigs` is at published handoff
 `8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49`, candidate version `0.0.71`.
-Active phase: finishing-pass automated qualification complete; human rendering
-review remains. Published implementation `fc53c470c94b08265a8a44ce867d7709d7e1003d`.
+Active phase: semantic-anchor source/package qualification complete; commit,
+publish, and guarded runtime qualification pending. Starting published handoff
+is `1d9a94da43e712c1b4b0a8eb3f69f9f4a6c30f7b`.
 Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
 preview objects are removed. Musket retains its good transform; Blunderbuss's
@@ -18,9 +19,13 @@ strict package validation, and guarded rig/switching/Wwise/Scatter/projectile/
 reload scenarios pass. Exact package/DLL SHA-256 are
 `2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F` /
 `D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`.
-Next action: supervised checklist at
-`docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`, long guns first. No
-weapon is HumanAccepted. The
+Pistol is frozen after narrow human held-appearance acceptance. Musket,
+Blunderbuss, and Rifle now use explicit source Grip/Support/Butt/Muzzle anchors;
+semantic lengths are `1.349985`, `0.848`, and `1.549379 m`. Two clean exact
+Unity bundles match at
+`F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+Next action: commit/push, exact published rebuild, guarded rig and frozen
+regressions, then supervised checklist. No weapon is globally HumanAccepted. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are

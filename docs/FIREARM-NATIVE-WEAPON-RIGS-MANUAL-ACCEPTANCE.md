@@ -1,5 +1,11 @@
 # Firearm native weapon rigs manual acceptance
 
+Human observation record: **Regular Pistol held appearance accepted on
+2026-08-07.** This narrow verdict covers the observed held model/pose only; it
+does not accept unobserved Pistol lifecycle/body/holster states and does not set
+the global readiness to `HumanAccepted`. Its Cyril43 source, equipped transform,
+scale, and `PiercingOneHanded` animation are frozen for this pass.
+
 Candidate: version `0.0.71`, implementation commit
 `fc53c470c94b08265a8a44ce867d7709d7e1003d`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,

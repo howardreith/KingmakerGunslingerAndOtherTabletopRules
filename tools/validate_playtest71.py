@@ -23,6 +23,8 @@ def validate(root:Path)->None:
                   "KMG_RIG_BINDING", "KMG_RIG_TRANSFORM", "KMG_RIG_BOUNDS",
                   "RemoveDuplicatePreviewGeometry", "model.dae",
                   "Final2 Sketchfab.fbx",
+                  "SourceGripPoint", "SourceSupportPoint", "SourceButtPoint",
+                  "SourceMuzzlePoint", "AnchorRelativeToGrip", "KMG_RIG_ANCHORS",
                   "new Vector3(0f, 180f, 180f), 0.24f"):
         if token not in builder:raise AssertionError(f"visibility repair missing: {token}")
     if (root/"tools/unity/KmgDoubleSidedDiffuse.shader").exists():raise AssertionError("runtime-invisible custom shader returned")

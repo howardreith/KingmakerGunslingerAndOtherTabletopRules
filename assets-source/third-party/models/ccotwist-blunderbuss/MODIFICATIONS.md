@@ -20,3 +20,8 @@ scale was corrected from `0.5` to `20`, producing `0.978023946 m` bounds without
 changing the grip root, support target, muzzle, or Crossbow animation. Opaque
 Standard materials and generated reverse-wound backfaces replace the failed
 custom shader experiment.
+
+The semantic-anchor pass declares source Grip `(0.01,0,-0.00316)`, Support
+`(-0.0125,-0.00255,-0.00471)`, Butt `(0.01565,0,-0.00316)`, and Muzzle
+`(-0.02675,0,-0.00316)`, yielding `0.848 m` length and Heavy-Crossbow-derived
+support clearance `(-0.031,-0.051,0.45)` in the grip frame.
