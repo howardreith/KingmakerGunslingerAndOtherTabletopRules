@@ -26,3 +26,19 @@ structured mechanical evidence.
 
 Never use a valued save or `KMG_AUTOMATION_BASELINE`.
 
+## Manual transaction recovery
+
+If a run is interrupted, do not rename or delete any Mods-related directory by
+hand. Ensure Kingmaker has exited, preserve the active transaction directory,
+and run:
+
+```powershell
+.\scripts\compatibility\Restore-KingmakerCompatibilityProfile.ps1 `
+  -RunId <recorded-run-id> -Confirm:$false
+```
+
+If restoration fails closed, preserve the live `Mods`, the
+`Mods.kmg-compat-<runId>.original` or `.staged` directory, and
+`C:\Dev\KingmakerGunslingerLab\compatibility-state\<runId>`. Do not attempt a
+second speculative cleanup. The transaction record contains exact recovery
+paths and the mismatch reason.

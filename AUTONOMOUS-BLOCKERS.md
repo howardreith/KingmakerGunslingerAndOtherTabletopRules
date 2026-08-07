@@ -2,6 +2,8 @@
 
 ## 2026-08-07 optional-mod compatibility publication policy
 
+- Resolved 2026-08-07: the user updated the approved helper allowlist. Exact
+  helper publication succeeded and local/origin both pointed to `9da61a4`.
 - Validated checkpoint `274d4d7` on required branch
   `codex/postbase-archetypes-compatibility` invoked the exact approved push
   helper.

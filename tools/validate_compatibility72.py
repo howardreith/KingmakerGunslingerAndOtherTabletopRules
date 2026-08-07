@@ -32,6 +32,12 @@ def validate(root: Path) -> None:
         "scripts/compatibility/Inspect-OptionalModReferences.ps1",
         "scripts/compatibility/Test-OptionalModReferenceInventory.ps1",
         "scripts/compatibility/Invoke-OptionalModStaticAudit.ps1",
+        "scripts/compatibility/CompatibilityProfile.Common.ps1",
+        "scripts/compatibility/Resolve-KingmakerCompatibilityProfile.ps1",
+        "scripts/compatibility/Test-KingmakerCompatibilityProfileResolution.ps1",
+        "scripts/compatibility/Enter-KingmakerCompatibilityProfile.ps1",
+        "scripts/compatibility/Restore-KingmakerCompatibilityProfile.ps1",
+        "scripts/compatibility/Test-KingmakerCompatibilityProfile.ps1",
         "tools/compatibility/scan_optional_mod_sources.py",
         "tools/compatibility/test_scan_optional_mod_sources.py",
     ]
@@ -53,6 +59,12 @@ def validate(root: Path) -> None:
     craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
     if craft["disposition"] != "STATIC-AUDITED-ONLY" or craft["runtimeLoadableRequired"]:
         raise AssertionError("source-only Craft Magic Items profile is not static-only")
+    catalog_by_key = {entry["key"]: entry for entry in catalog["references"]}
+    if catalog_by_key["kaz-asset-references"]["runtimeStagingAllowed"]:
+        raise AssertionError("KAZ asset references must not be runtime staged")
+    all_local = next(profile for profile in profiles if profile["id"] == "gunslinger-all-loadable-local")
+    if "kaz-asset-references" in all_local["modKeys"] or any(value.startswith("KAZ_") for value in all_local["expectedUmmIds"]):
+        raise AssertionError("KAZ asset references leaked into runtime profile")
 
 
 def main() -> int:

@@ -77,3 +77,28 @@
   SHA-256 `AC9DB772CDA6C228B1CEEA2AC13CE7DDF73BDD2C85A87D0EFE57D827CB4BECAF`;
   DLL SHA-256
   `8891F0709E96282908BB26898BB51D852F61D8497FD859E4B74E8F0AA6857EFA`.
+
+## 2026-08-07 - Publication resumed and transaction core
+
+- Verified clean required worktree/branch at exact `9da61a4`; the updated
+  approved helper published successfully and origin matched the local commit.
+- Current user authority supersedes the earlier KAZ staging interpretation:
+  `KAZ_*` stays an asset-reference group, `runtimeStagingAllowed=false`, and no
+  KAZ key or UMM ID appears in the all-loadable runtime profile.
+- All eight dry runs PASS without Mods mutation. Six are runtime-capable;
+  Craft Magic Items and its Call-of-the-Wild overlay remain static-only.
+- Added a committed-profile-only resolver with exact UMM/version/assembly/MVID,
+  whole-tree source manifests, intended destination, load order, warnings, and
+  runtime-capability reporting.
+- Added transaction enter/restore/recovery primitives. Public entry accepts only
+  a committed profile ID and exact lab state root. The original Mods directory
+  is renamed, never merged; a fresh staged directory carries a sentinel bound
+  to an immutable hashed ownership record.
+- Filesystem integration tests PASS for normal restoration, copy/profile
+  failure, simulated launch failure, destination collision, unresolved prior
+  transaction, interruption recovery, staged extra-file detection, original
+  hash mismatch preservation, original Mods absent, managed SoundBank
+  present/absent, running-process refusal, duplicate restore, spaces in paths,
+  and sentinel hash mismatch.
+- No real Kingmaker installation, Mods directory, Steam process, save, or
+  SoundBank was touched by these fixture tests.

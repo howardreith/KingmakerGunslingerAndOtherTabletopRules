@@ -34,13 +34,13 @@ on `codex/postbase-archetypes-compatibility` in
 - [x] Verify clean integrated baseline and create the isolated branch/worktree.
 - [x] Run unchanged repository, 911-test, exact-reference Release, SoundBank,
   build-output, and strict package gates.
-- [ ] Inventory and classify every immediate local reference child with exact,
+- [x] Inventory and classify every immediate local reference child with exact,
   machine-local hashes and a committed logical catalog/schema.
-- [ ] Perform deterministic identity, GUID, Harmony-target, and bootstrap/static
+- [x] Perform deterministic identity, GUID, Harmony-target, and bootstrap/static
   overlap analysis with explicit heuristic confidence.
-- [ ] Resolve committed compatibility profiles only to exact unambiguous local
+- [x] Resolve committed compatibility profiles only to exact unambiguous local
   inventory records.
-- [ ] Fixture-qualify atomic Mods-directory staging, interruption recovery,
+- [x] Fixture-qualify atomic Mods-directory staging, interruption recovery,
   managed SoundBank restoration, and exact original-state restoration.
 - [ ] Add the guarded `observe-optional-mod-compatibility` scenario using exact
   UMM 0.32.4 and Harmony12 1.2.0.1 contracts.
@@ -90,4 +90,3 @@ standalone passes; every eligible individual and maximum combined profile
 truthfully disposed; exact base/Mysterious Stranger/product integrity; required
 combined and working-save evidence; complete exact-hash documentation; a
 validated 0.0.72 package; pushed branch; and an explicit no-merge handoff.
-

@@ -20,9 +20,11 @@ after the external publication policy is resolved:
 implementing the exact profile resolver and transaction framework entirely
 against temporary fixtures. Do not touch the real Mods directory before all
 transaction safety fixtures pass.
-Checkpoint `274d4d7` is local only: the exact approved push helper rejected this
-required branch because its external allowlist has not been updated. Do not use
-raw push; retry only after the policy helper is user-updated.
+Checkpoint `9da61a4` is published and verified on the identically named origin
+branch. Profile resolution and transaction fixtures now pass. Next action:
+source-qualify and publish the transaction checkpoint, then add the guarded
+`observe-optional-mod-compatibility` scenario before any real Mods mutation or
+Steam launch.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

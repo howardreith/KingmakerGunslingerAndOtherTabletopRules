@@ -14,8 +14,21 @@ logical catalog/schema, a deterministic standard-library GUID/Harmony/bootstrap
 scanner, and committed exact-profile definitions/schema with truthful
 static-only and unavailable dispositions.
 
-Pending: exact profile resolver, transactional staging/recovery, guarded
-runtime observer, exact UMM/Harmony diagnostics, execution matrix, and reports.
+The profile resolver binds only committed logical keys to canonical local
+roots, reports complete exact identities and manifests, and refuses ambiguous
+or missing runtime roots. Public transaction entry accepts a committed profile
+ID rather than caller-provided source paths.
+
+Transactional staging records the exact original Mods tree and managed
+`KMG_Firearms.bnk` state, atomically renames the original Mods directory,
+creates a sentinel-owned isolated directory, copies the validated Gunslinger
+package and allowlisted references, and restores from `finally`/explicit
+recovery. Restoration quarantines staged data, returns the original directory,
+verifies exact metadata and hashes, restores the bounded SoundBank side effect,
+and deletes only the sentinel-owned quarantine after verification.
+
+Pending: guarded runtime observer, exact UMM/Harmony diagnostics, execution
+matrix, and final reports.
 
 ## Safety and dependency result
 
