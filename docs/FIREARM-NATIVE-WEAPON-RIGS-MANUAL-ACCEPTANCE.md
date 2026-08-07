@@ -40,6 +40,13 @@ full regression or completion verdict.
 This candidate restores inherited native attach slots and override behavior
 while keeping the failed candidate's sheath patch enabled. Check only:
 
+Commit `6e3aa3782eb6328786b60330ae453fa2d5241f6a`; package
+`artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`;
+package SHA-256
+`CE0C03BE2AF4D0BA0BBFF6A975C5733D106716B4BE581F69F44ED46140B2F90D`;
+DLL `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC`;
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+
 - [ ] Pistol remains visible and unchanged.
 - [ ] Musket is visible while its weapon set is selected.
 - [ ] Blunderbuss is visible while its weapon set is selected.

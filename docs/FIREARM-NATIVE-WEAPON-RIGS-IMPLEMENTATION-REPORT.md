@@ -266,3 +266,12 @@ must not be promoted or merged, and its invisibility is not minor clipping.
 The next isolated candidate restores inherited attach slots/override behavior
 without altering any held rig value. Full completion remains pending a human
 visibility screenshot/checkpoint.
+
+Attach-slot experiment A is published at
+`6e3aa3782eb6328786b60330ae453fa2d5241f6a`. It restores inherited attach slots
+and override behavior only. Candidate package SHA-256 is
+`CE0C03BE2AF4D0BA0BBFF6A975C5733D106716B4BE581F69F44ED46140B2F90D`;
+DLL `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC`;
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+Its build/package checks pass, but actual held visibility is deliberately
+unclaimed pending the narrow human A/B observation.

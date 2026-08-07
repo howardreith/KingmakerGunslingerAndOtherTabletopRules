@@ -879,3 +879,15 @@ Entries are append-only in spirit.
   evidence that the held models are visible. Publish/rebuild exact identity,
   then stop for the required narrow human A/B check without running the full
   regression matrix.
+
+- Published experiment A: `6e3aa3782eb6328786b60330ae453fa2d5241f6a`.
+  Exact published package/DLL/AssetBundle/rig-manifest SHA-256:
+  `CE0C03BE2AF4D0BA0BBFF6A975C5733D106716B4BE581F69F44ED46140B2F90D` /
+  `BC1B4C8B67B8CD68A654DD1334361C61A47733A292A78138DC0239874B8387DC` /
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B` /
+  `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
+- Exact published rebuild again passed repository validation, 911/911 tests,
+  exact-reference Release, build-output, SoundBank, and strict package gates.
+  Per explicit human-checkpoint policy, no detached guarded runtime or full
+  regression scenarios were run. Next evidence must be actual player-visible
+  Pistol/Musket/Blunderbuss and inactive-back observation.
