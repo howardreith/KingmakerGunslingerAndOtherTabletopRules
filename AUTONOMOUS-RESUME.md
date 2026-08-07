@@ -91,6 +91,10 @@ inner Dodge exceptions are now preserved and the dedicated Dodge scenario is
 allowed by the profile wrapper. Source-qualify/publish, run standalone Dodge,
 then make only an evidence-backed fixture or Gunslinger repair and rerun
 standalone before the combined comprehensive repetition.
+Dedicated Dodge run `20260807T2050596684740Z-855d97503f97488086afa4b2c7268038`
+still lacked its inner exception because the top-level summary truncated it.
+The central summary now preserves the full exception chain. Qualify/publish and
+run exactly one more standalone Dodge diagnostic before choosing a repair.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

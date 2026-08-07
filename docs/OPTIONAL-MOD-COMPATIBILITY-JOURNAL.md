@@ -276,3 +276,9 @@
   ignored event. The comprehensive aggregator now preserves the full inner
   exception chain, and the established dedicated Dodge scenario is admitted
   by the typed profile wrapper for exact diagnosis.
+- Dedicated standalone Dodge run
+  `20260807T2050596684740Z-855d97503f97488086afa4b2c7268038` again reached
+  `activate-immediate-dodge`, but the central error formatter also discarded
+  inner exceptions and the exact game log contained no nested trace.
+  `ExceptionSummary` now preserves `Exception.ToString()` so the next single
+  diagnostic run can identify the actual native command failure.

@@ -12260,7 +12260,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string ExceptionSummary(Exception exception)
         {
-            return exception.GetType().FullName + ": " + exception.Message;
+            return exception.ToString();
         }
 
         private static string ReadAssemblyMetadata(Assembly assembly, string key)
