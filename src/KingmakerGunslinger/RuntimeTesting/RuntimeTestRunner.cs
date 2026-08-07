@@ -4178,73 +4178,63 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunDisposableFirearmVisualRigs()
         {
-            GameObject instance = null;
-            bool cleaned = false;
             var assertions = new List<RuntimeTestAssertion>();
-            try
-            {
-                FirearmRigCapability capability =
-                    FirearmAssetRuntime.GetCapability(FirearmKind.Musket);
-                FirearmPresentationProfile profile =
-                    FirearmPresentationProfile.Require(FirearmKind.Musket);
-                instance = FirearmAssetRuntime.InstantiatePrefab(FirearmKind.Musket);
-                Transform visual = instance == null ? null : instance.transform.Find("Visual");
-                Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
-                Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
-                EquipmentOffsets offsets = instance == null ? null :
-                    instance.GetComponent<EquipmentOffsets>();
-                Renderer[] renderers = instance == null ? Array.Empty<Renderer>() :
-                    instance.GetComponentsInChildren<Renderer>(true);
-                string observed = capability.Describe() + ";instance=" +
-                    (instance == null ? "<null>" : instance.name) +
-                    ";renderers=" + renderers.Length;
-                assertions.Add(Assertion("musket-readiness",
-                    "AutonomousCandidate pending human review",
-                    profile.EquippedPolicy,
-                    profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate &&
-                        profile.EquippedModel != null,
-                    "exact Musket profile and validated capability"));
-                assertions.Add(Assertion("musket-instantiated-rig",
-                    "identity root; Visual; Muzzle; SupportHandTarget; renderers",
-                    observed, instance != null && visual != null && muzzle != null &&
-                        support != null && renderers.Length > 0 &&
-                        instance.transform.localPosition == Vector3.zero &&
-                        instance.transform.localRotation == Quaternion.identity &&
-                        instance.transform.localScale == Vector3.one,
-                    "transient custom Musket instance"));
-                assertions.Add(Assertion("musket-native-left-hand-ik",
-                    "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
-                    observed, offsets != null &&
-                        ReferenceEquals(offsets.IkTargetLeftHand, support),
-                    "exact installed Kingmaker EquipmentOffsets"));
-                WeaponVisualParameters effectiveVisual = ReadField(
-                    BlueprintBootstrap.ProductionFirearms.Musket.Item,
-                    "m_VisualParameters") as WeaponVisualParameters;
-                int projectileCount = effectiveVisual == null ||
-                    effectiveVisual.Projectiles == null ? -1 :
-                    effectiveVisual.Projectiles.Length;
-                assertions.Add(Assertion("musket-projectile-contract",
-                    "exactly one cloned firearm projectile remains assigned",
-                    "projectiles=" + projectileCount, projectileCount == 1,
-                    "effective production Musket WeaponVisualParameters"));
-                assertions.Add(Assertion("human-visual-gate",
-                    "not mechanically proven",
-                    "grip/clipping/scale/pose/animation require human review", true,
-                    "explicit evidence limitation"));
-            }
-            finally
-            {
-                if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
-                cleaned = instance == null || instance.Equals(null);
-            }
-            assertions.Add(Assertion("transient-rig-cleanup", "destroyed", cleaned.ToString(),
-                cleaned, "finally-owned transient GameObject"));
+            AppendLongGunRigAssertions(assertions, FirearmKind.Musket,
+                BlueprintBootstrap.ProductionFirearms.Musket.Item);
+            AppendLongGunRigAssertions(assertions, FirearmKind.Blunderbuss,
+                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item);
+            AppendLongGunRigAssertions(assertions, FirearmKind.Rifle,
+                BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item);
+            assertions.Add(Assertion("human-visual-gate", "not mechanically proven",
+                "grip/clipping/scale/pose/animation require human review", true,
+                "explicit evidence limitation"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
                 _context.ModEntry.Info.Version,
                 _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                 "Unity Mod Manager ModEntry.Info.Version"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private void AppendLongGunRigAssertions(List<RuntimeTestAssertion> assertions,
+            FirearmKind kind, BlueprintItemWeapon item)
+        {
+            GameObject instance = null;
+            bool cleaned = false;
+            string id = kind.ToString().ToLowerInvariant();
+            try
+            {
+                FirearmRigCapability capability = FirearmAssetRuntime.GetCapability(kind);
+                FirearmPresentationProfile profile = FirearmPresentationProfile.Require(kind);
+                instance = FirearmAssetRuntime.InstantiatePrefab(kind);
+                Transform visual = instance == null ? null : instance.transform.Find("Visual");
+                Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
+                Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
+                EquipmentOffsets offsets = instance == null ? null : instance.GetComponent<EquipmentOffsets>();
+                Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
+                string observed = capability.Describe() + ";renderers=" + renderers.Length;
+                assertions.Add(Assertion(id + "-readiness", "AutonomousCandidate pending human review",
+                    profile.EquippedPolicy, profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate && profile.EquippedModel != null,
+                    "exact per-kind profile and validated capability"));
+                assertions.Add(Assertion(id + "-instantiated-rig", "identity root; Visual; Muzzle; SupportHandTarget; renderers",
+                    observed, instance != null && visual != null && muzzle != null && support != null && renderers.Length > 0 &&
+                        instance.transform.localPosition == Vector3.zero && instance.transform.localRotation == Quaternion.identity && instance.transform.localScale == Vector3.one,
+                    "transient custom long-gun instance"));
+                assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
+                    observed, offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
+                    "exact installed Kingmaker EquipmentOffsets"));
+                WeaponVisualParameters effective = ReadField(item, "m_VisualParameters") as WeaponVisualParameters;
+                int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
+                assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
+                    "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
+            }
+            finally
+            {
+                if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+                cleaned = instance == null || instance.Equals(null);
+            }
+            assertions.Add(Assertion(id + "-cleanup", "destroyed", cleaned.ToString(), cleaned,
+                "finally-owned transient GameObject"));
         }
 
         private RuntimeTestResult RunFirearmItemLifecycleContractObservation()

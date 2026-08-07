@@ -297,3 +297,20 @@ Entries are append-only in spirit.
   support-hand quality remain untested and must not be called accepted.
 - Next action: extend the same independently calibrated architecture and guarded
   assertions to Blunderbuss and Rifle, preserving Scatter and other mechanics.
+
+## 2026-08-07T06:45:00Z - Remaining long-gun source qualification
+
+- Branch/commit before experiment: published `2513c464dfff09d96c14afc0f0d3e11782de5105`.
+- Question: do Blunderbuss and Rifle independently satisfy the same exact
+  long-gun hierarchy, native IK, projectile and cleanup gates as Musket?
+- Files changed: two readiness profiles, generalized per-kind runtime assertions,
+  focused test and validator counts.
+- Commands: `Build-Local.ps1` three times: first found a stale Musket source-test
+  anchor after 907 tests; second found exact catalog member is `AdvancedRifle`;
+  final PASS.
+- Evidence: repository validation PASS; suite PASS 907/907; exact-reference and
+  strict package PASS; package/DLL SHA-256
+  `AE968B489B2E344C536C0046136A158462FE7F8717AAA291EF871E28AA4DB7AE` /
+  `FE093C41175FC42F1BD0657107476F1BAD67F8F34484A95934C4612E1B77BDF1`.
+- Result: **pass source qualification**; guarded runtime pending published commit.
+- Next action: commit/push, then rerun `disposable-firearm-visual-rigs`.

@@ -41,10 +41,10 @@ namespace KingmakerGunslinger.Assets
                     FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
                     false, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
-                    FirearmKind.Blunderbuss, FirearmPresentationReadiness.NativeFallback,
+                    FirearmKind.Blunderbuss, FirearmPresentationReadiness.AutonomousCandidate,
                     false, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
-                    FirearmKind.Rifle, FirearmPresentationReadiness.NativeFallback,
+                    FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate,
                     false, null, false) }
             };
 

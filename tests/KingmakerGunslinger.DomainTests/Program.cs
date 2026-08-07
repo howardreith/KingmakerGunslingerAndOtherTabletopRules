@@ -225,6 +225,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.animation-allowlist", NativeRigAnimationAllowlist),
             Case("native-rig.calibration-native-refresh", NativeRigCalibrationNativeRefresh),
             Case("native-rig.musket-candidate", NativeRigMusketCandidate),
+            Case("native-rig.long-gun-candidates", NativeRigLongGunCandidates),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1327,10 +1328,24 @@ namespace KingmakerGunslinger.DomainTests
                     "FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate") &&
                 !profile.Contains("FirearmKind.Musket, FirearmPresentationReadiness.HumanAccepted") &&
                 runner.Contains("RunDisposableFirearmVisualRigs") &&
-                runner.Contains("musket-native-left-hand-ik") &&
+                runner.Contains("id + \"-native-left-hand-ik\"") &&
                 runner.Contains("human-visual-gate") &&
                 runner.Contains("grip/clipping/scale/pose/animation require human review"),
                 "Musket may be an autonomous candidate only with guarded structural IK evidence and an explicit human visual gate.");
+        }
+
+        private static void NativeRigLongGunCandidates()
+        {
+            string profile = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
+            string runner = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            Assertions.True(profile.Contains("FirearmKind.Blunderbuss, FirearmPresentationReadiness.AutonomousCandidate") &&
+                profile.Contains("FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate") &&
+                runner.Contains("AppendLongGunRigAssertions(assertions, FirearmKind.Blunderbuss") &&
+                runner.Contains("AppendLongGunRigAssertions(assertions, FirearmKind.Rifle") &&
+                runner.Contains("ReferenceEquals(offsets.IkTargetLeftHand, support)"),
+                "Blunderbuss and Rifle require independent candidate profiles and exact per-instance native IK assertions.");
         }
 
         private static void FirearmAudioDischargeRouteShape()
