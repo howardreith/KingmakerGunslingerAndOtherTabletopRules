@@ -314,3 +314,21 @@ Entries are append-only in spirit.
   `FE093C41175FC42F1BD0657107476F1BAD67F8F34484A95934C4612E1B77BDF1`.
 - Result: **pass source qualification**; guarded runtime pending published commit.
 - Next action: commit/push, then rerun `disposable-firearm-visual-rigs`.
+
+## 2026-08-07T07:00:00Z - Pistol and Revolver source qualification
+
+- Branch/commit before experiment: published `8794e668daa5a50c639157beab57c7ef0b1e7147`.
+- Question: do independently authored Pistol/Revolver rigs satisfy identity,
+  muzzle, renderability, no-support, projectile, cleanup and allowlisted
+  `PiercingOneHanded` candidate requirements?
+- Files changed: short-gun readiness/animation, generalized runtime assertions,
+  focused test and validator counts.
+- Commands: `Build-Local.ps1` (first compile found missing exact animation
+  namespace after 908 tests); corrected import; final `Build-Local.ps1` PASS.
+- Evidence: repository validation PASS; suite PASS 908/908; exact-reference and
+  strict package PASS; package/DLL SHA-256
+  `9B56A87F4122D72DD699B7AD4A874F83D33DFE4084F3AD7CE6FA1C7135FF3F8B` /
+  `CC20FB243D19C35208B746E388B55D6491F949CA3A0B6144C8BAA38D25E2667E`.
+- Result: **pass source qualification**. The animation is a mechanically testable
+  candidate, not a human visual verdict.
+- Next action: commit/push and run the all-five guarded structural scenario.

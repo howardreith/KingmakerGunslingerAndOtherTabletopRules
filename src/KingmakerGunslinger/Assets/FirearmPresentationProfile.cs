@@ -28,11 +28,11 @@ namespace KingmakerGunslinger.Assets
                 // Stabilization therefore keeps the cloned native presentation for
                 // all five weapons until an individual replacement is human-approved.
                 { FirearmKind.Pistol, new FirearmPresentationProfile(
-                    FirearmKind.Pistol, FirearmPresentationReadiness.NativeFallback,
-                    false, null, false) },
+                    FirearmKind.Pistol, FirearmPresentationReadiness.AutonomousCandidate,
+                    false, WeaponAnimationStyle.PiercingOneHanded, false) },
                 { FirearmKind.Revolver, new FirearmPresentationProfile(
-                    FirearmKind.Revolver, FirearmPresentationReadiness.NativeFallback,
-                    false, null, false) },
+                    FirearmKind.Revolver, FirearmPresentationReadiness.AutonomousCandidate,
+                    false, WeaponAnimationStyle.PiercingOneHanded, false) },
 
                 // Long-gun wrappers have repeatedly been invisible, inverted, or
                 // body-clipping. Preserve visible native crossbow fallbacks until

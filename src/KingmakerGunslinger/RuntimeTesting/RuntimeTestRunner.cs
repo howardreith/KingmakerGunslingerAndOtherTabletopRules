@@ -32,6 +32,7 @@ using KingmakerGunslinger.Grit;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
+using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
@@ -4185,6 +4186,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item);
             AppendLongGunRigAssertions(assertions, FirearmKind.Rifle,
                 BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item);
+            AppendShortGunRigAssertions(assertions, FirearmKind.Pistol,
+                BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+            AppendShortGunRigAssertions(assertions, FirearmKind.Revolver,
+                BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item);
             assertions.Add(Assertion("human-visual-gate", "not mechanically proven",
                 "grip/clipping/scale/pose/animation require human review", true,
                 "explicit evidence limitation"));
@@ -4225,6 +4230,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact installed Kingmaker EquipmentOffsets"));
                 WeaponVisualParameters effective = ReadField(item, "m_VisualParameters") as WeaponVisualParameters;
                 int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
+                assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
+                    "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
+            }
+            finally
+            {
+                if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+                cleaned = instance == null || instance.Equals(null);
+            }
+            assertions.Add(Assertion(id + "-cleanup", "destroyed", cleaned.ToString(), cleaned,
+                "finally-owned transient GameObject"));
+        }
+
+        private void AppendShortGunRigAssertions(List<RuntimeTestAssertion> assertions,
+            FirearmKind kind, BlueprintItemWeapon item)
+        {
+            GameObject instance = null;
+            bool cleaned = false;
+            string id = kind.ToString().ToLowerInvariant();
+            try
+            {
+                FirearmRigCapability capability = FirearmAssetRuntime.GetCapability(kind);
+                FirearmPresentationProfile profile = FirearmPresentationProfile.Require(kind);
+                instance = FirearmAssetRuntime.InstantiatePrefab(kind);
+                Transform visual = instance == null ? null : instance.transform.Find("Visual");
+                Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
+                Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
+                Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
+                WeaponVisualParameters effective = ReadField(item, "m_VisualParameters") as WeaponVisualParameters;
+                int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
+                string observed = capability.Describe() + ";renderers=" + renderers.Length + ";anim=" +
+                    (effective == null ? "<null>" : effective.AnimStyle.ToString());
+                assertions.Add(Assertion(id + "-readiness", "AutonomousCandidate pending human review",
+                    profile.EquippedPolicy, profile.EquippedReadiness == FirearmPresentationReadiness.AutonomousCandidate && profile.EquippedModel != null,
+                    "exact per-kind profile and validated capability"));
+                assertions.Add(Assertion(id + "-instantiated-rig", "identity root; Visual; Muzzle; no support target; renderers",
+                    observed, instance != null && visual != null && muzzle != null && support == null && renderers.Length > 0 &&
+                        instance.transform.localPosition == Vector3.zero && instance.transform.localRotation == Quaternion.identity && instance.transform.localScale == Vector3.one,
+                    "transient custom one-handed instance"));
+                assertions.Add(Assertion(id + "-animation-candidate", "PiercingOneHanded",
+                    observed, effective != null && effective.AnimStyle == WeaponAnimationStyle.PiercingOneHanded,
+                    "effective production item visual parameters"));
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
             }

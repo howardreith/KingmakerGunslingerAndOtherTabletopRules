@@ -226,6 +226,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.calibration-native-refresh", NativeRigCalibrationNativeRefresh),
             Case("native-rig.musket-candidate", NativeRigMusketCandidate),
             Case("native-rig.long-gun-candidates", NativeRigLongGunCandidates),
+            Case("native-rig.short-gun-candidates", NativeRigShortGunCandidates),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1346,6 +1347,21 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("AppendLongGunRigAssertions(assertions, FirearmKind.Rifle") &&
                 runner.Contains("ReferenceEquals(offsets.IkTargetLeftHand, support)"),
                 "Blunderbuss and Rifle require independent candidate profiles and exact per-instance native IK assertions.");
+        }
+
+        private static void NativeRigShortGunCandidates()
+        {
+            string profile = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
+            string runner = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            Assertions.True(profile.Contains("FirearmKind.Pistol, FirearmPresentationReadiness.AutonomousCandidate") &&
+                profile.Contains("FirearmKind.Revolver, FirearmPresentationReadiness.AutonomousCandidate") &&
+                profile.Contains("WeaponAnimationStyle.PiercingOneHanded") &&
+                runner.Contains("AppendShortGunRigAssertions(assertions, FirearmKind.Pistol") &&
+                runner.Contains("AppendShortGunRigAssertions(assertions, FirearmKind.Revolver") &&
+                runner.Contains("support == null") && !profile.Contains("ThrownStraight"),
+                "Pistol and Revolver require independent no-support rigs and the allowlisted PiercingOneHanded candidate, never ThrownStraight.");
         }
 
         private static void FirearmAudioDischargeRouteShape()
