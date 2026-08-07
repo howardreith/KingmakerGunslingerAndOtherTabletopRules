@@ -300,3 +300,19 @@
   `B22C9ED4FE76E61C0152CFFF376CC19EE2A9380DB32BD10E8AA178168DB1A80A`,
   `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`, and
   `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+
+## 2026-08-07 - Human-confirmed Call of the Wild catalog conflict
+
+- The user manually installed the exact local Call of the Wild 1.14.4c-2.1
+  build with Gunslinger and reached new-game character creation. Call of the
+  Wild classes including Antipaladin, Arcanist, Bloodrager, Brawler, and Hunter
+  were visible; Gunslinger was absent from the final player class list.
+- This supersedes timeout-only uncertainty for the player-facing result.
+  Disposition is `CONFLICT-CONFIRMED`: the final character-creation catalog
+  omits Gunslinger. The earlier guarded `request-accepted` timeouts remain a
+  distinct automation/bootstrap-boundary problem.
+- No cause is inferred yet. The next work stream must distinguish registration,
+  final root catalog publication, stale selector cache, later removal/root
+  replacement, or another exact compiled-DLL behavior before repairing.
+- This conflict is independent of the standalone detached Gunslinger's Dodge
+  fixture. Neither result is evidence for the other.

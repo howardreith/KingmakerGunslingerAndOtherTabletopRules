@@ -1,5 +1,13 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 Call of the Wild character-class catalog
+
+- Human exact-build evidence reached new-game character creation. Call of the
+  Wild classes were visible, but Gunslinger was absent.
+- Disposition is `CONFLICT-CONFIRMED`: final character-creation catalog omits
+  Gunslinger. Root-catalog versus selector-cache causality is not yet proven.
+- This is independent of the standalone Dodge fixture blocker below.
+
 ## 2026-08-07 standalone comprehensive qualification
 
 - Standalone and Arms & Armor plus Toggle Custom Soundpacks comprehensive runs

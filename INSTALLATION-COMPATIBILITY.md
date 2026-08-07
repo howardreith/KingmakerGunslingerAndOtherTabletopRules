@@ -81,8 +81,10 @@ Never test removal against the only copy of a valued save.
   0.0.72. This claim does not cover other builds.
 - Exact local Call of the Wild 1.14.4c-2.1 (DLL SHA-256
   `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`)
-  did not reach guarded readiness within 600 seconds and is
-  `CONFLICT-OBSERVED`, not compatible or runtime-qualified.
+  is `CONFLICT-CONFIRMED`: human testing reached character creation with Call
+  of the Wild classes present, but Gunslinger absent. Guarded automation also
+  observed separate 300/600-second bootstrap-boundary timeouts. It is not
+  compatible or runtime-qualified.
 - Craft Magic Items is `STATIC-AUDITED-ONLY`; no compiled local root was
   supplied. Eddic Respec and Bag of Tricks are
   `UNAVAILABLE-LOCAL-REFERENCE`. No claim is made for them.

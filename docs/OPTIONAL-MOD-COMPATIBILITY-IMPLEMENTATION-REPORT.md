@@ -76,3 +76,9 @@ Current DLL/AssetBundle/SoundBank SHA-256 are
 `B22C9ED4FE76E61C0152CFFF376CC19EE2A9380DB32BD10E8AA178168DB1A80A`,
 `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`, and
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+
+Human evidence now confirms that exact Call of the Wild 1.14.4c-2.1 reaches
+character creation and publishes its own added classes while Gunslinger is
+absent from the selector. This is `CONFLICT-CONFIRMED`, not merely slow startup.
+Root/selector lifecycle forensics are pending; no production repair has yet
+been selected.
