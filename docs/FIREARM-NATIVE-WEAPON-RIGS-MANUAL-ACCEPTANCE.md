@@ -13,6 +13,12 @@ Install to the guarded script-selected Kingmaker UMM mod directory. Use only
 Repeat this block separately for Pistol, Musket, Blunderbuss, Rifle, and
 Revolver; record the firearm beside every checked result:
 
+Review priority: first confirm held Musket and Blunderbuss remain fully visible
+from front, side, rear, high, and low camera angles without changing their good
+grip. Next confirm Pistol is upright and its muzzle still points outward. Treat
+long-gun back placement last; the current candidate intentionally hides those
+belt models.
+
 - [ ] Inventory doll and world models are visible; intended firing-hand grip,
   outward muzzle, credible scale, acceptable peaceful/combat idle, draw, and
   switching; no duplicate/stale model, torso penetration, barrel-tip pivot, or

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -30,9 +31,9 @@ public static class BuildFirearmBundles
     private static readonly FirearmPrefabSpec[] Specs =
     {
         Spec("Pistol", "Pistol", false, false,
-            new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 0f), 0.24f,
+            new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 180f), 0.24f,
             new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
-            "Crossbow", "legacy-candidate; source-unit-forensics-pending"),
+            "Crossbow", "autonomous-candidate; equipped-visual-roll-corrected"),
         Spec("PistolBelt", "Pistol", true, false,
             Vector3.zero, new Vector3(0f, 90f, 90f), 0.24f,
             Vector3.zero, 0.264f, 0.15f, 0.45f,
@@ -147,10 +148,15 @@ public static class BuildFirearmBundles
             UnityEngine.Object.DestroyImmediate(value.gameObject);
         foreach (Light value in visual.GetComponentsInChildren<Light>(true))
             UnityEngine.Object.DestroyImmediate(value.gameObject);
+        if (!spec.IsBeltOrBackModel &&
+            (spec.Family == "Musket" || spec.Family == "Blunderbuss"))
+            RetainHighestDetailRenderers(visual, spec);
         Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0)
             throw new InvalidOperationException(spec.Name + " has no renderer.");
-        ApplyMaterials(spec.Family, renderers);
+        ApplyMaterials(spec, renderers);
+        ValidateVisibleScales(visual, spec);
+        LogRendererDiagnostics(visual, spec, renderers);
         visual.transform.localPosition = spec.VisualPosition;
         visual.transform.localRotation = Quaternion.Euler(spec.VisualEuler);
         visual.transform.localScale = Vector3.one * spec.VisualScale;
@@ -166,11 +172,104 @@ public static class BuildFirearmBundles
             support.transform.localRotation = Quaternion.Euler(
                 spec.SupportHandEuler);
         }
+        if (spec.Name == "Pistol" &&
+            (spec.VisualEuler.x != 0f || spec.VisualEuler.y != 180f ||
+             spec.VisualEuler.z != 180f))
+            throw new InvalidOperationException(
+                "Pistol equipped Visual must carry the isolated 180-degree roll correction.");
         ValidateHierarchy(root, spec, renderers);
         PrefabUtility.CreatePrefab("Assets/ApprovedModels/" + spec.Name +
             ".prefab", root,
             ReplacePrefabOptions.ReplaceNameBased);
         UnityEngine.Object.DestroyImmediate(root);
+    }
+
+    private static void RetainHighestDetailRenderers(GameObject visual,
+        FirearmPrefabSpec spec)
+    {
+        LODGroup[] groups = visual.GetComponentsInChildren<LODGroup>(true);
+        int removedRenderers = 0;
+        foreach (LODGroup group in groups)
+        {
+            LOD[] lods = group.GetLODs();
+            var retained = new HashSet<Renderer>();
+            if (lods.Length > 0 && lods[0].renderers != null)
+                foreach (Renderer renderer in lods[0].renderers)
+                    if (renderer != null) retained.Add(renderer);
+            for (int index = 1; index < lods.Length; index++)
+                if (lods[index].renderers != null)
+                    foreach (Renderer renderer in lods[index].renderers)
+                        if (renderer != null && !retained.Contains(renderer))
+                        {
+                            UnityEngine.Object.DestroyImmediate(renderer);
+                            removedRenderers++;
+                        }
+            UnityEngine.Object.DestroyImmediate(group);
+        }
+        if (visual.GetComponentsInChildren<LODGroup>(true).Length != 0)
+            throw new InvalidOperationException(spec.Name +
+                " retains an LODGroup after highest-detail normalization.");
+        Debug.Log("KMG_RIG_LOD name=" + spec.Name + ";groups=" +
+            groups.Length + ";removedLowerDetailRenderers=" + removedRenderers +
+            ";policy=retain-lod0-and-remove-lodgroup");
+    }
+
+    private static void ValidateVisibleScales(GameObject visual,
+        FirearmPrefabSpec spec)
+    {
+        foreach (Transform child in visual.GetComponentsInChildren<Transform>(true))
+        {
+            Vector3 scale = child.localScale;
+            if (!Finite(scale) || scale.x <= 0f || scale.y <= 0f || scale.z <= 0f)
+                throw new InvalidOperationException(spec.Name +
+                    " visible hierarchy contains a zero, negative, mirrored, or non-finite scale at " +
+                    TransformPath(child, visual.transform) + ": " + scale.ToString("R"));
+        }
+    }
+
+    private static void LogRendererDiagnostics(GameObject visual,
+        FirearmPrefabSpec spec, Renderer[] renderers)
+    {
+        foreach (Renderer renderer in renderers)
+        {
+            Mesh mesh = null;
+            SkinnedMeshRenderer skinned = renderer as SkinnedMeshRenderer;
+            if (skinned != null) mesh = skinned.sharedMesh;
+            MeshFilter filter = renderer.GetComponent<MeshFilter>();
+            if (mesh == null && filter != null) mesh = filter.sharedMesh;
+            string[] materials = new string[renderer.sharedMaterials.Length];
+            for (int index = 0; index < renderer.sharedMaterials.Length; index++)
+            {
+                Material material = renderer.sharedMaterials[index];
+                materials[index] = material == null ? "<null>" :
+                    material.name + "@" + (material.shader == null ?
+                        "<null-shader>" : material.shader.name) +
+                    "#cullPolicy=" + (material.shader != null &&
+                        material.shader.name == "KingmakerGunslinger/DoubleSidedDiffuse"
+                        ? "off" : "shader-default");
+            }
+            Debug.Log("KMG_RIG_RENDERER name=" + spec.Name + ";path=" +
+                TransformPath(renderer.transform, visual.transform) +
+                ";type=" + renderer.GetType().Name +
+                ";enabled=" + renderer.enabled +
+                ";active=" + renderer.gameObject.activeInHierarchy +
+                ";mesh=" + (mesh == null ? "<null>" : mesh.name) +
+                ";vertices=" + (mesh == null ? -1 : mesh.vertexCount) +
+                ";normals=" + (mesh == null || mesh.normals == null ? -1 : mesh.normals.Length) +
+                ";materials=" + string.Join("|", materials) +
+                ";localScale=" + renderer.transform.localScale.ToString("R"));
+        }
+    }
+
+    private static string TransformPath(Transform value, Transform root)
+    {
+        string path = value.name;
+        while (value.parent != null && value != root)
+        {
+            value = value.parent;
+            if (value != root) path = value.name + "/" + path;
+        }
+        return path;
     }
 
     private static void ValidateSpec(FirearmPrefabSpec spec)
@@ -219,6 +318,9 @@ public static class BuildFirearmBundles
             root.GetComponentsInChildren<Light>(true).Length != 0)
             throw new InvalidOperationException(spec.Name +
                 " contains an unapproved camera or light.");
+        if (root.GetComponentsInChildren<LODGroup>(true).Length != 0)
+            throw new InvalidOperationException(spec.Name +
+                " contains runtime LODGroup behavior.");
         foreach (Renderer renderer in renderers)
             foreach (Material material in renderer.sharedMaterials)
                 if (material == null || material.shader == null)
@@ -236,8 +338,12 @@ public static class BuildFirearmBundles
         return !float.IsNaN(value) && !float.IsInfinity(value);
     }
 
-    private static void ApplyMaterials(string family, Renderer[] renderers)
+    private static void ApplyMaterials(FirearmPrefabSpec spec,
+        Renderer[] renderers)
     {
+        string family = spec.Family;
+        bool doubleSidedHeldLongGun = !spec.IsBeltOrBackModel &&
+            (family == "Musket" || family == "Blunderbuss");
         string materialFolder = "Assets/ApprovedModels/GeneratedMaterials";
         if (!AssetDatabase.IsValidFolder(materialFolder))
             AssetDatabase.CreateFolder("Assets/ApprovedModels", "GeneratedMaterials");
@@ -248,7 +354,9 @@ public static class BuildFirearmBundles
             for (int index = 0; index < source.Length; index++)
             {
                 string key = source[index] == null ? "material" + index : source[index].name;
-                string path = materialFolder + "/" + family + "_" + Sanitize(key) + ".mat";
+                string path = materialFolder + "/" + family +
+                    (doubleSidedHeldLongGun ? "_Held_" : "_") +
+                    Sanitize(key) + ".mat";
                 Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (material == null)
                 {
@@ -258,6 +366,16 @@ public static class BuildFirearmBundles
                     if (albedo != null) material.SetTexture("_MainTex", albedo);
                     material.SetFloat("_Glossiness", 0.25f);
                     AssetDatabase.CreateAsset(material, path);
+                }
+                if (doubleSidedHeldLongGun)
+                {
+                    Shader doubleSided = Shader.Find(
+                        "KingmakerGunslinger/DoubleSidedDiffuse");
+                    if (doubleSided == null)
+                        throw new InvalidOperationException(
+                            "Bundled double-sided held-weapon shader is unavailable.");
+                    material.shader = doubleSided;
+                    EditorUtility.SetDirty(material);
                 }
                 assigned[index] = material;
             }

@@ -8,6 +8,16 @@ save-free regression qualification. Belt/back models remain independently
 disabled, preserving native fallback behavior. No firearm is `HumanAccepted`;
 grip, clipping, scale, pose and animation quality still require a person.
 
+The current review build preserves the established Musket and Blunderbuss grip,
+support-hand, muzzle, and Crossbow animation calibrations. Their held materials
+use a project-owned double-sided diffuse shader after exact diagnostics found no
+LODGroup, no negative/mirrored scale, enabled renderers, and complete normal
+arrays. This is a narrow response to view-dependent partial disappearance, not
+a claim of visual acceptance. Pistol's equipped Visual child alone has a
+180-degree roll correction; its root, muzzle, animation, and belt prefab remain
+unchanged. Long-gun belt models remain intentionally hidden rather than expose
+the awkward native back-slot pose.
+
 ## Starting identity
 
 - Source: `codex/firearm-wwise-audio` / `2d9d95c8b0f919fb5f129c783522608bc47e2029` / `0.0.70`.

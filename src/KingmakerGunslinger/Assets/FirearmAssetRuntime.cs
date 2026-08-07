@@ -185,6 +185,12 @@ namespace KingmakerGunslinger.Assets
                 else if (prefab.GetComponentsInChildren<Camera>(true).Length != 0 ||
                     prefab.GetComponentsInChildren<Light>(true).Length != 0)
                     failure = "camera-or-light-present";
+                else if (prefab.GetComponentsInChildren<LODGroup>(true).Length != 0)
+                    failure = "lod-group-present";
+                else if (prefab.GetComponentsInChildren<Transform>(true).Any(
+                    child => !Finite(child.localScale) || child.localScale.x <= 0f ||
+                        child.localScale.y <= 0f || child.localScale.z <= 0f))
+                    failure = "negative-mirrored-zero-or-nonfinite-scale";
                 else
                 {
                     Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(
@@ -195,6 +201,13 @@ namespace KingmakerGunslinger.Assets
                         renderer.sharedMaterials.All(material => material != null &&
                             material.shader != null));
                     if (!renderable) failure = "renderable-materials-missing";
+                    else if ((kind == FirearmKind.Musket ||
+                        kind == FirearmKind.Blunderbuss) && renderers.Any(
+                            renderer => renderer.sharedMaterials.Any(material =>
+                                material == null || material.shader == null ||
+                                material.shader.name !=
+                                    "KingmakerGunslinger/DoubleSidedDiffuse")))
+                        failure = "held-long-gun-backface-culling-enabled";
                 }
                 if (failure == null && requiresTwoHandRig)
                 {

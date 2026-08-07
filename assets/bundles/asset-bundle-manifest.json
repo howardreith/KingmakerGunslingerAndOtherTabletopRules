@@ -3,12 +3,12 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91",
+  "sha256": "62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD",
   "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
   "rigs": [
-    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"structural-only"},
-    {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"structural-only"},
-    {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"structural-only"},
+    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-roll-corrected"},
+    {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-lod0-double-sided"},
+    {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-lod0-double-sided"},
     {"name":"Rifle","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"structural-only"},
     {"name":"Revolver","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"structural-only"}
   ],

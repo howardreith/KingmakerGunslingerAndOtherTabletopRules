@@ -434,3 +434,50 @@ Entries are append-only in spirit.
   save-writing API was observed. Human appearance remains entirely unaccepted.
 - Next action: supervised Musket-first checklist after remaining lab diagnostics
   are completed, or use current candidate strictly as structural review build.
+
+## 2026-08-07T16:30:00Z - Targeted visibility and pistol orientation repair
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` /
+  `cf03ba8fd4834153fe03d8008a66cd7592c44950` (published).
+- Question: can partial held Musket/Blunderbuss disappearance and inverted
+  Pistol presentation be corrected without changing the working grip, support
+  hand, muzzle, animation, or belt calibration?
+- Inspected assets: exact Unity 2018.4.10f1 staged Musket, Blunderbuss, and
+  Pistol models/prefabs; every renderer, mesh, normal count, material, shader,
+  enabled state, and hierarchy scale.
+- Evidence: `native-rigs-visibility-repair.log`,
+  `native-rigs-double-sided-repair.log`, and
+  `native-rigs-double-sided-repair-2.log` under the approved Unity build root.
+  Musket had zero LODGroups, two enabled MeshRenderers with normals
+  21526/21526 and 4717/4717; Blunderbuss had zero LODGroups and one enabled
+  MeshRenderer with normals 1444/1444. No zero, negative, mirrored, or nonfinite
+  hierarchy scale was found. Standard shader exposed no usable `_Cull`
+  property, so that experiment was rejected as ineffective.
+- Change: retain/remove LOD metadata defensively, fail closed on bad scales,
+  emit exhaustive renderer diagnostics, use held-long-gun-only
+  `KingmakerGunslinger/DoubleSidedDiffuse` (`Cull Off`), and roll only Pistol's
+  Visual child by 180 degrees. Held rig and belt values are otherwise unchanged.
+- Result: **pass deterministic structural build**. Two clean exact-Unity builds
+  produced AssetBundle SHA-256
+  `62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`.
+  View dependence plus the eliminated alternatives makes backface culling or
+  source normal orientation the supported cause. Human camera-angle review is
+  still required.
+- Next action: full repository/package qualification, publish, then guarded rig
+  and frozen-contract runtime regressions.
+
+## 2026-08-07T16:50:00Z - Visibility repair source/package gate
+
+- Branch/commit before experiment: `cf03ba8fd4834153fe03d8008a66cd7592c44950`.
+- Command: `scripts/Build-Local.ps1`.
+- Result: **pass** repository validation, 911/911 domain/reflection tests,
+  exact-reference Release build, build-output validation, and strict package
+  validation. Provisional package/DLL SHA-256:
+  `AA54406BEFF23A872FB3B234EA86097A4A5090E33AC6CEBAD73BCC346F8B6C91` /
+  `FF5822BF94F93EC7D24ACBCAB6ED22EC5FD9AED9ECAB61B9639C5CE0D11BCA6D`.
+  Rig manifest SHA-256:
+  `429A4E7A30553C016EFEEA95951598164D6F7A4930218A64977EA7DEBD2C2B7F`.
+- Meaning: source and package structure are safe; a published-commit rebuild
+  and guarded runtime qualification remain required. Appearance is unaccepted.
+- Next action: commit, push through policy helper, rebuild exact published
+  identity, then run the visual-rig and frozen-contract scenarios.

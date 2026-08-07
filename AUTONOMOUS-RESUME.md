@@ -2,9 +2,17 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` is at published holster commit
-`602e48998171cf10c3a474648dff8e57ae97ec07`, now candidate version `0.0.71`.
-Active phase: final published-identity qualification. The
+Branch `codex/firearm-native-weapon-rigs` starts this targeted repair at
+published commit `cf03ba8fd4834153fe03d8008a66cd7592c44950`, candidate version `0.0.71`.
+Active phase: qualify the held-long-gun visibility and equipped-Pistol roll
+repair while preserving the current grips and animations. Exact Unity
+2018.4.10f1 produced two byte-identical bundles at
+`62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`.
+Musket/Blunderbuss diagnostics found no LODGroups, no mirrored scales, enabled
+renderers, and complete normal arrays; their held models alone now use Cull Off.
+Pistol's Visual child alone has the 180-degree roll correction. Belt/back models
+remain independently hidden. Next command: `./scripts/Build-Local.ps1`, then
+commit/push and run guarded visual-rig/frozen-contract scenarios. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are

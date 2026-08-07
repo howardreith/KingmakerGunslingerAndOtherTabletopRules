@@ -229,6 +229,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.short-gun-candidates", NativeRigShortGunCandidates),
             Case("native-rig.obsolete-scan-retired", NativeRigObsoleteScanRetired),
             Case("native-rig.holster-hidden-exact", NativeRigHolsterHiddenExact),
+            Case("native-rig.visibility-repair", NativeRigVisibilityRepair),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1391,6 +1392,39 @@ namespace KingmakerGunslinger.DomainTests
                 presentation.Contains("Native crossbow") &&
                 !presentation.Contains("GetComponentsInChildren<Renderer>"),
                 "Candidate holsters must be hidden on exact firearm visual parameters without renderer scanning or native donor mutation.");
+        }
+
+        private static void NativeRigVisibilityRepair()
+        {
+            string builder = ThirdPlaytestSource("tools/unity/BuildFirearmBundles.cs");
+            string runtime = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
+            Assertions.True(builder.Contains(
+                    "new Vector3(0f, 180f, 180f), 0.24f") &&
+                builder.Contains("RetainHighestDetailRenderers(visual, spec)") &&
+                builder.Contains("policy=retain-lod0-and-remove-lodgroup") &&
+                builder.Contains("KMG_RIG_RENDERER") &&
+                builder.Contains("mesh=") && builder.Contains("materials=") &&
+                builder.Contains("doubleSidedHeldLongGun") &&
+                builder.Contains("KingmakerGunslinger/DoubleSidedDiffuse") &&
+                builder.Contains("vertices=") && builder.Contains("normals=") &&
+                builder.Contains("ValidateVisibleScales") &&
+                builder.Contains("Pistol equipped Visual must carry the isolated 180-degree roll correction") &&
+                runtime.Contains("lod-group-present") &&
+                runtime.Contains("negative-mirrored-zero-or-nonfinite-scale") &&
+                runtime.Contains("held-long-gun-backface-culling-enabled"),
+                "Visibility repair must isolate Pistol roll, retain LOD0 for held long guns, log renderer contracts, and reject mirrored scales at build and runtime.");
+            Assertions.True(builder.Contains(
+                    "Spec(\"Musket\", \"Musket\", false, true,\n            new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f") &&
+                builder.Contains(
+                    "Spec(\"Blunderbuss\", \"Blunderbuss\", false, true,\n            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f"),
+                "Held Musket and Blunderbuss grip transforms changed during renderer isolation.");
+            string shader = ThirdPlaytestSource(
+                "tools/unity/KmgDoubleSidedDiffuse.shader");
+            Assertions.True(shader.Contains("Cull Off") &&
+                shader.Contains("RenderType\"=\"Opaque") &&
+                shader.Contains("#pragma surface surf Lambert"),
+                "Held-only visibility shader must be opaque, diffuse, and explicitly double-sided.");
         }
 
         private static void FirearmAudioDischargeRouteShape()
