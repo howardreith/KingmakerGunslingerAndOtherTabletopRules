@@ -232,3 +232,8 @@
   for one materially different 600-second Call of the Wild attempt. Profile and
   scenario allowlists, Steam launch, automatic exit, and restoration semantics
   are unchanged.
+- The one changed-strategy Call of the Wild attempt used 600 seconds under
+  transaction `compat-20260807T201206Z-e36dbdadd645`. It again ended structured
+  `TIMEOUT` at `request-accepted`; exact restoration verified. This profile and
+  both combined profiles remain `CONFLICT-OBSERVED`; no further unchanged
+  bootstrap retry is authorized by the evidence.

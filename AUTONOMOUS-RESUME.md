@@ -68,6 +68,12 @@ timeout and restored exactly. The wrapper now permits a bounded explicit
 timeout. Source-qualify and publish it, then run exactly one Call of the Wild
 `mod-load-smoke` with `-RuntimeTimeoutSeconds 600`. If readiness still does not
 occur, preserve `CONFLICT-OBSERVED` and do not retry unchanged.
+The 600-second attempt also timed out at `request-accepted`; transaction
+`compat-20260807T201206Z-e36dbdadd645` restored exactly. Do not retry Call of
+the Wild or either current combined profile unchanged. Continue gunslinger-only
+class/presentation and working-save qualification, then define the maximum
+passing combination from Arms & Armor plus Toggle Custom Soundpacks if the
+committed schema permits an evidence-backed extension profile.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-
