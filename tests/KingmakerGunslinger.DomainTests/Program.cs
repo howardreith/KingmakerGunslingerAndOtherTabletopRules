@@ -1388,14 +1388,28 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
             string presentation = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/FirearmWeaponPresentation.cs");
-            Assertions.True(profile.Contains("HideHolsteredModel") &&
-                profile.Contains("return HideHolsteredModel ? \"hidden\"") &&
+            string lifecycle = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmHiddenHolsterPatch.cs");
+            Assertions.True(profile.Contains("enum FirearmHolsterPolicy") &&
+                profile.Contains("NativeFallback = 0") &&
+                profile.Contains("Custom = 1") &&
+                profile.Contains("Hidden = 2") &&
+                profile.Contains("FirearmKind.Musket") &&
+                profile.Contains("FirearmHolsterPolicy.Hidden, null, true") &&
                 presentation.Contains("if (profile.HideHolsteredModel)") &&
                 presentation.Contains("Set(visual, \"m_WeaponBeltModel\", null)") &&
                 presentation.Contains("Set(visual, \"m_WeaponSheathModel\", null)") &&
+                presentation.Contains("SetEmptyCollection(visual, \"m_PossibleAttachSlots\")") &&
+                presentation.Contains("Set(visual, \"m_OverrideAttachSlots\", true)") &&
+                lifecycle.Contains("ReattachSheath") &&
+                lifecycle.Contains("DestroySheathModel") &&
+                lifecycle.Contains("KingmakerFirearmRuntimeItemResolver") &&
+                lifecycle.Contains("profile.Holster != FirearmHolsterPolicy.Hidden") &&
+                lifecycle.Contains("!profile.IsLongGun") &&
                 presentation.Contains("Native crossbow") &&
-                !presentation.Contains("GetComponentsInChildren<Renderer>"),
-                "Candidate holsters must be hidden on exact firearm visual parameters without renderer scanning or native donor mutation.");
+                !presentation.Contains("GetComponentsInChildren<Renderer>") &&
+                !lifecycle.Contains("Renderer"),
+                "Hidden long-gun holsters must clear attach models and exact firearm sheath lifecycle without renderer scanning or native donor mutation.");
         }
 
         private static void NativeRigVisibilityRepair()
@@ -1443,9 +1457,9 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("SourceMuzzlePoint") &&
                 builder.Contains("AnchorRelativeToGrip") &&
                 builder.Contains("KMG_RIG_ANCHORS") &&
-                builder.Contains("new Vector3(0.0400f, 0f, 0.00478f)") &&
+                builder.Contains("new Vector3(0.0400f, 0f, 0f)") &&
                 builder.Contains("new Vector3(-0.1000f, -0.0122f, -0.0074f)") &&
-                builder.Contains("new Vector3(0.0100f, 0f, -0.00216f)") &&
+                builder.Contains("new Vector3(0.0100f, 0f, -0.00316f)") &&
                 builder.Contains("new Vector3(0.1300f, 0f, 0f)") &&
                 runtime.Contains("semantic-length-or-butt-implausible") &&
                 runner.Contains("-semantic-anchors") &&

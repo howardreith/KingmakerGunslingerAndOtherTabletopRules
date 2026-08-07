@@ -103,6 +103,7 @@
     <Compile Include="Audio\FirearmSoundRuntime.cs" />
     <Compile Include="Audio\FirearmSoundStateMachine.cs" />
     <Compile Include="Assets\FirearmProjectileVisualPatch.cs" />
+    <Compile Include="Assets\FirearmHiddenHolsterPatch.cs" />
     <Compile Include="Assets\FirearmPresentationProfile.cs" />
     <Compile Include="Actions\FirearmActionDecision.cs" />
     <Compile Include="Actions\FirearmActionKind.cs" />

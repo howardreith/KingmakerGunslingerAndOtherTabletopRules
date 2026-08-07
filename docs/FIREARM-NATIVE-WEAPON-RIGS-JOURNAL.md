@@ -747,3 +747,57 @@ Entries are append-only in spirit.
 - Result: **AutonomousCandidate mechanical/structural pass**. No save-writing
   API was observed and `KMG_AUTOMATION_BASELINE` was not overwritten. Whether
   the 0.020 clearance visibly reduces torso clipping remains a human gate.
+
+## 2026-08-08T00:15:00Z - Final bounded finishing-pass plan
+
+- Branch/commit before work: clean, published
+  `3fab59c65c4767bd6231f4482673a76cf77872b7`.
+- Human verdict: reject the immediately preceding `-0.020` local-X clearance;
+  preserve accepted Pistol and Crossbow animations; restore the last human-best
+  semantic-anchor held values; render no Musket, Blunderbuss, or Rifle on back.
+- Exact history evidence: `git diff 39935dc..5a37f16 --
+  tools/unity/BuildFirearmBundles.cs` proves the rejected experiment changed
+  only Musket source-grip Z `0 -> 0.00478` and Blunderbuss source-grip Z
+  `-0.00316 -> -0.00216`.
+- Restored fallback values: Musket source grip `(0.0400,0,0)`, derived Visual
+  approximately `(0,0,0.16744)`, SupportHandTarget
+  `(-0.030976,-0.051069,0.586040)`, Muzzle `(0,0,1.180452)`, length
+  `1.349985 m`; Blunderbuss source grip `(0.0100,0,-0.00316)`, derived Visual
+  `(0.0632,0,0.2)`, SupportHandTarget `(-0.031,-0.051,0.45)`, Muzzle
+  `(0,0,0.735)`, length `0.848 m`.
+- Bounded rotation decision: no rotation is selected without a live rendered
+  torso/hand fixture that establishes the outward sign. The last unobserved
+  translation made appearance worse; speculative 4/7/10-degree rotation could
+  likewise trade torso clipping for barrel/support-hand error. The restored
+  human-best values remain the mandated safe fallback and minor clipping is
+  explicitly accepted.
+- Holster question: can a tri-state exact-firearm policy clear belt, sheath,
+  prototype-backed attach slots, and private `ReattachSheath` output for long
+  guns while leaving active held models and native crossbows unchanged?
+- Next action: restore the two grip values, implement explicit `Hidden` policy
+  plus exact slot lifecycle cleanup, add focused/runtime assertions, then run
+  full deterministic and guarded qualification.
+
+## 2026-08-08T01:00:00Z - Restored rigs and hidden-holster source gate
+
+- Files changed: restored two source grip coordinates; introduced explicit
+  `NativeFallback/Custom/Hidden` holster state; long guns set Hidden with typed
+  empty attach slots and override; exact `ReattachSheath` postfix destroys only
+  an exact resolved long-gun firearm's sheath model; strengthened source/runtime
+  assertions. Pistol held source/spec/animation and short-gun attach-slot
+  behavior are unchanged.
+- Exact final held values equal the last human-best baseline recorded above.
+  No 4/7/10-degree rotation or further translation was retained.
+- Deterministic evidence: `final-bounded-unity-pass1.log` and `pass2.log`;
+  both AssetBundles SHA-256
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+  Musket length remains `1.34998477 m`; Blunderbuss `0.848 m`.
+- Source/package checks: PASS repository validation, 911/911 tests,
+  exact-reference Release compilation (including the private lifecycle patch),
+  build-output, SoundBank, and strict package validation. Provisional
+  package/DLL SHA-256:
+  `C6E416A87212BA244F3A71EB0FAC78466B8C43413DA8B7FA3B027C8561BC598A` /
+  `78E93E479D2B58E9466F86A5F4A357C28755AC997766A83427809445EE856132`.
+- Result: **source/structural pass**. Runtime must still prove Harmony patch
+  application, empty effective long-gun attach slots, held models, native donor
+  isolation, switching cleanup, and frozen mechanics on a published commit.

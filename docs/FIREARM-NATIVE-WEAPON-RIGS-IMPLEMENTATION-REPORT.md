@@ -224,3 +224,21 @@ rig manifest `15A1B3D6E821A96C1DF64FBF80752254AA3C498CE2871ADC2BB434EE5502B3FC`.
 Guarded visual rigs, switching, Targeting Arms/projectile, Wwise, Scatter, and
 reload scenarios all PASS with exact run IDs/hashes in the journal. The only
 remaining uncertainty for this pass is the human-perceived clipping delta.
+
+## Final bounded finishing candidate
+
+The rejected `-0.020` local-X experiment is reverted by reapplying only the
+last human-best Musket and Blunderbuss source grip values. Musket remains
+`1.349985 m`; scale, rotation, semantic points, model, materials and Crossbow
+animation are unchanged. Blunderbuss likewise returns to its prior anchors and
+`0.848 m` length. No unobserved rotation was selected because the save-free
+fixture cannot establish a trustworthy torso-outward sign; minor residual
+clipping is accepted rather than risking another regression.
+
+Holsters now use an explicit tri-state policy. Musket, Blunderbuss and Rifle
+are `Hidden`: effective belt/sheath are null, the exact installed attach-slot
+collection is empty with override enabled, prototype fallback is severed, and
+an exact long-gun-only `ReattachSheath` postfix removes recreated sheath/quiver
+presentation. It resolves production firearms through their marker and never
+scans avatar renderers or touches native crossbows. Pistol's accepted held
+source, transform, scale and animation remain frozen.

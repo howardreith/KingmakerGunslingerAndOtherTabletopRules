@@ -13,6 +13,13 @@ namespace KingmakerGunslinger.Assets
         HumanAccepted = 2
     }
 
+    internal enum FirearmHolsterPolicy
+    {
+        NativeFallback = 0,
+        Custom = 1,
+        Hidden = 2
+    }
+
     /// <summary>
     /// Declares which custom presentation capabilities are trusted for each
     /// firearm. A disabled or unavailable capability preserves the cloned native
@@ -29,40 +36,42 @@ namespace KingmakerGunslinger.Assets
                 // all five weapons until an individual replacement is human-approved.
                 { FirearmKind.Pistol, new FirearmPresentationProfile(
                     FirearmKind.Pistol, FirearmPresentationReadiness.AutonomousCandidate,
-                    false, WeaponAnimationStyle.PiercingOneHanded, false) },
+                    FirearmHolsterPolicy.Hidden,
+                    WeaponAnimationStyle.PiercingOneHanded, false) },
                 { FirearmKind.Revolver, new FirearmPresentationProfile(
                     FirearmKind.Revolver, FirearmPresentationReadiness.AutonomousCandidate,
-                    false, WeaponAnimationStyle.PiercingOneHanded, false) },
+                    FirearmHolsterPolicy.Hidden,
+                    WeaponAnimationStyle.PiercingOneHanded, false) },
 
                 // Long-gun wrappers have repeatedly been invisible, inverted, or
                 // body-clipping. Preserve visible native crossbow fallbacks until
                 // each replacement is calibrated and human-approved.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
                     FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
-                    false, null, false) },
+                    FirearmHolsterPolicy.Hidden, null, true) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
                     FirearmKind.Blunderbuss, FirearmPresentationReadiness.AutonomousCandidate,
-                    false, null, false) },
+                    FirearmHolsterPolicy.Hidden, null, true) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
                     FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate,
-                    false, null, false) }
+                    FirearmHolsterPolicy.Hidden, null, true) }
             };
 
         private FirearmPresentationProfile(FirearmKind kind,
             FirearmPresentationReadiness equippedReadiness,
-            bool useCustomBeltModel,
+            FirearmHolsterPolicy holsterPolicy,
             WeaponAnimationStyle? animation, bool overrideAttachSlots)
         {
             Kind = kind;
             EquippedReadiness = equippedReadiness;
-            UseCustomBeltModel = useCustomBeltModel;
+            Holster = holsterPolicy;
             Animation = animation;
             OverrideAttachSlots = overrideAttachSlots;
         }
 
         internal FirearmKind Kind { get; private set; }
         internal FirearmPresentationReadiness EquippedReadiness { get; private set; }
-        internal bool UseCustomBeltModel { get; private set; }
+        internal FirearmHolsterPolicy Holster { get; private set; }
         internal WeaponAnimationStyle? Animation { get; private set; }
         internal bool OverrideAttachSlots { get; private set; }
         internal string EquippedPolicy
@@ -71,13 +80,16 @@ namespace KingmakerGunslinger.Assets
         }
         internal string HolsterPolicy
         {
-            get { return HideHolsteredModel ? "hidden" :
-                (BeltModel == null ? "native-fallback" : "custom-belt/back"); }
+            get
+            {
+                return Holster == FirearmHolsterPolicy.Hidden ? "hidden" :
+                    Holster == FirearmHolsterPolicy.Custom ? "custom-belt/back" :
+                    "native-fallback";
+            }
         }
         internal bool HideHolsteredModel
         {
-            get { return EquippedReadiness != FirearmPresentationReadiness.NativeFallback &&
-                !UseCustomBeltModel; }
+            get { return Holster == FirearmHolsterPolicy.Hidden; }
         }
         internal GameObject EquippedModel
         {
@@ -93,12 +105,18 @@ namespace KingmakerGunslinger.Assets
         {
             get
             {
-                return UseCustomBeltModel
+                return Holster == FirearmHolsterPolicy.Custom
                     ? FirearmAssetRuntime.GetBeltPrefab(Kind)
                     : null;
             }
         }
         internal GameObject SheathModel { get { return null; } }
+
+        internal bool IsLongGun
+        {
+            get { return Kind == FirearmKind.Musket ||
+                Kind == FirearmKind.Blunderbuss || Kind == FirearmKind.Rifle; }
+        }
 
         internal static FirearmPresentationProfile Require(FirearmKind kind)
         {

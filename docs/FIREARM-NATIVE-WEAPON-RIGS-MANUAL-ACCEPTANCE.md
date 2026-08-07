@@ -17,6 +17,12 @@ approximately `0.020` local units outward; it does not alter length, scale,
 rotation, animation, Pistol, Rifle, or holsters. Accept minor residual clipping
 when further tuning merely trades one small flaw for another.
 
+Final bounded candidate supersedes that rejected outward-offset package: it
+restores the prior human-best Musket/Blunderbuss held anchors and intentionally
+shows no Musket, Blunderbuss, or Rifle on the back. Minor residual held clipping
+is accepted for now. Confirm absence of firearm, native crossbow sheath, bolt
+container, and quiver after switching each long gun inactive.
+
 Candidate: version `0.0.71`, semantic-anchor implementation commit
 `25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,

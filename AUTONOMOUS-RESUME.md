@@ -2,22 +2,23 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` has published clipping-calibration
-implementation `5a37f16a176b54a71d18924c42f769caea5c92c2`, version `0.0.71`.
-Active phase: automated qualification complete; narrow supervised visual
-comparison pending. Two deterministic Unity builds
-match at `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`;
+Branch `codex/firearm-native-weapon-rigs` is at published evidence baseline
+`3fab59c65c4767bd6231f4482673a76cf77872b7`, version `0.0.71`, with the final
+bounded source candidate ready to commit. Active phase: published runtime
+qualification. The rejected `-0.020` micro-offset has been replaced by the
+last human-best Musket/Blunderbuss anchor values; no speculative rotation was
+retained. Two deterministic Unity builds match at
+`F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`;
 repository validation, 911/911 tests, exact-reference Release, build-output and
-strict package validation pass. The sole changes are source-grip Z
-`0 -> 0.00478` (Musket) and `-0.00316 -> -0.00216` (Blunderbuss), producing an
-approximately `-0.020` local-X clearance while preserving Musket length/scale,
-both rotations, Crossbow animations, Pistol, Rifle, and belts. Exact package/DLL
-hashes are `3296604A13F738DC4E8388F3FD8320AB9BA520BD7C9B6ABC04B16B2C114E6B99` /
-`00C19F621AD6184EED6B000ACD76D9C5DC19F5616F8DF91AFA7A1C171A32AF14`.
-Guarded visual-rig, switching, Targeting Arms/projectile, Wwise, Scatter, and
-reload scenarios all PASS. Next action: compare Musket then Blunderbuss in doll
-idle/firing, world idle/firing, and switching; confirm torso clipping is reduced
-without degrading grip/support contact. Visual improvement remains a human gate.
+strict package validation pass. Explicit long-gun `Hidden` holster policy now
+clears belt, sheath, prototype fallback attach slots and exact firearm
+`ReattachSheath` output; active held models remain configured. Pistol held
+presentation remains frozen. Provisional package/DLL hashes are
+`C6E416A87212BA244F3A71EB0FAC78466B8C43413DA8B7FA3B027C8561BC598A` /
+`78E93E479D2B58E9466F86A5F4A357C28755AC997766A83427809445EE856132`.
+Next action: commit/push, rebuild exact identity, then run guarded visual rigs,
+switching, Targeting Arms, Wwise, Scatter and reload. Minor residual held
+clipping is explicitly accepted pending final human review.
 Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
 preview objects are removed. Blunderbuss's proven `0.024 m` unit collapse and
