@@ -79,6 +79,11 @@ Arms & Armor and Toggle Custom Soundpacks; all nine dry runs, 911/911 tests,
 and package gates pass. Commit/publish, then run its load, compatibility
 observer, and full high-risk scenario matrix in fresh processes. It is the
 maximum passing candidate, not evidence for Call of the Wild.
+Its first `mod-load-smoke` passed under transaction
+`compat-20260807T202946Z-28927c42d2fd`; observer launch then exposed a remaining
+typed ValidateSet in `Invoke-KingmakerRuntimeTest.ps1`, and restoration verified.
+The allowlist is repaired. Source-qualify/publish, then rerun the combined
+matrix beginning with the observer (load smoke is already evidenced).
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

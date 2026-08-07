@@ -58,4 +58,9 @@ foreach ($contract in @('[ValidateRange(120, 900)]',
         throw "Compatibility wrapper timeout contract missing: $contract"
     }
 }
+$launcher = Get-Content -LiteralPath (Join-Path $root `
+    'scripts\Invoke-KingmakerRuntimeTest.ps1') -Raw
+if (-not $launcher.Contains("'gunslinger-qualified-combined'")) {
+    throw 'Guarded runtime launcher does not allow the committed qualified-combined profile.'
+}
 Write-Host 'Optional-mod compatibility observer allowlist and source contracts passed.'

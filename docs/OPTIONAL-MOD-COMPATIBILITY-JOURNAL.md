@@ -252,3 +252,8 @@
   strict package validation PASS. Pre-runtime package/DLL SHA-256 are
   `072235BA4057153D655A782D7DCC08F109FDE676C9CD701BAB192B6A929178E1` /
   `511EAE870CE9760A527701C424CF644895B060EB531D36772C3C2519C5AF79F4`.
+- First runtime transaction `compat-20260807T202946Z-28927c42d2fd` proved
+  combined `mod-load-smoke` PASS, then stopped before observer launch because
+  the top-level guarded launcher retained its own six-profile `ValidateSet`.
+  Restoration verified. The new ID is now added to that final typed allowlist
+  and tested; no arbitrary profile input is accepted.
