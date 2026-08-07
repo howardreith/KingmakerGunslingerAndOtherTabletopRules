@@ -96,10 +96,10 @@ Fresh published-commit PASS runs: Wwise
 
 ## Candidate identities
 
-- Commit: `54eeeea460844e66d1fff286b0b494ceeb27e6a2`.
-- Version: `0.0.70` (candidate identity has not yet been bumped to 0.0.71).
-- Package: `artifacts/local-runtime/0.0.70/KingmakerGunslinger-0.0.70-local-runtime.zip`, SHA-256 `655B4C2A59DF09A689A5C49A70B818650DFBD1276BB5A99A2982D1D3331B94AB`.
-- DLL SHA-256: `395278EA216126828FC361C126FBBD1C0AB87FB6459323509910DF3A69112D2D`.
+- Commit: `3ae6b5d903720dbd450a2bb3fa82ed32d0b14c4d`.
+- Version: `0.0.71`.
+- Package: `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`, SHA-256 `9F905766214BEB2AC23E2519525826B14970FA7CDE32D305BD8D4E9D2452DF2D`.
+- DLL SHA-256: `479244B41883256831396E60FFCC9CFD06E6F40544AF6E8185D0785831D5000C`.
 - AssetBundle SHA-256: `88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`.
 - Rig manifest SHA-256: `2DD5D5F69C99925B8D390292B1FC3045BC7775CBB04B3D136FF0938D04BF9CA6`.
 
@@ -110,8 +110,7 @@ pending.
 
 ## Known limitations
 
-Inventory-doll refresh, exact per-slot quiver/sheath suppression, belt/back
-candidate qualification, calibration debug markers/import promotion, real-unit
+Inventory-doll refresh, belt/back candidate qualification, calibration debug markers/import promotion, real-unit
 hand-distance instrumentation, two consecutive final candidate runs, version
 0.0.71 identity, working-save/full acceptance, and all human visual judgments
 remain. The structural scenario instantiates validated rigs but does not yet
@@ -120,5 +119,15 @@ prove native live hand-slot parenting on a rendered disposable unit.
 ## Next action
 
 Implement exact slot-scoped sheath/quiver lifecycle and inventory-doll refresh,
-then bump the coherent final candidate to 0.0.71 and rerun the full acceptance
-set twice before the supervised Musket-first visual session.
+then perform the supervised Musket-first visual session. If calibration changes
+are required, export them with `humanAccepted=false` and promote only reviewed
+values into the authoritative rig specification.
+
+Final 0.0.71 evidence: two consecutive all-five rig PASS runs
+`20260807T0452453368618Z-108bd4df764c4c948b1baf7c72619537` and
+`20260807T0454196627467Z-0f6629e8e8fd4f2f924c1d4da64cc130`; Wwise PASS
+`20260807T0455538086836Z-aa2b2e869bd9435c9510a2c64e19b4ee`;
+Targeting Arms PASS
+`20260807T0457299033010Z-53ece3c653eb43e1b71ad1913c0661e9`;
+working-save smoke PASS
+`20260807T0459208536053Z-7621757d095c4a6a89273a06c4585d69`.

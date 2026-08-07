@@ -406,3 +406,31 @@ Entries are append-only in spirit.
 - Result: **pass source qualification**. Exact published-commit rebuild/runtime
   remains pending.
 - Next action: commit/push, rebuild, then critical scenarios twice.
+
+## 2026-08-07T10:05:00Z - Final published 0.0.71 qualification
+
+- Branch/commit before experiment: published `3ae6b5d903720dbd450a2bb3fa82ed32d0b14c4d`.
+- Question: does the exact independent candidate pass repeat structural, Wwise,
+  projectile/damage and authorized working-save gates without save writes?
+- Commands: exact `Build-Local.ps1`; two consecutive
+  `disposable-firearm-visual-rigs`; `disposable-firearm-wwise-audio`;
+  `disposable-gunslinger-targeting-arms`; `working-save-smoke` naming only
+  `KMG_AUTOMATION_WORKING`.
+- Evidence: package/DLL SHA-256
+  `9F905766214BEB2AC23E2519525826B14970FA7CDE32D305BD8D4E9D2452DF2D` /
+  `479244B41883256831396E60FFCC9CFD06E6F40544AF6E8185D0785831D5000C`.
+  Runtime PASS run/result hashes:
+  - rig 1 `20260807T0452453368618Z-108bd4df764c4c948b1baf7c72619537` /
+    `872B3D0310C6A1EC214EC03AC94400B2DC3FFFD4D544A4E1635D7EE918806933`;
+  - rig 2 `20260807T0454196627467Z-0f6629e8e8fd4f2f924c1d4da64cc130` /
+    `8D726E15965092F15DE782FA11E497394605C97995D6E7D35BA6ED869438478A`;
+  - Wwise `20260807T0455538086836Z-aa2b2e869bd9435c9510a2c64e19b4ee` /
+    `FB1FEA2D073B373541AD599AF46C72D13DB56F06BA45882A7345D303936B59D4`;
+  - Targeting Arms `20260807T0457299033010Z-53ece3c653eb43e1b71ad1913c0661e9` /
+    `492D9B02C09F39A22BD53205656AC12C15515A571EF5968934EECE78E29DF0EE`;
+  - working save `20260807T0459208536053Z-7621757d095c4a6a89273a06c4585d69` /
+    `B223E4046BDE847D912630FA0AC1F33A6991AD7AA217B00433A9DD68C9152E6B`.
+- Result: **pass**. Protected baseline was not selected or overwritten; no
+  save-writing API was observed. Human appearance remains entirely unaccepted.
+- Next action: supervised Musket-first checklist after remaining lab diagnostics
+  are completed, or use current candidate strictly as structural review build.

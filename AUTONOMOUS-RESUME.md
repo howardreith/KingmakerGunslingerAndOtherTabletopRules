@@ -8,15 +8,17 @@ Active phase: final published-identity qualification. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are
-`525C5CE6567D7E987FBBD89D388C33D7B6435DA03A8120D0D996E165A1B483FF` /
-`D9E0C48263B800DCD75D53FB1BEB60E65AB5C1324DA1B6C3357FA822930FAE80`.
+`9F905766214BEB2AC23E2519525826B14970FA7CDE32D305BD8D4E9D2452DF2D` /
+`479244B41883256831396E60FFCC9CFD06E6F40544AF6E8185D0785831D5000C`.
 All five firearms are `AutonomousCandidate`; none is `HumanAccepted`;
 no visual acceptance is claimed. Published commit `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`
 passed guarded smoke and `disposable-firearm-visual-rigs`; exact evidence is in
 the journal. Next command: commit/push long-gun source, then run guarded visual
 rig scenario and frozen regressions passed on the scan-retirement commit. Next
-action: commit/push version identity, rebuild exact published commit, then run
-critical 0.0.71 scenarios twice before final report.
+Final 0.0.71 qualification passes two consecutive rig runs, Wwise, Targeting
+Arms and working-save smoke. Next action: commit/push the final evidence handoff;
+remaining implementation gaps are inventory-doll refresh, markers/import
+promotion and live rendered-unit parenting diagnostics before human review.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at
