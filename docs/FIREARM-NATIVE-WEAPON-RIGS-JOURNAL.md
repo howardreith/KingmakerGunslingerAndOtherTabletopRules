@@ -61,3 +61,88 @@ Entries are append-only in spirit.
   only the unchanged baseline and does not qualify any new firearm rig.
 - Next action: commit/push, then inspect exact private-reference signatures and
   native donor contracts.
+
+## 2026-08-07T03:30:00Z - Publication routing and exact metadata forensics
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  `da916fbc74a3b48dc0d5e8cc43c5dad867b633d0`.
+- Question: did policy publication reach this branch, and which exact installed
+  native rig members exist?
+- Inspected: exact policy script; installed `Assembly-CSharp.dll` through
+  read-only reflection metadata; existing source presentation/builder/runtime
+  surfaces.
+- Files changed: forensics, journal, structured Unity builder, and current
+  version source validator.
+- Commands: exact mandated policy publisher; read-only `Get-Content` of policy;
+  narrow assembly string search; broad reflection attempt; narrow
+  reflection-only known-type inspection.
+- Evidence: policy output targeted
+  `.worktrees/firearm-wwise-audio`, branch `codex/firearm-wwise-audio`, commit
+  `2d9d95c...`, leaving `da916fb` local-only. Policy source hard-codes that
+  worktree. Broad reflection failed with `StackOverflowException`; narrow
+  reflection-only inspection returned the exact members curated in
+  `FIREARM-NATIVE-RIG-FORENSICS.md`.
+- Result: **ambiguous publication / pass forensics**. The mandated command did
+  not publish this mission branch; arbitrary push was not substituted. Exact
+  rig metadata is sufficient to proceed safely with structured authoring.
+- Meaning: local work may continue, but every checkpoint must continue invoking
+  and truthfully recording the policy mismatch until policy routing is updated.
+- Next action: validate the declarative rig-specification refactor, then inspect
+  native donor objects through the guarded runtime scenario.
+
+## 2026-08-07T03:36:00Z - Declarative rig builder checkpoint
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  `da916fbc74a3b48dc0d5e8cc43c5dad867b633d0`.
+- Question: can all eight current bundle prefabs be built from reviewable
+  per-prefab specifications with identity roots, explicit Muzzle points, exact
+  long-gun support-target hierarchy, and deterministic bytes?
+- Inspected: preserved five source-model families, exact Unity editor version,
+  staged prefab/material hierarchy, generated AssetBundle and build logs.
+- Files changed: `tools/unity/BuildFirearmBundles.cs`, current source validator,
+  bundle manifest, forensics/journal/resume documents.
+- Commands: repository validation; `Prepare-UnityAssets.ps1`; exact Unity
+  2018.4.10f1 `BuildFirearmBundles.BuildBatch` runs using hidden batch process;
+  SHA-256 comparison after independent restaging.
+- Evidence paths (machine-local, not committed):
+  `C:\Dev\KingmakerGunslingerLab\unity-asset-build\native-rigs-build.log`,
+  `native-rigs-build-2.log`, `native-rigs-build-3.log`. Exact editor reported
+  `2018.4.10f1 (a0470569e97b)`. Two independently restaged outputs matched at
+  SHA-256
+  `88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`.
+- Result: **pass** for deterministic structural authoring. An initial shell
+  wrapper returned before Unity exited; the process completed successfully and
+  its log was retained. Synchronous hidden `Start-Process -Wait` then established
+  the matching hash.
+- Meaning: builder structure is reproducible. The existing transform values are
+  explicitly labeled calibration/source-unit work, and no production profile is
+  enabled; this does not prove EquipmentOffsets assignment or visual quality.
+- Next action: run source/domain/Release/package gates with the new bundle, then
+  implement runtime preparation/capability and native donor observation.
+
+## 2026-08-07T03:41:00Z - Structured bundle source qualification
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  `da916fbc74a3b48dc0d5e8cc43c5dad867b633d0` plus the declarative builder diff.
+- Question: does the deterministic structural bundle pass every repository,
+  domain, exact-reference Release, build-output, and strict package gate?
+- Inspected: full 898-test catalogue, exact-reference DLL, packaged bundle and
+  manifest, SoundBank, final local-runtime archive.
+- Files changed: evidence in journal/resume only after validation.
+- Commands: `.\scripts\test-domain.ps1 -Configuration Release -Clean` and
+  `.\scripts\Build-Local.ps1`.
+- Evidence: repository validation PASS; complete suite PASS 898/898 (twice,
+  including Build-Local); exact-reference compile, output validation, SoundBank
+  validation, strict standalone and local-runtime package validation PASS;
+  package SHA-256
+  `4BD296BEC867BC6B44496A07826224DEBF9F61EB3F41CA6F2028BABC9ECAC7A3`;
+  DLL SHA-256
+  `6BBA65B3C22332B6DB8B2F2420E7412195C562B72F45AC7A39A2F4F548A905AB`;
+  bundle SHA-256
+  `88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`.
+- Result: **pass**. No deployment or Kingmaker launch occurred.
+- Meaning: structured rig authoring is source-qualified, but equipped readiness
+  remains native fallback and native IK/runtime preparation remains pending.
+- Next action: commit this checkpoint, invoke policy publisher, then implement
+  fail-closed runtime rig validation/EquipmentOffsets preparation and donor
+  observation.

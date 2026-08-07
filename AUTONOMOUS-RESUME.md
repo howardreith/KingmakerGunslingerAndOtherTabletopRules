@@ -17,6 +17,20 @@ rig-manifest SHA-256 is
 Next command: exact private-reference and native donor inspection after the
 durable checkpoint is committed and pushed.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
+Declarative eight-prefab rig specifications now build deterministically under
+exact Unity 2018.4.10f1; two clean staged bundle hashes match at
+`88DF971967ECF4879BAA93FE79A734D46ABA2A754AEBD193FAE01AB756DCFD91`.
+Models remain disabled pending runtime capability/IK preparation and visual
+review. Source qualification passes repository validation, 898/898 tests,
+exact-reference Release build, and strict packaging. Current structural package
+SHA-256 is
+`4BD296BEC867BC6B44496A07826224DEBF9F61EB3F41CA6F2028BABC9ECAC7A3`;
+DLL SHA-256 is
+`6BBA65B3C22332B6DB8B2F2420E7412195C562B72F45AC7A39A2F4F548A905AB`.
+Next action: runtime rig validation/EquipmentOffsets preparation and guarded
+native donor observation. Publication note: the mandated policy script currently hard-codes the Wwise
+worktree, so it verified `codex/firearm-wwise-audio@2d9d95c` rather than pushing
+this branch's local `da916fb`; do not replace it with arbitrary `git push`.
 
 ## Sixth-playtest resume point (2026-08-04)
 

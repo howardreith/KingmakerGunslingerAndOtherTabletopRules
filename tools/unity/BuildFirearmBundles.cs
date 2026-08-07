@@ -7,28 +7,72 @@ public static class BuildFirearmBundles
 {
     private const string Bundle = "kingmakergunslinger.firearms";
 
+    internal sealed class FirearmPrefabSpec
+    {
+        internal string Name;
+        internal string Family;
+        internal bool IsBeltOrBackModel;
+        internal bool RequiresTwoHandRig;
+        internal Vector3 VisualPosition;
+        internal Vector3 VisualEuler;
+        internal float VisualScale;
+        internal Vector3 MuzzlePosition;
+        internal Vector3 MuzzleEuler;
+        internal Vector3 SupportHandPosition;
+        internal Vector3 SupportHandEuler;
+        internal float ExpectedLengthMeters;
+        internal float MinimumLengthMeters;
+        internal float MaximumLengthMeters;
+        internal string CandidateAnimation;
+        internal string CalibrationStatus;
+    }
+
+    private static readonly FirearmPrefabSpec[] Specs =
+    {
+        Spec("Pistol", "Pistol", false, false,
+            new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 0f), 0.24f,
+            new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
+            "Crossbow", "legacy-candidate; source-unit-forensics-pending"),
+        Spec("PistolBelt", "Pistol", true, false,
+            Vector3.zero, new Vector3(0f, 90f, 90f), 0.24f,
+            Vector3.zero, 0.264f, 0.15f, 0.45f,
+            "None", "disabled; independent-holster-calibration-pending"),
+        Spec("Musket", "Musket", false, true,
+            new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f,
+            new Vector3(0f, 0f, 0.8525f), 0.8525f, 0.55f, 1.60f,
+            "Crossbow", "autonomous-calibration-candidate"),
+        Spec("MusketBelt", "Musket", true, false,
+            Vector3.zero, Vector3.zero, 2.0f, Vector3.zero,
+            0.8525f, 0.55f, 1.60f, "None",
+            "disabled; independent-back-calibration-pending"),
+        Spec("Blunderbuss", "Blunderbuss", false, true,
+            new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f,
+            new Vector3(0f, 0f, 0.6875f), 0.6875f, 0.40f, 1.30f,
+            "Crossbow", "autonomous-calibration-candidate"),
+        Spec("BlunderbussBelt", "Blunderbuss", true, false,
+            Vector3.zero, Vector3.zero, 0.5f, Vector3.zero,
+            0.6875f, 0.40f, 1.30f, "None",
+            "disabled; independent-back-calibration-pending"),
+        Spec("Revolver", "Revolver", false, false,
+            new Vector3(-0.0460553f, -0.1052241f, 0.1857974f),
+            new Vector3(0f, 90f, 0f), 0.01719849f,
+            new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
+            "Crossbow", "source-unit-normalization-required"),
+        Spec("Rifle", "Rifle", false, true,
+            new Vector3(0f, 0f, -0.651f), new Vector3(0f, 90f, 0f),
+            1.5401387f, new Vector3(0f, 0f, 0.8525f),
+            0.8525f, 0.55f, 1.60f, "Crossbow",
+            "autonomous-calibration-candidate")
+    };
+
     public static void BuildBatch()
     {
         if (!Application.unityVersion.Equals("2018.4.10f1", StringComparison.Ordinal))
             throw new InvalidOperationException("Exact Unity 2018.4.10f1 is required; observed " + Application.unityVersion);
-        // Preserve the human-accepted drawn Pistol transform. Holstered/idle
-        // wrappers are separate assets because belt/back sockets do not share
-        // the hand socket's coordinate contract.
-        CreatePrefab("Pistol", "Pistol", new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 0f), 0.24f, 0.264f);
-        CreatePrefab("PistolBelt", "Pistol", new Vector3(0f, 0f, 0f), new Vector3(0f, 90f, 90f), 0.24f, 0.264f);
-        CreatePrefab("Musket", "Musket", new Vector3(0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 2.0f, 0.8525f);
-        CreatePrefab("MusketBelt", "Musket", new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), 2.0f, 0.8525f);
-        CreatePrefab("Blunderbuss", "Blunderbuss", new Vector3(0f, 0f, 0.25f), new Vector3(0f, 90f, 0f), 0.5f, 0.6875f);
-        CreatePrefab("BlunderbussBelt", "Blunderbuss", new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), 0.5f, 0.6875f);
-        CreatePrefab("Revolver", "Revolver", new Vector3(-0.0460553f, -0.1052241f, 0.1857974f), new Vector3(0f, 90f, 0f), 0.01719849f, 0.264f);
-        CreatePrefab("Rifle", "Rifle", new Vector3(0f, 0f, -0.651f), new Vector3(0f, 90f, 0f), 1.5401387f, 0.8525f);
-        string[] approved = { "Assets/ApprovedModels/Pistol.prefab",
-            "Assets/ApprovedModels/PistolBelt.prefab",
-            "Assets/ApprovedModels/Musket.prefab", "Assets/ApprovedModels/Blunderbuss.prefab",
-            "Assets/ApprovedModels/MusketBelt.prefab", "Assets/ApprovedModels/BlunderbussBelt.prefab",
-            "Assets/ApprovedModels/Revolver.prefab", "Assets/ApprovedModels/Rifle.prefab" };
-        foreach (string path in approved)
+        foreach (FirearmPrefabSpec spec in Specs) CreatePrefab(spec);
+        foreach (FirearmPrefabSpec spec in Specs)
         {
+            string path = "Assets/ApprovedModels/" + spec.Name + ".prefab";
             AssetImporter importer = AssetImporter.GetAtPath(path);
             if (importer == null) throw new FileNotFoundException(path);
             importer.assetBundleName = Bundle;
@@ -56,16 +100,47 @@ public static class BuildFirearmBundles
             BuildTarget.StandaloneWindows64);
     }
 
-    private static void CreatePrefab(string name, string family, Vector3 localPosition,
-        Vector3 localEuler, float uniformScale, float muzzleDistance)
+    private static FirearmPrefabSpec Spec(string name, string family,
+        bool isBeltOrBackModel, bool requiresTwoHandRig, Vector3 visualPosition,
+        Vector3 visualEuler, float visualScale, Vector3 muzzlePosition,
+        float expectedLengthMeters, float minimumLengthMeters,
+        float maximumLengthMeters, string candidateAnimation,
+        string calibrationStatus)
     {
-        string folder = "Assets/ApprovedModels/" + family;
+        return new FirearmPrefabSpec
+        {
+            Name = name,
+            Family = family,
+            IsBeltOrBackModel = isBeltOrBackModel,
+            RequiresTwoHandRig = requiresTwoHandRig,
+            VisualPosition = visualPosition,
+            VisualEuler = visualEuler,
+            VisualScale = visualScale,
+            MuzzlePosition = muzzlePosition,
+            MuzzleEuler = Vector3.zero,
+            SupportHandPosition = requiresTwoHandRig
+                ? new Vector3(0f, 0f, muzzlePosition.z * 0.55f)
+                : Vector3.zero,
+            SupportHandEuler = Vector3.zero,
+            ExpectedLengthMeters = expectedLengthMeters,
+            MinimumLengthMeters = minimumLengthMeters,
+            MaximumLengthMeters = maximumLengthMeters,
+            CandidateAnimation = candidateAnimation,
+            CalibrationStatus = calibrationStatus
+        };
+    }
+
+    private static void CreatePrefab(FirearmPrefabSpec spec)
+    {
+        ValidateSpec(spec);
+        string folder = "Assets/ApprovedModels/" + spec.Family;
         string[] modelGuids = AssetDatabase.FindAssets("t:Model", new[] { folder });
         if (modelGuids.Length != 1)
-            throw new InvalidOperationException(family + " requires exactly one model; observed " + modelGuids.Length);
+            throw new InvalidOperationException(spec.Family +
+                " requires exactly one model; observed " + modelGuids.Length);
         GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(
             AssetDatabase.GUIDToAssetPath(modelGuids[0]));
-        GameObject root = new GameObject(name);
+        GameObject root = new GameObject(spec.Name);
         GameObject visual = UnityEngine.Object.Instantiate(source, root.transform);
         visual.name = "Visual";
         foreach (Camera value in visual.GetComponentsInChildren<Camera>(true))
@@ -73,17 +148,92 @@ public static class BuildFirearmBundles
         foreach (Light value in visual.GetComponentsInChildren<Light>(true))
             UnityEngine.Object.DestroyImmediate(value.gameObject);
         Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
-        if (renderers.Length == 0) throw new InvalidOperationException(name + " has no renderer.");
-        ApplyMaterials(family, renderers);
-        visual.transform.localPosition = localPosition;
-        visual.transform.localRotation = Quaternion.Euler(localEuler);
-        visual.transform.localScale = Vector3.one * uniformScale;
+        if (renderers.Length == 0)
+            throw new InvalidOperationException(spec.Name + " has no renderer.");
+        ApplyMaterials(spec.Family, renderers);
+        visual.transform.localPosition = spec.VisualPosition;
+        visual.transform.localRotation = Quaternion.Euler(spec.VisualEuler);
+        visual.transform.localScale = Vector3.one * spec.VisualScale;
         GameObject muzzle = new GameObject("Muzzle");
         muzzle.transform.SetParent(root.transform, false);
-        muzzle.transform.localPosition = new Vector3(0f, 0f, muzzleDistance);
-        PrefabUtility.CreatePrefab("Assets/ApprovedModels/" + name + ".prefab", root,
+        muzzle.transform.localPosition = spec.MuzzlePosition;
+        muzzle.transform.localRotation = Quaternion.Euler(spec.MuzzleEuler);
+        if (spec.RequiresTwoHandRig)
+        {
+            GameObject support = new GameObject("SupportHandTarget");
+            support.transform.SetParent(root.transform, false);
+            support.transform.localPosition = spec.SupportHandPosition;
+            support.transform.localRotation = Quaternion.Euler(
+                spec.SupportHandEuler);
+        }
+        ValidateHierarchy(root, spec, renderers);
+        PrefabUtility.CreatePrefab("Assets/ApprovedModels/" + spec.Name +
+            ".prefab", root,
             ReplacePrefabOptions.ReplaceNameBased);
         UnityEngine.Object.DestroyImmediate(root);
+    }
+
+    private static void ValidateSpec(FirearmPrefabSpec spec)
+    {
+        if (spec == null || string.IsNullOrEmpty(spec.Name) ||
+            string.IsNullOrEmpty(spec.Family))
+            throw new InvalidOperationException("Every firearm rig needs identity.");
+        if (!Finite(spec.VisualPosition) || !Finite(spec.VisualEuler) ||
+            !Finite(spec.MuzzlePosition) || !Finite(spec.MuzzleEuler) ||
+            !Finite(spec.SupportHandPosition) || !Finite(spec.SupportHandEuler) ||
+            !Finite(spec.VisualScale) || spec.VisualScale <= 0f)
+            throw new InvalidOperationException(spec.Name +
+                " contains a non-finite or non-positive transform.");
+        if (spec.MinimumLengthMeters <= 0f ||
+            spec.ExpectedLengthMeters < spec.MinimumLengthMeters ||
+            spec.ExpectedLengthMeters > spec.MaximumLengthMeters)
+            throw new InvalidOperationException(spec.Name +
+                " has an invalid expected-length contract.");
+        if (!spec.IsBeltOrBackModel && spec.MuzzlePosition.z <= 0f)
+            throw new InvalidOperationException(spec.Name +
+                " muzzle must be forward of the grip on declared +Z.");
+        if (spec.RequiresTwoHandRig &&
+            (spec.SupportHandPosition.z <= 0f ||
+             spec.SupportHandPosition.z >= spec.MuzzlePosition.z))
+            throw new InvalidOperationException(spec.Name +
+                " support target must lie between grip and muzzle.");
+    }
+
+    private static void ValidateHierarchy(GameObject root,
+        FirearmPrefabSpec spec, Renderer[] renderers)
+    {
+        if (root.transform.localPosition != Vector3.zero ||
+            root.transform.localRotation != Quaternion.identity ||
+            root.transform.localScale != Vector3.one)
+            throw new InvalidOperationException(spec.Name +
+                " root is not an identity dominant-hand grip frame.");
+        if (root.transform.Find("Visual") == null ||
+            root.transform.Find("Muzzle") == null || renderers.Length == 0)
+            throw new InvalidOperationException(spec.Name +
+                " lacks its required visual or muzzle hierarchy.");
+        bool hasSupport = root.transform.Find("SupportHandTarget") != null;
+        if (hasSupport != spec.RequiresTwoHandRig)
+            throw new InvalidOperationException(spec.Name +
+                " support-target requirement does not match its rig family.");
+        if (root.GetComponentsInChildren<Camera>(true).Length != 0 ||
+            root.GetComponentsInChildren<Light>(true).Length != 0)
+            throw new InvalidOperationException(spec.Name +
+                " contains an unapproved camera or light.");
+        foreach (Renderer renderer in renderers)
+            foreach (Material material in renderer.sharedMaterials)
+                if (material == null || material.shader == null)
+                    throw new InvalidOperationException(spec.Name +
+                        " contains a null material or shader.");
+    }
+
+    private static bool Finite(Vector3 value)
+    {
+        return Finite(value.x) && Finite(value.y) && Finite(value.z);
+    }
+
+    private static bool Finite(float value)
+    {
+        return !float.IsNaN(value) && !float.IsInfinity(value);
     }
 
     private static void ApplyMaterials(string family, Renderer[] renderers)
