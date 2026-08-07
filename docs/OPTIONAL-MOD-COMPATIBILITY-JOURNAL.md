@@ -150,3 +150,9 @@
   `modEntries`. The repair now resolves the manager from the actual
   `context.ModEntry.GetType().DeclaringType`, eliminating compile-reference
   type selection from this exact-runtime query.
+- Observer run under transaction
+  `compat-20260807T192017Z-17a2340a5202` proved the live declaring type but
+  still failed before assertions. Exact field metadata then showed
+  `modEntries` is `Public, Static, InitOnly` in this UMM 0.32.4 build, contrary
+  to the earlier private-field note. The binding now includes `Public` and
+  `NonPublic`; restoration again verified exactly.

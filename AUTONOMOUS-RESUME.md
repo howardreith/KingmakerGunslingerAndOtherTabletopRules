@@ -37,6 +37,10 @@ lookup; transaction `compat-20260807T191438Z-3adf77ada3af` restored exactly.
 The observer now resolves `modEntries` from the live ModEntry declaring type and
 is fully source/build/package qualified. Commit/publish/rebuild, then rerun the
 gunslinger-only observer before advancing.
+The live-type rerun identified the final exact mismatch: UMM 0.32.4 declares
+`modEntries` as `Public, Static, InitOnly`, not private. Binding flags now cover
+the proven public field. Transaction `compat-20260807T192017Z-17a2340a5202`
+restored exactly. Source-qualify/publish/rebuild and rerun the observer.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

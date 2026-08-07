@@ -128,7 +128,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (managerType == null)
                 throw new InvalidOperationException("The live UMM ModEntry declaring type was unavailable.");
             FieldInfo field = managerType.GetField("modEntries",
-                BindingFlags.Static | BindingFlags.NonPublic);
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (field == null) throw new MissingFieldException(managerType.AssemblyQualifiedName, "modEntries");
             IEnumerable values = field.GetValue(null) as IEnumerable;
             if (values == null) throw new InvalidOperationException("UMM modEntries was unavailable.");
