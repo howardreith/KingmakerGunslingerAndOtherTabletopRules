@@ -1395,12 +1395,13 @@ namespace KingmakerGunslinger.DomainTests
                 profile.Contains("Custom = 1") &&
                 profile.Contains("Hidden = 2") &&
                 profile.Contains("FirearmKind.Musket") &&
-                profile.Contains("FirearmHolsterPolicy.Hidden, null, true") &&
+                profile.Contains("FirearmHolsterPolicy.Hidden, null, false") &&
                 presentation.Contains("if (profile.HideHolsteredModel)") &&
                 presentation.Contains("Set(visual, \"m_WeaponBeltModel\", null)") &&
                 presentation.Contains("Set(visual, \"m_WeaponSheathModel\", null)") &&
-                presentation.Contains("SetEmptyCollection(visual, \"m_PossibleAttachSlots\")") &&
-                presentation.Contains("Set(visual, \"m_OverrideAttachSlots\", true)") &&
+                presentation.Contains("Materialize(visual, \"m_PossibleAttachSlots\", source.AttachSlots)") &&
+                !presentation.Contains("SetEmptyCollection") &&
+                !presentation.Contains("Set(visual, \"m_OverrideAttachSlots\", true)") &&
                 lifecycle.Contains("ReattachSheath") &&
                 lifecycle.Contains("DestroySheathModel") &&
                 lifecycle.Contains("KingmakerFirearmRuntimeItemResolver") &&

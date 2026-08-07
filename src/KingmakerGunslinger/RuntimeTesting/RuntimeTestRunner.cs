@@ -4302,7 +4302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",
                     profile.HolsterPolicy, effective != null && effective.BeltModel == null &&
                         effective.SheathModel == null && effective.AttachSlots != null &&
-                        !effective.AttachSlots.Any() && profile.HolsterPolicy == "hidden",
+                        effective.AttachSlots.Any() && profile.HolsterPolicy == "hidden",
                     "exact project-owned firearm visual parameters"));
             }
             finally

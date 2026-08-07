@@ -835,3 +835,47 @@ Entries are append-only in spirit.
   Pistol held appearance retains its prior narrow human acceptance. Long-gun
   held rigs remain `AutonomousCandidate`; minor residual torso clipping is
   explicitly accepted for now. No long gun is rendered on the back.
+
+## 2026-08-08T03:00:00Z - Human hard FAIL and attach-slot A/B plan
+
+- Failed implementation: `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`;
+  evidence handoff `07b2a8c035a057fc3664fbab281fe328ac86b51a`.
+- Human verdict: **FAIL**. Held Musket is completely invisible. Held
+  Blunderbuss is completely invisible. Characters enter the correct weapon
+  pose, but no held model is player-visible. This supersedes detached prefab
+  and active-renderer assertions; those did not prove attachment/rendering in
+  the actual player inventory/world hand hierarchy.
+- Promotion status: this candidate must not be promoted or merged. Its result
+  is not "minor residual clipping" and the bounded pass is not complete.
+- Exact regression hypothesis: long-gun Hidden changed inherited attach slots
+  to an empty collection and forced `m_OverrideAttachSlots=true`. That
+  blueprint-level contract may prevent active held attachment.
+- A/B experiment A (this checkpoint only): retain custom equipped model,
+  restored human-best anchors, null belt/sheath, severed Prototype, and current
+  `ReattachSheath` patch. Remove empty `m_PossibleAttachSlots`, remove forced
+  override, and restore the inherited native attach-slot/override values copied
+  from the visible semantic-anchor candidate. No model, transform, scale,
+  anchor, animation, projectile, or mechanical change is authorized.
+- Decision gate: build/package this isolated A/B candidate and stop for the
+  five-item narrow human check. If held models remain invisible, disable only
+  `FirearmHiddenHolsterPatch` in experiment B. Full regressions wait for human
+  confirmation of actual held visibility.
+
+### Experiment A source/package result
+
+- Exact change: long-gun `OverrideAttachSlots` restored to `false`; the Hidden
+  block no longer writes `m_PossibleAttachSlots` or
+  `m_OverrideAttachSlots`. Materialization continues to copy both inherited
+  native values before Prototype is severed. Belt/sheath remain null and the
+  sheath postfix remains compiled. No AssetBundle input changed; bundle remains
+  the human-best `F52CBC5B...71A0B` identity.
+- Checks: PASS repository validation, 911/911 domain/reflection tests,
+  exact-reference Release, build-output, SoundBank, package creation and strict
+  package validation.
+- Provisional package/DLL SHA-256:
+  `7383AFF87023575D138439C1BFB57A28B18D4C101174374E63FDB079382FFB25` /
+  `C2259009B5806A4F9C982C6097C4EC74D013F19672E8E22B602FD2BEF2DDB999`.
+- Result: **automated source pass; human visibility unknown**. This is not
+  evidence that the held models are visible. Publish/rebuild exact identity,
+  then stop for the required narrow human A/B check without running the full
+  regression matrix.

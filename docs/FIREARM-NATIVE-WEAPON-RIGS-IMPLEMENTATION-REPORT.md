@@ -255,3 +255,14 @@ All required guarded scenarios pass; exact IDs and hashes are in the journal.
 Known limitation: the stock Crossbow animation still permits minor torso
 intersection. That residual defect is accepted for now under the bounded stop
 rule. No claim of complete visual `HumanAccepted` status is made.
+
+### Superseding human failure
+
+Human review hard-failed `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`:
+both held Musket and held Blunderbuss are completely invisible while their
+poses remain active. The automated detached-renderer evidence was insufficient
+to prove actual player-visible hand-slot attachment. This candidate is rejected,
+must not be promoted or merged, and its invisibility is not minor clipping.
+The next isolated candidate restores inherited attach slots/override behavior
+without altering any held rig value. Full completion remains pending a human
+visibility screenshot/checkpoint.

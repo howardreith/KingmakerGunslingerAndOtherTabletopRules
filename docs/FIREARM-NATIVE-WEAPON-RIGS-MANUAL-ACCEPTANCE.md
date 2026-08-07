@@ -29,6 +29,27 @@ package SHA-256
 DLL `BAFC115F3839B7D31E6DB9BB5C3D6D97FFB7BCCA97416AD440FA2997B0CD4E74`;
 AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
 
+**REJECTED — DO NOT INSTALL/PROMOTE AS A PASS:** human testing found the held
+Musket and Blunderbuss completely invisible. The renderer assertions above did
+not prove player-visible hand-slot attachment. The narrow replacement candidate
+must first prove Pistol, held Musket, and held Blunderbuss visible before any
+full regression or completion verdict.
+
+## Attach-slot experiment A — narrow checkpoint
+
+This candidate restores inherited native attach slots and override behavior
+while keeping the failed candidate's sheath patch enabled. Check only:
+
+- [ ] Pistol remains visible and unchanged.
+- [ ] Musket is visible while its weapon set is selected.
+- [ ] Blunderbuss is visible while its weapon set is selected.
+- [ ] Musket is absent from the back after switching away.
+- [ ] Blunderbuss is absent from the back after switching away.
+
+If either held long gun remains invisible, report Experiment A FAIL; the next
+isolated step is disabling only `FirearmHiddenHolsterPatch`. Do not infer a pass
+from automated renderer counts.
+
 Candidate: version `0.0.71`, semantic-anchor implementation commit
 `25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,

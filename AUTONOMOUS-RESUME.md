@@ -2,10 +2,19 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` has published final bounded
-implementation `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`, version `0.0.71`.
-Active phase: automated qualification complete; final supervised confirmation
-pending. The rejected `-0.020` micro-offset has been replaced by the
+Branch `codex/firearm-native-weapon-rigs` is at published handoff
+`07b2a8c035a057fc3664fbab281fe328ac86b51a`, version `0.0.71`. Human testing
+hard-failed implementation `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`:
+held Musket and Blunderbuss are completely invisible despite detached runtime
+renderer assertions. That candidate must not be promoted or merged. Active
+phase: isolated attach-slot A/B repair. The restored human-best anchors remain;
+the rejected `-0.020` offset remains absent. Remove only Hidden's empty attach
+slots/forced override, preserve inherited attachment values, belt/sheath null,
+equipped models, current sheath patch, Pistol, transforms, scales and animations.
+Build/package, push, and stop for the narrow human visibility checkpoint before
+experiment B or full regressions.
+
+Historical candidate context: the rejected `-0.020` micro-offset was replaced by the
 last human-best Musket/Blunderbuss anchor values; no speculative rotation was
 retained. Two deterministic Unity builds match at
 `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`;

@@ -90,11 +90,6 @@ namespace KingmakerGunslinger.Blueprints
                 // blueprints and unrelated renderers are never mutated.
                 Set(visual, "m_WeaponBeltModel", null);
                 Set(visual, "m_WeaponSheathModel", null);
-                if (profile.OverrideAttachSlots)
-                {
-                    SetEmptyCollection(visual, "m_PossibleAttachSlots");
-                    Set(visual, "m_OverrideAttachSlots", true);
-                }
             }
             if (profile.Animation.HasValue)
                 Set(visual, "m_WeaponAnimationStyle", profile.Animation.Value);
@@ -105,18 +100,6 @@ namespace KingmakerGunslinger.Blueprints
         private static void Materialize(object instance, string name, object value)
         {
             Set(instance, name, value);
-        }
-
-        private static void SetEmptyCollection(object instance, string name)
-        {
-            FieldInfo field = Find(instance.GetType(), name);
-            Type fieldType = field.FieldType;
-            object empty;
-            if (fieldType.IsArray)
-                empty = Array.CreateInstance(fieldType.GetElementType(), 0);
-            else
-                empty = Activator.CreateInstance(fieldType);
-            field.SetValue(instance, empty);
         }
 
         private static object Read(object instance, string name)

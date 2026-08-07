@@ -48,13 +48,13 @@ namespace KingmakerGunslinger.Assets
                 // each replacement is calibrated and human-approved.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
                     FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, true) },
+                    FirearmHolsterPolicy.Hidden, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
                     FirearmKind.Blunderbuss, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, true) },
+                    FirearmHolsterPolicy.Hidden, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
                     FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, true) }
+                    FirearmHolsterPolicy.Hidden, null, false) }
             };
 
         private FirearmPresentationProfile(FirearmKind kind,
