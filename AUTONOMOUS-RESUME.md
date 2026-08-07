@@ -50,6 +50,12 @@ Wild's first process exceeded the default 120-second result bound and then
 exited safely; transaction `compat-20260807T192918Z-c9ce6b83ef83` restored
 exactly. The profile wrapper now uses 300-second guarded startup/result bounds.
 Commit/publish, then rerun Call of the Wild mod-load plus observer.
+Call of the Wild again reached structured 300-second `TIMEOUT`; restoration
+verified. Continue independent profiles. Arms & Armor passed every substantive
+observer assertion; only expected-ID array order differed from actual UMM order
+`ArmsArmor,KingmakerGunslinger`. Exact membership comparison now ignores order
+while retaining actual load order evidence. Qualify/publish, then rerun Arms &
+Armor observer and continue Toggle Custom Soundpacks.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

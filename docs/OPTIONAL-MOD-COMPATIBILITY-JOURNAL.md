@@ -176,3 +176,11 @@
   verified. This is a broad-mod startup observation, not a compatibility
   verdict. Profile orchestration now supplies the already-supported 300-second
   scenario/startup bounds.
+- Arms & Armor transaction `compat-20260807T194023Z-0fdb2d8752de` restored
+  exactly. Mod-load passed; observer
+  `20260807T1942160100478Z-ac890d898de0440b817a78e55484d285` passed every
+  product, assembly, Harmony, Wwise, and save-free assertion. Its only failure
+  was manifest comparison treating expected membership order as mandated load
+  order: actual UMM order was `ArmsArmor,KingmakerGunslinger`. Expected IDs are
+  now compared as an exact set while the observed string continues to preserve
+  and report actual order.

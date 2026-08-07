@@ -52,8 +52,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<UnityModManager.ModEntry> entries = ReadModEntries(context.ModEntry);
             string[] observedIds = entries.Select(value => value.Info.Id).ToArray();
             Add(assertions, "isolated-umm-entry-set", string.Join(",", expectedIds),
-                string.Join(",", observedIds), expectedIds.SequenceEqual(observedIds),
-                "UnityModManager 0.32.4 private static modEntries in actual load order");
+                string.Join(",", observedIds), expectedIds.OrderBy(value => value,
+                    StringComparer.Ordinal).SequenceEqual(observedIds.OrderBy(value => value,
+                        StringComparer.Ordinal)),
+                "UnityModManager 0.32.4 public static modEntries; observed value preserves actual load order");
             Add(assertions, "umm-identities-singular", "unique IDs and assembly names",
                 DescribeDuplicates(entries), HasUniqueIdentities(entries),
                 "ModEntry.Info.Id and loaded Assembly.GetName().Name");
