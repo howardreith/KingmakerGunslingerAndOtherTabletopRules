@@ -56,6 +56,13 @@ observer assertion; only expected-ID array order differed from actual UMM order
 `ArmsArmor,KingmakerGunslinger`. Exact membership comparison now ignores order
 while retaining actual load order evidence. Qualify/publish, then rerun Arms &
 Armor observer and continue Toggle Custom Soundpacks.
+Arms & Armor now passes its exact observer, visual-rig, and production-switching
+matrix; Toggle Custom Soundpacks passes exact load, observer, and Wwise runs.
+All associated transactions restored Mods and `KMG_Firearms.bnk` exactly.
+Call of the Wild remains `CONFLICT-OBSERVED` at the exact 300-second readiness
+timeout. Next command is the guarded `gunslinger-high-risk-combined`
+`mod-load-smoke` attempt; restore and classify before attempting the separately
+named all-loadable profile. Do not rerun the unchanged individual CotW timeout.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

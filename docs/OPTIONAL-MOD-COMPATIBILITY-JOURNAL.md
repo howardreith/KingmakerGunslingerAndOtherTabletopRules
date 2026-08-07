@@ -184,3 +184,34 @@
   order: actual UMM order was `ArmsArmor,KingmakerGunslinger`. Expected IDs are
   now compared as an exact set while the observed string continues to preserve
   and report actual order.
+
+## 2026-08-07 - Individual compiled-reference qualification
+
+- Call of the Wild 1.14.4c-2.1 transaction
+  `compat-20260807T193416Z-b1e18d2b46e4` produced a structured guarded
+  `TIMEOUT` after 300025 ms during `mod-load-smoke`; readiness never completed.
+  Exact Mods and managed SoundBank restoration verified. Disposition is
+  `CONFLICT-OBSERVED`, limited to exact DLL SHA-256
+  `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`.
+- Arms & Armor 1.0.10 isolated observer PASS run
+  `20260807T1945060542640Z-8e90a80c6ae340b78d4fc3f2320927f3` recorded actual
+  UMM order `ArmsArmor,KingmakerGunslinger`; result SHA-256
+  `45C30C714A41D4C72321E4298ECCE36EAE075857DF190F109A267FDA20116C95`.
+  Visual-rig run `20260807T1951374125273Z-0230e28df636482a885f9ca9e15c7cfb`
+  and production-switching run
+  `20260807T1953023759407Z-8edf6383be2b41248db68dd728f23107` both PASS.
+  Transaction `compat-20260807T195110Z-e0d22a37068f` restored exactly.
+- Toggle Custom Soundpacks 1.0.1 load PASS run
+  `20260807T1946430623743Z-28f134968e6b41cc93d93e22abf4bb60`, observer PASS
+  run `20260807T1948071575023Z-b02d7bbca92841339c5735c7df6b8101`, and Wwise
+  PASS run `20260807T1954513766772Z-03339ad39a714dfb8c46407bcf0b0f36` establish
+  isolated exact-version audio coexistence. Harmony evidence records the
+  third-party `AkBankHandle.LoadBank` and `LoadBankAsync` prefixes while the
+  Gunslinger bank remains Ready and the discharge scenario remains singular.
+  Transactions `compat-20260807T194616Z-2670aac10cc1` and
+  `compat-20260807T195424Z-6f83d019d8ef` restored Mods and the bounded
+  `KMG_Firearms.bnk` side effect exactly.
+- Current deterministic package SHA-256 is
+  `2C85B610CB51247F5C45D7EB1803EA6BBE7BF9584FC253A0B5E73DCE120D965D`.
+  Runtime evidence remains machine-local; only exact IDs and hashes are
+  curated here.

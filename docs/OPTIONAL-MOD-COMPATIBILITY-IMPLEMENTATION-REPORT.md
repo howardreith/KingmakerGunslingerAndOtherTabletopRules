@@ -34,7 +34,15 @@ owners/order on all Gunslinger-patched methods, and verifies the base class,
 20-level progression, Mysterious Stranger rows/Charisma binding, production
 firearm pairs, Wwise state, and save-free boundary.
 
-Pending: transactional execution matrix and final exact-profile reports.
+The standalone observer passed twice. Arms & Armor 1.0.10 passed isolated load,
+exact observer, visual-rig, and production-switching scenarios. Toggle Custom
+Soundpacks 1.0.1 passed isolated load, exact observer, and Wwise discharge.
+Call of the Wild 1.14.4c-2.1 did not reach guarded readiness within 300 seconds;
+it is recorded as `CONFLICT-OBSERVED`, not compatibility-qualified. Every
+transaction restored the exact original Mods tree and bounded SoundBank state.
+
+Pending: combined-profile execution, remaining standalone/profile scenarios,
+working-save qualification where eligible, and final exact-profile reports.
 
 The profile invocation wrapper accepts only the six runtime-capable committed
 profiles and the established guarded scenario allowlist. It stages through the
@@ -53,5 +61,6 @@ copied profile roots and restore the exact original Mods-directory state.
 
 Inventory and scanner behavior fixtures pass. Repository validation, the
 unchanged 911-test suite, exact-reference Release, SoundBank validation, and
-strict 0.0.72 packaging passed at the first checkpoint. Runtime qualification
-has not begun.
+strict 0.0.72 packaging passed at the first checkpoint. The current rebuilt
+package SHA-256 is
+`2C85B610CB51247F5C45D7EB1803EA6BBE7BF9584FC253A0B5E73DCE120D965D`.
