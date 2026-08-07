@@ -209,3 +209,32 @@ Entries are append-only in spirit.
 - Next action: implement the development-only session calibration model/UI and
   native hands-equipment refresh, then enable Musket only after its candidate
   loaded-unit scenario passes.
+
+## 2026-08-07T05:05:00Z - Session calibration model and live instance adapter
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  `c7fda25e62ec3a231127492a23430dd32713e9c8`.
+- Question: can calibration be isolated per firearm, applied only to a unique
+  selected exact-firearm candidate instance, exported deterministically, and
+  reset without save or shared-native mutation?
+- Inspected: existing reflection-only UMM GUI, exact firearm resolver, validated
+  rig capabilities, selected-unit API, instantiated `EquipmentOffsets` contract.
+- Files changed: new calibration state/runtime/UI, development panel/project
+  registration, focused source tests, current test-count validator surfaces.
+- Commands: `test-domain.ps1 -Configuration Release` (sandbox-only temp replace
+  denial after 900 passes); `Build-Local.ps1` (same denial); escalated
+  `Build-Local.ps1` (901 tests passed, compile rejected one unused field);
+  corrected field; final escalated `Build-Local.ps1`.
+- Evidence: repository validation PASS; complete suite PASS 904/904;
+  exact-reference Release, build-output, SoundBank, strict package PASS; package
+  SHA-256 `4A2977ACA90AA5DAE2A27C55F82249374CD41EA81A2875D4363A236D6AFC2C7A`;
+  DLL SHA-256 `BA16B74BF575E6A3D641DDF95A05596EB0C378CC790A7E15EFC484FBD1B01425`.
+- Result: **pass source qualification**. No runtime launch and no profile
+  readiness change occurred.
+- Meaning: deterministic finite session calibration, coarse/fine transform
+  controls, exact active-instance filtering, native IK verification, resets,
+  allowlisted animations, and `humanAccepted=false` export now exist. Native
+  equipment refresh/toggle, doll refresh, markers, and belt/projectile controls
+  remain incomplete and are not represented as passing.
+- Next action: commit/push, then add exact native hands-equipment refresh and
+  candidate toggle before the Musket disposable loaded-unit proof.

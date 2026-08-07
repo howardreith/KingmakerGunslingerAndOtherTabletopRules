@@ -220,6 +220,9 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.runtime-capability", NativeRigRuntimeCapability),
             Case("native-rig.readiness-fails-closed", NativeRigReadinessFailsClosed),
             Case("native-rig.observer-guarded", NativeRigObserverGuarded),
+            Case("native-rig.calibration-session", NativeRigCalibrationSession),
+            Case("native-rig.calibration-export", NativeRigCalibrationExport),
+            Case("native-rig.animation-allowlist", NativeRigAnimationAllowlist),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1262,6 +1265,42 @@ namespace KingmakerGunslinger.DomainTests
                 automation.Contains("'observe-native-firearm-rig-contracts'") &&
                 automation.Contains("ReadinessBehavior = 'mod-load'"),
                 "Native donor observation must be allowlisted, save-free, cleanup-owned, and retain production fallback.");
+        }
+
+        private static void NativeRigCalibrationSession()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Development/FirearmVisualCalibration.cs");
+            Assertions.True(source.Contains("Dictionary<FirearmKind, FirearmCalibrationState> Session") &&
+                source.Contains("ExactEquippedFirearmResolver.TryResolve") &&
+                source.Contains("FindUnique") && source.Contains("EquipmentOffsets") &&
+                source.Contains("ReferenceEquals(offsets.IkTargetLeftHand, support)") &&
+                source.Contains("ResetAll()"),
+                "Calibration must be per-kind, exact-firearm filtered, instance-local, native-IK checked, and resettable.");
+        }
+
+        private static void NativeRigCalibrationExport()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Development/FirearmVisualCalibration.cs");
+            Assertions.True(source.Contains("SchemaVersion = 1") &&
+                source.Contains("humanAccepted\\\": false") &&
+                source.Contains("development\", \"firearm-calibration") &&
+                source.Contains("new UTF8Encoding(false)") &&
+                source.Contains("IsFinite()"),
+                "Calibration export must be deterministic, finite, development-scoped, and never claim human acceptance.");
+        }
+
+        private static void NativeRigAnimationAllowlist()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Development/FirearmVisualCalibration.cs");
+            Assertions.True(source.Contains("WeaponAnimationStyle.PiercingOneHanded") &&
+                source.Contains("WeaponAnimationStyle.Fencing") &&
+                source.Contains("WeaponAnimationStyle.Dagger") &&
+                source.Contains("WeaponAnimationStyle.Crossbow") &&
+                !source.Contains("ThrownStraight"),
+                "The calibration lab must expose only the mission allowlist and exclude ThrownStraight.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

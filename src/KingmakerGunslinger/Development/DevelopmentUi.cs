@@ -58,6 +58,8 @@ namespace KingmakerGunslinger.Development
                     ? "Blueprint state: initialized."
                     : "Blueprint state: not initialized; controls will fail closed.");
 
+            FirearmVisualCalibrationUi.Draw();
+
             lock (Gate)
             {
                 ImmediateModeGui.Label("Last result: " + _status);

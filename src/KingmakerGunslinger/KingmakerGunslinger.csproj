@@ -224,6 +224,8 @@
     <Compile Include="Blueprints\StartlingShotBlueprints.cs" />
     <Compile Include="Development\ImmediateModeGui.cs" />
     <Compile Include="Development\DevelopmentUi.cs" />
+    <Compile Include="Development\FirearmVisualCalibration.cs" />
+    <Compile Include="Development\FirearmVisualCalibrationUi.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.cs" />
     <Compile Include="Development\ReflectionAccess.cs" />
     <Compile Include="Development\PersistenceEvidenceData.cs" />
