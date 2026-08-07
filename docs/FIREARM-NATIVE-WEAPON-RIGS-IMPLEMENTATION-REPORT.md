@@ -242,3 +242,16 @@ an exact long-gun-only `ReattachSheath` postfix removes recreated sheath/quiver
 presentation. It resolves production firearms through their marker and never
 scans avatar renderers or touches native crossbows. Pistol's accepted held
 source, transform, scale and animation remain frozen.
+
+Final published implementation is
+`6b1f5db443c1051ecd949c8987b75ccd3c69c78d`. Candidate package
+`artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`
+SHA-256 is
+`FA955857DA4DDE83D43107D57A6CE4B1E41F738A4BB18F30269F4A69F067740D`;
+DLL `BAFC115F3839B7D31E6DB9BB5C3D6D97FFB7BCCA97416AD440FA2997B0CD4E74`;
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`;
+rig manifest `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
+All required guarded scenarios pass; exact IDs and hashes are in the journal.
+Known limitation: the stock Crossbow animation still permits minor torso
+intersection. That residual defect is accepted for now under the bounded stop
+rule. No claim of complete visual `HumanAccepted` status is made.

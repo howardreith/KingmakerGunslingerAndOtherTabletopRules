@@ -23,6 +23,12 @@ shows no Musket, Blunderbuss, or Rifle on the back. Minor residual held clipping
 is accepted for now. Confirm absence of firearm, native crossbow sheath, bolt
 container, and quiver after switching each long gun inactive.
 
+Final implementation `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`;
+package SHA-256
+`FA955857DA4DDE83D43107D57A6CE4B1E41F738A4BB18F30269F4A69F067740D`;
+DLL `BAFC115F3839B7D31E6DB9BB5C3D6D97FFB7BCCA97416AD440FA2997B0CD4E74`;
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
+
 Candidate: version `0.0.71`, semantic-anchor implementation commit
 `25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,

@@ -801,3 +801,37 @@ Entries are append-only in spirit.
 - Result: **source/structural pass**. Runtime must still prove Harmony patch
   application, empty effective long-gun attach slots, held models, native donor
   isolation, switching cleanup, and frozen mechanics on a published commit.
+
+## 2026-08-08T02:00:00Z - Final bounded published qualification
+
+- Published implementation: `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`.
+- Exact candidate package/DLL/AssetBundle/rig-manifest SHA-256:
+  `FA955857DA4DDE83D43107D57A6CE4B1E41F738A4BB18F30269F4A69F067740D` /
+  `BAFC115F3839B7D31E6DB9BB5C3D6D97FFB7BCCA97416AD440FA2997B0CD4E74` /
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B` /
+  `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
+- Exact published rebuild: PASS repository validation, 911/911 tests,
+  exact-reference Release, build-output, SoundBank, and strict package gates.
+- Guarded PASS run/result hashes: visual rigs
+  `20260807T1531219665001Z-disposable-firearm-visual-rigs` /
+  `F352FAF9247FC4CC51137DB73B1404B91F70CB66B93CA15A185A0AF934C04D63`;
+  switching `20260807T1533292743869Z-disposable-production-firearm-switching` /
+  `A13D189B2B4FF6B87B702A46226FF0EFEAD2E22A0ED3797EC767ADAEB8DED3D9`;
+  Targeting Arms `20260807T1534557411006Z-disposable-gunslinger-targeting-arms` /
+  `34C1CE88D321819B4B538B15C7BB20DB6F4FDDED1DF9052A26E57AD592C30695`;
+  Wwise `20260807T1536223446254Z-disposable-firearm-wwise-audio` /
+  `4B45AE697E686B27EC9FD16DE5955C4B2D5A19F978D52BCE8450C9F262FCC299`;
+  Scatter `20260807T1537478186289Z-disposable-gunslinger-scatter-shot` /
+  `AA8C9F38CB83CCCB4847BB9F1E8B8D28B9B05EF6339D3526A45144E9BD679F65`;
+  reload `20260807T1539127986702Z-disposable-reload-autocast` /
+  `92567B093A657AFCCE332F48482AC9280B46AF51B5F192D1D5319209CDECF68C`.
+- Runtime meaning: all three long guns have active held renderers, exact native
+  IK, null belt/sheath, empty effective attach slots, and Hidden policy; native
+  donors remain unchanged. Switching cleanup, projectile/damage, Wwise,
+  Scatter, and reload contracts pass. The multi-run wrapper's inherited native
+  exit state was nonzero after all six JSON results were already PASS; it does
+  not represent a scenario failure.
+- Final verdict: automated work for this bounded pass is complete. Regular
+  Pistol held appearance retains its prior narrow human acceptance. Long-gun
+  held rigs remain `AutonomousCandidate`; minor residual torso clipping is
+  explicitly accepted for now. No long gun is rendered on the back.

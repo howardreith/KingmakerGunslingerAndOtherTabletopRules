@@ -2,10 +2,10 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` is at published evidence baseline
-`3fab59c65c4767bd6231f4482673a76cf77872b7`, version `0.0.71`, with the final
-bounded source candidate ready to commit. Active phase: published runtime
-qualification. The rejected `-0.020` micro-offset has been replaced by the
+Branch `codex/firearm-native-weapon-rigs` has published final bounded
+implementation `6b1f5db443c1051ecd949c8987b75ccd3c69c78d`, version `0.0.71`.
+Active phase: automated qualification complete; final supervised confirmation
+pending. The rejected `-0.020` micro-offset has been replaced by the
 last human-best Musket/Blunderbuss anchor values; no speculative rotation was
 retained. Two deterministic Unity builds match at
 `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`;
@@ -16,9 +16,13 @@ clears belt, sheath, prototype fallback attach slots and exact firearm
 presentation remains frozen. Provisional package/DLL hashes are
 `C6E416A87212BA244F3A71EB0FAC78466B8C43413DA8B7FA3B027C8561BC598A` /
 `78E93E479D2B58E9466F86A5F4A357C28755AC997766A83427809445EE856132`.
-Next action: commit/push, rebuild exact identity, then run guarded visual rigs,
-switching, Targeting Arms, Wwise, Scatter and reload. Minor residual held
-clipping is explicitly accepted pending final human review.
+Exact package/DLL hashes are
+`FA955857DA4DDE83D43107D57A6CE4B1E41F738A4BB18F30269F4A69F067740D` /
+`BAFC115F3839B7D31E6DB9BB5C3D6D97FFB7BCCA97416AD440FA2997B0CD4E74`.
+Guarded visual rigs, switching, Targeting Arms, Wwise, Scatter and reload all
+PASS. Next action: confirm restored Musket/Blunderbuss held placement and verify
+Musket/Blunderbuss/Rifle show nothing on the back. Minor residual clipping is
+explicitly accepted for now; do not begin another transform architecture pass.
 Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
 preview objects are removed. Blunderbuss's proven `0.024 m` unit collapse and
