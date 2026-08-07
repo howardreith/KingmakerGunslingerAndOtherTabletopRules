@@ -71,7 +71,13 @@ namespace KingmakerGunslinger.Assets
         }
         internal string HolsterPolicy
         {
-            get { return BeltModel == null ? "native-fallback" : "custom-belt/back"; }
+            get { return HideHolsteredModel ? "hidden" :
+                (BeltModel == null ? "native-fallback" : "custom-belt/back"); }
+        }
+        internal bool HideHolsteredModel
+        {
+            get { return EquippedReadiness != FirearmPresentationReadiness.NativeFallback &&
+                !UseCustomBeltModel; }
         }
         internal GameObject EquippedModel
         {

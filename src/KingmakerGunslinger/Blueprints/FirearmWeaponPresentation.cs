@@ -84,6 +84,13 @@ namespace KingmakerGunslinger.Blueprints
             if (belt != null) Set(visual, "m_WeaponBeltModel", belt);
             GameObject sheath = profile.SheathModel;
             if (sheath != null) Set(visual, "m_WeaponSheathModel", sheath);
+            if (profile.HideHolsteredModel)
+            {
+                // Exact project-owned firearm visual only. Native crossbow
+                // blueprints and unrelated renderers are never mutated.
+                Set(visual, "m_WeaponBeltModel", null);
+                Set(visual, "m_WeaponSheathModel", null);
+            }
             if (profile.Animation.HasValue)
                 Set(visual, "m_WeaponAnimationStyle", profile.Animation.Value);
 

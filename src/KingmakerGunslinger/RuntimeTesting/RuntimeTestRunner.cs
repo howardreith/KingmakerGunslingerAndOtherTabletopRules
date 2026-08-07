@@ -4232,6 +4232,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
+                assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",
+                    profile.HolsterPolicy, effective != null && effective.BeltModel == null &&
+                        effective.SheathModel == null && profile.HolsterPolicy == "hidden",
+                    "exact project-owned firearm visual parameters"));
             }
             finally
             {
@@ -4273,6 +4277,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "effective production item visual parameters"));
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
+                assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",
+                    profile.HolsterPolicy, effective != null && effective.BeltModel == null &&
+                        effective.SheathModel == null && profile.HolsterPolicy == "hidden",
+                    "exact project-owned firearm visual parameters"));
             }
             finally
             {

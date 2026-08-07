@@ -228,6 +228,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.long-gun-candidates", NativeRigLongGunCandidates),
             Case("native-rig.short-gun-candidates", NativeRigShortGunCandidates),
             Case("native-rig.obsolete-scan-retired", NativeRigObsoleteScanRetired),
+            Case("native-rig.holster-hidden-exact", NativeRigHolsterHiddenExact),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1374,6 +1375,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(!System.IO.File.Exists(retired) &&
                 !project.Contains("FirearmVisualEquipmentHandler"),
                 "The whole-character renderer-name scan must remain deleted and uncompiled.");
+        }
+
+        private static void NativeRigHolsterHiddenExact()
+        {
+            string profile = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs");
+            string presentation = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/FirearmWeaponPresentation.cs");
+            Assertions.True(profile.Contains("HideHolsteredModel") &&
+                profile.Contains("return HideHolsteredModel ? \"hidden\"") &&
+                presentation.Contains("if (profile.HideHolsteredModel)") &&
+                presentation.Contains("Set(visual, \"m_WeaponBeltModel\", null)") &&
+                presentation.Contains("Set(visual, \"m_WeaponSheathModel\", null)") &&
+                presentation.Contains("Native crossbow") &&
+                !presentation.Contains("GetComponentsInChildren<Renderer>"),
+                "Candidate holsters must be hidden on exact firearm visual parameters without renderer scanning or native donor mutation.");
         }
 
         private static void FirearmAudioDischargeRouteShape()

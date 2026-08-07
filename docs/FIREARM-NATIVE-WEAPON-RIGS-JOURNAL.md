@@ -372,3 +372,20 @@ Entries are append-only in spirit.
 - Result: **pass**. No save was used or written. These are structural/mechanical
   results only; appearance remains unaccepted.
 - Next action: exact slot-scoped sheath/quiver lifecycle and doll refresh.
+
+## 2026-08-07T09:05:00Z - Exact hidden-holster policy
+
+- Branch/commit before experiment: published `7c6f31b07493118c6be3a255968b5f5d97aa8b8e`.
+- Question: can inherited crossbow belt/sheath presentation be suppressed on
+  exact project-owned candidate visual parameters without renderer scans or
+  native donor mutation?
+- Files changed: readiness holster policy, weapon presentation, runtime
+  assertions, focused test/counts.
+- Command: `Build-Local.ps1`.
+- Evidence: repository validation PASS; suite PASS 910/910; exact-reference and
+  strict package PASS; package/DLL SHA-256
+  `0756F8F78111FAB171F1FD8B77BBFE1A68DB9D71CEEDA89D785C5E2BAF56DEC7` /
+  `B0B775467597C716662FCC916B179A96A118AA530870ABAAD5617830F2B6BEBC`.
+- Result: **pass source qualification**. All candidate firearms explicitly use
+  hidden belt/sheath models; native crossbow objects are unchanged.
+- Next action: commit/push and rerun all-five guarded rig scenario.
