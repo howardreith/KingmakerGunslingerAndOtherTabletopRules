@@ -125,3 +125,18 @@
   DLL SHA-256
   `026B7215DCAC0AA1923B11F5A1E79101D0C70872BD462813FC9703C11918F698`.
 - No real Mods mutation or Kingmaker launch occurred at this checkpoint.
+
+## 2026-08-07 - First real transaction, runner timing repair
+
+- Transaction `compat-20260807T191144Z-9ce245d1f232` staged only Gunslinger.
+  Guarded `mod-load-smoke` run
+  `20260807T1912134251961Z-379f7fd088d945fca5a7e663ed6c1262`
+  PASS with embedded commit `3fbd5ae`.
+- Exact original Mods and managed SoundBank restoration verified `True` at
+  `2026-08-07T19:13:16.1390728Z`. Staged mutation was observed and safely
+  discarded only after restoration verification.
+- The second requested fresh process was correctly refused because the first
+  Kingmaker process had committed its result but had not completed automatic
+  exit. Root cause is wrapper sequencing, not product compatibility. The
+  wrapper now waits boundedly for process exit between scenarios as well as in
+  `finally`. No process was killed.

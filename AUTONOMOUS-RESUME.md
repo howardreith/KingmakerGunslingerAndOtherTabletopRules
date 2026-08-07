@@ -27,8 +27,11 @@ branch. Profile resolution and transaction fixtures pass. The guarded
 observer checkpoint: the compatibility profile wrapper now enters the
 transaction, invokes the existing Steam/App ID 640820 harness with the typed
 profile ID, and restores in `finally`. Publish/rebuild this runner checkpoint,
-then run `gunslinger-only` mod-load and observer fresh processes and verify
-exact restoration before advancing.
+then rerun `gunslinger-only` mod-load and observer fresh processes after the
+bounded inter-scenario exit-wait repair. The first real mod-load run
+`20260807T1912134251961Z-379f7fd088d945fca5a7e663ed6c1262` passed and
+transaction `compat-20260807T191144Z-9ce245d1f232` restored exactly; the
+observer was not launched because the prior process was still exiting.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

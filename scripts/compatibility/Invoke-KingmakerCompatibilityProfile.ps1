@@ -69,6 +69,12 @@ try {
         }
         $results.Add([ordered]@{ scenario = $name; runId = $result.runId
             status = $result.status; evidenceDirectory = $evidence.FullName })
+        $exitDeadline = [DateTime]::UtcNow.AddSeconds(60)
+        while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+            [DateTime]::UtcNow -lt $exitDeadline) { Start-Sleep -Milliseconds 500 }
+        if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0) {
+            throw "Kingmaker did not complete guarded automatic exit after scenario: $name"
+        }
     }
 }
 catch {
