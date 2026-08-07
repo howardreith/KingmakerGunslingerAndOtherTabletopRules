@@ -4,15 +4,17 @@
 
 Branch `codex/firearm-native-weapon-rigs` is at published calibration commit
 `f9a799283564c6d0b96d1f78e66abc1c7fa4b924`, version `0.0.70`. Active phase:
-Musket autonomous-candidate runtime proof. The new
+Blunderbuss/Rifle integration after the Musket proof. The new
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 906/906 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are
 `2DEBECF19A3D44D246FA52E94632881BE229102BB0A0B32E39005D405248D2F6` /
 `3CD68BBC38A55DE491000CBBE648B858958472D02927379832C54C0E27807E37`.
 Musket alone is `AutonomousCandidate`; the other four remain `NativeFallback`;
-no visual acceptance is claimed. Next command: commit/push, then run guarded
-`mod-load-smoke` and `disposable-firearm-visual-rigs` on the exact commit.
+no visual acceptance is claimed. Published commit `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`
+passed guarded smoke and `disposable-firearm-visual-rigs`; exact evidence is in
+the journal. Next command: commit/push evidence, then extend the scenario and
+candidate policy independently to Blunderbuss and Rifle.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at

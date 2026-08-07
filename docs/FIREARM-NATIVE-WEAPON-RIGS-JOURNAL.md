@@ -274,3 +274,26 @@ Entries are append-only in spirit.
 - Meaning: Musket is structurally eligible for live candidate review, never
   `HumanAccepted`. Grip, clipping, pose, scale and animation remain human gates.
 - Next action: commit/push, then guarded smoke and visual-rig scenarios.
+
+## 2026-08-07T06:25:00Z - Published Musket runtime qualification
+
+- Branch/commit before experiment: published
+  `8f2ba17aeb9da6b2f9ae1786475a5b8d96b69b97`.
+- Question: does the exact deployed commit load and instantiate the Musket
+  candidate with identity hierarchy, renderer, exact native left-hand IK, one
+  logical projectile, explicit human gate, and deterministic cleanup?
+- Commands: guarded Steam `mod-load-smoke`; guarded Steam
+  `disposable-firearm-visual-rigs`; both version `0.0.70`, save-free, automatic
+  exit.
+- Evidence: smoke run
+  `20260807T0421190993099Z-53e862198b0343ddb4327a2b79d481b2`, result SHA-256
+  `BBE9AB631A7D2BE2118875E69ADA4E03515A72E52A0F937FEC2FED2567C7D611`;
+  rig run `20260807T0422526272729Z-a25328bd2f3345079a5589ae59a48c6b`,
+  result SHA-256
+  `97321FDD49D6D361F854FECA174DF7120A7DBEC963F38E4E322296B723C6413D`.
+- Result: **pass** for both.
+- Meaning: Musket is structurally/mechanically qualified as
+  `AutonomousCandidate`. Human grip, clipping, scale, pose, animation timing and
+  support-hand quality remain untested and must not be called accepted.
+- Next action: extend the same independently calibrated architecture and guarded
+  assertions to Blunderbuss and Rifle, preserving Scatter and other mechanics.
