@@ -2,30 +2,28 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` is at published handoff
-`8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49`, candidate version `0.0.71`.
-Active phase: semantic-anchor source/package qualification complete; commit,
-publish, and guarded runtime qualification pending. Starting published handoff
-is `1d9a94da43e712c1b4b0a8eb3f69f9f4a6c30f7b`.
+Branch `codex/firearm-native-weapon-rigs` has published semantic-anchor
+implementation `25a585f79a7c0af232c55636aaaaa77d78a4fdee`, version `0.0.71`.
+Active phase: automated qualification complete; supervised doll/world visual
+review pending.
 Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
-preview objects are removed. Musket retains its good transform; Blunderbuss's
-proven `0.024 m` unit collapse and Rifle's proven behind-grip offset are
-corrected. Opaque Standard materials and generated reverse-wound backfaces
-replace the failed custom shader. Two exact Unity builds match at
-`4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
+preview objects are removed. Blunderbuss's proven `0.024 m` unit collapse and
+Rifle's proven behind-grip offset are corrected. Opaque Standard materials and generated reverse-wound backfaces
+replace the failed custom shader. Two cache-cleared exact Unity builds match at
+`F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
 Repository validation, 911/911 tests, exact-reference Release, build-output,
 strict package validation, and guarded rig/switching/Wwise/Scatter/projectile/
 reload scenarios pass. Exact package/DLL SHA-256 are
-`2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F` /
-`D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`.
+`6858AF28C2DDE865BD2575FDEECF6DA11ADACEB0BC6210B1251DEC54239DBC06` /
+`2757835E9086B35481D9F5E06B03DC691BB317B351794BE1B0EDC20442568EA4`.
 Pistol is frozen after narrow human held-appearance acceptance. Musket,
 Blunderbuss, and Rifle now use explicit source Grip/Support/Butt/Muzzle anchors;
 semantic lengths are `1.349985`, `0.848`, and `1.549379 m`. Two clean exact
 Unity bundles match at
 `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`.
-Next action: commit/push, exact published rebuild, guarded rig and frozen
-regressions, then supervised checklist. No weapon is globally HumanAccepted. The
+Next action: supervised semantic-anchor checklist across inventory doll and
+world idle/fire/recovery/switching states. No weapon is globally HumanAccepted. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are

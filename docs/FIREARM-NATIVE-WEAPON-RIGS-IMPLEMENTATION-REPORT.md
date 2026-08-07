@@ -2,6 +2,16 @@
 
 ## Outcome
 
+Final semantic-anchor identity is implementation
+`25a585f79a7c0af232c55636aaaaa77d78a4fdee`: package
+`6858AF28C2DDE865BD2575FDEECF6DA11ADACEB0BC6210B1251DEC54239DBC06`,
+DLL `2757835E9086B35481D9F5E06B03DC691BB317B351794BE1B0EDC20442568EA4`,
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`,
+manifest `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
+All source/package and guarded rig, switching, Wwise, Scatter, Targeting Arms,
+and reload gates pass. Human review must still establish abdominal clearance,
+grip contact, and support-hand surface contact on doll/world animations.
+
 Semantic-anchor candidate: Regular Pistol held appearance was human-accepted on
 2026-08-07 and its source, equipped transform, scale, and animation are frozen;
 this is not blanket `HumanAccepted` status. Musket, Blunderbuss, and Rifle now

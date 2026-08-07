@@ -6,13 +6,13 @@ does not accept unobserved Pistol lifecycle/body/holster states and does not set
 the global readiness to `HumanAccepted`. Its Cyril43 source, equipped transform,
 scale, and `PiercingOneHanded` animation are frozen for this pass.
 
-Candidate: version `0.0.71`, implementation commit
-`fc53c470c94b08265a8a44ce867d7709d7e1003d`. Package
+Candidate: version `0.0.71`, semantic-anchor implementation commit
+`25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,
-SHA-256 `2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F`;
-DLL `D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`;
-AssetBundle `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`;
-rig manifest `60D143952974B8B9039E45B7F4E5B14A7D33294BA89FC336ADCC5CDD7A65571D`.
+SHA-256 `6858AF28C2DDE865BD2575FDEECF6DA11ADACEB0BC6210B1251DEC54239DBC06`;
+DLL `2757835E9086B35481D9F5E06B03DC691BB317B351794BE1B0EDC20442568EA4`;
+AssetBundle `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`;
+rig manifest `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
 Install to the guarded script-selected Kingmaker UMM mod directory. Use only
 `KMG_AUTOMATION_WORKING`; never overwrite `KMG_AUTOMATION_BASELINE`.
 
@@ -24,6 +24,12 @@ visible while idle and firing from front/side/rear/high/low angles. Confirm the
 left hand remains present on each support target. Next confirm Advanced Revolver
 has no duplicate/wire/helper geometry, then confirm regular Pistol reads as a
 flintlock and remains upright. Long-gun belt models are intentionally hidden.
+
+For each long gun verify the firing hand is at the trigger/wrist grip, the butt
+is visibly behind it, the muzzle is forward, and the support hand sits outside
+or below the fore-stock rather than inside it. Musket must read longer than
+Blunderbuss. Check inventory doll, world peaceful/combat idle, firing, recovery,
+set switching, and unequipped state separately; doll success alone is incomplete.
 
 - [ ] Inventory doll and world models are visible; intended firing-hand grip,
   outward muzzle, credible scale, acceptable peaceful/combat idle, draw, and

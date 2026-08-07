@@ -639,3 +639,33 @@ Entries are append-only in spirit.
   a supervised diagnostic/human gate.
 - Next action: commit/push, exact-identity rebuild, guarded visual-rig and frozen
   regressions, then human doll/world/attack review.
+
+## 2026-08-07T22:30:00Z - Published semantic-anchor qualification
+
+- Published implementation: `25a585f79a7c0af232c55636aaaaa77d78a4fdee`.
+- Package/DLL/AssetBundle/rig-manifest SHA-256:
+  `6858AF28C2DDE865BD2575FDEECF6DA11ADACEB0BC6210B1251DEC54239DBC06` /
+  `2757835E9086B35481D9F5E06B03DC691BB317B351794BE1B0EDC20442568EA4` /
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B` /
+  `35BB38BF142D1F1DB3439F4EC328CE7EBF2CFD149318BCEF714A1254CB5301D1`.
+- Exact published rebuild: PASS repository validation, 911/911 tests,
+  exact-reference Release, build-output, and strict package validation.
+- Guarded PASS run/result hashes: rigs
+  `20260807T1419038906650Z-disposable-firearm-visual-rigs` /
+  `E939B06DEF436F82CEDE45C8A787EB1F685FFC67555F2E27F6C605A6414A9B7B`;
+  switching `20260807T1420432406524Z-disposable-production-firearm-switching` /
+  `FE2F225B8C2A4EBB21027E730DFE82E9C4435CF7BDD09925F677D311EC2E76F2`;
+  Wwise `20260807T1422088088480Z-disposable-firearm-wwise-audio` /
+  `0124DD303BF2E8596607C748E91328F42F30465329FD07C63833890CA75A5495`;
+  Scatter `20260807T1423345050167Z-disposable-gunslinger-scatter-shot` /
+  `A387285F717A784E240313017F27E5941D8138EA6A6CE84B9DFC5F5C72497DD6`;
+  projectile/damage `20260807T1425004772302Z-disposable-gunslinger-targeting-arms` /
+  `CF866985A6EAA1E27A603A800C8A0B2FB488CF93B4428D617182CFF11000B5E2`;
+  reload `20260807T1426268373129Z-disposable-reload-autocast` /
+  `769369149D0516DE8F1CA39CFB480F85D570F6970784957DE14173ACBBAEA59B`.
+- Result: **AutonomousCandidate structural/mechanical pass**. Pistol freeze,
+  semantic ordering/relative length, renderers, IK, animation, switching,
+  projectile, audio, Scatter, and reload pass. No protected save was overwritten.
+  Doll/world clipping and hand contact remain human-perception gates.
+- Next action: supervised inventory doll, peaceful/combat idle, firing/recovery,
+  switching, and unequipped review.
