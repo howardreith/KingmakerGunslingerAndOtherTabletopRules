@@ -14,8 +14,16 @@ source-qualified with 911/911 tests and strict packaging. Instrumented run
 proved all roots identical and case A: Evasive's vanilla-only native component
 count assertion rejected CotW-mutated donors and rolled back 146 registrations.
 The narrow current-donor ordered-type validation repair is implemented without
-a CotW dependency. Source-qualify, commit/push/rebuild, rerun CotW load and
-observer, then proceed to the separate view-backed Dodge work stream.
+a CotW dependency and is published at `b00e7e8`. Fresh CotW load
+`20260807T2146571019519Z-mod-load-smoke` and strengthened observer
+`20260807T2149121927539Z-a37fb450a1164ec9b664812be3073704` pass with exact
+restoration. The observer proves Gunslinger exactly once in the final root and
+chargen input while retaining all 46 compiled CotW helper classes. Candidate
+package/DLL SHA-256 are `37B4C25A...AC0DBE5` /
+`B8799B41...3A69E8B`. Human chargen confirmation remains pending. Next: build
+the separate guarded view-backed Dodge qualification on the exact
+`KMG_AUTOMATION_WORKING` receiver-bound load path; do not change production
+Dodge unless that real player path fails.
 
 Branch `codex/postbase-archetypes-compatibility` starts from clean integrated
 `master` commit `d03dfe9eae65f5cd1395df7337f21dfdb4357661`, version `0.0.71`.

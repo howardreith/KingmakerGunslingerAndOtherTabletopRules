@@ -95,3 +95,16 @@ back during Evasive donor validation. The bounded repair validates that each
 project clone preserves its current donor's ordered component types rather than
 requiring vanilla-only counts. It neither references nor detects CotW and does
 not alter Evasive's level, Grit, grant, removal, or True Grit behavior.
+
+The repaired candidate passed fresh CotW load evidence
+`20260807T2146571019519Z-mod-load-smoke` and strengthened observer run
+`20260807T2149121927539Z-a37fb450a1164ec9b664812be3073704`. The observer
+proved exact UMM identities/order, all 46 compiled CotW helper classes retained,
+Gunslinger singular in the 48-entry final root catalog and chargen selector
+input, exact progression and Mysterious Stranger structure, firearm identities,
+Wwise readiness, Harmony inventory, and no save-writing API. Both transactions
+restored exactly. Current repair package/DLL hashes are
+`37B4C25A45BD69EC19B20248BA14539AF38FAF7AF3C5C649E6FD3AC01AC0DBE5` /
+`B8799B41D9C74F0D1EB1484F6BFE9353285CF0DFD34507977E37CA72E3A69E8B`.
+Human chargen confirmation remains pending, so the prior human conflict is not
+yet promoted to final runtime qualification.

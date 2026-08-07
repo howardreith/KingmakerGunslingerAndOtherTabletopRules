@@ -366,3 +366,20 @@
   current native donor and its project-owned clone. It has no CotW type,
   assembly, GUID, or compile dependency and remains a no-op adaptation when the
   vanilla donor shapes are unchanged.
+- The repaired candidate passed a fresh CotW `mod-load-smoke` run at
+  `20260807T2146571019519Z-mod-load-smoke` under transaction
+  `compat-20260807T214629Z-8b200066e1b4`; exact restoration verified.
+- The strengthened observer then passed at
+  `20260807T2149121927539Z-a37fb450a1164ec9b664812be3073704`
+  (`20260807T2149121767405Z-observe-optional-mod-compatibility`) under
+  transaction `compat-20260807T214842Z-4a54996837a4`; exact restoration
+  verified. It observed UMM order `CallOfTheWild,KingmakerGunslinger`, a
+  48-class final catalog with Gunslinger exactly once by reference and GUID,
+  Gunslinger exactly once in the chargen selector input, and all 46 compiled
+  CotW helper classes retained. Gunslinger progression, Mysterious Stranger,
+  five firearm pairs, Harmony inventory, Wwise state, and save-free boundaries
+  all passed.
+- Repair package/DLL SHA-256 are
+  `37B4C25A45BD69EC19B20248BA14539AF38FAF7AF3C5C649E6FD3AC01AC0DBE5` and
+  `B8799B41D9C74F0D1EB1484F6BFE9353285CF0DFD34507977E37CA72E3A69E8B`.
+  Human character-creation visibility remains a required final checkpoint.

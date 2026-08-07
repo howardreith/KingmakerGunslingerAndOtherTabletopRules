@@ -128,3 +128,11 @@ owned registrations because `EvasiveBlueprints` required vanilla donor
 component counts `1/2/1` after CotW had changed the current native donor shape.
 The final 47-class catalog was consequently coherent for CotW but contained no
 Gunslinger. This is exact case A evidence.
+
+After the donor-contract repair, fresh guarded evidence
+`20260807T2149121927539Z-a37fb450a1164ec9b664812be3073704` proves a single
+shared root with 48 final classes, Gunslinger exactly once in both the root
+catalog and exact chargen getter input, and all 46 entries exposed by the
+compiled CotW `Helpers.classes` collection still present. This proves the
+automated catalog invariant for the repaired candidate; it does not replace the
+pending human character-creation visibility check.
