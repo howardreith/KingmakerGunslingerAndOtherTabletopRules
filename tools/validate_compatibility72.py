@@ -27,8 +27,13 @@ def validate(root: Path) -> None:
         "docs/OPTIONAL-MOD-COMPATIBILITY-MANUAL-ACCEPTANCE.md",
         "compatibility/reference-catalog.schema.json",
         "compatibility/reference-catalog.json",
+        "compatibility/profiles.schema.json",
+        "compatibility/profiles.json",
         "scripts/compatibility/Inspect-OptionalModReferences.ps1",
         "scripts/compatibility/Test-OptionalModReferenceInventory.ps1",
+        "scripts/compatibility/Invoke-OptionalModStaticAudit.ps1",
+        "tools/compatibility/scan_optional_mod_sources.py",
+        "tools/compatibility/test_scan_optional_mod_sources.py",
     ]
     for relative in required:
         if not (root / relative).is_file():
@@ -41,6 +46,13 @@ def validate(root: Path) -> None:
                 "toggle-custom-soundpacks", "eddic-respec", "bag-of-tricks"):
         if key not in keys:
             raise AssertionError(f"compatibility reference key missing: {key}")
+    profiles = json.loads((root / "compatibility/profiles.json").read_text(encoding="utf-8"))["profiles"]
+    profile_ids = [entry["id"] for entry in profiles]
+    if len(profile_ids) != len(set(profile_ids)) or len(profile_ids) != 8:
+        raise AssertionError("compatibility profile IDs must be eight unique values")
+    craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
+    if craft["disposition"] != "STATIC-AUDITED-ONLY" or craft["runtimeLoadableRequired"]:
+        raise AssertionError("source-only Craft Magic Items profile is not static-only")
 
 
 def main() -> int:

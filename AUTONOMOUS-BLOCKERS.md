@@ -1,5 +1,16 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 optional-mod compatibility publication policy
+
+- Validated checkpoint `274d4d7` on required branch
+  `codex/postbase-archetypes-compatibility` invoked the exact approved push
+  helper.
+- The helper refused the branch because its external allowlist contains only
+  `codex/firearm-wwise-audio` and `codex/firearm-native-weapon-rigs`.
+- Raw push and policy workarounds are prohibited. Safe local work and durable
+  commits may continue, but publication remains externally blocked until the
+  user updates the approved helper allowlist.
+
 ## 2026-08-04 sixth-playtest external gates
 
 - Functional 0.0.66 qualification is complete at `448e0d1`, including two

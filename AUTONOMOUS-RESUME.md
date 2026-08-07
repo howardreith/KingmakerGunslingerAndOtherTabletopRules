@@ -14,8 +14,15 @@ checkpoint are established at version `0.0.72`. Its full source/build/package
 gate passes with package/DLL SHA-256
 `43D48259B890F7F600DF6E2FFC1B5D142ED0948FF1A1BD4FE1F0181E9779B006` /
 `BD1BD66C690A4689A2125CE4D6CC8ED3CFC36962ADB222A131F1BDA856FA0339`.
-Next command: `python .\tools\compatibility\scan_optional_mod_sources.py`
-after implementing the deterministic static scanner and fixtures.
+Static audit and the eight-profile manifest are source-qualified. Next command
+after the external publication policy is resolved:
+`.\scripts\compatibility\Test-KingmakerCompatibilityProfile.ps1`, after
+implementing the exact profile resolver and transaction framework entirely
+against temporary fixtures. Do not touch the real Mods directory before all
+transaction safety fixtures pass.
+Checkpoint `274d4d7` is local only: the exact approved push helper rejected this
+required branch because its external allowlist has not been updated. Do not use
+raw push; retry only after the policy helper is user-updated.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

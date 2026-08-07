@@ -67,4 +67,35 @@ Eddic Respec and Bag of Tricks are absent and are explicitly
 
 ## Static overlap conclusions
 
-Pending deterministic scan and curated review.
+The first deterministic lexical audit scanned Gunslinger plus four source
+reference trees. It reported zero cross-owner project-definition GUID
+collisions and three shared Harmony targets:
+
+- `LibraryScriptableObject.LoadDictionary`: Gunslinger, the Call of the Wild
+  source tree, and Arms & Armor source tree. This is a bootstrap/load-order
+  overlap requiring runtime owner/order evidence, not an automatic conflict.
+- `RestController.ApplyRest`: Gunslinger Gunsmithing reset and source-only Craft
+  Magic Items. Runtime qualification is unavailable for the supplied CMI bytes.
+- `RuleCalculateWeaponStats.WeaponSize`: Craft Magic Items and Arms & Armor;
+  this does not directly overlap a Gunslinger patch but can affect firearm item
+  presentation/stat calculations if those mods act on firearm items.
+
+Curated high-risk observations beyond exact shared targets:
+
+- Arms & Armor patches `UnitViewHandSlotData.OwnerWeaponScale`, several weapon
+  and hand-slot contracts, and creates `EquipmentOffsets` for its own weapon
+  types. Gunslinger dynamically targets `UnitViewHandSlotData.ReattachSheath`.
+  These are adjacent equipment lifecycle risks even though the exact methods
+  differ.
+- Craft Magic Items reads and rewrites item enchantment collections, resolves
+  custom blueprints, clones item-related objects, and patches weapon-size and
+  rest flows. The supplied reference is source-only, so these remain static
+  risks rather than observed Gunslinger firearm-state defects.
+- Toggle Custom Soundpacks patches `AkBankHandle.LoadBank` and `LoadBankAsync`
+  and reads `SoundBanksManager` state. It has no observed `KMG_Firearms.bnk`
+  literal collision, but runtime coexistence must verify the Gunslinger bank
+  remains healthy and discharge remains exactly once.
+
+The scanner is intentionally lexical and labels its findings accordingly. It
+does not claim compiled-only targets, overload signatures, dynamically selected
+targets, or runtime patch order until exact Harmony12 introspection is added.

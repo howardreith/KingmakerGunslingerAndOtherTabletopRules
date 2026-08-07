@@ -54,3 +54,26 @@
   `BD1BD66C690A4689A2125CE4D6CC8ED3CFC36962ADB222A131F1BDA856FA0339`.
 - Next action: run full 0.0.72 source/build/package gates, commit/publish this
   checkpoint, then implement the static GUID/Harmony/bootstrap audit.
+- Commit: `274d4d7` (`chore(compat): establish mission and reference inventory`).
+- Required push helper: FAIL before network activity; branch is not on its
+  external allowlist. No alternative push was attempted. Safe local work
+  continues; publication status is blocked.
+
+## 2026-08-07 - Static audit and profile manifest checkpoint
+
+- Added deterministic standard-library lexical audit plus PowerShell wrapper
+  and behavior fixture. Fixture proves exact GUID collision classification and
+  shared Harmony-target reporting.
+- Real audit: five trees, zero cross-owner project-definition GUID collisions,
+  three shared Harmony targets. Curated details are in the forensics report.
+- Added eight required stable profiles. Craft Magic Items and its combined
+  profile are `STATIC-AUDITED-ONLY`; absent extensions remain explicit. The
+  high-risk primary combined profile includes the three compiled primary roots;
+  the all-loadable extension additionally names all five proven KAZ UMM IDs.
+- No runtime compatibility claim is made. Next engineering phase is exact
+  profile resolution followed by transactional staging fixtures.
+- Full checkpoint gate: repository validation PASS, 911/911 PASS,
+  exact-reference Release/build-output/SoundBank/strict package PASS. Package
+  SHA-256 `AC9DB772CDA6C228B1CEEA2AC13CE7DDF73BDD2C85A87D0EFE57D827CB4BECAF`;
+  DLL SHA-256
+  `8891F0709E96282908BB26898BB51D852F61D8497FD859E4B74E8F0AA6857EFA`.
