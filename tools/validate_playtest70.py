@@ -7,7 +7,7 @@ import validate_playtest67,validate_mysterious_stranger
 VERSION="0.0.70";INFORMATIONAL_VERSION="0.0.70-focused-aim-repair"
 def validate(root:Path)->None:
     validate_playtest67.VERSION=VERSION;validate_playtest67.INFORMATIONAL_VERSION=INFORMATIONAL_VERSION
-    validate_playtest67.validate(root,883);validate_mysterious_stranger.validate(root)
+    validate_playtest67.validate(root,884);validate_mysterious_stranger.validate(root)
     text=(root/"src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
     if "Kingmaker Gunslinger - 0.0.70 FOCUSED-AIM-REPAIR / DODGE-EXPIRATION-R3" not in text:raise AssertionError("0.0.70 build label missing")
     builder=(root/"tools/unity/BuildFirearmBundles.cs").read_text(encoding="utf-8")

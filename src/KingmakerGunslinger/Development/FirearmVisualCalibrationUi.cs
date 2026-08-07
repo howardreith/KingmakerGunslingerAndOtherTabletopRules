@@ -41,6 +41,8 @@ namespace KingmakerGunslinger.Development
                 if (ImmediateModeGui.Button("Animation: Crossbow fallback")) state.Animation = WeaponAnimationStyle.Crossbow;
             }
             FirearmVisualCalibration.Update(state);
+            if (ImmediateModeGui.Button("Show custom candidate + native refresh")) FirearmVisualCalibration.ToggleSelectedCandidate(true);
+            if (ImmediateModeGui.Button("Restore native fallback + native refresh")) FirearmVisualCalibration.ToggleSelectedCandidate(false);
             if (ImmediateModeGui.Button("Apply to exact active custom instance")) FirearmVisualCalibration.ApplySelected();
             if (ImmediateModeGui.Button("Export calibration JSON")) FirearmVisualCalibration.ExportSelected();
             if (ImmediateModeGui.Button("Reset selected calibration")) FirearmVisualCalibration.Reset(kind);

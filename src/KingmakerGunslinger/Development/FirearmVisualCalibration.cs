@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.Selection;
 using Kingmaker.View.Animation;
 using Kingmaker.View.Equipment;
+using Kingmaker.Blueprints.Items.Weapons;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Bootstrap;
@@ -83,6 +85,8 @@ namespace KingmakerGunslinger.Development
             new Dictionary<FirearmKind, FirearmCalibrationState>();
         private static readonly Dictionary<FirearmKind, FirearmCalibrationState> Session =
             new Dictionary<FirearmKind, FirearmCalibrationState>();
+        private static readonly Dictionary<FirearmKind, GameObject> NativeModels =
+            new Dictionary<FirearmKind, GameObject>();
         private static string _lastResult = "No calibration action has run.";
 
         static FirearmVisualCalibration()
@@ -150,6 +154,36 @@ namespace KingmakerGunslinger.Development
             return SetResult("PASS: applied session calibration to exact world candidate; inventory doll refresh unavailable in the confirmed Kingmaker contract and was not mutated.");
         }
 
+        internal static string ToggleSelectedCandidate(bool useCustom)
+        {
+            UnitEntityData unit; ExactEquippedFirearmContext firearm; string reason;
+            if (!TryResolveSelected(out unit, out firearm, out reason)) return SetResult("FAILED: " + reason);
+            FirearmKind kind = firearm.Definition.Kind;
+            FirearmRigCapability capability = FirearmAssetRuntime.GetCapability(kind);
+            if (useCustom && !capability.IsValidated)
+                return SetResult("FAILED: custom rig is not validated: " + capability.Failure);
+            object blueprint = firearm.Weapon.Blueprint;
+            FieldInfo visualField = FindField(blueprint.GetType(), "m_VisualParameters");
+            WeaponVisualParameters visual = visualField.GetValue(blueprint) as WeaponVisualParameters;
+            if (visual == null) return SetResult("FAILED: selected firearm has no materialized visual parameters.");
+            FieldInfo modelField = FindField(typeof(WeaponVisualParameters), "m_WeaponModel");
+            lock (Gate)
+            {
+                if (!NativeModels.ContainsKey(kind)) NativeModels[kind] = visual.Model;
+                GameObject model = useCustom ? FirearmAssetRuntime.GetPrefab(kind) : NativeModels[kind];
+                if (model == null) return SetResult("FAILED: requested model is null; native fallback preserved.");
+                modelField.SetValue(visual, model);
+                FirearmCalibrationState state = Session[kind];
+                state.UseCustomCandidate = useCustom;
+            }
+            if (unit.View == null || unit.View.HandsEquipment == null)
+                return SetResult("FAILED: world HandsEquipment is unavailable; visual value changed only on the project-owned firearm blueprint.");
+            unit.View.HandsEquipment.UpdateAll();
+            string applied = useCustom ? ApplySelected() : "native fallback restored";
+            return SetResult("PASS: world HandsEquipment.UpdateAll; " + applied +
+                "; inventory doll refresh unavailable and was not reported as successful.");
+        }
+
         internal static string ExportSelected()
         {
             UnitEntityData unit; ExactEquippedFirearmContext firearm; string reason;
@@ -183,6 +217,16 @@ namespace KingmakerGunslinger.Development
                 found = child;
             }
             return found;
+        }
+        private static FieldInfo FindField(Type type, string name)
+        {
+            for (Type current = type; current != null; current = current.BaseType)
+            {
+                FieldInfo field = current.GetField(name, BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (field != null) return field;
+            }
+            throw new MissingFieldException(type.FullName, name);
         }
         private static string SetResult(string value) { lock (Gate) _lastResult = value; return value; }
     }

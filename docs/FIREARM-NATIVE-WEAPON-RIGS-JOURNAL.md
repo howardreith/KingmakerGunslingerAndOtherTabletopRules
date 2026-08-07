@@ -238,3 +238,19 @@ Entries are append-only in spirit.
   remain incomplete and are not represented as passing.
 - Next action: commit/push, then add exact native hands-equipment refresh and
   candidate toggle before the Musket disposable loaded-unit proof.
+
+## 2026-08-07T05:20:00Z - Reversible native hands-equipment refresh
+
+- Branch/commit before experiment: published `1e98aadc97ee3481b3893dfabca319642b8066a2`.
+- Question: can the selected project-owned firearm switch between candidate and
+  its preserved non-null native model through the exact world-view lifecycle?
+- Files changed: calibration runtime/UI, focused test, validator counts.
+- Command: escalated `Build-Local.ps1` for disposable Windows temp access.
+- Evidence: repository validation PASS; suite PASS 905/905; exact-reference
+  Release and strict package PASS; package/DLL SHA-256
+  `5AD68BE85A3AEAA2B53EF299C0AE4A7D2B4F4C74F8F1EC6883CFBACE2539458D` /
+  `BD24338674025E3B9ED4CE5AEBA1B5B597AFFCAC91A4EE9F93C93A7A42026466`.
+- Result: **pass source qualification**. World refresh uses
+  `UnitViewHandsEquipment.UpdateAll`; the original model is retained per kind
+  and restored explicitly. Doll refresh remains unavailable/fail-closed.
+- Next action: create and qualify the disposable Musket visual-rig scenario.

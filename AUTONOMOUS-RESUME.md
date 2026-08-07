@@ -2,18 +2,19 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` is at published donor-evidence commit
-`c7fda25e62ec3a231127492a23430dd32713e9c8`, version `0.0.70`. Active phase:
+Branch `codex/firearm-native-weapon-rigs` is at published calibration commit
+`1e98aadc97ee3481b3893dfabca319642b8066a2`, version `0.0.70`. Active phase:
 development-only calibration lab, followed by the Musket proof. The new
 session-isolated per-kind calibration model/UI is source-qualified by repository
-validation, 904/904 tests, exact-reference Release build, build-output and strict
+validation, 905/905 tests, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are
-`4A2977ACA90AA5DAE2A27C55F82249374CD41EA81A2875D4363A236D6AFC2C7A` /
-`BA16B74BF575E6A3D641DDF95A05596EB0C378CC790A7E15EFC484FBD1B01425`.
+`5AD68BE85A3AEAA2B53EF299C0AE4A7D2B4F4C74F8F1EC6883CFBACE2539458D` /
+`BD24338674025E3B9ED4CE5AEBA1B5B597AFFCAC91A4EE9F93C93A7A42026466`.
 All five production profiles remain `NativeFallback`; no visual acceptance is
-claimed. Next command: commit/push the calibration checkpoint, then implement
-native hands-equipment candidate refresh/toggle and the disposable Musket
-loaded-unit scenario before changing Musket readiness.
+claimed. The lab now preserves the original non-null model and switches through
+exact world `HandsEquipment.UpdateAll`; doll refresh remains fail-closed. Next
+command: commit/push, then implement the disposable Musket loaded-unit scenario
+before changing Musket readiness.
 Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
 Declarative eight-prefab rig specifications now build deterministically under
 exact Unity 2018.4.10f1; two clean staged bundle hashes match at

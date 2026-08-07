@@ -223,6 +223,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.calibration-session", NativeRigCalibrationSession),
             Case("native-rig.calibration-export", NativeRigCalibrationExport),
             Case("native-rig.animation-allowlist", NativeRigAnimationAllowlist),
+            Case("native-rig.calibration-native-refresh", NativeRigCalibrationNativeRefresh),
             Case("true-grit.catalog", TrueGritCatalogExact),
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
@@ -1301,6 +1302,18 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("WeaponAnimationStyle.Crossbow") &&
                 !source.Contains("ThrownStraight"),
                 "The calibration lab must expose only the mission allowlist and exclude ThrownStraight.");
+        }
+
+        private static void NativeRigCalibrationNativeRefresh()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Development/FirearmVisualCalibration.cs");
+            Assertions.True(source.Contains("Dictionary<FirearmKind, GameObject> NativeModels") &&
+                source.Contains("NativeModels[kind] = visual.Model") &&
+                source.Contains("unit.View.HandsEquipment.UpdateAll()") &&
+                source.Contains("native fallback restored") &&
+                !source.Contains("NativeModels[kind] = null"),
+                "Development toggle must retain and restore the non-null native model through the native hands-equipment refresh.");
         }
 
         private static void FirearmAudioDischargeRouteShape()
