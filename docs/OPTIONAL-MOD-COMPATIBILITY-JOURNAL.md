@@ -140,3 +140,13 @@
   exit. Root cause is wrapper sequencing, not product compatibility. The
   wrapper now waits boundedly for process exit between scenarios as well as in
   `finally`. No process was killed.
+- After the sequencing repair, transaction
+  `compat-20260807T191438Z-3adf77ada3af` again restored exactly. Its mod-load
+  control passed; observer run
+  `20260807T1916297159780Z-observe-optional-mod-compatibility` ended `ERROR`
+  before assertions because `typeof(UnityModManager)` did not expose the
+  private field on the live runtime type. Offline exact assembly inspection
+  reconfirmed UMM 0.32.4 MVID `97735e89-6c7c-4f6c-a737-187e1328fba3` and field
+  `modEntries`. The repair now resolves the manager from the actual
+  `context.ModEntry.GetType().DeclaringType`, eliminating compile-reference
+  type selection from this exact-runtime query.

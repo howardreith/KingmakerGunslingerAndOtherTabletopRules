@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] expectedIds = Profiles[profileId];
             var assertions = new List<RuntimeTestAssertion>();
             var diagnostics = new List<string>();
-            List<UnityModManager.ModEntry> entries = ReadModEntries();
+            List<UnityModManager.ModEntry> entries = ReadModEntries(context.ModEntry);
             string[] observedIds = entries.Select(value => value.Info.Id).ToArray();
             Add(assertions, "isolated-umm-entry-set", string.Join(",", expectedIds),
                 string.Join(",", observedIds), expectedIds.SequenceEqual(observedIds),
@@ -120,11 +120,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
-        private static List<UnityModManager.ModEntry> ReadModEntries()
+        private static List<UnityModManager.ModEntry> ReadModEntries(
+            UnityModManager.ModEntry currentEntry)
         {
-            FieldInfo field = typeof(UnityModManager).GetField("modEntries",
+            Type managerType = currentEntry == null ? null :
+                currentEntry.GetType().DeclaringType;
+            if (managerType == null)
+                throw new InvalidOperationException("The live UMM ModEntry declaring type was unavailable.");
+            FieldInfo field = managerType.GetField("modEntries",
                 BindingFlags.Static | BindingFlags.NonPublic);
-            if (field == null) throw new MissingFieldException(typeof(UnityModManager).FullName, "modEntries");
+            if (field == null) throw new MissingFieldException(managerType.AssemblyQualifiedName, "modEntries");
             IEnumerable values = field.GetValue(null) as IEnumerable;
             if (values == null) throw new InvalidOperationException("UMM modEntries was unavailable.");
             return values.Cast<object>().Select(value => value as UnityModManager.ModEntry)

@@ -37,7 +37,7 @@ foreach ($parameters in $rejected) {
 
 $observer = Get-Content -LiteralPath (Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\OptionalModCompatibilityObserver.cs') -Raw
-foreach ($contract in @('GetField("modEntries"', 'GetPatchedMethods()',
+foreach ($contract in @('currentEntry.GetType().DeclaringType', 'GetField("modEntries"', 'GetPatchedMethods()',
     'GetPatchInfo(method)', 'gunslinger-class-singular',
     'mysterious-stranger-replacement-rows', 'production-firearm-identities',
     'save-free-observer')) {

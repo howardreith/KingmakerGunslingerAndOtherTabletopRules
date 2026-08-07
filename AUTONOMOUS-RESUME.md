@@ -32,6 +32,11 @@ bounded inter-scenario exit-wait repair. The first real mod-load run
 `20260807T1912134251961Z-379f7fd088d945fca5a7e663ed6c1262` passed and
 transaction `compat-20260807T191144Z-9ce245d1f232` restored exactly; the
 observer was not launched because the prior process was still exiting.
+The next repaired run reached the observer but failed at its first UMM field
+lookup; transaction `compat-20260807T191438Z-3adf77ada3af` restored exactly.
+The observer now resolves `modEntries` from the live ModEntry declaring type and
+is fully source/build/package qualified. Commit/publish/rebuild, then rerun the
+gunslinger-only observer before advancing.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-
