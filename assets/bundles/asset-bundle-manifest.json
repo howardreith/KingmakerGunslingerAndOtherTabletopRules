@@ -3,7 +3,7 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B",
+  "sha256": "EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E",
   "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
   "rigs": [
     {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-roll-corrected"},

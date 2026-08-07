@@ -198,3 +198,17 @@ Targeting Arms PASS
 `20260807T0457299033010Z-53ece3c653eb43e1b71ad1913c0661e9`;
 working-save smoke PASS
 `20260807T0459208536053Z-7621757d095c4a6a89273a06c4585d69`.
+
+## Held clipping micro-calibration candidate
+
+The 2026-08-07 finishing pass leaves the human-accepted Pistol, Rifle, belt
+policy, every scale and rotation, and both Crossbow animations unchanged. It
+changes only the semantic source-grip Z for Musket (`0` to `0.00478`) and
+Blunderbuss (`-0.00316` to `-0.00216`). This derives an approximately `-0.020`
+local-X clearance for each complete held rig, including support, butt, and
+muzzle anchors, without changing semantic lengths (`1.349985` and `0.848 m`).
+Two exact Unity builds are byte-identical at
+`EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`;
+repository validation, 911/911 tests, Release build, build-output, and strict
+package validation pass. Automated checks do not establish that torso clipping
+looks improved; that remains the next narrow human comparison.

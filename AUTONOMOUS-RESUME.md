@@ -2,10 +2,21 @@
 
 ## Firearm native-rig mission resume point (2026-08-07)
 
-Branch `codex/firearm-native-weapon-rigs` has published semantic-anchor
-implementation `25a585f79a7c0af232c55636aaaaa77d78a4fdee`, version `0.0.71`.
-Active phase: automated qualification complete; supervised doll/world visual
-review pending.
+Branch `codex/firearm-native-weapon-rigs` is at clean published baseline
+`39935dc38d1ec9a7a411eac155b6cb1e4f1989e0`, version `0.0.71`, with a narrow
+Musket/Blunderbuss clipping micro-calibration ready to commit. Active phase:
+exact published-identity runtime qualification. Two deterministic Unity builds
+match at `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`;
+repository validation, 911/911 tests, exact-reference Release, build-output and
+strict package validation pass. The sole changes are source-grip Z
+`0 -> 0.00478` (Musket) and `-0.00316 -> -0.00216` (Blunderbuss), producing an
+approximately `-0.020` local-X clearance while preserving Musket length/scale,
+both rotations, Crossbow animations, Pistol, Rifle, and belts. Provisional
+package/DLL hashes are `F130C8F063556EBEA674F9FCA194052E708F88B699E7164067FBCC3580E01388` /
+`869D88032F711839D999186C1325C200A18B407ADB4300519342F35CA7B331E5`.
+Next command: commit/push this coherent source checkpoint, rebuild its exact
+identity, then run guarded visual-rig, switching, projectile, Wwise, Scatter,
+and reload scenarios. Visual clipping improvement remains a human gate.
 Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
 preview objects are removed. Blunderbuss's proven `0.024 m` unit collapse and

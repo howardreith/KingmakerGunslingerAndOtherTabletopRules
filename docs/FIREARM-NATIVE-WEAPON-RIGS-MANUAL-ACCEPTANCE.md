@@ -6,6 +6,12 @@ does not accept unobserved Pistol lifecycle/body/holster states and does not set
 the global readiness to `HumanAccepted`. Its Cyril43 source, equipped transform,
 scale, and `PiercingOneHanded` animation are frozen for this pass.
 
+Current micro-calibration review: compare only Musket and Blunderbuss against
+the prior semantic-anchor package. The candidate moves each complete held rig
+approximately `0.020` local units outward; it does not alter length, scale,
+rotation, animation, Pistol, Rifle, or holsters. Accept minor residual clipping
+when further tuning merely trades one small flaw for another.
+
 Candidate: version `0.0.71`, semantic-anchor implementation commit
 `25a585f79a7c0af232c55636aaaaa77d78a4fdee`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,
@@ -63,5 +69,7 @@ Screenshots are supporting visual evidence only, never mechanical proof.
 ## Next supervised action
 
 After candidate identities are filled, load only `KMG_AUTOMATION_WORKING`
-through the normal authorized UI, open the inventory doll, and evaluate the
-Musket model/rig checklist first using the native/custom calibration toggle.
+through the normal authorized UI. Compare Musket, then Blunderbuss in inventory
+doll idle/firing, world idle/firing, and set switching. Confirm the rear body is
+less buried in the torso and the support hand remains plausible; stop tuning if
+the remaining defect is minor or the next adjustment worsens another angle.

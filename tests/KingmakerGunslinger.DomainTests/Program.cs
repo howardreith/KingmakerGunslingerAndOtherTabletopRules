@@ -1443,9 +1443,9 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("SourceMuzzlePoint") &&
                 builder.Contains("AnchorRelativeToGrip") &&
                 builder.Contains("KMG_RIG_ANCHORS") &&
-                builder.Contains("new Vector3(0.0400f, 0f, 0f)") &&
+                builder.Contains("new Vector3(0.0400f, 0f, 0.00478f)") &&
                 builder.Contains("new Vector3(-0.1000f, -0.0122f, -0.0074f)") &&
-                builder.Contains("new Vector3(0.0100f, 0f, -0.00316f)") &&
+                builder.Contains("new Vector3(0.0100f, 0f, -0.00216f)") &&
                 builder.Contains("new Vector3(0.1300f, 0f, 0f)") &&
                 runtime.Contains("semantic-length-or-butt-implausible") &&
                 runner.Contains("-semantic-anchors") &&

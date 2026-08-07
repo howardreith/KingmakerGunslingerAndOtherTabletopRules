@@ -669,3 +669,49 @@ Entries are append-only in spirit.
   Doll/world clipping and hand contact remain human-perception gates.
 - Next action: supervised inventory doll, peaceful/combat idle, firing/recovery,
   switching, and unequipped review.
+
+## 2026-08-07T23:00:00Z - Held long-gun clipping micro-calibration plan
+
+- Branch/commit before experiment: `codex/firearm-native-weapon-rigs` at
+  published, clean `39935dc38d1ec9a7a411eac155b6cb1e4f1989e0`.
+- Human baseline: Regular Pistol remains frozen; Musket length `1.349985` m,
+  scale `4.186`, Euler `(0,90,0)`, and Crossbow animation are accepted for this
+  pass. Blunderbuss scale `20`, Euler `(0,90,0)`, and Crossbow animation are
+  also frozen. Only residual held torso clipping is in scope.
+- Exact before values:
+  - Musket source grip `(0.0400,0,0)`, Visual position approximately
+    `(0,0,0.16744)`, SupportHandTarget
+    `(-0.030976,-0.051069,0.586040)`, Muzzle `(0,0,1.180452)`.
+  - Blunderbuss source grip `(0.0100,0,-0.00316)`, Visual position
+    `(0.0632,0,0.2)`, SupportHandTarget `(-0.031,-0.051,0.45)`, Muzzle
+    `(0,0,0.735)`.
+- Question: does a single `-0.020` held-rig local-X clearance, expressed by a
+  source-grip Z micro-adjustment so semantic grip construction remains intact,
+  reduce torso clipping while preserving length, scale, rotation, visibility,
+  animation, and relative Butt/Support/Muzzle geometry?
+- Planned isolated change: Musket source grip Z `0 -> 0.00478`; Blunderbuss
+  source grip Z `-0.00316 -> -0.00216`. This changes only one source-space
+  coordinate per weapon and should shift the complete derived rig approximately
+  `-0.020` local X. No Pistol, Rifle, belt, scale, rotation, or animation value
+  will change.
+- Result: **structural pass, visual verdict pending**. Two cache-cleared exact
+  Unity builds matched at
+  `EEEBA3292119A4619EE3D391246C55E47FC5D9E0BA625DB19E5AB9BBF124315E`.
+  Derived Musket Visual/Support/Butt/Muzzle X values are
+  `-0.020009/-0.050986/-0.020009/-0.020009`; Blunderbuss values are
+  `0.043200/-0.051000/-0.020000/-0.020000`. Lengths remain exactly
+  `1.349985/0.848 m`; scales, rotations, animation strings, Pistol, Rifle, and
+  all belt specs are unchanged. Exact logs:
+  `artifacts/micro-calibration-unity-pass-{1,2}.log` (uncommitted evidence).
+- Commands/checks: `test-domain.ps1 -Configuration Release -Clean` passed
+  911/911 outside the sandbox after two sandbox-only `File.Replace` denials in
+  the unrelated audio staging lifecycle test; `Build-Local.ps1` passed full
+  repository validation, 911/911, exact-reference Release, build-output,
+  SoundBank, package creation, and strict package validation.
+- Provisional package/DLL SHA-256:
+  `F130C8F063556EBEA674F9FCA194052E708F88B699E7164067FBCC3580E01388` /
+  `869D88032F711839D999186C1325C200A18B407ADB4300519342F35CA7B331E5`.
+- Meaning: automated evidence proves a coherent one-axis offset without rig or
+  mechanical regression; it cannot prove reduced clipping. Next action:
+  commit/push, rebuild exact published identity, run guarded rig/switching and
+  frozen regressions, then request the narrow Musket/Blunderbuss visual check.
