@@ -74,6 +74,30 @@ hand-to-target distances.
 
 ## Evidence
 
-The planned guarded scenario is `observe-native-firearm-rig-contracts`. It will
-be save-free, non-mutating, fail closed on ambiguity, clean transient objects,
-and state that structure does not prove visual quality.
+Guarded save-free scenario `observe-native-firearm-rig-contracts` passed on
+published commit `8bdb40b65c24b271f60361b492e559523e595e17`, run
+`20260807T0405003890595Z-8623a3dc21f84769bde130d434879a37`, result SHA-256
+`6CC73E253B48ADDBB0DE6D59867A7AEF82083914469D8281D978759BDA995BDE`.
+
+Exact native observations:
+
+- Light Crossbow: model `TH_CrossbowLightArmy_Normal`, `Crossbow`, attach slot
+  `Shield`, one projectile, no belt model, sheath
+  `QR_CrossbowHeavyQuiver_LightArmyNormal`, one renderer, root
+  `EquipmentOffsets`, and left target child `!IK_TARGET_LEFT_HAND (15)` at
+  `(-0.0250036642,-0.0240078568,0.357007027)`.
+- Heavy Crossbow: model `TH_CrossbowHeavy`, `Crossbow`, attach slot `Shield`, one
+  projectile, no belt model, sheath `QR_CrossbowHeavyQuiver`, one renderer,
+  root `EquipmentOffsets`, and left target child `!IK_TARGET_LEFT_HAND (12)` at
+  `(-0.031,-0.051,0.374)`.
+- Both donor roots contain `Locator_WeaponCenterFX_00`, surface locators,
+  weapon-trail start/end locators, and `Locator_WeaponWarheadFX_00`.
+- All five custom equipped prefabs passed runtime structural preparation.
+  Musket support is `(0,0,0.468875021)` and muzzle `(0,0,0.8525)`; Blunderbuss
+  support/muzzle are `(0,0,0.378125)` / `(0,0,0.6875)`; Rifle support/muzzle
+  are `(0,0,0.468875021)` / `(0,0,0.8525)`. Long-gun exact left-hand IK
+  assignments passed. Short guns have no support target.
+
+The scenario destroyed both transient donor instances and performed no item,
+unit, inventory, blueprint, or save mutation. These are structural facts, not
+proof of acceptable grip, scale, clipping, pose, or animation.

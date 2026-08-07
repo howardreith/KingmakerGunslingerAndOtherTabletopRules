@@ -33,7 +33,11 @@ exact-reference Release, and strict packaging pass. Package/DLL hashes are
 `569B283BD8B40EF57232C5DB05C9EA37DBA4C08217B57425A15E2BE79A43C36B` /
 `EB5AE4153CC0ACD34FEE894F885940CCFB1934FED856E6FB4062F4246923DBCD`.
 All production profiles remain `NativeFallback`. Next action after commit/push:
-exact-commit `mod-load-smoke`, then `observe-native-firearm-rig-contracts`.
+exact-commit mod load and `observe-native-firearm-rig-contracts` passed on
+published `8bdb40b`; run IDs/hashes are recorded in the native-rig journal and
+forensics report. Exact Heavy Crossbow left-hand target is
+`(-0.031,-0.051,0.374)`. Active phase is the development calibration lab,
+followed by the Musket loaded-unit proof.
 
 ## Sixth-playtest resume point (2026-08-04)
 

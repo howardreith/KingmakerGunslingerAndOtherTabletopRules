@@ -181,3 +181,31 @@ Entries are append-only in spirit.
 - Next action: commit/push, run exact-commit `mod-load-smoke`, then run
   `observe-native-firearm-rig-contracts` and use its structured evidence to
   refine the Musket proof.
+
+## 2026-08-07T04:06:00Z - Guarded donor and capability qualification
+
+- Branch/commit before experiment: published
+  `8bdb40b65c24b271f60361b492e559523e595e17`.
+- Question: does the exact deployed commit load through Steam, expose the native
+  donor rig contract, prepare all five custom capabilities, preserve fallback,
+  and clean up without save mutation?
+- Inspected: exact deployed package/DLL/bundle identity, UMM version/commit,
+  native Light/Heavy Crossbow transient models, custom runtime capabilities.
+- Files changed: curated forensics/journal/resume/report only after runs.
+- Commands: guarded `mod-load-smoke`; guarded
+  `observe-native-firearm-rig-contracts`, both expected version `0.0.70`,
+  automatic exit, no confirmation UI.
+- Evidence: mod-load run
+  `20260807T0403244410281Z-832f57f82d554f5ca257b31bf88b4012`, result SHA-256
+  `CFBE0EC292B6589E9F3AD5496B744A77F51240C01741813F8AFB65C9B8892F78`,
+  PASS; donor run
+  `20260807T0405003890595Z-8623a3dc21f84769bde130d434879a37`, result SHA-256
+  `6CC73E253B48ADDBB0DE6D59867A7AEF82083914469D8281D978759BDA995BDE`,
+  PASS. Exact observations are in `FIREARM-NATIVE-RIG-FORENSICS.md`.
+- Result: **pass**. All five custom capabilities prepared; all five production
+  profiles stayed `NativeFallback`; transient donors cleaned; no save used.
+- Meaning: the native IK architecture is proven present and compatible with the
+  custom hierarchy. Human pose quality remains wholly unproven.
+- Next action: implement the development-only session calibration model/UI and
+  native hands-equipment refresh, then enable Musket only after its candidate
+  loaded-unit scenario passes.
