@@ -99,3 +99,21 @@ and validation, and `git diff --check`. Pre-commit strict package SHA-256:
 `4DB98D3E7F36126C58C0F772B769BF459687912F6C9FF823808CAC0A3C9E4435`;
 manifest SHA-256:
 `20908FBB97AE465075B53491D5C7103E5C5520B5A481CDCC0CB2B8399A61F517`.
+
+Post-checkpoint guarded qualification on commit `896ec38b1af5142967348f11935cca86bd36f2f7`
+passed twice on consecutive fresh launches. The final run ID was
+`20260807T0210021249437Z-259c1bd4abac47fbb5aa138846c1a0c6` (result SHA-256
+`81DE5F3DE21F47B98C98BB315A322AAC23EC353E338DFFD5AD85F1501FB47ED9`).
+It observed `Ready`, exact new bank hashes, one load attempt, global Pistol ID
+2, live-unit Blunderbuss preview ID 3, ordinary Blunderbuss ID 4, and no post
+increment for the forced Blunderbuss misfire. Scatter transaction and complete
+firearm presentation/fallback scenarios also passed on the same commit.
+
+Final local-runtime package SHA-256:
+`66FCA06C862A41FC0E3E42A8ECC3C9DBBE605EBEC1CAC4E92B72180FE9D7FBE5`;
+DLL SHA-256:
+`649E5E7DFA739E610E28D0BA2B2124BB8EA831B30FC451CCEBF391EF8944B9BA`;
+last strict release-package SHA-256:
+`94AFF3D386BDE6111EA06E8340C751DE3C7CA9EFDDB617D9F10398C982F0B1B6`.
+Mechanical/runtime work is complete. Fresh human listening must decide timing,
+release-twang suppression, Scatter spell-audio removal, and Scatter visuals.

@@ -283,3 +283,33 @@ Focused test PASS; authoring/bank validators PASS; repository validator PASS;
 domain/reflection 898/898 PASS; exact-reference Release build, build-output,
 strict packaging and package validation PASS; `git diff --check` PASS. Next:
 checkpoint/push and guarded Wwise, Scatter, and presentation scenarios.
+
+### Auditory-polish runtime evidence
+
+Commit `896ec38b1af5142967348f11935cca86bd36f2f7` was published before runtime.
+Two consecutive fresh-launch `disposable-firearm-wwise-audio` runs passed. The
+first was `20260807T0204544970074Z-542cfd2fa60a4868bb8fe9accdbcbd39`
+(result SHA-256
+`E5609A66F04801F85839710CF1C9DDD13BAE688C7B1905B749DD481542A11AFD`);
+the second was `20260807T0210021249437Z-259c1bd4abac47fbb5aa138846c1a0c6`
+(result SHA-256
+`81DE5F3DE21F47B98C98BB315A322AAC23EC353E338DFFD5AD85F1501FB47ED9`).
+
+Both reached `Ready` with one bank-load attempt and exact new staged/source
+hashes. They accepted global Pistol on `Canvas` as ID 2, live Blunderbuss on
+`Human_Fighter_Baron(Clone)` as ID 3, and ordinary committed Blunderbuss as ID
+4. Forced Blunderbuss misfire left attempts/accepted posts at three.
+
+Scatter run `20260807T0206511814303Z-08ba9a38fe1e4ddaae60202b49ca32d3`
+passed the two-target mixed/all-misfire transaction and cleanup. Presentation
+run `20260807T0207599351364Z-b317e082a8bf4ad5b5a20c132efb38e0`
+passed all eight assertions for five firearm models, projectiles, icons,
+animation/presentation, descriptions, and isolation after prototype severing.
+
+Final runtime package SHA-256:
+`66FCA06C862A41FC0E3E42A8ECC3C9DBBE605EBEC1CAC4E92B72180FE9D7FBE5`;
+DLL SHA-256:
+`649E5E7DFA739E610E28D0BA2B2124BB8EA831B30FC451CCEBF391EF8944B9BA`;
+last strict package SHA-256:
+`94AFF3D386BDE6111EA06E8340C751DE3C7CA9EFDDB617D9F10398C982F0B1B6`.
+Only fresh human auditory/visual acceptance remains.
