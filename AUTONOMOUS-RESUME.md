@@ -45,6 +45,11 @@ Run `20260807T1924016022942Z-fce5fc0272f9417a968fbbb87d3fd868`
 then passed every product/UMM assertion and exposed only an overload-collapsing
 Harmony diagnostic false positive. Target identities now include parameter
 types. Source-qualify/publish/rebuild and rerun gunslinger-only observer.
+Gunslinger-only observer now passes twice with exact restoration. Call of the
+Wild's first process exceeded the default 120-second result bound and then
+exited safely; transaction `compat-20260807T192918Z-c9ce6b83ef83` restored
+exactly. The profile wrapper now uses 300-second guarded startup/result bounds.
+Commit/publish, then rerun Call of the Wild mod-load plus observer.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

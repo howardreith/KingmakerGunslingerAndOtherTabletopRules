@@ -49,6 +49,8 @@ try {
             Scenario = $name
             ExpectedVersion = '0.0.72'
             ExitAfterCompletion = $true
+            TimeoutSeconds = 300
+            ObserverStartupTimeoutSeconds = 300
             Confirm = $false
         }
         if ($name -ceq 'observe-optional-mod-compatibility') {

@@ -164,3 +164,15 @@
   omitted parameters. Patch target identities now include exact parameter type
   signatures. Transaction `compat-20260807T192334Z-3062c8cc37ab` restored
   exactly; no gameplay defect was observed.
+- Two consecutive exact gunslinger-only observers PASS:
+  `20260807T1927010278912Z-9f3d6d5e8337497ab1866bfef14247d7` and
+  `20260807T1928069055132Z-841e007fa26a441490602a5e7f56901c`, with transactions
+  `compat-20260807T192628Z-7568d3bd3e7b` and
+  `compat-20260807T192735Z-4e989a3e6edd` restored exactly.
+- Initial Call of the Wild profile transaction
+  `compat-20260807T192918Z-c9ce6b83ef83` exceeded the basic 120-second result
+  timeout during the first guarded process. The harness did not kill it; it
+  exited during the wrapper's bounded finally wait and exact restoration
+  verified. This is a broad-mod startup observation, not a compatibility
+  verdict. Profile orchestration now supplies the already-supported 300-second
+  scenario/startup bounds.
