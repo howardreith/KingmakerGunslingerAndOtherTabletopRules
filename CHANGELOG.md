@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.72 - Optional-mod compatibility framework
+
+- Establishes the manifest-driven, exact-local-reference compatibility mission,
+  read-only inventory schema/catalog, and bounded fixture-tested inventory tool.
+- Preserves standalone operation and packages no third-party mod payload.
+
 ## 0.0.71 - Native firearm weapon-rig candidates
 
 - Adds deterministic identity-grip firearm rigs with muzzle transforms and

@@ -1,6 +1,30 @@
 # Autonomous Gunslinger resume handoff
 
-## Firearm native-rig mission resume point (2026-08-07)
+## Optional-mod compatibility mission resume point (2026-08-07)
+
+Branch `codex/postbase-archetypes-compatibility` starts from clean integrated
+`master` commit `d03dfe9eae65f5cd1395df7337f21dfdb4357661`, version `0.0.71`.
+Unchanged repository validation, 911/911 deterministic tests, exact-reference
+Release build, build-output, SoundBank, package creation, and strict package
+validation pass. Baseline package/DLL SHA-256 are
+`1815C6A37C935A61223D026E03A8E6D50A0D949066CD41F9D2A17479D9197CC2` /
+`F879904D51DDAA0B226375048EF0C7983F44158B8441EC1EC4616C00CB204BEB`.
+Durable compatibility mission documents and the read-only inventory/catalog
+checkpoint are established at version `0.0.72`. Its full source/build/package
+gate passes with package/DLL SHA-256
+`43D48259B890F7F600DF6E2FFC1B5D142ED0948FF1A1BD4FE1F0181E9779B006` /
+`BD1BD66C690A4689A2125CE4D6CC8ED3CFC36962ADB222A131F1BDA856FA0339`.
+Next command: `python .\tools\compatibility\scan_optional_mod_sources.py`
+after implementing the deterministic static scanner and fixtures.
+
+The user-authoritative accepted native-rig history is: attach-slot Experiment A
+still left held Musket and Blunderbuss invisible; the later isolated holster-
+patch experiment restored visibility. Minor residual clipping is accepted and
+firearm visual calibration is frozen for this mission. The older active summary
+below is retained as historical provenance but is superseded where it says
+Experiment A passed or Experiment B was unnecessary.
+
+## Superseded firearm native-rig handoff
 
 Branch `codex/firearm-native-weapon-rigs` has published isolated attach-slot
 experiment A `6e3aa3782eb6328786b60330ae453fa2d5241f6a`, version `0.0.71`. Human testing
