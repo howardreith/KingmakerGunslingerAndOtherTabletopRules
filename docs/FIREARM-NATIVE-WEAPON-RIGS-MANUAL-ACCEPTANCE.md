@@ -1,23 +1,23 @@
 # Firearm native weapon rigs manual acceptance
 
 Candidate: version `0.0.71`, implementation commit
-`d7b6bc1756ae89f5e043c5b3362a46e8fe614e8f`. Package
+`fc53c470c94b08265a8a44ce867d7709d7e1003d`. Package
 `artifacts/local-runtime/0.0.71/KingmakerGunslinger-0.0.71-local-runtime.zip`,
-SHA-256 `6B3E85517C945B7CB6096E83C2946706749B91C142FA5C7412044EBDD5A03D81`;
-DLL `B1C181740DF76179B145D5C9A03B420DADDB71E6AA938445FDBAA5351660CE5F`;
-AssetBundle `62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`;
-rig manifest `429A4E7A30553C016EFEEA95951598164D6F7A4930218A64977EA7DEBD2C2B7F`.
+SHA-256 `2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F`;
+DLL `D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`;
+AssetBundle `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`;
+rig manifest `60D143952974B8B9039E45B7F4E5B14A7D33294BA89FC336ADCC5CDD7A65571D`.
 Install to the guarded script-selected Kingmaker UMM mod directory. Use only
 `KMG_AUTOMATION_WORKING`; never overwrite `KMG_AUTOMATION_BASELINE`.
 
 Repeat this block separately for Pistol, Musket, Blunderbuss, Rifle, and
 Revolver; record the firearm beside every checked result:
 
-Review priority: first confirm held Musket and Blunderbuss remain fully visible
-from front, side, rear, high, and low camera angles without changing their good
-grip. Next confirm Pistol is upright and its muzzle still points outward. Treat
-long-gun back placement last; the current candidate intentionally hides those
-belt models.
+Review priority: first confirm held Musket, Blunderbuss, and Advanced Rifle are
+visible while idle and firing from front/side/rear/high/low angles. Confirm the
+left hand remains present on each support target. Next confirm Advanced Revolver
+has no duplicate/wire/helper geometry, then confirm regular Pistol reads as a
+flintlock and remains upright. Long-gun belt models are intentionally hidden.
 
 - [ ] Inventory doll and world models are visible; intended firing-hand grip,
   outward muzzle, credible scale, acceptable peaceful/combat idle, draw, and

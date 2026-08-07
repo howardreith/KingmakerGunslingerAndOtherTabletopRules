@@ -557,3 +557,36 @@ Entries are append-only in spirit.
   `349E2B788BFD1F1DACADB3510DEE3A5F878E9FC4417EBCADF43A9BF567AD2959`.
 - Next action: publish, rebuild exact identity, then guarded presentation and
   frozen-contract regressions.
+
+## 2026-08-07T20:00:00Z - Published finishing-pass qualification
+
+- Published implementation: `fc53c470c94b08265a8a44ce867d7709d7e1003d`.
+- Exact candidate package/DLL/AssetBundle/rig-manifest SHA-256:
+  `2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F` /
+  `D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D` /
+  `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B` /
+  `60D143952974B8B9039E45B7F4E5B14A7D33294BA89FC336ADCC5CDD7A65571D`.
+- Full source/package gate: PASS repository validation, 911/911 tests,
+  exact-reference Release, build-output, and strict package validation.
+- Guarded Steam PASS run/result hashes:
+  - rigs `20260807T1339455160535Z-disposable-firearm-visual-rigs` /
+    `1DF5B1AC3DC704D121C84368A9EF0CD72E9FDEB4ACA966626100116378E76A02`;
+  - switching `20260807T1341293502697Z-disposable-production-firearm-switching` /
+    `6317258CC29C1AC9477CA85287734A03FE08DF034E4611783E578A14491A52A4`;
+  - Wwise `20260807T1343125131386Z-disposable-firearm-wwise-audio` /
+    `AADCA554CAA1E9AA2A47E4BBAA69CA40D181DCE4FDE387886190AFE8C46DD38D`;
+  - Scatter `20260807T1344504827205Z-disposable-gunslinger-scatter-shot` /
+    `AB019F0E4583A2450B47E5B190124B7505DA1A1585719DBDD80B44866EE2E943`;
+  - projectile/damage `20260807T1346289207404Z-disposable-gunslinger-targeting-arms` /
+    `B824F56DD8418BD31D797CB11192577F178F3EDFFF9DBABD8F14DB738D243D44`;
+  - reload `20260807T1348052311092Z-disposable-reload-autocast` /
+    `DF34FEE571B18B09120415E26447FC7F442BF6EC30F751F312ED0338E0379353`.
+- One attempted immediate sequential launch was safely refused because the prior
+  Kingmaker PID had not yet exited; subsequent process-synchronized launches
+  passed. This was harness sequencing, not a product/scenario failure.
+- Result: **AutonomousCandidate structural/mechanical pass**. Runtime-loaded
+  renderers are active, opaque Standard, and nontrivially bounded; native IK,
+  projectile, audio, Scatter, switching, and reload contracts remain intact.
+  Human visibility/pose review is still required; nothing is HumanAccepted.
+- Next action: supervised checklist, prioritizing three held long guns, then
+  Revolver cleanup and Pistol family appearance. Holsters are intentionally hidden.

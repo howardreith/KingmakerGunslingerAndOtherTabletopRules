@@ -4,18 +4,23 @@
 
 Branch `codex/firearm-native-weapon-rigs` is at published handoff
 `8289af3eaa4fa852ad0ec886d1b7be3f56fe4d49`, candidate version `0.0.71`.
-Active phase: finishing-pass source/package qualification complete; publication
-and guarded runtime qualification pending. Pistol is proven bound to Cyril43
+Active phase: finishing-pass automated qualification complete; human rendering
+review remains. Published implementation `fc53c470c94b08265a8a44ce867d7709d7e1003d`.
+Pistol is proven bound to Cyril43
 `model.dae`, distinct from Revolver's Navy Colt source. Revolver's 53 duplicate
 preview objects are removed. Musket retains its good transform; Blunderbuss's
 proven `0.024 m` unit collapse and Rifle's proven behind-grip offset are
 corrected. Opaque Standard materials and generated reverse-wound backfaces
 replace the failed custom shader. Two exact Unity builds match at
 `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
-Repository validation, 911/911 tests, exact-reference Release, build-output, and
-strict package validation pass. Next action: commit/push, rebuild exact published
-identity, then run guarded rig, switching, projectile, Wwise, Scatter, and
-reload scenarios. No weapon is HumanAccepted. The
+Repository validation, 911/911 tests, exact-reference Release, build-output,
+strict package validation, and guarded rig/switching/Wwise/Scatter/projectile/
+reload scenarios pass. Exact package/DLL SHA-256 are
+`2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F` /
+`D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`.
+Next action: supervised checklist at
+`docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`, long guns first. No
+weapon is HumanAccepted. The
 session-isolated per-kind calibration model/UI is source-qualified by repository
 validation, 910/910 tests, runtime preflight 86, exact-reference Release build, build-output and strict
 package validation. Candidate package/DLL SHA-256 are

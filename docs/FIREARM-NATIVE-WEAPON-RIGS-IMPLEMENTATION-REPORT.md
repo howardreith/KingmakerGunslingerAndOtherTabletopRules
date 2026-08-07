@@ -138,6 +138,21 @@ camera angles, then Pistol orientation/muzzle, and only then holster policy.
 - AssetBundle SHA-256: `62BAB35C9DEB94AE98B61CD8B56CA523CC946A740248C06B63E8E41A94AE7CDD`.
 - Rig manifest SHA-256: `429A4E7A30553C016EFEEA95951598164D6F7A4930218A64977EA7DEBD2C2B7F`.
 
+## Finishing-pass candidate identity
+
+- Implementation commit: `fc53c470c94b08265a8a44ce867d7709d7e1003d`.
+- Version: `0.0.71`.
+- Package SHA-256: `2D7D5A107DF377C1C5BC9D4DCDB693DF5826C390223E14AF789CC03EF34CCE4F`.
+- DLL SHA-256: `D8D717C21B24CD8EE1702D979132BB5E2123DD513147D39FD804B48728CF4E1D`.
+- AssetBundle SHA-256: `4A96CD13152A9EF6B48B3758B697659DCC82BC92D46A97AC8FBAAD815E386B2B`.
+- Rig manifest SHA-256: `60D143952974B8B9039E45B7F4E5B14A7D33294BA89FC336ADCC5CDD7A65571D`.
+- Automated gates: repository/package plus guarded rig, switching, Wwise,
+  Scatter, Targeting Arms projectile/damage, and reload scenarios all PASS.
+- Remaining risk: only human rendering can prove that the three long guns are
+  actually visible in the inventory/world cameras, Revolver cleanup looks
+  coherent, and Pistol visually reads as the intended flintlock. Holsters are
+  intentionally hidden. No weapon is HumanAccepted.
+
 See `docs/FIREARM-NATIVE-WEAPON-RIGS-MANUAL-ACCEPTANCE.md`. All checks remain
 pending.
 
