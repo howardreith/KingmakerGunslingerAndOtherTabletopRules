@@ -7,7 +7,8 @@ param(
         'gunslinger-arms-armor',
         'gunslinger-toggle-custom-soundpacks',
         'gunslinger-high-risk-combined',
-        'gunslinger-all-loadable-local')]
+        'gunslinger-all-loadable-local',
+        'gunslinger-qualified-combined')]
     [string]$ProfileId,
     [Parameter(Mandatory = $true)]
     [ValidateSet(

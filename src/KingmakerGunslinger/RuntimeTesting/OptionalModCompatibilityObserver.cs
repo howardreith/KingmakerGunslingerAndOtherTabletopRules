@@ -35,7 +35,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "gunslinger-high-risk-combined", new[] { "KingmakerGunslinger",
                     "CallOfTheWild", "ArmsArmor", "ToggleCustomSoundpacks" } },
                 { "gunslinger-all-loadable-local", new[] { "KingmakerGunslinger",
-                    "CallOfTheWild", "ArmsArmor", "ToggleCustomSoundpacks" } }
+                    "CallOfTheWild", "ArmsArmor", "ToggleCustomSoundpacks" } },
+                { "gunslinger-qualified-combined", new[] { "KingmakerGunslinger",
+                    "ArmsArmor", "ToggleCustomSoundpacks" } }
             };
 
         internal static bool IsAllowedProfile(string profileId)

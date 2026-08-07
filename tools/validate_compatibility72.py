@@ -54,8 +54,8 @@ def validate(root: Path) -> None:
             raise AssertionError(f"compatibility reference key missing: {key}")
     profiles = json.loads((root / "compatibility/profiles.json").read_text(encoding="utf-8"))["profiles"]
     profile_ids = [entry["id"] for entry in profiles]
-    if len(profile_ids) != len(set(profile_ids)) or len(profile_ids) != 8:
-        raise AssertionError("compatibility profile IDs must be eight unique values")
+    if len(profile_ids) != len(set(profile_ids)) or len(profile_ids) != 9:
+        raise AssertionError("compatibility profile IDs must be nine unique values")
     craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
     if craft["disposition"] != "STATIC-AUDITED-ONLY" or craft["runtimeLoadableRequired"]:
         raise AssertionError("source-only Craft Magic Items profile is not static-only")
@@ -65,6 +65,9 @@ def validate(root: Path) -> None:
     all_local = next(profile for profile in profiles if profile["id"] == "gunslinger-all-loadable-local")
     if "kaz-asset-references" in all_local["modKeys"] or any(value.startswith("KAZ_") for value in all_local["expectedUmmIds"]):
         raise AssertionError("KAZ asset references leaked into runtime profile")
+    qualified = next(profile for profile in profiles if profile["id"] == "gunslinger-qualified-combined")
+    if qualified["modKeys"] != ["arms-armor", "toggle-custom-soundpacks"]:
+        raise AssertionError("qualified combined profile must contain only proven passing optional roots")
 
 
 def main() -> int:

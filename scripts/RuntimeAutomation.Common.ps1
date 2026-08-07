@@ -554,7 +554,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             'gunslinger-arms-armor',
             'gunslinger-toggle-custom-soundpacks',
             'gunslinger-high-risk-combined',
-            'gunslinger-all-loadable-local'
+            'gunslinger-all-loadable-local',
+            'gunslinger-qualified-combined'
         )
         if ($Parameters.Count -ne 1 -or
             -not $Parameters.ContainsKey('profileId') -or

@@ -237,3 +237,18 @@
   `TIMEOUT` at `request-accepted`; exact restoration verified. This profile and
   both combined profiles remain `CONFLICT-OBSERVED`; no further unchanged
   bootstrap retry is authorized by the evidence.
+
+## 2026-08-07 - Maximum passing combination extension
+
+- Standalone class/blueprint and presentation scenarios PASS in fresh processes
+  under transaction `compat-20260807T202419Z-f94e101e3a19`; exact restoration
+  verified.
+- Added `gunslinger-qualified-combined` as a ninth extension profile containing
+  only the independently passing Arms & Armor 1.0.10 and Toggle Custom
+  Soundpacks 1.0.1 roots. The original eight required logical profiles remain
+  intact; this extension does not weaken their conflict dispositions.
+- All nine dry runs, observer/preflight allowlists, transaction fixtures,
+  repository validation, 911/911 tests, exact Release build, SoundBank, and
+  strict package validation PASS. Pre-runtime package/DLL SHA-256 are
+  `072235BA4057153D655A782D7DCC08F109FDE676C9CD701BAB192B6A929178E1` /
+  `511EAE870CE9760A527701C424CF644895B060EB531D36772C3C2519C5AF79F4`.

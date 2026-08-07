@@ -74,6 +74,11 @@ the Wild or either current combined profile unchanged. Continue gunslinger-only
 class/presentation and working-save qualification, then define the maximum
 passing combination from Arms & Armor plus Toggle Custom Soundpacks if the
 committed schema permits an evidence-backed extension profile.
+The extension profile `gunslinger-qualified-combined` now exists with only
+Arms & Armor and Toggle Custom Soundpacks; all nine dry runs, 911/911 tests,
+and package gates pass. Commit/publish, then run its load, compatibility
+observer, and full high-risk scenario matrix in fresh processes. It is the
+maximum passing candidate, not evidence for Call of the Wild.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-
