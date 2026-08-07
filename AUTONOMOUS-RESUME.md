@@ -1,5 +1,23 @@
 # Autonomous Gunslinger resume handoff
 
+## Firearm native-rig mission resume point (2026-08-07)
+
+Branch `codex/firearm-native-weapon-rigs` is isolated from clean qualified
+commit `2d9d95c8b0f919fb5f129c783522608bc47e2029` at version `0.0.70`. Active
+phase: durable mission checkpoint followed by exact installed Kingmaker rig
+forensics. Baseline ancestry/isolation, repository validation, 898/898 domain
+tests, exact-reference Release build, and strict package validation pass; no new
+runtime claim exists yet. The unchanged-baseline local package SHA-256 is
+`86192DD3383C51CEB60A5D00A49194CAA33FB29BC31FC6AF29CFEFFED2BE6B98`
+and DLL SHA-256 is
+`D664EF718C90C7582644E764039BEBD092AFE406C8513F4947A4349D77B6F1AF`.
+No mission rig candidate exists; baseline
+rig-manifest SHA-256 is
+`326E3B59A0FF869D8BA570F2A01C5D6137F828CC3FAA652CC9191309779B219D`.
+Next command: exact private-reference and native donor inspection after the
+durable checkpoint is committed and pushed.
+Durable contract: `planning/FIREARM-NATIVE-WEAPON-RIGS-MISSION.md`.
+
 ## Sixth-playtest resume point (2026-08-04)
 
 Version 0.0.66 is functionally qualified at `448e0d1`; package SHA-256 begins
