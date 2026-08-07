@@ -340,3 +340,29 @@
   validation pass. Diagnostic package/DLL SHA-256 are
   `E17C269AD6BF475793E6CB80911416F413673007CB3F79A22416F94F0FC8CBBC` /
   `1A3CC75C10684BC6C9CE5CAA63DB396D11F2410479CB1F8FA91D32EA57CF9E84`.
+
+## 2026-08-07 - Call of the Wild root cause and bounded repair
+
+- An attempted 900-second wrapper invocation failed before launch because the
+  established launcher caps `ObserverStartupTimeoutSeconds` at 600. Transaction
+  `compat-20260807T213132Z-5a2a78587544` restored exactly.
+- The materially different 600-second instrumented run
+  `20260807T2132214591875Z-9fc724aa137b43b7b92d9907706743f6`
+  ended `TIMEOUT` at `request-accepted`; transaction
+  `compat-20260807T213153Z-9c40e2c554a5` restored the original Mods tree and
+  `KMG_Firearms.bnk` exactly.
+- CotW's synchronous LoadDictionary postfix returned after about 31.6 seconds.
+  Harmony order was CotW postfix first, Gunslinger postfix second. Static,
+  library, and game roots, progression roots, and final arrays were identical.
+  The 47-entry final catalog contained the exact observed CotW classes but no
+  Gunslinger.
+- Root cause is case A: Gunslinger initialization registered 146 owned
+  blueprints, then `EvasiveBlueprints.Validate` rejected the post-CotW native
+  Evasion/Uncanny donor component shape with its vanilla-only `1/2/1` count
+  assertion. Transactional registry rollback removed all 146 registrations;
+  therefore Gunslinger, its progression, and Mysterious Stranger never existed.
+- The narrow repair retains exact project controller references and replaces
+  fixed vanilla counts with ordered component-type equality between each
+  current native donor and its project-owned clone. It has no CotW type,
+  assembly, GUID, or compile dependency and remains a no-op adaptation when the
+  vanilla donor shapes are unchanged.

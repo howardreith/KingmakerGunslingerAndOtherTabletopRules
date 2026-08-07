@@ -87,4 +87,20 @@ foreach ($contract in @('"spent to 0; remains 0"', 'afterUnaware == 0',
         throw "Compatibility diagnostic fixture contract missing: $contract"
     }
 }
+$evasive = Get-Content -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Blueprints\EvasiveBlueprints.cs') -Raw
+foreach ($contract in @('PreservesCurrentComponentContract',
+    'source.ComponentsArray.Length != clone.ComponentsArray.Length',
+    'sourceComponent.GetType() != cloneComponent.GetType()')) {
+    if (-not $evasive.Contains($contract)) {
+        throw "Evasive optional-mod donor contract missing: $contract"
+    }
+}
+foreach ($forbidden in @('evasion.ComponentsArray.Length != 1',
+    'uncanny.ComponentsArray.Length != 2',
+    'improved.ComponentsArray.Length != 1', 'CallOfTheWild.')) {
+    if ($evasive.Contains($forbidden)) {
+        throw "Evasive optional-mod repair retained forbidden coupling: $forbidden"
+    }
+}
 Write-Host 'Optional-mod compatibility observer allowlist and source contracts passed.'

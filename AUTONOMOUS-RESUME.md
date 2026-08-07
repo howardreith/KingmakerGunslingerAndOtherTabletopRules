@@ -9,9 +9,13 @@ player-facing catalog. Keep it independent from detached Dodge. Exact compiled
 IL now proves CotW writes `Main.library.Root` while exact game chargen reads
 `Game.Instance.BlueprintRoot`; Gunslinger publishes through
 `BlueprintRoot.Instance`. Diagnostic-only lifecycle/root/catalog snapshots are
-source-qualified with 911/911 tests and strict packaging. Commit/push/rebuild,
-then run one materially different guarded CotW profile and inspect structured
-catalog evidence before implementing reconciliation.
+source-qualified with 911/911 tests and strict packaging. Instrumented run
+`20260807T2132214591875Z-9fc724aa137b43b7b92d9907706743f6`
+proved all roots identical and case A: Evasive's vanilla-only native component
+count assertion rejected CotW-mutated donors and rolled back 146 registrations.
+The narrow current-donor ordered-type validation repair is implemented without
+a CotW dependency. Source-qualify, commit/push/rebuild, rerun CotW load and
+observer, then proceed to the separate view-backed Dodge work stream.
 
 Branch `codex/postbase-archetypes-compatibility` starts from clean integrated
 `master` commit `d03dfe9eae65f5cd1395df7337f21dfdb4357661`, version `0.0.71`.

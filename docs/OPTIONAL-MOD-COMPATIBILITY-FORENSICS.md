@@ -120,3 +120,11 @@ Read-only reflection over exact installed Kingmaker 2.1.7b proves both
 getters reading `Game.Instance.BlueprintRoot.Progression.CharacterClasses`.
 Gunslinger currently publishes through static `BlueprintRoot.Instance`.
 Runtime snapshots must prove whether these roots diverge before repair.
+
+The instrumented run disproved root divergence: all three access paths resolved
+to the same root, progression, and class array. It proved registration failure
+instead. CotW completed its postfix first; Gunslinger then rolled back 146
+owned registrations because `EvasiveBlueprints` required vanilla donor
+component counts `1/2/1` after CotW had changed the current native donor shape.
+The final 47-class catalog was consequently coherent for CotW but contained no
+Gunslinger. This is exact case A evidence.

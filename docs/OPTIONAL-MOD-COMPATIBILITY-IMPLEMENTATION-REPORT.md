@@ -89,3 +89,9 @@ Installed IL proves CotW writes through `Main.library.Root`, chargen reads
 through `Game.Instance.BlueprintRoot`, and pre-repair Gunslinger publishes
 through `BlueprintRoot.Instance`. The next materially different CotW run will
 determine whether those objects or arrays actually diverge at runtime.
+
+The run proved the roots do not diverge. Bootstrap instead failed and rolled
+back during Evasive donor validation. The bounded repair validates that each
+project clone preserves its current donor's ordered component types rather than
+requiring vanilla-only counts. It neither references nor detects CotW and does
+not alter Evasive's level, Grit, grant, removal, or True Grit behavior.
