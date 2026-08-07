@@ -44,6 +44,14 @@ transaction restored the exact original Mods tree and bounded SoundBank state.
 Pending: combined-profile execution, remaining standalone/profile scenarios,
 working-save qualification where eligible, and final exact-profile reports.
 
+The Arms & Armor plus Toggle Custom Soundpacks extension passes load, exact
+observer, presentation, visual rigs, switching, Targeting Arms, Wwise, Scatter,
+and reload. Comprehensive acceptance is not qualified: standalone and combined
+runs reproduce a detached Gunslinger's Dodge command ending `Interrupt` without
+the timed buff. This is `GUNSLINGER-REPAIR-REQUIRED`, not attributed to either
+optional mod. Working-save smoke was not run while standalone comprehensive
+qualification remained failed.
+
 The profile invocation wrapper accepts only the six runtime-capable committed
 profiles and the established guarded scenario allowlist. It stages through the
 transaction core, launches each scenario through the existing Steam harness in
@@ -63,4 +71,8 @@ Inventory and scanner behavior fixtures pass. Repository validation, the
 unchanged 911-test suite, exact-reference Release, SoundBank validation, and
 strict 0.0.72 packaging passed at the first checkpoint. The current rebuilt
 package SHA-256 is
-`2C85B610CB51247F5C45D7EB1803EA6BBE7BF9584FC253A0B5E73DCE120D965D`.
+`5FD8DC95EAA96B4DCAF225C41AEBE700816D3B41FD4D12D70A5E69B6DE2CA0D1`.
+Current DLL/AssetBundle/SoundBank SHA-256 are
+`B22C9ED4FE76E61C0152CFFF376CC19EE2A9380DB32BD10E8AA178168DB1A80A`,
+`F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`, and
+`0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

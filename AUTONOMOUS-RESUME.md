@@ -99,6 +99,10 @@ The full exception proves a finished detached command reports `Interrupt`.
 The fixture now records the enum and evaluates the actual strict Dodge effects.
 Qualify/publish and rerun standalone Dodge once; its effect assertions will
 decide whether further repair is required.
+The effect-based run proved no timed buff was applied. Preserve
+`GUNSLINGER-REPAIR-REQUIRED`; do not weaken the assertions or run working-save
+smoke until standalone comprehensive acceptance is repaired. Finalize exact
+reports/hashes and publish the blocker checkpoint. No merge occurred.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-

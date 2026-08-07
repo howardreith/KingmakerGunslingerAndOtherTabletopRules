@@ -289,3 +289,14 @@
   existing strict mechanical assertions instead of treating the result enum as
   the behavior. Missing Grit spend, buff, AC, availability, or cleanup still
   fails closed.
+- Effect-based standalone run
+  `20260807T2057209416590Z-a48e33c01d6f48f2b407eb08fe361035` proved the
+  finished `Interrupt` applied no timed Buff fact. Transaction
+  `compat-20260807T205654Z-995e08e885b6` restored exactly. Standalone and the
+  maximum passing optional combination are therefore
+  `GUNSLINGER-REPAIR-REQUIRED`; working-save smoke was not attempted.
+- Current package/DLL/AssetBundle/SoundBank SHA-256 are
+  `5FD8DC95EAA96B4DCAF225C41AEBE700816D3B41FD4D12D70A5E69B6DE2CA0D1`,
+  `B22C9ED4FE76E61C0152CFFF376CC19EE2A9380DB32BD10E8AA178168DB1A80A`,
+  `F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B`, and
+  `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

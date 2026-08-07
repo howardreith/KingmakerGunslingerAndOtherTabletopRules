@@ -1,5 +1,17 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 standalone comprehensive qualification
+
+- Standalone and Arms & Armor plus Toggle Custom Soundpacks comprehensive runs
+  reproduce the same failure. The detached Gunslinger's Dodge command finishes
+  as `Interrupt` and applies no timed buff. Exact diagnostic run:
+  `20260807T2057209416590Z-a48e33c01d6f48f2b407eb08fe361035`.
+- This prevents comprehensive and working-save qualification and is classified
+  `GUNSLINGER-REPAIR-REQUIRED`, not an optional-mod interaction defect. The
+  strict mechanic assertions were not weakened.
+- Call of the Wild 1.14.4c-2.1 independently remains `CONFLICT-OBSERVED` after
+  300- and 600-second guarded readiness timeouts.
+
 ## 2026-08-07 optional-mod compatibility publication policy
 
 - Resolved 2026-08-07: the user updated the approved helper allowlist. Exact
