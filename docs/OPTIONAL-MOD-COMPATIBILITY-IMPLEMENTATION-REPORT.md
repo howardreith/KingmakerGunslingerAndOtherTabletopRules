@@ -36,6 +36,13 @@ firearm pairs, Wwise state, and save-free boundary.
 
 Pending: transactional execution matrix and final exact-profile reports.
 
+The profile invocation wrapper accepts only the six runtime-capable committed
+profiles and the established guarded scenario allowlist. It stages through the
+transaction core, launches each scenario through the existing Steam harness in
+a fresh process, waits boundedly for automatic exit, and restores from
+`finally`. A PASS result is not returned unless the transaction record confirms
+exact restoration.
+
 ## Safety and dependency result
 
 The design admits no third-party compile or runtime dependency and no

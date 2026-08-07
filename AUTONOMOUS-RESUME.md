@@ -24,10 +24,11 @@ Checkpoint `1062676` is published and verified on the identically named origin
 branch. Profile resolution and transaction fixtures pass. The guarded
 `observe-optional-mod-compatibility` source is exact-reference qualified with
 911/911 tests and strict package validation. Next action after publishing this
-observer checkpoint: add the compatibility matrix wrapper that enters a
+observer checkpoint: the compatibility profile wrapper now enters the
 transaction, invokes the existing Steam/App ID 640820 harness with the typed
-profile ID, and restores in `finally`; then run `gunslinger-only` mod-load and
-observer fresh processes and verify exact restoration before advancing.
+profile ID, and restores in `finally`. Publish/rebuild this runner checkpoint,
+then run `gunslinger-only` mod-load and observer fresh processes and verify
+exact restoration before advancing.
 
 The user-authoritative accepted native-rig history is: attach-slot Experiment A
 still left held Musket and Blunderbuss invisible; the later isolated holster-
