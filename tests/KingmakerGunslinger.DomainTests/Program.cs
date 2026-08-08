@@ -25,6 +25,11 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
+            Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
+            Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
+            Case("seeking.wrong-item", RareFirearmSeekingTests.WrongItemFailsClosed),
+            Case("seeking.missing-context", RareFirearmSeekingTests.MissingContextFailsClosed),
             Case("archetype-handedness.catalog-exact", ArchetypeFoundationTests.HandednessCatalogExact),
             Case("archetype-handedness.family-matching", ArchetypeFoundationTests.HandednessFamilyMatching),
             Case("archetype-handedness.unknown-fails-closed", ArchetypeFoundationTests.HandednessUnknownFailsClosed),

@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 232;
+        internal const int ExpectedRegisteredBlueprintCount = 233;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -578,6 +578,9 @@ namespace KingmakerGunslinger.Bootstrap
                     FirearmStateTokenBlueprints.Register(registry, context.Logger);
                 BlueprintWeaponEnchantment batteredOrigin =
                     BatteredFirearmOriginBlueprints.Register(registry);
+                BlueprintWeaponEnchantment seeking =
+                    Enchantments.SeekingBlueprints.Register(registry);
+                Enchantments.SeekingBlueprints.Validate(seeking);
 
                 BasicAmmunitionBlueprintSet basicAmmunition =
                     BasicAmmunitionBlueprints.Register(
@@ -736,6 +739,8 @@ namespace KingmakerGunslinger.Bootstrap
                             ExpectedRegisteredBlueprintCount,
                             registry.RegisteredCount));
                 }
+
+                Enchantments.SeekingExactItemResolver.Configure(seeking);
 
                 FirearmRuntimeState.Configure(firearmStateTokens);
                 context.Logger.Info(

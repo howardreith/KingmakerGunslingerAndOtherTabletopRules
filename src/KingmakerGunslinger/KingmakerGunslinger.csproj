@@ -46,6 +46,11 @@
     <Compile Include="Archetypes\UpCloseAndDeadlyMechanics.cs" />
     <Compile Include="Archetypes\TwinShotKnockdownMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
+    <Compile Include="Enchantments\SeekingBlueprints.cs" />
+    <Compile Include="Enchantments\SeekingWeaponEnchantmentComponent.cs" />
+    <Compile Include="Enchantments\SeekingExactItemResolver.cs" />
+    <Compile Include="Enchantments\SeekingConcealmentPatch.cs" />
+    <Compile Include="Enchantments\SeekingConcealmentPolicy.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

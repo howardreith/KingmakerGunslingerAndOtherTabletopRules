@@ -363,8 +363,13 @@ def validate(
                      152: "one-hundred-fifty-two",
                      157: "one-hundred-fifty-seven"}
                     .get(expected_active_blueprints, "twenty-four"))
+    if expected_active_blueprints == 233:
+        active_words = "two-hundred-thirty-three"
+    reserved_blueprints = expected_ledger_entries - expected_active_blueprints
+    reserved_words = ("one reserved" if reserved_blueprints == 1 else
+                      f"{reserved_blueprints} reserved")
     ledger_summary = (f"{expected_ledger_entries} stable IDs: "
-                      f"{expected_active_blueprints} active and one reserved")
+                      f"{expected_active_blueprints} active and {reserved_words}")
     require_tokens(
         architecture,
         [
@@ -381,7 +386,7 @@ def validate(
         manifest_doc,
         [
             (f"{expected_ledger_entries} stable identifiers: "
-             f"{expected_active_blueprints} active and one reserved"),
+             f"{expected_active_blueprints} active and {reserved_words}"),
             "complete " + active_words + "-blueprint transaction",
             "KMG.Test.RepairAbility",
             "c914b3c0786463b7a1e17e47447ee5b1",

@@ -89,3 +89,47 @@ After publishing this amendment checkpoint, inspect exact installed concealment
 attack IL/signatures and record the narrow safe hook contract; then add the
 stable Seeking manifest identity, focused source policies/tests, and continue
 the complete original implementation and qualification mission.
+
+## 2026-08-08 — Project Seeking installed-contract and source checkpoint
+
+- Exact installed Assembly-CSharp MVID is
+  `07FA1E4D-8618-41B3-9B8D-FAA17D3B26F7`. `RuleAttackRoll.OnTrigger`
+  (token `0x06007173`) calls private
+  `TryOvercomeTargetConcealmentAndMissChance` (`0x06007174`) before AC, attack,
+  critical, Mirror Image and final sneak-attack cleanup. A false return alone
+  assigns `AttackResult` value 8.
+- That private method first handles the independent `MissChance`/D100 path,
+  then creates and triggers `RuleConcealmentCheck(initiator,target,true)`, stores
+  it in `RuleAttackRoll.ConcealmentCheck`, and reads its public `Success` getter.
+  `RuleConcealmentCheck.OnTrigger` preserves exact concealment, 20/50 value,
+  D100 roll and any native reroll. `Success` is solely `None || Roll > Value`.
+- `RuleCheckTargetFlatFooted.OnTrigger` independently calls
+  `UnitPartConcealment.Calculate(..., false)` and applies its own
+  `IgnoreConcealment`; `UnitPartConcealment.Calculate` also owns invisibility,
+  blindness, weather, range and unit-part semantics. Therefore patching either
+  global seam would violate the amendment. The selected postfix changes only a
+  failed `RuleConcealmentCheck.Success` read when the current parent
+  `RuleAttackRoll` stores that exact check and its exact ranged weapon carries
+  one valid project Seeking enchantment.
+- `WeaponEnchantmentLogic` derives from exact-owner
+  `ItemEnchantmentLogic<ItemEntityWeapon>`. The project blueprint contains one
+  inert marker; the resolver rejects no/duplicate markers, duplicate runtime
+  enchantments, foreign marker carriers, non-ranged items, missing configuration
+  and all exceptions. It never infers from name, family, wielder or inventory.
+- Added stable active Seeking identity
+  `036fc59fd1e24753b98f9d92cdb1e93e`; the other nine final identities are
+  append-only reserved until their catalog transaction. Current bootstrap is
+  233 active registrations and the ledger is 243 total / 233 active.
+- Five focused dependency-free policy tests plus the full suite pass: 935/935.
+  Repository validation, clean exact-reference Release, build-output, authentic
+  SoundBank, package creation and strict package validation pass at 0.0.73.
+  The first sandboxed full run reproduced only the inherited audio
+  `File.Replace` denial; the authorized exact rerun passed.
+
+### Exact next action
+
+Commit and publish this source checkpoint, then run guarded save-free bootstrap
+and blueprint-contract observation on its exact clean SHA. Curate the run ID,
+then implement the remaining nine-blueprint magic-firearm catalog and shared
+Reliable threshold service; do not treat this scoped Seeking checkpoint as
+mission completion.

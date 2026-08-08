@@ -29,3 +29,11 @@ and is now resolved by the continuation amendment.
   `20260808T1720275373614Z-observe-vendor-table-contracts`, runtime ID
   `20260808T1720275529421Z-c5dbf9e887b64c1b89ac129ba490d2b3`.
 - Feature source/runtime/persistence/compatibility/0.0.74 final gates: pending.
+
+Project Seeking source checkpoint: installed IL proves the selected
+`RuleConcealmentCheck.Success` postfix is downstream of native concealment
+classification/20-or-50 D100 roll and separate from flat-footed evaluation. The
+exact stored-check/parent-attack/item resolver is fail-closed. Focused policy
+tests and the complete suite pass 935/935; clean Release, build-output,
+SoundBank, package and strict validation pass at the still-intermediate 0.0.73.
+Guarded runtime behavior and integrated 0.0.74 qualification remain pending.

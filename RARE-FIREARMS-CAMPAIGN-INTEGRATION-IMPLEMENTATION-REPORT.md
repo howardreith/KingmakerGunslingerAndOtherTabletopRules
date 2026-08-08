@@ -30,3 +30,12 @@ The final report will include every required identity, item/location, Reliable
 order/shared service, token proof, native contracts, modern-support exclusion,
 legacy-stock behavior, Thundering disposition, test totals, runtime/profile
 results, hashes, inherited defects, final SHA and clean remote verification.
+
+First resumed source phase registers and validates project Seeking only, with
+the other nine final stable IDs reserved. Its exact-item resolver accepts one
+runtime enchantment whose exact configured blueprint contains one project
+marker. A Harmony postfix on `RuleConcealmentCheck.Success` requires the current
+parent `RuleAttackRoll` to store that exact check and use that exact ranged item;
+it changes only a false concealment success result. It never sets either native
+`IgnoreConcealment` flag or changes `UnitPartConcealment`. Runtime qualification
+and the remaining catalog are next; this is not final disposition.
