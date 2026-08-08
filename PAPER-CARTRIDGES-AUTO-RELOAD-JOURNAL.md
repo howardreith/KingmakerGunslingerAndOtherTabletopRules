@@ -310,3 +310,10 @@
 - Current version remains the intentional vertical-work pin `0.0.73`; release
   pin advancement remains Phase 7. Next exact action: commit/push this mechanics
   slice, then add the guarded ordinary/Dead Shot/scatter Paper runtime fixtures.
+- First guarded Paper misfire run
+  `20260808T2340116760278Z-c1e0c7a064e04633bbfc7442f5f49d83` reached the
+  ordinary Reliable Paper/loose boundaries but the subsequent Dead Shot reuse of
+  that exact previously fired Reliable item exposed no native probe roll. Cleanup
+  passed. The narrower retry uses a separate mundane Pistol paper chamber and
+  forced natural 2, which directly proves Paper raises Dead Shot's base threshold
+  from 1 to 2 without coupling the fixture's independent Reliable lifecycle.

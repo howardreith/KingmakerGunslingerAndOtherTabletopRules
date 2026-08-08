@@ -4955,7 +4955,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             UnitEntityData attacker = null, target = null;
-            ItemEntityWeapon reliablePistol = null, reliableMusket = null;
+            ItemEntityWeapon reliablePistol = null, reliableMusket = null,
+                deadShotPistol = null;
             Deeds.DeadShotExecutionResult deadShot = null;
             bool cleaned = false;
             var assertions = new List<RuntimeTestAssertion>();
@@ -4973,6 +4974,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.MagicFirearms.Entries[3].Item);
                 reliableMusket = new ItemEntityWeapon(
                     BlueprintBootstrap.MagicFirearms.Entries[4].Item);
+                deadShotPistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
                 AmmunitionId paper = ReloadAmmunitionProfileCatalog
                     .PaperCartridge.LoadedAmmunition;
                 AmmunitionId loose = ReloadAmmunitionProfileCatalog
@@ -4996,12 +4999,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 if (attacker.Body.PrimaryHand.MaybeItem != null)
                     attacker.Body.PrimaryHand.RemoveItem(false);
-                attacker.Body.PrimaryHand.InsertItem(reliablePistol);
-                FirearmRuntimeState.Service.Set(reliablePistol, new FirearmState(
+                attacker.Body.PrimaryHand.InsertItem(deadShotPistol);
+                FirearmRuntimeState.Service.Set(deadShotPistol, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1, paper,
                     FirearmCondition.Normal));
                 deadShot = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(
-                    attacker, target, 1, 1, 1);
+                    attacker, target, 2, 2, 2);
 
                 string observed = "pistolPaper=" + pistolPaper.Result + ":" +
                     pistolPaperAfter + ";pistolLoose=" + pistolLoose.Result + ":" +
@@ -5021,7 +5024,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, musketPaperAfter == FirearmCondition.Broken,
                     "central condition/ammunition/Reliable policy"));
                 assertions.Add(Assertion("paper-dead-shot-shared-threshold",
-                    "one paper chamber; all Dead Shot probes use threshold 1 and transition once",
+                    "one paper chamber; natural 2 probes use its raised threshold and transition once",
                     observed, deadShot != null && deadShot.Before.LoadedAmmunition == paper &&
                         deadShot.Probes.Length == 3 && deadShot.Outcome.Misfires &&
                         deadShot.After.Condition == FirearmCondition.Broken,
@@ -5037,7 +5040,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
                 if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                     attacker.Body.PrimaryHand.RemoveItem(false);
-                foreach (ItemEntityWeapon item in new[] { reliablePistol, reliableMusket })
+                foreach (ItemEntityWeapon item in new[] {
+                    reliablePistol, reliableMusket, deadShotPistol })
                     if (item != null) FirearmRuntimeState.Service.Forget(item);
                 if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
                 if (target != null) target.Dispose();
