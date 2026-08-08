@@ -3822,6 +3822,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 command.AllAttacks.Add(new AttackHandInfo(unit.Body.PrimaryHand, 0, 1)
                     { Target = target });
                 SetExactField(command, "m_AttackIndex", 0);
+                RuleAttackWithWeapon observedPrevious = command.LastAttackRule;
+                AttackHandInfo observedPlanned = command.PlannedAttack;
+                ExactEquippedFirearmContext observedFirearm;
+                string observedReason;
+                bool observedExact = ExactEquippedFirearmResolver.TryResolve(
+                    unit.Descriptor, out observedFirearm, out observedReason);
+                string nativeBoundary = "isFull=" + command.IsFullAttack +
+                    ";executor=" + ReferenceEquals(command.Executor, unit) +
+                    ";previous=" + (observedPrevious != null) +
+                    ";previousWeapon=" + (observedPrevious != null &&
+                        ReferenceEquals(observedPrevious.Weapon, weapon)) +
+                    ";planned=" + (observedPlanned != null) +
+                    ";plannedWeapon=" + (observedPlanned != null &&
+                        ReferenceEquals(observedPlanned.Weapon, weapon)) +
+                    ";exact=" + observedExact +
+                    ";exactWeapon=" + (observedExact &&
+                        ReferenceEquals(observedFirearm.Weapon, weapon)) +
+                    ";auto=" + (unit.AutoUseAbility != null &&
+                        ReferenceEquals(unit.AutoUseAbility.Blueprint,
+                            BlueprintBootstrap.ReloadTestMusketAbility)) +
+                    ";reason=" + observedReason;
                 int paperStart = inventory.Count(ReloadInventoryComponent.PaperCartridge);
                 UnitCommand.ResultType result;
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
@@ -3855,7 +3876,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     inventory.Count(ReloadInventoryComponent.BlackPowderCharge) ==
                         before.BlackPowderCharges &&
                     inventory.Count(ReloadInventoryComponent.LeadBall) == before.LeadBalls;
-                observed = "repeated=" + repeated + ";autoOff=" + autoOff +
+                observed = nativeBoundary + ";repeated=" + repeated + ";autoOff=" + autoOff +
                     ";exhausted=" + exhausted + ";attempted=" +
                     FreeActionFullAttackReloadPatch.Attempted + ";succeeded=" +
                     FreeActionFullAttackReloadPatch.Succeeded;

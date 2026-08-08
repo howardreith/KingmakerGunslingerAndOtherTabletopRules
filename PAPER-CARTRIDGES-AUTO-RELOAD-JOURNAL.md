@@ -251,3 +251,10 @@
   `m_AttackIndex`, rejecting the constructor's `-1` index by unsigned comparison.
   The fixture now sets the exact demonstrated index to 0 after adding its native
   `AttackHandInfo`; no production logic changed.
+- Third full-attack run
+  `20260808T2310433234529Z-3a45bd3b8c174f0aa5aba0c25896c0f9` on published
+  commit `cee6b96cec8f1edfd25d3b7d775c6e6c3d48fc27` again reached structured FAIL
+  with `attempted=0`, while cleanup passed. No ammunition or firearm mutation
+  occurred. The next bounded fixture revision records the exact native boundary
+  inputs (full-attack flag, executor, previous/planned weapon identity, equipped
+  firearm resolution, and auto-use identity) before changing any theory.
