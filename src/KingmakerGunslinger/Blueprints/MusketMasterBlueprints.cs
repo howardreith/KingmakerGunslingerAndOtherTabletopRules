@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.Blueprints
         internal MusketMasterBlueprintSet(BlueprintArchetype archetype,
             BlueprintFeature steadyAim, BlueprintFeature fastMusket,
             BlueprintFeature training, BlueprintAbility steadyAimAbility,
-            BlueprintBuff steadyAimArmed)
+            BlueprintBuff steadyAimArmed, BlueprintFeature deedTier)
         {
             Archetype = archetype;
             SteadyAim = steadyAim;
@@ -30,6 +30,7 @@ namespace KingmakerGunslinger.Blueprints
             Training = training;
             SteadyAimAbility = steadyAimAbility;
             SteadyAimArmed = steadyAimArmed;
+            DeedTier = deedTier;
         }
         internal BlueprintArchetype Archetype { get; private set; }
         internal BlueprintFeature SteadyAim { get; private set; }
@@ -37,7 +38,8 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature Training { get; private set; }
         internal BlueprintAbility SteadyAimAbility { get; private set; }
         internal BlueprintBuff SteadyAimArmed { get; private set; }
-        internal int Count { get { return 5; } }
+        internal BlueprintFeature DeedTier { get; private set; }
+        internal int Count { get { return 6; } }
     }
 
     internal static class MusketMasterBlueprints
@@ -49,6 +51,8 @@ namespace KingmakerGunslinger.Blueprints
         internal const string SteadyAimArmedSymbol =
             "KMG.Archetypes.SteadyAimArmed";
         internal const string FastMusketSymbol = "KMG.Archetypes.FastMusket";
+        internal const string DeedTierSymbol =
+            "KMG.Archetypes.MusketMasterDeedsLevel1";
 
         internal static MusketMasterBlueprintSet Register(BlueprintRegistry registry,
             GunslingerClassBlueprintSet gunslinger,
@@ -65,16 +69,19 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature fast = registry.Register<BlueprintFeature>(
                 FastMusketSymbol, () => CreatePassive("Fast Musket",
                     "While this deed is available, reload two-handed firearms as if they were one-handed firearms."));
+            BlueprintFeature deedTier = registry.Register<BlueprintFeature>(
+                DeedTierSymbol, () => CreatePassive("Musket Master Deeds",
+                    "Deadeye, Steady Aim, and Quick Clear."));
             BlueprintArchetype archetype = registry.Register<BlueprintArchetype>(
                 ArchetypeSymbol, () => CreateArchetype(gunslinger, training,
-                    rapidMusket, steady, fast, startingItems));
+                    rapidMusket, steady, fast, deedTier, startingItems));
             if (!gunslinger.CharacterClass.Archetypes.Any(value =>
                     ReferenceEquals(value, archetype)))
                 gunslinger.CharacterClass.Archetypes = gunslinger.CharacterClass
                     .Archetypes.Concat(new[] { archetype }).ToArray();
             FastMusketRuntime.Configure(fast, null);
             return new MusketMasterBlueprintSet(archetype, steady, fast,
-                training.Musket, steadyAbility, steadyArmed);
+                training.Musket, steadyAbility, steadyArmed, deedTier);
         }
 
         private static BlueprintBuff CreateSteadyArmed(
@@ -147,7 +154,8 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintArchetype CreateArchetype(
             GunslingerClassBlueprintSet g, FirearmTrainingBlueprintSet training,
             BlueprintFeature rapidMusket, BlueprintFeature steady,
-            BlueprintFeature fast, BlueprintItem[] startingItems)
+            BlueprintFeature fast, BlueprintFeature deedTier,
+            BlueprintItem[] startingItems)
         {
             if (startingItems == null || startingItems.Length != 4 ||
                 startingItems.Any(value => value == null) ||
@@ -172,7 +180,7 @@ namespace KingmakerGunslinger.Blueprints
             archetype.StartingGold = g.CharacterClass.StartingGold;
             archetype.StartingItems = (BlueprintItem[])startingItems.Clone();
             archetype.RemoveFeatures = new[] {
-                Entry(1, g.Proficiencies, g.Dodge.Feature),
+                Entry(1, g.Proficiencies, g.Dodge.Feature, g.DeedTiers[0]),
                 Entry(3, g.UtilityShot.Feature),
                 Entry(5, g.GunTraining.Selection),
                 Entry(9, g.GunTraining.Selection),
@@ -180,7 +188,7 @@ namespace KingmakerGunslinger.Blueprints
                 Entry(17, g.GunTraining.Selection) };
             archetype.AddFeatures = new[] {
                 Entry(1, g.ArchetypeProficiencies.MusketMaster, steady,
-                    rapidMusket),
+                    rapidMusket, deedTier),
                 Entry(3, fast),
                 Entry(5, training.Musket), Entry(9, training.Musket),
                 Entry(13, training.Musket), Entry(17, training.Musket) };

@@ -1003,7 +1003,7 @@ namespace KingmakerGunslinger.DomainTests
                 "basicAmmunition.BlackPowder",
                 "basicAmmunition.LeadBall",
                 "gunsmithingSupplies.GunsmithKit",
-                "Entry(1, g.Proficiencies, g.Dodge.Feature)",
+                "Entry(1, g.Proficiencies, g.Dodge.Feature, g.DeedTiers[0])",
                 "Entry(3, g.UtilityShot.Feature)",
                 "Entry(5, g.GunTraining.Selection)",
                 "Entry(17, g.GunTraining.Selection)",

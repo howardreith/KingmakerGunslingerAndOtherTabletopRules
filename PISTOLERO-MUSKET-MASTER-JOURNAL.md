@@ -849,3 +849,25 @@ Commit and publish the curated True Grit runtime evidence, then implement the
 guarded Musket Master mechanics fixture for Steady Aim effective range,
 Deadeye composition, Fast Musket reload revalidation, scoped proficiency,
 training, and the mandatory exact native Musket starter/ownership transaction.
+
+## 2026-08-08 - Truthful Musket Master level-1 deed summary
+
+- Closed the remaining progression-presentation gap by replacing the base
+  level-1 deed summary alongside Gunslinger's Dodge and proficiency, and adding
+  an exact Musket Master summary naming Deadeye, Steady Aim, and Quick Clear.
+- Appended stable identity `KMG.Archetypes.MusketMasterDeedsLevel1`; ledger is
+  now 233 entries, 232 active and one reserved. Updated exact replacement-row
+  observers and source-shape coverage.
+- Repository validation, 930/930 deterministic tests, clean exact-reference
+  Release build, build-output, SoundBank, package creation, and strict package
+  validation pass. The first gate correctly rejected the stale 20-archetype-
+  asset validator count; it was updated to the exact new count of 21 and the
+  complete gate then passed without waivers.
+
+## Exact next action
+
+Commit and publish the truthful Musket Master summary checkpoint, obtain its
+guarded class-blueprint PASS, then add the combined disposable Musket Master
+mechanics/starter fixture covering Steady Aim, Deadeye range composition, Fast
+Musket reload revalidation, scoped proficiency, training, exact Musket grant,
+20/20 ammunition, battered ownership, and repeated-callback idempotence.

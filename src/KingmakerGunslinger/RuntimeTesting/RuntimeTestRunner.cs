@@ -4214,7 +4214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 archetype.RemoveFeatures != null &&
                 archetype.RemoveFeatures.Length == 6 &&
                 ExactLevelEntry(archetype.RemoveFeatures, 1,
-                    gunslinger.Proficiencies, gunslinger.Dodge.Feature) &&
+                    gunslinger.Proficiencies, gunslinger.Dodge.Feature,
+                    gunslinger.DeedTiers[0]) &&
                 ExactLevelEntry(archetype.RemoveFeatures, 3,
                     gunslinger.UtilityShot.Feature) &&
                 new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
@@ -4223,7 +4224,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 archetype.AddFeatures != null && archetype.AddFeatures.Length == 6 &&
                 rapidMusket != null && ExactLevelEntry(archetype.AddFeatures, 1,
                     gunslinger.ArchetypeProficiencies.MusketMaster,
-                    musketMaster.SteadyAim, rapidMusket) &&
+                    musketMaster.SteadyAim, rapidMusket,
+                    musketMaster.DeedTier) &&
                 ExactLevelEntry(archetype.AddFeatures, 3, musketMaster.FastMusket) &&
                 new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
                     archetype.AddFeatures, level,
