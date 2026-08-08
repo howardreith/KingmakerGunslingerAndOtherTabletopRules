@@ -3815,9 +3815,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 var command = new UnitAttack(unit);
-                SetExactProperty(command, "IsFullAttack", true);
-                SetExactProperty(command, "Target", target);
-                SetExactProperty(command, "LastAttackRule",
+                SetDeclaredProperty(command, typeof(UnitAttack), "IsFullAttack", true);
+                SetDeclaredProperty(command, typeof(UnitAttack), "Target", target);
+                SetDeclaredProperty(command, typeof(UnitAttack), "LastAttackRule",
                     new RuleAttackWithWeapon(unit, target, weapon, 0));
                 command.AllAttacks.Add(new AttackHandInfo(unit.Body.PrimaryHand, 0, 1)
                     { Target = target });
@@ -13851,6 +13851,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             MethodInfo setter = property == null ? null : property.GetSetMethod(true);
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
+            setter.Invoke(value, new[] { propertyValue });
+        }
+
+        private static void SetDeclaredProperty(object value, Type declaringType,
+            string name, object propertyValue)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (declaringType == null || !declaringType.IsInstanceOfType(value))
+                throw new ArgumentException("The declared property owner is invalid.",
+                    "declaringType");
+            PropertyInfo property = declaringType.GetProperty(name,
+                BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null)
+                throw new MissingMemberException(declaringType.FullName, name);
             setter.Invoke(value, new[] { propertyValue });
         }
 

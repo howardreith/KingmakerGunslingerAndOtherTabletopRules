@@ -236,3 +236,10 @@
 - Next exact action: publish the full-attack fixture checkpoint, run exact-build
   smoke, then runtime-qualify the native full-attack scenario and repair only
   from its first failed invariant if necessary.
+
+- Exact `e1fcc00dca06a11b95f8bd946952f7f4cf7298e5` smoke PASS; first
+  full-attack run `20260808T2257433338888Z-3c23c3d324f0435497ab500989ec5d02`
+  ended ERROR before the reload prefix or inventory mutation because the generic
+  property helper found inherited/declared `UnitAttack.Target` ambiguous. The
+  fixture now uses a narrow declared-type setter for the three exact UnitAttack
+  properties; production mechanics are unchanged.
