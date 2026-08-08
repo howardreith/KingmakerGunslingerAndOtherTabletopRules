@@ -266,3 +266,10 @@
   that fallback did not initialize the command. The fixture now assigns a
   request-local `List<AttackHandInfo>` to the exact demonstrated backing field,
   matching the native property contract without changing production behavior.
+- The next run
+  `20260808T2322018744715Z-d79c969cbc9146a583109904b3e6a92b` proved every
+  instrumented boundary exact except `executor=False`: full attack, previous and
+  planned exact weapon, equipped firearm resolver, and Reload auto-use were all
+  true. Installed reflection proves `UnitCommand.Executor` has an exact native
+  setter and backing field normally populated by command scheduling. The fixture
+  now sets that exact base property to its request-local unit.

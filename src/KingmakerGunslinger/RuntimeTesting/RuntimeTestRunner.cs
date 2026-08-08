@@ -3815,6 +3815,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 var command = new UnitAttack(unit);
+                SetDeclaredProperty(command, typeof(UnitCommand), "Executor", unit);
                 SetDeclaredProperty(command, typeof(UnitAttack), "IsFullAttack", true);
                 SetDeclaredProperty(command, typeof(UnitAttack), "Target", target);
                 SetDeclaredProperty(command, typeof(UnitAttack), "LastAttackRule",
