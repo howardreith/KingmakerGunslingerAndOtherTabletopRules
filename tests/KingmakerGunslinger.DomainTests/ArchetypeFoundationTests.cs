@@ -1,5 +1,6 @@
 using System;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Gunsmithing;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -140,6 +141,41 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 FirearmProficiencyPolicy.CanSelectExoticWeaponProficiency(-1,
                     false), "Negative BAB did not fail closed.");
+        }
+
+        internal static void StartingFirearmPrecedence()
+        {
+            Assertions.Equal(StartingFirearmProfile.BaseDefault,
+                StartingFirearmPolicy.Resolve(false, false, false),
+                "Base Gunslinger default no longer resolves to Pistol.");
+            Assertions.Equal(StartingFirearmProfile.Pistolero,
+                StartingFirearmPolicy.Resolve(false, true, true),
+                "Pistolero did not override an explicit base Musket signal.");
+            Assertions.Equal(StartingFirearmProfile.MusketMaster,
+                StartingFirearmPolicy.Resolve(true, false, false),
+                "Musket Master did not resolve to its mandatory profile.");
+            Assertions.Equal(StartingFirearmProfile.MusketMaster,
+                StartingFirearmPolicy.Resolve(true, true, true),
+                "Musket Master lost highest starter precedence.");
+            Assertions.Equal(StartingFirearmProfile.ExplicitMusket,
+                StartingFirearmPolicy.Resolve(false, false, true),
+                "Safe explicit base choice did not resolve to Musket.");
+        }
+
+        internal static void StartingFirearmExactKind()
+        {
+            Assertions.False(StartingFirearmPolicy.ExpectsMusket(
+                StartingFirearmProfile.BaseDefault),
+                "Base default unexpectedly selected Musket.");
+            Assertions.False(StartingFirearmPolicy.ExpectsMusket(
+                StartingFirearmProfile.Pistolero),
+                "Pistolero unexpectedly selected Musket.");
+            Assertions.True(StartingFirearmPolicy.ExpectsMusket(
+                StartingFirearmProfile.MusketMaster),
+                "Musket Master did not select Musket.");
+            Assertions.True(StartingFirearmPolicy.ExpectsMusket(
+                StartingFirearmProfile.ExplicitMusket),
+                "Explicit Musket choice did not select Musket.");
         }
     }
 }

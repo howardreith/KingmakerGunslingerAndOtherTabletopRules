@@ -10,6 +10,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Compatibility;
+using KingmakerGunslinger.Gunsmithing;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -630,6 +631,11 @@ namespace KingmakerGunslinger.Bootstrap
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,
                         gunsmithingSupplies.GunsmithKit);
+                GunslingerStartingFirearmResolver.Configure(
+                    gunslingerClassBlueprints.CharacterClass,
+                    productionFirearms.Pistol.Item,
+                    productionFirearms.Musket.Item,
+                    null, null);
                 ClassCatalogDiagnostics.Capture("after-registration", library,
                     gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
@@ -703,6 +709,7 @@ namespace KingmakerGunslinger.Bootstrap
                     initializationException);
                 try
                 {
+                    GunslingerStartingFirearmResolver.Rollback();
                     Feats.NativeFirearmFeatIntegration.Rollback();
                 }
                 catch (Exception nativeFeatRollbackException)

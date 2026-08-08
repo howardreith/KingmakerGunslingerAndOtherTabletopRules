@@ -266,6 +266,8 @@
     <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
     <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs" />
+    <Compile Include="Gunsmithing\GunslingerStartingFirearmResolver.cs" />
+    <Compile Include="Gunsmithing\StartingFirearmPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />

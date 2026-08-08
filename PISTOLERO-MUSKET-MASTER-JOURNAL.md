@@ -197,3 +197,31 @@ then generalize the starting-firearm resolver and ownership transaction.
 Commit and publish this evidence record, then generalize the expected starter
 resolver and `GunslingerStartingFirearmOwnershipPatch` transaction with focused
 inventory-delta, detached-chargen, idempotence, and rollback tests.
+
+## 2026-08-08 - Generalized starting-firearm transaction foundation
+
+- Added an exact committed-class-data resolver with required precedence:
+  Musket Master, Pistolero, future explicit base choice, then backward-compatible
+  base/Mysterious Stranger Pistol default. The archetype references remain
+  intentionally unconfigured until their stable blueprints are registered.
+- The native `AddStartingItems` observer now recognizes every production firearm
+  by exact blueprint reference, requires exactly one newly added expected item,
+  rejects a wrong or duplicate production starter, preserves detached no-delta
+  behavior, verifies native +1/+1 ammunition, tops only to 20/20, and binds the
+  exact observed item to the exact receiving unit.
+- A repeated callback for a receiver already owning the exact battered starter
+  suppresses the native grant before inventory mutation, preventing firearm and
+  ammunition duplication. Rollback remains limited to the project-added 19/19.
+- Added pure precedence/kind tests and updated focused starting-item source
+  contracts. All three focused scripts pass; the complete suite passes 922/922.
+- Exact-reference Release, build-output, SoundBank, package creation, and strict
+  package validation pass. Candidate package SHA-256:
+  `256067A457C85F40C49B26E6ECD31AB71CCB314660C34E74D008A79E28E36486`;
+  DLL SHA-256:
+  `1DA4F52B3FB15A5516FDB523CF24B9160A20C1FDBA6E4ABE6360106F0FF6CB96`.
+
+## Exact next action
+
+Commit and publish the generalized starter foundation, run the existing guarded
+starting-items scenario against the exact commit to prove unchanged base-Pistol
+behavior, then implement the shared firearm-training service and reload policy.

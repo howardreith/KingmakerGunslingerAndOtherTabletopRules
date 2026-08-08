@@ -34,6 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-proficiency.absent-and-marker-fail-closed", ArchetypeFoundationTests.ProficiencyFailsClosed),
             Case("archetype-proficiency.action-access", ArchetypeFoundationTests.ScopedActionAccess),
             Case("archetype-proficiency.ewp-selection", ArchetypeFoundationTests.ExoticWeaponProficiencySelection),
+            Case("archetype-starter.precedence", ArchetypeFoundationTests.StartingFirearmPrecedence),
+            Case("archetype-starter.exact-kind", ArchetypeFoundationTests.StartingFirearmExactKind),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),

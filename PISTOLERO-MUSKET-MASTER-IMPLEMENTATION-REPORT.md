@@ -55,3 +55,15 @@ Custom firearm feat rows and appended native parametrized level-up rows consume
 the same scoped policy. This phase passes 920 deterministic tests and the clean
 exact-reference Release/package gate. Runtime qualification is the next
 checkpoint; no archetype completion claim is made.
+
+## Starting-firearm transaction foundation
+
+The hard-coded Pistol observer is now an exact expected-starter transaction.
+It resolves committed Gunslinger archetype state, observes only native inventory
+deltas, rejects wrong/duplicate production starters, preserves detached chargen,
+tops exact native ammunition deltas to 20/20, and binds the exact new weapon.
+Repeated native callbacks are suppressed only after the same receiver already
+owns the exact battered expected starter. The base default remains Pistol until
+the archetype identities are wired. This shared phase passes 922 tests and the
+full Release/package gate; mandatory Musket runtime proof still awaits the
+Musket Master blueprint.
