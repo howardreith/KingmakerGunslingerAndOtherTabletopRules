@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Runtime.CompilerServices;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
@@ -21,6 +22,9 @@ namespace KingmakerGunslinger.Deeds
         private static readonly object Gate = new object();
         private static readonly ConditionalWeakTable<RuleAttackRoll, ProbeContext>
             Probes = new ConditionalWeakTable<RuleAttackRoll, ProbeContext>();
+        private static long _registeredProbes;
+        private static long _rollSetterProbes;
+        private static long _successProbes;
         private static readonly ConditionalWeakTable<RuleAttackWithWeapon, DeliveryMarker>
             Deliveries = new ConditionalWeakTable<RuleAttackWithWeapon, DeliveryMarker>();
         private static readonly DeadShotService Policy = new DeadShotService();
@@ -246,6 +250,7 @@ namespace KingmakerGunslinger.Deeds
                 Probes.Remove(attackRoll);
                 Probes.Add(attackRoll, new ProbeContext(misfireThreshold,
                     forcedNaturalRoll));
+                Interlocked.Increment(ref _registeredProbes);
             }
         }
 
@@ -320,6 +325,7 @@ namespace KingmakerGunslinger.Deeds
         {
             ProbeContext context;
             if (!TryGet(attackRoll, out context)) return;
+            Interlocked.Increment(ref _rollSetterProbes);
             if (context.ForcedNaturalRoll.HasValue)
             {
                 int forced = context.ForcedNaturalRoll.Value;
@@ -338,6 +344,7 @@ namespace KingmakerGunslinger.Deeds
         {
             ProbeContext context;
             if (!TryGet(attackRoll, out context)) return;
+            Interlocked.Increment(ref _successProbes);
             context.VerifyNaturalRoll(naturalRoll);
             if (context.IsMisfire) nativeResult = false;
         }
@@ -353,7 +360,11 @@ namespace KingmakerGunslinger.Deeds
                 Probes.Remove(attackRoll);
             }
             if (!context.HasNaturalRoll)
-                throw new InvalidOperationException("Dead Shot probe exposed no natural roll.");
+                throw new InvalidOperationException(
+                    "Dead Shot probe exposed no natural roll; registered=" +
+                    Interlocked.Read(ref _registeredProbes) + ";rollSetter=" +
+                    Interlocked.Read(ref _rollSetterProbes) + ";success=" +
+                    Interlocked.Read(ref _successProbes) + ".");
             return new DeadShotRollObservation(attackRoll.IsHit,
                 context.IsMisfire, attackRoll.IsCriticalRoll && attackRoll.IsHit);
         }

@@ -323,3 +323,10 @@
   passing Dead Shot fixture was a retained native Immortality state on the target.
   Because all ordinary controls use `-100` attack bonus and the Dead Shot is an
   all-misfire delivery, the retry removes that unnecessary target-state mutation.
+- Retry `20260808T2350428300401Z-2231d4fc6e1b4b27b066536b96dffaea`
+  reproduced the failure, disproving target Immortality. The established legacy
+  Dead Shot scenario then also ERRORed on the same assembly in run
+  `20260808T2353155279726Z-0adbd45793fc496ea35cd383d24a9522`, proving a touched
+  source regression rather than Paper-fixture construction. Narrow counters are
+  added at registration, exact Roll-setter prefix, and success postfix so the
+  next structured failure identifies the first missing native boundary.
