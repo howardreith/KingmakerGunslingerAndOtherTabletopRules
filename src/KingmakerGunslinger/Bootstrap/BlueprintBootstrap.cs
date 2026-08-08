@@ -706,6 +706,9 @@ namespace KingmakerGunslinger.Bootstrap
                     gunsmithingSupplies,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
+                PlayerFacingPresentation.ApplyArchetypes(
+                    gunslingerClassBlueprints.CharacterClass,
+                    gunslingerClassBlueprints.CharacterClass.Icon);
                 ClassCatalogDiagnostics.Capture("before-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
                 classPublication = GunslingerClassBlueprints.Publish(

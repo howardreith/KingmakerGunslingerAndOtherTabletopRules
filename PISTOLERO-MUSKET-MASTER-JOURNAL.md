@@ -1033,3 +1033,20 @@ scenario on the exact committed package.
 Commit/publish the curated expanded PASS, then audit generic archetype
 presentation/icons/action-bar ownership and implement persistence/reconciliation
 coverage for stale markers, deeds, training, proficiency, and starter identity.
+
+## 2026-08-08 - Generic archetype presentation traversal
+
+- Replaced the Focused Aim one-off icon block with generic traversal of every
+  current Gunslinger archetype AddFeatures row and public component-held unit
+  fact reference. This reaches selections, granted abilities, armed buffs, and
+  future project facts while preserving native blueprint icons.
+- Added post-registration archetype localization/icon/ability-tooltip
+  validation and retained semantic Focused Aim mapping through the generic
+  name policy. Repository validation, 930/930 tests, clean Release, SoundBank,
+  package, and strict validation pass.
+
+## Exact next action
+
+Commit/publish the generic presentation refactor, run the guarded Gunslinger
+presentation and class observers, then implement persistence/reconciliation
+coverage.

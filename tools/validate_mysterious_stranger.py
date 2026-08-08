@@ -48,8 +48,9 @@ def validate(root: Path) -> None:
     if hashlib.sha256(data).hexdigest()!="ba962ad9dbd58f52fad6097dd973508f98ac000db8629f698126c7c5026ec7a8":
         raise AssertionError("Focused Aim icon export changed")
     icon_code=(root/"src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs").read_text(encoding="utf-8")
-    if icon_code.count('Require("focused-aim")') != 3:
-        raise AssertionError("Focused Aim feature, ability, and buff icon mapping changed")
+    if 'return "focused-aim"' not in icon_code or \
+            "IEnumerable<BlueprintUnitFact>" not in icon_code:
+        raise AssertionError("Generic Focused Aim feature, ability, and buff icon mapping changed")
 
 if __name__=="__main__":
     validate(Path(__file__).resolve().parents[1])

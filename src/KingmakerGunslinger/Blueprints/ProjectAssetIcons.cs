@@ -82,15 +82,15 @@ namespace KingmakerGunslinger.Blueprints
             ApplyFact(feats.RapidReload, visited);
             ApplyFact(feats.ExoticWeaponProficiency, visited);
             ApplyFact(gunslinger.QuickClear.Feature, visited);
-            BlueprintUnitFactAccess facts = BlueprintUnitFactAccess.Resolve();
-            facts.SetIcon(gunslinger.MysteriousStranger.FocusedAim,
-                Require("focused-aim"));
-            facts.SetIcon(gunslinger.MysteriousStranger.FocusedAimBuff,
-                Require("focused-aim"));
-            AddFacts focusedGrant = gunslinger.MysteriousStranger.FocusedAim
-                .ComponentsArray.OfType<AddFacts>().Single();
-            facts.SetIcon((BlueprintUnitFact)focusedGrant.Facts.Single(),
-                Require("focused-aim"));
+            foreach (BlueprintArchetype archetype in gunslinger.CharacterClass
+                .Archetypes ?? Array.Empty<BlueprintArchetype>())
+                foreach (LevelEntry entry in archetype == null ||
+                    archetype.AddFeatures == null ? Array.Empty<LevelEntry>() :
+                    archetype.AddFeatures)
+                    foreach (BlueprintFeatureBase feature in entry == null ||
+                        entry.Features == null ? new List<BlueprintFeatureBase>() :
+                        entry.Features)
+                        ApplyFact(feature, visited);
             BlueprintUnitFactAccess.Resolve().SetIcon(
                 gunslinger.Dodge.ArmorClassBuff, Require("gunslingers-dodge"));
             ApplyFact(reload, visited); ApplyFact(repair, visited); ApplyFact(overhaul, visited);
@@ -204,9 +204,19 @@ namespace KingmakerGunslinger.Blueprints
                     if (entry != null && entry.Features != null)
                         foreach (BlueprintFeatureBase child in entry.Features)
                             ApplyFact(child, visited);
-            foreach (AddFacts add in (fact.ComponentsArray ?? Array.Empty<BlueprintComponent>()).OfType<AddFacts>())
-                foreach (BlueprintUnitFact child in add.Facts ?? Array.Empty<BlueprintUnitFact>())
-                    ApplyFact(child, visited);
+            foreach (BlueprintComponent component in fact.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                foreach (FieldInfo field in component.GetType().GetFields(
+                    BindingFlags.Instance | BindingFlags.Public))
+                {
+                    object value = field.GetValue(component);
+                    BlueprintUnitFact child = value as BlueprintUnitFact;
+                    if (child != null) ApplyFact(child, visited);
+                    var children = value as IEnumerable<BlueprintUnitFact>;
+                    if (children != null)
+                        foreach (BlueprintUnitFact nested in children)
+                            ApplyFact(nested, visited);
+                }
         }
 
         private static string Choose(string name)
@@ -223,6 +233,7 @@ namespace KingmakerGunslinger.Blueprints
             if (value.Contains("deadeye")) return "deadeye";
             if (value.Contains("dodge")) return "gunslingers-dodge";
             if (value.Contains("quickclear") || value.Contains("quick_clear")) return "quick-clear";
+            if (value.Contains("focusedaim") || value.Contains("focused_aim")) return "focused-aim";
             if (value.Contains("rapidreload") || value.Contains("rapid_reload")) return "rapid-reload";
             if (value.Contains("weaponfocus") || value.Contains("weapon_focus")) return "weapon-focus-firearm";
             if (value.Contains("reload")) return "reload-firearm";

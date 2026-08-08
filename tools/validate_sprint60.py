@@ -38,7 +38,8 @@ def validate(root: Path, version: str = VERSION,
         "src/KingmakerGunslinger/Blueprints/PlayerFacingPresentation.cs")
     require_tokens(presentation,
         ["SetIconIfMissing", "feature.HideInUI", "ability.Hidden",
-         "StartsWith(\"KMG_\"", "selection.AllFeatures", "OfType<AddFacts>",
+         "StartsWith(\"KMG_\"", "selection.AllFeatures", "ReferencedFacts(component)",
+         "ApplyArchetypes",
          "progression.UIGroups", "features.ToList()"],
         "Sprint 60 presentation graph")
     require_tokens(read(root,
