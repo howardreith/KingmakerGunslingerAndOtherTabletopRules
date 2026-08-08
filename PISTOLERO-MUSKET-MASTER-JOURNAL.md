@@ -326,3 +326,19 @@ matrix, preserving current base and Lightning Reload behavior.
 Commit/publish the Fast Musket policy foundation, run existing reload and
 full-attack reload guarded regressions, record evidence, then inspect and add
 the per-attack effective-range context required by Steady Aim.
+
+## 2026-08-08 - Reload-policy runtime evidence
+
+- Exact published commit `877c25df447e0f039f497e72608843eb780d1871`
+  passed guarded fresh-process run
+  `20260808T0448213280657Z-disposable-reload-autocast`.
+- Existing Reload availability, action presentation, command execution, and
+  autocast behavior remain runtime-correct while unconfigured Fast Musket fails
+  closed. Full-attack-specific archetype coverage will be added with its exact
+  feature fixture rather than inferred from this base regression.
+
+## Exact next action
+
+Commit/publish this evidence record, then inspect the exact native range penalty
+and maximum-range signatures and implement the isolated per-attack effective-
+range context before creating Steady Aim blueprints.
