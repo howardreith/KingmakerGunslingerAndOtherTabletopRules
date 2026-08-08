@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.Blueprints
         internal GunslingerClassBlueprintSet(BlueprintCharacterClass characterClass,
             BlueprintProgression progression, BlueprintFeature proficiencies,
             ArchetypeProficiencyBlueprintSet archetypeProficiencies,
+            BlueprintFeature[] deedTiers,
             BlueprintFeature gunsmithing,
             GritBlueprintSet grit, DeadeyeBlueprintSet deadeye,
             GunslingerDodgeBlueprintSet dodge, QuickClearBlueprintSet quickClear,
@@ -44,6 +45,7 @@ namespace KingmakerGunslinger.Blueprints
             Proficiencies = proficiencies ?? throw new ArgumentNullException("proficiencies");
             ArchetypeProficiencies = archetypeProficiencies ??
                 throw new ArgumentNullException("archetypeProficiencies");
+            DeedTiers = deedTiers ?? throw new ArgumentNullException("deedTiers");
             Gunsmithing = gunsmithing ?? throw new ArgumentNullException("gunsmithing");
             Grit = grit ?? throw new ArgumentNullException("grit");
             Deadeye = deadeye ?? throw new ArgumentNullException("deadeye");
@@ -87,6 +89,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature Proficiencies { get; private set; }
         internal ArchetypeProficiencyBlueprintSet ArchetypeProficiencies
         { get; private set; }
+        internal BlueprintFeature[] DeedTiers { get; private set; }
         internal BlueprintFeature Gunsmithing { get; private set; }
         internal GritBlueprintSet Grit { get; private set; }
         internal DeadeyeBlueprintSet Deadeye { get; private set; }
@@ -114,8 +117,9 @@ namespace KingmakerGunslinger.Blueprints
         internal StunningShotBlueprintSet StunningShot { get; private set; }
         internal TrueGritBlueprintSet TrueGrit { get; private set; }
         internal MysteriousStrangerBlueprintSet MysteriousStranger { get; set; }
+        internal PistoleroBlueprintSet Pistolero { get; set; }
         internal MusketMasterBlueprintSet MusketMaster { get; set; }
-        internal int Count { get { return 5 + ArchetypeProficiencies.Count + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count + (MysteriousStranger == null ? 0 : MysteriousStranger.Count) + (MusketMaster == null ? 0 : MusketMaster.Count); } }
+        internal int Count { get { return 5 + ArchetypeProficiencies.Count + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count + (MysteriousStranger == null ? 0 : MysteriousStranger.Count) + (Pistolero == null ? 0 : Pistolero.Count) + (MusketMaster == null ? 0 : MusketMaster.Count); } }
     }
 
     internal sealed class GunslingerClassCatalogPublication
@@ -301,7 +305,7 @@ namespace KingmakerGunslinger.Blueprints
                 poorSave, startingPistol, blackPowder, leadBall, gunsmithKit,
                 simple, martial, lightArmor, firearmProficiency);
             var set = new GunslingerClassBlueprintSet(characterClass, progression,
-                proficiencies, archetypeProficiencies, gunsmithing, grit,
+                proficiencies, archetypeProficiencies, deedTiers, gunsmithing, grit,
                 deadeye, dodge, quickClear, nimble, initiative,
                 pistolWhip, utilityShot, gunTraining, deadShot, startlingShot,
                 targetingArms, targetingHead, targetingTorso, targetingLegs, bleedingWound,

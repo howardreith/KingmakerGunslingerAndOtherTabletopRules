@@ -4225,7 +4225,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             bool resolver = expectedItems != null &&
                 GunslingerStartingFirearmResolver.MatchesConfiguration(cls,
-                    firearms.Pistol.Item, firearms.Musket.Item, null, archetype);
+                    firearms.Pistol.Item, firearms.Musket.Item,
+                    gunslinger.Pistolero == null ? null :
+                        gunslinger.Pistolero.Archetype, archetype);
             assertions.Add(Assertion("musket-master-starter-resolver",
                 "exact Musket Master maps to exact production Musket",
                 resolver ? "exact" : "changed", resolver,
@@ -4268,6 +4270,87 @@ namespace KingmakerGunslinger.RuntimeTesting
                 matching[0].Features.Count != expected.Length) return false;
             return matching[0].Features.Zip(expected, ReferenceEquals)
                 .All(value => value);
+        }
+
+        private static void AddPistoleroBlueprintAssertions(
+            List<RuntimeTestAssertion> assertions)
+        {
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            PistoleroBlueprintSet pistolero = gunslinger == null ? null :
+                gunslinger.Pistolero;
+            BlueprintArchetype archetype = pistolero == null ? null :
+                pistolero.Archetype;
+            BlueprintCharacterClass cls = gunslinger == null ? null :
+                gunslinger.CharacterClass;
+            FieldInfo parent = typeof(BlueprintArchetype).GetField("m_ParentClass",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            int count = cls == null || cls.Archetypes == null ? 0 :
+                cls.Archetypes.Count(value => ReferenceEquals(value, archetype));
+            bool registration = archetype != null && parent != null && count == 1 &&
+                ReferenceEquals(parent.GetValue(archetype), cls) &&
+                !archetype.ReplaceStartingEquipment;
+            assertions.Add(Assertion("pistolero-registration",
+                "one exact Pistolero on Gunslinger with inherited starter",
+                "count=" + count + ";replaceStarting=" +
+                    (archetype == null ? "missing" :
+                        archetype.ReplaceStartingEquipment.ToString()),
+                registration, "Archetypes, m_ParentClass, starter flag"));
+
+            bool rows = archetype != null && gunslinger != null &&
+                archetype.RemoveFeatures != null &&
+                archetype.RemoveFeatures.Length == 7 &&
+                ExactLevelEntry(archetype.RemoveFeatures, 1,
+                    gunslinger.Proficiencies, gunslinger.Deadeye.Feature,
+                    gunslinger.DeedTiers[0]) &&
+                ExactLevelEntry(archetype.RemoveFeatures, 7,
+                    gunslinger.StartlingShot.Feature, gunslinger.DeedTiers[1]) &&
+                ExactLevelEntry(archetype.RemoveFeatures, 11,
+                    gunslinger.BleedingWound.Feature, gunslinger.DeedTiers[2]) &&
+                new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
+                    archetype.RemoveFeatures, level,
+                    gunslinger.GunTraining.Selection)) &&
+                archetype.AddFeatures != null && archetype.AddFeatures.Length == 7 &&
+                ExactLevelEntry(archetype.AddFeatures, 1,
+                    gunslinger.ArchetypeProficiencies.Pistolero,
+                    pistolero.UpCloseAndDeadly, pistolero.DeedTiers[0]) &&
+                ExactLevelEntry(archetype.AddFeatures, 7,
+                    gunslinger.Deadeye.Feature, pistolero.DeedTiers[1]) &&
+                ExactLevelEntry(archetype.AddFeatures, 11,
+                    pistolero.TwinShotKnockdown, pistolero.DeedTiers[2]) &&
+                new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
+                    archetype.AddFeatures, level, pistolero.Training));
+            assertions.Add(Assertion("pistolero-replacement-rows",
+                "exact seven rows, shifted existing Deadeye, truthful summaries",
+                rows ? "exact" : "changed", rows,
+                "exact LevelEntry reference identity"));
+
+            ProductionFirearmBlueprintCatalog firearms =
+                BlueprintBootstrap.ProductionFirearms;
+            bool resolver = firearms != null && gunslinger.MusketMaster != null &&
+                GunslingerStartingFirearmResolver.MatchesConfiguration(cls,
+                    firearms.Pistol.Item, firearms.Musket.Item, archetype,
+                    gunslinger.MusketMaster.Archetype);
+            assertions.Add(Assertion("pistolero-starter-resolver",
+                "exact Pistolero maps through inherited production Pistol contract",
+                resolver ? "exact" : "changed", resolver,
+                "resolver configuration references"));
+
+            BlueprintArchetype[] project = cls == null || cls.Archetypes == null ?
+                new BlueprintArchetype[0] : cls.Archetypes.Where(value =>
+                    (gunslinger.MysteriousStranger != null && ReferenceEquals(value,
+                        gunslinger.MysteriousStranger.Archetype)) ||
+                    ReferenceEquals(value, archetype) ||
+                    (gunslinger.MusketMaster != null && ReferenceEquals(value,
+                        gunslinger.MusketMaster.Archetype))).ToArray();
+            bool order = project.Length == 3 &&
+                ReferenceEquals(project[0], gunslinger.MysteriousStranger.Archetype) &&
+                ReferenceEquals(project[1], archetype) &&
+                ReferenceEquals(project[2], gunslinger.MusketMaster.Archetype);
+            assertions.Add(Assertion("project-archetype-order",
+                "Mysterious Stranger, Pistolero, Musket Master exactly once",
+                string.Join(",", project.Select(value => value == null ?
+                    "null" : value.name).ToArray()), order,
+                "filtered exact project identities; unrelated entries preserved"));
         }
 
         private static string DescribeNativeRig(GameObject instance,
@@ -5208,6 +5291,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            AddPistoleroBlueprintAssertions(assertions);
             AddMusketMasterBlueprintAssertions(assertions);
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :

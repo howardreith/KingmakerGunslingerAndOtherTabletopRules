@@ -584,3 +584,32 @@ disposable Steady Aim mechanics scenario and prove positive/zero grit, arming,
 wrong-family preservation, direct-shot consumption, +10-foot context, scatter
 exclusion, round expiry, unit isolation, duplicate-callback idempotence, and
 unchanged shared firearm metadata.
+
+## 2026-08-08 - Pistolero native progression skeleton
+
+- Added the stable Pistolero archetype with inherited base starting equipment,
+  exact one-handed scoped proficiency, rankable Pistol Training at 5/9/13/17,
+  and exact shifted existing Deadeye identity at level 7.
+- Exact removal/addition rows replace Deadeye at 1, Startling Shot at 7, Bleeding
+  Wound at 11, all four Gun Training selections, and the three misleading base
+  deed summaries. Stable Pistolero summaries truthfully name the retained and
+  replacement deeds.
+- Up Close and Deadly and Twin Shot Knockdown currently have stable ownership
+  facts and truthful descriptions but remain mechanics placeholders; this phase
+  does not claim those deeds complete.
+- Starter resolver configuration now carries both exact archetypes. Project
+  catalog order is Mysterious Stranger, Pistolero, Musket Master while unrelated
+  current entries remain in place. The guarded observer checks exact Pistolero
+  parent, rows, starter configuration, summaries, and project ordering.
+- Blueprint count is 224 active; ledger is 225 stable IDs including one
+  reserved. All 928 tests and the full Release/package gate pass. Candidate
+  package SHA-256:
+  `419B20646399019F50592FAB91A1488336A4B8CCE00DCD74A0095261D67DAE51`;
+  DLL SHA-256:
+  `A79CD7802A5A63D40748134E8C6B7C4182A0F2F0664D7FCB8B39E1C68B0D8DC0`.
+
+## Exact next action
+
+Commit/publish the Pistolero native skeleton, then run the fresh guarded class
+observer and require all Pistolero/project-order assertions before implementing
+Up Close and Deadly's fixed-cost precision arming/delivery mechanics.

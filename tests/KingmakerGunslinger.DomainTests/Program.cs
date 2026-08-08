@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
             Case("archetype-range.effective-boundaries", ArchetypeFoundationTests.EffectiveRangeContextBoundaries),
             Case("archetype-musket-master.native-starter-skeleton", MusketMasterStarterSkeleton),
+            Case("archetype-pistolero.replacement-skeleton", PistoleroReplacementSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
@@ -1034,6 +1035,35 @@ namespace KingmakerGunslinger.DomainTests
                     creationObserver - classObserver).Contains(
                         "AddMusketMasterBlueprintAssertions(assertions)"),
                 "Musket Master assertions are not invoked by the exact class observer.");
+        }
+
+        private static void PistoleroReplacementSkeleton()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/PistoleroBlueprints.cs");
+            foreach (string token in new[] {
+                "result.ReplaceStartingEquipment = false",
+                "Entry(1, g.Proficiencies, g.Deadeye.Feature, g.DeedTiers[0])",
+                "Entry(7, g.StartlingShot.Feature, g.DeedTiers[1])",
+                "Entry(11, g.BleedingWound.Feature, g.DeedTiers[2])",
+                "Entry(7, g.Deadeye.Feature, tiers[1])",
+                "Entry(5, training.Pistol)",
+                "Entry(17, training.Pistol)",
+                "Pistolero Deeds — Level" })
+                Assertions.True(source.Contains(token),
+                    "Pistolero skeleton lacks exact token: " + token);
+            Assertions.False(source.Contains("ProductionFirearms.Musket"),
+                "Pistolero skeleton references the Musket starter.");
+            Assertions.False(source.Contains("new BlueprintItem"),
+                "Pistolero skeleton manufactures starting equipment.");
+            string observer = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            foreach (string token in new[] { "pistolero-registration",
+                "pistolero-replacement-rows", "pistolero-starter-resolver",
+                "project-archetype-order",
+                "AddPistoleroBlueprintAssertions(assertions)" })
+                Assertions.True(observer.Contains(token),
+                    "Pistolero guarded observer lacks token: " + token);
         }
 
         private static void ThirdPlaytestNativeParentOnly()

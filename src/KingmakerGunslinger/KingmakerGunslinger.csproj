@@ -138,6 +138,7 @@
     <Compile Include="Blueprints\FirearmTrainingBlueprints.cs" />
     <Compile Include="Blueprints\ArchetypeProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\MusketMasterBlueprints.cs" />
+    <Compile Include="Blueprints\PistoleroBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProjectileBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />

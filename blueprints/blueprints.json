@@ -49,6 +49,24 @@
       "symbol": "KMG.Archetypes.MusketMasterProficiencies", "guid": "3001d47f279f43fdbbec8955499d777b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/two-handed proficiency grant."
     },
     {
+      "symbol": "KMG.Archetypes.Pistolero", "guid": "32a41699a7bf42dbbe7ae755d68d73cb", "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Native one-handed firearm Gunslinger archetype."
+    },
+    {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadly", "guid": "de285a78190e4c73a83f05705f36133d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-1 Up Close and Deadly deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.TwinShotKnockdown", "guid": "cd4b145b016d4db6ac60dc3c8aa8e396", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-11 Twin Shot Knockdown deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel1", "guid": "6e3066820a3245eb80726e77e2627a36", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-1 deed summary."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel7", "guid": "8eb4316856e649db9d78b8ee97521c69", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-7 deed summary."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel11", "guid": "a4cd03a8470f419eabdb79d508be43ab", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-11 deed summary."
+    },
+    {
       "symbol": "KMG.Archetypes.MusketMaster", "guid": "468ebf7536f04f498749869396189fbd", "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Native Gunslinger archetype with exact Musket starting equipment."
     },
     {
