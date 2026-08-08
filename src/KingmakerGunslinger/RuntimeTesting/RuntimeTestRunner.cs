@@ -3616,7 +3616,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
             OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
                 .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
             int kitsBefore = player.Inventory.Count(repairKit);
@@ -3626,6 +3626,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool delayed = false, interruptionAtomic = false,
                 combatBlocked = false, exactCompletion = false,
                 repairCompletion = false, cleaned = false;
+            int staticBefore = -1, staticAfterOverhaul = -1,
+                staticAfterRepair = -1;
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             string overhaulLog = null, repairLog = null;
             try
@@ -3641,6 +3643,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
+                staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Wrecked));
@@ -3678,6 +3682,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
                     player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                staticAfterOverhaul = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
                 overhaulLog = FirearmConditionCombatLog.LastMessage;
                 FirearmRepairRuntimeResult repaired =
                     RepairTestMusketRuntime.Execute(
@@ -3688,6 +3694,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     repaired.AfterFirearm.Repository.State.Condition ==
                         FirearmCondition.Normal &&
                     player.Inventory.Count(repairKit) == kitsAtStart - 2;
+                staticAfterRepair = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
             }
             finally
@@ -3710,6 +3718,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";delayed=" + delayed + ";interruptionAtomic=" + interruptionAtomic +
                 ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
+                ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
+                staticAfterRepair +
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
@@ -3726,6 +3736,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit",
                     observed, exactCompletion,
                     "existing exact-item atomic transaction after maintenance gate"),
+                Assertion("magic-static-maintenance-lifecycle",
+                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and Repair",
+                    observed, staticBefore == 3 && staticAfterOverhaul == 3 &&
+                        staticAfterRepair == 3,
+                    "exact runtime static-enchantment identities across state-token replacement"),
                 Assertion("overhaul-condition-combat-log",
                     "one native player log only after completed Wrecked -> Broken",
                     observed,
