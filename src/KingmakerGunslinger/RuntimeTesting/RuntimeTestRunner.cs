@@ -3616,7 +3616,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
             OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
                 .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = BlueprintBootstrap.MagicFirearms.Entries[6].Item;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon magicPistol =
+                BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
             int kitsBefore = player.Inventory.Count(repairKit);
@@ -3643,8 +3645,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
-                staticBefore = weapon.Enchantments.Count(value => value != null &&
-                    entryBlueprint(weapon, value.Blueprint));
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Wrecked));
@@ -3676,8 +3676,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             StringComparison.OrdinalIgnoreCase) >= 0;
                 SetExactProperty(unit, "CombatState", null);
 
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(magicPistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Wrecked));
+
                 FirearmOverhaulRuntimeResult completed =
-                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, pistol, repairKit);
+                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        repairKit);
                 exactCompletion = completed.Succeeded &&
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
@@ -3687,7 +3699,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 overhaulLog = FirearmConditionCombatLog.LastMessage;
                 FirearmRepairRuntimeResult repaired =
                     RepairTestMusketRuntime.Execute(
-                        unit.Descriptor, pistol, repairKit);
+                        unit.Descriptor, magicPistol, repairKit);
                 repairCompletion = repaired.Succeeded &&
                     repaired.BeforeFirearm.Repository.State.Condition ==
                         FirearmCondition.Broken &&
