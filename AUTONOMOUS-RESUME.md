@@ -1193,6 +1193,11 @@ training, rollback, and no save writes. Commit the curated evidence, then close
 the remaining expanded Pistolero deed branches and Twin Shot cleanup/turn
 boundaries before persistence, compatibility, version, and final gates.
 
-The expanded Pistolero guarded fixture now covers critical, misfire, scatter,
-Dead Shot final delivery, and duplicate callback source contracts. Commit and
-run it, then close marker-expiry/fault and Twin Shot lifecycle cleanup.
+The expanded Pistolero and combined Musket Master fixtures are guarded-runtime
+qualified. Generic archetype presentation and class observers passed on exact
+`1cd4b2785052acbe5be03a7426c064ba14c2ee46` in directories
+`20260808T1412495842884Z-observe-gunslinger-presentation` and
+`20260808T1414251995558Z-observe-class-blueprint-contracts`. Next implement
+and qualify archetype persistence/reconciliation transitions and starter
+identity invariants, then continue to the bounded base-starter investigation,
+version/profile transaction, compatibility profiles, and final gates.

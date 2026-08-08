@@ -1050,3 +1050,24 @@ coverage for stale markers, deeds, training, proficiency, and starter identity.
 Commit/publish the generic presentation refactor, run the guarded Gunslinger
 presentation and class observers, then implement persistence/reconciliation
 coverage.
+
+## 2026-08-08 - Generic presentation guarded PASS
+
+- Exact committed source `1cd4b2785052acbe5be03a7426c064ba14c2ee46`
+  passed `observe-gunslinger-presentation` in directory
+  `20260808T1412495842884Z-observe-gunslinger-presentation`, run ID
+  `20260808T1412496064594Z-e810c58680f9497dab4b3d75d336f3fd`.
+- The same source passed `observe-class-blueprint-contracts` in directory
+  `20260808T1414251995558Z-observe-class-blueprint-contracts`, run ID
+  `20260808T1414252152059Z-1df25ec7506a4a0b977fdf1264aabdc2`.
+- Both guarded Steam launches loaded DLL SHA-256
+  `BA0676560B4C7A6F84A2D1173F902DC0319CA45165E5627F6D71F37846E4922D`,
+  observed no save interaction, and proved the current class/progression and
+  player-facing presentation contracts after generic archetype traversal.
+
+## Exact next action
+
+Implement and qualify archetype persistence/reconciliation coverage for
+base-to-archetype, archetype-to-base, and archetype-to-archetype transitions,
+including stale deed/marker/training/proficiency cleanup and invariant starter
+identity with no repeated native grant.

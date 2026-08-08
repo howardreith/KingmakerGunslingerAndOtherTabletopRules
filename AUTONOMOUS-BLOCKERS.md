@@ -301,5 +301,6 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`; no autonomous engineering
   alternative remains unless that session reports a concrete failure.
 - The Pistolero/Musket Master mission has no newly established hard stop. Its
-  combined Musket Master starter/mechanics fixture is runtime-qualified; the
-  remaining expanded Pistolero branches and integration gates are autonomous.
+  combined Musket Master starter/mechanics, expanded Pistolero deed, generic
+  presentation, and class observers are runtime-qualified. Persistence,
+  compatibility, and final integration gates remain autonomous.
