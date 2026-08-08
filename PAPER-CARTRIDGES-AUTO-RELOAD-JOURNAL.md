@@ -154,3 +154,11 @@
   for a `BlueprintBuff`, which returned no live Buff. Changed only the fixture to
   established native `Buffs.AddBuff` with an exact `MechanicsContext`, retaining
   AddFact as a narrow fallback. Production mode state remains native fact-owned.
+- The native `Buffs.AddBuff` theory also returned no marker in run
+  `20260808T2226306134022Z-f150d006759f4828bf3eee1c7103cfc2`; no reload or
+  inventory mutation occurred. Exact installed reflection then proved
+  `ActivatableAbilityCollection.Enumerable` and the `ActivatableAbility.IsOn`
+  setter. The fixture now finds the exact granted activatable fact and toggles
+  `IsOn`, exercising the real player-mode lifecycle rather than synthesizing its
+  implementation buff. This is the changed strategy after the repeated marker
+  insertion failure.

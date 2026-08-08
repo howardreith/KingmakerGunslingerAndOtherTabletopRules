@@ -19,6 +19,7 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -3634,6 +3635,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             Buff marker = null;
+            ActivatableAbility nativeMode = null;
             bool modeGranted = false, offByDefault = false, pistolLoaded = false,
                 actionExact = false, noLooseConsumption = false,
                 magicCompatible = false, staticPreserved = false,
@@ -3650,13 +3652,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
-                modeGranted = unit.Descriptor.HasFact(mode.Ability);
-                offByDefault = !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
-                var modeContext = new MechanicsContext(unit, unit.Descriptor,
-                    BlueprintBootstrap.ReloadTestMusketAbility, null,
-                    new TargetWrapper(unit));
-                marker = unit.Descriptor.Buffs.AddBuff(mode.Marker, modeContext, null);
-                marker = marker ?? unit.Descriptor.AddFact(mode.Marker) as Buff;
+                nativeMode = unit.Descriptor.ActivatableAbilities.Enumerable
+                    .SingleOrDefault(value => value != null &&
+                        ReferenceEquals(value.Blueprint, mode.Ability));
+                modeGranted = nativeMode != null;
+                offByDefault = nativeMode != null && !nativeMode.IsOn &&
+                    !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
+                if (nativeMode != null) nativeMode.IsOn = true;
+                marker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint, mode.Marker));
                 if (marker == null || !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker))
                     throw new InvalidOperationException("The request-local paper mode marker was rejected.");
                 weapon = new ItemEntityWeapon(pistol);
@@ -3717,7 +3721,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (unit != null && marker != null) unit.Descriptor.Buffs.RemoveFact(marker);
+                if (nativeMode != null && nativeMode.IsOn) nativeMode.IsOn = false;
+                if (unit != null && marker != null && unit.Descriptor.Buffs.RawFacts.Contains(marker))
+                    unit.Descriptor.Buffs.RemoveFact(marker);
                 if (weapon != null)
                 {
                     FirearmRuntimeState.Service.Forget(weapon);
