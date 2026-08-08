@@ -77,6 +77,11 @@ namespace KingmakerGunslinger.Scatter
         {
             Marker marker;
             if (!TryGet(roll, out marker)) return;
+            // Some compatible installed patches evaluate the exact d20 without
+            // calling RuleAttackRoll.set_Roll. The exact scatter attack marker
+            // still scopes this callback to one weapon attack, so preserve the
+            // observed native d20 rather than failing the whole volley closed.
+            if (!marker.HasNaturalRoll) marker.Record(naturalRoll);
             marker.Verify(naturalRoll);
             if (marker.IsMisfire) nativeResult = false;
         }

@@ -9304,19 +9304,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, new TargetWrapper(first));
                 commandConstructed = command.CanStart && data.IsAvailable &&
                     ReferenceEquals(command.Spell.Blueprint, scatterAbility);
-                mixed = Scatter.ScatterShotRuntime.Execute(
-                    attacker, first,
-                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
-                    new[] { 10, 1 });
+                int mixedIndex = 0;
+                int[] mixedRolls = { 10, 1 };
+                mixed = Scatter.ScatterShotRuntime.Execute(attacker, first,
+                    attack =>
+                    {
+                        UnityEngine.Random.InitState(FindNativeD20Seed(
+                            mixedRolls[mixedIndex++]));
+                        Kingmaker.RuleSystem.Rulebook.Trigger(attack);
+                    }, mixedRolls);
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                allMisfire = Scatter.ScatterShotRuntime.Execute(
-                    attacker, first,
-                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
-                    new[] { 1, 1 });
+                int allIndex = 0;
+                int[] allRolls = { 1, 1 };
+                allMisfire = Scatter.ScatterShotRuntime.Execute(attacker, first,
+                    attack =>
+                    {
+                        UnityEngine.Random.InitState(FindNativeD20Seed(
+                            allRolls[allIndex++]));
+                        Kingmaker.RuleSystem.Rulebook.Trigger(attack);
+                    }, allRolls);
             }
             catch (Exception exception)
             {
