@@ -114,7 +114,8 @@ namespace KingmakerGunslinger.Blueprints
         internal StunningShotBlueprintSet StunningShot { get; private set; }
         internal TrueGritBlueprintSet TrueGrit { get; private set; }
         internal MysteriousStrangerBlueprintSet MysteriousStranger { get; set; }
-        internal int Count { get { return 5 + ArchetypeProficiencies.Count + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count + (MysteriousStranger == null ? 0 : MysteriousStranger.Count); } }
+        internal MusketMasterBlueprintSet MusketMaster { get; set; }
+        internal int Count { get { return 5 + ArchetypeProficiencies.Count + Grit.Count + Deadeye.Count + Dodge.Count + QuickClear.Count + Nimble.Count + PistolWhip.Count + UtilityShot.Count + GunTraining.Count + DeadShot.Count + StartlingShot.Count + TargetingArms.Count + TargetingHead.Count + TargetingTorso.Count + TargetingLegs.Count + BleedingWound.Count + ExpertLoading.Count + LightningReload.Count + Evasive.Count + MenacingShot.Count + SlingersLuck.Count + DeathsShot.Count + StunningShot.Count + TrueGrit.Count + (MysteriousStranger == null ? 0 : MysteriousStranger.Count) + (MusketMaster == null ? 0 : MusketMaster.Count); } }
     }
 
     internal sealed class GunslingerClassCatalogPublication

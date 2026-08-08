@@ -49,6 +49,15 @@
       "symbol": "KMG.Archetypes.MusketMasterProficiencies", "guid": "3001d47f279f43fdbbec8955499d777b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/two-handed proficiency grant."
     },
     {
+      "symbol": "KMG.Archetypes.MusketMaster", "guid": "468ebf7536f04f498749869396189fbd", "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Native Gunslinger archetype with exact Musket starting equipment."
+    },
+    {
+      "symbol": "KMG.Archetypes.SteadyAim", "guid": "c4ec2b80c01147d6ae387197e9f5ab9b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-1 Steady Aim deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.FastMusket", "guid": "0d52210d53424464836106b08bc87d4d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-3 passive Fast Musket deed."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",

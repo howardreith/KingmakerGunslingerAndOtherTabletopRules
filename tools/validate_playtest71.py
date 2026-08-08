@@ -7,7 +7,7 @@ import validate_playtest67,validate_mysterious_stranger
 VERSION="0.0.71";INFORMATIONAL_VERSION="0.0.71-firearm-native-weapon-rigs"
 def validate(root:Path)->None:
     validate_playtest67.VERSION=VERSION;validate_playtest67.INFORMATIONAL_VERSION=INFORMATIONAL_VERSION
-    validate_playtest67.validate(root,890);validate_mysterious_stranger.validate(root)
+    validate_playtest67.validate(root,891);validate_mysterious_stranger.validate(root)
     ui=(root/"src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
     if f"Kingmaker Gunslinger - {VERSION} " not in ui or "FIREARM-NATIVE-WEAPON-RIGS" not in ui:raise AssertionError(f"{VERSION} build label missing")
     profile=(root/"src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs").read_text(encoding="utf-8")

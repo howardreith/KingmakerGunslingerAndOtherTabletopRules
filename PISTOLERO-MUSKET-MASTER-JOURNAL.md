@@ -427,3 +427,35 @@ Commit/publish the visible proficiency layer, then implement the mandatory
 Musket Master archetype skeleton first: exact parent/replacement rows, exact
 native four-item Musket starting array, catalog append, and starter-resolver
 wiring, before adding its deed mechanics.
+
+## 2026-08-08 - Mandatory Musket Master native skeleton
+
+- Added the stable Musket Master archetype identity and wired its exact parent,
+  replacement rows, scoped proficiency, exact existing Rapid Reload (Musket),
+  rankable Musket Training, and passive Fast Musket ownership fact.
+- Set `ReplaceStartingEquipment = true` and the native archetype starting array
+  to exactly production Musket, black powder, lead ball, and gunsmith kit. The
+  generalized starter resolver now recognizes the exact Musket Master archetype
+  before the backward-compatible base Pistol default.
+- Appended the archetype without replacing unrelated catalog entries and added
+  stable Steady Aim/Fast Musket identities. Steady Aim remains a deliberately
+  incomplete placeholder fact in this skeleton; no runtime-qualification claim
+  is made for its action or per-shot mechanics yet.
+- Bootstrap count is 216 active; manifest ledger is 217 stable IDs including one
+  reserved. Repository validation and all 927 domain/reflection tests pass. Two
+  sandboxed attempts failed only because the sandbox denied the pre-existing
+  audio test's atomic `File.Replace`; the identical suite passed 927/927 when
+  run outside that filesystem restriction.
+- Exact-reference Release, build-output, SoundBank, package creation, and strict
+  package validation pass. Candidate package SHA-256:
+  `42D006889DA8AC5941E62DB6E542435F829C3B500B1380191CB65E5CFA6AFD82`;
+  DLL SHA-256:
+  `3A49B22FB93AD5A02897D70996A1DDBA2229E5D3C75CA6199ABF6033D892D98C`.
+
+## Exact next action
+
+Commit/publish the mandatory Musket Master native skeleton, then extend the
+guarded class/archetype observer to prove the exact parent, replacement rows,
+four-item starting array, preserved unrelated catalog entries, and exact
+starter-resolver identity in a fresh guarded Kingmaker process before adding
+Steady Aim mechanics.

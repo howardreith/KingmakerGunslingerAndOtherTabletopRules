@@ -21,7 +21,10 @@ def validate(root: Path) -> None:
              and e["symbol"] not in {"KMG.Archetypes.PistolTraining",
                                       "KMG.Archetypes.MusketTraining",
                                       "KMG.Archetypes.PistoleroProficiencies",
-                                      "KMG.Archetypes.MusketMasterProficiencies"}]
+                                      "KMG.Archetypes.MusketMasterProficiencies",
+                                      "KMG.Archetypes.MusketMaster",
+                                      "KMG.Archetypes.SteadyAim",
+                                      "KMG.Archetypes.FastMusket"}]
     if len(entries)!=17: raise AssertionError(f"Expected 17 archetype assets, found {len(entries)}")
     if len({e["guid"] for e in ledger["entries"]})!=len(ledger["entries"]):
         raise AssertionError("Blueprint GUIDs are not unique")

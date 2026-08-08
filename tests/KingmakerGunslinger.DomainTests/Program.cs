@@ -40,6 +40,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-training.overlap-and-negative-dex", ArchetypeFoundationTests.TrainingOverlapAndNegativeDexterity),
             Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
             Case("archetype-range.effective-boundaries", ArchetypeFoundationTests.EffectiveRangeContextBoundaries),
+            Case("archetype-musket-master.native-starter-skeleton", MusketMasterStarterSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
@@ -985,6 +986,32 @@ namespace KingmakerGunslinger.DomainTests
         {
             return File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 relative.Replace('/', Path.DirectorySeparatorChar)));
+        }
+
+        private static void MusketMasterStarterSkeleton()
+        {
+            string archetypeSource = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/MusketMasterBlueprints.cs");
+            string source = archetypeSource + ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs");
+            foreach (string token in new[] {
+                "archetype.ReplaceStartingEquipment = true",
+                "productionFirearms.Musket.Item",
+                "basicAmmunition.BlackPowder",
+                "basicAmmunition.LeadBall",
+                "gunsmithingSupplies.GunsmithKit",
+                "Entry(1, g.Proficiencies, g.Dodge.Feature)",
+                "Entry(3, g.UtilityShot.Feature)",
+                "Entry(5, g.GunTraining.Selection)",
+                "Entry(17, g.GunTraining.Selection)",
+                "Entry(5, training.Musket)",
+                "Entry(17, training.Musket)" })
+                Assertions.True(source.Contains(token),
+                    "Musket Master skeleton lacks exact token: " + token);
+            Assertions.False(archetypeSource.Contains("TestMusket"),
+                "Musket Master skeleton references the development Test Musket.");
+            Assertions.False(archetypeSource.Contains("HeavyCrossbow"),
+                "Musket Master skeleton references the donor Heavy Crossbow.");
         }
 
         private static void ThirdPlaytestNativeParentOnly()

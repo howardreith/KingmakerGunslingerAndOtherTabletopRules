@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 213;
+        internal const int ExpectedRegisteredBlueprintCount = 216;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -642,11 +642,19 @@ namespace KingmakerGunslinger.Bootstrap
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,
                         gunsmithingSupplies.GunsmithKit);
+                gunslingerClassBlueprints.MusketMaster =
+                    MusketMasterBlueprints.Register(registry,
+                        gunslingerClassBlueprints, firearmTraining,
+                        firearmFeats.RapidReloadChoices[1],
+                        productionFirearms.Musket.Item,
+                        basicAmmunition.BlackPowder,
+                        basicAmmunition.LeadBall,
+                        gunsmithingSupplies.GunsmithKit);
                 GunslingerStartingFirearmResolver.Configure(
                     gunslingerClassBlueprints.CharacterClass,
                     productionFirearms.Pistol.Item,
                     productionFirearms.Musket.Item,
-                    null, null);
+                    null, gunslingerClassBlueprints.MusketMaster.Archetype);
                 ClassCatalogDiagnostics.Capture("after-registration", library,
                     gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
