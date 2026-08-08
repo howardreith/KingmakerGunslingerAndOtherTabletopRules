@@ -24,5 +24,13 @@ namespace KingmakerGunslinger.Firearms
             if (scope == FirearmHandedness.TwoHanded) return true;
             throw new ArgumentOutOfRangeException("scope");
         }
+
+        internal static bool CanSelectExoticWeaponProficiency(
+            int baseAttackBonus, bool hasFullProficiency)
+        {
+            if (baseAttackBonus < 0) throw new ArgumentOutOfRangeException(
+                "baseAttackBonus");
+            return baseAttackBonus >= 1 && !hasFullProficiency;
+        }
     }
 }

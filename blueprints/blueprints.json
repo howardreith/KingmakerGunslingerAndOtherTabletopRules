@@ -34,6 +34,9 @@
       "symbol": "KMG.Firearms.TwoHandedFirearmProficiency", "guid": "cbf3d4e79b6144b9b76480d8b242d37c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Hidden scoped proficiency fact for exact two-handed firearm kinds."
     },
     {
+      "symbol": "KMG.Feats.ExoticWeaponProficiencyFirearms", "guid": "b1a58cfdbf004f04ade7765373484c29", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Player-facing combat feat granting the preserved full firearm-proficiency fact."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",

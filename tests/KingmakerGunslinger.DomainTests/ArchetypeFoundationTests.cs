@@ -122,5 +122,24 @@ namespace KingmakerGunslinger.DomainTests
                 FirearmProficiencyPolicy.GrantsScatter(FirearmHandedness.Unknown),
                 "Unknown proficiency scope did not fail closed.");
         }
+
+        internal static void ExoticWeaponProficiencySelection()
+        {
+            Assertions.False(FirearmProficiencyPolicy.
+                CanSelectExoticWeaponProficiency(0, false),
+                "EWP ignored its BAB +1 prerequisite.");
+            Assertions.True(FirearmProficiencyPolicy.
+                CanSelectExoticWeaponProficiency(1, false),
+                "EWP rejected an eligible scoped-proficiency owner.");
+            Assertions.True(FirearmProficiencyPolicy.
+                CanSelectExoticWeaponProficiency(20, false),
+                "EWP rejected an eligible high-BAB owner.");
+            Assertions.False(FirearmProficiencyPolicy.
+                CanSelectExoticWeaponProficiency(1, true),
+                "EWP admitted an owner who already has full proficiency.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                FirearmProficiencyPolicy.CanSelectExoticWeaponProficiency(-1,
+                    false), "Negative BAB did not fail closed.");
+        }
     }
 }

@@ -80,6 +80,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (BlueprintFeature choice in feats.RapidReloadChoices) ApplyFact(choice, visited);
             ApplyFact(feats.WeaponFocus, visited);
             ApplyFact(feats.RapidReload, visited);
+            ApplyFact(feats.ExoticWeaponProficiency, visited);
             ApplyFact(gunslinger.QuickClear.Feature, visited);
             BlueprintUnitFactAccess facts = BlueprintUnitFactAccess.Resolve();
             facts.SetIcon(gunslinger.MysteriousStranger.FocusedAim,

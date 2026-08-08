@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-proficiency.two-handed-exact", ArchetypeFoundationTests.TwoHandedProficiencyExact),
             Case("archetype-proficiency.absent-and-marker-fail-closed", ArchetypeFoundationTests.ProficiencyFailsClosed),
             Case("archetype-proficiency.action-access", ArchetypeFoundationTests.ScopedActionAccess),
+            Case("archetype-proficiency.ewp-selection", ArchetypeFoundationTests.ExoticWeaponProficiencySelection),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
@@ -985,8 +986,11 @@ namespace KingmakerGunslinger.DomainTests
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs");
             Assertions.True(source.Contains(
-                "var additions = new BlueprintFeature[] { set.RapidReload }"),
-                "A wrapper feat is still published at top level.");
+                "set.RapidReload, set.ExoticWeaponProficiency"),
+                "The authorized standalone firearm feats are not published together.");
+            Assertions.False(source.Contains(
+                "set.WeaponFocus, set.NativeWeaponFocusWithFirearms"),
+                "A hidden Weapon Focus compatibility wrapper is still published at top level.");
         }
 
         private static void ThirdPlaytestNativeIconGuard()

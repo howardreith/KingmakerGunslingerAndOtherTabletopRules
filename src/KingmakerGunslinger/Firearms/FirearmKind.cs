@@ -4,7 +4,7 @@ namespace KingmakerGunslinger.Firearms
     /// Stable firearm identity used by rules code. This identity is deliberately
     /// independent of any borrowed Kingmaker weapon category.
     /// </summary>
-    internal enum FirearmKind
+    public enum FirearmKind
     {
         Unknown = 0,
         Pistol = 1,

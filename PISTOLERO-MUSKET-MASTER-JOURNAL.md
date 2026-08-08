@@ -153,3 +153,31 @@ rewire production firearm restrictions and focused tests before adding EWP.
 Commit/publish this runtime evidence record, then inspect exact BAB/duplicate
 prerequisite APIs and implement the single EWP
 (Firearms) publication plus scoped firearm-feat prerequisites.
+
+## 2026-08-08 - Firearm EWP and scoped feat prerequisites
+
+- Exact installed prerequisite contracts were inspected before use. Added one
+  combat feat, Exotic Weapon Proficiency (Firearms), with BAB +1, a duplicate
+  guard, and an exact grant of the preserved full firearm-proficiency identity.
+- Added one serializable prerequisite driven by the shared full-or-matching-scope
+  policy. Custom Weapon Focus, Rapid Reload, and dependent choices now reject
+  the opposite family without relying on donor crossbow categories.
+- Native parametrized level-up menus filter appended firearm parameters against
+  the preview unit's exact full/scoped facts; presentation enumeration remains
+  complete.
+- `FirearmKind` is public because the public prerequisite serializes it; the
+  exact-reference compiler caught and proved this boundary.
+- Bootstrap count is 209 active; the manifest ledger has 210 stable IDs including
+  one reserved. No existing GUID changed.
+- Repository validation, complete 920/920 suite, exact-reference Release,
+  build-output, SoundBank, package creation, and strict package validation pass.
+- Candidate package SHA-256:
+  `FB6B71147286BD90C4082BD91D1199FB3DCB2EA345799DACA36289FB9D1EC8AC`;
+  DLL SHA-256:
+  `D5AFDDC74A551625E9E690A49B849A4FC974AFCB9B2BEC630E9BC7AF7B07415E`.
+
+## Exact next action
+
+Commit and publish the EWP/scoped-feat phase, run the guarded native firearm-feat
+and presentation observers against that exact commit, record their evidence,
+then generalize the starting-firearm resolver and ownership transaction.

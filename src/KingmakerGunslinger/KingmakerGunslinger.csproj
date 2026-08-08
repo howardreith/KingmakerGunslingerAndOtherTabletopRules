@@ -499,6 +499,7 @@
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
     <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />
+    <Compile Include="Feats\PrerequisiteFirearmProficiency.cs" />
     <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
     <Compile Include="Blueprints\ProjectAssetIcons.cs" />

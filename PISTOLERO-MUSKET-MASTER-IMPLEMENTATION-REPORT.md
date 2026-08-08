@@ -30,6 +30,9 @@ partially registered blueprints or runtime behavior exist.
 Required human action: update the repository push-helper allowlist for the
 exact feature branch, then rerun the approved helper and verify the remote SHA.
 
+This historical publication stop was resolved. The approved helper now accepts
+the exact feature branch and subsequent coherent checkpoints are published.
+
 ## Canonical handedness foundation
 
 Publication was restored. The first source phase adds the canonical project-
@@ -38,3 +41,17 @@ classifies the five current stable `FirearmKind` values exactly once and fails
 closed for unknown/undefined values. `ProductionFirearmWeaponSpec` consumes the
 same policy, eliminating the prior duplicate kind list. The 914-test and full
 clean Release/package gate passes; runtime behavior is unchanged in this phase.
+
+## Scoped proficiency and firearm feat foundation
+
+The existing full firearm-proficiency identity remains unchanged for old saves.
+Two stable scoped facts now enforce exact one- and two-handed equipment/action
+contracts through a shared fail-closed policy. Production restrictions carry
+the exact firearm kind rather than consulting donor weapon categories.
+
+Exotic Weapon Proficiency (Firearms) is one combat feat that grants the preserved
+full-proficiency fact, requires BAB +1, and rejects owners already holding it.
+Custom firearm feat rows and appended native parametrized level-up rows consume
+the same scoped policy. This phase passes 920 deterministic tests and the clean
+exact-reference Release/package gate. Runtime qualification is the next
+checkpoint; no archetype completion claim is made.
