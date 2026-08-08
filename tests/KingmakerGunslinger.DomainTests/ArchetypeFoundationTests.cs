@@ -1,6 +1,7 @@
 using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Classes;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -176,6 +177,49 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(StartingFirearmPolicy.ExpectsMusket(
                 StartingFirearmProfile.ExplicitMusket),
                 "Explicit Musket choice did not select Musket.");
+        }
+
+        internal static void TrainingThresholdsAndFamilies()
+        {
+            Assertions.False(FirearmTrainingPolicy.Evaluate(FirearmKind.Pistol,
+                4, false, 0, 0).Eligible, "Level 4 acquired training.");
+            for (int rank = 1; rank <= 4; rank++)
+            {
+                FirearmTrainingEntitlement pistol = FirearmTrainingPolicy.Evaluate(
+                    FirearmKind.Pistol, 4, false, rank, 0);
+                Assertions.Equal(4 + rank - 1, pistol.DamageBonus,
+                    "Pistol Training rank scaling changed.");
+                Assertions.True(pistol.ReducedBrokenMisfire,
+                    "Pistol Training lost Broken misfire reduction.");
+                FirearmTrainingEntitlement musket = FirearmTrainingPolicy.Evaluate(
+                    FirearmKind.Musket, 4, false, 0, rank);
+                Assertions.Equal(4 + rank - 1, musket.DamageBonus,
+                    "Musket Training rank scaling changed.");
+            }
+            Assertions.False(FirearmTrainingPolicy.Evaluate(FirearmKind.Musket,
+                4, false, 4, 0).Eligible,
+                "Pistol Training leaked to a two-handed firearm.");
+            Assertions.False(FirearmTrainingPolicy.Evaluate(FirearmKind.Revolver,
+                4, false, 0, 4).Eligible,
+                "Musket Training leaked to a one-handed firearm.");
+        }
+
+        internal static void TrainingOverlapAndNegativeDexterity()
+        {
+            FirearmTrainingEntitlement overlap = FirearmTrainingPolicy.Evaluate(
+                FirearmKind.Pistol, 3, true, 4, 0);
+            Assertions.Equal(6, overlap.DamageBonus,
+                "Overlapping training summed or selected the lower entitlement.");
+            FirearmTrainingEntitlement negative = FirearmTrainingPolicy.Evaluate(
+                FirearmKind.Musket, -2, false, 0, 1);
+            Assertions.Equal(-2, negative.DamageBonus,
+                "Negative Dexterity was clamped or ignored.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                FirearmTrainingPolicy.Evaluate(FirearmKind.Unknown, 1,
+                    false, 0, 0), "Unknown training kind did not fail closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                FirearmTrainingPolicy.Evaluate(FirearmKind.Pistol, 1,
+                    false, 5, 0), "Invalid training rank did not fail closed.");
         }
     }
 }

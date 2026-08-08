@@ -112,7 +112,8 @@ namespace KingmakerGunslinger.Deeds
 
                 int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
                     firearm.Definition.MisfireValue, firearm.EffectiveCondition,
-                    HasGunTraining(casterEntity, firearm.Definition.Kind));
+                    Classes.FirearmTrainingRuntime.Resolve(casterEntity,
+                        firearm.Definition.Kind).ReducedBrokenMisfire);
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
@@ -225,15 +226,6 @@ namespace KingmakerGunslinger.Deeds
         {
             return caster == null || caster.Stats == null ? 0 :
                 caster.Stats.BaseAttackBonus.ModifiedValue;
-        }
-
-        private static bool HasGunTraining(UnitEntityData caster, FirearmKind kind)
-        {
-            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            return caster != null && gunslinger != null &&
-                gunslinger.GunTraining != null &&
-                Classes.GunTrainingPolicy.IsSupportedKind(kind) &&
-                caster.Descriptor.HasFact(gunslinger.GunTraining.ChoiceFor(kind));
         }
 
         internal static void RegisterProbe(RuleAttackRoll attackRoll,

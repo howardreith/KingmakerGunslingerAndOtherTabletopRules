@@ -152,6 +152,8 @@
     <Compile Include="Classes\GunslingerInitiativeRuntime.cs" />
     <Compile Include="Classes\BonusFeatProgression.cs" />
     <Compile Include="Classes\GunTrainingDamage.cs" />
+    <Compile Include="Classes\FirearmTrainingPolicy.cs" />
+    <Compile Include="Classes\FirearmTrainingRuntime.cs" />
     <Compile Include="Classes\GunTrainingPolicy.cs" />
     <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />

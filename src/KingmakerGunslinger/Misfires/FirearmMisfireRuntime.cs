@@ -105,7 +105,8 @@ namespace KingmakerGunslinger.Misfires
                     Classes.GunTrainingPolicy.EffectiveMisfireValue(
                         postDischarge.Definition.MisfireValue,
                         effectiveCondition,
-                        HasGunTraining(wielder, postDischarge.Definition.Kind)),
+                        Classes.FirearmTrainingRuntime.Resolve(wielder,
+                            postDischarge.Definition.Kind).ReducedBrokenMisfire),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName),
                     postDischarge.Definition.Kind);
@@ -132,19 +133,6 @@ namespace KingmakerGunslinger.Misfires
                     exception);
                 return false;
             }
-        }
-
-        private static bool HasGunTraining(UnitEntityData wielder,
-            FirearmKind kind)
-        {
-            Blueprints.GunslingerClassBlueprintSet gunslinger =
-                BlueprintBootstrap.GunslingerClass;
-            if (wielder == null || gunslinger == null ||
-                gunslinger.GunTraining == null ||
-                !Classes.GunTrainingPolicy.IsSupportedKind(kind))
-                return false;
-            return wielder.Descriptor.HasFact(
-                gunslinger.GunTraining.ChoiceFor(kind));
         }
 
         internal static void BeforeSetRoll(

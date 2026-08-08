@@ -258,3 +258,30 @@ it passes, record the exact evidence and continue to the shared training service
 Commit and publish this evidence record, then implement the authoritative shared
 firearm-training entitlement service and refactor ordinary attacks, Dead Shot,
 Scatter Shot, and Broken-misfire callers to consume it.
+
+## 2026-08-08 - Shared firearm-training entitlement
+
+- Added one pure entitlement policy covering exact-kind base Gun Training plus
+  one-/two-handed archetype ranks. It applies Dexterity at most once, selects the
+  highest valid total rather than summing overlap, preserves negative Dexterity,
+  and exposes the shared Broken +2 entitlement.
+- Added one runtime service used by ordinary `RuleCalculateWeaponStats`, natural
+  misfire registration, Dead Shot, and Scatter Shot. A weak per-event stamp makes
+  damage mutation idempotent even if stale overlapping source components observe
+  the same rule event.
+- Existing base choice identities and progression remain unchanged. Archetype
+  training fact references are intentionally configurable and will be wired when
+  their stable rank features are registered.
+- Updated the historical Sprint 42 validator from the removed duplicate helper
+  name to the authoritative service call. Complete suite passes 924/924.
+- Exact-reference Release, build-output, SoundBank, package creation, and strict
+  validation pass. Candidate package SHA-256:
+  `B789946329E57FC006EB0608FDA8B17C82E0E1C131660A53253D3D8B48071834`;
+  DLL SHA-256:
+  `463BD07670E59F0255C0B9F73DB1D835F0C37C31D0D719D856C06D370405BDDB`.
+
+## Exact next action
+
+Commit and publish the shared training service, then run the existing Gun
+Training, Dead Shot, and Scatter Shot guarded scenarios against the exact commit
+before extending the central reload-action policy for Fast Musket.
