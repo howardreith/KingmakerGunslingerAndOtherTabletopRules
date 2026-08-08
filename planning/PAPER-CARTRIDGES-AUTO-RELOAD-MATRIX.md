@@ -25,7 +25,8 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Runtime | Native full-attack scenario | TODO | |
 | Runtime | Ordinary/Dead Shot misfire scenario | TODO | |
 | Runtime | Scatter scenario | TODO | |
-| Runtime | Lightning Reload scenario | TODO | |
+| Runtime | Lightning Reload scenario | PASS | `20260808T2249322389967Z-45e14b6dfb8f4312bc591156fdf7ec28` |
+| Runtime | Native full-attack scenario | PASS | `20260808T2327250125449Z-4dc36ba60fe44e9c9af7ca06fb32912b`; repeated reload, auto-use-off, and no-fallback controls |
 | Runtime | Crafting/vendor scenario | TODO | |
 | Runtime | Two independent final comprehensive PASSes | TODO | |
 | Compatibility | Standalone, A&A, soundpacks, combined, one bounded CotW; exact restoration | TODO | |

@@ -273,3 +273,15 @@
   true. Installed reflection proves `UnitCommand.Executor` has an exact native
   setter and backing field normally populated by command scheduling. The fixture
   now sets that exact base property to its request-local unit.
+- Phase 3 runtime qualification PASS on published commit
+  `73e3cdf7f4773b8a5b5985c65cfd96384c5c054c`:
+  - prerequisite smoke evidence directory
+    `20260808T2324554987384Z-mod-load-smoke`;
+  - native full-attack run
+    `20260808T2327250125449Z-4dc36ba60fe44e9c9af7ca06fb32912b` PASS;
+  - exact observations: native boundary identities all true, two repeated paper
+    reloads committed (`attempted=2`, `succeeded=2`), auto-use-off ended without
+    spending, exhaustion ended without loose fallback, and cleanup was exact.
+- Deterministic total remains 950 PASS. Phase 3 is complete; next exact action is
+  Phase 4 central ammunition-aware misfire policy and ordinary/Dead Shot/Scatter
+  propagation with focused boundary tests.
