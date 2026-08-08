@@ -1386,3 +1386,12 @@ Pistol natural 1 was a native miss with Normal condition; Reliable Musket roll
 Broken thresholds were exactly Pistol trained/untrained 2/4 and Musket 3/5.
 Next qualify Reliable through Scatter Shot and the native Thundering per-target
 critical matrix, then native enhancement/Fey Bane and full static lifecycle.
+
+## Current resume point — authorized Ovation fallback
+
+Native Thundering's exact installed component is unconditional Sonic energy,
+not critical-only. Two materially distinct guarded live scatter strategies
+failed closed at native roll completion. The authorized fallback is selected:
+Ovation is now +4 Reliable, effective +5, cost 52,300. Next run the full source,
+build, package, and guarded scatter gates for the fallback; then complete static
+enchantment lifecycle and remaining native enhancement/Fey Bane qualification.

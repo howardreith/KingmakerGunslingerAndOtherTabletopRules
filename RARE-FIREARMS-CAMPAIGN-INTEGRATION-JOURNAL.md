@@ -284,3 +284,19 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - The shared Broken/training/Reliable order returned trained/untrained Pistol
   2/4 and Musket 3/5. Diagnostics: 4 eligible, 4 natural rolls, 2 ordinary,
   2 misfires, 2 Normal-to-Broken, 0 duplicate callbacks, 0 no-rolls, 0 faults.
+
+## 2026-08-08 — native Thundering fallback selected
+
+- Exact accepted forensics record: native Thundering
+  `690e762f7704e1f4aa1ac69ef0ce6a96`, cost 1, has exactly one
+  `WeaponEnergyDamageDice` whose only relevant field is `Element=Sonic`; it has
+  no critical-only condition and has both Sonic and Thundering native donors.
+- Guarded strategies used disposable chargen entities and then live
+  `EntityCreator`/`SceneEntitiesState` entities with exact global registrations.
+  Runs `20260808T2005160312360Z-a80980abf4414584b55f3f4aa064fe00`
+  (`db910a3`) and
+  `20260808T2008403586898Z-a8575264652f471fbfe123c90e6b6fa5`
+  (`701afe1`) both failed closed before exposing a completed native attack roll.
+- This is the bounded installed-contract mismatch anticipated by the original
+  work order. The authorized fallback is selected automatically: Irovetti's
+  Ovation is +4 Reliable, effective +5, exact cost 52,300 gp, no Thundering.

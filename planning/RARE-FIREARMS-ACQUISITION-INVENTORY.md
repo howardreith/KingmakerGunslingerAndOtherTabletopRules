@@ -69,6 +69,13 @@ user authority amendment accepts this absence conclusively, resolves that stop,
 forbids further native-Seeking searches, and authorizes project-owned Seeking
 `036fc59fd1e24753b98f9d92cdb1e93e`. Acquisition selections are unchanged.
 
+The accepted component record further resolves Thundering's only configurable
+field as `Element=Sonic`, with no critical predicate. Its donors include
+`DartSonicShockPlus2`, `SlingSonicPlus2`, and named Thundering weapons. After
+two independent guarded scatter fixture strategies could not produce a safe
+completed native roll for the enchanted blunderbuss, the mission's authorized
+fallback was selected: Ovation is +4 Reliable, effective +5, cost 52,300 gp.
+
 Final vendor-reference PASS
 `20260808T1739377557378Z-observe-vendor-table-contracts`, runtime ID
 `20260808T1739377910467Z-f45ce288a1504610a85c458eb6de1e26`, proved the

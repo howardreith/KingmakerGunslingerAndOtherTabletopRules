@@ -9392,8 +9392,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Normal -> Broken (scatter misfire)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
-                Assertion("scatter-thundering-noncritical",
-                    "forced roll 10 noncritical hit contains no Sonic/Thundering damage packet",
+                Assertion("scatter-thundering-fallback",
+                    "authorized +4 Reliable fallback contains no Sonic/Thundering damage packet",
                     firstDamage,
                     mixed != null && mixed.Attacks.Length > 0 &&
                     mixed.Attacks[0].AttackRoll != null &&
@@ -9401,7 +9401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mixed.Attacks[0].MeleeDamage != null &&
                     firstDamage.IndexOf("Sonic", StringComparison.OrdinalIgnoreCase) < 0 &&
                     firstDamage.IndexOf("Thundering", StringComparison.OrdinalIgnoreCase) < 0,
-                    "native RuleAttackWithWeapon damage graph for Irovetti's Ovation"),
+                    "native RuleAttackWithWeapon damage graph after installed-contract fallback"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

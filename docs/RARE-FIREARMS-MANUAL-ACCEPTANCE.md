@@ -80,8 +80,10 @@ opened/instantiated, and the panel audit text.
   misfire or condition change. Check a Reliable Musket/Blunderbuss at threshold
   and threshold +1 in direct fire and Scatter Shot.
 - Test Irovetti's Ovation directly and with Scatter Shot; confirm one pellet load
-  is discharged once and Thundering occurs only on each independently confirmed
-  critical target.
+  is discharged once and no sonic/Thundering packet occurs. The authorized
+  fallback is +4 Reliable because the installed native property is unconditional
+  sonic energy rather than a critical-only effect. Confirm ordinary critical
+  behavior remains native.
 - Confirm The Last Word's Seeking presentation and concealment-only bypass, and
   Watch at the World's End's Fey Bane presentation/target isolation. Confirm no
   Rifle/Revolver appears in ordinary capital or BTSL stock and no obvious visual

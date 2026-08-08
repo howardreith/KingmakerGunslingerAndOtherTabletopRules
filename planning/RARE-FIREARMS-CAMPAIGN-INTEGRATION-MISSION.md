@@ -70,6 +70,17 @@ two-requirement contradiction, prohibited/destructive need, or divergent-history
 GUID collision. Failures, unknown GUIDs, rejected candidates, stale counts,
 legacy-stock limits, inherited defects and Thundering fallback are not stops.
 
+## Authorized Thundering fallback disposition — 2026-08-08
+
+The bounded fallback is selected. Exact installed evidence proves native
+Thundering `690e762f7704e1f4aa1ac69ef0ce6a96` contains only
+`WeaponEnergyDamageDice(Element=Sonic)` with no critical-only condition, and
+its native donors include ordinary sonic weapons. Two materially distinct live
+scatter fixtures also failed before exposing a completed native attack roll for
+the enchanted blunderbuss. Irovetti's Ovation therefore finalizes as +4
+Reliable, effective +5, exact cost 52,300 gp, with no Thundering property or
+description. The original contract above is preserved as historical authority.
+
 Completion requires a clean remotely verified branch, all nine blueprints and
 exact acquisition/mechanics contracts, full deterministic/runtime/package/
 compatibility evidence, current matrices/journal/report/qualification/manual

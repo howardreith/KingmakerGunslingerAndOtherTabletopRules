@@ -79,3 +79,15 @@ The live native attack pipeline proved threshold 0 natural-1 miss without
 misfire for a Reliable Pistol, Reliable Musket threshold/threshold+1 outcomes
 at rolls 1/2, mundane Musket threshold 2 control, and exact Broken/training
 orders 2/4 and 3/5. No roll, duplicate, or runtime fault was observed.
+
+## Native Thundering disposition
+
+The authorized fallback is selected. Installed Thundering
+`690e762f7704e1f4aa1ac69ef0ce6a96` is an unconditional
+`WeaponEnergyDamageDice(Element=Sonic)` contract with no critical predicate.
+Two guarded scatter strategies (runtime IDs
+`20260808T2005160312360Z-a80980abf4414584b55f3f4aa064fe00` and
+`20260808T2008403586898Z-a8575264652f471fbfe123c90e6b6fa5`) failed closed at
+the completed-native-roll boundary. Ovation is therefore qualified only as the
+specified +4 Reliable, effective +5, 52,300 gp fallback; final positive scatter
+qualification remains required after removal of the incompatible property.

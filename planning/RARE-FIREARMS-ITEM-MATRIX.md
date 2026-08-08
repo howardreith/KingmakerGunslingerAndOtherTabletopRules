@@ -9,7 +9,7 @@
 | KMG.Firearms.BlunderbussPlus1Item | 1dc7efe0792040f187a18adfdc54c6e0 | BlueprintItemWeapon / Blunderbuss +1 | canonical Blunderbuss | Enhancement +1 | +1 | 4,300 | 8 lb | capital + BTSL | Planned |
 | KMG.Firearms.DuelistsRebuttalItem | bae89c3abc3240578a6bff69044d2c1b | BlueprintItemWeapon / Duelist's Rebuttal | canonical Pistol | Enhancement +2; Reliable | +3 | 19,300 | 4 lb | fixed Act 3/4 | Planned |
 | KMG.Firearms.RiverKingsMeasureItem | a27c86b0d87c423d9ba8a05227bbf1e6 | BlueprintItemWeapon / The River King's Measure | canonical Musket | Enhancement +4; Reliable | +5 | 51,800 | 9 lb | fixed Pitax | Planned |
-| KMG.Firearms.IrovettisOvationItem | caf23b7555cd4524a7622eaa25266ea1 | BlueprintItemWeapon / Irovetti's Ovation | canonical Blunderbuss | Enhancement +4; Reliable; Thundering* | +6* | 74,300* | 8 lb | distinct fixed Pitax | Planned; fallback 52,300/+5 |
+| KMG.Firearms.IrovettisOvationItem | caf23b7555cd4524a7622eaa25266ea1 | BlueprintItemWeapon / Irovetti's Ovation | canonical Blunderbuss | Enhancement +4; Reliable | +5 | 52,300 | 8 lb | distinct fixed Pitax | Authorized Thundering fallback selected after exact installed-contract mismatch |
 | KMG.Firearms.TheLastWordItem | 0d31f794ba294c1e834af44f918f6721 | BlueprintItemWeapon / The Last Word | canonical Pistol | Enhancement +5; Reliable; project Seeking | +7 | 99,300 | 4 lb | final main route | Planned |
 | KMG.Firearms.WatchAtTheWorldsEndItem | 87c7baaaad504b7f8742f2dfcd79d067 | BlueprintItemWeapon / Watch at the World's End | canonical Musket | Enhancement +5; Reliable; Fey Bane | +7 | 99,800 | 9 lb | separate final source | Planned |
 

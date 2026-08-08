@@ -26,7 +26,6 @@ namespace KingmakerGunslinger.Blueprints
         internal const string Enhancement2Guid = "eb2faccc4c9487d43b3575d7e77ff3f5";
         internal const string Enhancement4Guid = "783d7d496da6ac44f9511011fc5f1979";
         internal const string Enhancement5Guid = "bdba267e951851449af552aa9f9e3992";
-        internal const string ThunderingGuid = "690e762f7704e1f4aa1ac69ef0ce6a96";
         internal const string FeyBaneGuid = "b6948040cdb601242884744a543050d4";
         private const BindingFlags Fields = BindingFlags.Instance |
             BindingFlags.Public | BindingFlags.NonPublic;
@@ -44,7 +43,6 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintWeaponEnchantment plus2 = Native(library, Enhancement2Guid, "+2");
             BlueprintWeaponEnchantment plus4 = Native(library, Enhancement4Guid, "+4");
             BlueprintWeaponEnchantment plus5 = Native(library, Enhancement5Guid, "+5");
-            BlueprintWeaponEnchantment thundering = Native(library, ThunderingGuid, "Thundering");
             BlueprintWeaponEnchantment feyBane = Native(library, FeyBaneGuid, "Fey Bane");
 
             MagicFirearmItemSpec[] specs =
@@ -67,9 +65,9 @@ namespace KingmakerGunslinger.Blueprints
                     "+4 Reliable musket. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss.",
                     "Irovetti commissioned the weapon to prove that everything within sight was already within his reach.", plus4, reliable),
                 new MagicFirearmItemSpec(IrovettisOvationSymbol, "KMG_IrovettisOvation_Item",
-                    "Irovetti's Ovation", FirearmKind.Blunderbuss, 74300, 6,
-                    "+4 Reliable Thundering blunderbuss. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Thundering releases its native sonic force on a confirmed critical hit.",
-                    "The king demanded applause after every performance. This was the instrument used when the audience proved reluctant.", plus4, reliable, thundering),
+                    "Irovetti's Ovation", FirearmKind.Blunderbuss, 52300, 5,
+                    "+4 Reliable blunderbuss. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss.",
+                    "The king demanded applause after every performance. This was the instrument used when the audience proved reluctant.", plus4, reliable),
                 new MagicFirearmItemSpec(TheLastWordSymbol, "KMG_TheLastWord_Item",
                     "The Last Word", FirearmKind.Pistol, 99300, 7,
                     "+5 Reliable Seeking pistol. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Seeking ignores concealment miss chances without revealing unseen creatures or bypassing other defenses.",

@@ -46,3 +46,9 @@ firearms in addition to project Seeking. All three attack paths use one effectiv
 misfire policy with the required Broken/training/Reliable order and a truthful
 zero threshold. The intermediate source/build/package gates pass at 0.0.73;
 live bootstrap observation and acquisition publication remain in progress.
+
+Thundering disposition is now resolved: installed
+`690e762f7704e1f4aa1ac69ef0ce6a96` exposes unconditional Sonic energy without
+a critical predicate, and two independent guarded scatter fixtures failed
+closed at native attack-roll completion. The authorized fallback is selected;
+Irovetti's Ovation is +4 Reliable, effective +5, exact cost 52,300 gp.
