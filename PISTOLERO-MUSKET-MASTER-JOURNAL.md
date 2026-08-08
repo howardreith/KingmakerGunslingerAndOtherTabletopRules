@@ -871,3 +871,25 @@ guarded class-blueprint PASS, then add the combined disposable Musket Master
 mechanics/starter fixture covering Steady Aim, Deadeye range composition, Fast
 Musket reload revalidation, scoped proficiency, training, exact Musket grant,
 20/20 ammunition, battered ownership, and repeated-callback idempotence.
+
+## 2026-08-08 - Musket Master truthful-summary live evidence
+
+- Exact committed source `b4018f07846201833b7e47e611b6551f28c37fba`
+  passed `observe-class-blueprint-contracts` in directory
+  `20260808T1333164049155Z-observe-class-blueprint-contracts`, runtime run ID
+  `20260808T1333164340842Z-6177dd33257a40468a9935548c06a76e`.
+- The live replacement graph removes the base level-1 summary and adds the
+  exact Musket Master summary with proficiency, Steady Aim, and the existing
+  Rapid Reload (Musket), while all starter, archetype catalog, Pistolero, and
+  True Grit assertions remain PASS.
+- Package SHA-256
+  `C12FDACFE31628E4550548A24245A54EB494B2C2B14677883A9994136A77527B`;
+  DLL SHA-256
+  `E9400D14C6C878959EA7F5025FF92553710BF1B89664BD04D3D759B328534655`.
+
+## Exact next action
+
+Add the combined disposable Musket Master mechanics/starter fixture covering
+Steady Aim, Deadeye range composition, Fast Musket reload revalidation, scoped
+proficiency, training, exact Musket grant, 20/20 ammunition, battered
+ownership, and repeated-callback idempotence.
