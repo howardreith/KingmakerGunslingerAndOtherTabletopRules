@@ -1160,3 +1160,25 @@ committed `gunslinger-only` profile matrix through the sentinel-owned wrapper,
 requiring exact Mods/SoundBank restoration before proceeding to Arms & Armor,
 Toggle Custom Soundpacks, qualified combined, and the one bounded Call of the
 Wild sequence.
+
+## 2026-08-08 - Standalone profile exposed stale feat fixture assumption
+
+- Sentinel transaction `compat-20260808T143620Z-5ea53fa89a13` restored the
+  exact original Mods/SoundBank state (`restorationVerified=true`) after
+  `disposable-firearm-dependent-feats` ended ERROR in directory
+  `20260808T1443159465659Z-disposable-firearm-dependent-feats`, run ID
+  `20260808T1443159515973Z-9584bf457cc049b6b49fc9cb9b0cfcd9`.
+- Cause: the inherited detached native feat-menu fixture expected a Pistol row
+  from a unit with no firearm proficiency. Scoped prerequisite filtering now
+  correctly removes that row; this was a stale test setup, not a production
+  feat-publication defect.
+- Exact `916cf3a` grants the fixture owner the preserved full firearm
+  proficiency before unit-aware menu extraction. The full 930-test clean
+  Release/package gate passes, and the archetype validator now protects this
+  setup.
+
+## Exact next action
+
+Rebuild the exact committed 0.0.73 local-runtime package, rerun the standalone
+profile matrix from the start under a fresh sentinel transaction, and require
+complete PASS plus exact restoration before advancing.
