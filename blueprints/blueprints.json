@@ -43,6 +43,12 @@
       "symbol": "KMG.Archetypes.MusketTraining", "guid": "283b26ca325c499cbe34299994519b26", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Four-rank two-handed Musket Training feature."
     },
     {
+      "symbol": "KMG.Archetypes.PistoleroProficiencies", "guid": "6938d078ca724a8cb40a20063ac75c44", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/one-handed proficiency grant."
+    },
+    {
+      "symbol": "KMG.Archetypes.MusketMasterProficiencies", "guid": "3001d47f279f43fdbbec8955499d777b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/two-handed proficiency grant."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",

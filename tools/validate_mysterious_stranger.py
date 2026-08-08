@@ -19,7 +19,9 @@ def validate(root: Path) -> None:
     ledger=json.loads((root/"blueprints/blueprints.json").read_text(encoding="utf-8"))
     entries=[e for e in ledger["entries"] if e["symbol"].startswith("KMG.Archetypes.")
              and e["symbol"] not in {"KMG.Archetypes.PistolTraining",
-                                      "KMG.Archetypes.MusketTraining"}]
+                                      "KMG.Archetypes.MusketTraining",
+                                      "KMG.Archetypes.PistoleroProficiencies",
+                                      "KMG.Archetypes.MusketMasterProficiencies"}]
     if len(entries)!=17: raise AssertionError(f"Expected 17 archetype assets, found {len(entries)}")
     if len({e["guid"] for e in ledger["entries"]})!=len(ledger["entries"]):
         raise AssertionError("Blueprint GUIDs are not unique")

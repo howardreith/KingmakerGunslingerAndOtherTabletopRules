@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 211;
+        internal const int ExpectedRegisteredBlueprintCount = 213;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -636,7 +636,8 @@ namespace KingmakerGunslinger.Bootstrap
 
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
-                        library, registry, firearmProficiency, gunsmithing,
+                        library, registry, firearmProficiency,
+                        scopedFirearmProficiencies, gunsmithing,
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,

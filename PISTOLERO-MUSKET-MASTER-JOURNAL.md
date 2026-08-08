@@ -405,3 +405,25 @@ and visible scoped-proficiency grants before constructing the exact archetypes.
 Commit/publish the rankable training facts, then create visible Pistolero/Musket
 Master proficiency features from the exact native simple/martial/light facts and
 the matching scoped firearm fact before archetype progression wiring.
+
+## 2026-08-08 - Visible scoped archetype proficiencies
+
+- Added stable visible Pistolero and Musket Master proficiency features. Both
+  reuse the exact native simple/martial/light facts; Pistolero grants only the
+  one-handed scoped firearm fact and Musket Master only the two-handed fact.
+- Registered these facts inside the existing class transaction where the exact
+  native proficiency donors are already resolved. The class set exposes them for
+  upcoming archetype replacement wiring.
+- Bootstrap count is 213 active; manifest ledger is 214 stable IDs including one
+  reserved. Complete suite remains 926/926 and the full Release/package gate
+  passes. Candidate package SHA-256:
+  `D4BC6DABE21206866BA3D7AC7065D7BD9D6AEFF43A3675B56918FB7A51EC9EFA`;
+  DLL SHA-256:
+  `4166E62E0967FDEFAB78CB4455468B5D9B7F710939888865D23312A199AEBE93`.
+
+## Exact next action
+
+Commit/publish the visible proficiency layer, then implement the mandatory
+Musket Master archetype skeleton first: exact parent/replacement rows, exact
+native four-item Musket starting array, catalog append, and starter-resolver
+wiring, before adding its deed mechanics.
