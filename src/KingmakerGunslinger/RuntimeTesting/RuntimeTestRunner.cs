@@ -21,6 +21,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Commands;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -528,6 +529,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposablePaperCartridgeReload)
                 {
                     Complete(RunDisposablePaperCartridgeReload());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeFullAttack)
+                {
+                    Complete(RunDisposablePaperCartridgeFullAttack());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3759,6 +3766,130 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "definition-driven profile compatibility"),
                 Assertion("request-local-cleanup", "temporary cartridges, unit, facts, and items restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeFullAttack()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player inventory is unavailable.");
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintFeature rapidPistol = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                BlueprintBootstrap.Library, "070f4f07b5164d8a82d647a93539746d",
+                "Rapid Reload (Pistol)");
+            var inventory = new KingmakerReloadAmmunitionInventory(player.Inventory,
+                ammunition.BlackPowder, ammunition.LeadBall, ammunition.PaperCartridge);
+            ReloadAmmunitionInventorySnapshot before =
+                ReloadAmmunitionInventorySnapshot.Capture(inventory);
+            UnitEntityData unit = null, target = null;
+            ItemEntityWeapon weapon = null;
+            ActivatableAbility mode = null;
+            bool repeated = false, autoOff = false, exhausted = false, cleaned = false;
+            string observed = null;
+            try
+            {
+                inventory.Add(ReloadInventoryComponent.PaperCartridge, 3);
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                unit.Descriptor.AddFact(rapidPistol);
+                Kingmaker.UnitLogic.Abilities.Ability reload = unit.Descriptor.Abilities
+                    .GetAbility(BlueprintBootstrap.ReloadTestMusketAbility);
+                if (reload == null) throw new InvalidOperationException(
+                    "The native Reload Firearm auto-use fact was not granted.");
+                unit.AutoUseAbility = new AbilityData(reload);
+                mode = unit.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+                mode.IsOn = true;
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                var command = new UnitAttack(unit);
+                SetExactProperty(command, "IsFullAttack", true);
+                SetExactProperty(command, "Target", target);
+                SetExactProperty(command, "LastAttackRule",
+                    new RuleAttackWithWeapon(unit, target, weapon, 0));
+                command.AllAttacks.Add(new AttackHandInfo(unit.Body.PrimaryHand, 0, 1)
+                    { Target = target });
+                int paperStart = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                UnitCommand.ResultType result;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool firstContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                bool firstLoaded = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedAmmunition ==
+                    ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool secondContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                repeated = firstContinues && secondContinues && firstLoaded &&
+                    inventory.Count(ReloadInventoryComponent.PaperCartridge) == paperStart - 2;
+
+                unit.AutoUseAbility = null;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                int beforeOff = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                bool offContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                autoOff = !offContinues && result == UnitCommand.ResultType.Success &&
+                    inventory.Count(ReloadInventoryComponent.PaperCartridge) == beforeOff;
+
+                unit.AutoUseAbility = new AbilityData(reload);
+                int remaining = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                if (remaining > 0) inventory.Remove(
+                    ReloadInventoryComponent.PaperCartridge, remaining);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool exhaustedContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                exhausted = !exhaustedContinues && result == UnitCommand.ResultType.Success &&
+                    inventory.Count(ReloadInventoryComponent.BlackPowderCharge) ==
+                        before.BlackPowderCharges &&
+                    inventory.Count(ReloadInventoryComponent.LeadBall) == before.LeadBalls;
+                observed = "repeated=" + repeated + ";autoOff=" + autoOff +
+                    ";exhausted=" + exhausted + ";attempted=" +
+                    FreeActionFullAttackReloadPatch.Attempted + ";succeeded=" +
+                    FreeActionFullAttackReloadPatch.Succeeded;
+            }
+            finally
+            {
+                if (mode != null && mode.IsOn) mode.IsOn = false;
+                if (unit != null) unit.AutoUseAbility = null;
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                new ReloadAmmunitionTransactionService().RestoreExact(inventory, before);
+                if (unit != null) unit.Dispose();
+                if (target != null) target.Dispose();
+                cleaned = before.Equals(ReloadAmmunitionInventorySnapshot.Capture(inventory));
+            }
+            observed = (observed ?? "fixture-failed") + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-full-attack-native-boundary",
+                    "two planned iterations on one native UnitAttack reload the exact Pistol",
+                    observed, repeated,
+                    "UnitAttack IsFullAttack/LastAttackRule/PlannedAttack Harmony prefix boundary"),
+                Assertion("paper-full-attack-auto-use-control",
+                    "auto-use off ends remaining attacks without cartridge consumption",
+                    observed, autoOff, "exact native AutoUseAbility identity"),
+                Assertion("paper-full-attack-no-fallback",
+                    "cartridge exhaustion ends before an empty shot despite loose stock",
+                    observed, exhausted, "selected plan availability and no-fallback policy"),
+                Assertion("request-local-cleanup", "exact inventory/unit/item restoration",
+                    observed, cleaned, "finally restoration; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

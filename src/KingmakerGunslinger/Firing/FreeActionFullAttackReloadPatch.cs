@@ -208,6 +208,13 @@ namespace KingmakerGunslinger.Firing
             }
         }
 
+        internal static bool ApplyForRuntimeTest(UnitAttack command,
+            out UnitCommand.ResultType result)
+        {
+            result = UnitCommand.ResultType.None;
+            return Prefix(command, ref result);
+        }
+
         private static void EndRemainingAttacks(
             ref UnitCommand.ResultType result, string eventName, string detail)
         {

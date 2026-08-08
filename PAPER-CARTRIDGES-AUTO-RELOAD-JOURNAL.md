@@ -216,3 +216,23 @@
 - Runtime run IDs: pending clean candidate publication and exact-build smoke.
 - Next exact action: publish candidate; smoke and qualify Lightning; then add and
   qualify the dedicated native `UnitAttack` full-attack fixture.
+
+- Published exact candidate `fd6bc51a06ef4ed7651cf81f1d3d5ceb7d729f40`.
+  Fresh smoke PASS run
+  `20260808T2247181810217Z-bb28c3276a5c45db90c706a39d6fd178`;
+  fresh Paper Lightning PASS run
+  `20260808T2249322389967Z-45e14b6dfb8f4312bc591156fdf7ec28`.
+  The latter proved loose Swift control, actual Paper mode Free action in both
+  `AbilityData.ActionType` and `RuntimeActionType`, one cartridge/one chamber,
+  same-round rejection, native round reset, Broken preservation, grit, and exact
+  external restoration.
+- Added the dedicated `disposable-paper-cartridge-full-attack` fixture around a
+  real native `UnitAttack`, exact `LastAttackRule`, `AttackHandInfo` planned
+  attack, exact slot/item/target, and native `AutoUseAbility`. It covers repeated
+  Pistol reload boundaries, auto-use-off termination, paper exhaustion with loose
+  stock preserved, and exact cleanup. Initial isolated preflight fingerprint
+  check raced a just-completed local build once; unchanged isolated retry passed
+  all 86 checks. Complete domain suite remains 950/950 PASS.
+- Next exact action: publish the full-attack fixture checkpoint, run exact-build
+  smoke, then runtime-qualify the native full-attack scenario and repair only
+  from its first failed invariant if necessary.
