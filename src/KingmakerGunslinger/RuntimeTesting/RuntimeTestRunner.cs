@@ -1642,6 +1642,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int pistolCount = -1;
             int powderCount = -1;
             int ballCount = -1;
+            int kitCount = -1;
             long batteredSaleValue = -1;
             long ordinarySaleValue = -1;
             bool exactOwnership = false;
@@ -1695,10 +1696,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 before = EnumerateRuntimeInventory(player.Inventory);
                 expected = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
-                if (expected.Length != 3 || expected.Any(item => item == null) ||
-                    expected.Distinct().Count() != 3)
+                if (expected.Length != 4 || expected.Any(item => item == null) ||
+                    expected.Distinct().Count() != 4)
                     throw new InvalidOperationException(
-                        "The production Gunslinger starting-item array is not three exact distinct items.");
+                        "The production Gunslinger starting-item array is not four exact distinct items.");
                 beforeQuantities = expected.Select(item =>
                     player.Inventory.Count(item)).ToArray();
                 moneyBefore = player.Money;
@@ -1725,9 +1726,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     beforeQuantities[1];
                 ballCount = player.Inventory.Count(expected[2]) -
                     beforeQuantities[2];
+                kitCount = player.Inventory.Count(expected[3]) -
+                    beforeQuantities[3];
                 exactGrant = added.All(item => expected.Any(blueprint =>
                         ItemUsesRuntimeBlueprint(item, blueprint))) &&
-                    pistolCount == 1 && powderCount == 20 && ballCount == 20;
+                    pistolCount == 1 && powderCount == 20 && ballCount == 20 &&
+                    kitCount == 1;
                 batteredItem = added.OfType<ItemEntityWeapon>()
                     .Single(item => ReferenceEquals(item.Blueprint, expected[0]));
                 Kingmaker.EntitySystem.Entities.UnitEntityData owner;
@@ -1976,7 +1980,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     moneyStable = player.Money == moneyBefore;
                 }
-                if (before != null && player != null && player.Inventory != null)
+                if (before != null && expected != null && beforeQuantities != null &&
+                    player != null && player.Inventory != null)
                 {
                     List<object> afterRollback =
                         EnumerateRuntimeInventory(player.Inventory);
@@ -1998,9 +2003,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.DescriptorReferenceCorrelated &&
                         !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
                     "qualified receiver-bound working-save path"),
-                Assertion("native-starting-item-grant", "pistol=1;powder=20;ball=20",
+                Assertion("native-starting-item-grant",
+                    "pistol=1;powder=20;ball=20;kit=1",
                     "added=" + addedCount + ";pistol=" + pistolCount +
-                        ";powder=" + powderCount + ";ball=" + ballCount,
+                        ";powder=" + powderCount + ";ball=" + ballCount +
+                        ";kit=" + kitCount,
                     exactGrant,
                     "LevelUpHelper.AddStartingItems on the exact main descriptor"),
                 Assertion("battered-origin-and-sale-value",

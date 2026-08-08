@@ -225,3 +225,21 @@ inventory-delta, detached-chargen, idempotence, and rollback tests.
 Commit and publish the generalized starter foundation, run the existing guarded
 starting-items scenario against the exact commit to prove unchanged base-Pistol
 behavior, then implement the shared firearm-training service and reload policy.
+
+## 2026-08-08 - Starting-items fixture repair
+
+- Guarded run `20260808T0429233486715Z-gunslinger-starting-items` reached an
+  exact working-save load with no save write, then exposed an inherited fixture
+  mismatch: it required an obsolete three-item class array although the current
+  established contract is Pistol, powder, ball, and gunsmith kit. Its cleanup
+  also called `SequenceEqual` with an uninitialized quantity array, masking the
+  primary assertion.
+- Updated only this request-local runtime fixture to require four exact distinct
+  items, assert one exact gunsmith kit, and guard cleanup comparison after early
+  fixture rejection. No game mechanic or starting-item blueprint changed.
+- The repaired fixture passes the complete 922-test and Release/package gate.
+
+## Exact next action
+
+Commit/publish the fixture repair and rerun `gunslinger-starting-items` once. If
+it passes, record the exact evidence and continue to the shared training service.
