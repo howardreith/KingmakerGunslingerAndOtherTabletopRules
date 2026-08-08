@@ -1346,3 +1346,8 @@ audit surface plus practical manual checklist pass source/build/package gates.
 Publish this checkpoint. Next implement and run focused magic-firearm blueprint,
 Reliable zero-threshold/direct/scatter, Seeking concealment, static-enchantment
 lifecycle, native enhancement/Fey Bane, and Thundering scatter qualification.
+## Current resume point — blueprint/state runtime observer
+
+The typed rare-firearm blueprint/state observer passes all source/build/package
+gates. Commit and publish it, run it from the clean SHA, then implement the live
+Reliable direct/scatter matrix and Seeking/native-property combat scenarios.

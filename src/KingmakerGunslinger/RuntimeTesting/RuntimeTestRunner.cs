@@ -468,6 +468,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveRareFirearmBlueprintContracts)
+                {
+                    Complete(RunRareFirearmBlueprintContracts());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
@@ -4181,6 +4187,113 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunRareFirearmBlueprintContracts()
+        {
+            MagicFirearmBlueprintCatalog catalog = BlueprintBootstrap.MagicFirearms;
+            var instances = new List<ItemEntityWeapon>();
+            var assertions = new List<RuntimeTestAssertion>();
+            string observed = string.Empty;
+            try
+            {
+                FieldInfo field = typeof(BlueprintItemWeapon).GetField("m_Enchantments",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                foreach (MagicFirearmBlueprintEntry entry in catalog.Entries)
+                {
+                    var instance = new ItemEntityWeapon(entry.Item);
+                    instances.Add(instance);
+                    BlueprintWeaponEnchantment[] staticValues = field == null ? null :
+                        field.GetValue(entry.Item) as BlueprintWeaponEnchantment[];
+                    bool exactStatic = staticValues != null &&
+                        staticValues.SequenceEqual(entry.Spec.Enchantments) &&
+                        instance.Enchantments.Count(value => value != null &&
+                            staticValues.Contains(value.Blueprint as
+                                BlueprintWeaponEnchantment)) == staticValues.Length;
+                    assertions.Add(Assertion("item-" + entry.Spec.Symbol,
+                        "exact identity/family/cost/weight/static enchantments",
+                        entry.Spec.DisplayName + ":" + entry.Item.AssetGuid +
+                        ":cost=" + entry.Item.Cost + ":weight=" + entry.Item.Weight +
+                        ":static=" + (staticValues == null ? -1 : staticValues.Length),
+                        entry.Item.AssetGuid.Length == 32 && entry.Item.Cost ==
+                            entry.Spec.Cost && entry.Item.Weight.Equals(
+                                entry.Family.Item.Weight) && exactStatic,
+                        "live BlueprintItemWeapon and ItemEntityWeapon"));
+                }
+                ItemEntityWeapon reliable = instances[3];
+                ItemEntityWeapon lastWord = instances[6];
+                ItemEntityWeapon control = instances[0];
+                int beforeStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                FirearmRuntimeState.Service.Set(lastWord, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                int loadedStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                FirearmRuntimeState.Service.Set(lastWord, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+                int brokenStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                int zero = global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy
+                    .Evaluate(1, FirearmCondition.Normal, false, reliable);
+                int trainedBroken = global::KingmakerGunslinger.Misfires
+                    .EffectiveFirearmMisfirePolicy.Evaluate(1,
+                        FirearmCondition.Broken, true, reliable);
+                observed = "catalog=" + catalog.Entries.Length + ";reliable=" +
+                    Enchantments.FirearmMisfireReductionResolver.Resolve(reliable) +
+                    ";controlReliable=" +
+                    Enchantments.FirearmMisfireReductionResolver.Resolve(control) +
+                    ";seeking=" + Enchantments.SeekingExactItemResolver.IsAuthorized(lastWord) +
+                    ";controlSeeking=" + Enchantments.SeekingExactItemResolver.IsAuthorized(control) +
+                    ";thresholds=" + zero + "," + trainedBroken +
+                    ";staticLifecycle=" + beforeStatic + "," + loadedStatic +
+                    "," + brokenStatic;
+                assertions.Add(Assertion("reliable-exact-item-threshold",
+                    "exact Reliable item 1->0 and trained Broken 1+2-1=2; control none",
+                    observed, zero == 0 && trainedBroken == 2 &&
+                        Enchantments.FirearmMisfireReductionResolver.Resolve(reliable) == 1 &&
+                        Enchantments.FirearmMisfireReductionResolver.Resolve(control) == 0,
+                    "shared effective misfire service"));
+                assertions.Add(Assertion("seeking-exact-item",
+                    "The Last Word authorized; +1 control unauthorized", observed,
+                    Enchantments.SeekingExactItemResolver.IsAuthorized(lastWord) &&
+                        !Enchantments.SeekingExactItemResolver.IsAuthorized(control),
+                    "exact runtime enchantment resolver"));
+                assertions.Add(Assertion("static-state-token-coexistence",
+                    "three Last Word static properties survive Loaded and Broken tokens",
+                    observed, beforeStatic == 3 && loadedStatic == 3 &&
+                        brokenStatic == 3 &&
+                        FirearmRuntimeState.ReadStateTokenIds(lastWord).Count == 1,
+                    "item-owned token repository"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("rare-firearm-blueprint-exception",
+                    "no exception", exception.ToString(), false,
+                    "exception-contained observer"));
+            }
+            finally
+            {
+                foreach (ItemEntityWeapon item in instances)
+                    FirearmRuntimeState.Repository.Remove(item);
+            }
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static bool entryBlueprint(ItemEntityWeapon item, object blueprint)
+        {
+            BlueprintWeaponEnchantment[] values = typeof(BlueprintItemWeapon)
+                .GetField("m_Enchantments", BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic)
+                .GetValue(item.Blueprint) as BlueprintWeaponEnchantment[];
+            return values != null && values.Contains(blueprint as BlueprintWeaponEnchantment);
         }
 
         private static bool IsRareFirearmNativeEnchantmentCandidate(

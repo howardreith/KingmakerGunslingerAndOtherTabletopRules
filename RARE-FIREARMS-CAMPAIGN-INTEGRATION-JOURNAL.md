@@ -229,3 +229,13 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - All 935 tests and source/build/package gates pass. Next: publish this panel/docs
   checkpoint, then implement focused magic-firearm blueprint, Reliable, Seeking,
   lifecycle, native-property, and Thundering guarded combat scenarios.
+## 2026-08-08 blueprint/state observer checkpoint
+
+- Added typed guarded `observe-rare-firearm-blueprint-contracts` coverage for all
+  eight exact blueprint/runtime identities, static enchantments, prices/weights,
+  Reliable exact-item thresholds, Seeking exact-item authorization, and Last Word
+  static enchantment survival across Loaded and Broken state-token replacement.
+- Host and mod allowlists plus preflight expectations were extended without
+  weakening request validation. Source validation, 935/935 tests, exact-reference
+  Release, SoundBank, and strict package validation pass. Next: publish and run
+  the clean-SHA observer, then build deterministic live combat scenarios.
