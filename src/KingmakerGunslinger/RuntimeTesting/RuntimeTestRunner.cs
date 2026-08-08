@@ -4321,6 +4321,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "No exact installed Blur concealment buff was found.");
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 20;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 30;
                 target.Descriptor.State.Immortality.Retain();
                 concealmentFact = target.Descriptor.AddFact(concealment) as
                     Kingmaker.UnitLogic.Buffs.Buff;
