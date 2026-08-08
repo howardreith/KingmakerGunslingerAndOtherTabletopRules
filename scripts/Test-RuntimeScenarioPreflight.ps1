@@ -40,6 +40,8 @@ $expected = @(
     'disposable-reload-autocast',
     'disposable-paper-cartridge-reload',
     'disposable-paper-cartridge-full-attack',
+    'disposable-paper-cartridge-misfire',
+    'disposable-paper-cartridge-scatter',
     'disposable-paper-cartridge-lightning-reload',
     'observe-native-weapon-feat-contracts',
     'observe-class-blueprint-contracts',

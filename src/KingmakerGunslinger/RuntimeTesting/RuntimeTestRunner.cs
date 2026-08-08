@@ -538,6 +538,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeMisfire)
+                {
+                    Complete(RunDisposablePaperCartridgeMisfire());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeScatter)
+                {
+                    Complete(RunDisposableGunslingerScatterShot(
+                        ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition));
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableOverhaulMaintenance)
                 {
                     Complete(RunDisposableOverhaulMaintenance());
@@ -4938,16 +4951,121 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
+        private RuntimeTestResult RunDisposablePaperCartridgeMisfire()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null, target = null;
+            ItemEntityWeapon reliablePistol = null, reliableMusket = null;
+            Deeds.DeadShotExecutionResult deadShot = null;
+            bool cleaned = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.Retain();
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(
+                    BlueprintBootstrap.GunslingerClass.Grit.Resource, 4);
+                reliablePistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[3].Item);
+                reliableMusket = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[4].Item);
+                AmmunitionId paper = ReloadAmmunitionProfileCatalog
+                    .PaperCartridge.LoadedAmmunition;
+                AmmunitionId loose = ReloadAmmunitionProfileCatalog
+                    .LooseBasic.LoadedAmmunition;
+
+                RuleAttackRoll pistolPaper = TriggerReliableMatrixAttack(
+                    attacker, target, reliablePistol, 1,
+                    FirearmCondition.Normal, paper);
+                FirearmCondition pistolPaperAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliablePistol).Repository.State.Condition;
+                RuleAttackRoll pistolLoose = TriggerReliableMatrixAttack(
+                    attacker, target, reliablePistol, 1,
+                    FirearmCondition.Normal, loose);
+                FirearmCondition pistolLooseAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliablePistol).Repository.State.Condition;
+                RuleAttackRoll musketPaper = TriggerReliableMatrixAttack(
+                    attacker, target, reliableMusket, 2,
+                    FirearmCondition.Normal, paper);
+                FirearmCondition musketPaperAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliableMusket).Repository.State.Condition;
+
+                if (attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                attacker.Body.PrimaryHand.InsertItem(reliablePistol);
+                FirearmRuntimeState.Service.Set(reliablePistol, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1, paper,
+                    FirearmCondition.Normal));
+                deadShot = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(
+                    attacker, target, 1, 1, 1);
+
+                string observed = "pistolPaper=" + pistolPaper.Result + ":" +
+                    pistolPaperAfter + ";pistolLoose=" + pistolLoose.Result + ":" +
+                    pistolLooseAfter + ";musketPaper=" + musketPaper.Result + ":" +
+                    musketPaperAfter + ";deadShotThreshold=" +
+                    (deadShot == null ? "missing" : string.Join(",",
+                        deadShot.Probes.Select(value => value.Roll.Value))) +
+                    ";deadShotCondition=" + (deadShot == null ? "missing" :
+                        deadShot.After.Condition.ToString());
+                assertions.Add(Assertion("paper-reliable-pistol-boundary",
+                    "Reliable Pistol natural 1: paper misfires, next loose load does not",
+                    observed, pistolPaperAfter == FirearmCondition.Broken &&
+                        pistolLooseAfter == FirearmCondition.Normal,
+                    "native ordinary attacks and exact pre-discharge ammunition"));
+                assertions.Add(Assertion("paper-reliable-musket-boundary",
+                    "Reliable Musket paper threshold includes +1 so natural 2 misfires",
+                    observed, musketPaperAfter == FirearmCondition.Broken,
+                    "central condition/ammunition/Reliable policy"));
+                assertions.Add(Assertion("paper-dead-shot-shared-threshold",
+                    "one paper chamber; all Dead Shot probes use threshold 1 and transition once",
+                    observed, deadShot != null && deadShot.Before.LoadedAmmunition == paper &&
+                        deadShot.Probes.Length == 3 && deadShot.Outcome.Misfires &&
+                        deadShot.After.Condition == FirearmCondition.Broken,
+                    "pre-discharge identity and shared Dead Shot threshold"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("paper-misfire-exception", "no exception",
+                    exception.ToString(), false, "exception-contained fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                foreach (ItemEntityWeapon item in new[] { reliablePistol, reliableMusket })
+                    if (item != null) FirearmRuntimeState.Service.Forget(item);
+                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            assertions.Add(Assertion("request-local-cleanup",
+                "disposable units, items, tokens, grit, and forced rolls removed",
+                "cleaned=" + cleaned, cleaned, "bounded fixture cleanup; no save API"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
         private static RuleAttackRoll TriggerReliableMatrixAttack(
             UnitEntityData attacker, UnitEntityData target,
-            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition)
+            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition,
+            AmmunitionId ammunition = null)
         {
             if (attacker.Body.PrimaryHand.MaybeItem != null)
                 attacker.Body.PrimaryHand.RemoveItem(false);
             attacker.Body.PrimaryHand.InsertItem(weapon);
             FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                 FirearmState.CurrentSchemaVersion, 1,
-                FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+                ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
             var attack = new RuleAttackRoll(attacker, target, weapon, -100);
             UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
             Rulebook.Trigger(attack);
@@ -9594,7 +9712,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
-        private RuntimeTestResult RunDisposableGunslingerScatterShot()
+        private RuntimeTestResult RunDisposableGunslingerScatterShot(
+            AmmunitionId ammunition = null)
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             BlueprintItemWeapon blunderbuss =
@@ -9650,7 +9769,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
 
                 BlueprintAbility scatterAbility = BlueprintBootstrap.FirearmProficiency
@@ -9680,7 +9799,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 int allIndex = 0;
                 int[] allRolls = { 1, 1 };

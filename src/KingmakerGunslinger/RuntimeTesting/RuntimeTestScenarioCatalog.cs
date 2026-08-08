@@ -45,6 +45,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-paper-cartridge-reload";
         internal const string DisposablePaperCartridgeFullAttack =
             "disposable-paper-cartridge-full-attack";
+        internal const string DisposablePaperCartridgeMisfire =
+            "disposable-paper-cartridge-misfire";
+        internal const string DisposablePaperCartridgeScatter =
+            "disposable-paper-cartridge-scatter";
         internal const string DisposableOverhaulMaintenance =
             "disposable-overhaul-maintenance";
         internal const string DisposableProductionFirearmSwitching =
@@ -202,6 +206,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableReloadAutocast,
                 DisposablePaperCartridgeReload,
                 DisposablePaperCartridgeFullAttack,
+                DisposablePaperCartridgeMisfire,
+                DisposablePaperCartridgeScatter,
                 DisposableOverhaulMaintenance,
                 DisposableProductionFirearmSwitching,
                 DisposableGunslingerComprehensiveAcceptance,
