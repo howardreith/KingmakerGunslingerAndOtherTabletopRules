@@ -34,6 +34,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ArchetypeFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandedness.cs"><Link>Domain\FirearmHandedness.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandednessPolicy.cs"><Link>Domain\FirearmHandednessPolicy.cs</Link></Compile>
     <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundEventCatalog.cs"><Link>Audio\FirearmSoundEventCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifest.cs"><Link>Audio\FirearmSoundBankManifest.cs</Link></Compile>

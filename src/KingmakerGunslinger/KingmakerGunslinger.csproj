@@ -272,6 +272,8 @@
     <Compile Include="Gunsmithing\BatteredFirearmSaleValueRuntime.cs" />
     <Compile Include="Blueprints\BatteredFirearmOriginBlueprints.cs" />
     <Compile Include="Firearms\FirearmDefinition.cs" />
+    <Compile Include="Firearms\FirearmHandedness.cs" />
+    <Compile Include="Firearms\FirearmHandednessPolicy.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />
     <Compile Include="Firearms\ProductionFirearmCatalog.cs" />

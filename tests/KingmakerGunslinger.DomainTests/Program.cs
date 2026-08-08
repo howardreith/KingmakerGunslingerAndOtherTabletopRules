@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("archetype-handedness.catalog-exact", ArchetypeFoundationTests.HandednessCatalogExact),
+            Case("archetype-handedness.family-matching", ArchetypeFoundationTests.HandednessFamilyMatching),
+            Case("archetype-handedness.unknown-fails-closed", ArchetypeFoundationTests.HandednessUnknownFailsClosed),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),

@@ -93,3 +93,26 @@ the mandatory pre-implementation source and installed-contract inventory.
 Commit and publish the pre-implementation inventory, then implement the
 canonical handedness policy and scoped proficiency foundations with focused
 tests before generalizing the starting-firearm observer.
+
+## 2026-08-08 - Canonical firearm handedness
+
+- Added one project-owned `FirearmHandedness` enum and fail-closed
+  `FirearmHandednessPolicy` mapping all five current production kinds exactly
+  once: Pistol/Revolver one-handed; Musket/Blunderbuss/Rifle two-handed.
+- `ProductionFirearmWeaponSpec` now validates its `IsTwoHanded` contract through
+  the canonical policy instead of a second embedded kind list.
+- Added three focused cases covering the complete catalog, both family scopes,
+  cross-family rejection, unknown scope, unknown kind, and undefined kind.
+- Repository validation, complete 914/914 deterministic suite, clean exact-
+  reference Release, build-output, SoundBank, package creation, and strict
+  package validation pass.
+- Candidate package SHA-256:
+  `E7D01B712448B85CC8693135CA362C608547BB853E26B40AC040615F9A3CA7FF`;
+  DLL SHA-256:
+  `E1600DC86BAEAE09CE7352A30D7B2309851DB430DAD7A93AD23110CDA10EACC0`.
+
+## Exact next action
+
+Commit/publish canonical handedness, then add stable one-handed/two-handed
+proficiency blueprints and a pure full-or-matching-scope policy. Transactionally
+rewire production firearm restrictions and focused tests before adding EWP.

@@ -29,3 +29,12 @@ partially registered blueprints or runtime behavior exist.
 
 Required human action: update the repository push-helper allowlist for the
 exact feature branch, then rerun the approved helper and verify the remote SHA.
+
+## Canonical handedness foundation
+
+Publication was restored. The first source phase adds the canonical project-
+owned handedness abstraction used by every later archetype family gate. It
+classifies the five current stable `FirearmKind` values exactly once and fails
+closed for unknown/undefined values. `ProductionFirearmWeaponSpec` consumes the
+same policy, eliminating the prior duplicate kind list. The 914-test and full
+clean Release/package gate passes; runtime behavior is unchanged in this phase.
