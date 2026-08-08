@@ -44,6 +44,7 @@ $expected = @(
     'observe-vendor-table-contracts',
     'observe-rare-firearm-acquisition',
     'observe-rare-firearm-blueprint-contracts',
+    'magic-firearm-native-properties',
     'observe-production-firearm-fallbacks',
     'observe-native-firearm-rig-contracts',
     'disposable-firearm-visual-rigs',

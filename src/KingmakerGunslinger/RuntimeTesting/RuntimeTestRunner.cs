@@ -474,6 +474,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.MagicFirearmNativeProperties)
+                {
+                    Complete(RunMagicFirearmNativeProperties());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
@@ -4279,6 +4285,127 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (ItemEntityWeapon item in instances)
                     FirearmRuntimeState.Repository.Remove(item);
             }
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunMagicFirearmNativeProperties()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null;
+            UnitEntityData target = null;
+            ItemEntityWeapon control = null;
+            ItemEntityWeapon seeking = null;
+            BlueprintBuff concealment = null;
+            Kingmaker.UnitLogic.Buffs.Buff concealmentFact = null;
+            RuleAttackRoll controlRoll = null;
+            RuleAttackRoll seekingRoll = null;
+            bool cleaned = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                concealment = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintBuff>()
+                    .Where(value => value != null &&
+                        (value.name ?? string.Empty).IndexOf("blur",
+                            StringComparison.OrdinalIgnoreCase) >= 0 &&
+                        DescribeComponents(value.ComponentsArray).IndexOf(
+                            "conceal", StringComparison.OrdinalIgnoreCase) >= 0)
+                    .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                    .FirstOrDefault();
+                if (concealment == null) throw new InvalidOperationException(
+                    "No exact installed Blur concealment buff was found.");
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.Retain();
+                concealmentFact = target.Descriptor.AddFact(concealment) as
+                    Kingmaker.UnitLogic.Buffs.Buff;
+                if (concealmentFact == null) throw new InvalidOperationException(
+                    "The exact installed concealment buff was not applied.");
+
+                control = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[0].Item);
+                seeking = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[6].Item);
+
+                attacker.Body.PrimaryHand.InsertItem(control);
+                FirearmRuntimeState.Service.Set(control, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                controlRoll = new RuleAttackRoll(attacker, target, control, 0);
+                controlRoll.AutoHit = true;
+                Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(control, 1);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+                Rulebook.Trigger(controlRoll);
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                Enchantments.SeekingConcealmentRuntime.CancelForcedRoll();
+                attacker.Body.PrimaryHand.RemoveItem(false);
+
+                attacker.Body.PrimaryHand.InsertItem(seeking);
+                FirearmRuntimeState.Service.Set(seeking, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                seekingRoll = new RuleAttackRoll(attacker, target, seeking, 0);
+                seekingRoll.AutoHit = true;
+                Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(seeking, 1);
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
+                Rulebook.Trigger(seekingRoll);
+
+                string observed = "buff=" + concealment.name + ":" +
+                    concealment.AssetGuid + ";control=" + controlRoll.Result +
+                    ",success=" + controlRoll.IsHit + ",concealment=" +
+                    (controlRoll.ConcealmentCheck == null ? "none" :
+                        controlRoll.ConcealmentCheck.Concealment + ":" +
+                        controlRoll.ConcealmentCheck.Roll) + ";seeking=" +
+                    seekingRoll.Result + ",success=" + seekingRoll.IsHit +
+                    ",concealment=" + (seekingRoll.ConcealmentCheck == null ?
+                        "none" : seekingRoll.ConcealmentCheck.Concealment + ":" +
+                        seekingRoll.ConcealmentCheck.Roll);
+                bool sameNativeConcealment = controlRoll.ConcealmentCheck != null &&
+                    seekingRoll.ConcealmentCheck != null &&
+                    controlRoll.ConcealmentCheck.Concealment ==
+                        seekingRoll.ConcealmentCheck.Concealment &&
+                    !string.Equals(controlRoll.ConcealmentCheck.Concealment.ToString(),
+                        "None", StringComparison.Ordinal);
+                assertions.Add(Assertion("seeking-concealment-only-bypass",
+                    "control misses the same forced concealment check; exact Seeking item hits",
+                    observed, !controlRoll.IsHit && seekingRoll.IsHit &&
+                        sameNativeConcealment,
+                    "native RuleAttackRoll and RuleConcealmentCheck with exact-item Success postfix"));
+                assertions.Add(Assertion("seeking-no-global-concealment-mutation",
+                    "same native concealment classification and chance remain on both attacks",
+                    observed, sameNativeConcealment,
+                    "stored native RuleConcealmentCheck fields"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("magic-property-exception", "no exception",
+                    exception.ToString(), false, "exception-contained disposable fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                Enchantments.SeekingConcealmentRuntime.CancelForcedRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                if (control != null) FirearmRuntimeState.Repository.Remove(control);
+                if (seeking != null) FirearmRuntimeState.Repository.Remove(seeking);
+                if (concealmentFact != null && target != null)
+                    target.Descriptor.Buffs.RemoveFact(concealmentFact);
+                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            assertions.Add(Assertion("external-isolation",
+                "disposable units, buff, items, tokens, and forced rolls removed",
+                "cleaned=" + cleaned, cleaned, "bounded fixture cleanup"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
                 _context.ModEntry.Info.Version,
                 _request.ExpectedModVersion == _context.ModEntry.Info.Version,

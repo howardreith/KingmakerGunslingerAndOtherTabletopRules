@@ -25,6 +25,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-rare-firearm-acquisition";
         internal const string ObserveRareFirearmBlueprintContracts =
             "observe-rare-firearm-blueprint-contracts";
+        internal const string MagicFirearmNativeProperties =
+            "magic-firearm-native-properties";
         internal const string ObserveProductionFirearmFallbacks =
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
@@ -180,6 +182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveVendorTableContracts,
                 ObserveRareFirearmAcquisition,
                 ObserveRareFirearmBlueprintContracts,
+                MagicFirearmNativeProperties,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
                 DisposableFirearmVisualRigs,
