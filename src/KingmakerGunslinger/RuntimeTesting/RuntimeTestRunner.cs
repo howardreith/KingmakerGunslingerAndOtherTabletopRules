@@ -4338,7 +4338,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 controlRoll = new RuleAttackRoll(attacker, target, control, 0);
-                controlRoll.AutoHit = true;
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(control, 1);
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(controlRoll);
@@ -4352,7 +4351,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 seekingRoll = new RuleAttackRoll(attacker, target, seeking, 0);
-                seekingRoll.AutoHit = true;
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(seeking, 1);
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(seekingRoll);
