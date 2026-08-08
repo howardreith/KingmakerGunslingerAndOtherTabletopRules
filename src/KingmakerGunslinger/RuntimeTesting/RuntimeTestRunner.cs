@@ -3819,8 +3819,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetDeclaredProperty(command, typeof(UnitAttack), "Target", target);
                 SetDeclaredProperty(command, typeof(UnitAttack), "LastAttackRule",
                     new RuleAttackWithWeapon(unit, target, weapon, 0));
-                command.AllAttacks.Add(new AttackHandInfo(unit.Body.PrimaryHand, 0, 1)
-                    { Target = target });
+                var nativeAttacks = new List<AttackHandInfo>
+                {
+                    new AttackHandInfo(unit.Body.PrimaryHand, 0, 1) { Target = target }
+                };
+                SetExactField(command, "m_AllAttacks", nativeAttacks);
                 SetExactField(command, "m_AttackIndex", 0);
                 RuleAttackWithWeapon observedPrevious = command.LastAttackRule;
                 AttackHandInfo observedPlanned = command.PlannedAttack;

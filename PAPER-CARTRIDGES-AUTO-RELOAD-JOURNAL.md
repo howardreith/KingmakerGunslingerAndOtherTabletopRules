@@ -258,3 +258,11 @@
   occurred. The next bounded fixture revision records the exact native boundary
   inputs (full-attack flag, executor, previous/planned weapon identity, equipped
   firearm resolution, and auto-use identity) before changing any theory.
+- The diagnostic run
+  `20260808T2317028628347Z-39c191cc571e4c19b8aaccd77e2810f0` produced an exact
+  `UnitAttack.get_PlannedAttack` null-reference before mutation. Installed
+  Assembly-CSharp IL proves the constructor leaves `m_AllAttacks` null and the
+  public `AllAttacks` getter returns a shared fallback when null; adding through
+  that fallback did not initialize the command. The fixture now assigns a
+  request-local `List<AttackHandInfo>` to the exact demonstrated backing field,
+  matching the native property contract without changing production behavior.
