@@ -486,6 +486,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.BlunderbussThunderingScatter)
+                {
+                    Complete(RunDisposableGunslingerScatterShot());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
@@ -9228,7 +9234,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             BlueprintItemWeapon blunderbuss =
-                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item;
+                BlueprintBootstrap.MagicFirearms.Entries[5].Item;
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -9248,6 +9254,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 20;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 30;
                 first = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 second = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 first.Descriptor.State.Immortality.Retain();
@@ -9365,6 +9373,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 allMisfire.After.Condition == FirearmCondition.Broken &&
                 allMisfire.Volley.MisfireRollCount == 2 &&
                 allMisfire.Volley.AllRollsMisfire;
+            string firstDamage = mixed == null || mixed.Attacks.Length == 0 ||
+                mixed.Attacks[0] == null ? "<missing>" :
+                DescribeNestedObject(mixed.Attacks[0].MeleeDamage, 8);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("scatter-command-contract-and-transaction",
@@ -9379,6 +9390,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Normal -> Broken (scatter misfire)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                Assertion("scatter-thundering-noncritical",
+                    "forced roll 10 noncritical hit contains no Sonic/Thundering damage packet",
+                    firstDamage,
+                    mixed != null && mixed.Attacks.Length > 0 &&
+                    mixed.Attacks[0].AttackRoll != null &&
+                    mixed.Attacks[0].AttackRoll.IsHit &&
+                    mixed.Attacks[0].MeleeDamage != null &&
+                    firstDamage.IndexOf("Sonic", StringComparison.OrdinalIgnoreCase) < 0 &&
+                    firstDamage.IndexOf("Thundering", StringComparison.OrdinalIgnoreCase) < 0,
+                    "native RuleAttackWithWeapon damage graph for Irovetti's Ovation"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

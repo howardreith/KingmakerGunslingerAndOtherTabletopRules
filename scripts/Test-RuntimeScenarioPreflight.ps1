@@ -46,6 +46,7 @@ $expected = @(
     'observe-rare-firearm-blueprint-contracts',
     'magic-firearm-native-properties',
     'reliable-firearm-misfire-matrix',
+    'blunderbuss-thundering-scatter',
     'observe-production-firearm-fallbacks',
     'observe-native-firearm-rig-contracts',
     'disposable-firearm-visual-rigs',
