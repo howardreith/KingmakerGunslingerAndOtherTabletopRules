@@ -187,3 +187,18 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - Next: publish this coherent source checkpoint and run the guarded live graph
   observer to validate all selected loot target names/types/areas and vendor
   bootstrap mutation against the installed graph.
+## 2026-08-08 acquisition observer repair
+
+- Live run `20260808T1859583851736Z-63e8ceb97df44e3ea87c596e66ec0914`
+  loaded exact source `61f05e6fad00a53fb7eae0fec925e9b88c4e3365` and
+  successfully bootstrapped the acquisition mutations, but the inherited vendor
+  observer failed because it still asserted ten Jhod-era entries and the former
+  Advanced Rifle/Revolver BTSL roster. This was an observer expectation defect,
+  not a publication/bootstrap failure.
+- Updated the observer to the eleven-entry Smith/BTSL early/+1 roster and added
+  the typed `observe-rare-firearm-acquisition` scenario. It now asserts modern
+  and named-item vendor exclusion, zero current Jhod firearm publication, and
+  all five exact count-one loot GUID/name/area/item relationships.
+- The repaired observer source passes repository validation, 935/935 tests,
+  exact-reference Release, SoundBank, and strict package gates. Next action:
+  publish and run `observe-rare-firearm-acquisition` from the clean SHA.

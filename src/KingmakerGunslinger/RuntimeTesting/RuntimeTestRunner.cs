@@ -462,6 +462,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveRareFirearmAcquisition)
+                {
+                    Complete(RunVendorTableContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
@@ -3873,7 +3879,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ownerRecords.Sort(StringComparer.Ordinal);
             BlueprintSharedVendorTable capitalTable = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    "afa2c7f292b8e1c4d9c835f0e8047dd3", StringComparison.Ordinal));
+                    CapitalVendorBlueprints.TableGuid, StringComparison.Ordinal));
             if (capitalTable != null && fixedItemField != null && fixedCountField != null)
             {
                 foreach (LootItemsPackFixed component in
@@ -3915,8 +3921,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { BlueprintBootstrap.ProductionFirearms.Pistol.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.Musket.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.PistolPlus1Symbol).Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.MusketPlus1Symbol).Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                     { BlueprintBootstrap.FirearmRepairKit, 10 },
@@ -3945,8 +3955,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 { production.Pistol.Item, 1 }, { production.Musket.Item, 1 },
                 { production.Blunderbuss.Item, 1 },
-                { production.AdvancedRifle.Item, 1 },
-                { production.AdvancedRevolver.Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.PistolPlus1Symbol).Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.MusketPlus1Symbol).Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                 { BlueprintBootstrap.FirearmRepairKit, 10 },
@@ -3969,6 +3983,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
+            }
+            BlueprintItem[] namedItems = BlueprintBootstrap.MagicFirearms.Entries
+                .Where(value => value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
+                    value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
+                    value.Spec.Symbol != MagicFirearmBlueprints.BlunderbussPlus1Symbol)
+                .Select(value => (BlueprintItem)value.Item).ToArray();
+            BlueprintItem[] bannedManaged = namedItems.Concat(new BlueprintItem[] {
+                production.AdvancedRifle.Item, production.AdvancedRevolver.Item })
+                .ToArray();
+            BlueprintSharedVendorTable[] managedTables = tables.Where(value =>
+                value.AssetGuid == CapitalVendorBlueprints.TableGuid ||
+                BeneathStolenLandsVendorBlueprints.TableGuids.Contains(value.AssetGuid))
+                .ToArray();
+            int bannedManagedEntries = managedTables.Sum(table =>
+                (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value =>
+                        bannedManaged.Contains(CapitalVendorBlueprints.ReadItem(value))));
+            BlueprintSharedVendorTable jhod = tables.SingleOrDefault(value =>
+                value.AssetGuid == "afa2c7f292b8e1c4d9c835f0e8047dd3");
+            BlueprintItem[] allProjectFirearms = production.Entries.Select(value =>
+                (BlueprintItem)value.Item).Concat(BlueprintBootstrap.MagicFirearms.Entries
+                    .Select(value => (BlueprintItem)value.Item)).ToArray();
+            int jhodProjectEntries = jhod == null ? -1 :
+                (jhod.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => allProjectFirearms
+                        .Contains(CapitalVendorBlueprints.ReadItem(value)));
+            string[] rareLootGuids = { "193b1222846a0114197e716cb35d3ce8",
+                "b34367a637010f743815aed5875152bd",
+                "485300a2036a763499aa77ebac1f83c6",
+                "36d315a81b36980438e2ef1a866791d1",
+                "5a9b9e4b884ae064fa7caa5a13eab065" };
+            string[] rareLootNames = { "Forest_cache",
+                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)",
+                "Forest_PoorLoot_PuzzleItem3_Instrument",
+                "FirstWorld_BasementGoodLoot01",
+                "FirstWorld_VeryGoodHiddenLoot02" };
+            string[] rareLootAreas = { "VordakaiTombLevel2", "IrovettiPalace",
+                "IrovettiPalace", "HouseAtTheEdgeOfTime_Basement",
+                "HouseAtTheEdgeOfTime" };
+            var rareLootRecords = new List<string>();
+            int validRareLoot = 0;
+            for (int index = 0; index < rareLootGuids.Length; index++)
+            {
+                BlueprintLoot loot = allBlueprints.OfType<BlueprintLoot>()
+                    .SingleOrDefault(value => value.AssetGuid == rareLootGuids[index]);
+                LootEntry[] matches = loot == null ? new LootEntry[0] :
+                    (loot.Items ?? new LootEntry[0]).Where(value => value != null &&
+                        ReferenceEquals(value.Item, namedItems[index])).ToArray();
+                bool valid = loot != null && loot.name == rareLootNames[index] &&
+                    loot.Area != null && loot.Area.name == rareLootAreas[index] &&
+                    matches.Length == 1 && matches[0].Count == 1;
+                if (valid) validRareLoot++;
+                rareLootRecords.Add(rareLootGuids[index] + ":" +
+                    (loot == null ? "<missing>" : loot.name + ":" +
+                        (loot.Area == null ? "<no-area>" : loot.Area.name)) +
+                    ":matches=" + matches.Length +
+                    ":valid=" + valid);
             }
             if (fixedItemField != null && fixedCountField != null)
             {
@@ -4001,7 +4072,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
                 ";blunderbussEntries=" + blunderbussEntries +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
-                ";invalidBtslCounts=" + invalidBtslCounts +
+                    ";invalidBtslCounts=" + invalidBtslCounts +
+                ";bannedManagedEntries=" + bannedManagedEntries +
+                ";jhodProjectEntries=" + jhodProjectEntries +
+                ";validRareLoot=" + validRareLoot + ";rareLoot=" +
+                    string.Join(" | ", rareLootRecords.ToArray()) +
                 ";criticalProfiles=" + criticalProfiles + ";catalog=" + catalog +
                 ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
@@ -4046,17 +4121,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixedCountField != null && capitalEntries.Count == 61 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
-                    "C11_JhodVendorTable LootItemsPackFixed fields"),
+                    "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "ten exact entries with project quantities including one Blunderbuss",
-                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
+                    "eleven exact early/+1/supply entries including one Blunderbuss",
+                    observed, projectEntries == 11 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
-                    "registered production firearms, ammunition, and repair kit"),
+                    "registered early and +1 firearms, ammunition, and supplies"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; ten unique entries each",
-                    observed, btslTables == 4 && btslEntries == 40 &&
+                    "four exact standalone/campaign tables; eleven unique entries each",
+                    observed, btslTables == 4 && btslEntries == 44 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
+                Assertion("rare-firearm-acquisition-exclusions",
+                    "no named or modern firearms in managed vendors; no Jhod project firearms",
+                    observed, bannedManagedEntries == 0 && jhodProjectEntries == 0,
+                    "exact managed table and item identities"),
+                Assertion("rare-firearm-fixed-loot",
+                    "five distinct exact count-one BlueprintLoot targets with exact names and areas",
+                    observed, validRareLoot == 5,
+                    "installed live blueprint graph after transactional publication"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",

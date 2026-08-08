@@ -1332,3 +1332,10 @@ transactions pass source/build/package gates. Commit and publish this checkpoint
 then run the guarded save-free live graph observer from its clean SHA. After live
 bootstrap proof, implement the dedicated acquisition observer and development-only
 Rare Firearm Acceptance catalog/spawn/location-audit panel.
+## Current resume point — dedicated acquisition observer
+
+The inherited Jhod-era observer expectation was repaired after exact live failure
+evidence, and the typed `observe-rare-firearm-acquisition` scenario now covers the
+Smith/BTSL roster, exclusions, and five exact fixed-loot relationships. Commit and
+publish this passing repair, then run that scenario from the clean SHA. Continue
+with the development Rare Firearm Acceptance panel after the observer passes.

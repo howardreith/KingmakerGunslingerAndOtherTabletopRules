@@ -21,6 +21,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-empty-firearm-command";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
+        internal const string ObserveRareFirearmAcquisition =
+            "observe-rare-firearm-acquisition";
         internal const string ObserveProductionFirearmFallbacks =
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
@@ -174,6 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableEmptyFirearmCommand,
                 ObserveVendorTableContracts,
+                ObserveRareFirearmAcquisition,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
                 DisposableFirearmVisualRigs,
