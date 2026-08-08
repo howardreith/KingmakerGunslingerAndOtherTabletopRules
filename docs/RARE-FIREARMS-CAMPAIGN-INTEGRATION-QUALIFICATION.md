@@ -1,19 +1,24 @@
 # Rare Firearms and Campaign Integration Qualification
 
-Status: not yet qualified.
+Status: resumed; feature qualification pending.
 
-Critical stop: native Seeking is absent from the installed authoritative
+Historical evidence: native Seeking is absent from the installed authoritative
 Kingmaker graph. Final component-based guarded PASS directory
 `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime ID
 `20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`, found no Seeking
-or concealment-component weapon enchantment. Production implementation and
-0.0.74 qualification did not begin.
+or concealment-component weapon enchantment. This accepted evidence is the basis
+for the user-authorized project-owned Seeking implementation; it is no longer a
+blocker and must not be repeated.
 
 Continuation audit run
 `20260808T1748440170104Z-observe-vendor-table-contracts`, runtime ID
 `20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, also inspected
 all primitive, enum, and string component values and found no generically
-encoded concealment/Seeking mechanic. The hard stop is confirmed.
+encoded concealment/Seeking mechanic. The original stop was correctly confirmed
+and is now resolved by the continuation amendment.
+
+- Amended stable Seeking identity: `KMG.Enchantments.Seeking`,
+  `036fc59fd1e24753b98f9d92cdb1e93e`; exact ten-blueprint registration pending.
 
 - Baseline: `1c570bd4211d69c5c29f6af46a870146adb1645b`, 0.0.73.
 - Accepted prior evidence: 930/930 deterministic and clean Release/build/

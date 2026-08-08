@@ -64,7 +64,10 @@ Seeking is absent. Three materially distinct guarded graph strategies found no
 internal name, display name, donor, or concealment-component weapon enchantment;
 final run `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime ID
 `20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`. This triggers the
-work order's critical required-native-property stop.
+original work order's critical required-native-property stop. The 2026-08-08
+user authority amendment accepts this absence conclusively, resolves that stop,
+forbids further native-Seeking searches, and authorizes project-owned Seeking
+`036fc59fd1e24753b98f9d92cdb1e93e`. Acquisition selections are unchanged.
 
 Final vendor-reference PASS
 `20260808T1739377557378Z-observe-vendor-table-contracts`, runtime ID

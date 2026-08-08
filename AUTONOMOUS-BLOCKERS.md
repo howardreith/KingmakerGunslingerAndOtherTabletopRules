@@ -1,5 +1,14 @@
 # Autonomous Gunslinger blockers
 
+## Rare Firearms Seeking stop — RESOLVED BY USER AUTHORITY (2026-08-08)
+
+The continuation amendment expressly accepts the complete native investigation
+preserved immediately below, forbids repeating it, supersedes the custom-Seeking
+prohibition and native-only hard stop, and authorizes project-owned Seeking with
+stable GUID `036fc59fd1e24753b98f9d92cdb1e93e`. This is not an active blocker.
+The mission resumed from clean published checkpoint
+`69fd9a0b9e5889082f15f0e536eb940e79be138b`.
+
 ## Rare Firearms mission — critical native Seeking absence (2026-08-08)
 
 The Rare Firearms and Campaign Integration work order requires The Last Word to
@@ -30,7 +39,7 @@ Three materially distinct checks found no native Seeking authority:
    enchantments contained no Seeking, concealment, miss-chance, or blindness-
    suppression value.
 
-Do not custom-reimplement Seeking, remove it, rename another property, or begin
+Historical original stop instruction (superseded): do not custom-reimplement Seeking, remove it, rename another property, or begin
 production registration. Required resolution is new user authority changing the
 nonoptional native-property requirement or an authoritative installed-game asset
 that supplies the missing native enchantment.

@@ -1,5 +1,23 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Rare Firearms project-owned Seeking authority (2026-08-08)
+
+- Exact branch/checkpoint verified clean and published:
+  `codex/rare-firearms-campaign-integration` at
+  `69fd9a0b9e5889082f15f0e536eb940e79be138b`; baseline `1c570bd` is an ancestor.
+- Native Seeking absence is accepted historical evidence. Do not search for it
+  again. The prior stop is resolved by new user authority.
+- Register exactly ten new blueprints. New project Seeking symbol/GUID:
+  `KMG.Enchantments.Seeking` / `036fc59fd1e24753b98f9d92cdb1e93e`.
+- Exact next action after publishing this amendment checkpoint: inspect installed
+  Kingmaker 2.1.7b concealment attack IL/signatures, record the narrow exact-item
+  attack-scoped seam, then implement the stable manifest identity and focused
+  policies/tests. Continue every remaining original mission phase through
+  0.0.74, complete runtime/compatibility/package qualification and final remote
+  verification; do not stop after Seeking.
+
+---
+
 ## Active rare-firearms mission — 2026-08-08
 
 - Branch `codex/rare-firearms-campaign-integration`; exact baseline

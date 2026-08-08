@@ -75,3 +75,48 @@ exact acquisition/mechanics contracts, full deterministic/runtime/package/
 compatibility evidence, current matrices/journal/report/qualification/manual
 checklist/blocker/resume records, hashes/run IDs, and no mission output left
 untracked. Do not open a PR or merge unless separately instructed.
+
+## User Authority Amendment — Project-Owned Seeking (2026-08-08)
+
+The user's continuation amendment preserves the original mission and its native
+Seeking absence evidence, but supersedes only the native-Seeking requirement,
+the prohibition on a project implementation, the nine-blueprint count, and the
+associated hard stop. The conclusive installed-game absence must not be searched
+again. It is now the accepted basis for registering project-owned
+`KMG.Enchantments.Seeking`, stable GUID
+`036fc59fd1e24753b98f9d92cdb1e93e`, as a +1-equivalent
+`BlueprintWeaponEnchantment`. The mission therefore registers exactly ten new
+blueprints: Reliable, Seeking, and the eight fixed firearm items. All original
+nine GUIDs remain unchanged.
+
+Seeking applies only to an attack made with the exact ranged runtime item that
+carries the exact project enchantment. It may bypass only the concealment
+miss-chance result after a legal attack exists. It must preserve concealment
+classification, target legality, visibility, flat-footed and precision/sneak
+semantics, Mirror Image and other avoidance, attack/critical/misfire results,
+all firearm mechanics, and all other attackers, targets, weapons and attacks.
+Ambiguous exact-item/event identity or ordering fails closed to native behavior;
+request state must be exception-contained, idempotent, nested-safe and cleaned.
+The Last Word remains +5 Reliable Seeking, +7-equivalent, exactly 99,300 gp.
+
+Before implementation, inspect and record exact installed Kingmaker 2.1.7b IL
+and signatures for `RuleAttackRoll.OnTrigger`, its concealment/outcome fields,
+the actual concealment chance roll/evaluation seam, `UnitPartConcealment.Calculate`,
+`RuleCheckTargetFlatFooted.IgnoreConcealment`, weapon-enchantment subscriber
+ownership/order, combat-log result handling, concealment percentages, and the
+relationships among hit, sneak/precision and critical resolution. Prefer one
+narrow attack-scoped Harmony adapter with exact-item authorization; do not add a
+library or globally mutate concealment. Three materially distinct safe scoped
+strategies must be exhausted before the amended Seeking hard stop can apply.
+
+The amendment also requires a development-only UMM Rare Firearm Acceptance
+surface: read-only eight-item catalog, explicit selected/all-item disposable-save
+spawn actions, exact acquisition audit, and a safe current-area locator whose
+mandatory floor is exact live identity plus coordinates/direction/distance.
+It never runs automatically, loads areas, opens or mutates loot, changes quests
+or perception, writes saves, or supplies mechanical publication proof. Add the
+save-free `observe-rare-firearm-acquisition` scenario and focused Seeking,
+locator-policy, acquisition, persistence and combat qualification. Human
+location checks validate physical accessibility/appropriateness only. Every
+other original mechanics, acquisition, runtime, compatibility, packaging,
+0.0.74, publication and completion requirement remains mandatory.

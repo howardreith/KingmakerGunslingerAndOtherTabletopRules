@@ -77,5 +77,15 @@
 
 ## Exact next action
 
-Stop under the confirmed required-native-Seeking hard stop. Await new authority
-or an authoritative installed asset; do not custom-implement or weaken Seeking.
+The 2026-08-08 continuation amendment is new user authority. Checkpoint
+`69fd9a0b9e5889082f15f0e536eb940e79be138b` was verified clean, published and
+identical locally/remotely; it descends from baseline `1c570bd`. Native Seeking
+absence remains conclusive historical evidence and must not be searched again.
+The prior blocker is resolved by user authority, project-owned Seeking GUID
+`036fc59fd1e24753b98f9d92cdb1e93e` is authorized, and the registration total is
+now ten. Mission status is resumed.
+
+After publishing this amendment checkpoint, inspect exact installed concealment
+attack IL/signatures and record the narrow safe hook contract; then add the
+stable Seeking manifest identity, focused source policies/tests, and continue
+the complete original implementation and qualification mission.
