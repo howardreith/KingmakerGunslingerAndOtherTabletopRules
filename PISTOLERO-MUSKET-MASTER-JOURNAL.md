@@ -668,3 +668,23 @@ Commit/publish Up Close and Deadly, run the guarded class-blueprint observer and
 require `up-close-and-deadly-blueprint-contract`, then add the disposable
 behavioral scenario covering hit, miss, critical, immunity, misfire, family,
 scatter, Dead Shot, fixed cost, marker lifecycle, and duplicate delivery.
+
+## 2026-08-08 - Up Close and Deadly live blueprint evidence
+
+- Guarded directory
+  `20260808T1227026428237Z-observe-class-blueprint-contracts` passed under
+  runtime run ID `20260808T1227026740842Z-0d8a298531cc4bda99418f0490b71ea8`,
+  exact source `fe50f6b53e28b6f7e77276f1eda4b8078b66f1de`, version 0.0.72.
+- `up-close-and-deadly-blueprint-contract` PASS proves the live visible free
+  action, exact feature-to-ability-to-marker graph, exact Gunslinger class
+  reference, and exact shared Grit resource. All Pistolero progression/starter
+  and project catalog assertions remained PASS.
+- This is blueprint evidence only; attack-result and damage behavior remains
+  pending the disposable mechanics scenario.
+
+## Exact next action
+
+Commit/publish this curated live blueprint evidence, then implement and run the
+guarded disposable Up Close and Deadly mechanics scenario for hit, miss,
+critical, immunity, misfire, family/scatter gates, Dead Shot, fixed cost,
+marker lifecycle, fault rollback, and duplicate-callback idempotence.

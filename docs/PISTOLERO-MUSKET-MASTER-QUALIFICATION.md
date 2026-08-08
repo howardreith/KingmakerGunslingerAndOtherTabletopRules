@@ -60,6 +60,13 @@ the exact parent, replacement rows, inherited production-Pistol resolver, and
 one-copy deterministic project archetype ordering. It does not qualify either
 Pistolero deed's mechanics or live character-creation inventory.
 
+Up Close and Deadly's live blueprint contract passed under exact source
+`fe50f6b53e28b6f7e77276f1eda4b8078b66f1de` in guarded directory
+`20260808T1227026428237Z-observe-class-blueprint-contracts`, runtime run ID
+`20260808T1227026740842Z-0d8a298531cc4bda99418f0490b71ea8`. The result proves
+the visible free action and exact feature/ability/marker/class/shared-Grit
+references. Behavioral attack and damage qualification remains pending.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,
