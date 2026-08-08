@@ -243,3 +243,18 @@ behavior, then implement the shared firearm-training service and reload policy.
 
 Commit/publish the fixture repair and rerun `gunslinger-starting-items` once. If
 it passes, record the exact evidence and continue to the shared training service.
+
+## 2026-08-08 - Base starter runtime preserved
+
+- Exact published fixture/transaction commit
+  `20c6c7136177f500589e7b8977f4526924caa0d1` passed guarded working-save run
+  `20260808T0433173615244Z-gunslinger-starting-items`.
+- The structured PASS proves the unchanged base Gunslinger exact Pistol grant,
+  20/20 ammunition, one gunsmith kit, exact battered-owner binding and transfer
+  persistence, exact rollback, stable money/class state, and no save write.
+
+## Exact next action
+
+Commit and publish this evidence record, then implement the authoritative shared
+firearm-training entitlement service and refactor ordinary attacks, Dead Shot,
+Scatter Shot, and Broken-misfire callers to consume it.
