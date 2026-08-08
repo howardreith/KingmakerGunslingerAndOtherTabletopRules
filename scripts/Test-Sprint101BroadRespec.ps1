@@ -12,6 +12,7 @@ if ($start -lt 0 -or $end -le $start) { throw 'Broad respec method unavailable.'
 $method = $runner.Substring($start, $end - $start)
 $checks = [ordered]@{
   'save-free-scenario' = $catalog.Contains('DisposableGunslingerBroadRespec') -and $common.Contains("'disposable-gunslinger-broad-respec'")
+  'archetype-reconciliation-matrix' = $catalog.Contains('DisposableArchetypeReconciliation') -and $common.Contains("'disposable-archetype-reconciliation'") -and $runner.Contains('base-to-pistolero') -and $runner.Contains('base-to-musket-master') -and $runner.Contains('pistolero-to-base') -and $runner.Contains('musket-master-to-base') -and $runner.Contains('pistolero-to-musket-master')
   'exact-global-callback' = $method.Contains('player.RespecCompanion(source')
   'exact-handler' = $runner.Contains('ILevelUpInitiateUIHandler') -and $runner.Contains('HandleLevelUpStart(UnitDescriptor unit')
   'handler-lifetime' = $method.Contains('EventBus.Subscribe(handler)') -and $method.Contains('EventBus.Unsubscribe(handler)')

@@ -65,6 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-respec-commit";
         internal const string DisposableGunslingerBroadRespec =
             "disposable-gunslinger-broad-respec";
+        internal const string DisposableArchetypeReconciliation =
+            "disposable-archetype-reconciliation";
         internal const string DisposableGunslingerGritResource =
             "disposable-gunslinger-grit-resource";
         internal const string DisposableGunslingerGritRest =
@@ -195,6 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerRespecPreview,
                 DisposableGunslingerRespecCommit,
                 DisposableGunslingerBroadRespec,
+                DisposableArchetypeReconciliation,
                 DisposableGunslingerGritResource,
                 DisposableGunslingerGritRest,
                 DisposableGunslingerGritPersistence,

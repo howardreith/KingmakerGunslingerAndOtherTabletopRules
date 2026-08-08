@@ -593,6 +593,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableArchetypeReconciliation)
+                {
+                    Complete(RunDisposableArchetypeReconciliation());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableGunslingerGritResource)
                 {
                     Complete(RunDisposableGunslingerGritResource());
@@ -7252,6 +7258,40 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunDisposableGunslingerBroadRespec()
         {
+            return RunDisposableGunslingerBroadRespecTransition(
+                null, null, "fighter-to-base");
+        }
+
+        private RuntimeTestResult RunDisposableArchetypeReconciliation()
+        {
+            GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
+            BlueprintArchetype pistolero = set.Pistolero.Archetype;
+            BlueprintArchetype musketMaster = set.MusketMaster.Archetype;
+            var assertions = new List<RuntimeTestAssertion>();
+            foreach (RuntimeTestResult result in new[]
+            {
+                RunDisposableGunslingerBroadRespecTransition(null, pistolero,
+                    "base-to-pistolero"),
+                RunDisposableGunslingerBroadRespecTransition(null, musketMaster,
+                    "base-to-musket-master"),
+                RunDisposableGunslingerBroadRespecTransition(pistolero, null,
+                    "pistolero-to-base"),
+                RunDisposableGunslingerBroadRespecTransition(musketMaster, null,
+                    "musket-master-to-base"),
+                RunDisposableGunslingerBroadRespecTransition(pistolero, musketMaster,
+                    "pistolero-to-musket-master")
+            })
+                assertions.AddRange(result.Assertions);
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableGunslingerBroadRespecTransition(
+            BlueprintArchetype sourceArchetype,
+            BlueprintArchetype targetArchetype,
+            string transition)
+        {
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
             BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
                 .Single(value => value != null && value.AssetGuid ==
@@ -7303,6 +7343,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
                 MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
                     BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo addArchetype = type.GetMethod("AddArchetype",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintArchetype) }, null);
                 MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
                     BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo cancel = type.GetMethod("Cancel",
@@ -7315,14 +7358,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "CharGen", false);
                 seed = start.Invoke(null,
                     new object[] { descriptor, false, null, null, charGen });
-                if (!(bool)selectClass.Invoke(seed, new object[] { fighter, false }))
-                    throw new InvalidOperationException("Broad-respec Fighter seed failed.");
+                BlueprintCharacterClass sourceClass = sourceArchetype == null
+                    ? (transition == "fighter-to-base" ? fighter : gunslinger)
+                    : gunslinger;
+                if (!(bool)selectClass.Invoke(seed,
+                    new object[] { sourceClass, false }))
+                    throw new InvalidOperationException(
+                        "Broad-respec source selection failed for " + transition + ".");
+                if (sourceArchetype != null && (addArchetype == null ||
+                    !(bool)addArchetype.Invoke(seed,
+                        new object[] { sourceArchetype })))
+                    throw new InvalidOperationException(
+                        "Broad-respec source archetype failed for " + transition + ".");
                 mechanics.Invoke(seed, null);
                 apply.Invoke(seed, new object[] { descriptor });
                 cancel.Invoke(seed, null);
                 seed = null;
 
                 gunslinger.StartingGold = 0;
+                handler.SelectedArchetype = targetArchetype;
                 EventBus.Subscribe(handler);
                 subscribed = true;
                 player.RespecCompanion(source, () => callback = true);
@@ -7339,11 +7393,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     handler.Replacement.Progression.GetClassLevel(gunslinger);
                 descriptorsAlias = handler.Replacement != null &&
                     ReferenceEquals(source.Descriptor, handler.Replacement);
+                BlueprintFeature expectedProficiency = targetArchetype == null
+                    ? BlueprintBootstrap.GunslingerClass.Proficiencies
+                    : ReferenceEquals(targetArchetype,
+                        BlueprintBootstrap.GunslingerClass.Pistolero.Archetype)
+                        ? BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.Pistolero
+                        : BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.MusketMaster;
+                Kingmaker.UnitLogic.ClassData replacementClassData =
+                    handler.Replacement == null ? null :
+                    handler.Replacement.Progression.GetClassData(gunslinger);
+                List<BlueprintArchetype> replacementArchetypes =
+                    replacementClassData == null ? null :
+                    replacementClassData.Archetypes ?? new List<BlueprintArchetype>();
+                bool archetypeReconciled = replacementClassData != null &&
+                    replacementArchetypes.Count(value =>
+                            ReferenceEquals(value, targetArchetype)) ==
+                        (targetArchetype == null ? 0 : 1) &&
+                    (sourceArchetype == null ||
+                        ReferenceEquals(sourceArchetype, targetArchetype) ||
+                        !replacementArchetypes.Any(value =>
+                            ReferenceEquals(value, sourceArchetype)));
                 facts = handler.Replacement != null &&
+                    handler.Replacement.HasFact(expectedProficiency) &&
                     handler.Replacement.HasFact(
-                        BlueprintBootstrap.GunslingerClass.Proficiencies) &&
-                    handler.Replacement.HasFact(
-                        BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                        BlueprintBootstrap.GunslingerClass.Grit.Feature) &&
+                    archetypeReconciled;
             }
             finally
             {
@@ -7385,27 +7459,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(inventoryBefore, SnapshotReferences(player.Inventory)) &&
                     player.Money == moneyBefore;
             }
-            string observed = "handler=" + handler.Invoked + ";selected=" +
+            string observed = "transition=" + transition + ";handler=" +
+                handler.Invoked + ";selected=" +
                 handler.Selected + ";callback=" + callback + ";source=" +
                 sourceFighter + "/" + sourceGunslinger + ";replacement=" +
                 replacementFighter + "/" + replacementGunslinger +
                 ";alias=" + descriptorsAlias + ";facts=" + facts;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("broad-native-replacement",
-                    "handler/callback; source and replacement both Gunslinger 1",
+                Assertion(transition + "-native-replacement",
+                    "handler/callback and replacement Gunslinger 1",
                     observed, handler.Invoked && handler.Selected && callback &&
-                        sourceFighter == 0 && sourceGunslinger == 1 &&
                         replacementFighter == 0 && replacementGunslinger == 1,
                     "Player.RespecCompanion plus exact initiation handler and Commit"),
-                Assertion("broad-replacement-facts",
-                    "proficiency and grit installed", observed, facts,
+                Assertion(transition + "-replacement-facts",
+                    "target-family proficiency and grit installed", observed, facts,
                     "replacement descriptor exact facts"),
-                Assertion("external-isolation",
+                Assertion(transition + "-external-isolation",
                     "party, units, companions, cross-scene, inventory, and money restored",
                     "cleaned=" + cleaned, cleaned,
                     "handler unsubscription, grant rollback, and entity disposal in finally"),
-                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                Assertion(transition + "-loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
