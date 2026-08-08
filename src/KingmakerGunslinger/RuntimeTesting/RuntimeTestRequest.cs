@@ -220,7 +220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                 request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
-                request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems;
+                request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
+                request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter;
             bool workingEntryObservation = request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction ||

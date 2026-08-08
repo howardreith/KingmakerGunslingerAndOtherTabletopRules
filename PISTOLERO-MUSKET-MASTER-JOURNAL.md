@@ -915,3 +915,20 @@ ownership, and repeated-callback idempotence.
 Commit and publish the combined Musket Master fixture, run it against
 `KMG_AUTOMATION_WORKING`, diagnose any exact native-contract mismatch, and
 repeat only after a materially justified repair until the full result passes.
+
+## 2026-08-08 - Combined fixture request-validation repair
+
+- First guarded directory
+  `20260808T1347133367005Z-musket-master-mechanics-and-starter` was rejected at
+  `request-accepted` with `scenario-timeouts-not-allowed`; run ID remained
+  empty, the hook was not installed, and no UI or save action occurred.
+- Root cause was an omitted new scenario identity in `RuntimeTestRequest`'s
+  authoritative `workingSmoke` classification. Added that exact identity; no
+  timeout or save-name rule was weakened.
+- Repository validation, 930/930 tests, runtime preflight 86, clean Release,
+  SoundBank, package, and strict validation pass after the repair.
+
+## Exact next action
+
+Commit/publish the request-validation repair and relaunch the exact combined
+scenario against `KMG_AUTOMATION_WORKING` through Steam App ID 640820.
