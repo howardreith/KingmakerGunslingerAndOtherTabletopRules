@@ -43,6 +43,7 @@
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />
+    <Compile Include="Archetypes\UpCloseAndDeadlyMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
@@ -503,6 +504,7 @@
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
     <Compile Include="Reloading\FastMusketRuntime.cs" />
+    <Compile Include="Rules\UpCloseAndDeadlyPolicy.cs" />
     <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />

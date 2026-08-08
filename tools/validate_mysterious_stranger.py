@@ -33,7 +33,7 @@ def validate(root: Path) -> None:
                                       "KMG.Archetypes.SteadyAimAbility",
                                       "KMG.Archetypes.SteadyAimArmed",
                                       "KMG.Archetypes.FastMusket"}]
-    if len(entries)!=17: raise AssertionError(f"Expected 17 archetype assets, found {len(entries)}")
+    if len(entries)!=19: raise AssertionError(f"Expected 19 archetype assets, found {len(entries)}")
     if len({e["guid"] for e in ledger["entries"]})!=len(ledger["entries"]):
         raise AssertionError("Blueprint GUIDs are not unique")
     if "FirearmDefinitionComponent>().Count() != 1" not in mechanics:

@@ -312,5 +312,55 @@ namespace KingmakerGunslinger.DomainTests
                     FirearmKind.Musket, false),
                 "Negative marker count did not fail closed.");
         }
+
+        internal static void UpCloseAndDeadlyPolicyContract()
+        {
+            Assertions.Equal(1, UpCloseAndDeadlyPolicy.DiceAtLevel(1),
+                "Level 1 deed dice changed.");
+            Assertions.Equal(2, UpCloseAndDeadlyPolicy.DiceAtLevel(5),
+                "Level 5 deed dice changed.");
+            Assertions.Equal(3, UpCloseAndDeadlyPolicy.DiceAtLevel(10),
+                "Level 10 deed dice changed.");
+            Assertions.Equal(4, UpCloseAndDeadlyPolicy.DiceAtLevel(15),
+                "Level 15 deed dice changed.");
+            Assertions.Equal(5, UpCloseAndDeadlyPolicy.DiceAtLevel(20),
+                "Level 20 deed dice changed.");
+            var hit = UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                FirearmKind.Pistol, false, true, true, false, 10, 1);
+            Assertions.True(hit.ConsumeMarker && hit.ApplyDamage,
+                "Qualifying hit did not consume and apply.");
+            Assertions.Equal(3, hit.Dice, "Qualifying hit dice changed.");
+            Assertions.Equal(1f, hit.Modifier, "Hit was not full damage.");
+            var miss = UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                FirearmKind.Revolver, false, true, false, false, 20, 1);
+            Assertions.True(miss.ConsumeMarker && miss.ApplyDamage,
+                "Qualifying miss did not consume and apply.");
+            Assertions.Equal(0.5f, miss.Modifier,
+                "Miss did not use native half-damage semantics.");
+            var immune = UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                FirearmKind.Pistol, false, true, true, true, 5, 1);
+            Assertions.True(immune.ConsumeMarker && !immune.ApplyDamage,
+                "Precision immunity did not consume without applying.");
+            var noGrit = UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                FirearmKind.Pistol, false, true, true, false, 5, 0);
+            Assertions.True(noGrit.ConsumeMarker && !noGrit.ApplyDamage,
+                "Resolution-time grit loss did not consume without applying.");
+            foreach (var rejected in new[] {
+                UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                    FirearmKind.Musket, false, true, true, false, 5, 1),
+                UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                    FirearmKind.Pistol, true, true, true, false, 5, 1),
+                UpCloseAndDeadlyPolicy.Evaluate(false, 0,
+                    FirearmKind.Unknown, false, true, true, false, 5, 1) })
+                Assertions.False(rejected.ConsumeMarker,
+                    "Nonqualifying action consumed the marker.");
+            var misfire = UpCloseAndDeadlyPolicy.Evaluate(true, 1,
+                FirearmKind.Pistol, false, false, false, false, 5, 1);
+            Assertions.False(misfire.ConsumeMarker || misfire.ApplyDamage,
+                "Failed discharge consumed or grazed the target.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                UpCloseAndDeadlyPolicy.DiceAtLevel(0),
+                "Invalid class level did not fail closed.");
+        }
     }
 }

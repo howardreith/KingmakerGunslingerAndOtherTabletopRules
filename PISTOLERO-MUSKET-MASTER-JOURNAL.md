@@ -634,3 +634,37 @@ Commit/publish this curated Pistolero progression evidence, then implement Up
 Close and Deadly's fixed-cost, one-shot arming and post-result precision damage
 runtime with focused policy/component tests before its guarded mechanics
 scenario.
+
+## 2026-08-08 - Up Close and Deadly source implementation
+
+- Replaced the level-1 placeholder with a visible free-action ability and an
+  owner-scoped armed buff. Activation requires but does not spend the exact one
+  grit; the qualifying result spends the fixed cost, independently of True
+  Grit, and delivery failure restores it.
+- The pure policy proves 1d6/2d6/3d6/4d6/5d6 scaling, full hit and native
+  half-on-miss modifiers, Pistol/Revolver family gating, scatter and wrong-family
+  preservation, precision-immunity consumption without spend, resolution-time
+  insufficient-grit behavior, and genuine-misfire exclusion.
+- Runtime delivery creates one isolated piercing damage packet with native
+  precision discovery disabled, preventing critical multiplication and a second
+  sneak/precision source while leaving other attack precision intact. A weak
+  exact-attack gate prevents duplicate callbacks from spending or delivering
+  twice.
+- Exact event-order inspection proved the live misfire context is removed before
+  `RuleAttackWithWeapon` completes. `FirearmMisfireRuntime` now retains a weak,
+  attack-scoped completed non-misfire outcome so ordinary misses qualify and
+  genuine misfires fail closed without global or item mutation.
+- Added stable action/marker identities. Blueprint count is 226 active; ledger
+  is 227 stable IDs including one reserved. Repository validation, all 929
+  deterministic tests, clean exact-reference Release, build-output validation,
+  SoundBank validation, and strict packages pass. Candidate package SHA-256:
+  `7676A8EA0EC86066865BC60BA44ED813BA0954DC29B4D3DF80DABAD07112C5AF`;
+  DLL SHA-256:
+  `0C7F07A1819572743781CFB74B4F760292AF0D02C630CA42A5A09A17A079812F`.
+
+## Exact next action
+
+Commit/publish Up Close and Deadly, run the guarded class-blueprint observer and
+require `up-close-and-deadly-blueprint-contract`, then add the disposable
+behavioral scenario covering hit, miss, critical, immunity, misfire, family,
+scatter, Dead Shot, fixed cost, marker lifecycle, and duplicate delivery.

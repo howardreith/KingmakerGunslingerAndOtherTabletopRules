@@ -30,6 +30,7 @@ using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Grit;
 using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.Archetypes;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
 using Kingmaker.View.Animation;
@@ -4323,6 +4324,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "exact seven rows, shifted existing Deadeye, truthful summaries",
                 rows ? "exact" : "changed", rows,
                 "exact LevelEntry reference identity"));
+
+            AddFacts upCloseGrant = pistolero == null ? null :
+                pistolero.UpCloseAndDeadly.ComponentsArray
+                    .OfType<AddFacts>().SingleOrDefault();
+            UpCloseAndDeadlyAbilityLogic upCloseLogic = pistolero == null ? null :
+                pistolero.UpCloseAbility.ComponentsArray
+                    .OfType<UpCloseAndDeadlyAbilityLogic>().SingleOrDefault();
+            UpCloseAndDeadlyAttackHandler upCloseHandler = pistolero == null ?
+                null : pistolero.UpCloseArmed.ComponentsArray
+                    .OfType<UpCloseAndDeadlyAttackHandler>().SingleOrDefault();
+            bool upCloseContract = pistolero != null && upCloseGrant != null &&
+                upCloseLogic != null && upCloseHandler != null &&
+                pistolero.UpCloseAbility.ActionType ==
+                    Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Free &&
+                upCloseGrant.Facts.Length == 1 &&
+                ReferenceEquals(upCloseGrant.Facts[0], pistolero.UpCloseAbility) &&
+                ReferenceEquals(upCloseLogic.ArmedMarker,
+                    pistolero.UpCloseArmed) &&
+                ReferenceEquals(upCloseLogic.Grit, gunslinger.Grit.Resource) &&
+                ReferenceEquals(upCloseHandler.Grit, gunslinger.Grit.Resource) &&
+                ReferenceEquals(upCloseHandler.GunslingerClass, cls);
+            assertions.Add(Assertion("up-close-and-deadly-blueprint-contract",
+                "visible free action, exact marker, fixed shared Grit resource",
+                upCloseContract ? "exact" : "changed", upCloseContract,
+                "exact AddFacts, ability logic, buff handler, class/resource references"));
 
             ProductionFirearmBlueprintCatalog firearms =
                 BlueprintBootstrap.ProductionFirearms;

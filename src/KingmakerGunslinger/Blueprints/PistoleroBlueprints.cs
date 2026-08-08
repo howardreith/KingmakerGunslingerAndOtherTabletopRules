@@ -3,7 +3,14 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
+using KingmakerGunslinger.Archetypes;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -12,20 +19,25 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal PistoleroBlueprintSet(BlueprintArchetype archetype,
             BlueprintFeature upCloseAndDeadly, BlueprintFeature twinShot,
-            BlueprintFeature[] deedTiers, BlueprintFeature training)
+            BlueprintFeature[] deedTiers, BlueprintFeature training,
+            BlueprintAbility upCloseAbility, BlueprintBuff upCloseArmed)
         {
             Archetype = archetype;
             UpCloseAndDeadly = upCloseAndDeadly;
             TwinShotKnockdown = twinShot;
             DeedTiers = deedTiers;
             Training = training;
+            UpCloseAbility = upCloseAbility;
+            UpCloseArmed = upCloseArmed;
         }
         internal BlueprintArchetype Archetype { get; private set; }
         internal BlueprintFeature UpCloseAndDeadly { get; private set; }
         internal BlueprintFeature TwinShotKnockdown { get; private set; }
         internal BlueprintFeature[] DeedTiers { get; private set; }
         internal BlueprintFeature Training { get; private set; }
-        internal int Count { get { return 6; } }
+        internal BlueprintAbility UpCloseAbility { get; private set; }
+        internal BlueprintBuff UpCloseArmed { get; private set; }
+        internal int Count { get { return 8; } }
     }
 
     internal static class PistoleroBlueprints
@@ -33,6 +45,10 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ArchetypeSymbol = "KMG.Archetypes.Pistolero";
         internal const string UpCloseSymbol =
             "KMG.Archetypes.UpCloseAndDeadly";
+        internal const string UpCloseAbilitySymbol =
+            "KMG.Archetypes.UpCloseAndDeadlyAbility";
+        internal const string UpCloseArmedSymbol =
+            "KMG.Archetypes.UpCloseAndDeadlyArmed";
         internal const string TwinShotSymbol =
             "KMG.Archetypes.TwinShotKnockdown";
         private static readonly string[] TierSymbols = {
@@ -42,11 +58,17 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static PistoleroBlueprintSet Register(BlueprintRegistry registry,
             GunslingerClassBlueprintSet gunslinger,
-            FirearmTrainingBlueprintSet training)
+            FirearmTrainingBlueprintSet training,
+            BlueprintAbilityResource grit)
         {
+            BlueprintBuff upCloseArmed = registry.Register<BlueprintBuff>(
+                UpCloseArmedSymbol, () => CreateUpCloseArmed(grit,
+                    gunslinger.CharacterClass));
+            BlueprintAbility upCloseAbility = registry.Register<BlueprintAbility>(
+                UpCloseAbilitySymbol, () => CreateUpCloseAbility(
+                    upCloseArmed, grit));
             BlueprintFeature upClose = registry.Register<BlueprintFeature>(
-                UpCloseSymbol, () => CreateFeature("Up Close and Deadly",
-                    "Arm your next one-handed, non-scatter firearm attack this turn. After the result is known, spend exactly 1 grit to deal scaling precision damage on a hit or half of the same roll on a miss. This cost cannot be reduced by True Grit."));
+                UpCloseSymbol, () => CreateUpCloseFeature(upCloseAbility));
             BlueprintFeature twin = registry.Register<BlueprintFeature>(
                 TwinShotSymbol, () => CreateFeature("Twin Shot Knockdown",
                     "After two distinct one-handed firearm hits against the same target during your turn, you may spend 1 grit to knock that target prone."));
@@ -65,7 +87,81 @@ namespace KingmakerGunslinger.Blueprints
                 gunslinger.CharacterClass.Archetypes = gunslinger.CharacterClass
                     .Archetypes.Concat(new[] { archetype }).ToArray();
             return new PistoleroBlueprintSet(archetype, upClose, twin, tiers,
-                training.Pistol);
+                training.Pistol, upCloseAbility, upCloseArmed);
+        }
+
+        private static BlueprintBuff CreateUpCloseArmed(
+            BlueprintAbilityResource grit, BlueprintCharacterClass gunslinger)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintBuff>();
+            result.name = "KMG_UpCloseAndDeadly_Armed";
+            result.IsClassFeature = true;
+            result.Stacking = StackingType.Replace;
+            var handler = ScriptableObject.CreateInstance<
+                UpCloseAndDeadlyAttackHandler>();
+            handler.name = "$KMG_UpCloseAndDeadly_Attack";
+            handler.Grit = grit;
+            handler.GunslingerClass = gunslinger;
+            result.ComponentsArray = new BlueprintComponent[] { handler };
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.UpCloseAndDeadly.Armed.Name",
+                    "Up Close and Deadly Armed"),
+                LocalizationService.Create(
+                    "KMG.UpCloseAndDeadly.Armed.Description",
+                    "Your next one-handed direct firearm attack this turn delivers Up Close and Deadly after its result is known."), null);
+            return result;
+        }
+
+        private static BlueprintAbility CreateUpCloseAbility(
+            BlueprintBuff armed, BlueprintAbilityResource grit)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintAbility>();
+            result.name = "KMG_UpCloseAndDeadly_Ability";
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.UpCloseAndDeadly.Ability.Name",
+                    "Up Close and Deadly"),
+                LocalizationService.Create(
+                    "KMG.UpCloseAndDeadly.Ability.Description",
+                    "As a free action, arm your next one-handed, non-scatter firearm attack this turn. After the result is known, spend exactly 1 grit to deal scaling precision damage on a hit or half of the same roll on a miss. The extra damage is not multiplied on a critical hit, and True Grit cannot reduce its cost."), null);
+            result.Type = AbilityType.Extraordinary;
+            result.Range = AbilityRange.Personal;
+            result.CanTargetSelf = true;
+            result.CanTargetPoint = result.CanTargetEnemies =
+                result.CanTargetFriends = false;
+            result.SpellResistance = false;
+            result.Hidden = false;
+            result.ActionBarAutoFillIgnored = false;
+            result.NeedEquipWeapons = false;
+            result.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            result.EffectOnEnemy = AbilityEffectOnUnit.None;
+            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
+            result.ActionType = UnitCommand.CommandType.Free;
+            result.ResourceAssetIds = Array.Empty<string>();
+            result.LocalizedDuration = LocalizationService.Create(
+                "KMG.UpCloseAndDeadly.Ability.Duration",
+                "Current turn or until used");
+            result.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.UpCloseAndDeadly.Ability.SavingThrow", "None");
+            var logic = ScriptableObject.CreateInstance<
+                UpCloseAndDeadlyAbilityLogic>();
+            logic.name = "$KMG_UpCloseAndDeadly_Arm";
+            logic.ArmedMarker = armed;
+            logic.Grit = grit;
+            result.ComponentsArray = new BlueprintComponent[] { logic };
+            return result;
+        }
+
+        private static BlueprintFeature CreateUpCloseFeature(
+            BlueprintAbility ability)
+        {
+            BlueprintFeature result = CreateFeature("Up Close and Deadly",
+                "As a free action, arm your next one-handed, non-scatter firearm attack this turn. After the result is known, spend exactly 1 grit to deal scaling precision damage on a hit or half of the same roll on a miss. This cost cannot be reduced by True Grit.");
+            var add = ScriptableObject.CreateInstance<AddFacts>();
+            add.name = "$KMG_UpCloseAndDeadly_Grant";
+            add.Facts = new BlueprintUnitFact[] { ability };
+            add.DoNotRestoreMissingFacts = false;
+            result.ComponentsArray = new BlueprintComponent[] { add };
+            return result;
         }
 
         private static BlueprintArchetype CreateArchetype(

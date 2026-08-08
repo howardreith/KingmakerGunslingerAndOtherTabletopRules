@@ -55,6 +55,12 @@
       "symbol": "KMG.Archetypes.UpCloseAndDeadly", "guid": "de285a78190e4c73a83f05705f36133d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-1 Up Close and Deadly deed feature."
     },
     {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadlyAbility", "guid": "0fb1ef47da6040088db3946815419723", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Free-action single-shot Up Close and Deadly arming ability."
+    },
+    {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadlyArmed", "guid": "b881cfed156749dca0c7db968f626656", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Ephemeral owner-scoped Up Close and Deadly attack marker."
+    },
+    {
       "symbol": "KMG.Archetypes.TwinShotKnockdown", "guid": "cd4b145b016d4db6ac60dc3c8aa8e396", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-11 Twin Shot Knockdown deed feature."
     },
     {

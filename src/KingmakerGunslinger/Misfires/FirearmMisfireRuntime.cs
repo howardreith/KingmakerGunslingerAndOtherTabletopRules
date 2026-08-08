@@ -29,6 +29,9 @@ namespace KingmakerGunslinger.Misfires
         private static readonly ConditionalWeakTable<RuleAttackRoll, EligibleAttackContext>
             EligibleAttacks =
                 new ConditionalWeakTable<RuleAttackRoll, EligibleAttackContext>();
+        private static readonly ConditionalWeakTable<RuleAttackRoll, DischargeOutcome>
+            CompletedOutcomes =
+                new ConditionalWeakTable<RuleAttackRoll, DischargeOutcome>();
         private static readonly ForcedNaturalRollQueue ForcedRolls =
             new ForcedNaturalRollQueue();
         private static readonly FirearmMisfireService Service =
@@ -257,6 +260,7 @@ namespace KingmakerGunslinger.Misfires
                         context.Wielder == null ? null : context.Wielder.Descriptor);
                 if (fortuneIgnored)
                 {
+                    RecordCompletedOutcome(attackRoll, true);
                     nativeResult = nativeSuccess;
                     Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
                         context.Kind, context.Wielder, "ordinary-attack-fortune-ignored");
@@ -265,6 +269,7 @@ namespace KingmakerGunslinger.Misfires
                     return;
                 }
                 nativeResult = decision.FinalSuccess;
+                RecordCompletedOutcome(attackRoll, !decision.IsMisfire);
 
                 if (!firstEvaluation)
                 {
@@ -425,6 +430,35 @@ namespace KingmakerGunslinger.Misfires
                 EligibleAttackContext ignored;
                 return EligibleAttacks.TryGetValue(attackRoll, out ignored);
             }
+        }
+
+        internal static bool WasCompletedNonMisfire(RuleAttackRoll attackRoll)
+        {
+            if (attackRoll == null) return false;
+            lock (ContextGate)
+            {
+                DischargeOutcome outcome;
+                return CompletedOutcomes.TryGetValue(attackRoll, out outcome) &&
+                    outcome.NonMisfire;
+            }
+        }
+
+        private static void RecordCompletedOutcome(RuleAttackRoll attackRoll,
+            bool nonMisfire)
+        {
+            lock (ContextGate)
+            {
+                CompletedOutcomes.Remove(attackRoll);
+                CompletedOutcomes.Add(attackRoll,
+                    new DischargeOutcome(nonMisfire));
+            }
+        }
+
+        private sealed class DischargeOutcome
+        {
+            internal DischargeOutcome(bool nonMisfire)
+            { NonMisfire = nonMisfire; }
+            internal bool NonMisfire { get; private set; }
         }
 
         private static void CommitConditionTransition(
