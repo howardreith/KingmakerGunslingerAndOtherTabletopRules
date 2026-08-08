@@ -41,7 +41,8 @@ namespace KingmakerGunslinger.Deeds
                     BlueprintBootstrap.GunslingerClass.Grit.Resource);
                 DeadeyeDecision decision = Service.Evaluate(new DeadeyeRequest(
                     true, marker.IsExactFirearm, marker.MarkerCount, marker.Definition,
-                    initiator.DistanceTo(target), int.MaxValue));
+                    initiator.DistanceTo(target), int.MaxValue,
+                    Rules.EffectiveFirearmRangeRuntime.GetBonusFeet(attackRoll)));
 
                 // The native persisted marker applies to the next firearm attack only.
                 // Non-firearm actions leave it armed; any exact firearm shot consumes it.

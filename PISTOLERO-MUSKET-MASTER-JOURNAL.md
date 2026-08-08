@@ -342,3 +342,29 @@ the per-attack effective-range context required by Steady Aim.
 Commit/publish this evidence record, then inspect the exact native range penalty
 and maximum-range signatures and implement the isolated per-attack effective-
 range context before creating Steady Aim blueprints.
+
+## 2026-08-08 - Per-attack effective-range foundation
+
+- Read-only installed IL confirms native weapon target range flows through
+  `UnitDescriptor.GetWeaponRange(BlueprintItemWeapon)` and attack command data;
+  it reads weapon metadata rather than a project deed context. No shared
+  blueprint mutation is acceptable, so a narrow exact-event adapter remains
+  required when the armed Steady Aim fixture exists.
+- Added an immutable pure effective-increment policy and a weak exact
+  `RuleAttackRoll` context. Registration is one-time per attack and cannot add
+  +20 feet through duplicate callbacks.
+- Touch-AC selection and Deadeye increment/cost now accept the same per-attack
+  bonus. Existing constructors default to zero, preserving all base callers.
+- Focused boundary coverage proves a 40-foot Musket reaches 50 feet exactly,
+  changes 45 feet from second to first increment, and makes both touch-AC and
+  Deadeye consume the same effective range. Complete suite passes 926/926.
+- Exact-reference Release/package gate passes. Candidate package SHA-256:
+  `DEA7A7DCEFC16B2FB79BCAAB2B6FA7022BFB99794F6C5A92BED9C925F1529B2D`;
+  DLL SHA-256:
+  `F2BA8F1B61F30CB02C539AF6926201586B6C9F2D995DAB31FE16AF39F67C5EEA`.
+
+## Exact next action
+
+Commit/publish the effective-range foundation, run Deadeye and firearm-AC
+regressions, then create the stable Pistolero/Musket Master training and
+proficiency blueprint facts before wiring full archetype replacement rows.

@@ -3,6 +3,8 @@ using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Classes;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Rules;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -252,6 +254,35 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(EffectiveReloadAction.Standard,
                 ReloadActionEconomy.Evaluate(FirearmDefinitions.CreateEarlyPistol(),
                     true, false), "Fast Musket affected a one-handed firearm.");
+        }
+
+        internal static void EffectiveRangeContextBoundaries()
+        {
+            var musket = FirearmDefinitions.CreateEarlyMusket();
+            Assertions.Equal(50d, EffectiveFirearmRangePolicy.IncrementFeet(
+                musket, 10), "Steady Aim did not add exactly 10 feet.");
+            double distance = 45d * FirearmArmorClassService.MetersPerFoot;
+            var ordinary = FirearmArmorClassService.Select(
+                new FirearmArmorClassRequest(true, 1, musket, distance,
+                    20, 12, 20, false, false, 0));
+            var steady = FirearmArmorClassService.Select(
+                new FirearmArmorClassRequest(true, 1, musket, distance,
+                    20, 12, 20, false, false, 10));
+            Assertions.False(ordinary.UsesTouchArmorClass,
+                "Ordinary Musket incorrectly used touch AC past 40 feet.");
+            Assertions.True(steady.UsesTouchArmorClass,
+                "Steady Aim effective increment did not reach touch AC.");
+            DeadeyeDecision ordinaryDeadeye = new DeadeyeService().Evaluate(
+                new DeadeyeRequest(true, true, 1, musket, distance, 10, 0));
+            DeadeyeDecision steadyDeadeye = new DeadeyeService().Evaluate(
+                new DeadeyeRequest(true, true, 1, musket, distance, 10, 10));
+            Assertions.Equal(2, ordinaryDeadeye.RangeIncrement,
+                "Ordinary Deadeye increment changed.");
+            Assertions.Equal(1, steadyDeadeye.RangeIncrement,
+                "Deadeye did not consume the effective range first.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                EffectiveFirearmRangePolicy.IncrementFeet(musket, -1),
+                "Negative per-attack range context did not fail closed.");
         }
     }
 }

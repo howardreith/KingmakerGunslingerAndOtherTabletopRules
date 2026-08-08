@@ -562,6 +562,8 @@
     <Compile Include="Rules\FirearmArmorClassRequest.cs" />
     <Compile Include="Rules\FirearmArmorClassRuntime.cs" />
     <Compile Include="Rules\FirearmArmorClassService.cs" />
+    <Compile Include="Rules\EffectiveFirearmRangePolicy.cs" />
+    <Compile Include="Rules\EffectiveFirearmRangeRuntime.cs" />
     <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
     <Compile Include="Scatter\ScatterGeometryDisposition.cs" />
     <Compile Include="Scatter\ScatterConeDistanceDecision.cs" />

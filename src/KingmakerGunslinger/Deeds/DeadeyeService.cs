@@ -30,7 +30,8 @@ namespace KingmakerGunslinger.Deeds
                 double tolerantDistance = Math.Max(0d, request.DistanceMeters -
                     FirearmArmorClassService.RangeBoundaryToleranceMeters);
                 increment = FirearmRangeMath.CalculateIncrement(tolerantDistance,
-                    request.Definition.RangeIncrementFeet *
+                    EffectiveFirearmRangePolicy.IncrementFeet(request.Definition,
+                        request.RangeIncrementBonusFeet) *
                         FirearmArmorClassService.MetersPerFoot);
             }
             catch (ArgumentOutOfRangeException)
