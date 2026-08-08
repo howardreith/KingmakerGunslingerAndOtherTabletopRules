@@ -51,7 +51,8 @@ namespace KingmakerGunslinger.Misfires
             RuleAttackRoll attackRoll,
             object firearmItem,
             FirearmItemStateSnapshot postDischarge,
-            FirearmCondition effectiveCondition)
+            FirearmCondition effectiveCondition,
+            AmmunitionId firedAmmunition)
         {
             try
             {
@@ -111,7 +112,8 @@ namespace KingmakerGunslinger.Misfires
                         effectiveCondition,
                         Classes.FirearmTrainingRuntime.Resolve(wielder,
                             postDischarge.Definition.Kind).ReducedBrokenMisfire,
-                        firearmItem as ItemEntityWeapon),
+                        firearmItem as ItemEntityWeapon,
+                        firedAmmunition),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName),
                     postDischarge.Definition.Kind);

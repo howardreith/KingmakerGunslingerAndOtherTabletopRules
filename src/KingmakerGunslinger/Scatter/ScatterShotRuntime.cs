@@ -148,7 +148,7 @@ namespace KingmakerGunslinger.Scatter
                 firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                 Classes.FirearmTrainingRuntime.Resolve(caster,
                     firearm.Definition.Kind).ReducedBrokenMisfire,
-                firearm.Weapon);
+                firearm.Weapon, before.LoadedAmmunition);
             var attacks = new RuleAttackWithWeapon[plan.TargetCount];
             var observations = new ScatterAttackRollObservation[plan.TargetCount];
             for (int index = 0; index < plan.TargetCount; index++)

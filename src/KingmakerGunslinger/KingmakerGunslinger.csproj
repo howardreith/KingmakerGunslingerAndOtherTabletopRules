@@ -55,6 +55,7 @@
     <Compile Include="Enchantments\ReliableBlueprints.cs" />
     <Compile Include="Enchantments\FirearmMisfireReductionResolver.cs" />
     <Compile Include="Misfires\EffectiveFirearmMisfirePolicy.cs" />
+    <Compile Include="Misfires\EffectiveFirearmMisfireValuePolicy.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionSourceKind.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfile.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfileCatalog.cs" />

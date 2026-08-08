@@ -40,6 +40,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionSourceKind.cs"><Link>Ammunition\ReloadAmmunitionSourceKind.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfile.cs"><Link>Ammunition\ReloadAmmunitionProfile.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfileCatalog.cs"><Link>Ammunition\ReloadAmmunitionProfileCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\EffectiveFirearmMisfireValuePolicy.cs"><Link>Misfires\EffectiveFirearmMisfireValuePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadInventoryComponent.cs"><Link>Ammunition\ReloadInventoryComponent.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\IReloadAmmunitionInventory.cs"><Link>Ammunition\IReloadAmmunitionInventory.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicReloadAmmunitionInventoryAdapter.cs"><Link>Ammunition\BasicReloadAmmunitionInventoryAdapter.cs</Link></Compile>

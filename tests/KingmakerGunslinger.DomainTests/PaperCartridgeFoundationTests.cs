@@ -5,6 +5,7 @@ using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.Misfires;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -64,6 +65,55 @@ namespace KingmakerGunslinger.DomainTests
                 ReloadAmmunitionProfileCatalog.Require(
                     new AmmunitionId("kmg.ammunition.unknown")),
                 "unknown ammunition must fail closed");
+        }
+
+        internal static void MisfireAuthoritativeOrder()
+        {
+            AmmunitionId loose = ReloadAmmunitionProfileCatalog.LooseBasic.LoadedAmmunition;
+            AmmunitionId paper = ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+            Assertions.Equal(1, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                1, FirearmCondition.Normal, false, loose, 0), "loose control");
+            Assertions.Equal(2, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                1, FirearmCondition.Normal, false, paper, 0), "paper plus one");
+            Assertions.Equal(0, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                1, FirearmCondition.Normal, false, loose, 1), "Reliable loose zero");
+            Assertions.Equal(1, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                1, FirearmCondition.Normal, false, paper, 1), "paper before Reliable");
+            Assertions.Equal(6, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                2, FirearmCondition.Broken, false, paper, 1),
+                "broken untrained then paper then Reliable");
+            Assertions.Equal(4, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                2, FirearmCondition.Broken, true, paper, 1),
+                "broken trained then paper then Reliable");
+            Assertions.Equal(20, EffectiveFirearmMisfireValuePolicy.Evaluate(
+                20, FirearmCondition.Normal, false, paper, 0), "maximum clamp");
+            Assertions.Equal(0, EffectiveFirearmMisfireValuePolicy.MinimumEffectiveValue,
+                "truthful zero threshold");
+            Assertions.Throws<KeyNotFoundException>(() =>
+                EffectiveFirearmMisfireValuePolicy.Evaluate(1,
+                    FirearmCondition.Normal, false,
+                    new AmmunitionId("kmg.ammunition.unknown"), 0),
+                "unknown ammunition fails closed");
+        }
+
+        internal static void MisfireCentralConsumers()
+        {
+            string root = Environment.CurrentDirectory;
+            string ordinary = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Firing", "FirearmDischargeRuntime.cs"));
+            string deadShot = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Deeds", "DeadShotRuntime.cs"));
+            string scatter = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Scatter", "ScatterShotRuntime.cs"));
+            Assertions.True(ordinary.Contains("before.Repository.State.LoadedAmmunition"),
+                "ordinary captures fired ammunition before discharge");
+            Assertions.True(deadShot.Contains("firearm.Weapon, before.LoadedAmmunition"),
+                "Dead Shot uses pre-discharge ammunition");
+            Assertions.True(scatter.Contains("firearm.Weapon, before.LoadedAmmunition"),
+                "Scatter uses pre-discharge ammunition");
+            Assertions.True(deadShot.Contains("MinimumEffectiveValue") &&
+                deadShot.Contains("MaximumEffectiveValue"),
+                "Dead Shot accepts centralized zero-to-twenty thresholds");
         }
 
         internal static void PaperTokensRoundTrip()

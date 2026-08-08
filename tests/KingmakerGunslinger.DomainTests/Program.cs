@@ -40,6 +40,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("paper-mode.source-contract", PaperCartridgeFoundationTests.ModeSourceContract),
             Case("paper-lightning.dynamic-actions", PaperCartridgeFoundationTests.LightningReloadDynamicActions),
             Case("paper-full-attack.reload-branches", PaperCartridgeFoundationTests.FullAttackReloadBranches),
+            Case("paper-misfire.authoritative-order", PaperCartridgeFoundationTests.MisfireAuthoritativeOrder),
+            Case("paper-misfire.central-consumers", PaperCartridgeFoundationTests.MisfireCentralConsumers),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),

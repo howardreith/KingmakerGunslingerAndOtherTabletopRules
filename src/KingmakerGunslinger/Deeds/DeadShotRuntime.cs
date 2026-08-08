@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.Deeds
                     firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                     Classes.FirearmTrainingRuntime.Resolve(casterEntity,
                         firearm.Definition.Kind).ReducedBrokenMisfire,
-                    firearm.Weapon);
+                    firearm.Weapon, before.LoadedAmmunition);
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
@@ -233,7 +233,10 @@ namespace KingmakerGunslinger.Deeds
             int misfireThreshold, int? forcedNaturalRoll = null)
         {
             if (attackRoll == null) throw new ArgumentNullException("attackRoll");
-            if (misfireThreshold < 1 || misfireThreshold > 20)
+            if (misfireThreshold <
+                    global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.MinimumEffectiveValue ||
+                misfireThreshold >
+                    global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.MaximumEffectiveValue)
                 throw new ArgumentOutOfRangeException("misfireThreshold");
             if (forcedNaturalRoll.HasValue && (forcedNaturalRoll.Value < 1 ||
                 forcedNaturalRoll.Value > 20))

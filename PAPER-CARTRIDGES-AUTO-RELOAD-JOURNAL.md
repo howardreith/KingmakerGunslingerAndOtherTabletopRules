@@ -285,3 +285,28 @@
 - Deterministic total remains 950 PASS. Phase 3 is complete; next exact action is
   Phase 4 central ammunition-aware misfire policy and ordinary/Dead Shot/Scatter
   propagation with focused boundary tests.
+
+## Phase 4 central misfire mechanics checkpoint
+
+- One dependency-free `EffectiveFirearmMisfireValuePolicy` now owns the fixed
+  arithmetic: base plus condition/training, loaded profile modifier, exact-weapon
+  reduction, then one `0..20` clamp. The Kingmaker-bound
+  `EffectiveFirearmMisfirePolicy` remains the sole exact-item Reliable resolver
+  and delegates to that arithmetic.
+- Ordinary discharge passes the exact pre-discharge ammunition identity into its
+  item-bound misfire context. Dead Shot and Scatter capture the same `before`
+  identity before emptying the chamber. Dead Shot probe registration now accepts
+  the centralized legal threshold 0.
+- Focused coverage proves loose control, Paper +1, Broken trained/untrained,
+  Paper-before-Reliable ordering, Reliable loose 0 / Paper 1 boundaries, maximum
+  clamp, unknown-ID fail-closed, and all three consumer source seams.
+- Complete deterministic suite: 952 PASS, 0 failures.
+- Clean Release build, output validation, SoundBank validation, package creation,
+  and strict standalone package validation: PASS.
+- DLL SHA-256:
+  `04BEEA35CBF9B7455CDF36ECEC2AAB0E50634233699F869DA009C9BD7D2CD348`.
+- Package SHA-256:
+  `092526BD31F42A2ECD5C555DFFCBD7C767E03645DF8549B4F2959F1B98ED2B5D`.
+- Current version remains the intentional vertical-work pin `0.0.73`; release
+  pin advancement remains Phase 7. Next exact action: commit/push this mechanics
+  slice, then add the guarded ordinary/Dead Shot/scatter Paper runtime fixtures.
