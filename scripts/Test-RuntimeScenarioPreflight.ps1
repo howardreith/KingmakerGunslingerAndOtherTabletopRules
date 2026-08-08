@@ -97,6 +97,8 @@ $expected = @(
     'observe-stunning-shot-native-stunned',
     'disposable-gunslinger-stunning-shot',
     'disposable-gunslinger-true-grit',
+    'disposable-pistolero-deeds',
+    'observe-optional-mod-compatibility',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',

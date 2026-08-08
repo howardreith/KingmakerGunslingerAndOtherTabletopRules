@@ -21,6 +21,10 @@ namespace KingmakerGunslinger.Deeds
         MenacingShot,
         CheatDeath,
         DeathsShot,
-        StunningShot
+        StunningShot,
+        FocusedAim,
+        TwinShotKnockdown,
+        SteadyAim,
+        FastMusket
     }
 }

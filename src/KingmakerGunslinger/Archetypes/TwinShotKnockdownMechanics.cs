@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Rules;
 using Kingmaker.Utility;
@@ -113,7 +114,9 @@ namespace KingmakerGunslinger.Archetypes
             bool immune = target.Descriptor.State.HasCondition(
                 UnitCondition.ImmuneToCombatManeuvers);
             bool prone = target.Descriptor.State.HasCondition(UnitCondition.Prone);
-            int current = owner.Descriptor.Resources.GetResourceAmount(grit);
+            TrueGritDecision decision = TrueGritRuntime.Evaluate(
+                owner.Descriptor, TrueGritDeed.TwinShotKnockdown,
+                TwinShotKnockdownPolicy.OrdinaryGritCost, false);
             lock (States)
             {
                 OwnerState state;
@@ -121,11 +124,13 @@ namespace KingmakerGunslinger.Archetypes
                     state.Count(target) : 0;
                 bool used = state != null && state.WasUsed(target);
                 if (!IsOwnersTurn(owner) || !TwinShotKnockdownPolicy.CanExecute(
-                        hits, used, prone, immune, current))
+                        hits, used, prone, immune,
+                        decision.Available ? 1 : 0))
                     throw new InvalidOperationException(
                         "Twin Shot Knockdown target is not currently eligible.");
-                owner.Descriptor.Resources.Spend(grit,
-                    TwinShotKnockdownPolicy.OrdinaryGritCost);
+                if (decision.EffectiveCost > 0)
+                    owner.Descriptor.Resources.Spend(grit,
+                        decision.EffectiveCost);
                 try
                 {
                     target.Descriptor.State.AddCondition(UnitCondition.Prone,
@@ -137,8 +142,9 @@ namespace KingmakerGunslinger.Archetypes
                 }
                 catch
                 {
-                    owner.Descriptor.Resources.Restore(grit,
-                        TwinShotKnockdownPolicy.OrdinaryGritCost);
+                    if (decision.EffectiveCost > 0)
+                        owner.Descriptor.Resources.Restore(grit,
+                            decision.EffectiveCost);
                     throw;
                 }
             }

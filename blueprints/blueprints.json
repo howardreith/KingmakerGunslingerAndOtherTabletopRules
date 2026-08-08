@@ -968,6 +968,10 @@
     { "symbol": "KMG.Archetypes.StrangersFortuneFeature", "guid": "4f75451043784ecf9db475199ca8c914", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Stranger's Fortune replacing Gun Training 1." },
     { "symbol": "KMG.Archetypes.ClippingShotArmed", "guid": "cbceda9bb0a24f29b14091c2b8e51915", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot next-attack marker." },
     { "symbol": "KMG.Archetypes.ClippingShotAbility", "guid": "5b5aa8c8e2434509a46d464d87b97316", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot free action." },
-    { "symbol": "KMG.Archetypes.ClippingShotFeature", "guid": "937af7e5746740c29dd833b50b98f817", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot deed replacing Bleeding Wound." }
+    { "symbol": "KMG.Archetypes.ClippingShotFeature", "guid": "937af7e5746740c29dd833b50b98f817", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot deed replacing Bleeding Wound." },
+    { "symbol": "KMG.Classes.TrueGritFocusedAim", "guid": "2ecd9a3d016f43228e2f3ca74729dabb", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Focused Aim." },
+    { "symbol": "KMG.Classes.TrueGritTwinShotKnockdown", "guid": "a6ff971cfff3415b889672a276d5ed4d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Twin Shot Knockdown." },
+    { "symbol": "KMG.Classes.TrueGritSteadyAim", "guid": "7b49e3ca3b6b4cacb7c7fefb1f57616c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Steady Aim." },
+    { "symbol": "KMG.Classes.TrueGritFastMusket", "guid": "6d4d4fe700fb4aceb30c6afd8dc8450a", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Fast Musket." }
   ]
 }

@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Scatter;
 using Kingmaker.Utility;
@@ -94,8 +95,8 @@ namespace KingmakerGunslinger.Archetypes
             BlueprintAbilityResource grit, BlueprintUnitFact trueGritChoice)
         {
             if (owner == null || grit == null) return false;
-            return owner.Resources.GetResourceAmount(grit) > 0 ||
-                (trueGritChoice != null && owner.HasFact(trueGritChoice));
+            return TrueGritRuntime.Evaluate(owner, TrueGritDeed.SteadyAim,
+                0, true).Available;
         }
     }
 }

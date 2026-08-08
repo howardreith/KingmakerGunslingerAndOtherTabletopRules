@@ -11,6 +11,8 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.Reloading;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -22,7 +24,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 227;
+        internal const int ExpectedRegisteredBlueprintCount = 231;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -661,6 +663,36 @@ namespace KingmakerGunslinger.Bootstrap
                     productionFirearms.Musket.Item,
                     gunslingerClassBlueprints.Pistolero.Archetype,
                     gunslingerClassBlueprints.MusketMaster.Archetype);
+                TrueGritBlueprints.ConfigureOwnership(
+                    gunslingerClassBlueprints.TrueGrit,
+                    gunslingerClassBlueprints.Deadeye.Feature,
+                    gunslingerClassBlueprints.Dodge.Feature,
+                    gunslingerClassBlueprints.QuickClear.Feature,
+                    gunslingerClassBlueprints.Initiative,
+                    gunslingerClassBlueprints.PistolWhip.Feature,
+                    gunslingerClassBlueprints.UtilityShot.Feature,
+                    gunslingerClassBlueprints.DeadShot.Feature,
+                    gunslingerClassBlueprints.StartlingShot.Feature,
+                    gunslingerClassBlueprints.TargetingArms.Feature,
+                    gunslingerClassBlueprints.TargetingHead.Feature,
+                    gunslingerClassBlueprints.TargetingTorso.Feature,
+                    gunslingerClassBlueprints.TargetingLegs.Feature,
+                    gunslingerClassBlueprints.BleedingWound.Feature,
+                    gunslingerClassBlueprints.ExpertLoading.Feature,
+                    gunslingerClassBlueprints.LightningReload.Feature,
+                    gunslingerClassBlueprints.Evasive.Feature,
+                    gunslingerClassBlueprints.MenacingShot.Feature,
+                    gunslingerClassBlueprints.CheatDeath,
+                    gunslingerClassBlueprints.DeathsShot.Feature,
+                    gunslingerClassBlueprints.StunningShot.Feature,
+                    gunslingerClassBlueprints.MysteriousStranger.FocusedAim,
+                    gunslingerClassBlueprints.Pistolero.TwinShotKnockdown,
+                    gunslingerClassBlueprints.MusketMaster.SteadyAim,
+                    gunslingerClassBlueprints.MusketMaster.FastMusket);
+                FastMusketRuntime.Configure(
+                    gunslingerClassBlueprints.MusketMaster.FastMusket,
+                    gunslingerClassBlueprints.TrueGrit.ChoiceFor(
+                        TrueGritDeed.FastMusket));
                 ClassCatalogDiagnostics.Capture("after-registration", library,
                     gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(

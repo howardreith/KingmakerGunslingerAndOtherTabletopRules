@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
         private static void TrueGritCatalogExact()
         {
             TrueGritChoice[] values = TrueGritCatalog.Choices;
-            Assertions.Equal(20, values.Length, "True Grit catalog count changed.");
+            Assertions.Equal(24, values.Length, "True Grit catalog count changed.");
             Assertions.True(values.Any(value =>
                     value.Deed == TrueGritDeed.TargetingArms),
                 "Targeting Arms is missing from the True Grit catalog.");
@@ -17,6 +17,12 @@ namespace KingmakerGunslinger.DomainTests
                 .Distinct().Count(), "True Grit catalog contains duplicates.");
             Assertions.True(!values.Any(value => value.DisplayName.Contains("Luck")),
                 "Slinger's Luck entered the True Grit catalog.");
+            Assertions.True(values.Any(value =>
+                    value.Deed == TrueGritDeed.TwinShotKnockdown) &&
+                values.Any(value => value.Deed == TrueGritDeed.SteadyAim) &&
+                values.Any(value => value.Deed == TrueGritDeed.FastMusket) &&
+                values.Any(value => value.Deed == TrueGritDeed.FocusedAim),
+                "Archetype-owned True Grit choices are incomplete.");
         }
 
         private static void TrueGritPairUniqueness()

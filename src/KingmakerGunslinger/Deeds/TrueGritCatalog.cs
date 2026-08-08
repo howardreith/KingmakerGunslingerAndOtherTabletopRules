@@ -26,7 +26,11 @@ namespace KingmakerGunslinger.Deeds
             Choice(TrueGritDeed.MenacingShot, "Menacing Shot"),
             Choice(TrueGritDeed.CheatDeath, "Cheat Death"),
             Choice(TrueGritDeed.DeathsShot, "Death's Shot"),
-            Choice(TrueGritDeed.StunningShot, "Stunning Shot")
+            Choice(TrueGritDeed.StunningShot, "Stunning Shot"),
+            Choice(TrueGritDeed.FocusedAim, "Focused Aim"),
+            Choice(TrueGritDeed.TwinShotKnockdown, "Twin Shot Knockdown"),
+            Choice(TrueGritDeed.SteadyAim, "Steady Aim"),
+            Choice(TrueGritDeed.FastMusket, "Fast Musket")
         };
 
         internal static TrueGritChoice[] Choices

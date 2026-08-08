@@ -9885,7 +9885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TrueGritDeed.StunningShot));
                     attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
                         TrueGritDeed.StopBleeding));
-                    selectionShape = gunslinger.TrueGrit.Choices.Length == 20 &&
+                    selectionShape = gunslinger.TrueGrit.Choices.Length == 24 &&
                         gunslinger.Progression.LevelEntries[19].Features.Count(
                             value => ReferenceEquals(value,
                                 gunslinger.TrueGrit.Selection)) == 2;

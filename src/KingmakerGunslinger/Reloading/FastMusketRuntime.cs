@@ -1,6 +1,7 @@
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Reloading
 {
@@ -20,12 +21,10 @@ namespace KingmakerGunslinger.Reloading
         {
             if (owner == null || _feature == null || !owner.HasFact(_feature))
                 return false;
-            if (_trueGritChoice != null && owner.HasFact(_trueGritChoice))
-                return true;
             return BlueprintBootstrap.GunslingerClass != null &&
                 BlueprintBootstrap.GunslingerClass.Grit != null &&
-                owner.Resources.GetResourceAmount(
-                    BlueprintBootstrap.GunslingerClass.Grit.Resource) > 0;
+                TrueGritRuntime.Evaluate(owner, TrueGritDeed.FastMusket,
+                    0, true).Available;
         }
 
         internal static void Rollback()

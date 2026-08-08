@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Classes.Prerequisites;
 using KingmakerGunslinger.Deeds;
 using UnityEngine;
 
@@ -56,7 +58,11 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Classes.TrueGritMenacingShot",
             "KMG.Classes.TrueGritCheatDeath",
             "KMG.Classes.TrueGritDeathsShot",
-            "KMG.Classes.TrueGritStunningShot"
+            "KMG.Classes.TrueGritStunningShot",
+            "KMG.Classes.TrueGritFocusedAim",
+            "KMG.Classes.TrueGritTwinShotKnockdown",
+            "KMG.Classes.TrueGritSteadyAim",
+            "KMG.Classes.TrueGritFastMusket"
         };
 
         internal static TrueGritBlueprintSet Register(BlueprintRegistry registry)
@@ -96,6 +102,36 @@ namespace KingmakerGunslinger.Blueprints
                     choice.DisplayName + " by 1, following the True Grit rules."),
                 null);
             return feature;
+        }
+
+        internal static void ConfigureOwnership(TrueGritBlueprintSet set,
+            params BlueprintFeature[] ownedDeeds)
+        {
+            if (set == null || ownedDeeds == null ||
+                ownedDeeds.Length != set.Choices.Length ||
+                ownedDeeds.Any(value => value == null))
+                throw new InvalidOperationException(
+                    "Every True Grit choice requires one exact owned deed fact.");
+            for (int index = 0; index < set.Choices.Length; index++)
+            {
+                BlueprintFeature choice = set.Choices[index];
+                PrerequisiteFeature[] existing = choice.ComponentsArray
+                    .OfType<PrerequisiteFeature>().ToArray();
+                if (existing.Length == 1 &&
+                    ReferenceEquals(existing[0].Feature, ownedDeeds[index]) &&
+                    existing[0].Group == Prerequisite.GroupType.All)
+                    continue;
+                if (existing.Length != 0)
+                    throw new InvalidOperationException(
+                        "True Grit choice has an unexpected ownership prerequisite.");
+                var prerequisite = ScriptableObject.CreateInstance<
+                    PrerequisiteFeature>();
+                prerequisite.name = "$KMG_TrueGrit_Owns_" + set.Deeds[index];
+                prerequisite.Feature = ownedDeeds[index];
+                prerequisite.Group = Prerequisite.GroupType.All;
+                choice.ComponentsArray = choice.ComponentsArray
+                    .Concat(new BlueprintComponent[] { prerequisite }).ToArray();
+            }
         }
 
         private static BlueprintFeatureSelection CreateSelection(

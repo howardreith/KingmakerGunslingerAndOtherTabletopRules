@@ -797,3 +797,27 @@ behavior evidence.
 Commit/publish this clean deed evidence, then implement archetype-aware True
 Grit ownership choices and wire Steady Aim, Fast Musket, Twin Shot Knockdown,
 and Focused Aim into the authoritative runtime cost/positive-grit service.
+
+## 2026-08-08 - Archetype-aware True Grit source implementation
+
+- Expanded the exact catalog from 20 to 24 choices with Focused Aim, Twin Shot
+  Knockdown, Steady Aim, and Fast Musket. Every existing and new choice now has
+  one exact deed-ownership prerequisite, appended idempotently without changing
+  the two-selection progression contract.
+- Wired Focused Aim and Twin Shot through the central spend decision. A selected
+  one-grit deed costs zero but retains the positive-grit floor. Wired Steady Aim
+  and Fast Musket through the central positive-grit/no-spend decision so their
+  selected choices operate at zero grit.
+- Appended four stable manifest identities; the ledger is now 232 entries, 231
+  active and one reserved. Repository validation, 930/930 deterministic tests,
+  runtime preflight 86, clean exact-reference Release build, build-output,
+  SoundBank, package creation, and strict package validation pass.
+- The first sandboxed domain run had the known filesystem-denied audio staging
+  result; the policy-approved full run passed 930/930. No assertion was waived.
+
+## Exact next action
+
+Commit and publish the archetype-aware True Grit source checkpoint, extend the
+guarded True Grit/class observers to prove all 24 ownership prerequisites and
+the four archetype runtime decisions, then run those observers on the exact
+committed package before proceeding to the Musket Master mechanics fixture.
