@@ -55,6 +55,10 @@ def validate(root: Path) -> None:
             raise AssertionError(f"profile wrapper scenario missing: {scenario}")
     if "SaveName = 'KMG_AUTOMATION_WORKING'" not in wrapper:
         raise AssertionError("Musket Master profile save binding missing")
+    runner = (root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs").read_text(
+        encoding="utf-8")
+    if "menuUnit.Descriptor.AddFact(\n                        BlueprintBootstrap.FirearmProficiency)" not in runner:
+        raise AssertionError("native firearm menu fixture lacks explicit proficiency owner")
     for profile in profiles:
         if profile["requiredGunslingerPackage"] != PACKAGE:
             raise AssertionError(f"profile package pin mismatch: {profile['id']}")

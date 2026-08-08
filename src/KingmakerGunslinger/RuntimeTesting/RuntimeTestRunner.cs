@@ -3088,6 +3088,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool levelUpCommit;
             try
             {
+                if (menuUnit.Descriptor.AddFact(
+                        BlueprintBootstrap.FirearmProficiency) == null)
+                    throw new InvalidOperationException(
+                        "Detached firearm-feat menu owner could not receive full proficiency.");
                 levelUpMenus = native.All(feature =>
                 {
                     FeatureUIData[] menu = feature.ExtractSelectionItems(
