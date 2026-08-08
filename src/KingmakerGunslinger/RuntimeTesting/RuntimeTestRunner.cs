@@ -4964,7 +4964,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                target.Descriptor.State.Immortality.Retain();
                 attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
                 attacker.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
@@ -5043,7 +5042,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (ItemEntityWeapon item in new[] {
                     reliablePistol, reliableMusket, deadShotPistol })
                     if (item != null) FirearmRuntimeState.Service.Forget(item);
-                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
                 if (target != null) target.Dispose();
                 if (attacker != null) attacker.Dispose();
                 cleaned = true;

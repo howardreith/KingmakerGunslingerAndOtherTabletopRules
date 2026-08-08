@@ -317,3 +317,9 @@
   passed. The narrower retry uses a separate mundane Pistol paper chamber and
   forced natural 2, which directly proves Paper raises Dead Shot's base threshold
   from 1 to 2 without coupling the fixture's independent Reliable lifecycle.
+- Retry `20260808T2345237314982Z-6a4c7a1122d84226bae6ef7cc7a5567c`
+  reproduced the missing Dead Shot probe roll with the isolated mundane item,
+  disproving item reuse. The only remaining difference from the established
+  passing Dead Shot fixture was a retained native Immortality state on the target.
+  Because all ordinary controls use `-100` attack bonus and the Dead Shot is an
+  all-misfire delivery, the retry removes that unnecessary target-state mutation.
