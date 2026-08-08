@@ -30,6 +30,9 @@ namespace KingmakerGunslinger.Blueprints
                 "FirstWorld_VeryGoodHiddenLoot02", "HouseAtTheEdgeOfTime")
         };
 
+        internal static TargetSpec[] TargetSpecs
+        { get { return Targets.ToArray(); } }
+
         internal static RareFirearmCampaignLootPublication Publish(
             LibraryScriptableObject library, MagicFirearmBlueprintCatalog catalog,
             ModLogger logger)

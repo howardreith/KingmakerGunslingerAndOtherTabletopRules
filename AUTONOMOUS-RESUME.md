@@ -1339,3 +1339,10 @@ evidence, and the typed `observe-rare-firearm-acquisition` scenario now covers t
 Smith/BTSL roster, exclusions, and five exact fixed-loot relationships. Commit and
 publish this passing repair, then run that scenario from the clean SHA. Continue
 with the development Rare Firearm Acceptance panel after the observer passes.
+## Current resume point — combat and lifecycle qualification
+
+The acquisition observer passes and the development-only catalog/spawn/location
+audit surface plus practical manual checklist pass source/build/package gates.
+Publish this checkpoint. Next implement and run focused magic-firearm blueprint,
+Reliable zero-threshold/direct/scatter, Seeking concealment, static-enchantment
+lifecycle, native enhancement/Fey Bane, and Thundering scatter qualification.

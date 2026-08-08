@@ -212,3 +212,20 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - Narrowed that presentation-contract assertion to the observed exact 27 without
   changing publication mechanics. Next action: publish and repeat the dedicated
   acquisition observer.
+## 2026-08-08 human acceptance surface checkpoint
+
+- Acquisition observer PASS evidence directory:
+  `20260808T1908322207263Z-observe-rare-firearm-acquisition`; exact source
+  `01b189b45b521ae97ceea4cf25216fcf59391ecc`.
+- Added a development-only Rare Firearm Acceptance panel: complete catalog report,
+  one exact selected-item spawn, one-copy eight-item set spawn, and a read-only
+  acquisition/current-area audit. It grants no proficiency/ammunition, never runs
+  automatically, performs no cleanup-by-blueprint, and makes no unproven live
+  entity, coordinate, highlight, or teleport claim.
+- Expanded the manual checklist with disposable/pre-entry save guidance, all exact
+  targets, capital merchant stock, stale instantiated-container distinction, and
+  the shortest combat/presentation checks. No authoritative local Bag of Tricks
+  `tp2loc_*` command was proven, so none is guessed.
+- All 935 tests and source/build/package gates pass. Next: publish this panel/docs
+  checkpoint, then implement focused magic-firearm blueprint, Reliable, Seeking,
+  lifecycle, native-property, and Thundering guarded combat scenarios.

@@ -127,6 +127,26 @@ namespace KingmakerGunslinger.Development
             }
 
             ImmediateModeGui.Space(8f);
+            ImmediateModeGui.Label("Rare Firearm Acceptance (DEVELOPMENT ONLY)");
+            ImmediateModeGui.Label("Use a disposable campaign. Spawning never proves campaign placement and grants no proficiency or ammunition. The read-only acquisition locator reports exact blueprint/current-area identity; live coordinates remain unavailable unless safely resolved.");
+            if (ImmediateModeGui.Button("Print complete rare-firearm catalog audit"))
+                Run(DevelopmentControls.DescribeRareFirearmCatalog);
+            if (ImmediateModeGui.Button("Add one copy of all eight test items"))
+                Run(DevelopmentControls.AddRareFirearmSet);
+            string[] rareNames = { "Pistol +1", "Musket +1", "Blunderbuss +1",
+                "Duelist's Rebuttal", "The River King's Measure",
+                "Irovetti's Ovation", "The Last Word",
+                "Watch at the World's End" };
+            for (int rareIndex = 0; rareIndex < rareNames.Length; rareIndex++)
+            {
+                int selected = rareIndex;
+                if (ImmediateModeGui.Button("Add one " + rareNames[rareIndex]))
+                    Run(() => DevelopmentControls.AddRareFirearm(selected));
+            }
+            if (ImmediateModeGui.Button("Print acquisition/current-area location audit"))
+                Run(DevelopmentControls.DescribeRareFirearmAcquisition);
+
+            ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label("Character and Test Musket controls");
 
             if (ImmediateModeGui.Button("Grant Firearm Proficiency to selected unit"))

@@ -44,6 +44,15 @@ namespace KingmakerGunslinger.Development
             return Execute("grant-proficiency", bridge => bridge.GrantFirearmProficiency());
         }
 
+        internal static DevelopmentActionResult DescribeRareFirearmCatalog()
+        { return Execute("rare-firearm-catalog", bridge => bridge.DescribeRareFirearmCatalog()); }
+        internal static DevelopmentActionResult AddRareFirearmSet()
+        { return Execute("rare-firearm-add-set", bridge => bridge.AddRareFirearmSet()); }
+        internal static DevelopmentActionResult AddRareFirearm(int index)
+        { return Execute("rare-firearm-add-" + index, bridge => bridge.AddRareFirearm(index)); }
+        internal static DevelopmentActionResult DescribeRareFirearmAcquisition()
+        { return Execute("rare-firearm-acquisition-audit", bridge => bridge.DescribeRareFirearmAcquisition()); }
+
         internal static DevelopmentActionResult DescribeReloadReadiness()
         {
             return Execute(
