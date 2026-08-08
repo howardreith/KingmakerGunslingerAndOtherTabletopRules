@@ -10,6 +10,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
@@ -4378,6 +4379,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "targeted free action, exact tracker, fixed shared Grit resource",
                 twinContract ? "exact" : "changed", twinContract,
                 "exact AddFacts, hit tracker, ability logic, and resource references"));
+
+            BlueprintFeature[] ownedDeeds = gunslinger == null ? null : new[]
+            {
+                gunslinger.Deadeye.Feature, gunslinger.Dodge.Feature,
+                gunslinger.QuickClear.Feature, gunslinger.Initiative,
+                gunslinger.PistolWhip.Feature, gunslinger.UtilityShot.Feature,
+                gunslinger.DeadShot.Feature, gunslinger.StartlingShot.Feature,
+                gunslinger.TargetingArms.Feature, gunslinger.TargetingHead.Feature,
+                gunslinger.TargetingTorso.Feature, gunslinger.TargetingLegs.Feature,
+                gunslinger.BleedingWound.Feature, gunslinger.ExpertLoading.Feature,
+                gunslinger.LightningReload.Feature, gunslinger.Evasive.Feature,
+                gunslinger.MenacingShot.Feature, gunslinger.CheatDeath,
+                gunslinger.DeathsShot.Feature, gunslinger.StunningShot.Feature,
+                gunslinger.MysteriousStranger.FocusedAim,
+                pistolero.TwinShotKnockdown,
+                gunslinger.MusketMaster.SteadyAim,
+                gunslinger.MusketMaster.FastMusket
+            };
+            bool ownership = gunslinger != null && ownedDeeds != null &&
+                gunslinger.TrueGrit.Choices.Length == ownedDeeds.Length &&
+                gunslinger.TrueGrit.Choices.Select((choice, index) =>
+                {
+                    PrerequisiteFeature[] prerequisites = choice.ComponentsArray
+                        .OfType<PrerequisiteFeature>().ToArray();
+                    return prerequisites.Length == 1 &&
+                        ReferenceEquals(prerequisites[0].Feature,
+                            ownedDeeds[index]) &&
+                        prerequisites[0].Group == Prerequisite.GroupType.All;
+                }).All(value => value);
+            assertions.Add(Assertion("true-grit-archetype-ownership",
+                "24 exact deed-owned choices including four archetype deeds",
+                ownership ? "exact" : "changed", ownership,
+                "ordered choice identities and exact PrerequisiteFeature references"));
 
             ProductionFirearmBlueprintCatalog firearms =
                 BlueprintBootstrap.ProductionFirearms;
@@ -9861,7 +9895,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successStunned = false, immunityStunned = false, cleaned = false;
             bool selectionShape = false, positiveGateAtZero = false,
                 zeroCostRequiresPositive = false, variableCost = false,
-                slingersLuckExcluded = false;
+                slingersLuckExcluded = false, archetypeChoicesEffective = false;
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
             int shotEventsBefore = -1, shotEventsAfter = -1;
@@ -10016,6 +10050,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     zeroCostRequiresPositive = !TrueGritRuntime.Evaluate(
                         attacker.Descriptor, TrueGritDeed.StunningShot, 1, false)
                         .Available;
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.FocusedAim));
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.TwinShotKnockdown));
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.SteadyAim));
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.FastMusket));
+                    bool positiveOnly = TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.SteadyAim, 0, true)
+                        .Available && TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.FastMusket, 0, true)
+                        .Available;
+                    attacker.Descriptor.Resources.Restore(
+                        gunslinger.Grit.Resource, 1);
+                    TrueGritDecision focused = TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.FocusedAim, 1, false);
+                    TrueGritDecision twin = TrueGritRuntime.Evaluate(
+                        attacker.Descriptor, TrueGritDeed.TwinShotKnockdown,
+                        1, false);
+                    archetypeChoicesEffective = positiveOnly &&
+                        focused.Available && focused.EffectiveCost == 0 &&
+                        twin.Available && twin.EffectiveCost == 0;
                 }
             }
             catch (Exception exception)
@@ -10103,10 +10160,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !immunityStunned,
                     "RuleAttackRoll.ImmuneToCriticalHit"),
                 Assertion("true-grit-selection-and-policy",
-                    qualifyTrueGrit ? "two level-20 selections, twenty choices, selected cost reduction, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
+                    qualifyTrueGrit ? "two level-20 selections, 24 choices, selected cost reduction, archetype runtime effects, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
                     observed, !qualifyTrueGrit || (selectionShape &&
-                        positiveGateAtZero && zeroCostRequiresPositive &&
-                        variableCost && slingersLuckExcluded),
+                    positiveGateAtZero && zeroCostRequiresPositive &&
+                    variableCost && slingersLuckExcluded &&
+                    archetypeChoicesEffective),
                     "production selection blueprints, unit-owned facts, and TrueGritRuntime"),
                 Assertion("external-isolation", "detached units and item cleaned",
                     observed, cleaned, "reference snapshots and disposal"),
