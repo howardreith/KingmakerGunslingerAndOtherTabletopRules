@@ -1407,7 +1407,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
-            AddMusketMasterBlueprintAssertions(assertions);
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             RuntimeTestResult result = CreateResult(
                 pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
@@ -5182,6 +5181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            AddMusketMasterBlueprintAssertions(assertions);
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             return CreateResult(pass ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);

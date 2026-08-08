@@ -1022,6 +1022,17 @@ namespace KingmakerGunslinger.DomainTests
                 "GunslingerStartingFirearmResolver.MatchesConfiguration" })
                 Assertions.True(observerSource.Contains(token),
                     "Musket Master runtime observer lacks exact token: " + token);
+            int classObserver = observerSource.IndexOf(
+                "private RuntimeTestResult RunClassBlueprintContractObservation()",
+                StringComparison.Ordinal);
+            int creationObserver = observerSource.IndexOf(
+                "private RuntimeTestResult RunCharacterCreationContractObservation()",
+                StringComparison.Ordinal);
+            Assertions.True(classObserver >= 0 && creationObserver > classObserver &&
+                observerSource.Substring(classObserver,
+                    creationObserver - classObserver).Contains(
+                        "AddMusketMasterBlueprintAssertions(assertions)"),
+                "Musket Master assertions are not invoked by the exact class observer.");
         }
 
         private static void ThirdPlaytestNativeParentOnly()

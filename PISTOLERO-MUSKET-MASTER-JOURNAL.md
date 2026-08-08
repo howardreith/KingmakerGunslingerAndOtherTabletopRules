@@ -483,3 +483,26 @@ Commit/publish the guarded Musket Master observer, then run a fresh guarded
 `observe-class-blueprint-contracts` process against that exact commit/package;
 inspect every structured Musket assertion and record the run before beginning
 Steady Aim mechanics.
+
+## 2026-08-08 - Observer registration correction
+
+- Guarded run directory
+  `20260808T0514160336987Z-observe-class-blueprint-contracts` returned PASS for
+  the inherited three class assertions, but structured-result inspection proved
+  the new Musket assertions were absent. A broad source anchor had registered
+  them in the feature-acceptance path instead of the exact class observer.
+- This run is explicitly insufficient and is not counted as Musket Master
+  evidence. Moved the call into the exact class-observer method, removed the
+  unintended feature-acceptance call, and hardened the source test to verify
+  method-local registration.
+- Corrected source passes all 927 tests and the full Release/package gate.
+  Candidate package SHA-256:
+  `4DAC4B3FF3B1EB318C99FF30490E01B24B75C59294E8A08702458B3F83E7306E`;
+  DLL SHA-256:
+  `EC55839DDF0EA342858FF15C812E101C633D8E5B6E1F1ADE48089142A48FC351`.
+
+## Exact next action
+
+Commit/publish the exact observer registration correction, rerun fresh guarded
+`observe-class-blueprint-contracts`, and require all four named Musket Master
+assertions in the structured result before recording runtime evidence.
