@@ -181,3 +181,19 @@ prerequisite APIs and implement the single EWP
 Commit and publish the EWP/scoped-feat phase, run the guarded native firearm-feat
 and presentation observers against that exact commit, record their evidence,
 then generalize the starting-firearm resolver and ownership transaction.
+
+## 2026-08-08 - EWP/scoped-feat runtime evidence
+
+- Exact published commit `f2667c2f9cc6dae003a0aaf355d770899121af01`
+  passed guarded fresh-process native feat observation
+  `20260808T0420061481380Z-observe-native-weapon-feat-contracts`.
+- The same exact commit passed guarded fresh-process presentation observation
+  `20260808T0422069409940Z-observe-gunslinger-presentation`.
+- Both runs used the strict local-runtime package through Steam App ID 640820,
+  produced structured PASS results, and completed the harness restoration path.
+
+## Exact next action
+
+Commit and publish this evidence record, then generalize the expected starter
+resolver and `GunslingerStartingFirearmOwnershipPatch` transaction with focused
+inventory-delta, detached-chargen, idempotence, and rollback tests.
