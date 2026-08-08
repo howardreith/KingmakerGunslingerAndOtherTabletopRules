@@ -821,3 +821,31 @@ Commit and publish the archetype-aware True Grit source checkpoint, extend the
 guarded True Grit/class observers to prove all 24 ownership prerequisites and
 the four archetype runtime decisions, then run those observers on the exact
 committed package before proceeding to the Musket Master mechanics fixture.
+
+## 2026-08-08 - Archetype-aware True Grit guarded evidence
+
+- Exact committed source `fa976145bc8f2f315b80065c1cb9ec1c8a0e476b`
+  passed `observe-class-blueprint-contracts` in directory
+  `20260808T1324308734029Z-observe-class-blueprint-contracts`, runtime run ID
+  `20260808T1324309047264Z-053d5756361048e582e8ac2e01baf0c7`.
+  The live blueprint graph contains 24 choices with one ordered, exact
+  `PrerequisiteFeature` deed reference apiece and retains every prior archetype
+  contract.
+- The same committed source passed `disposable-gunslinger-true-grit` in
+  directory `20260808T1326311118342Z-disposable-gunslinger-true-grit`, runtime
+  run ID `20260808T1326311438745Z-5890d023ea9147cca4e40f90288cc00e`.
+  Focused Aim and Twin Shot resolve to zero cost while retaining the
+  positive-grit floor; selected Steady Aim and Fast Musket are available at
+  zero grit through the positive-only contract. The existing two selections,
+  variable reduction, Stunning Shot behavior, and exclusions remained PASS.
+- Exact package SHA-256
+  `D3B697F23F1044A910BEC31548984ACCEDF1BE3D5A75639BEE23768A0F834C3F`;
+  DLL SHA-256
+  `9E40B67171339CA4ED14B7990B3AE0450205A671278ECFB5CACE1A948FAC2A7B`.
+
+## Exact next action
+
+Commit and publish the curated True Grit runtime evidence, then implement the
+guarded Musket Master mechanics fixture for Steady Aim effective range,
+Deadeye composition, Fast Musket reload revalidation, scoped proficiency,
+training, and the mandatory exact native Musket starter/ownership transaction.
