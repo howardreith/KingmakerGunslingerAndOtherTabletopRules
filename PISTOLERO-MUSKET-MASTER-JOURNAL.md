@@ -142,9 +142,14 @@ rewire production firearm restrictions and focused tests before adding EWP.
 - Guarded mod load requires a clean Git state, so the first dirty-tree launch
   was correctly rejected before deployment. Commit/publish this source-qualified
   phase, then run fresh mod load against the exact commit.
+- Exact published source commit `c89cf29badf45fed4193d058046ebfd828451715`
+  passed guarded fresh-process mod load
+  `20260808T0408526345980Z-mod-load-smoke`; structured result and evidence
+  manifests are under the matching machine-local runtime-evidence directory.
+  Bootstrap registered the 208-active identity set without rollback.
 
 ## Exact next action
 
-Commit/publish scoped proficiency, run guarded `mod-load-smoke`, record the run,
-then inspect exact BAB/duplicate prerequisite APIs and implement the single EWP
+Commit/publish this runtime evidence record, then inspect exact BAB/duplicate
+prerequisite APIs and implement the single EWP
 (Firearms) publication plus scoped firearm-feat prerequisites.
