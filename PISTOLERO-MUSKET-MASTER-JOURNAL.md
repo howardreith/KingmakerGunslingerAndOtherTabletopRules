@@ -1008,3 +1008,28 @@ cleanup and authoritative RTWP action-cycle state.
 
 Commit/publish the detached-marker repair and rerun the expanded Pistolero
 scenario on the exact committed package.
+
+## 2026-08-08 - Expanded Pistolero deed runtime PASS
+
+- Exact committed source `c381eb0e85f330f35890041b67c92b030faa3259`
+  passed `disposable-pistolero-deeds` in directory
+  `20260808T1405262267429Z-disposable-pistolero-deeds`, run ID
+  `20260808T1405262615305Z-40b057769b664cbb84bd9c6fb7e68f65`.
+- The guarded result now proves hit, same-roll half miss, precision immunity,
+  unmultiplied critical packet, genuine misfire rejection, scatter rejection,
+  final Dead Shot delivery once despite three constituent hits and duplicate
+  callback, Twin Shot reference deduplication/per-target isolation/native
+  Prone/grit, and request-local cleanup.
+- Package SHA-256
+  `69E4A2FD88B11BF03B7895FF3EE5097168B17B807881287B130765320EF2BAAB`;
+  DLL SHA-256
+  `98D9A2B68DD643640DEE45426E496BD65877338979E007E171971F9B45E20DF7`.
+- Marker expiry remains structurally enforced by the six-second current-turn
+  buff and cleanup; delivery-fault grit restoration remains source-enforced.
+  Persistence/reconciliation qualification will exercise stale-marker cleanup.
+
+## Exact next action
+
+Commit/publish the curated expanded PASS, then audit generic archetype
+presentation/icons/action-bar ownership and implement persistence/reconciliation
+coverage for stale markers, deeds, training, proficiency, and starter identity.
