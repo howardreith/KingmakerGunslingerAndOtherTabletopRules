@@ -109,3 +109,10 @@ Enhancement +5, Reliable, and Seeking static enchantments remained exactly
 `3,3,3` through Wrecked-to-Broken Overhaul and Broken-to-Normal Repair. The
 configured one-minute delivery, interruption atomicity, combat gate, exact kit
 consumption, condition logs, and complete cleanup also passed.
+
+Guarded Quick Clear run
+`20260808T2044205593443Z-1587853acc1a49959806b534bffdd6cb` passed on source
+`a329a1260beb73bde362b506e8ab1c96ab7de1ba`. The Last Word retained all three
+static enchantments across standard, move, and rejected Quick Clear paths
+(`3,3,3,3`), while native grit, availability, condition-log, diagnostics, and
+cleanup contracts remained exact.

@@ -322,3 +322,9 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - One Overhaul Kit and one Firearm Repair Kit were consumed by their respective
   transitions; two exact condition logs and complete inventory/item cleanup
   passed.
+
+- Guarded Quick Clear run
+  `20260808T2044205593443Z-1587853acc1a49959806b534bffdd6cb` passed on source
+  `a329a1260beb73bde362b506e8ab1c96ab7de1ba`. Standard and move paths restored
+  The Last Word from Broken to Normal; Wrecked and zero-grit paths rejected
+  atomically. Its +5, Reliable, and Seeking static set remained `3,3,3,3`.
