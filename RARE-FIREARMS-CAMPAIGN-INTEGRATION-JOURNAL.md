@@ -254,3 +254,22 @@ gates and guarded blueprint contracts before vendor/loot publication.
   Pistol and 2 for a trained Broken Reliable Pistol. The Last Word retained all
   three static enchantments before, during Loaded, and during Broken state-token
   replacement (`3,3,3`).
+## 2026-08-08 — deterministic Seeking combat PASS
+
+- Final source for this phase: `2ed81a147e709d13c450dc793b2082a633ea159a`.
+- Guarded run: `20260808T1943391642314Z-5bde100e871d487cbd1c5357ebeb9bbe`;
+  evidence directory `20260808T1943391283437Z-magic-firearm-native-properties`.
+- Initial strategy using `AutoHit` was rejected because installed
+  `RuleAttackRoll` skipped concealment-check construction. Ordinary attacks then
+  proved control `Concealment` versus Seeking advancement, but exposed that the
+  loaded optional-mod composition bypasses `RuleAttackRoll.set_Roll` while still
+  calling exact `IsSuccessRoll(d20)`; the old adapter therefore failed closed.
+- The bounded repair records the exact eligible attack's native `d20` at
+  `IsSuccessRoll` only when setter observation is absent and not faulted. It does
+  not patch global dice, infer an item, or apply a queued forced roll after native
+  success computation. Existing setter observation remains preferred.
+- Final PASS used native Blur `dd3ad347240624d46a11a092b4dd4674` and forced
+  concealment percentile 1 for both attacks. The +1 control ended Concealment;
+  The Last Word retained Partial concealment, used deterministic natural 19,
+  hit AC 14, discharged exactly once, evaluated threshold 0 as ordinary, and
+  produced no misfire or cleanup fault.

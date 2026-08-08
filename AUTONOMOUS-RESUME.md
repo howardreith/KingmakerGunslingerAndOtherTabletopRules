@@ -1362,3 +1362,16 @@ Reliable and Seeking resolution, Reliable thresholds 0 and 2, and preservation
 of The Last Word's three static enchantments across Loaded and Broken token
 replacement. Next implement the deterministic live Reliable direct/scatter and
 Seeking/native enhancement/Fey Bane/Thundering combat-property scenarios.
+
+## Current resume point — Reliable and remaining native-property matrices
+
+Project Seeking concealment behavior passed guarded runtime run
+`20260808T1943391642314Z-5bde100e871d487cbd1c5357ebeb9bbe` on exact
+published source `2ed81a147e709d13c450dc793b2082a633ea159a`. The same exact
+native Blur buff and forced percentile 1 produced a control Concealment miss and
+a The Last Word hit while both stored Partial concealment; the Seeking attack
+used natural 19, attack bonus 135, AC 14, one discharge, threshold none, and no
+misfire/state leak. The run also qualified the exact `IsSuccessRoll(d20)`
+compatibility fallback when another installed patch bypasses the Roll setter.
+Next implement and run the Reliable direct/scatter threshold matrix, followed by
+static lifecycle and native enhancement/Fey Bane/Thundering qualification.

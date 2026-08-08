@@ -59,3 +59,15 @@ and runtime items proved the exact eight-item identity/family/cost/weight/static
 enchantment catalog, exact-item Reliable and Seeking qualification, effective
 Reliable thresholds 0 and 2, and preservation of The Last Word's Enhancement
 +5, Reliable, and Seeking enchantments across Loaded and Broken token changes.
+## Deterministic Seeking combat qualification
+
+Guarded run `20260808T1943391642314Z-5bde100e871d487cbd1c5357ebeb9bbe`
+passed on published source `2ed81a147e709d13c450dc793b2082a633ea159a`.
+Against exact native Blur `dd3ad347240624d46a11a092b4dd4674`, the +1 Pistol
+control failed forced percentile 1 as `Concealment`. The Last Word preserved the
+same `Partial` concealment classification and percentile result, bypassed only
+that failed success read, then hit on deterministic natural 19 against AC 14.
+Both exact items discharged once. The Last Word's Reliable threshold was 0,
+the attack was ordinary rather than a misfire, and all disposable state was
+removed. This run also proves the exact-event fallback for an installed
+composition that calls `IsSuccessRoll(d20)` without the observable Roll setter.
