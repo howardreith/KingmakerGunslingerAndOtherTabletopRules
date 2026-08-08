@@ -1,7 +1,6 @@
 # Pistolero and Musket Master Qualification
 
-Status: unchanged-baseline qualification complete; feature qualification not
-started.
+Status: implementation and feature qualification in progress.
 
 ## Baseline
 
@@ -24,12 +23,27 @@ The inherited detached Dodge failure and the two distinct Call of the Wild
 evidence classifications are recorded in the journal. No feature evidence or
 runtime qualification is claimed yet.
 
-## Current blocker
+## Current feature evidence
 
-The required publication helper refused local checkpoint `c962e33` because the
-new feature branch is not in its external allowlist. This is a policy blocker,
-not a source, build, package, runtime, or compatibility failure. No bypass was
-attempted and feature implementation has not started.
+- Source: `49a545d638b930dbb6decd2119e00f6c3585fd58`, version 0.0.72.
+- Guarded Steam class-blueprint PASS:
+  `20260808T0517582472885Z-observe-class-blueprint-contracts`, runtime run ID
+  `20260808T0517582785424Z-83c886dcc18c400f9fcac681db3fbf55`.
+- The structured result proves one exact Musket Master on the Gunslinger parent,
+  exact six replacement/addition rows including the existing Rapid Reload
+  (Musket), `ReplaceStartingEquipment`, the exact production Musket/powder/ball/
+  kit references, and exact starter-resolver configuration.
+- Runtime DLL SHA-256:
+  `63394DFC43F15FBBEEE82B14581EB3EAD0B1B9A3AC2015C570F76AD3CF11BA63`.
+- No save interaction occurred. This is blueprint/catalog evidence only; live
+  character-creation inventory, battered ownership, and deed mechanics remain
+  unqualified.
+
+The earlier directory
+`20260808T0514160336987Z-observe-class-blueprint-contracts` is not Musket Master
+evidence: its PASS contained only the inherited class assertions because the
+new assertion call was registered in the wrong scenario. The correction and a
+method-local source test preceded the passing run above.
 
 ## Required final evidence
 

@@ -506,3 +506,28 @@ Steady Aim mechanics.
 Commit/publish the exact observer registration correction, rerun fresh guarded
 `observe-class-blueprint-contracts`, and require all four named Musket Master
 assertions in the structured result before recording runtime evidence.
+
+## 2026-08-08 - Musket Master native contract runtime evidence
+
+- Corrected guarded directory
+  `20260808T0517582472885Z-observe-class-blueprint-contracts` PASS, runtime run
+  ID `20260808T0517582785424Z-83c886dcc18c400f9fcac681db3fbf55`, exact source
+  `49a545d638b930dbb6decd2119e00f6c3585fd58`, version 0.0.72.
+- All four required structured assertions are present and PASS: exact parent and
+  single catalog membership; exact ordered production Musket/powder/ball/kit
+  starter contract with `ReplaceStartingEquipment`; exact six remove/add rows
+  including existing Rapid Reload (Musket); exact starter-resolver references.
+- Loaded/runtime DLL SHA-256:
+  `63394DFC43F15FBBEEE82B14581EB3EAD0B1B9A3AC2015C570F76AD3CF11BA63`.
+  The harness launched only through Steam App ID 640820 and recorded no save
+  interaction.
+- This qualifies the native blueprint/catalog contract, not live character
+  creation inventory or unfinished Steady Aim/Fast Musket mechanics.
+
+## Exact next action
+
+Commit/publish the curated Musket Master native-contract evidence, then inspect
+the existing single-shot deed marker/turn-boundary components and implement
+Steady Aim as a visible move-action arming ability feeding the existing exact
+per-attack effective-range context, with focused positive-grit, consumption,
+expiry, isolation, and no-global-mutation tests.
