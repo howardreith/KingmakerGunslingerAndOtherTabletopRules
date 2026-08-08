@@ -324,6 +324,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerStartingItems &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveCharacterCreationContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableDescriptorConstruction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerSelection &&
@@ -813,6 +814,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -832,6 +834,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction ||
                     _request.Scenario ==
@@ -1055,6 +1058,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     RunGunslingerStartingItems();
                 }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter)
+                {
+                    RunGunslingerStartingItems(true);
+                }
                 else
                 {
                     CompleteWorkingSaveSmoke(RuntimeTestStatuses.Pass, "", "");
@@ -1263,7 +1270,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             receiverBoundPath = receiverBoundPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity;
             receiverBoundPath = receiverBoundPath ||
-                _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems;
+                _request.Scenario == RuntimeTestScenarioCatalog.GunslingerStartingItems ||
+                _request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter;
             if (receiverBoundPath)
             {
                 result.WorkingSaveReceiverBoundActionObservation = evidence;
@@ -1637,7 +1645,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Complete(result);
         }
 
-        private void RunGunslingerStartingItems()
+        private void RunGunslingerStartingItems(bool musketMaster = false)
         {
             _trace.Record("feature-acceptance-start",
                 "native Gunslinger starting items; exact request-local rollback");
@@ -1656,6 +1664,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             long batteredSaleValue = -1;
             long ordinarySaleValue = -1;
             bool exactOwnership = false;
+            bool repeatedGrantStable = false;
+            bool scopedProficiency = false, fastReloadMatrix = false,
+                steadyDeadeyeRange = false, musketTraining = false;
             bool transferRetained = false;
             bool vendorRoundTrip = false;
             bool vendorDealRoundTrip = false;
@@ -1676,6 +1687,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int originalStartingGold = 0;
             long moneyBefore = 0;
             FieldInfo classField = null;
+            BlueprintArchetype[] originalArchetypes = null;
             List<object> before = null;
             BlueprintItem[] expected = null;
             int[] beforeQuantities = null;
@@ -1705,7 +1717,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The working character already has Gunslinger ClassData; identity substitution refused.");
 
                 before = EnumerateRuntimeInventory(player.Inventory);
-                expected = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
+                BlueprintArchetype musketArchetype = BlueprintBootstrap
+                    .GunslingerClass.MusketMaster.Archetype;
+                expected = musketMaster ? musketArchetype.StartingItems :
+                    gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
                 if (expected.Length != 4 || expected.Any(item => item == null) ||
                     expected.Distinct().Count() != 4)
                     throw new InvalidOperationException(
@@ -1714,6 +1729,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(item)).ToArray();
                 moneyBefore = player.Money;
                 originalClass = classData.CharacterClass;
+                originalArchetypes = (classData.Archetypes ??
+                    new List<BlueprintArchetype>()).ToArray();
                 originalStartingGold = gunslinger.StartingGold;
                 classField = typeof(Kingmaker.UnitLogic.ClassData).GetField(
                     "CharacterClass", BindingFlags.Instance | BindingFlags.Public);
@@ -1724,6 +1741,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 gunslinger.StartingGold = 0;
                 classField.SetValue(classData, gunslinger);
+                if (musketMaster)
+                {
+                    classData.Archetypes.Clear();
+                    classData.Archetypes.Add(musketArchetype);
+                }
                 LevelUpHelper.AddStartingItems(mainDescriptor);
 
                 List<object> afterGrant = EnumerateRuntimeInventory(player.Inventory);
@@ -1747,6 +1769,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Kingmaker.EntitySystem.Entities.UnitEntityData owner;
                 exactOwnership = BatteredFirearmOriginRuntime.TryGetOwner(
                     batteredItem, out owner) && ReferenceEquals(owner, mainDescriptor.Unit);
+                int inventoryCountAfterFirst = EnumerateRuntimeInventory(
+                    player.Inventory).Count;
+                int powderAfterFirst = player.Inventory.Count(expected[1]);
+                int ballAfterFirst = player.Inventory.Count(expected[2]);
+                LevelUpHelper.AddStartingItems(mainDescriptor);
+                repeatedGrantStable = EnumerateRuntimeInventory(player.Inventory)
+                        .Count == inventoryCountAfterFirst &&
+                    player.Inventory.Count(expected[0]) - beforeQuantities[0] == 1 &&
+                    player.Inventory.Count(expected[1]) == powderAfterFirst &&
+                    player.Inventory.Count(expected[2]) == ballAfterFirst;
+                if (musketMaster)
+                {
+                    FirearmDefinition musketDefinition = BlueprintBootstrap
+                        .ProductionFirearms.Musket.Spec.Definition;
+                    scopedProficiency = FirearmProficiencyPolicy.CanUse(1,
+                            FirearmKind.Musket, false, false, true) &&
+                        !FirearmProficiencyPolicy.CanUse(1, FirearmKind.Pistol,
+                            false, false, true);
+                    fastReloadMatrix = ReloadActionEconomy.Evaluate(
+                            musketDefinition, true, true) ==
+                            EffectiveReloadAction.Move &&
+                        ReloadActionEconomy.Evaluate(musketDefinition, false,
+                            true) == EffectiveReloadAction.Standard;
+                    var training = Classes.FirearmTrainingPolicy.Evaluate(
+                        FirearmKind.Musket, 5, false, 0, 4);
+                    musketTraining = training.Eligible &&
+                        training.DamageBonus == 8 &&
+                        training.ReducedBrokenMisfire;
+                    var deadeye = new DeadeyeService().Evaluate(
+                        new DeadeyeRequest(true, true, 1, musketDefinition,
+                            18.5d, 5, 10));
+                    steadyDeadeyeRange = deadeye.Status == DeadeyeStatus.Eligible &&
+                        deadeye.RangeIncrement == 2 && deadeye.GritCost == 1;
+                }
                 transferUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 if (transferUnit == null || transferUnit.Descriptor == null ||
@@ -1922,7 +1978,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (transferUnit != null) transferUnit.Dispose();
                 if (classData != null && originalClass != null && classField != null)
+                {
+                    if (originalArchetypes != null)
+                    {
+                        classData.Archetypes.Clear();
+                        classData.Archetypes.AddRange(originalArchetypes);
+                    }
                     classField.SetValue(classData, originalClass);
+                }
                 if (gunslinger != null)
                     gunslinger.StartingGold = originalStartingGold;
                 if (player != null && player.Inventory != null)
@@ -1972,7 +2035,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 classRestored = classData == null ||
-                    ReferenceEquals(classData.CharacterClass, originalClass);
+                    (ReferenceEquals(classData.CharacterClass, originalClass) &&
+                    originalArchetypes != null && classData.Archetypes
+                        .SequenceEqual(originalArchetypes));
                 startingGoldRestored = gunslinger == null ||
                     gunslinger.StartingGold == originalStartingGold;
                 if (player != null)
@@ -2014,12 +2079,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
                     "qualified receiver-bound working-save path"),
                 Assertion("native-starting-item-grant",
-                    "pistol=1;powder=20;ball=20;kit=1",
-                    "added=" + addedCount + ";pistol=" + pistolCount +
+                    (musketMaster ? "musket" : "pistol") +
+                        "=1;powder=20;ball=20;kit=1",
+                    "added=" + addedCount + ";firearm=" + pistolCount +
                         ";powder=" + powderCount + ";ball=" + ballCount +
                         ";kit=" + kitCount,
                     exactGrant,
                     "LevelUpHelper.AddStartingItems on the exact main descriptor"),
+                Assertion("repeated-starting-item-callback",
+                    "no firearm or ammunition duplication after repeat observation",
+                    "stable=" + repeatedGrantStable, repeatedGrantStable,
+                    "bound-starter guard around exact native AddStartingItems"),
+                Assertion("musket-master-scoped-proficiency",
+                    "Musket allowed and Pistol rejected by two-handed scope",
+                    "exact=" + scopedProficiency,
+                    !musketMaster || scopedProficiency,
+                    "canonical firearm handedness and scoped policy"),
+                Assertion("musket-master-fast-reload",
+                    "Musket: Rapid Reload only Standard; Fast Musket plus Rapid Reload Move",
+                    "exact=" + fastReloadMatrix,
+                    !musketMaster || fastReloadMatrix,
+                    "central ReloadActionEconomy"),
+                Assertion("musket-master-steady-deadeye-range",
+                    "+10-foot increment applied before Deadeye increment and cost",
+                    "exact=" + steadyDeadeyeRange,
+                    !musketMaster || steadyDeadeyeRange,
+                    "installed DeadeyeService and effective-range policy"),
+                Assertion("musket-master-training",
+                    "rank 4 Musket Training gives Dex+3 and reduced Broken misfire",
+                    "exact=" + musketTraining,
+                    !musketMaster || musketTraining,
+                    "shared FirearmTrainingPolicy"),
                 Assertion("battered-origin-and-sale-value",
                     "owner=exact;bound=22gp;ordinary=native-non22",
                     "owner=" + exactOwnership + ";bound=" +

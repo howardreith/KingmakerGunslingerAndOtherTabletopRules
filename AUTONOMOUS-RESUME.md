@@ -1185,3 +1185,9 @@ only `KMG_AUTOMATION_WORKING`; never load or mutate
 `KMG_AUTOMATION_BASELINE`. Never save, quicksave, send UI input, or infer a save
 from Continue/newest ordering. Stop on ambiguous identity, entitlement, UI,
 prerequisite, save-write, or result evidence.
+
+Pistolero/Musket Master active checkpoint: the combined
+`musket-master-mechanics-and-starter` fixture is source-qualified on the current
+branch. Commit/publish it, then run it only through the guarded Steam harness
+with exact save `KMG_AUTOMATION_WORKING`; preserve the native inventory,
+class/archetype, money, and no-save-write rollback assertions.

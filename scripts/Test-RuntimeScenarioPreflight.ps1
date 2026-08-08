@@ -98,6 +98,7 @@ $expected = @(
     'disposable-gunslinger-stunning-shot',
     'disposable-gunslinger-true-grit',
     'disposable-pistolero-deeds',
+    'musket-master-mechanics-and-starter',
     'observe-optional-mod-compatibility',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',

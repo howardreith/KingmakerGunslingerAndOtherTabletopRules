@@ -893,3 +893,25 @@ Add the combined disposable Musket Master mechanics/starter fixture covering
 Steady Aim, Deadeye range composition, Fast Musket reload revalidation, scoped
 proficiency, training, exact Musket grant, 20/20 ammunition, battered
 ownership, and repeated-callback idempotence.
+
+## 2026-08-08 - Combined Musket Master guarded fixture source
+
+- Registered `musket-master-mechanics-and-starter` through the existing
+  autonomous `KMG_AUTOMATION_WORKING` path and no-save-write sentinels.
+- The reversible fixture commits the exact Musket Master archetype onto the
+  trusted receiver, calls native `LevelUpHelper.AddStartingItems`, verifies the
+  production Musket/no-Pistol ordered starter contract, 20/20 ammunition,
+  gunsmith kit, exact battered owner, then repeats the callback and requires no
+  firearm, ammunition, or inventory-reference delta.
+- The same result includes exact scoped-family, central Fast Musket/Rapid Reload
+  ordering, +10-foot-before-Deadeye range/cost, and rank-4 Musket Training
+  assertions, plus exact inventory/class/archetype/gold/money rollback.
+- Repository validation, 930/930 deterministic tests, runtime preflight 86,
+  clean exact-reference Release build, build-output, SoundBank, package, and
+  strict package validation pass.
+
+## Exact next action
+
+Commit and publish the combined Musket Master fixture, run it against
+`KMG_AUTOMATION_WORKING`, diagnose any exact native-contract mismatch, and
+repeat only after a materially justified repair until the full result passes.
