@@ -88,11 +88,8 @@ namespace KingmakerGunslinger.Reloading
                         m_TestMusket,
                         m_BlackPowder,
                         m_LeadBall);
-                return result.IsAvailable && (m_DynamicAction || ReloadActionEconomy.Evaluate(
-                    result.Firearm.Definition,
-                    FastMusketRuntime.IsAvailable(ability.Caster),
-                    RapidReloadRuntime.HasMatchingChoice(ability.Caster,
-                        result.Firearm.Definition.Kind)) == m_Action);
+                return result.IsAvailable && (m_DynamicAction ||
+                    result.Plan.Action == m_Action);
             }
             catch
             {
@@ -102,7 +99,7 @@ namespace KingmakerGunslinger.Reloading
 
         public string GetReason()
         {
-            return "Requires one unambiguous equipped firearm that is not full or Wrecked, plus compatible Black Powder Charges and Lead Balls.";
+            return "Requires one unambiguous equipped firearm that is not full or Wrecked and the exact ammunition selected by Use Paper Cartridges. No loose-ammunition fallback occurs.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(

@@ -58,6 +58,11 @@
     <Compile Include="Ammunition\ReloadAmmunitionSourceKind.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfile.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfileCatalog.cs" />
+    <Compile Include="Ammunition\ReloadInventoryComponent.cs" />
+    <Compile Include="Ammunition\IReloadAmmunitionInventory.cs" />
+    <Compile Include="Ammunition\BasicReloadAmmunitionInventoryAdapter.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionInventorySnapshot.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionTransactionService.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -130,7 +135,9 @@
     <Compile Include="Ammunition\BasicAmmunitionTransactionService.cs" />
     <Compile Include="Ammunition\IBasicAmmunitionInventory.cs" />
     <Compile Include="Ammunition\KingmakerBasicAmmunitionInventory.cs" />
+    <Compile Include="Ammunition\KingmakerReloadAmmunitionInventory.cs" />
     <Compile Include="Blueprints\BasicAmmunitionBlueprints.cs" />
+    <Compile Include="Blueprints\PaperCartridgeModeBlueprints.cs" />
     <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
@@ -518,6 +525,9 @@
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
+    <Compile Include="Reloading\FirearmReloadPlanStatus.cs" />
+    <Compile Include="Reloading\FirearmReloadPlan.cs" />
+    <Compile Include="Reloading\FirearmReloadPlanner.cs" />
     <Compile Include="Reloading\FastMusketRuntime.cs" />
     <Compile Include="Rules\UpCloseAndDeadlyPolicy.cs" />
     <Compile Include="Rules\TwinShotKnockdownPolicy.cs" />
@@ -534,6 +544,7 @@
     <Compile Include="Blueprints\DeedTierBlueprints.cs" />
     <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
     <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
+    <Compile Include="Reloading\PaperCartridgeModeRuntime.cs" />
     <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />
     <Compile Include="Recovery\FirearmOverhaulAvailability.cs" />
     <Compile Include="Recovery\FirearmOverhaulResult.cs" />

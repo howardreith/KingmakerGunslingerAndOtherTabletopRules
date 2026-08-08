@@ -153,11 +153,11 @@ def validate(
         "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs",
     ]:
         adapter = read(root, relative)
-        require_tokens(
-            adapter,
-            ["ExactEquippedFirearmResolver.TryResolve", "FirearmActionPolicy.Evaluate"],
-            relative,
-        )
+        required_policy = ("FirearmReloadPlanner.Evaluate" if
+            "Reloading/ReloadTestMusketRuntime.cs" in relative else
+            "FirearmActionPolicy.Evaluate")
+        require_tokens(adapter,
+            ["ExactEquippedFirearmResolver.TryResolve", required_policy], relative)
 
     tests = read(root, "tests/KingmakerGunslinger.DomainTests/Sprint30Tests.cs")
     require_tokens(

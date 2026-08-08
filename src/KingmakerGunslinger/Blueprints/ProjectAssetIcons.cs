@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.Blueprints
             MagicFirearmBlueprintCatalog magicFirearms,
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet supplies,
+            PaperCartridgeModeBlueprintSet paperCartridgeMode,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -111,6 +112,8 @@ namespace KingmakerGunslinger.Blueprints
             items.SetIcon(ammunition.LeadBall, Require("lead-ball"));
             items.SetIcon(ammunition.BlackPowder, Require("black-powder"));
             items.SetIcon(ammunition.PaperCartridge, Require("paper-cartridge"));
+            BlueprintUnitFactAccess.Resolve().SetIcon(
+                paperCartridgeMode.Ability, Require("paper-cartridge"));
             items.SetIcon(repairKit, Require("repair-kit"));
             items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"));
             items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"));

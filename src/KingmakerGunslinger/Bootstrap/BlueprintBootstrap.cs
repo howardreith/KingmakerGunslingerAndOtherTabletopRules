@@ -7,6 +7,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Compatibility;
@@ -24,7 +25,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 245;
+        internal const int ExpectedRegisteredBlueprintCount = 247;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -45,6 +46,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static FirearmStateTokenBlueprintSet _firearmStateTokens;
         private static BlueprintWeaponEnchantment _batteredOrigin;
         private static BasicAmmunitionBlueprintSet _basicAmmunition;
+        private static PaperCartridgeModeBlueprintSet _paperCartridgeMode;
         private static ProductionFirearmBlueprintCatalog _productionFirearms;
         private static MagicFirearmBlueprintCatalog _magicFirearms;
         private static GunslingerClassBlueprintSet _gunslingerClassBlueprints;
@@ -70,6 +72,17 @@ namespace KingmakerGunslinger.Bootstrap
                 lock (Gate)
                 {
                     return _diagnosticFeature;
+                }
+            }
+        }
+
+        internal static PaperCartridgeModeBlueprintSet PaperCartridgeMode
+        {
+            get
+            {
+                lock (Gate)
+                {
+                    return _paperCartridgeMode;
                 }
             }
         }
@@ -469,6 +482,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _firearmStateTokens = result.FirearmStateTokens;
                     _batteredOrigin = result.BatteredOrigin;
                     _basicAmmunition = result.BasicAmmunition;
+                    _paperCartridgeMode = result.PaperCartridgeMode;
                     _productionFirearms = result.ProductionFirearms;
                     _magicFirearms = result.MagicFirearms;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
@@ -619,6 +633,9 @@ namespace KingmakerGunslinger.Bootstrap
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall);
 
+                PaperCartridgeModeBlueprintSet paperCartridgeMode =
+                    PaperCartridgeModeBlueprints.Register(registry, basicAmmunition);
+
                 BlueprintAbility overhaulTestMusketAbility =
                     OverhaulTestMusketAbilityBlueprints.Register(
                         registry,
@@ -643,11 +660,13 @@ namespace KingmakerGunslinger.Bootstrap
                 FirearmProficiencyBlueprints.AttachReload(
                     firearmProficiency,
                     reloadTestMusketAbility,
-                    scatterShotAbility);
+                    scatterShotAbility,
+                    paperCartridgeMode.Ability);
                 FirearmScopedProficiencyBlueprints.AttachActions(
                     scopedFirearmProficiencies,
                     reloadTestMusketAbility,
-                    scatterShotAbility);
+                    scatterShotAbility,
+                    paperCartridgeMode.Ability);
 
                 BlueprintFeature gunsmithing = GunsmithingBlueprints.Register(
                     registry, overhaulTestMusketAbility, repairTestMusketAbility,
@@ -721,6 +740,7 @@ namespace KingmakerGunslinger.Bootstrap
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
                     productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit,
                     gunsmithingSupplies,
+                    paperCartridgeMode,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
                 PlayerFacingPresentation.ApplyArchetypes(
@@ -782,6 +802,7 @@ namespace KingmakerGunslinger.Bootstrap
                     firearmStateTokens,
                     batteredOrigin,
                     basicAmmunition,
+                    paperCartridgeMode,
                     gunslingerClassBlueprints);
             }
             catch (Exception initializationException)
@@ -931,6 +952,7 @@ namespace KingmakerGunslinger.Bootstrap
                 FirearmStateTokenBlueprintSet firearmStateTokens,
                 BlueprintWeaponEnchantment batteredOrigin,
                 BasicAmmunitionBlueprintSet basicAmmunition,
+                PaperCartridgeModeBlueprintSet paperCartridgeMode,
                 GunslingerClassBlueprintSet gunslingerClassBlueprints)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
@@ -951,6 +973,7 @@ namespace KingmakerGunslinger.Bootstrap
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
                 BatteredOrigin = batteredOrigin ?? throw new ArgumentNullException("batteredOrigin");
                 BasicAmmunition = basicAmmunition ?? throw new ArgumentNullException("basicAmmunition");
+                PaperCartridgeMode = paperCartridgeMode ?? throw new ArgumentNullException("paperCartridgeMode");
                 GunslingerClassBlueprints = gunslingerClassBlueprints ??
                     throw new ArgumentNullException("gunslingerClassBlueprints");
             }
@@ -986,6 +1009,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintWeaponEnchantment BatteredOrigin { get; private set; }
 
             internal BasicAmmunitionBlueprintSet BasicAmmunition { get; private set; }
+
+            internal PaperCartridgeModeBlueprintSet PaperCartridgeMode { get; private set; }
 
             internal GunslingerClassBlueprintSet GunslingerClassBlueprints { get; private set; }
         }

@@ -7,6 +7,8 @@ namespace KingmakerGunslinger.Reloading
         Broken = 3,
         Wrecked = 4,
         InsufficientBlackPowder = 5,
-        InsufficientLeadBall = 6
+        InsufficientLeadBall = 6,
+        InsufficientPaperCartridge = 7,
+        UnsupportedAmmunition = 8
     }
 }

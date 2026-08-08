@@ -77,3 +77,45 @@
 - Uncertainty: native activatable exact fields and Paper mode ownership still
   require installed-contract inspection in Phase 2.
 - Remote branch equals local HEAD: pending Phase 1 publication.
+
+## 2026-08-08 — Phase 2 deterministic candidate
+
+- Branch/base: `codex/paper-cartridges-auto-reload`, descendant of
+  `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`; Phase 1 commit
+  `28db02b616d6fe25f6fc85e1eec10574849bd573` was pushed and remote-equal.
+- Version remains the intermediate source pin `0.0.73` until the final release
+  transaction.
+- Architecture: one immutable `FirearmReloadPlan` binds exact unit/item,
+  canonical definition, effective state, selected profile, source snapshot,
+  requested/loadable rounds, and effective action. Manual availability,
+  `AbilityData` action, `UnitUseAbility` construction, and delivery consume that
+  plan. Loose and Paper sources share one exact rollback/verification service.
+- Native mode: `KMG.Ammunition.PaperCartridgeModeMarker`
+  (`69a804ea1fd14a5da3ba893c373f481f`) and
+  `KMG.Ammunition.UsePaperCartridges`
+  (`b0f16e90dc4e48929e111a7d56b62e5d`) are off-by-default, immediate/free,
+  unit-local facts granted once through full and scoped proficiencies.
+- Ledger/bootstrap: 248 total / 247 active / one reserved; every prior identity
+  remains unchanged.
+- Focused coverage: mandatory twelve-row action matrix, incompatible/no-fallback
+  policy, exact loose/paper deltas, successful Paper state transaction,
+  post-write rollback, mixed-ammunition rejection, and mode/grant source
+  contracts. Complete suite: 948/948 PASS.
+- Validation/build/package: repository PASS; clean exact-reference Release PASS;
+  build-output PASS; SoundBank PASS; strict package PASS.
+- Candidate package SHA-256:
+  `bff694d8676014ee93c09c0de843a429102b6a4d1c4ebbd869758931a5033f24`.
+  Candidate DLL SHA-256:
+  `4625ec0ade5404f91062443707fa46f6780a3e658049070eabcd68e2835ffef1`.
+- Runtime: `disposable-paper-cartridge-reload` added as a save-free guarded
+  scenario. The first launch attempt was correctly refused because the harness
+  requires a clean Git state; no Kingmaker process was launched. The candidate
+  will be committed/pushed, then exact-build smoke and scenario runs will occur.
+- Failures/changed strategy: historical validators were updated only where the
+  former loose-only implementation tokens were deliberately replaced by the
+  central planner/transaction and for the append-only count increase.
+- Compatibility transactions: none. Runtime run IDs: none yet.
+- Next exact action: publish this deterministic candidate, verify remote equality,
+  then run fresh guarded `mod-load-smoke` and
+  `disposable-paper-cartridge-reload`; repair from structured evidence if needed.
+- Remote branch equals local HEAD: pending candidate publication.

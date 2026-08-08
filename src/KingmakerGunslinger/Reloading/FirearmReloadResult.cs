@@ -17,6 +17,20 @@ namespace KingmakerGunslinger.Reloading
             FirearmState afterState,
             BasicAmmunitionInventorySnapshot beforeInventory,
             BasicAmmunitionInventorySnapshot afterInventory)
+            : this(status, beforeState, afterState,
+                ReloadAmmunitionProfileCatalog.LooseBasic,
+                FromBasic(beforeInventory, "beforeInventory"),
+                FromBasic(afterInventory, "afterInventory"))
+        {
+        }
+
+        internal FirearmReloadResult(
+            FirearmReloadStatus status,
+            FirearmState beforeState,
+            FirearmState afterState,
+            ReloadAmmunitionProfile profile,
+            ReloadAmmunitionInventorySnapshot beforeInventory,
+            ReloadAmmunitionInventorySnapshot afterInventory)
         {
             if (!Enum.IsDefined(typeof(FirearmReloadStatus), status))
             {
@@ -26,6 +40,7 @@ namespace KingmakerGunslinger.Reloading
             Status = status;
             BeforeState = beforeState ?? throw new ArgumentNullException("beforeState");
             AfterState = afterState ?? throw new ArgumentNullException("afterState");
+            Profile = profile ?? throw new ArgumentNullException("profile");
             BeforeInventory = beforeInventory ?? throw new ArgumentNullException("beforeInventory");
             AfterInventory = afterInventory ?? throw new ArgumentNullException("afterInventory");
 
@@ -40,8 +55,7 @@ namespace KingmakerGunslinger.Reloading
                     AfterState.Condition != BeforeState.Condition ||
                     AfterState.LoadedAmmunition == null ||
                     (!BeforeState.IsEmpty && BeforeState.LoadedAmmunition != AfterState.LoadedAmmunition) ||
-                    AfterInventory.BlackPowderCharges != BeforeInventory.BlackPowderCharges - roundsLoaded ||
-                    AfterInventory.LeadBalls != BeforeInventory.LeadBalls - roundsLoaded)
+                    !HasExactConsumption(BeforeInventory, AfterInventory, Profile, roundsLoaded))
                 {
                     throw new ArgumentException(
                         "A successful reload must preserve condition and ammunition identity, load a positive round count, and consume the matching component count.");
@@ -63,9 +77,11 @@ namespace KingmakerGunslinger.Reloading
 
         internal FirearmState AfterState { get; private set; }
 
-        internal BasicAmmunitionInventorySnapshot BeforeInventory { get; private set; }
+        internal ReloadAmmunitionProfile Profile { get; private set; }
 
-        internal BasicAmmunitionInventorySnapshot AfterInventory { get; private set; }
+        internal ReloadAmmunitionInventorySnapshot BeforeInventory { get; private set; }
+
+        internal ReloadAmmunitionInventorySnapshot AfterInventory { get; private set; }
 
         internal bool Succeeded
         {
@@ -87,6 +103,28 @@ namespace KingmakerGunslinger.Reloading
                 AfterState,
                 BeforeInventory,
                 AfterInventory);
+        }
+
+        private static bool HasExactConsumption(ReloadAmmunitionInventorySnapshot before,
+            ReloadAmmunitionInventorySnapshot after, ReloadAmmunitionProfile profile, int rounds)
+        {
+            try
+            {
+                ReloadAmmunitionTransactionService.VerifyDelta(before, after, profile, rounds);
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        private static ReloadAmmunitionInventorySnapshot FromBasic(
+            BasicAmmunitionInventorySnapshot snapshot, string parameterName)
+        {
+            if (snapshot == null) throw new ArgumentNullException(parameterName);
+            return new ReloadAmmunitionInventorySnapshot(
+                snapshot.BlackPowderCharges, snapshot.LeadBalls, 0);
         }
     }
 }

@@ -17,7 +17,8 @@ namespace KingmakerGunslinger.Reloading
             string reason,
             ItemEntityWeapon weapon,
             FirearmItemStateSnapshot firearm,
-            BasicAmmunitionInventorySnapshot inventory)
+            ReloadAmmunitionInventorySnapshot inventory,
+            FirearmReloadPlan plan)
         {
             if (string.IsNullOrWhiteSpace(reason))
             {
@@ -29,8 +30,10 @@ namespace KingmakerGunslinger.Reloading
             Weapon = weapon;
             Firearm = firearm;
             Inventory = inventory;
+            Plan = plan;
 
-            if (isAvailable && (weapon == null || firearm == null || inventory == null))
+            if (isAvailable && (weapon == null || firearm == null || inventory == null ||
+                plan == null || !plan.IsAvailable))
             {
                 throw new ArgumentException(
                     "An available reload evaluation requires an exact weapon, firearm state, and inventory snapshot.");
@@ -41,7 +44,8 @@ namespace KingmakerGunslinger.Reloading
         internal string Reason { get; private set; }
         internal ItemEntityWeapon Weapon { get; private set; }
         internal FirearmItemStateSnapshot Firearm { get; private set; }
-        internal BasicAmmunitionInventorySnapshot Inventory { get; private set; }
+        internal ReloadAmmunitionInventorySnapshot Inventory { get; private set; }
+        internal FirearmReloadPlan Plan { get; private set; }
 
         public override string ToString()
         {

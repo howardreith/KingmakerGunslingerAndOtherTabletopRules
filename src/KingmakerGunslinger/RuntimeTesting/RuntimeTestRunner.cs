@@ -522,6 +522,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeReload)
+                {
+                    Complete(RunDisposablePaperCartridgeReload());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableOverhaulMaintenance)
                 {
                     Complete(RunDisposableOverhaulMaintenance());
@@ -3609,6 +3615,143 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeReload()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player inventory is unavailable.");
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            PaperCartridgeModeBlueprintSet mode = BlueprintBootstrap.PaperCartridgeMode;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon rifle = BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item;
+            MagicFirearmBlueprintEntry namedEntry = BlueprintBootstrap.MagicFirearms.Entries[3];
+            BlueprintItemWeapon named = namedEntry.Item;
+            int powderBefore = player.Inventory.Count(ammunition.BlackPowder);
+            int ballBefore = player.Inventory.Count(ammunition.LeadBall);
+            int paperBefore = player.Inventory.Count(ammunition.PaperCartridge);
+            UnitEntityData unit = null;
+            ItemEntityWeapon weapon = null;
+            Buff marker = null;
+            bool modeGranted = false, offByDefault = false, pistolLoaded = false,
+                actionExact = false, noLooseConsumption = false,
+                magicCompatible = false, staticPreserved = false,
+                advancedRejected = false, brokenRetained = false, cleaned = false;
+            string observed = null;
+            try
+            {
+                object ignored; string method;
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { ammunition.PaperCartridge, 3 },
+                        new object[] { ammunition.PaperCartridge } },
+                    out ignored, out method))
+                    throw new InvalidOperationException("Temporary Paper Cartridges could not be added.");
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                modeGranted = unit.Descriptor.HasFact(mode.Ability);
+                offByDefault = !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
+                marker = unit.Descriptor.AddFact(mode.Marker) as Buff;
+                if (marker == null || !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker))
+                    throw new InvalidOperationException("The request-local paper mode marker was rejected.");
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability plan = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, pistol, ammunition.BlackPowder, ammunition.LeadBall);
+                actionExact = plan.IsAvailable && plan.Plan.Action == EffectiveReloadAction.Move &&
+                    ReferenceEquals(plan.Plan.ExactItem, weapon) &&
+                    plan.Plan.Profile == ReloadAmmunitionProfileCatalog.PaperCartridge;
+                FirearmReloadResult reload = ReloadTestMusketRuntime.Execute(unit.Descriptor,
+                    pistol, ammunition.BlackPowder, ammunition.LeadBall);
+                FirearmState loaded = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State;
+                pistolLoaded = reload.Succeeded && loaded.LoadedAmmunition ==
+                    ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                noLooseConsumption = player.Inventory.Count(ammunition.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammunition.LeadBall) == ballBefore;
+
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(named);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                int staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    namedEntry.Spec.Enchantments.Contains(value.Blueprint as BlueprintWeaponEnchantment));
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability namedPlan = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, named, ammunition.BlackPowder, ammunition.LeadBall);
+                FirearmReloadResult namedReload = ReloadTestMusketRuntime.Execute(unit.Descriptor,
+                    named, ammunition.BlackPowder, ammunition.LeadBall);
+                int staticAfter = weapon.Enchantments.Count(value => value != null &&
+                    namedEntry.Spec.Enchantments.Contains(value.Blueprint as BlueprintWeaponEnchantment));
+                magicCompatible = namedPlan.IsAvailable && namedReload.Succeeded;
+                staticPreserved = staticBefore == staticAfter && staticBefore == 2;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null, FirearmCondition.Broken));
+                ReloadTestMusketRuntime.Execute(unit.Descriptor, named,
+                    ammunition.BlackPowder, ammunition.LeadBall);
+                brokenRetained = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition == FirearmCondition.Broken;
+
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(rifle);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability rejected = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, rifle, ammunition.BlackPowder, ammunition.LeadBall);
+                advancedRejected = !rejected.IsAvailable && rejected.Plan != null &&
+                    rejected.Plan.Status == FirearmReloadPlanStatus.IncompatibleAmmunition;
+                observed = "modeGranted=" + modeGranted + ";offDefault=" + offByDefault +
+                    ";action=" + actionExact + ";pistol=" + pistolLoaded +
+                    ";looseUntouched=" + noLooseConsumption + ";magic=" + magicCompatible +
+                    ";static=" + staticPreserved + ";broken=" + brokenRetained +
+                    ";advancedRejected=" + advancedRejected;
+            }
+            finally
+            {
+                if (unit != null && marker != null) unit.Descriptor.Buffs.RemoveFact(marker);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                int excess = player.Inventory.Count(ammunition.PaperCartridge) - paperBefore;
+                if (excess > 0) player.Inventory.Remove(ammunition.PaperCartridge, excess);
+                if (unit != null) unit.Dispose();
+                cleaned = player.Inventory.Count(ammunition.PaperCartridge) == paperBefore &&
+                    player.Inventory.Count(ammunition.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammunition.LeadBall) == ballBefore;
+            }
+            observed = (observed ?? "fixture-failed-before-observation") + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-mode-native-grant", "granted exactly through proficiency and off by default",
+                    observed, modeGranted && offByDefault,
+                    "native AddFacts plus absence of hidden marker"),
+                Assertion("paper-manual-reload", "Move-action Pistol plan loads exact paper identity",
+                    observed, actionExact && pistolLoaded && noLooseConsumption,
+                    "authoritative plan and atomic manual reload transaction"),
+                Assertion("paper-magic-family-state", "named Reliable Pistol shares compatibility and retains two static enchantments",
+                    observed, magicCompatible && staticPreserved && brokenRetained,
+                    "canonical family definition and item-token replacement"),
+                Assertion("paper-advanced-rejection", "Advanced Rifle rejects paper without fallback",
+                    observed, advancedRejected,
+                    "definition-driven profile compatibility"),
+                Assertion("request-local-cleanup", "temporary cartridges, unit, facts, and items restored",
+                    observed, cleaned, "guaranteed finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private RuntimeTestResult RunDisposableOverhaulMaintenance()

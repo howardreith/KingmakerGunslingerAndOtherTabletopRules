@@ -986,6 +986,8 @@
     { "symbol": "KMG.Firearms.WatchAtTheWorldsEndItem", "guid": "87c7baaaad504b7f8742f2dfcd79d067", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Rare Firearms 0.0.74", "notes": "Watch at the World's End unique Musket." },
     { "symbol": "KMG.Ammunition.PaperCartridge", "guid": "fea7337cfd06417a853546af9d950f77", "plannedType": "BlueprintItem", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Stackable prepared early-firearm ammunition item." },
     { "symbol": "KMG.Ammunition.PaperLoadedNormalStateToken", "guid": "a6344f33e7344d4aab249485faedf7fd", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Inert item-owned Normal paper-loaded state token." },
-    { "symbol": "KMG.Ammunition.PaperBrokenLoadedStateToken", "guid": "fdd814300fff4eea89d9d508663aebc0", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Inert item-owned Broken paper-loaded state token." }
+    { "symbol": "KMG.Ammunition.PaperBrokenLoadedStateToken", "guid": "fdd814300fff4eea89d9d508663aebc0", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Inert item-owned Broken paper-loaded state token." },
+    { "symbol": "KMG.Ammunition.PaperCartridgeModeMarker", "guid": "69a804ea1fd14a5da3ba893c373f481f", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Hidden unit-local selected-ammunition marker." },
+    { "symbol": "KMG.Ammunition.UsePaperCartridges", "guid": "b0f16e90dc4e48929e111a7d56b62e5d", "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Visible off-by-default Paper Cartridge reload-source mode." }
   ]
 }

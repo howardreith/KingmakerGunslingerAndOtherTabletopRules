@@ -35,7 +35,7 @@ def validate(root: Path, version: str = VERSION,
          "exact pre-operation snapshots", "Two consecutive fresh-process PASS runs"],
         "Sprint 33 entry criteria")
     require_tokens(read(root, "src/KingmakerGunslinger/Reloading/FirearmReloadTransactionService.cs"),
-        ["TryReloadBasicRounds", "roundsToLoad", "TryConsumeLoads",
+        ["TryReloadBasicRounds", "roundsToLoad", "_ammunitionService.Consume",
          "rules.Capacity - beforeState.LoadedRounds"],
         "Sprint 33 multi-round reload transaction")
     require_tokens(read(root, "tests/KingmakerGunslinger.DomainTests/Program.cs"),
