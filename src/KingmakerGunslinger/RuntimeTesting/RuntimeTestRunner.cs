@@ -4306,6 +4306,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target = null;
             ItemEntityWeapon control = null;
             ItemEntityWeapon seeking = null;
+            ItemEntityWeapon watch = null;
+            BlueprintFeature feyType = null;
             BlueprintBuff concealment = null;
             Kingmaker.UnitLogic.Buffs.Buff concealmentFact = null;
             RuleAttackRoll controlRoll = null;
@@ -4392,6 +4394,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "same native concealment classification and chance remain on both attacks",
                     observed, sameNativeConcealment,
                     "stored native RuleConcealmentCheck fields"));
+
+                target.Descriptor.Buffs.RemoveFact(concealmentFact);
+                concealmentFact = null;
+                RuleAttackRoll plusOneAttack = TriggerReliableMatrixAttack(
+                    attacker, target, control, 10, FirearmCondition.Normal);
+                RuleAttackRoll plusFiveAttack = TriggerReliableMatrixAttack(
+                    attacker, target, seeking, 10, FirearmCondition.Normal);
+                string enhancementObserved = "plus1=" +
+                    plusOneAttack.AttackBonus + ";plus5=" +
+                    plusFiveAttack.AttackBonus + ";rolls=" + plusOneAttack.Roll +
+                    "," + plusFiveAttack.Roll;
+                assertions.Add(Assertion("native-enhancement-attack-bonus",
+                    "+5 Pistol native attack bonus is exactly four above +1 Pistol",
+                    enhancementObserved,
+                    plusFiveAttack.AttackBonus - plusOneAttack.AttackBonus == 4 &&
+                        plusOneAttack.Roll.Value == 10 &&
+                        plusFiveAttack.Roll.Value == 10,
+                    "native WeaponEnhancementBonus through RuleCalculateAttackBonus"));
+
+                feyType = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintFeature>()
+                    .Single(value => string.Equals(value.name, "FeyType",
+                        StringComparison.Ordinal));
+                watch = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[7].Item);
+                RuleAttackRoll nonFey = TriggerReliableMatrixAttack(
+                    attacker, target, watch, 10, FirearmCondition.Normal);
+                target.Descriptor.AddFact(feyType);
+                RuleAttackRoll fey = TriggerReliableMatrixAttack(
+                    attacker, target, watch, 10, FirearmCondition.Normal);
+                string feyObserved = "feature=" + feyType.AssetGuid +
+                    ";nonFey=" + nonFey.AttackBonus + ";fey=" +
+                    fey.AttackBonus + ";rolls=" + nonFey.Roll + "," + fey.Roll;
+                assertions.Add(Assertion("native-fey-bane-attack-bonus",
+                    "Watch gains native +2 Bane attack bonus only against exact Fey",
+                    feyObserved, fey.AttackBonus - nonFey.AttackBonus == 2 &&
+                        nonFey.Roll.Value == 10 && fey.Roll.Value == 10,
+                    "native WeaponConditionalEnhancementBonus and exact Fey type fact"));
+                target.Descriptor.RemoveFact(feyType);
             }
             catch (Exception exception)
             {
@@ -4406,6 +4447,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Body.PrimaryHand.RemoveItem(false);
                 if (control != null) FirearmRuntimeState.Repository.Remove(control);
                 if (seeking != null) FirearmRuntimeState.Repository.Remove(seeking);
+                if (watch != null) FirearmRuntimeState.Repository.Remove(watch);
+                if (feyType != null && target != null && target.Descriptor.HasFact(feyType))
+                    target.Descriptor.RemoveFact(feyType);
                 if (concealmentFact != null && target != null)
                     target.Descriptor.Buffs.RemoveFact(concealmentFact);
                 if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
