@@ -11504,11 +11504,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 roll18.Damage.Damage;
             int damage19 = roll19 == null || roll19.Damage == null ? -1 :
                 roll19.Damage.Damage;
+            int natural18 = roll18 == null || roll18.Attack == null ||
+                roll18.Attack.AttackRoll == null ? -1 :
+                roll18.Attack.AttackRoll.Roll.Value;
+            int natural19 = roll19 == null || roll19.Attack == null ||
+                roll19.Attack.AttackRoll == null ? -1 :
+                roll19.Attack.AttackRoll.Roll.Value;
+            int edge19 = roll19 == null || roll19.Attack == null ||
+                roll19.Attack.AttackRoll == null ||
+                roll19.Attack.AttackRoll.WeaponStats == null ? -1 :
+                roll19.Attack.AttackRoll.WeaponStats.CriticalEdge;
+            int edgeBonus19 = roll19 == null || roll19.Attack == null ||
+                roll19.Attack.AttackRoll == null ||
+                roll19.Attack.AttackRoll.WeaponStats == null ? -1 :
+                roll19.Attack.AttackRoll.WeaponStats.CriticalEdgeBonus;
             string observed = "grit=" + gritBefore + "->" + gritAfter +
                 ";rounds18=" + roundsAfter18 + ";rounds19=" + roundsAfter19 +
-                ";hit18=" + eighteenHit + ";threat18=" + eighteenThreat +
+                ";natural18=" + natural18 + ";hit18=" + eighteenHit +
+                ";threat18=" + eighteenThreat +
                 ";damage18=" + damage18 + ";hit19=" + nineteenHit +
-                ";threat19=" + nineteenThreat + ";damage19=" + damage19;
+                ";natural19=" + natural19 + ";edge19=" + edge19 +
+                ";edgeBonus19=" + edgeBonus19 + ";threat19=" +
+                nineteenThreat + ";damage19=" + damage19;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("targeting-torso-progression",
