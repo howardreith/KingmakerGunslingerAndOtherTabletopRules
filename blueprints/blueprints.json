@@ -64,6 +64,9 @@
       "symbol": "KMG.Archetypes.TwinShotKnockdown", "guid": "cd4b145b016d4db6ac60dc3c8aa8e396", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-11 Twin Shot Knockdown deed feature."
     },
     {
+      "symbol": "KMG.Archetypes.TwinShotKnockdownAbility", "guid": "87d1967bdbbd4ab98fe65e8bb9838eb8", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Targeted free-action Twin Shot Knockdown delivery."
+    },
+    {
       "symbol": "KMG.Archetypes.PistoleroDeedsLevel1", "guid": "6e3066820a3245eb80726e77e2627a36", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-1 deed summary."
     },
     {

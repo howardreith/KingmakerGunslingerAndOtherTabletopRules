@@ -502,6 +502,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\UpCloseAndDeadlyPolicy.cs">
       <Link>Rules\UpCloseAndDeadlyPolicy.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\TwinShotKnockdownPolicy.cs">
+      <Link>Rules\TwinShotKnockdownPolicy.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\KingmakerArmorClassAccess.cs">
       <Link>Rules\KingmakerArmorClassAccess.cs</Link>
     </Compile>

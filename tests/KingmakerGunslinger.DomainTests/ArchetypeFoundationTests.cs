@@ -362,5 +362,31 @@ namespace KingmakerGunslinger.DomainTests
                 UpCloseAndDeadlyPolicy.DiceAtLevel(0),
                 "Invalid class level did not fail closed.");
         }
+
+        internal static void TwinShotPolicyContract()
+        {
+            Assertions.True(TwinShotKnockdownPolicy.IsQualifyingHit(true, true,
+                1, FirearmKind.Pistol, true), "Pistol hit did not qualify.");
+            Assertions.True(TwinShotKnockdownPolicy.IsQualifyingHit(true, true,
+                1, FirearmKind.Revolver, true), "Revolver hit did not qualify.");
+            Assertions.False(TwinShotKnockdownPolicy.IsQualifyingHit(true, true,
+                1, FirearmKind.Musket, true), "Two-handed hit qualified.");
+            Assertions.False(TwinShotKnockdownPolicy.IsQualifyingHit(true, true,
+                1, FirearmKind.Pistol, false), "Miss qualified.");
+            Assertions.False(TwinShotKnockdownPolicy.IsQualifyingHit(false, true,
+                1, FirearmKind.Pistol, true), "Outside-turn hit qualified.");
+            Assertions.False(TwinShotKnockdownPolicy.CanExecute(1, false,
+                false, false, 1), "First hit enabled delivery.");
+            Assertions.True(TwinShotKnockdownPolicy.CanExecute(2, false,
+                false, false, 1), "Two hits did not enable delivery.");
+            Assertions.False(TwinShotKnockdownPolicy.CanExecute(2, true,
+                false, false, 1), "Repeated use remained enabled.");
+            Assertions.False(TwinShotKnockdownPolicy.CanExecute(2, false,
+                true, false, 1), "Already-prone target remained enabled.");
+            Assertions.False(TwinShotKnockdownPolicy.CanExecute(2, false,
+                false, true, 1), "Prone-immune target remained enabled.");
+            Assertions.False(TwinShotKnockdownPolicy.CanExecute(2, false,
+                false, false, 0), "Zero grit enabled ordinary delivery.");
+        }
     }
 }

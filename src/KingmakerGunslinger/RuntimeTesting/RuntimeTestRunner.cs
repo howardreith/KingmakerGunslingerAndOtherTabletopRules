@@ -4350,6 +4350,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 upCloseContract ? "exact" : "changed", upCloseContract,
                 "exact AddFacts, ability logic, buff handler, class/resource references"));
 
+            AddFacts twinGrant = pistolero == null ? null :
+                pistolero.TwinShotKnockdown.ComponentsArray
+                    .OfType<AddFacts>().SingleOrDefault();
+            TwinShotHitTracker twinTracker = pistolero == null ? null :
+                pistolero.TwinShotKnockdown.ComponentsArray
+                    .OfType<TwinShotHitTracker>().SingleOrDefault();
+            TwinShotKnockdownAbilityLogic twinLogic = pistolero == null ? null :
+                pistolero.TwinShotAbility.ComponentsArray
+                    .OfType<TwinShotKnockdownAbilityLogic>().SingleOrDefault();
+            bool twinContract = twinGrant != null && twinTracker != null &&
+                twinLogic != null && twinGrant.Facts.Length == 1 &&
+                ReferenceEquals(twinGrant.Facts[0], pistolero.TwinShotAbility) &&
+                ReferenceEquals(twinLogic.Grit, gunslinger.Grit.Resource) &&
+                pistolero.TwinShotAbility.ActionType ==
+                    Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Free &&
+                pistolero.TwinShotAbility.CanTargetEnemies;
+            assertions.Add(Assertion("twin-shot-knockdown-blueprint-contract",
+                "targeted free action, exact tracker, fixed shared Grit resource",
+                twinContract ? "exact" : "changed", twinContract,
+                "exact AddFacts, hit tracker, ability logic, and resource references"));
+
             ProductionFirearmBlueprintCatalog firearms =
                 BlueprintBootstrap.ProductionFirearms;
             bool resolver = firearms != null && gunslinger.MusketMaster != null &&

@@ -688,3 +688,36 @@ Commit/publish this curated live blueprint evidence, then implement and run the
 guarded disposable Up Close and Deadly mechanics scenario for hit, miss,
 critical, immunity, misfire, family/scatter gates, Dead Shot, fixed cost,
 marker lifecycle, fault rollback, and duplicate-callback idempotence.
+
+## 2026-08-08 - Twin Shot Knockdown source implementation
+
+- Replaced the level-11 placeholder with a targeted visible free action, an
+  exact hit-tracking component, and owner/target state keyed solely by reference
+  identity. Duplicate callbacks for the same `RuleAttackWithWeapon` do not
+  increase the count; different targets remain isolated.
+- Direct Pistol/Revolver hits qualify. Misses, non-firearms, wrong-family hits,
+  and turn-based attacks outside the Pistolero's exact current turn fail closed.
+  Dead Shot's final weapon delivery naturally contributes one event rather than
+  its constituent probes. RTWP uses the authorized per-owner combat-round
+  adaptation through the feature component's native round tick.
+- Execution revalidates the exact owner/target count and turn, rejects prone or
+  combat-maneuver-immune targets without spending, spends the ordinary fixed
+  cost, and applies native Prone directly with no save or CMB contest. A failed
+  native condition application restores grit. One target can be charged only
+  once per round, and round ticks discard all ephemeral evidence.
+- The initial deterministic/source gate passes all 930 tests; clean exact-
+  reference Release, build-output, SoundBank, and strict package validation pass.
+  Candidate package SHA-256:
+  `ECF6C1087B592FC129F07DEBF53E27020A1A406CECBFA4E823B095A228E4F64C`;
+  DLL SHA-256:
+  `0457D44D1571932B83F2F7B665AC45DC3B4C75029B3B42D6ED77226772866F83`.
+- Up Close and Deadly's dedicated behavioral scenario remains required and has
+  not been waived; batching both Pistolero deed fixtures will avoid duplicating
+  disposable-unit setup while retaining separate structured assertions.
+
+## Exact next action
+
+Complete the exact-source gate for the Twin Shot observer addition, commit and
+publish Twin Shot Knockdown, then run the guarded class observer before adding
+the combined disposable Pistolero deed mechanics fixture with separately named
+Up Close and Twin Shot assertions.

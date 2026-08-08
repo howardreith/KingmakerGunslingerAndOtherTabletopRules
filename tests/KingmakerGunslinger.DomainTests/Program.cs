@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
             Case("archetype-range.effective-boundaries", ArchetypeFoundationTests.EffectiveRangeContextBoundaries),
             Case("archetype-pistolero.up-close-policy", ArchetypeFoundationTests.UpCloseAndDeadlyPolicyContract),
+            Case("archetype-pistolero.twin-shot-policy", ArchetypeFoundationTests.TwinShotPolicyContract),
             Case("archetype-musket-master.native-starter-skeleton", MusketMasterStarterSkeleton),
             Case("archetype-pistolero.replacement-skeleton", PistoleroReplacementSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
@@ -1062,6 +1063,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "pistolero-registration",
                 "pistolero-replacement-rows", "pistolero-starter-resolver",
                 "project-archetype-order", "up-close-and-deadly-blueprint-contract",
+                "twin-shot-knockdown-blueprint-contract",
                 "AddPistoleroBlueprintAssertions(assertions)" })
                 Assertions.True(observer.Contains(token),
                     "Pistolero guarded observer lacks token: " + token);

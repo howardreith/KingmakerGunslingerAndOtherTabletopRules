@@ -37,7 +37,8 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature Training { get; private set; }
         internal BlueprintAbility UpCloseAbility { get; private set; }
         internal BlueprintBuff UpCloseArmed { get; private set; }
-        internal int Count { get { return 8; } }
+        internal BlueprintAbility TwinShotAbility { get; set; }
+        internal int Count { get { return 9; } }
     }
 
     internal static class PistoleroBlueprints
@@ -51,6 +52,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Archetypes.UpCloseAndDeadlyArmed";
         internal const string TwinShotSymbol =
             "KMG.Archetypes.TwinShotKnockdown";
+        internal const string TwinShotAbilitySymbol =
+            "KMG.Archetypes.TwinShotKnockdownAbility";
         private static readonly string[] TierSymbols = {
             "KMG.Archetypes.PistoleroDeedsLevel1",
             "KMG.Archetypes.PistoleroDeedsLevel7",
@@ -69,9 +72,10 @@ namespace KingmakerGunslinger.Blueprints
                     upCloseArmed, grit));
             BlueprintFeature upClose = registry.Register<BlueprintFeature>(
                 UpCloseSymbol, () => CreateUpCloseFeature(upCloseAbility));
+            BlueprintAbility twinAbility = registry.Register<BlueprintAbility>(
+                TwinShotAbilitySymbol, () => CreateTwinShotAbility(grit));
             BlueprintFeature twin = registry.Register<BlueprintFeature>(
-                TwinShotSymbol, () => CreateFeature("Twin Shot Knockdown",
-                    "After two distinct one-handed firearm hits against the same target during your turn, you may spend 1 grit to knock that target prone."));
+                TwinShotSymbol, () => CreateTwinShotFeature(twinAbility));
             BlueprintFeature[] tiers = {
                 RegisterTier(registry, 0,
                     "Up Close and Deadly, Gunslinger's Dodge, and Quick Clear."),
@@ -86,8 +90,54 @@ namespace KingmakerGunslinger.Blueprints
                     ReferenceEquals(value, archetype)))
                 gunslinger.CharacterClass.Archetypes = gunslinger.CharacterClass
                     .Archetypes.Concat(new[] { archetype }).ToArray();
-            return new PistoleroBlueprintSet(archetype, upClose, twin, tiers,
+            var set = new PistoleroBlueprintSet(archetype, upClose, twin, tiers,
                 training.Pistol, upCloseAbility, upCloseArmed);
+            set.TwinShotAbility = twinAbility;
+            return set;
+        }
+
+        private static BlueprintAbility CreateTwinShotAbility(
+            BlueprintAbilityResource grit)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintAbility>();
+            result.name = "KMG_TwinShotKnockdown_Ability";
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.TwinShotKnockdown.Ability.Name",
+                    "Twin Shot Knockdown"),
+                LocalizationService.Create("KMG.TwinShotKnockdown.Ability.Description",
+                    "As a free action after two distinct one-handed firearm hits against this target during your current turn, spend 1 grit to knock it prone without a save or combat maneuver check."), null);
+            result.Type = AbilityType.Extraordinary;
+            result.Range = AbilityRange.Close;
+            result.CanTargetEnemies = true;
+            result.CanTargetSelf = result.CanTargetFriends = result.CanTargetPoint = false;
+            result.SpellResistance = false;
+            result.Hidden = false;
+            result.ActionBarAutoFillIgnored = false;
+            result.ActionType = UnitCommand.CommandType.Free;
+            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Point;
+            result.ResourceAssetIds = Array.Empty<string>();
+            result.LocalizedDuration = LocalizationService.Create(
+                "KMG.TwinShotKnockdown.Ability.Duration", "Instantaneous");
+            result.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.TwinShotKnockdown.Ability.SavingThrow", "None");
+            var logic = ScriptableObject.CreateInstance<TwinShotKnockdownAbilityLogic>();
+            logic.name = "$KMG_TwinShotKnockdown_Deliver";
+            logic.Grit = grit;
+            result.ComponentsArray = new BlueprintComponent[] { logic };
+            return result;
+        }
+
+        private static BlueprintFeature CreateTwinShotFeature(BlueprintAbility ability)
+        {
+            BlueprintFeature result = CreateFeature("Twin Shot Knockdown",
+                "After two distinct one-handed firearm hits against the same target during your turn, you may spend 1 grit to knock that target prone without a save or combat maneuver check.");
+            var add = ScriptableObject.CreateInstance<AddFacts>();
+            add.name = "$KMG_TwinShotKnockdown_Grant";
+            add.Facts = new BlueprintUnitFact[] { ability };
+            var tracker = ScriptableObject.CreateInstance<TwinShotHitTracker>();
+            tracker.name = "$KMG_TwinShotKnockdown_Hits";
+            result.ComponentsArray = new BlueprintComponent[] { add, tracker };
+            return result;
         }
 
         private static BlueprintBuff CreateUpCloseArmed(
