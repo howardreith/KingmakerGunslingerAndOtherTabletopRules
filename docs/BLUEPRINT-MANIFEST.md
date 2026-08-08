@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-The append-only contract contains 217 stable identifiers: 216 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the mandatory Musket Master archetype skeleton and its supporting scoped features without changing any established GUID.
+The append-only contract contains 219 stable identifiers: 218 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the mandatory Musket Master archetype skeleton, Steady Aim action/marker, and supporting scoped features without changing any established GUID.
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.

@@ -496,6 +496,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\EffectiveFirearmRangePolicy.cs">
       <Link>Rules\EffectiveFirearmRangePolicy.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\SteadyAimPolicy.cs">
+      <Link>Rules\SteadyAimPolicy.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\KingmakerArmorClassAccess.cs">
       <Link>Rules\KingmakerArmorClassAccess.cs</Link>
     </Compile>

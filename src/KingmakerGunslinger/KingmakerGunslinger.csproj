@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
+    <Compile Include="Archetypes\SteadyAimMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
@@ -567,6 +568,7 @@
     <Compile Include="Rules\FirearmArmorClassService.cs" />
     <Compile Include="Rules\EffectiveFirearmRangePolicy.cs" />
     <Compile Include="Rules\EffectiveFirearmRangeRuntime.cs" />
+    <Compile Include="Rules\SteadyAimPolicy.cs" />
     <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
     <Compile Include="Scatter\ScatterGeometryDisposition.cs" />
     <Compile Include="Scatter\ScatterConeDistanceDecision.cs" />

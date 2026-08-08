@@ -3,8 +3,15 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
+using KingmakerGunslinger.Archetypes;
 using KingmakerGunslinger.Reloading;
 using UnityEngine;
 
@@ -14,34 +21,47 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal MusketMasterBlueprintSet(BlueprintArchetype archetype,
             BlueprintFeature steadyAim, BlueprintFeature fastMusket,
-            BlueprintFeature training)
+            BlueprintFeature training, BlueprintAbility steadyAimAbility,
+            BlueprintBuff steadyAimArmed)
         {
             Archetype = archetype;
             SteadyAim = steadyAim;
             FastMusket = fastMusket;
             Training = training;
+            SteadyAimAbility = steadyAimAbility;
+            SteadyAimArmed = steadyAimArmed;
         }
         internal BlueprintArchetype Archetype { get; private set; }
         internal BlueprintFeature SteadyAim { get; private set; }
         internal BlueprintFeature FastMusket { get; private set; }
         internal BlueprintFeature Training { get; private set; }
-        internal int Count { get { return 3; } }
+        internal BlueprintAbility SteadyAimAbility { get; private set; }
+        internal BlueprintBuff SteadyAimArmed { get; private set; }
+        internal int Count { get { return 5; } }
     }
 
     internal static class MusketMasterBlueprints
     {
         internal const string ArchetypeSymbol = "KMG.Archetypes.MusketMaster";
         internal const string SteadyAimSymbol = "KMG.Archetypes.SteadyAim";
+        internal const string SteadyAimAbilitySymbol =
+            "KMG.Archetypes.SteadyAimAbility";
+        internal const string SteadyAimArmedSymbol =
+            "KMG.Archetypes.SteadyAimArmed";
         internal const string FastMusketSymbol = "KMG.Archetypes.FastMusket";
 
         internal static MusketMasterBlueprintSet Register(BlueprintRegistry registry,
             GunslingerClassBlueprintSet gunslinger,
             FirearmTrainingBlueprintSet training, BlueprintFeature rapidMusket,
+            BlueprintAbilityResource grit,
             params BlueprintItem[] startingItems)
         {
+            BlueprintBuff steadyArmed = registry.Register<BlueprintBuff>(
+                SteadyAimArmedSymbol, () => CreateSteadyArmed(grit));
+            BlueprintAbility steadyAbility = registry.Register<BlueprintAbility>(
+                SteadyAimAbilitySymbol, () => CreateSteadyAbility(steadyArmed, grit));
             BlueprintFeature steady = registry.Register<BlueprintFeature>(
-                SteadyAimSymbol, () => CreatePassive("Steady Aim",
-                    "As a move action while this deed is available, arm your next two-handed direct firearm shot this turn to increase its range increment by 10 feet. This spends no grit."));
+                SteadyAimSymbol, () => CreateSteadyFeature(steadyAbility));
             BlueprintFeature fast = registry.Register<BlueprintFeature>(
                 FastMusketSymbol, () => CreatePassive("Fast Musket",
                     "While this deed is available, reload two-handed firearms as if they were one-handed firearms."));
@@ -54,7 +74,75 @@ namespace KingmakerGunslinger.Blueprints
                     .Archetypes.Concat(new[] { archetype }).ToArray();
             FastMusketRuntime.Configure(fast, null);
             return new MusketMasterBlueprintSet(archetype, steady, fast,
-                training.Musket);
+                training.Musket, steadyAbility, steadyArmed);
+        }
+
+        private static BlueprintBuff CreateSteadyArmed(
+            BlueprintAbilityResource grit)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintBuff>();
+            result.name = "KMG_SteadyAim_Armed";
+            result.IsClassFeature = true;
+            result.Stacking = StackingType.Replace;
+            var handler = ScriptableObject.CreateInstance<SteadyAimAttackHandler>();
+            handler.name = "$KMG_SteadyAim_Attack";
+            handler.Grit = grit;
+            result.ComponentsArray = new BlueprintComponent[] { handler };
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.SteadyAim.Armed.Name",
+                    "Steady Aim Armed"),
+                LocalizationService.Create("KMG.SteadyAim.Armed.Description",
+                    "Your next two-handed direct firearm shot this turn gains 10 feet to its effective range increment."), null);
+            return result;
+        }
+
+        private static BlueprintAbility CreateSteadyAbility(BlueprintBuff armed,
+            BlueprintAbilityResource grit)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintAbility>();
+            result.name = "KMG_SteadyAim_Ability";
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.SteadyAim.Ability.Name",
+                    "Steady Aim"),
+                LocalizationService.Create("KMG.SteadyAim.Ability.Description",
+                    "As a move action while you have positive grit, arm your next two-handed direct firearm shot this turn. That shot treats its range increment as 10 feet longer. Scatter cones do not qualify. This spends no grit."), null);
+            result.Type = AbilityType.Extraordinary;
+            result.Range = AbilityRange.Personal;
+            result.CanTargetSelf = true;
+            result.CanTargetPoint = result.CanTargetEnemies =
+                result.CanTargetFriends = false;
+            result.SpellResistance = false;
+            result.Hidden = false;
+            result.ActionBarAutoFillIgnored = false;
+            result.NeedEquipWeapons = false;
+            result.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            result.EffectOnEnemy = AbilityEffectOnUnit.None;
+            result.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
+            result.ActionType = UnitCommand.CommandType.Move;
+            result.ResourceAssetIds = Array.Empty<string>();
+            result.LocalizedDuration = LocalizationService.Create(
+                "KMG.SteadyAim.Ability.Duration", "Current turn or until used");
+            result.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.SteadyAim.Ability.SavingThrow", "None");
+            var logic = ScriptableObject.CreateInstance<SteadyAimAbilityLogic>();
+            logic.name = "$KMG_SteadyAim_Arm";
+            logic.ArmedMarker = armed;
+            logic.Grit = grit;
+            result.ComponentsArray = new BlueprintComponent[] { logic };
+            return result;
+        }
+
+        private static BlueprintFeature CreateSteadyFeature(
+            BlueprintAbility ability)
+        {
+            BlueprintFeature result = CreatePassive("Steady Aim",
+                "As a move action while you have positive grit, arm your next two-handed direct firearm shot this turn to increase its range increment by 10 feet. This spends no grit.");
+            var add = ScriptableObject.CreateInstance<AddFacts>();
+            add.name = "$KMG_SteadyAim_Grant";
+            add.Facts = new BlueprintUnitFact[] { ability };
+            add.DoNotRestoreMissingFacts = false;
+            result.ComponentsArray = new BlueprintComponent[] { add };
+            return result;
         }
 
         private static BlueprintArchetype CreateArchetype(

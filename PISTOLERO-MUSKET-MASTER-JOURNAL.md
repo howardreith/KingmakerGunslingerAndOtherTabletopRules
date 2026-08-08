@@ -531,3 +531,34 @@ the existing single-shot deed marker/turn-boundary components and implement
 Steady Aim as a visible move-action arming ability feeding the existing exact
 per-attack effective-range context, with focused positive-grit, consumption,
 expiry, isolation, and no-global-mutation tests.
+
+## 2026-08-08 - Steady Aim implementation
+
+- Replaced the stable Steady Aim placeholder feature with an exact AddFacts
+  grant to a new visible move-action ability and owner-scoped armed buff while
+  preserving the established feature GUID.
+- Activation spends no grit, requires positive grit, rejects duplicate arming,
+  and exposes exact current-turn/None presentation. The marker removes itself
+  on the owner's next round boundary and on the first qualifying shot.
+- The attack handler qualifies exact direct Musket, Rifle, and Blunderbuss
+  attacks; ignores one-handed/non-firearm actions; excludes registered Scatter
+  Shot deliveries; revalidates grit; and registers exactly +10 feet on the
+  attack's existing weak per-roll effective-range context. No weapon blueprint,
+  weapon type, or firearm definition is mutated.
+- Pure coverage proves family, scatter, marker-count, unknown-kind, touch-AC,
+  and Deadeye range-order boundaries. The guarded class observer now also checks
+  the exact move action, AddFacts grant, marker handler, and shared Grit
+  references.
+- Blueprint count is 218 active; ledger is 219 stable IDs including one
+  reserved. All 927 tests and the full Release/build-output/SoundBank/package
+  gate pass. Candidate package SHA-256:
+  `88C45D6E98B90FB05A45111734E8713C402C3DFED9E3005A04AA7F0A208C30C3`;
+  DLL SHA-256:
+  `3C34889F961BCA32C691105B06AB4DA4002C28F947AA1A7DFB6666344AAF875E`.
+
+## Exact next action
+
+Commit/publish Steady Aim, then run the fresh guarded class-blueprint observer
+and require the new `steady-aim-blueprint-contract` assertion before adding a
+dedicated disposable mechanics scenario for arming, consumption, range, grit,
+scatter exclusion, expiry, and metadata immutability.

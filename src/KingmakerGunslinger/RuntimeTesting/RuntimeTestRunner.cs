@@ -4230,6 +4230,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "exact Musket Master maps to exact production Musket",
                 resolver ? "exact" : "changed", resolver,
                 "read-only resolver configuration reference comparison"));
+
+            BlueprintAbility steadyAbility = musketMaster == null ? null :
+                musketMaster.SteadyAimAbility;
+            Archetypes.SteadyAimAbilityLogic steadyLogic = steadyAbility == null
+                ? null : steadyAbility.ComponentsArray.OfType<
+                    Archetypes.SteadyAimAbilityLogic>().SingleOrDefault();
+            Archetypes.SteadyAimAttackHandler steadyHandler = musketMaster == null ||
+                musketMaster.SteadyAimArmed == null ? null :
+                musketMaster.SteadyAimArmed.ComponentsArray.OfType<
+                    Archetypes.SteadyAimAttackHandler>().SingleOrDefault();
+            AddFacts steadyGrant = musketMaster == null ? null :
+                musketMaster.SteadyAim.ComponentsArray.OfType<AddFacts>()
+                    .SingleOrDefault();
+            bool steadyContract = steadyAbility != null && steadyLogic != null &&
+                steadyHandler != null && steadyGrant != null &&
+                steadyAbility.ActionType ==
+                    Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Move &&
+                steadyGrant.Facts.Length == 1 &&
+                ReferenceEquals(steadyGrant.Facts[0], steadyAbility) &&
+                ReferenceEquals(steadyLogic.ArmedMarker,
+                    musketMaster.SteadyAimArmed) &&
+                ReferenceEquals(steadyHandler.Grit, gunslinger.Grit.Resource) &&
+                ReferenceEquals(steadyLogic.Grit, gunslinger.Grit.Resource);
+            assertions.Add(Assertion("steady-aim-blueprint-contract",
+                "visible move action, exact marker, exact shared Grit resource",
+                steadyContract ? "exact" : "changed", steadyContract,
+                "exact AddFacts, ability logic, buff handler, and resource references"));
         }
 
         private static bool ExactLevelEntry(LevelEntry[] entries, int level,

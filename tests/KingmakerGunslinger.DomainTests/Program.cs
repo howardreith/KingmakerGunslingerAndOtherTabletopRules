@@ -1019,6 +1019,7 @@ namespace KingmakerGunslinger.DomainTests
                 "musket-master-starting-items",
                 "musket-master-replacement-rows",
                 "musket-master-starter-resolver",
+                "steady-aim-blueprint-contract",
                 "GunslingerStartingFirearmResolver.MatchesConfiguration" })
                 Assertions.True(observerSource.Contains(token),
                     "Musket Master runtime observer lacks exact token: " + token);

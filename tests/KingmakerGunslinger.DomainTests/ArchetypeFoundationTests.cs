@@ -283,6 +283,34 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 EffectiveFirearmRangePolicy.IncrementFeet(musket, -1),
                 "Negative per-attack range context did not fail closed.");
+            Assertions.True(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Musket, false),
+                "Direct Musket shot did not qualify for Steady Aim.");
+            Assertions.True(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Blunderbuss, false),
+                "Direct Blunderbuss shot did not qualify for Steady Aim.");
+            Assertions.True(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Rifle, false),
+                "Direct Rifle shot did not qualify for Steady Aim.");
+            Assertions.False(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Blunderbuss, true),
+                "Scatter cone qualified for Steady Aim.");
+            Assertions.False(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Pistol, false),
+                "One-handed shot consumed Steady Aim.");
+            Assertions.False(SteadyAimPolicy.IsQualifyingShot(false, 0,
+                FirearmKind.Musket, false),
+                "Non-firearm attack qualified for Steady Aim.");
+            Assertions.False(SteadyAimPolicy.IsQualifyingShot(true, 2,
+                FirearmKind.Musket, false),
+                "Ambiguous firearm markers qualified for Steady Aim.");
+            Assertions.False(SteadyAimPolicy.IsQualifyingShot(true, 1,
+                FirearmKind.Unknown, false),
+                "Unknown firearm kind qualified for Steady Aim.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                SteadyAimPolicy.IsQualifyingShot(true, -1,
+                    FirearmKind.Musket, false),
+                "Negative marker count did not fail closed.");
         }
     }
 }

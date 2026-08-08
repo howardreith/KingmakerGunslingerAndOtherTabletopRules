@@ -55,6 +55,12 @@
       "symbol": "KMG.Archetypes.SteadyAim", "guid": "c4ec2b80c01147d6ae387197e9f5ab9b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-1 Steady Aim deed feature."
     },
     {
+      "symbol": "KMG.Archetypes.SteadyAimAbility", "guid": "6309970e44b949db80bfd2fda8b62e31", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Move-action single-shot Steady Aim arming ability."
+    },
+    {
+      "symbol": "KMG.Archetypes.SteadyAimArmed", "guid": "f1457546b92d497d9c5924296d358a18", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Ephemeral owner-scoped Steady Aim marker."
+    },
+    {
       "symbol": "KMG.Archetypes.FastMusket", "guid": "0d52210d53424464836106b08bc87d4d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-3 passive Fast Musket deed."
     },
     {
