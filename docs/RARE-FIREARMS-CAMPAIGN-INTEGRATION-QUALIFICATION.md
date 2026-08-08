@@ -71,3 +71,11 @@ Both exact items discharged once. The Last Word's Reliable threshold was 0,
 the attack was ordinary rather than a misfire, and all disposable state was
 removed. This run also proves the exact-event fallback for an installed
 composition that calls `IsSuccessRoll(d20)` without the observable Roll setter.
+## Reliable direct-fire qualification
+
+Guarded run `20260808T1948114670922Z-dddc0f3024424ac7bb628fdd7e02e080`
+passed on published source `4b0bcc6ea8ff0fa2c50ebac70f4483d559122e81`.
+The live native attack pipeline proved threshold 0 natural-1 miss without
+misfire for a Reliable Pistol, Reliable Musket threshold/threshold+1 outcomes
+at rolls 1/2, mundane Musket threshold 2 control, and exact Broken/training
+orders 2/4 and 3/5. No roll, duplicate, or runtime fault was observed.

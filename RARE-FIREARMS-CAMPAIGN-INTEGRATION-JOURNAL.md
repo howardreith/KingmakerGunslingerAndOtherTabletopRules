@@ -273,3 +273,14 @@ gates and guarded blueprint contracts before vendor/loot publication.
   The Last Word retained Partial concealment, used deterministic natural 19,
   hit AC 14, discharged exactly once, evaluated threshold 0 as ordinary, and
   produced no misfire or cleanup fault.
+## 2026-08-08 — Reliable direct-fire matrix PASS
+
+- Published source: `4b0bcc6ea8ff0fa2c50ebac70f4483d559122e81`.
+- Run ID: `20260808T1948114670922Z-dddc0f3024424ac7bb628fdd7e02e080`;
+  evidence directory `20260808T1948114394015Z-reliable-firearm-misfire-matrix`.
+- Reliable Pistol threshold 0 plus natural 1 produced native Miss and retained
+  Normal condition. Reliable Musket roll 1 produced misfire/Broken; its roll 2
+  control produced Hit/Normal. Mundane Musket roll 2 produced misfire/Broken.
+- The shared Broken/training/Reliable order returned trained/untrained Pistol
+  2/4 and Musket 3/5. Diagnostics: 4 eligible, 4 natural rolls, 2 ordinary,
+  2 misfires, 2 Normal-to-Broken, 0 duplicate callbacks, 0 no-rolls, 0 faults.

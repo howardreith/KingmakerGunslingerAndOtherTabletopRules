@@ -1375,3 +1375,14 @@ misfire/state leak. The run also qualified the exact `IsSuccessRoll(d20)`
 compatibility fallback when another installed patch bypasses the Roll setter.
 Next implement and run the Reliable direct/scatter threshold matrix, followed by
 static lifecycle and native enhancement/Fey Bane/Thundering qualification.
+
+## Current resume point — scatter and native-property qualification
+
+The guarded direct-fire `reliable-firearm-misfire-matrix` passed on exact
+published source `4b0bcc6ea8ff0fa2c50ebac70f4483d559122e81`, run
+`20260808T1948114670922Z-dddc0f3024424ac7bb628fdd7e02e080`. Reliable
+Pistol natural 1 was a native miss with Normal condition; Reliable Musket roll
+1 misfired/Broke and roll 2 hit normally; mundane Musket roll 2 misfired/Broke;
+Broken thresholds were exactly Pistol trained/untrained 2/4 and Musket 3/5.
+Next qualify Reliable through Scatter Shot and the native Thundering per-target
+critical matrix, then native enhancement/Fey Bane and full static lifecycle.
