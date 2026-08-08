@@ -162,3 +162,27 @@
   `IsOn`, exercising the real player-mode lifecycle rather than synthesizing its
   implementation buff. This is the changed strategy after the repeated marker
   insertion failure.
+
+### Phase 2 runtime qualification complete
+
+- Exact commit: `477145bb9c7de4e5037296644c21545004971d77`, pushed and
+  remote-equal before both launches.
+- Fresh exact-build smoke PASS:
+  `20260808T2230529903156Z-088c067cec2b4397a53fa59ff09e4384`
+  (90.302 seconds).
+- Fresh save-free Paper reload PASS:
+  `20260808T2233133870047Z-7cc71df785694c1bbdb6d3a747cb87d7`
+  (90.280 seconds).
+- Structured Paper assertions all PASS: proficiency granted the exact native
+  mode and it was off by default; native activation produced the marker; the
+  Pistol plan/action was Move and loaded the paper ID while loose stock remained
+  exact; a named Reliable Pistol shared family compatibility, preserved both
+  static enchantments and retained Broken condition; Advanced Rifle rejected
+  Paper without fallback; request-local inventory/facts/items cleaned exactly.
+- No save API was invoked. Both launches were fresh guarded Steam App ID 640820
+  processes with automatic exit.
+- Phase 2 remaining uncertainty: full-attack and Lightning Reload integration
+  are deliberately Phase 3; misfire propagation is deliberately Phase 4.
+- Next exact action: bind native auto-use/full-attack policy and Lightning Reload
+  to the same plan, require exact Reload Firearm auto-use, and add the one-use
+  genuinely-free Lightning fallback.
