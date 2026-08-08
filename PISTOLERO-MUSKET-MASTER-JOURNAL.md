@@ -721,3 +721,21 @@ Complete the exact-source gate for the Twin Shot observer addition, commit and
 publish Twin Shot Knockdown, then run the guarded class observer before adding
 the combined disposable Pistolero deed mechanics fixture with separately named
 Up Close and Twin Shot assertions.
+
+## 2026-08-08 - Twin Shot Knockdown live blueprint evidence
+
+- Guarded directory
+  `20260808T1235416856236Z-observe-class-blueprint-contracts` passed under
+  runtime run ID `20260808T1235417118457Z-5b58767f21c244c09765fbd04e829081`,
+  exact source `5a3b65fa8a38014c1f562aae8df25ab2b0867c68`, version 0.0.72.
+- `twin-shot-knockdown-blueprint-contract` PASS proves the live targeted free
+  action, exact feature-owned hit tracker, exact AddFacts link, and shared Grit
+  resource. All prior archetype/progression/starter assertions remained PASS.
+- This remains blueprint evidence. Hit counting, per-target isolation, prone,
+  grit, duplicate delivery, and cleanup require the disposable mechanics run.
+
+## Exact next action
+
+Commit/publish this curated Twin Shot blueprint evidence, then add the combined
+guarded disposable Pistolero deed mechanics fixture with distinct structured
+assertions for every Up Close and Deadly and Twin Shot Knockdown behavior.

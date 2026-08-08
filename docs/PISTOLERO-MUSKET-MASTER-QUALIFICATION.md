@@ -67,6 +67,13 @@ Up Close and Deadly's live blueprint contract passed under exact source
 the visible free action and exact feature/ability/marker/class/shared-Grit
 references. Behavioral attack and damage qualification remains pending.
 
+Twin Shot Knockdown's live blueprint contract passed under exact source
+`5a3b65fa8a38014c1f562aae8df25ab2b0867c68` in guarded directory
+`20260808T1235416856236Z-observe-class-blueprint-contracts`, runtime run ID
+`20260808T1235417118457Z-5b58767f21c244c09765fbd04e829081`.
+The result proves the targeted free action, feature-owned tracker, AddFacts
+link, and shared-Grit reference. Behavioral qualification remains pending.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,
