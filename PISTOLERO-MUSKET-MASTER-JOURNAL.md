@@ -1236,3 +1236,26 @@ restoration before continuing to Toggle Custom Soundpacks.
 Commit/publish this exact-profile evidence, then run the Toggle Custom
 Soundpacks committed archetype/Wwise matrix under a fresh sentinel transaction
 and require exact Mods/SoundBank restoration.
+
+## 2026-08-08 - Toggle Custom Soundpacks 0.0.73 exact profile PASS
+
+- Sentinel transaction `compat-20260808T151456Z-9d71de2d9c6e` passed all eight
+  committed scenarios, including Wwise discharge, and finished `Restored` with
+  exact Mods and bounded SoundBank restoration verified.
+- PASS directories: `20260808T1515262882380Z-mod-load-smoke`,
+  `20260808T1516552290281Z-observe-optional-mod-compatibility`,
+  `20260808T1518245972691Z-observe-class-blueprint-contracts`,
+  `20260808T1519540278715Z-observe-gunslinger-presentation`,
+  `20260808T1521232530532Z-disposable-firearm-dependent-feats`,
+  `20260808T1522515615370Z-disposable-pistolero-deeds`,
+  `20260808T1524207866218Z-disposable-archetype-reconciliation`, and
+  `20260808T1525526646065Z-disposable-firearm-wwise-audio`.
+- Evidence retains exact ToggleCustomSoundpacks 1.0.1 UMM/Harmony coexistence,
+  all archetype catalogs/mechanics, scoped menus, and exact Wwise behavior.
+
+## Exact next action
+
+Commit/publish this profile evidence, then execute the qualified combined
+Arms & Armor plus Toggle Custom Soundpacks committed matrix, including Musket
+Master, inherited firearm high-risk scenarios, and the comprehensive expected
+inherited-Dodge attribution, with exact transaction restoration.

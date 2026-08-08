@@ -1225,3 +1225,8 @@ and the bounded Call of the Wild profile.
 Arms & Armor profile is now also fully PASS with exact restoration under
 `compat-20260808T150037Z-9db324f97b45`. Publish this evidence and proceed with
 Toggle Custom Soundpacks next.
+
+Toggle Custom Soundpacks also passed its complete eight-scenario matrix with
+exact Mods/SoundBank restoration under `compat-20260808T151456Z-9d71de2d9c6e`.
+Publish this evidence, then run qualified combined followed by the single
+bounded Call of the Wild sequence.
