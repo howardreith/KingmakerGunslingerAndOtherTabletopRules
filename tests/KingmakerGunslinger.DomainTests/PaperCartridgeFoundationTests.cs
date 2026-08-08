@@ -244,6 +244,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Reloading", "PaperCartridgeModeRuntime.cs"));
             Assertions.False(runtime.Contains("_isActive") || runtime.Contains("Dictionary<Unit"),
                 "mode runtime must not own global mutable selection state");
+            string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
+            string packager = File.ReadAllText(Path.Combine(root, "tools",
+                "create_deterministic_package.py"));
+            Assertions.True(localBuild.Contains("{ 43 } else { 41 }") &&
+                packager.Contains("choices=(41, 43)"),
+                "deterministic package counts include the project-owned Paper Cartridge icon");
         }
 
         private static EffectiveReloadAction Action(FirearmDefinition definition,

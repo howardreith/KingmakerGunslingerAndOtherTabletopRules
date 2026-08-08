@@ -119,3 +119,18 @@
   then run fresh guarded `mod-load-smoke` and
   `disposable-paper-cartridge-reload`; repair from structured evidence if needed.
 - Remote branch equals local HEAD: pending candidate publication.
+
+### Phase 2 packaging repair
+
+- Published candidate commit `da091247b991a907fe5ef3b9a63acae0d9e35c06`
+  was remote-equal and clean.
+- Guarded `mod-load-smoke` preflight stopped before launching Kingmaker because
+  deterministic packaging expected 42 staged files but correctly observed 43:
+  Phase 1 had added `paper-cartridge.png` without advancing this second exact
+  package count. No runtime run ID or process was created.
+- Strategy changed from runtime retry to correcting the narrow deterministic
+  package invariant: counts are now 43 with SoundBank / 41 without, and the
+  Python packager permits exactly those values. A focused source-contract
+  assertion was added; complete suite remains 948/948 PASS.
+- Next action: publish the repair, re-establish clean remote equality, then
+  rerun exact-build smoke from a fresh process.
