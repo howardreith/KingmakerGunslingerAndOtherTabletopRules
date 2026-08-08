@@ -480,6 +480,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ReliableFirearmMisfireMatrix)
+                {
+                    Complete(RunReliableFirearmMisfireMatrix());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks)
                 {
                     Complete(RunProductionFirearmFallbackObservation());
@@ -4416,6 +4422,122 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Unity Mod Manager ModEntry.Info.Version"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunReliableFirearmMisfireMatrix()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null;
+            UnitEntityData target = null;
+            ItemEntityWeapon pistol = null;
+            ItemEntityWeapon musket = null;
+            ItemEntityWeapon control = null;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.Retain();
+                pistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[3].Item);
+                musket = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[4].Item);
+                control = new ItemEntityWeapon(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item);
+
+                RuleAttackRoll pistolOne = TriggerReliableMatrixAttack(
+                    attacker, target, pistol, 1, FirearmCondition.Normal);
+                FirearmState pistolAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(pistol).Repository.State;
+                RuleAttackRoll musketOne = TriggerReliableMatrixAttack(
+                    attacker, target, musket, 1, FirearmCondition.Normal);
+                FirearmState musketOneAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(musket).Repository.State;
+                RuleAttackRoll musketTwo = TriggerReliableMatrixAttack(
+                    attacker, target, musket, 2, FirearmCondition.Normal);
+                FirearmState musketTwoAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(musket).Repository.State;
+                RuleAttackRoll controlTwo = TriggerReliableMatrixAttack(
+                    attacker, target, control, 2, FirearmCondition.Normal);
+                FirearmState controlAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(control).Repository.State;
+
+                int trainedBrokenPistol = EffectiveFirearmMisfirePolicy.Evaluate(
+                    1, FirearmCondition.Broken, true, pistol);
+                int untrainedBrokenPistol = EffectiveFirearmMisfirePolicy.Evaluate(
+                    1, FirearmCondition.Broken, false, pistol);
+                int trainedBrokenMusket = EffectiveFirearmMisfirePolicy.Evaluate(
+                    2, FirearmCondition.Broken, true, musket);
+                int untrainedBrokenMusket = EffectiveFirearmMisfirePolicy.Evaluate(
+                    2, FirearmCondition.Broken, false, musket);
+                string observed = "pistol1=" + pistolOne.Result + ":" +
+                    pistolAfter.Condition + ";musket1=" + musketOne.Result +
+                    ":" + musketOneAfter.Condition + ";musket2=" +
+                    musketTwo.Result + ":" + musketTwoAfter.Condition +
+                    ";control2=" + controlTwo.Result + ":" +
+                    controlAfter.Condition + ";broken=" +
+                    trainedBrokenPistol + "," + untrainedBrokenPistol + "," +
+                    trainedBrokenMusket + "," + untrainedBrokenMusket +
+                    ";diagnostics=" + FirearmMisfireRuntime.Describe();
+                assertions.Add(Assertion("reliable-zero-natural-one",
+                    "Reliable Pistol threshold 0: natural 1 misses without misfire or condition damage",
+                    observed, !pistolOne.IsHit &&
+                        pistolAfter.Condition == FirearmCondition.Normal,
+                    "native RuleAttackRoll plus shared effective threshold"));
+                assertions.Add(Assertion("reliable-musket-threshold-edge",
+                    "Reliable Musket: roll 1 misfires; roll 2 is ordinary",
+                    observed, musketOneAfter.Condition == FirearmCondition.Broken &&
+                        musketTwoAfter.Condition == FirearmCondition.Normal,
+                    "deterministic native d20 sequence and exact item condition"));
+                assertions.Add(Assertion("mundane-musket-control",
+                    "mundane Musket threshold 2: roll 2 misfires",
+                    observed, controlAfter.Condition == FirearmCondition.Broken,
+                    "non-Reliable exact-item control"));
+                assertions.Add(Assertion("reliable-broken-training-order",
+                    "trained/untrained Broken Pistol 2/4 and Musket 3/5",
+                    observed, trainedBrokenPistol == 2 &&
+                        untrainedBrokenPistol == 4 && trainedBrokenMusket == 3 &&
+                        untrainedBrokenMusket == 5,
+                    "Broken then central training then Reliable then clamp"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("reliable-matrix-exception", "no exception",
+                    exception.ToString(), false, "exception-contained fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                foreach (ItemEntityWeapon item in new[] { pistol, musket, control })
+                    if (item != null) FirearmRuntimeState.Repository.Remove(item);
+                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+            }
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static RuleAttackRoll TriggerReliableMatrixAttack(
+            UnitEntityData attacker, UnitEntityData target,
+            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition)
+        {
+            if (attacker.Body.PrimaryHand.MaybeItem != null)
+                attacker.Body.PrimaryHand.RemoveItem(false);
+            attacker.Body.PrimaryHand.InsertItem(weapon);
+            FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                FirearmState.CurrentSchemaVersion, 1,
+                FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+            var attack = new RuleAttackRoll(attacker, target, weapon, -100);
+            UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
+            Rulebook.Trigger(attack);
+            return attack;
         }
 
         private static bool entryBlueprint(ItemEntityWeapon item, object blueprint)
