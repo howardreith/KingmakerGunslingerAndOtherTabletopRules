@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Scatter
                 throw new ArgumentException(
                     "A stable scatter target identity is required.",
                     "stableIdentity");
-            if (misfireThreshold < 1 || misfireThreshold > 20)
+            if (misfireThreshold < 0 || misfireThreshold > 20)
                 throw new ArgumentOutOfRangeException("misfireThreshold");
             if (forcedNaturalRoll.HasValue && (forcedNaturalRoll.Value < 1 ||
                 forcedNaturalRoll.Value > 20))
@@ -132,7 +132,7 @@ namespace KingmakerGunslinger.Scatter
             internal int NaturalRoll { get; private set; }
             internal bool HasNaturalRoll { get { return NaturalRoll != 0; } }
             internal bool IsMisfire { get { return NaturalRoll > 0 &&
-                NaturalRoll <= Threshold; } }
+                Threshold > 0 && NaturalRoll <= Threshold; } }
             internal void Record(int value)
             {
                 if (value < 1 || value > 20) throw new ArgumentOutOfRangeException("value");

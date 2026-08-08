@@ -365,6 +365,8 @@ def validate(
                     .get(expected_active_blueprints, "twenty-four"))
     if expected_active_blueprints == 233:
         active_words = "two-hundred-thirty-three"
+    if expected_active_blueprints == 242:
+        active_words = "two-hundred-forty-two"
     reserved_blueprints = expected_ledger_entries - expected_active_blueprints
     reserved_words = ("one reserved" if reserved_blueprints == 1 else
                       f"{reserved_blueprints} reserved")

@@ -39,3 +39,10 @@ parent `RuleAttackRoll` to store that exact check and use that exact ranged item
 it changes only a false concealment success result. It never sets either native
 `IgnoreConcealment` flag or changes `UnitPartConcealment`. Runtime qualification
 and the remaining catalog are next; this is not final disposition.
+## Reliable and item-catalog implementation checkpoint
+
+The production source now registers Reliable plus all eight specified magic
+firearms in addition to project Seeking. All three attack paths use one effective
+misfire policy with the required Broken/training/Reliable order and a truthful
+zero threshold. The intermediate source/build/package gates pass at 0.0.73;
+live bootstrap observation and acquisition publication remain in progress.

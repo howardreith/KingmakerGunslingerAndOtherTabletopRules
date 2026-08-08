@@ -144,10 +144,11 @@ namespace KingmakerGunslinger.Scatter
             Transition(firearm, expected, discharge.After);
             expected = discharge.After;
 
-            int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
+            int threshold = global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.Evaluate(
                 firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                 Classes.FirearmTrainingRuntime.Resolve(caster,
-                    firearm.Definition.Kind).ReducedBrokenMisfire);
+                    firearm.Definition.Kind).ReducedBrokenMisfire,
+                firearm.Weapon);
             var attacks = new RuleAttackWithWeapon[plan.TargetCount];
             var observations = new ScatterAttackRollObservation[plan.TargetCount];
             for (int index = 0; index < plan.TargetCount; index++)

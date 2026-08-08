@@ -51,6 +51,10 @@
     <Compile Include="Enchantments\SeekingExactItemResolver.cs" />
     <Compile Include="Enchantments\SeekingConcealmentPatch.cs" />
     <Compile Include="Enchantments\SeekingConcealmentPolicy.cs" />
+    <Compile Include="Enchantments\FirearmMisfireReductionComponent.cs" />
+    <Compile Include="Enchantments\ReliableBlueprints.cs" />
+    <Compile Include="Enchantments\FirearmMisfireReductionResolver.cs" />
+    <Compile Include="Misfires\EffectiveFirearmMisfirePolicy.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -138,6 +142,7 @@
     <Compile Include="Blueprints\LocalizationService.cs" />
     <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\ProductionFirearmBlueprints.cs" />
+    <Compile Include="Blueprints\MagicFirearmBlueprints.cs" />
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />

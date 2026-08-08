@@ -149,3 +149,22 @@ Implement the bounded Reliable enchantment and eight-item magic-firearm catalog
 as the remaining nine active registrations, including the shared effective
 misfire threshold service and canonical-family validation. Then re-run source
 gates and guarded blueprint contracts before vendor/loot publication.
+## 2026-08-08 Reliable and magic-firearm source checkpoint
+
+- Activated the original nine reserved Rare Firearms identities, producing the
+  amended ten-blueprint feature set and a 242-active/243-ledger manifest.
+- Registered project Reliable with one exact reduction-1 marker and built eight
+  isolated canonical-family item clones with exact names, prices, weights, native
+  enhancement/property references, descriptions, and late-applied family icons.
+- Consolidated ordinary fire, Scatter Shot, and Dead Shot behind one effective
+  misfire threshold service. Base definitions remain 1..20; effective thresholds
+  are 0..20, Reliable applies after Broken/training adjustments, and threshold 0
+  retains the native natural-1 miss without a misfire.
+- Source validation, 935/935 domain tests, exact-reference Release compilation,
+  build-output validation, SoundBank validation, package creation, and strict
+  package validation passed. Intermediate package SHA-256 is
+  `041a582f364ccfe4ec26c7d0733068075e909ac3d6dc5ef59661c6f0e08225a5` and DLL
+  SHA-256 is `caab7e79ae3bc5fbe9ce02e65c00e7dd7b265d5fb30411a79ec689b13f6e42d6`.
+- The guarded bootstrap observer correctly refused the dirty source state. The
+  next action is to publish this coherent passing source checkpoint, then run the
+  save-free live blueprint observer from its clean exact source SHA.

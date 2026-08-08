@@ -1317,3 +1317,11 @@ source Torso defects. After the final documentation commit is published and
 local/origin equality is verified, no autonomous archetype mission action
 remains; do not merge. Call of the Wild still requires the short human chargen
 catalog check before its public classification may change.
+## Current resume point — Reliable and eight-item source catalog
+
+The amended ten-blueprint catalog and shared 0..20 effective-misfire service pass
+all source, domain, exact-reference Release, SoundBank, and strict package gates.
+The exact next action is to commit and publish this coherent source checkpoint,
+run a guarded save-free bootstrap observer from the clean SHA, record its exact
+run ID, then implement the accepted capital/BTSL vendor and five-target fixed-loot
+publication transactions. Do not revisit native Seeking forensics.

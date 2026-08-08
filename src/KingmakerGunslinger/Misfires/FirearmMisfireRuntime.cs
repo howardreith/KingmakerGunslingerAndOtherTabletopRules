@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
@@ -105,11 +106,12 @@ namespace KingmakerGunslinger.Misfires
                     postDischargeState,
                     effectiveCondition,
                     postDischarge.Repository.RepositoryIdentity,
-                    Classes.GunTrainingPolicy.EffectiveMisfireValue(
+                    EffectiveFirearmMisfirePolicy.Evaluate(
                         postDischarge.Definition.MisfireValue,
                         effectiveCondition,
                         Classes.FirearmTrainingRuntime.Resolve(wielder,
-                            postDischarge.Definition.Kind).ReducedBrokenMisfire),
+                            postDischarge.Definition.Kind).ReducedBrokenMisfire,
+                        firearmItem as ItemEntityWeapon),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName),
                     postDischarge.Definition.Kind);
@@ -609,8 +611,8 @@ namespace KingmakerGunslinger.Misfires
                         "repositoryIdentity");
                 }
 
-                if (misfireValue < FirearmDefinition.MinimumMisfireValue ||
-                    misfireValue > FirearmDefinition.MaximumMisfireValue)
+                if (misfireValue < EffectiveFirearmMisfirePolicy.MinimumEffectiveValue ||
+                    misfireValue > EffectiveFirearmMisfirePolicy.MaximumEffectiveValue)
                 {
                     throw new ArgumentOutOfRangeException("misfireValue");
                 }

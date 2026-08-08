@@ -43,3 +43,10 @@ Seeking bootstrap checkpoint guarded PASS:
 `20260808T1839549954807Z-f994425a76d245288d0c0bec7b29e2b6`, exact source
 `2ba3866a991df9107209a93dd7369d5072cc0cd7`. This proves registration and patch
 load compatibility only; deterministic concealment combat remains pending.
+## Reliable and catalog source evidence
+
+On 2026-08-08, repository validation, all 935 dependency-free tests, clean
+exact-reference Release compilation, build-output validation, SoundBank
+validation, package creation, and strict package validation passed for the
+242-active registration source. This is source/package evidence only; the clean
+SHA live bootstrap observer and combat scenarios remain required.

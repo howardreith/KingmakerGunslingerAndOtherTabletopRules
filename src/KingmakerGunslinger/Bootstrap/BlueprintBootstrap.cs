@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 233;
+        internal const int ExpectedRegisteredBlueprintCount = 242;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintWeaponEnchantment _batteredOrigin;
         private static BasicAmmunitionBlueprintSet _basicAmmunition;
         private static ProductionFirearmBlueprintCatalog _productionFirearms;
+        private static MagicFirearmBlueprintCatalog _magicFirearms;
         private static GunslingerClassBlueprintSet _gunslingerClassBlueprints;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
@@ -227,6 +228,11 @@ namespace KingmakerGunslinger.Bootstrap
                     return _productionFirearms;
                 }
             }
+        }
+
+        internal static MagicFirearmBlueprintCatalog MagicFirearms
+        {
+            get { lock (Gate) { return _magicFirearms; } }
         }
 
         internal static GunslingerClassBlueprintSet GunslingerClass
@@ -464,6 +470,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _batteredOrigin = result.BatteredOrigin;
                     _basicAmmunition = result.BasicAmmunition;
                     _productionFirearms = result.ProductionFirearms;
+                    _magicFirearms = result.MagicFirearms;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -581,6 +588,12 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintWeaponEnchantment seeking =
                     Enchantments.SeekingBlueprints.Register(registry);
                 Enchantments.SeekingBlueprints.Validate(seeking);
+                BlueprintWeaponEnchantment reliable =
+                    Enchantments.ReliableBlueprints.Register(registry);
+                Enchantments.ReliableBlueprints.Validate(reliable);
+                MagicFirearmBlueprintCatalog magicFirearms =
+                    MagicFirearmBlueprints.Register(library, registry,
+                        productionFirearms, reliable, seeking, context.Logger);
 
                 BasicAmmunitionBlueprintSet basicAmmunition =
                     BasicAmmunitionBlueprints.Register(
@@ -705,7 +718,7 @@ namespace KingmakerGunslinger.Bootstrap
                     "Bound the native shared-grit indicator to " +
                     gritUiAbilities + " deed abilities.");
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
-                    productionFirearms, basicAmmunition, firearmRepairKit,
+                    productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit,
                     gunsmithingSupplies,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
@@ -741,6 +754,7 @@ namespace KingmakerGunslinger.Bootstrap
                 }
 
                 Enchantments.SeekingExactItemResolver.Configure(seeking);
+                Enchantments.FirearmMisfireReductionResolver.Configure(reliable);
 
                 FirearmRuntimeState.Configure(firearmStateTokens);
                 context.Logger.Info(
@@ -761,6 +775,7 @@ namespace KingmakerGunslinger.Bootstrap
                     gunsmithingCrafting,
                     testMusket,
                     productionFirearms,
+                    magicFirearms,
                     firearmStateTokens,
                     batteredOrigin,
                     basicAmmunition,
@@ -898,6 +913,7 @@ namespace KingmakerGunslinger.Bootstrap
                 GunsmithingCraftingBlueprintSet gunsmithingCrafting,
                 TestMusketBlueprintSet testMusket,
                 ProductionFirearmBlueprintCatalog productionFirearms,
+                MagicFirearmBlueprintCatalog magicFirearms,
                 FirearmStateTokenBlueprintSet firearmStateTokens,
                 BlueprintWeaponEnchantment batteredOrigin,
                 BasicAmmunitionBlueprintSet basicAmmunition,
@@ -917,6 +933,7 @@ namespace KingmakerGunslinger.Bootstrap
                 GunsmithingCrafting = gunsmithingCrafting ?? throw new ArgumentNullException("gunsmithingCrafting");
                 TestMusket = testMusket ?? throw new ArgumentNullException("testMusket");
                 ProductionFirearms = productionFirearms ?? throw new ArgumentNullException("productionFirearms");
+                MagicFirearms = magicFirearms ?? throw new ArgumentNullException("magicFirearms");
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
                 BatteredOrigin = batteredOrigin ?? throw new ArgumentNullException("batteredOrigin");
                 BasicAmmunition = basicAmmunition ?? throw new ArgumentNullException("basicAmmunition");
@@ -947,6 +964,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal TestMusketBlueprintSet TestMusket { get; private set; }
 
             internal ProductionFirearmBlueprintCatalog ProductionFirearms { get; private set; }
+
+            internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }
 
             internal FirearmStateTokenBlueprintSet FirearmStateTokens { get; private set; }
 
