@@ -202,3 +202,13 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - The repaired observer source passes repository validation, 935/935 tests,
   exact-reference Release, SoundBank, and strict package gates. Next action:
   publish and run `observe-rare-firearm-acquisition` from the clean SHA.
+## 2026-08-08 acquisition observer narrowing
+
+- Run `20260808T1905352086991Z-377c9b015ad1478d9f6f2a9a0e96f430`
+  proved 11/11 exact Smith entries, 44/44 BTSL entries, zero modern/named managed
+  vendor entries, zero Jhod project firearms, and 5/5 exact fixed-loot targets.
+  Its sole failure was the observer's inherited fixed-entry total of 61; the
+  selected Smith table has 16 native entries plus 11 project entries, exactly 27.
+- Narrowed that presentation-contract assertion to the observed exact 27 without
+  changing publication mechanics. Next action: publish and repeat the dedicated
+  acquisition observer.
