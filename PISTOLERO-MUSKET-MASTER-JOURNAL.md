@@ -368,3 +368,17 @@ range context before creating Steady Aim blueprints.
 Commit/publish the effective-range foundation, run Deadeye and firearm-AC
 regressions, then create the stable Pistolero/Musket Master training and
 proficiency blueprint facts before wiring full archetype replacement rows.
+
+## 2026-08-08 - Effective-range base runtime evidence
+
+- Exact published commit `efab35f0fcff185d0900a0c3f0ce2be0e0b64c6c`
+  passed guarded fresh-process run
+  `20260808T0453598757440Z-disposable-gunslinger-deadeye`.
+- The zero-bonus Deadeye and firearm touch-AC stack remains runtime-correct.
+  Steady Aim's +10 runtime registration and native range adapter still require
+  its exact armed feature and are not claimed by this base regression.
+
+## Exact next action
+
+Commit/publish this evidence record, then add stable Pistol/Musket Training facts
+and visible scoped-proficiency grants before constructing the exact archetypes.
