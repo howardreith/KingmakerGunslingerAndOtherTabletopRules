@@ -1,5 +1,51 @@
 # Autonomous Gunslinger blockers
 
+## Rare Firearms Seeking stop — RESOLVED BY USER AUTHORITY (2026-08-08)
+
+The continuation amendment expressly accepts the complete native investigation
+preserved immediately below, forbids repeating it, supersedes the custom-Seeking
+prohibition and native-only hard stop, and authorizes project-owned Seeking with
+stable GUID `036fc59fd1e24753b98f9d92cdb1e93e`. This is not an active blocker.
+The mission resumed from clean published checkpoint
+`69fd9a0b9e5889082f15f0e536eb940e79be138b`.
+
+## Rare Firearms mission — critical native Seeking absence (2026-08-08)
+
+The Rare Firearms and Campaign Integration work order requires The Last Word to
+use the installed native Seeking weapon enchantment and defines absence or
+unsafe impossibility of a required accepted native property other than optional
+Thundering as a critical hard stop.
+
+Three materially distinct checks found no native Seeking authority:
+
+1. Guarded blueprint-graph run
+   `20260808T1734599486274Z-observe-vendor-table-contracts` enumerated native
+   weapon enchantments by internal name and exact donors/components: no Seeking.
+2. Guarded run `20260808T1739377557378Z-observe-vendor-table-contracts` expanded
+   matching to localized display names: no Seeking.
+3. Guarded run `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime
+   ID `20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`, exact source
+   `d0e039a705075f971673b660f742650b4d8f20b2`, independently selected every
+   `BlueprintWeaponEnchantment` with a concealment-related component as well as
+   name/display candidates. It returned 17 relevant enchantments and none was
+   Seeking or carried a concealment component. A separate exact installed
+   Assembly-CSharp type/string contract search found concealment/reroll mechanics
+   but no native Seeking enchantment authority.
+4. Continuation audit guarded run
+   `20260808T1748440170104Z-observe-vendor-table-contracts`, runtime ID
+   `20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, exact source
+   `ebef1c36d0cccf3e8db0bdb95051eda2a7bbf669`, inspected primitive, enum, and
+   string values on every weapon-enchantment component. The same 17 relevant
+   enchantments contained no Seeking, concealment, miss-chance, or blindness-
+   suppression value.
+
+Historical original stop instruction (superseded): do not custom-reimplement Seeking, remove it, rename another property, or begin
+production registration. Required resolution is new user authority changing the
+nonoptional native-property requirement or an authoritative installed-game asset
+that supplies the missing native enchantment.
+
+---
+
 ## 2026-08-07 Pistolero/Musket Master branch publication
 
 - Revision 2 mission baseline, unchanged qualification, and durable mission

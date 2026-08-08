@@ -14,6 +14,7 @@ using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
@@ -458,6 +459,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
                 {
                     Complete(RunVendorTableContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveRareFirearmAcquisition)
+                {
+                    Complete(RunVendorTableContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveRareFirearmBlueprintContracts)
+                {
+                    Complete(RunRareFirearmBlueprintContracts());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.MagicFirearmNativeProperties)
+                {
+                    Complete(RunMagicFirearmNativeProperties());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ReliableFirearmMisfireMatrix)
+                {
+                    Complete(RunReliableFirearmMisfireMatrix());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.BlunderbussThunderingScatter)
+                {
+                    Complete(RunDisposableGunslingerScatterShot());
                     return;
                 }
                 if (_request.Scenario ==
@@ -3585,16 +3616,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
             OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
                 .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon pistol = typeof(OverhaulTestMusketAbilityLogic)
+                .GetField("m_TestMusket", BindingFlags.Instance |
+                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItemWeapon;
+            if (pistol == null) throw new InvalidOperationException(
+                "Overhaul ability exposed no exact configured firearm.");
+            BlueprintItem overhaulKit = typeof(OverhaulTestMusketAbilityLogic)
+                .GetField("m_RepairKit", BindingFlags.Instance |
+                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItem;
+            if (overhaulKit == null) throw new InvalidOperationException(
+                "Overhaul ability exposed no exact configured kit.");
+            BlueprintItemWeapon magicPistol =
+                BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
             int kitsBefore = player.Inventory.Count(repairKit);
+            int overhaulKitsBefore = player.Inventory.Count(overhaulKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
             bool delayed = false, interruptionAtomic = false,
                 combatBlocked = false, exactCompletion = false,
                 repairCompletion = false, cleaned = false;
+            int staticBefore = -1, staticAfterOverhaul = -1,
+                staticAfterRepair = -1;
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             string overhaulLog = null, repairLog = null;
             try
@@ -3606,6 +3651,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out ignored, out method))
                     throw new InvalidOperationException(
                         "Temporary Firearm Repair Kit could not be added.");
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { overhaulKit, 1 },
+                        new object[] { overhaulKit } }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Temporary Overhaul Kit could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
@@ -3624,11 +3674,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(unit), null);
                 int kitsAtStart = player.Inventory.Count(repairKit);
+                int overhaulKitsAtStart = player.Inventory.Count(overhaulKit);
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 delayed = delivery.MoveNext() && delivery.Current == null;
                 delivery.Dispose();
                 delivery = null;
                 interruptionAtomic = player.Inventory.Count(repairKit) == kitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
                         .Condition == FirearmCondition.Wrecked;
 
@@ -3636,27 +3688,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactField(combat, "m_InCombat", true);
                 SetExactProperty(unit, "CombatState", combat);
                 combatBlocked = unit.IsInCombat && !logic.IsAvailableFor(data) &&
-                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol, repairKit)
+                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol,
+                        overhaulKit)
                         .Reason.IndexOf("out of combat",
                             StringComparison.OrdinalIgnoreCase) >= 0;
                 SetExactProperty(unit, "CombatState", null);
 
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(magicPistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Wrecked));
+
                 FirearmOverhaulRuntimeResult completed =
-                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, pistol, repairKit);
+                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        overhaulKit);
                 exactCompletion = completed.Succeeded &&
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 1;
+                staticAfterOverhaul = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
                 overhaulLog = FirearmConditionCombatLog.LastMessage;
                 FirearmRepairRuntimeResult repaired =
                     RepairTestMusketRuntime.Execute(
-                        unit.Descriptor, pistol, repairKit);
+                        unit.Descriptor, magicPistol, repairKit);
                 repairCompletion = repaired.Succeeded &&
                     repaired.BeforeFirearm.Repository.State.Condition ==
                         FirearmCondition.Broken &&
                     repaired.AfterFirearm.Repository.State.Condition ==
                         FirearmCondition.Normal &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 2;
+                    player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                staticAfterRepair = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
             }
             finally
@@ -3672,13 +3741,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 int excess = player.Inventory.Count(repairKit) - kitsBefore;
                 if (excess > 0) player.Inventory.Remove(repairKit, excess);
+                int overhaulExcess = player.Inventory.Count(overhaulKit) -
+                    overhaulKitsBefore;
+                if (overhaulExcess > 0)
+                    player.Inventory.Remove(overhaulKit, overhaulExcess);
                 if (unit != null) unit.Dispose();
-                cleaned = player.Inventory.Count(repairKit) == kitsBefore;
+                cleaned = player.Inventory.Count(repairKit) == kitsBefore &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore;
             }
             string observed = "duration=" + blueprint.LocalizedDuration +
                 ";delayed=" + delayed + ";interruptionAtomic=" + interruptionAtomic +
                 ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
+                ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
+                staticAfterRepair +
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
@@ -3695,6 +3771,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit",
                     observed, exactCompletion,
                     "existing exact-item atomic transaction after maintenance gate"),
+                Assertion("magic-static-maintenance-lifecycle",
+                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and Repair",
+                    observed, staticBefore == 3 && staticAfterOverhaul == 3 &&
+                        staticAfterRepair == 3,
+                    "exact runtime static-enchantment identities across state-token replacement"),
                 Assertion("overhaul-condition-combat-log",
                     "one native player log only after completed Wrecked -> Broken",
                     observed,
@@ -3738,6 +3819,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var capitalEntries = new List<string>();
             var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
             var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
+            var enchantmentRecords = new List<string>();
+            var lootCandidateRecords = new List<string>();
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
             int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
@@ -3765,6 +3848,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (table == null ? "<null>" : table.name + ":" +
                             table.AssetGuid));
                 }
+            }
+            BlueprintScriptableObject[] allBlueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
+                .OfType<BlueprintWeaponEnchantment>()
+                .Where(IsRareFirearmNativeEnchantmentCandidate)
+                .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
+            FieldInfo enchantmentsField = typeof(BlueprintItemWeapon).GetField(
+                "m_Enchantments", Flags);
+            foreach (BlueprintWeaponEnchantment enchantment in nativeEnchantments)
+            {
+                string[] donors = enchantmentsField == null ? Array.Empty<string>() :
+                    allBlueprints.OfType<BlueprintItemWeapon>().Where(item =>
+                    {
+                        var values = enchantmentsField.GetValue(item) as
+                            BlueprintWeaponEnchantment[];
+                        return values != null && values.Any(value =>
+                            ReferenceEquals(value, enchantment));
+                    }).OrderBy(item => item.name, StringComparer.Ordinal)
+                    .Take(12).Select(item => item.name + ":" + item.AssetGuid)
+                    .ToArray();
+                enchantmentRecords.Add("enchantment=" + enchantment.name + ":" +
+                    enchantment.AssetGuid + ";display=" + enchantment.Name +
+                    ";cost=" + enchantment.EnchantmentCost + ";components=" +
+                    DescribeBlueprintComponents(enchantment) + ";componentValues=" +
+                    DescribeComponentScalarContracts(enchantment.ComponentsArray) +
+                    ";donors=" +
+                    string.Join(",", donors));
+            }
+            BlueprintScriptableObject[] lootCandidates = allBlueprints.Where(value =>
+                (value is BlueprintLoot || value is BlueprintUnitLoot) &&
+                IsRareFirearmLootCandidate(value)).OrderBy(value => value.name,
+                    StringComparer.Ordinal).ThenBy(value => value.AssetGuid,
+                    StringComparer.Ordinal).ToArray();
+            Dictionary<string, List<string>> lootReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints, lootCandidates);
+            Dictionary<string, List<string>> vendorReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints, tables);
+            foreach (BlueprintScriptableObject candidate in lootCandidates)
+            {
+                var loot = candidate as BlueprintLoot;
+                string fixedItems = loot == null ? DescribeFixedLootComponents(candidate) :
+                    string.Join(",", (loot.Items ?? Array.Empty<LootEntry>())
+                        .Where(entry => entry != null).Select(entry =>
+                            (entry.Item == null ? "<null>" : entry.Item.name + ":" +
+                                entry.Item.AssetGuid) + "*" + entry.Count).ToArray());
+                string area = loot == null || loot.Area == null ? "<none>" :
+                    loot.Area.name + ":" + loot.Area.AssetGuid;
+                string container = loot == null ? "<unit-loot>" :
+                    loot.ContainerName ?? string.Empty;
+                List<string> indexedReferences;
+                string[] references = lootReferences.TryGetValue(candidate.AssetGuid,
+                    out indexedReferences) ? indexedReferences.Take(20).ToArray() :
+                    Array.Empty<string>();
+                lootCandidateRecords.Add("loot=" + candidate.GetType().FullName +
+                    ":" + candidate.name + ":" + candidate.AssetGuid + ";area=" +
+                    area + ";container=" + container + ";setting=" +
+                    (loot == null ? "<unit-loot>" : loot.Setting.ToString()) +
+                    ";contents=" + fixedItems + ";components=" +
+                    DescribeBlueprintComponents(candidate) + ";references=" +
+                    references.Length + ":" + string.Join(",", references));
             }
             foreach (BlueprintUnit unit in BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintUnit>().OrderBy(value => value.AssetGuid,
@@ -3809,7 +3953,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ownerRecords.Sort(StringComparer.Ordinal);
             BlueprintSharedVendorTable capitalTable = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    "afa2c7f292b8e1c4d9c835f0e8047dd3", StringComparison.Ordinal));
+                    CapitalVendorBlueprints.TableGuid, StringComparison.Ordinal));
             if (capitalTable != null && fixedItemField != null && fixedCountField != null)
             {
                 foreach (LootItemsPackFixed component in
@@ -3851,8 +3995,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { BlueprintBootstrap.ProductionFirearms.Pistol.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.Musket.Item, 1 },
                     { BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.PistolPlus1Symbol).Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.MusketPlus1Symbol).Item, 1 },
+                    { BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                     { BlueprintBootstrap.FirearmRepairKit, 10 },
@@ -3881,8 +4029,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 { production.Pistol.Item, 1 }, { production.Musket.Item, 1 },
                 { production.Blunderbuss.Item, 1 },
-                { production.AdvancedRifle.Item, 1 },
-                { production.AdvancedRevolver.Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.PistolPlus1Symbol).Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.MusketPlus1Symbol).Item, 1 },
+                { BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                 { BlueprintBootstrap.FirearmRepairKit, 10 },
@@ -3905,6 +4057,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
+            }
+            BlueprintItem[] namedItems = BlueprintBootstrap.MagicFirearms.Entries
+                .Where(value => value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
+                    value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
+                    value.Spec.Symbol != MagicFirearmBlueprints.BlunderbussPlus1Symbol)
+                .Select(value => (BlueprintItem)value.Item).ToArray();
+            BlueprintItem[] bannedManaged = namedItems.Concat(new BlueprintItem[] {
+                production.AdvancedRifle.Item, production.AdvancedRevolver.Item })
+                .ToArray();
+            BlueprintSharedVendorTable[] managedTables = tables.Where(value =>
+                value.AssetGuid == CapitalVendorBlueprints.TableGuid ||
+                BeneathStolenLandsVendorBlueprints.TableGuids.Contains(value.AssetGuid))
+                .ToArray();
+            int bannedManagedEntries = managedTables.Sum(table =>
+                (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value =>
+                        bannedManaged.Contains(CapitalVendorBlueprints.ReadItem(value))));
+            BlueprintSharedVendorTable jhod = tables.SingleOrDefault(value =>
+                value.AssetGuid == "afa2c7f292b8e1c4d9c835f0e8047dd3");
+            BlueprintItem[] allProjectFirearms = production.Entries.Select(value =>
+                (BlueprintItem)value.Item).Concat(BlueprintBootstrap.MagicFirearms.Entries
+                    .Select(value => (BlueprintItem)value.Item)).ToArray();
+            int jhodProjectEntries = jhod == null ? -1 :
+                (jhod.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => allProjectFirearms
+                        .Contains(CapitalVendorBlueprints.ReadItem(value)));
+            string[] rareLootGuids = { "193b1222846a0114197e716cb35d3ce8",
+                "b34367a637010f743815aed5875152bd",
+                "485300a2036a763499aa77ebac1f83c6",
+                "36d315a81b36980438e2ef1a866791d1",
+                "5a9b9e4b884ae064fa7caa5a13eab065" };
+            string[] rareLootNames = { "Forest_cache",
+                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)",
+                "Forest_PoorLoot_PuzzleItem3_Instrument",
+                "FirstWorld_BasementGoodLoot01",
+                "FirstWorld_VeryGoodHiddenLoot02" };
+            string[] rareLootAreas = { "VordakaiTombLevel2", "IrovettiPalace",
+                "IrovettiPalace", "HouseAtTheEdgeOfTime_Basement",
+                "HouseAtTheEdgeOfTime" };
+            var rareLootRecords = new List<string>();
+            int validRareLoot = 0;
+            for (int index = 0; index < rareLootGuids.Length; index++)
+            {
+                BlueprintLoot loot = allBlueprints.OfType<BlueprintLoot>()
+                    .SingleOrDefault(value => value.AssetGuid == rareLootGuids[index]);
+                LootEntry[] matches = loot == null ? new LootEntry[0] :
+                    (loot.Items ?? new LootEntry[0]).Where(value => value != null &&
+                        ReferenceEquals(value.Item, namedItems[index])).ToArray();
+                bool valid = loot != null && loot.name == rareLootNames[index] &&
+                    loot.Area != null && loot.Area.name == rareLootAreas[index] &&
+                    matches.Length == 1 && matches[0].Count == 1;
+                if (valid) validRareLoot++;
+                rareLootRecords.Add(rareLootGuids[index] + ":" +
+                    (loot == null ? "<missing>" : loot.name + ":" +
+                        (loot.Area == null ? "<no-area>" : loot.Area.name)) +
+                    ":matches=" + matches.Length +
+                    ":valid=" + valid);
             }
             if (fixedItemField != null && fixedCountField != null)
             {
@@ -3937,7 +4146,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
                 ";blunderbussEntries=" + blunderbussEntries +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
-                ";invalidBtslCounts=" + invalidBtslCounts +
+                    ";invalidBtslCounts=" + invalidBtslCounts +
+                ";bannedManagedEntries=" + bannedManagedEntries +
+                ";jhodProjectEntries=" + jhodProjectEntries +
+                ";validRareLoot=" + validRareLoot + ";rareLoot=" +
+                    string.Join(" | ", rareLootRecords.ToArray()) +
                 ";criticalProfiles=" + criticalProfiles + ";catalog=" + catalog +
                 ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
@@ -3948,6 +4161,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparer.Ordinal).Select(value => value.Key + ":frequency=" +
                             value.Value).ToArray()) + ";records=" +
                     string.Join(" | ", records.ToArray());
+            observed += ";nativeEnchantments=" + string.Join(" | ",
+                enchantmentRecords.ToArray()) + ";lootCandidates=" + string.Join(
+                    " | ", lootCandidateRecords.ToArray()) +
+                ";vendorDirectReferences=" + string.Join(" | ", tables.Select(table =>
+                {
+                    List<string> references;
+                    return table.name + ":" + table.AssetGuid + "=" +
+                        (vendorReferences.TryGetValue(table.AssetGuid, out references) ?
+                            string.Join(",", references.Take(30).ToArray()) : string.Empty);
+                }).ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("vendor-table-catalog",
@@ -3969,20 +4192,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 61 &&
+                        fixedCountField != null && capitalEntries.Count == 27 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
-                    "C11_JhodVendorTable LootItemsPackFixed fields"),
+                    "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "ten exact entries with project quantities including one Blunderbuss",
-                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
+                    "eleven exact early/+1/supply entries including one Blunderbuss",
+                    observed, projectEntries == 11 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
-                    "registered production firearms, ammunition, and repair kit"),
+                    "registered early and +1 firearms, ammunition, and supplies"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; ten unique entries each",
-                    observed, btslTables == 4 && btslEntries == 40 &&
+                    "four exact standalone/campaign tables; eleven unique entries each",
+                    observed, btslTables == 4 && btslEntries == 44 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
+                Assertion("rare-firearm-acquisition-exclusions",
+                    "no named or modern firearms in managed vendors; no Jhod project firearms",
+                    observed, bannedManagedEntries == 0 && jhodProjectEntries == 0,
+                    "exact managed table and item identities"),
+                Assertion("rare-firearm-fixed-loot",
+                    "five distinct exact count-one BlueprintLoot targets with exact names and areas",
+                    observed, validRareLoot == 5,
+                    "installed live blueprint graph after transactional publication"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",
@@ -4006,6 +4237,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,
                     "scenario contains no assignment, AddLoot, GetTable, shop, or save call"),
+                Assertion("rare-firearm-native-enchantment-forensics",
+                    "installed enhancement +1/+2/+4/+5, Seeking, Thundering, and Fey Bane candidates with exact contracts",
+                    string.Join(" | ", enchantmentRecords.ToArray()),
+                    enchantmentsField != null && enchantmentRecords.Count > 0,
+                    "read-only BlueprintWeaponEnchantment and donor item graph"),
+                Assertion("rare-firearm-loot-candidate-forensics",
+                    "nonempty exact fixed campaign loot candidate inventory",
+                    string.Join(" | ", lootCandidateRecords.ToArray()),
+                    lootCandidateRecords.Count > 0,
+                    "read-only BlueprintLoot/BlueprintUnitLoot graph and direct references"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -4014,6 +4255,550 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunRareFirearmBlueprintContracts()
+        {
+            MagicFirearmBlueprintCatalog catalog = BlueprintBootstrap.MagicFirearms;
+            var instances = new List<ItemEntityWeapon>();
+            var assertions = new List<RuntimeTestAssertion>();
+            string observed = string.Empty;
+            try
+            {
+                FieldInfo field = typeof(BlueprintItemWeapon).GetField("m_Enchantments",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                foreach (MagicFirearmBlueprintEntry entry in catalog.Entries)
+                {
+                    var instance = new ItemEntityWeapon(entry.Item);
+                    instances.Add(instance);
+                    BlueprintWeaponEnchantment[] staticValues = field == null ? null :
+                        field.GetValue(entry.Item) as BlueprintWeaponEnchantment[];
+                    bool exactStatic = staticValues != null &&
+                        staticValues.SequenceEqual(entry.Spec.Enchantments) &&
+                        instance.Enchantments.Count(value => value != null &&
+                            staticValues.Contains(value.Blueprint as
+                                BlueprintWeaponEnchantment)) == staticValues.Length;
+                    assertions.Add(Assertion("item-" + entry.Spec.Symbol,
+                        "exact identity/family/cost/weight/static enchantments",
+                        entry.Spec.DisplayName + ":" + entry.Item.AssetGuid +
+                        ":cost=" + entry.Item.Cost + ":weight=" + entry.Item.Weight +
+                        ":static=" + (staticValues == null ? -1 : staticValues.Length),
+                        entry.Item.AssetGuid.Length == 32 && entry.Item.Cost ==
+                            entry.Spec.Cost && entry.Item.Weight.Equals(
+                                entry.Family.Item.Weight) && exactStatic,
+                        "live BlueprintItemWeapon and ItemEntityWeapon"));
+                }
+                ItemEntityWeapon reliable = instances[3];
+                ItemEntityWeapon lastWord = instances[6];
+                ItemEntityWeapon control = instances[0];
+                int beforeStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                FirearmRuntimeState.Service.Set(lastWord, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                int loadedStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                FirearmRuntimeState.Service.Set(lastWord, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+                int brokenStatic = lastWord.Enchantments.Count(value => value != null &&
+                    entryBlueprint(lastWord, value.Blueprint));
+                int zero = global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy
+                    .Evaluate(1, FirearmCondition.Normal, false, reliable);
+                int trainedBroken = global::KingmakerGunslinger.Misfires
+                    .EffectiveFirearmMisfirePolicy.Evaluate(1,
+                        FirearmCondition.Broken, true, reliable);
+                observed = "catalog=" + catalog.Entries.Length + ";reliable=" +
+                    Enchantments.FirearmMisfireReductionResolver.Resolve(reliable) +
+                    ";controlReliable=" +
+                    Enchantments.FirearmMisfireReductionResolver.Resolve(control) +
+                    ";seeking=" + Enchantments.SeekingExactItemResolver.IsAuthorized(lastWord) +
+                    ";controlSeeking=" + Enchantments.SeekingExactItemResolver.IsAuthorized(control) +
+                    ";thresholds=" + zero + "," + trainedBroken +
+                    ";staticLifecycle=" + beforeStatic + "," + loadedStatic +
+                    "," + brokenStatic;
+                assertions.Add(Assertion("reliable-exact-item-threshold",
+                    "exact Reliable item 1->0 and trained Broken 1+2-1=2; control none",
+                    observed, zero == 0 && trainedBroken == 2 &&
+                        Enchantments.FirearmMisfireReductionResolver.Resolve(reliable) == 1 &&
+                        Enchantments.FirearmMisfireReductionResolver.Resolve(control) == 0,
+                    "shared effective misfire service"));
+                assertions.Add(Assertion("seeking-exact-item",
+                    "The Last Word authorized; +1 control unauthorized", observed,
+                    Enchantments.SeekingExactItemResolver.IsAuthorized(lastWord) &&
+                        !Enchantments.SeekingExactItemResolver.IsAuthorized(control),
+                    "exact runtime enchantment resolver"));
+                assertions.Add(Assertion("static-state-token-coexistence",
+                    "three Last Word static properties survive Loaded and Broken tokens",
+                    observed, beforeStatic == 3 && loadedStatic == 3 &&
+                        brokenStatic == 3 &&
+                        FirearmRuntimeState.ReadStateTokenIds(lastWord).Count == 1,
+                    "item-owned token repository"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("rare-firearm-blueprint-exception",
+                    "no exception", exception.ToString(), false,
+                    "exception-contained observer"));
+            }
+            finally
+            {
+                foreach (ItemEntityWeapon item in instances)
+                    FirearmRuntimeState.Repository.Remove(item);
+            }
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunMagicFirearmNativeProperties()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null;
+            UnitEntityData target = null;
+            ItemEntityWeapon control = null;
+            ItemEntityWeapon seeking = null;
+            ItemEntityWeapon watch = null;
+            BlueprintFeature feyType = null;
+            BlueprintBuff concealment = null;
+            Kingmaker.UnitLogic.Buffs.Buff concealmentFact = null;
+            RuleAttackRoll controlRoll = null;
+            RuleAttackRoll seekingRoll = null;
+            bool cleaned = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                concealment = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintBuff>()
+                    .Where(value => value != null &&
+                        (value.name ?? string.Empty).IndexOf("blur",
+                            StringComparison.OrdinalIgnoreCase) >= 0 &&
+                        DescribeComponents(value.ComponentsArray).IndexOf(
+                            "conceal", StringComparison.OrdinalIgnoreCase) >= 0)
+                    .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                    .FirstOrDefault();
+                if (concealment == null) throw new InvalidOperationException(
+                    "No exact installed Blur concealment buff was found.");
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 20;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 30;
+                target.Descriptor.State.Immortality.Retain();
+                concealmentFact = target.Descriptor.AddFact(concealment) as
+                    Kingmaker.UnitLogic.Buffs.Buff;
+                if (concealmentFact == null) throw new InvalidOperationException(
+                    "The exact installed concealment buff was not applied.");
+
+                control = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[0].Item);
+                seeking = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[6].Item);
+
+                attacker.Body.PrimaryHand.InsertItem(control);
+                FirearmRuntimeState.Service.Set(control, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                controlRoll = new RuleAttackRoll(attacker, target, control, -100);
+                Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(control, 1);
+                Rulebook.Trigger(controlRoll);
+                Enchantments.SeekingConcealmentRuntime.CancelForcedRoll();
+                attacker.Body.PrimaryHand.RemoveItem(false);
+
+                attacker.Body.PrimaryHand.InsertItem(seeking);
+                FirearmRuntimeState.Service.Set(seeking, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                seekingRoll = new RuleAttackRoll(attacker, target, seeking, -100);
+                UnityEngine.Random.InitState(FindNativeD100ThenD20Seed(19));
+                Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(seeking, 1);
+                Rulebook.Trigger(seekingRoll);
+
+                string observed = "buff=" + concealment.name + ":" +
+                    concealment.AssetGuid + ";control=" + controlRoll.Result +
+                    ",success=" + controlRoll.IsHit + ",concealment=" +
+                    (controlRoll.ConcealmentCheck == null ? "none" :
+                        controlRoll.ConcealmentCheck.Concealment + ":" +
+                        controlRoll.ConcealmentCheck.Roll) + ",roll=" +
+                    controlRoll.Roll + ",bonus=" + controlRoll.AttackBonus +
+                    ",ac=" + controlRoll.TargetAC + ";seeking=" +
+                    seekingRoll.Result + ",success=" + seekingRoll.IsHit +
+                    ",concealment=" + (seekingRoll.ConcealmentCheck == null ?
+                        "none" : seekingRoll.ConcealmentCheck.Concealment + ":" +
+                        seekingRoll.ConcealmentCheck.Roll) + ",roll=" +
+                    seekingRoll.Roll + ",bonus=" + seekingRoll.AttackBonus +
+                    ",ac=" + seekingRoll.TargetAC + ";discharge=" +
+                    FirearmDischargeRuntimeDiagnostics.Describe() +
+                    ";misfire=" + FirearmMisfireRuntime.Describe();
+                bool sameNativeConcealment = controlRoll.ConcealmentCheck != null &&
+                    seekingRoll.ConcealmentCheck != null &&
+                    controlRoll.ConcealmentCheck.Concealment ==
+                        seekingRoll.ConcealmentCheck.Concealment &&
+                    !string.Equals(controlRoll.ConcealmentCheck.Concealment.ToString(),
+                        "None", StringComparison.Ordinal);
+                assertions.Add(Assertion("seeking-concealment-only-bypass",
+                    "control misses the same forced concealment check; exact Seeking item hits",
+                    observed, !controlRoll.IsHit && seekingRoll.IsHit &&
+                        sameNativeConcealment,
+                    "native RuleAttackRoll and RuleConcealmentCheck with exact-item Success postfix"));
+                assertions.Add(Assertion("seeking-no-global-concealment-mutation",
+                    "same native concealment classification and chance remain on both attacks",
+                    observed, sameNativeConcealment,
+                    "stored native RuleConcealmentCheck fields"));
+
+                target.Descriptor.Buffs.RemoveFact(concealmentFact);
+                concealmentFact = null;
+                RuleAttackRoll plusOneAttack = TriggerReliableMatrixAttack(
+                    attacker, target, control, 10, FirearmCondition.Normal);
+                RuleAttackRoll plusFiveAttack = TriggerReliableMatrixAttack(
+                    attacker, target, seeking, 10, FirearmCondition.Normal);
+                string enhancementObserved = "plus1=" +
+                    plusOneAttack.AttackBonus + ";plus5=" +
+                    plusFiveAttack.AttackBonus + ";rolls=" + plusOneAttack.Roll +
+                    "," + plusFiveAttack.Roll;
+                assertions.Add(Assertion("native-enhancement-attack-bonus",
+                    "+5 Pistol native attack bonus is exactly four above +1 Pistol",
+                    enhancementObserved,
+                    plusFiveAttack.AttackBonus - plusOneAttack.AttackBonus == 4 &&
+                        plusOneAttack.Roll.Value == 10 &&
+                        plusFiveAttack.Roll.Value == 10,
+                    "native WeaponEnhancementBonus through RuleCalculateAttackBonus"));
+
+                feyType = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintFeature>()
+                    .Single(value => string.Equals(value.name, "FeyType",
+                        StringComparison.Ordinal));
+                watch = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[7].Item);
+                RuleAttackRoll nonFey = TriggerReliableMatrixAttack(
+                    attacker, target, watch, 10, FirearmCondition.Normal);
+                target.Descriptor.AddFact(feyType);
+                RuleAttackRoll fey = TriggerReliableMatrixAttack(
+                    attacker, target, watch, 10, FirearmCondition.Normal);
+                string feyObserved = "feature=" + feyType.AssetGuid +
+                    ";nonFey=" + nonFey.AttackBonus + ";fey=" +
+                    fey.AttackBonus + ";rolls=" + nonFey.Roll + "," + fey.Roll;
+                assertions.Add(Assertion("native-fey-bane-attack-bonus",
+                    "Watch gains native +2 Bane attack bonus only against exact Fey",
+                    feyObserved, fey.AttackBonus - nonFey.AttackBonus == 2 &&
+                        nonFey.Roll.Value == 10 && fey.Roll.Value == 10,
+                    "native WeaponConditionalEnhancementBonus and exact Fey type fact"));
+                target.Descriptor.RemoveFact(feyType);
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("magic-property-exception", "no exception",
+                    exception.ToString(), false, "exception-contained disposable fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                Enchantments.SeekingConcealmentRuntime.CancelForcedRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                if (control != null) FirearmRuntimeState.Repository.Remove(control);
+                if (seeking != null) FirearmRuntimeState.Repository.Remove(seeking);
+                if (watch != null) FirearmRuntimeState.Repository.Remove(watch);
+                if (feyType != null && target != null && target.Descriptor.HasFact(feyType))
+                    target.Descriptor.RemoveFact(feyType);
+                if (concealmentFact != null && target != null)
+                    target.Descriptor.Buffs.RemoveFact(concealmentFact);
+                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            assertions.Add(Assertion("external-isolation",
+                "disposable units, buff, items, tokens, and forced rolls removed",
+                "cleaned=" + cleaned, cleaned, "bounded fixture cleanup"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunReliableFirearmMisfireMatrix()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null;
+            UnitEntityData target = null;
+            ItemEntityWeapon pistol = null;
+            ItemEntityWeapon musket = null;
+            ItemEntityWeapon control = null;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target.Descriptor.State.Immortality.Retain();
+                pistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[3].Item);
+                musket = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[4].Item);
+                control = new ItemEntityWeapon(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item);
+
+                RuleAttackRoll pistolOne = TriggerReliableMatrixAttack(
+                    attacker, target, pistol, 1, FirearmCondition.Normal);
+                FirearmState pistolAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(pistol).Repository.State;
+                RuleAttackRoll musketOne = TriggerReliableMatrixAttack(
+                    attacker, target, musket, 1, FirearmCondition.Normal);
+                FirearmState musketOneAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(musket).Repository.State;
+                RuleAttackRoll musketTwo = TriggerReliableMatrixAttack(
+                    attacker, target, musket, 2, FirearmCondition.Normal);
+                FirearmState musketTwoAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(musket).Repository.State;
+                RuleAttackRoll controlTwo = TriggerReliableMatrixAttack(
+                    attacker, target, control, 2, FirearmCondition.Normal);
+                FirearmState controlAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(control).Repository.State;
+
+                int trainedBrokenPistol = EffectiveFirearmMisfirePolicy.Evaluate(
+                    1, FirearmCondition.Broken, true, pistol);
+                int untrainedBrokenPistol = EffectiveFirearmMisfirePolicy.Evaluate(
+                    1, FirearmCondition.Broken, false, pistol);
+                int trainedBrokenMusket = EffectiveFirearmMisfirePolicy.Evaluate(
+                    2, FirearmCondition.Broken, true, musket);
+                int untrainedBrokenMusket = EffectiveFirearmMisfirePolicy.Evaluate(
+                    2, FirearmCondition.Broken, false, musket);
+                string observed = "pistol1=" + pistolOne.Result + ":" +
+                    pistolAfter.Condition + ";musket1=" + musketOne.Result +
+                    ":" + musketOneAfter.Condition + ";musket2=" +
+                    musketTwo.Result + ":" + musketTwoAfter.Condition +
+                    ";control2=" + controlTwo.Result + ":" +
+                    controlAfter.Condition + ";broken=" +
+                    trainedBrokenPistol + "," + untrainedBrokenPistol + "," +
+                    trainedBrokenMusket + "," + untrainedBrokenMusket +
+                    ";diagnostics=" + FirearmMisfireRuntime.Describe();
+                assertions.Add(Assertion("reliable-zero-natural-one",
+                    "Reliable Pistol threshold 0: natural 1 misses without misfire or condition damage",
+                    observed, !pistolOne.IsHit &&
+                        pistolAfter.Condition == FirearmCondition.Normal,
+                    "native RuleAttackRoll plus shared effective threshold"));
+                assertions.Add(Assertion("reliable-musket-threshold-edge",
+                    "Reliable Musket: roll 1 misfires; roll 2 is ordinary",
+                    observed, musketOneAfter.Condition == FirearmCondition.Broken &&
+                        musketTwoAfter.Condition == FirearmCondition.Normal,
+                    "deterministic native d20 sequence and exact item condition"));
+                assertions.Add(Assertion("mundane-musket-control",
+                    "mundane Musket threshold 2: roll 2 misfires",
+                    observed, controlAfter.Condition == FirearmCondition.Broken,
+                    "non-Reliable exact-item control"));
+                assertions.Add(Assertion("reliable-broken-training-order",
+                    "trained/untrained Broken Pistol 2/4 and Musket 3/5",
+                    observed, trainedBrokenPistol == 2 &&
+                        untrainedBrokenPistol == 4 && trainedBrokenMusket == 3 &&
+                        untrainedBrokenMusket == 5,
+                    "Broken then central training then Reliable then clamp"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("reliable-matrix-exception", "no exception",
+                    exception.ToString(), false, "exception-contained fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                foreach (ItemEntityWeapon item in new[] { pistol, musket, control })
+                    if (item != null) FirearmRuntimeState.Repository.Remove(item);
+                if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+            }
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static RuleAttackRoll TriggerReliableMatrixAttack(
+            UnitEntityData attacker, UnitEntityData target,
+            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition)
+        {
+            if (attacker.Body.PrimaryHand.MaybeItem != null)
+                attacker.Body.PrimaryHand.RemoveItem(false);
+            attacker.Body.PrimaryHand.InsertItem(weapon);
+            FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                FirearmState.CurrentSchemaVersion, 1,
+                FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+            var attack = new RuleAttackRoll(attacker, target, weapon, -100);
+            UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
+            Rulebook.Trigger(attack);
+            return attack;
+        }
+
+        private static bool entryBlueprint(ItemEntityWeapon item, object blueprint)
+        {
+            BlueprintWeaponEnchantment[] values = typeof(BlueprintItemWeapon)
+                .GetField("m_Enchantments", BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic)
+                .GetValue(item.Blueprint) as BlueprintWeaponEnchantment[];
+            return values != null && values.Contains(blueprint as BlueprintWeaponEnchantment);
+        }
+
+        private static int FindNativeD100ThenD20Seed(int expectedD20)
+        {
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                int ignored = RulebookEvent.Dice.D100.Value;
+                if (RulebookEvent.Dice.D20.Value == expectedD20) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native D100-to-D20 seed produced " +
+                expectedD20 + ".");
+        }
+
+        private static bool IsRareFirearmNativeEnchantmentCandidate(
+            BlueprintWeaponEnchantment enchantment)
+        {
+            string value = ((enchantment == null ? string.Empty : enchantment.name) +
+                " " + (enchantment == null ? string.Empty : enchantment.Name))
+                .ToLowerInvariant();
+            bool concealmentComponent = enchantment != null &&
+                (enchantment.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Any(component => component != null &&
+                    (component.GetType().FullName ?? string.Empty).IndexOf(
+                        "conceal", StringComparison.OrdinalIgnoreCase) >= 0);
+            bool concealmentValue = enchantment != null &&
+                DescribeComponentScalarContracts(enchantment.ComponentsArray)
+                    .IndexOf("conceal", StringComparison.OrdinalIgnoreCase) >= 0;
+            return concealmentComponent || concealmentValue ||
+                value.Contains("enhancement1") ||
+                value.Contains("enhancement2") ||
+                value.Contains("enhancement4") || value.Contains("enhancement5") ||
+                value.Contains("seeking") || value.Contains("thundering") ||
+                (value.Contains("fey") && value.Contains("bane"));
+        }
+
+        private static string DescribeComponentScalarContracts(
+            BlueprintComponent[] components)
+        {
+            var values = new List<string>();
+            foreach (BlueprintComponent component in components ??
+                Array.Empty<BlueprintComponent>())
+            {
+                if (component == null) continue;
+                for (Type type = component.GetType(); type != null;
+                    type = type.BaseType)
+                {
+                    foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.DeclaredOnly))
+                    {
+                        Type fieldType = field.FieldType;
+                        if (!(fieldType.IsEnum || fieldType.IsPrimitive ||
+                            fieldType == typeof(string))) continue;
+                        object fieldValue;
+                        try { fieldValue = field.GetValue(component); }
+                        catch { continue; }
+                        values.Add(component.GetType().FullName + "." + field.Name +
+                            "=" + (fieldValue == null ? "<null>" :
+                                fieldValue.ToString()));
+                    }
+                }
+            }
+            return string.Join(",", values.OrderBy(entry => entry,
+                StringComparer.Ordinal).ToArray());
+        }
+
+        private static bool IsRareFirearmLootCandidate(BlueprintScriptableObject value)
+        {
+            var loot = value as BlueprintLoot;
+            string text = (value.name ?? string.Empty) + " " +
+                (loot == null ? string.Empty : (loot.ContainerName ?? string.Empty) +
+                    " " + (loot.Area == null ? string.Empty : loot.Area.name));
+            string lower = text.ToLowerInvariant();
+            string[] terms = { "pitax", "irovetti", "palace", "armory", "treasur",
+                "duel", "officer", "noble", "cache", "academy", "bard", "opera",
+                "houseattheedge", "house_at_the_edge", "hateot", "finaldungeon",
+                "firstworld", "lanternking", "worldend" };
+            return terms.Any(lower.Contains);
+        }
+
+        private static string DescribeFixedLootComponents(
+            BlueprintScriptableObject blueprint)
+        {
+            return string.Join(",", (blueprint.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                .Select(component =>
+                {
+                    BlueprintItem item = CapitalVendorBlueprints.ReadItem(component);
+                    return (item == null ? "<null>" : item.name + ":" +
+                        item.AssetGuid) + "*" + CapitalVendorBlueprints.ReadCount(component);
+                }).ToArray());
+        }
+
+        private static Dictionary<string, List<string>>
+            BuildDirectBlueprintReferenceIndex(BlueprintScriptableObject[] owners,
+                BlueprintScriptableObject[] targets)
+        {
+            var targetGuids = new HashSet<string>(targets.Select(value =>
+                value.AssetGuid), StringComparer.Ordinal);
+            var result = targetGuids.ToDictionary(value => value,
+                value => new List<string>(), StringComparer.Ordinal);
+            foreach (BlueprintScriptableObject owner in owners)
+            {
+                var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+                CountSelectedDirectReferences(owner, targetGuids, counts);
+                foreach (BlueprintComponent component in owner.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                    CountSelectedDirectReferences(component, targetGuids, counts);
+                foreach (KeyValuePair<string, int> match in counts)
+                    result[match.Key].Add(owner.GetType().FullName + ":" +
+                        owner.name + ":" + owner.AssetGuid + "*" + match.Value);
+            }
+            return result;
+        }
+
+        private static void CountSelectedDirectReferences(object owner,
+            HashSet<string> targetGuids, Dictionary<string, int> counts)
+        {
+            if (owner == null) return;
+            for (Type type = owner.GetType(); type != null; type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    object value;
+                    try { value = field.GetValue(owner); }
+                    catch { continue; }
+                    var direct = value as BlueprintScriptableObject;
+                    if (direct != null && targetGuids.Contains(direct.AssetGuid))
+                        IncrementReferenceCount(counts, direct.AssetGuid);
+                    var array = value as Array;
+                    if (array == null) continue;
+                    foreach (object element in array)
+                    {
+                        var referenced = element as BlueprintScriptableObject;
+                        if (referenced != null &&
+                            targetGuids.Contains(referenced.AssetGuid))
+                            IncrementReferenceCount(counts, referenced.AssetGuid);
+                    }
+                }
+            }
+        }
+
+        private static void IncrementReferenceCount(
+            Dictionary<string, int> counts, string guid)
+        {
+            int current;
+            counts.TryGetValue(guid, out current);
+            counts[guid] = current + 1;
         }
 
         private RuntimeTestResult RunProductionFirearmFallbackObservation()
@@ -8499,7 +9284,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             BlueprintItemWeapon blunderbuss =
-                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item;
+                BlueprintBootstrap.MagicFirearms.Entries[5].Item;
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -8519,24 +9304,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 20;
+                attacker.Descriptor.Stats.Dexterity.BaseValue = 30;
                 first = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 second = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 first.Descriptor.State.Immortality.Retain();
                 second.Descriptor.State.Immortality.Retain();
                 Vector3 origin = new Vector3(10000f, 0f, 10000f);
                 SetExactProperty(attacker, "Position", origin);
-                SetExactProperty(first, "Position", origin + new Vector3(2f, 0f, 0.3f));
-                SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
+                SetExactProperty(first, "Position",
+                    origin + new Vector3(2f, 0f, 0.3f));
+                SetExactProperty(second, "Position",
+                    origin + new Vector3(3f, 0f, -0.3f));
                 weapon = new ItemEntityWeapon(blunderbuss);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
                 var combat = new Kingmaker.Controllers.Combat.UnitCombatState(attacker);
                 SetExactProperty(attacker, "CombatState", combat);
                 firstRegistered = Kingmaker.Game.Instance.State.Units.All.Add(first);
-                if (!firstRegistered) throw new InvalidOperationException(
-                    "First disposable scatter target was already registered.");
                 secondRegistered = Kingmaker.Game.Instance.State.Units.All.Add(second);
-                if (!secondRegistered) throw new InvalidOperationException(
-                    "Second disposable scatter target was already registered.");
+                if (!firstRegistered || !secondRegistered)
+                    throw new InvalidOperationException(
+                        "Live scatter targets did not register exactly once.");
                 registeredCount = Kingmaker.Game.Instance.State.Units.Count -
                     unitPoolBefore;
                 Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
@@ -8564,25 +9352,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
                     data, new TargetWrapper(first));
-                // Detached chargen units have no animation view, so running the
-                // command would test fixture interruption rather than player
-                // delivery. Record construction/availability separately; the
-                // transaction below remains explicitly non-acceptance evidence.
                 commandConstructed = command.CanStart && data.IsAvailable &&
                     ReferenceEquals(command.Spell.Blueprint, scatterAbility);
-                mixed = Scatter.ScatterShotRuntime.Execute(
-                    attacker, first,
-                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
-                    new[] { 10, 1 });
+                int mixedIndex = 0;
+                int[] mixedRolls = { 10, 1 };
+                mixed = Scatter.ScatterShotRuntime.Execute(attacker, first,
+                    attack =>
+                    {
+                        UnityEngine.Random.InitState(FindNativeD20Seed(
+                            mixedRolls[mixedIndex++]));
+                        Kingmaker.RuleSystem.Rulebook.Trigger(attack);
+                    }, mixedRolls);
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                allMisfire = Scatter.ScatterShotRuntime.Execute(
-                    attacker, first,
-                    attack => Kingmaker.RuleSystem.Rulebook.Trigger(attack),
-                    new[] { 1, 1 });
+                int allIndex = 0;
+                int[] allRolls = { 1, 1 };
+                allMisfire = Scatter.ScatterShotRuntime.Execute(attacker, first,
+                    attack =>
+                    {
+                        UnityEngine.Random.InitState(FindNativeD20Seed(
+                            allRolls[allIndex++]));
+                        Kingmaker.RuleSystem.Rulebook.Trigger(attack);
+                    }, allRolls);
             }
             catch (Exception exception)
             {
@@ -8598,14 +9392,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
                 if (attacker != null) SetExactProperty(attacker, "CombatState", null);
-                if (secondRegistered &&
-                    !Kingmaker.Game.Instance.State.Units.All.Remove(second))
-                    throw new InvalidOperationException(
-                        "Second disposable scatter target cleanup failed.");
-                if (firstRegistered &&
-                    !Kingmaker.Game.Instance.State.Units.All.Remove(first))
-                    throw new InvalidOperationException(
-                        "First disposable scatter target cleanup failed.");
+                if (secondRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(second);
+                if (firstRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(first);
                 if (second != null) second.Descriptor.State.Immortality.ReleaseAll();
                 if (first != null) first.Descriptor.State.Immortality.ReleaseAll();
                 if (second != null) second.Dispose();
@@ -8636,6 +9426,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 allMisfire.After.Condition == FirearmCondition.Broken &&
                 allMisfire.Volley.MisfireRollCount == 2 &&
                 allMisfire.Volley.AllRollsMisfire;
+            string firstDamage = mixed == null || mixed.Attacks.Length == 0 ||
+                mixed.Attacks[0] == null ? "<missing>" :
+                DescribeNestedObject(mixed.Attacks[0].MeleeDamage, 8);
+            BlueprintWeaponEnchantment[] fallbackEnchantments =
+                typeof(BlueprintItemWeapon).GetField("m_Enchantments",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic).GetValue(blunderbuss) as
+                    BlueprintWeaponEnchantment[];
+            bool fallbackStatic = fallbackEnchantments != null &&
+                fallbackEnchantments.Length == 2 &&
+                fallbackEnchantments.Any(value => value != null &&
+                    value.AssetGuid == MagicFirearmBlueprints.Enhancement4Guid) &&
+                fallbackEnchantments.Any(value => ReferenceEquals(value,
+                    BlueprintBootstrap.MagicFirearms.Reliable)) &&
+                !fallbackEnchantments.Any(value => value != null &&
+                    value.AssetGuid == "690e762f7704e1f4aa1ac69ef0ce6a96");
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("scatter-command-contract-and-transaction",
@@ -8650,6 +9456,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Normal -> Broken (scatter misfire)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                Assertion("scatter-thundering-fallback",
+                    "authorized fallback is exactly +4 Reliable, excludes native Thundering, and still hits",
+                    "static=" + (fallbackEnchantments == null ? "<null>" :
+                        string.Join(",", fallbackEnchantments.Select(value =>
+                            value.name + ":" + value.AssetGuid).ToArray())) +
+                        ";damageGraph=" + firstDamage,
+                    mixed != null && mixed.Attacks.Length > 0 &&
+                    mixed.Attacks[0].AttackRoll != null &&
+                    mixed.Attacks[0].AttackRoll.IsHit &&
+                    fallbackStatic,
+                    "exact BlueprintItemWeapon static enchantment array plus native scatter attack"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -11905,7 +12722,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             BlueprintAbilityResource grit = gunslinger.Grit.Resource;
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -11923,6 +12740,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             bool nativePresentation = false, brokenAvailable = false,
                 wreckedRejected = false, zeroGritRejected = false;
+            int staticBefore = -1, staticAfterStandard = -1,
+                staticAfterMove = -1, staticAfterRejected = -1;
             QuickClearRuntimeDiagnostics.Reset();
             try
             {
@@ -11958,6 +12777,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 if (!ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon))
                     throw new InvalidOperationException("Exact pistol was not equipped.");
+                staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
                 initial = unit.Descriptor.Resources.GetResourceAmount(grit);
 
                 stage = "standard-action";
@@ -11993,6 +12814,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterStandard = unit.Descriptor.Resources.GetResourceAmount(grit);
                 standardCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterStandard = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
 
                 stage = "move-action";
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
@@ -12001,6 +12824,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterMove = unit.Descriptor.Resources.GetResourceAmount(grit);
                 moveCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterMove = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
 
                 stage = "insufficient-rejection";
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
@@ -12011,6 +12836,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterRejected = unit.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterRejected = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
             }
             catch (Exception exception)
             {
@@ -12042,7 +12869,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 QuickClearRuntimeDiagnostics.Faults + ";presentation=" +
                 nativePresentation + ";brokenAvailable=" + brokenAvailable +
                 ";wreckedRejected=" + wreckedRejected + ";zeroGritRejected=" +
-                zeroGritRejected + ";conditionLogs=" +
+                zeroGritRejected + ";static=" + staticBefore + "," +
+                staticAfterStandard + "," + staticAfterMove + "," +
+                staticAfterRejected + ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
@@ -12078,6 +12907,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Broken -> Normal (Quick Clear)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                Assertion("magic-static-quick-clear-lifecycle",
+                    "The Last Word retains +5, Reliable, and Seeking through both Quick Clear paths and rejection",
+                    observed, staticBefore == 3 && staticAfterStandard == 3 &&
+                        staticAfterMove == 3 && staticAfterRejected == 3,
+                    "exact runtime static enchantments across state-token replacement"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "firearm forgotten and detached unit disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

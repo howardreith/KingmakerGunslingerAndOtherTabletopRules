@@ -21,6 +21,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-empty-firearm-command";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
+        internal const string ObserveRareFirearmAcquisition =
+            "observe-rare-firearm-acquisition";
+        internal const string ObserveRareFirearmBlueprintContracts =
+            "observe-rare-firearm-blueprint-contracts";
+        internal const string MagicFirearmNativeProperties =
+            "magic-firearm-native-properties";
+        internal const string ReliableFirearmMisfireMatrix =
+            "reliable-firearm-misfire-matrix";
+        internal const string BlunderbussThunderingScatter =
+            "blunderbuss-thundering-scatter";
         internal const string ObserveProductionFirearmFallbacks =
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
@@ -174,6 +184,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableEmptyFirearmCommand,
                 ObserveVendorTableContracts,
+                ObserveRareFirearmAcquisition,
+                ObserveRareFirearmBlueprintContracts,
+                MagicFirearmNativeProperties,
+                ReliableFirearmMisfireMatrix,
+                BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
                 DisposableFirearmVisualRigs,

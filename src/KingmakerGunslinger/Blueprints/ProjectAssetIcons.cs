@@ -68,6 +68,7 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static void Apply(GunslingerClassBlueprintSet gunslinger,
             FirearmFeatBlueprintSet feats, ProductionFirearmBlueprintCatalog firearms,
+            MagicFirearmBlueprintCatalog magicFirearms,
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet supplies,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
@@ -100,6 +101,13 @@ namespace KingmakerGunslinger.Blueprints
             items.SetIcon(firearms.Blunderbuss.Item, Require("blunderbuss"));
             items.SetIcon(firearms.AdvancedRifle.Item, Require("rifle"));
             items.SetIcon(firearms.AdvancedRevolver.Item, Require("revolver"));
+            foreach (MagicFirearmBlueprintEntry entry in magicFirearms.Entries)
+            {
+                string key = entry.Spec.Kind == Firearms.FirearmKind.Pistol ?
+                    "early-pistol" : entry.Spec.Kind == Firearms.FirearmKind.Musket ?
+                    "musket" : "blunderbuss";
+                items.SetIcon(entry.Item, Require(key));
+            }
             items.SetIcon(ammunition.LeadBall, Require("lead-ball"));
             items.SetIcon(ammunition.BlackPowder, Require("black-powder"));
             items.SetIcon(repairKit, Require("repair-kit"));

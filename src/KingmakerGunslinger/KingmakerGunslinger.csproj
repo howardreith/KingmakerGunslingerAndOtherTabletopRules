@@ -46,6 +46,15 @@
     <Compile Include="Archetypes\UpCloseAndDeadlyMechanics.cs" />
     <Compile Include="Archetypes\TwinShotKnockdownMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
+    <Compile Include="Enchantments\SeekingBlueprints.cs" />
+    <Compile Include="Enchantments\SeekingWeaponEnchantmentComponent.cs" />
+    <Compile Include="Enchantments\SeekingExactItemResolver.cs" />
+    <Compile Include="Enchantments\SeekingConcealmentPatch.cs" />
+    <Compile Include="Enchantments\SeekingConcealmentPolicy.cs" />
+    <Compile Include="Enchantments\FirearmMisfireReductionComponent.cs" />
+    <Compile Include="Enchantments\ReliableBlueprints.cs" />
+    <Compile Include="Enchantments\FirearmMisfireReductionResolver.cs" />
+    <Compile Include="Misfires\EffectiveFirearmMisfirePolicy.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -133,6 +142,8 @@
     <Compile Include="Blueprints\LocalizationService.cs" />
     <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\ProductionFirearmBlueprints.cs" />
+    <Compile Include="Blueprints\MagicFirearmBlueprints.cs" />
+    <Compile Include="Blueprints\RareFirearmCampaignLootBlueprints.cs" />
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
@@ -549,6 +560,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
+    <Compile Include="Development\KingmakerDevelopmentBridge.RareFirearms.cs" />
     <Compile Include="Recovery\FirearmItemRepairStateStore.cs" />
     <Compile Include="Recovery\FirearmRepairAvailability.cs" />
     <Compile Include="Recovery\FirearmRepairResult.cs" />

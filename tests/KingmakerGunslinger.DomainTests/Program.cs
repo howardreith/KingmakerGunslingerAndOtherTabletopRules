@@ -25,6 +25,11 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
+            Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
+            Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
+            Case("seeking.wrong-item", RareFirearmSeekingTests.WrongItemFailsClosed),
+            Case("seeking.missing-context", RareFirearmSeekingTests.MissingContextFailsClosed),
             Case("archetype-handedness.catalog-exact", ArchetypeFoundationTests.HandednessCatalogExact),
             Case("archetype-handedness.family-matching", ArchetypeFoundationTests.HandednessFamilyMatching),
             Case("archetype-handedness.unknown-fails-closed", ArchetypeFoundationTests.HandednessUnknownFailsClosed),
@@ -555,7 +560,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("explosion-target.result-negative-hp", ExplosionTargetResultAllowsNegativeHitPoints),
             Case("misfire.invalid-roll-zero", MisfireInvalidRollZero),
             Case("misfire.invalid-roll-twenty-one", MisfireInvalidRollTwentyOne),
-            Case("misfire.invalid-threshold-zero", MisfireInvalidThresholdZero),
+            Case("misfire.zero-threshold-natural-one-native-miss", MisfireZeroThresholdNaturalOneNativeMiss),
             Case("misfire.invalid-threshold-twenty-one", MisfireInvalidThresholdTwentyOne),
             Case("forced-roll.empty", ForcedRollQueueEmpty),
             Case("forced-roll.set-consume", ForcedRollQueueSetConsume),
@@ -4188,11 +4193,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Natural d20 twenty-one was accepted.");
         }
 
-        private static void MisfireInvalidThresholdZero()
+        private static void MisfireZeroThresholdNaturalOneNativeMiss()
         {
-            Assertions.Throws<ArgumentOutOfRangeException>(
-                () => new FirearmMisfireService().Evaluate(1, 0, true),
-                "Misfire threshold zero was accepted.");
+            FirearmMisfireDecision nativeMiss =
+                new FirearmMisfireService().Evaluate(1, 0, false);
+            Assertions.False(nativeMiss.IsMisfire,
+                "A zero effective threshold classified natural 1 as a misfire.");
+            Assertions.False(nativeMiss.FinalSuccess,
+                "A zero threshold converted native natural-1 miss into a hit.");
+            Assertions.True(nativeMiss.ToString().Contains("misfireRange=none"),
+                "Zero-threshold diagnostics displayed an impossible range.");
         }
 
         private static void MisfireInvalidThresholdTwentyOne()

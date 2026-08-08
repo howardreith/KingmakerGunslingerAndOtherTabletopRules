@@ -1,5 +1,68 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Rare Firearms project-owned Seeking authority (2026-08-08)
+
+- Exact branch/checkpoint verified clean and published:
+  `codex/rare-firearms-campaign-integration` at
+  `69fd9a0b9e5889082f15f0e536eb940e79be138b`; baseline `1c570bd` is an ancestor.
+- Native Seeking absence is accepted historical evidence. Do not search for it
+  again. The prior stop is resolved by new user authority.
+- Register exactly ten new blueprints. New project Seeking symbol/GUID:
+  `KMG.Enchantments.Seeking` / `036fc59fd1e24753b98f9d92cdb1e93e`.
+- Exact next action after publishing this amendment checkpoint: inspect installed
+  Kingmaker 2.1.7b concealment attack IL/signatures, record the narrow exact-item
+  attack-scoped seam, then implement the stable manifest identity and focused
+  policies/tests. Continue every remaining original mission phase through
+  0.0.74, complete runtime/compatibility/package qualification and final remote
+  verification; do not stop after Seeking.
+- Resumed source checkpoint completed exact IL inspection and implemented the
+  fail-closed exact-check `RuleConcealmentCheck.Success` adapter plus one active
+  Seeking blueprint. Source gates pass 935/935 and clean Release/package. Exact
+  next action after commit/publication is guarded save-free bootstrap/blueprint
+  observation on the clean SHA, followed by the remaining nine-blueprint magic
+  catalog and Reliable shared threshold service.
+- Guarded save-free observer PASS on exact `2ba3866`: evidence
+  `20260808T1839549682548Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1839549954807Z-f994425a76d245288d0c0bec7b29e2b6`. Next implement
+  Reliable plus all eight items and the shared 0..20 threshold service.
+
+---
+
+## Active rare-firearms mission — 2026-08-08
+
+- Branch `codex/rare-firearms-campaign-integration`; exact baseline
+  `1c570bd4211d69c5c29f6af46a870146adb1645b`, version 0.0.73.
+- Durable records exist; guarded read-only vendor run
+  `20260808T1720275373614Z-observe-vendor-table-contracts` passed.
+- Observer source is qualified (validation, 930/930, clean Release/SoundBank/
+  strict package). The first live graph-rescan strategy timed out without a
+  result and is replaced by a bounded single-pass direct-reference index. Next:
+  commit/publish the repair, run `observe-vendor-table-contracts`
+  on the clean commit, curate exact enchantment/merchant/loot evidence, and
+  publish the completed inventory before production registration.
+- The repaired run passed at `20260808T1734599486274Z`; five fixed targets and
+  native enhancement/Fey Bane/Thundering contracts are recorded. Current next
+  action is to qualify/commit/publish the display-name/vendor-reference observer
+  refinement, resolve Seeking and the exact capital merchant, then publish the
+  completed inventory before production registration.
+- CRITICAL STOP: final component-based run
+  `20260808T1744000629586Z-observe-vendor-table-contracts` found no native
+  Seeking enchantment, confirming two earlier name/display scans and installed-
+  assembly inspection. Await new authority changing the nonoptional property or
+  an authoritative asset supplying it. Do not implement a custom substitute or
+  begin production registration.
+- Continuation audit reopened one narrow evidence gap: generic enchantment
+  components may encode concealment via scalar/enum values. A deeper observer is
+  qualified and awaiting commit/publish/runtime execution; its result controls
+  whether the provisional Seeking stop remains.
+- That deeper run passed at `20260808T1748440170104Z` and found no generic
+  concealment value. The Seeking hard stop is confirmed; no independent safe
+  forensics strategy remains. Await changed authority or an authoritative asset.
+- Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
+  the approved helper and verify exact remote SHA after every commit.
+
+---
+
 ## Pistolero and Musket Master mission resume point (2026-08-07)
 
 Revision 2 begins from exact merged master
@@ -1254,3 +1317,100 @@ source Torso defects. After the final documentation commit is published and
 local/origin equality is verified, no autonomous archetype mission action
 remains; do not merge. Call of the Wild still requires the short human chargen
 catalog check before its public classification may change.
+## Current resume point — Reliable and eight-item source catalog
+
+The amended ten-blueprint catalog and shared 0..20 effective-misfire service pass
+all source, domain, exact-reference Release, SoundBank, and strict package gates.
+The exact next action is to commit and publish this coherent source checkpoint,
+run a guarded save-free bootstrap observer from the clean SHA, record its exact
+run ID, then implement the accepted capital/BTSL vendor and five-target fixed-loot
+publication transactions. Do not revisit native Seeking forensics.
+## Current resume point — acquisition publication
+
+The bounded capital/BTSL vendor normalization and five-target fixed-loot
+transactions pass source/build/package gates. Commit and publish this checkpoint,
+then run the guarded save-free live graph observer from its clean SHA. After live
+bootstrap proof, implement the dedicated acquisition observer and development-only
+Rare Firearm Acceptance catalog/spawn/location-audit panel.
+## Current resume point — dedicated acquisition observer
+
+The inherited Jhod-era observer expectation was repaired after exact live failure
+evidence, and the typed `observe-rare-firearm-acquisition` scenario now covers the
+Smith/BTSL roster, exclusions, and five exact fixed-loot relationships. Commit and
+publish this passing repair, then run that scenario from the clean SHA. Continue
+with the development Rare Firearm Acceptance panel after the observer passes.
+## Current resume point — combat and lifecycle qualification
+
+The acquisition observer passes and the development-only catalog/spawn/location
+audit surface plus practical manual checklist pass source/build/package gates.
+Publish this checkpoint. Next implement and run focused magic-firearm blueprint,
+Reliable zero-threshold/direct/scatter, Seeking concealment, static-enchantment
+lifecycle, native enhancement/Fey Bane, and Thundering scatter qualification.
+## Current resume point — blueprint/state runtime observer
+
+The typed rare-firearm blueprint/state observer passes all source/build/package
+gates. Commit and publish it, run it from the clean SHA, then implement the live
+Reliable direct/scatter matrix and Seeking/native-property combat scenarios.
+
+## Current resume point — combat-property runtime fixtures
+
+The guarded `observe-rare-firearm-blueprint-contracts` run
+`20260808T1915428002243Z-99c2bd30714c4647a7d91e40b494a6b0` passed on exact
+published source `2fb5391ba27edfe67d032812ea94129ce6dc6086`. It proved all eight
+live item identities/families/costs/weights/static enchantments, exact-item
+Reliable and Seeking resolution, Reliable thresholds 0 and 2, and preservation
+of The Last Word's three static enchantments across Loaded and Broken token
+replacement. Next implement the deterministic live Reliable direct/scatter and
+Seeking/native enhancement/Fey Bane/Thundering combat-property scenarios.
+
+## Current resume point — Reliable and remaining native-property matrices
+
+Project Seeking concealment behavior passed guarded runtime run
+`20260808T1943391642314Z-5bde100e871d487cbd1c5357ebeb9bbe` on exact
+published source `2ed81a147e709d13c450dc793b2082a633ea159a`. The same exact
+native Blur buff and forced percentile 1 produced a control Concealment miss and
+a The Last Word hit while both stored Partial concealment; the Seeking attack
+used natural 19, attack bonus 135, AC 14, one discharge, threshold none, and no
+misfire/state leak. The run also qualified the exact `IsSuccessRoll(d20)`
+compatibility fallback when another installed patch bypasses the Roll setter.
+Next implement and run the Reliable direct/scatter threshold matrix, followed by
+static lifecycle and native enhancement/Fey Bane/Thundering qualification.
+
+## Current resume point — scatter and native-property qualification
+
+The guarded direct-fire `reliable-firearm-misfire-matrix` passed on exact
+published source `4b0bcc6ea8ff0fa2c50ebac70f4483d559122e81`, run
+`20260808T1948114670922Z-dddc0f3024424ac7bb628fdd7e02e080`. Reliable
+Pistol natural 1 was a native miss with Normal condition; Reliable Musket roll
+1 misfired/Broke and roll 2 hit normally; mundane Musket roll 2 misfired/Broke;
+Broken thresholds were exactly Pistol trained/untrained 2/4 and Musket 3/5.
+Next qualify Reliable through Scatter Shot and the native Thundering per-target
+critical matrix, then native enhancement/Fey Bane and full static lifecycle.
+
+## Current resume point — authorized Ovation fallback
+
+Native Thundering's exact installed component is unconditional Sonic energy,
+not critical-only. Two materially distinct guarded live scatter strategies
+failed closed at native roll completion. The authorized fallback is selected:
+Ovation is now +4 Reliable, effective +5, cost 52,300. Next run the full source,
+build, package, and guarded scatter gates for the fallback; then complete static
+enchantment lifecycle and remaining native enhancement/Fey Bane qualification.
+
+The final Ovation fallback scatter gate passed as runtime ID
+`20260808T2025312832560Z-6f915d9e74bc4165963f48798ce00149` on published source
+`9d9e4c88201e40e06030f26674d0b7c1969c0495`. Next implement and qualify the
+complete magic-firearm static-enchantment/state-token lifecycle, then close
+native enhancement/Fey Bane damage evidence and integrated regression gates.
+
+The Last Word maintenance lifecycle passed in run
+`20260808T2040179460252Z-5438cbb8e26c4cdeb513b3a8d8ba03ba` on source
+`ae4b309d4574eea28f67ea3254177ac4db1cebf2`: exact static count 3/3/3 across
+Overhaul and Repair, plus all timing, kit, log, and cleanup contracts. Next
+qualify Quick Clear and reconciliation/transfer lifecycle coverage, then finish
+native damage properties, version 0.0.74, compatibility, and final regressions.
+
+Quick Clear static lifecycle passed in run
+`20260808T2044205593443Z-1587853acc1a49959806b534bffdd6cb` on source
+`a329a1260beb73bde362b506e8ab1c96ab7de1ba`. Next complete reconciliation and
+inventory-transfer isolation, then native enhancement/Fey Bane damage evidence,
+0.0.74 versioning, compatibility profiles, and final regression passes.

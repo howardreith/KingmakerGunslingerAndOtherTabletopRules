@@ -61,11 +61,11 @@ def validate(root: Path, version: str = VERSION,
     acquisition = read(root,
         "src/KingmakerGunslinger/Blueprints/CapitalVendorBlueprints.cs")
     require_tokens(acquisition,
-        ["afa2c7f292b8e1c4d9c835f0e8047dd3", "WeaponCount = 1",
-         "ConsumableCount = 99", "AdvancedRifle.Item",
-         "AdvancedRevolver.Item", "Blunderbuss included",
+        ["7de959347266092448d8a72089ef9778", "WeaponCount = 1",
+         "SmithVendorTable", "PistolPlus1Symbol",
+         "BlunderbussPlus1Symbol", "modern and named firearms excluded",
          "VendorCatalogPublication<BlueprintComponent>.Create",
-         "capital vendor contains a duplicate or partial",
+         "owned.Contains(ReadItem",
          "rollback refused because the table changed"],
         "Sprint 61 capital vendor publication")
     if bootstrap.index('"initialize.root-cause"') > bootstrap.index(

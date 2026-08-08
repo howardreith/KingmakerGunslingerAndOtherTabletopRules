@@ -12,7 +12,8 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static class CapitalVendorBlueprints
     {
-        internal const string TableGuid = "afa2c7f292b8e1c4d9c835f0e8047dd3";
+        internal const string TableGuid = "7de959347266092448d8a72089ef9778";
+        internal const string ExpectedTableName = "SmithVendorTable";
         internal const int WeaponCount = 1;
         internal const int ConsumableCount = 99;
         internal const int AmmunitionCount = 200;
@@ -22,6 +23,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static CapitalVendorPublication Publish(
             LibraryScriptableObject library,
             ProductionFirearmBlueprintCatalog firearms,
+            MagicFirearmBlueprintCatalog magicFirearms,
             BasicAmmunitionBlueprintSet ammunition,
             BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet gunsmithingSupplies,
@@ -29,6 +31,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (library == null) throw new ArgumentNullException("library");
             if (firearms == null) throw new ArgumentNullException("firearms");
+            if (magicFirearms == null) throw new ArgumentNullException("magicFirearms");
             if (ammunition == null) throw new ArgumentNullException("ammunition");
             if (repairKit == null) throw new ArgumentNullException("repairKit");
             if (gunsmithingSupplies == null) throw new ArgumentNullException("gunsmithingSupplies");
@@ -36,14 +39,18 @@ namespace KingmakerGunslinger.Blueprints
 
             BlueprintSharedVendorTable table =
                 BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>(
-                    library, TableGuid, "native capital Jhod vendor table");
+                    library, TableGuid, "native capital blacksmith vendor table");
+            if (!string.Equals(table.name, ExpectedTableName, StringComparison.Ordinal))
+                throw new InvalidOperationException("Capital merchant GUID/name mismatch: " +
+                    table.name + ":" + TableGuid);
             BlueprintItem[] items =
             {
                 firearms.Pistol.Item,
                 firearms.Musket.Item,
                 firearms.Blunderbuss.Item,
-                firearms.AdvancedRifle.Item,
-                firearms.AdvancedRevolver.Item,
+                magicFirearms.Require(MagicFirearmBlueprints.PistolPlus1Symbol).Item,
+                magicFirearms.Require(MagicFirearmBlueprints.MusketPlus1Symbol).Item,
+                magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
                 repairKit,
@@ -53,30 +60,45 @@ namespace KingmakerGunslinger.Blueprints
             int[] counts =
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
+                WeaponCount,
                 AmmunitionCount, AmmunitionCount, 10, 5, WeaponCount
             };
+            BlueprintItem[] owned = firearms.Entries.Select(value =>
+                (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
+                    (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
+                        ammunition.BlackPowder, ammunition.LeadBall, repairKit,
+                        gunsmithingSupplies.OverhaulKit,
+                        gunsmithingSupplies.GunsmithKit }).Distinct().ToArray();
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
             int[] matches = items.Select(item => existing.OfType<LootItemsPackFixed>()
                 .Count(component => ReferenceEquals(ReadItem(component), item))).ToArray();
-            if (matches.Any(value => value > 1) ||
-                (matches.Any(value => value == 1) && matches.Any(value => value == 0)))
-                throw new InvalidOperationException(
-                    "The capital vendor contains a duplicate or partial Gunslinger publication.");
-            if (matches.All(value => value == 1))
+            bool obsolete = existing.OfType<LootItemsPackFixed>().Any(component =>
+                owned.Contains(ReadItem(component)) && !items.Contains(ReadItem(component)));
+            bool exactCounts = items.Select((item, index) => existing
+                .OfType<LootItemsPackFixed>().Where(component =>
+                    ReferenceEquals(ReadItem(component), item)).ToArray())
+                .Select((found, index) => found.Length == 1 &&
+                    ReadCount(found[0]) == counts[index]).All(value => value);
+            if (!obsolete && exactCounts)
                 return CapitalVendorPublication.Unchanged(table, existing, items, counts);
 
+            BlueprintComponent[] retained = existing.Where(component =>
+            {
+                LootItemsPackFixed fixedEntry = component as LootItemsPackFixed;
+                return fixedEntry == null || !owned.Contains(ReadItem(fixedEntry));
+            }).ToArray();
             BlueprintComponent[] additions = items.Select((item, index) =>
                 CreateFixedEntry(item, counts[index])).Cast<BlueprintComponent>().ToArray();
             VendorCatalogPublication<BlueprintComponent> transaction =
-                VendorCatalogPublication<BlueprintComponent>.Create(existing, additions);
+                VendorCatalogPublication<BlueprintComponent>.Create(retained, additions);
             table.ComponentsArray = transaction.Published;
             var publication = new CapitalVendorPublication(
-                table, transaction, items, counts, true);
+                table, transaction, items, counts, true, existing);
             publication.Validate();
             logger.Info("acquisition", "capital-vendor.published",
                 string.Format(CultureInfo.InvariantCulture,
-                    "Appended {0} Gunslinger entries to {1} ({2}); weapons={3}, consumables={4}; Blunderbuss included.",
+                    "Normalized {0} bounded Gunslinger entries on {1} ({2}); weapons={3}, consumables={4}; modern and named firearms excluded.",
                     items.Length, table.name, TableGuid, WeaponCount, ConsumableCount));
             return publication;
         }
@@ -128,15 +150,18 @@ namespace KingmakerGunslinger.Blueprints
         private readonly VendorCatalogPublication<BlueprintComponent> _transaction;
         private readonly BlueprintItem[] _items;
         private readonly int[] _counts;
+        private readonly BlueprintComponent[] _rollbackSnapshot;
 
         internal CapitalVendorPublication(BlueprintSharedVendorTable table,
             VendorCatalogPublication<BlueprintComponent> transaction,
-            BlueprintItem[] items, int[] counts, bool changed)
+            BlueprintItem[] items, int[] counts, bool changed,
+            BlueprintComponent[] rollbackSnapshot = null)
         {
             _table = table ?? throw new ArgumentNullException("table");
             _transaction = transaction ?? throw new ArgumentNullException("transaction");
             _items = items ?? throw new ArgumentNullException("items");
             _counts = counts ?? throw new ArgumentNullException("counts");
+            _rollbackSnapshot = rollbackSnapshot ?? transaction.Rollback();
             Changed = changed;
         }
 
@@ -185,7 +210,7 @@ namespace KingmakerGunslinger.Blueprints
                 !ReferenceEquals(value, published[index])).Any())
                 throw new InvalidOperationException(
                     "Capital vendor rollback refused because the table changed after publication.");
-            _table.ComponentsArray = _transaction.Rollback();
+            _table.ComponentsArray = _rollbackSnapshot;
             Changed = false;
         }
     }

@@ -23,8 +23,7 @@ namespace KingmakerGunslinger.Misfires
                     "A natural d20 must be in the range 1..20.");
             }
 
-            if (misfireValue < Firearms.FirearmDefinition.MinimumMisfireValue ||
-                misfireValue > Firearms.FirearmDefinition.MaximumMisfireValue)
+            if (misfireValue < 0 || misfireValue > 20)
             {
                 throw new ArgumentOutOfRangeException(
                     "misfireValue",
@@ -32,14 +31,14 @@ namespace KingmakerGunslinger.Misfires
                     string.Format(
                         CultureInfo.InvariantCulture,
                         "A firearm misfire value must be in the range {0}..{1}.",
-                        Firearms.FirearmDefinition.MinimumMisfireValue,
-                        Firearms.FirearmDefinition.MaximumMisfireValue));
+                        0,
+                        20));
             }
 
             NaturalRoll = naturalRoll;
             MisfireValue = misfireValue;
             NativeSuccess = nativeSuccess;
-            IsMisfire = naturalRoll <= misfireValue;
+            IsMisfire = misfireValue != 0 && naturalRoll <= misfireValue;
             FinalSuccess = nativeSuccess && !IsMisfire;
         }
 
@@ -57,9 +56,9 @@ namespace KingmakerGunslinger.Misfires
         {
             return string.Format(
                 CultureInfo.InvariantCulture,
-                "naturalD20={0}; misfireRange=1-{1}; nativeSuccess={2}; misfired={3}; finalSuccess={4}",
+                "naturalD20={0}; misfireRange={1}; nativeSuccess={2}; misfired={3}; finalSuccess={4}",
                 NaturalRoll,
-                MisfireValue,
+                MisfireValue == 0 ? "none" : "1-" + MisfireValue.ToString(CultureInfo.InvariantCulture),
                 NativeSuccess,
                 IsMisfire,
                 FinalSuccess);

@@ -110,10 +110,11 @@ namespace KingmakerGunslinger.Deeds
                     expectedCurrent, discharge.After);
                 expectedCurrent = postDischarge.Repository.State;
 
-                int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
+                int threshold = global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.Evaluate(
                     firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                     Classes.FirearmTrainingRuntime.Resolve(casterEntity,
-                        firearm.Definition.Kind).ReducedBrokenMisfire);
+                        firearm.Definition.Kind).ReducedBrokenMisfire,
+                    firearm.Weapon);
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
