@@ -1236,3 +1236,10 @@ Its comprehensive run retains inherited Dodge and newly reproduces the
 unchanged-source Torso cached-threat defect documented in the journal/blockers;
 all archetype-specific slices remain PASS. Next run exactly one bounded Call of
 the Wild sequence, then proceed to final fresh archetype passes and reports.
+
+The single bounded Call of the Wild repaired-candidate sequence passed all
+seven authorized scenarios under `compat-20260808T160604Z-d19d00ad690b` and
+restored exactly. Preserve the public `CONFLICT-CONFIRMED` classification until
+human chargen confirmation. Next rebuild the committed package, run two final
+fresh-process passes of all complete archetype slices, and run two eligible
+canonical working-save smokes before final reports and hashes.

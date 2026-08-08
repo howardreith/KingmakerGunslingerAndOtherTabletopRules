@@ -1291,3 +1291,31 @@ Commit/publish the clean diagnostic state and evidence, then execute exactly
 one bounded Call of the Wild profile sequence (load, compatibility, class,
 presentation, scoped feats, Pistolero, reconciliation) and preserve its public
 CONFLICT-CONFIRMED classification pending human chargen confirmation.
+
+## 2026-08-08 - Bounded Call of the Wild repaired-candidate PASS
+
+- The single authorized bounded sequence ran under sentinel transaction
+  `compat-20260808T160604Z-d19d00ad690b`. All seven scenarios passed: load,
+  optional-mod observer, class contracts, presentation, scoped firearm feats,
+  Pistolero deeds, and archetype reconciliation.
+- PASS evidence directories are `20260808T1606416850938Z-mod-load-smoke`,
+  `20260808T1608420242972Z-observe-optional-mod-compatibility`,
+  `20260808T1610407547232Z-observe-class-blueprint-contracts`,
+  `20260808T1612377643026Z-observe-gunslinger-presentation`,
+  `20260808T1614356024583Z-disposable-firearm-dependent-feats`,
+  `20260808T1616340142846Z-disposable-pistolero-deeds`, and
+  `20260808T1618325296684Z-disposable-archetype-reconciliation`.
+- The observer retained all 46 exact compiled Call of the Wild helper classes,
+  Gunslinger exactly once in root/chargen inputs, and Mysterious Stranger,
+  Pistolero, and Musket Master exactly once without unrelated catalog loss.
+- The transaction finished `Restored` with `restorationVerified=true` at
+  `2026-08-08T16:20:11.7427003Z`. This is automated repaired-candidate
+  evidence only. The public profile remains `CONFLICT-CONFIRMED` pending the
+  previously required human new-game character-creation confirmation.
+
+## Exact next action
+
+Commit and publish this bounded compatibility evidence, then rebuild the exact
+committed package and run two fresh-process passes of every complete
+archetype-specific runtime slice followed by two eligible canonical
+`KMG_AUTOMATION_WORKING` save smokes.

@@ -1,6 +1,21 @@
 # Pistolero and Musket Master Qualification
 
-Status: implementation and feature qualification in progress.
+Status: archetype implementation complete; final repeated acceptance gates in progress.
+
+## Call of the Wild bounded repaired-candidate result
+
+The one mission-authorized bounded sequence passed under transaction
+`compat-20260808T160604Z-d19d00ad690b`, with exact restoration verified. Fresh
+load, compatibility, class, presentation, scoped-feat, Pistolero, and
+reconciliation scenarios all passed in directories
+`20260808T1606416850938Z` through `20260808T1618325296684Z`. The observer
+retained all 46 exact compiled Call of the Wild helper classes, Gunslinger once
+in the final root and chargen inputs, and all three project archetypes once.
+
+This does not replace the public `CONFLICT-CONFIRMED` classification. Human
+new-game character creation must still confirm that Gunslinger and Mysterious
+Stranger, Pistolero, and Musket Master are each visible exactly once before the
+public compatibility claim can change.
 
 ## Baseline
 
