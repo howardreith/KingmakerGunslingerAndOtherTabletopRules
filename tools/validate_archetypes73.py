@@ -59,6 +59,11 @@ def validate(root: Path) -> None:
         encoding="utf-8")
     if "menuUnit.Descriptor.AddFact(\n                        BlueprintBootstrap.FirearmProficiency)" not in runner:
         raise AssertionError("native firearm menu fixture lacks explicit proficiency owner")
+    torso = (root / "src/KingmakerGunslinger/Deeds/TargetingTorsoRuntime.cs").read_text(
+        encoding="utf-8")
+    if "attackRoll.Roll.Value == 19" not in torso or \
+            "attackRoll.AutoCriticalThreat = true" not in torso:
+        raise AssertionError("Targeting Torso cached-threat adapter missing")
     for profile in profiles:
         if profile["requiredGunslingerPackage"] != PACKAGE:
             raise AssertionError(f"profile package pin mismatch: {profile['id']}")
