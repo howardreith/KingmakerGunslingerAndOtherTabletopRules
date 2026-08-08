@@ -134,3 +134,15 @@
   assertion was added; complete suite remains 948/948 PASS.
 - Next action: publish the repair, re-establish clean remote equality, then
   rerun exact-build smoke from a fresh process.
+
+- Fresh guarded smoke process PID 31728 produced structured PASS run
+  `20260808T2214448694538Z-7d5b72d3d60943959188117a8ce90793` on exact commit
+  `bf9d8a3b0715d021016ba3232fd59beaa22972db`. The calling shell timed out after
+  120 seconds, but the guarded result flushed at 92.214 seconds and automatic
+  exit was initiated; the process subsequently exited. Evidence, not shell
+  timeout, establishes PASS.
+- The first feature-scenario request then failed before launch because the
+  PowerShell preflight allowlist had not yet been extended even though the C#
+  catalog was. Added the same save-free/basic-timeout scenario contract to
+  `RuntimeAutomation.Common.ps1` and its exact preflight test list; 86 preflight
+  checks PASS. No second Kingmaker process was created by that rejected request.

@@ -38,6 +38,7 @@ $expected = @(
     'disposable-firearm-dependent-feats',
     'disposable-overhaul-maintenance',
     'disposable-reload-autocast',
+    'disposable-paper-cartridge-reload',
     'observe-native-weapon-feat-contracts',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
