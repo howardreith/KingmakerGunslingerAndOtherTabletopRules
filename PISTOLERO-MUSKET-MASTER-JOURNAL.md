@@ -459,3 +459,27 @@ guarded class/archetype observer to prove the exact parent, replacement rows,
 four-item starting array, preserved unrelated catalog entries, and exact
 starter-resolver identity in a fresh guarded Kingmaker process before adding
 Steady Aim mechanics.
+
+## 2026-08-08 - Guarded Musket Master blueprint observer
+
+- Extended the existing read-only class-blueprint scenario with exact Musket
+  Master parent/catalog membership, six remove/add rows, existing Rapid Reload
+  (Musket) identity, ordered four-item starting array, and starter-resolver
+  reference assertions.
+- The observer compares current live blueprint references only and performs no
+  registry, catalog, inventory, save, or optional-mod mutation.
+- The first clean build exposed and rejected a compile-only accessor mistake;
+  the exact already-registered Musket Training reference is now carried by the
+  Musket Master set without changing blueprint registration. The corrected
+  source passes all 927 tests and the full Release/package gate.
+- Candidate package SHA-256:
+  `2DAA1387E5A1A147D053548EBCDD3D6A08DC2DE7DED484FFC20280F82AE7E7CA`;
+  DLL SHA-256:
+  `183B8FF5A5A4BF4E5CC0E5705141720A98AC7C80D9AC8E0132C29FEB27E597A5`.
+
+## Exact next action
+
+Commit/publish the guarded Musket Master observer, then run a fresh guarded
+`observe-class-blueprint-contracts` process against that exact commit/package;
+inspect every structured Musket assertion and record the run before beginning
+Steady Aim mechanics.

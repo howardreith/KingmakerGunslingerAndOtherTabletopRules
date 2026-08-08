@@ -1012,6 +1012,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Musket Master skeleton references the development Test Musket.");
             Assertions.False(archetypeSource.Contains("HeavyCrossbow"),
                 "Musket Master skeleton references the donor Heavy Crossbow.");
+            string observerSource = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            foreach (string token in new[] {
+                "musket-master-registration",
+                "musket-master-starting-items",
+                "musket-master-replacement-rows",
+                "musket-master-starter-resolver",
+                "GunslingerStartingFirearmResolver.MatchesConfiguration" })
+                Assertions.True(observerSource.Contains(token),
+                    "Musket Master runtime observer lacks exact token: " + token);
         }
 
         private static void ThirdPlaytestNativeParentOnly()

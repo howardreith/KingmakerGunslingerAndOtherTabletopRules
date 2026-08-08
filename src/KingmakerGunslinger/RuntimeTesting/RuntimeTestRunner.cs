@@ -1407,6 +1407,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            AddMusketMasterBlueprintAssertions(assertions);
             bool pass = assertions.TrueForAll(value => value.Status == "PASS");
             RuntimeTestResult result = CreateResult(
                 pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
@@ -4149,6 +4150,98 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value =>
                 value.Status == "PASS") ? RuntimeTestStatuses.Pass :
                 RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static void AddMusketMasterBlueprintAssertions(
+            List<RuntimeTestAssertion> assertions)
+        {
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            MusketMasterBlueprintSet musketMaster = gunslinger == null ? null :
+                gunslinger.MusketMaster;
+            BlueprintArchetype archetype = musketMaster == null ? null :
+                musketMaster.Archetype;
+            BlueprintCharacterClass cls = gunslinger == null ? null :
+                gunslinger.CharacterClass;
+            FieldInfo parent = typeof(BlueprintArchetype).GetField("m_ParentClass",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            int catalogCount = cls == null || cls.Archetypes == null ? 0 :
+                cls.Archetypes.Count(value => ReferenceEquals(value, archetype));
+            bool registration = archetype != null && parent != null &&
+                ReferenceEquals(parent.GetValue(archetype), cls) && catalogCount == 1;
+            assertions.Add(Assertion("musket-master-registration",
+                "one exact Musket Master on exact Gunslinger parent",
+                "count=" + catalogCount, registration,
+                "class Archetypes membership and BlueprintArchetype.m_ParentClass"));
+
+            ProductionFirearmBlueprintCatalog firearms =
+                BlueprintBootstrap.ProductionFirearms;
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            GunsmithingSupplyBlueprintSet supplies = BlueprintBootstrap.GunsmithingSupplies;
+            BlueprintItem[] expectedItems = firearms == null || ammunition == null ||
+                supplies == null ? null : new BlueprintItem[] {
+                    firearms.Musket.Item, ammunition.BlackPowder,
+                    ammunition.LeadBall, supplies.GunsmithKit };
+            BlueprintItem[] observedItems = archetype == null ? null :
+                archetype.StartingItems;
+            bool startingItems = archetype != null &&
+                archetype.ReplaceStartingEquipment && expectedItems != null &&
+                observedItems != null && observedItems.Length == expectedItems.Length &&
+                observedItems.Zip(expectedItems, ReferenceEquals).All(value => value);
+            assertions.Add(Assertion("musket-master-starting-items",
+                "ReplaceStartingEquipment and exact ordered Musket/powder/ball/kit",
+                DescribeStartingItems(archetype), startingItems,
+                "exact project BlueprintItem reference identity"));
+
+            BlueprintFeature rapidMusket = archetype == null ? null :
+                (archetype.AddFeatures ?? new LevelEntry[0])
+                    .Where(value => value != null && value.Level == 1 &&
+                        value.Features != null)
+                    .SelectMany(value => value.Features)
+                    .OfType<BlueprintFeature>()
+                    .SingleOrDefault(value => value != null &&
+                        string.Equals(value.name, "KMG_RapidReload_Musket",
+                            StringComparison.Ordinal));
+            bool rows = archetype != null && gunslinger != null &&
+                archetype.RemoveFeatures != null &&
+                archetype.RemoveFeatures.Length == 6 &&
+                ExactLevelEntry(archetype.RemoveFeatures, 1,
+                    gunslinger.Proficiencies, gunslinger.Dodge.Feature) &&
+                ExactLevelEntry(archetype.RemoveFeatures, 3,
+                    gunslinger.UtilityShot.Feature) &&
+                new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
+                    archetype.RemoveFeatures, level,
+                    gunslinger.GunTraining.Selection)) &&
+                archetype.AddFeatures != null && archetype.AddFeatures.Length == 6 &&
+                rapidMusket != null && ExactLevelEntry(archetype.AddFeatures, 1,
+                    gunslinger.ArchetypeProficiencies.MusketMaster,
+                    musketMaster.SteadyAim, rapidMusket) &&
+                ExactLevelEntry(archetype.AddFeatures, 3, musketMaster.FastMusket) &&
+                new[] { 5, 9, 13, 17 }.All(level => ExactLevelEntry(
+                    archetype.AddFeatures, level,
+                    musketMaster.Training));
+            assertions.Add(Assertion("musket-master-replacement-rows",
+                "exact six remove/add rows and exact Rapid Reload (Musket)",
+                rows ? "exact" : "changed", rows,
+                "project-owned LevelEntry and BlueprintFeature reference identity"));
+
+            bool resolver = expectedItems != null &&
+                GunslingerStartingFirearmResolver.MatchesConfiguration(cls,
+                    firearms.Pistol.Item, firearms.Musket.Item, null, archetype);
+            assertions.Add(Assertion("musket-master-starter-resolver",
+                "exact Musket Master maps to exact production Musket",
+                resolver ? "exact" : "changed", resolver,
+                "read-only resolver configuration reference comparison"));
+        }
+
+        private static bool ExactLevelEntry(LevelEntry[] entries, int level,
+            params BlueprintFeatureBase[] expected)
+        {
+            LevelEntry[] matching = (entries ?? new LevelEntry[0])
+                .Where(value => value != null && value.Level == level).ToArray();
+            if (matching.Length != 1 || matching[0].Features == null ||
+                matching[0].Features.Count != expected.Length) return false;
+            return matching[0].Features.Zip(expected, ReferenceEquals)
+                .All(value => value);
         }
 
         private static string DescribeNativeRig(GameObject instance,
@@ -12005,8 +12098,19 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string DescribeStartingItems(BlueprintCharacterClass characterClass)
         {
-            return string.Join(",", (characterClass.StartingItems ??
-                new Kingmaker.Blueprints.Items.BlueprintItem[0])
+            return DescribeStartingItems(characterClass == null ? null :
+                characterClass.StartingItems);
+        }
+
+        private static string DescribeStartingItems(BlueprintArchetype archetype)
+        {
+            return DescribeStartingItems(archetype == null ? null :
+                archetype.StartingItems);
+        }
+
+        private static string DescribeStartingItems(BlueprintItem[] items)
+        {
+            return string.Join(",", (items ?? new BlueprintItem[0])
                 .Where(value => value != null)
                 .Select(value => value.name + "@" + value.AssetGuid)
                 .OrderBy(value => value, StringComparer.Ordinal).ToArray());

@@ -62,6 +62,17 @@ namespace KingmakerGunslinger.Gunsmithing
                 profile.ToString().ToLowerInvariant());
         }
 
+        internal static bool MatchesConfiguration(BlueprintCharacterClass gunslinger,
+            BlueprintItemWeapon pistol, BlueprintItemWeapon musket,
+            BlueprintArchetype pistolero, BlueprintArchetype musketMaster)
+        {
+            return ReferenceEquals(_gunslinger, gunslinger) &&
+                ReferenceEquals(_pistol, pistol) &&
+                ReferenceEquals(_musket, musket) &&
+                ReferenceEquals(_pistolero, pistolero) &&
+                ReferenceEquals(_musketMaster, musketMaster);
+        }
+
         internal static void Rollback()
         {
             _gunslinger = null;

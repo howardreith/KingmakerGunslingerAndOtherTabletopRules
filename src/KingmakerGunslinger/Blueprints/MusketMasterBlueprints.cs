@@ -13,11 +13,18 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class MusketMasterBlueprintSet
     {
         internal MusketMasterBlueprintSet(BlueprintArchetype archetype,
-            BlueprintFeature steadyAim, BlueprintFeature fastMusket)
-        { Archetype = archetype; SteadyAim = steadyAim; FastMusket = fastMusket; }
+            BlueprintFeature steadyAim, BlueprintFeature fastMusket,
+            BlueprintFeature training)
+        {
+            Archetype = archetype;
+            SteadyAim = steadyAim;
+            FastMusket = fastMusket;
+            Training = training;
+        }
         internal BlueprintArchetype Archetype { get; private set; }
         internal BlueprintFeature SteadyAim { get; private set; }
         internal BlueprintFeature FastMusket { get; private set; }
+        internal BlueprintFeature Training { get; private set; }
         internal int Count { get { return 3; } }
     }
 
@@ -46,7 +53,8 @@ namespace KingmakerGunslinger.Blueprints
                 gunslinger.CharacterClass.Archetypes = gunslinger.CharacterClass
                     .Archetypes.Concat(new[] { archetype }).ToArray();
             FastMusketRuntime.Configure(fast, null);
-            return new MusketMasterBlueprintSet(archetype, steady, fast);
+            return new MusketMasterBlueprintSet(archetype, steady, fast,
+                training.Musket);
         }
 
         private static BlueprintArchetype CreateArchetype(
