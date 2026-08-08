@@ -43,6 +43,18 @@ def validate(root: Path) -> None:
         raise AssertionError("compatibility schema package pin mismatch")
     profiles = json.loads((root / "compatibility/profiles.json").read_text(
         encoding="utf-8"))["profiles"]
+    wrapper = (root / "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1").read_text(
+        encoding="utf-8")
+    for scenario in (
+        "disposable-firearm-dependent-feats",
+        "disposable-pistolero-deeds",
+        "disposable-archetype-reconciliation",
+        "musket-master-mechanics-and-starter",
+    ):
+        if f"'{scenario}'" not in wrapper:
+            raise AssertionError(f"profile wrapper scenario missing: {scenario}")
+    if "SaveName = 'KMG_AUTOMATION_WORKING'" not in wrapper:
+        raise AssertionError("Musket Master profile save binding missing")
     for profile in profiles:
         if profile["requiredGunslingerPackage"] != PACKAGE:
             raise AssertionError(f"profile package pin mismatch: {profile['id']}")
