@@ -613,3 +613,24 @@ unchanged shared firearm metadata.
 Commit/publish the Pistolero native skeleton, then run the fresh guarded class
 observer and require all Pistolero/project-order assertions before implementing
 Up Close and Deadly's fixed-cost precision arming/delivery mechanics.
+
+## 2026-08-08 - Pistolero live progression evidence
+
+- Guarded directory
+  `20260808T1213268469463Z-observe-class-blueprint-contracts` passed under
+  runtime run ID `20260808T1213268625740Z-654d9af3b1d9489b82c858f8d5f4d37a`,
+  exact source `90cc34d82934a9abd639e57706b65598ea88881f`, version 0.0.72.
+- Live assertions prove the exact Pistolero parent and replacement rows, the
+  inherited production-Pistol starter resolution, and deterministic project
+  archetype order `Mysterious Stranger, Pistolero, Musket Master` with each
+  project identity present once.
+- The existing Musket Master starter resolver assertion remained PASS. This is
+  blueprint/catalog evidence only: Up Close and Deadly and Twin Shot Knockdown
+  remain mechanics placeholders, and live starting inventory remains pending.
+
+## Exact next action
+
+Commit/publish this curated Pistolero progression evidence, then implement Up
+Close and Deadly's fixed-cost, one-shot arming and post-result precision damage
+runtime with focused policy/component tests before its guarded mechanics
+scenario.

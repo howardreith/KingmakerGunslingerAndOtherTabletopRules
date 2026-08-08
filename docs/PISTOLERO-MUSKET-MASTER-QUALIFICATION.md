@@ -52,6 +52,14 @@ Steady Aim's live blueprint contract passed under source
 the move action, exact feature/ability/marker linkage, and shared Grit identity;
 it does not yet qualify behavioral attack consumption or range delivery.
 
+Pistolero's live progression/catalog contract passed under exact source
+`90cc34d82934a9abd639e57706b65598ea88881f` in guarded directory
+`20260808T1213268469463Z-observe-class-blueprint-contracts`, runtime run ID
+`20260808T1213268625740Z-654d9af3b1d9489b82c858f8d5f4d37a`. The result proves
+the exact parent, replacement rows, inherited production-Pistol resolver, and
+one-copy deterministic project archetype ordering. It does not qualify either
+Pistolero deed's mechanics or live character-creation inventory.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,
