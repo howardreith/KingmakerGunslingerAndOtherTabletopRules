@@ -124,11 +124,6 @@ namespace KingmakerGunslinger.Deeds
             int edge = attackRoll.WeaponStats.CriticalEdge;
             if (edge > 19)
                 attackRoll.WeaponStats.CriticalEdgeBonus += edge - 19;
-            // Kingmaker caches IsCriticalRoll before this RuleAttackRoll prefix
-            // observes the deed-local WeaponStats mutation. Authorize only the
-            // newly added natural-19 threat; confirmation remains native.
-            if (attackRoll.Roll.Value == 19)
-                attackRoll.AutoCriticalThreat = true;
         }
 
         private static int ReadGrit(UnitDescriptor caster)

@@ -61,9 +61,10 @@ def validate(root: Path) -> None:
         raise AssertionError("native firearm menu fixture lacks explicit proficiency owner")
     torso = (root / "src/KingmakerGunslinger/Deeds/TargetingTorsoRuntime.cs").read_text(
         encoding="utf-8")
-    if "attackRoll.Roll.Value == 19" not in torso or \
-            "attackRoll.AutoCriticalThreat = true" not in torso:
-        raise AssertionError("Targeting Torso cached-threat adapter missing")
+    misfire = (root / "src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs").read_text(
+        encoding="utf-8")
+    if "TargetingTorsoRuntime.ConfigureAttackRoll(attackRoll);" not in misfire:
+        raise AssertionError("Targeting Torso pre-cache Roll adapter missing")
     for profile in profiles:
         if profile["requiredGunslingerPackage"] != PACKAGE:
             raise AssertionError(f"profile package pin mismatch: {profile['id']}")

@@ -172,6 +172,11 @@ namespace KingmakerGunslinger.Misfires
                     finalNaturalRoll = forcedNaturalRoll;
                 }
 
+                // The Roll setter is the last proven point before Kingmaker
+                // caches critical-threat state. Apply the marked Torso edge
+                // here so native threat and confirmation logic consumes it.
+                TargetingTorsoRuntime.ConfigureAttackRoll(attackRoll);
+
                 context.RecordNaturalRoll(
                     originalNaturalRoll,
                     finalNaturalRoll,
