@@ -71,9 +71,23 @@ Never test removal against the only copy of a valued save.
 - No compatibility is claimed for mods that replace the Gunslinger class
   identity, reuse this project's published blueprint GUIDs, rewrite firearm
   item enchantments, or alter the same saves outside Kingmaker's normal APIs.
-- Call of the Wild, Cowboys and Demons, BlueprintCore, Wrath Modification
-  Template, and other gameplay mods are neither dependencies nor currently
-  qualified compatibility targets.
+- Exact local Arms & Armor 1.0.10 (DLL SHA-256
+  `CEC7C177819F8F68ADAC4CB24DF5834C862D0930D77305655AC3195097E33733`)
+  passed isolated identity, Mysterious Stranger, visual-rig, and switching
+  observations with Gunslinger 0.0.72. This claim does not cover other builds.
+- Exact local Toggle Custom Soundpacks 1.0.1 (DLL SHA-256
+  `A2582533DFDFF82D1ECE3EC51D931D72D7C8AAC9A1302C219FCD8FCA070C9434`)
+  passed isolated identity and Wwise coexistence observations with Gunslinger
+  0.0.72. This claim does not cover other builds.
+- Exact local Call of the Wild 1.14.4c-2.1 (DLL SHA-256
+  `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`)
+  is `CONFLICT-CONFIRMED`: human testing reached character creation with Call
+  of the Wild classes present, but Gunslinger absent. Guarded automation also
+  observed separate 300/600-second bootstrap-boundary timeouts. It is not
+  compatible or runtime-qualified.
+- Craft Magic Items is `STATIC-AUDITED-ONLY`; no compiled local root was
+  supplied. Eddic Respec and Bag of Tricks are
+  `UNAVAILABLE-LOCAL-REFERENCE`. No claim is made for them.
 - The approved asset bundle was built with the locally installed, licensed Unity
   2018.4.10f1 editor. Missing or corrupt bundle data falls back safely and does
   not change firearm rules identity, save schema, or reload action economy.

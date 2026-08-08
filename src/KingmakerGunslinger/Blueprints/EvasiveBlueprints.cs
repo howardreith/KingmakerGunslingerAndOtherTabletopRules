@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature feature = registry.Register<BlueprintFeature>(
                 FeatureSymbol, () => CreateFeature(grit, gunslingerClass,
                     evasion, uncanny, improved));
-            Validate(feature, evasion, uncanny, improved);
+            Validate(feature, nativeEvasion, nativeUncanny, nativeImproved,
+                evasion, uncanny, improved);
             return new EvasiveBlueprintSet(feature, evasion, uncanny, improved);
         }
 
@@ -91,6 +92,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void Validate(BlueprintFeature feature,
+            BlueprintFeature nativeEvasion, BlueprintFeature nativeUncanny,
+            BlueprintFeature nativeImproved,
             BlueprintFeature evasion, BlueprintFeature uncanny,
             BlueprintFeature improved)
         {
@@ -100,12 +103,29 @@ namespace KingmakerGunslinger.Blueprints
                 evasion) || !ReferenceEquals(controller.UncannyDodgeBenefit,
                 uncanny) || !ReferenceEquals(
                 controller.ImprovedUncannyDodgeBenefit, improved) ||
-                evasion.ComponentsArray.Length != 1 ||
-                uncanny.ComponentsArray.Length != 2 ||
-                improved.ComponentsArray.Length != 1)
+                !PreservesCurrentComponentContract(nativeEvasion, evasion) ||
+                !PreservesCurrentComponentContract(nativeUncanny, uncanny) ||
+                !PreservesCurrentComponentContract(nativeImproved, improved))
                 throw new InvalidOperationException(
                     "Evasive exact native-component contract is incomplete.");
             controller.Validate();
+        }
+
+        private static bool PreservesCurrentComponentContract(
+            BlueprintFeature source, BlueprintFeature clone)
+        {
+            if (source == null || clone == null || source.ComponentsArray == null ||
+                clone.ComponentsArray == null ||
+                source.ComponentsArray.Length != clone.ComponentsArray.Length)
+                return false;
+            for (int index = 0; index < source.ComponentsArray.Length; index++)
+            {
+                BlueprintComponent sourceComponent = source.ComponentsArray[index];
+                BlueprintComponent cloneComponent = clone.ComponentsArray[index];
+                if (sourceComponent == null || cloneComponent == null ||
+                    sourceComponent.GetType() != cloneComponent.GetType()) return false;
+            }
+            return true;
         }
     }
 }

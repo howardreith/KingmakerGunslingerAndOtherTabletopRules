@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Compatibility;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -609,6 +610,8 @@ namespace KingmakerGunslinger.Bootstrap
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,
                         gunsmithingSupplies.GunsmithKit);
+                ClassCatalogDiagnostics.Capture("after-registration", library,
+                    gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
                     library, gunslingerClassBlueprints.Grit.Resource,
                     gunslingerClassBlueprints.Dodge.ProneAbility);
@@ -620,7 +623,11 @@ namespace KingmakerGunslinger.Bootstrap
                     gunsmithingSupplies,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
+                ClassCatalogDiagnostics.Capture("before-publish", library,
+                    gunslingerClassBlueprints.CharacterClass);
                 classPublication = GunslingerClassBlueprints.Publish(
+                    gunslingerClassBlueprints.CharacterClass);
+                ClassCatalogDiagnostics.Capture("after-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
 
                 capitalVendorPublication = CapitalVendorBlueprints.Publish(

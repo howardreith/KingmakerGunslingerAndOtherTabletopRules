@@ -1,6 +1,140 @@
 # Autonomous Gunslinger resume handoff
 
-## Firearm native-rig mission resume point (2026-08-07)
+## Optional-mod compatibility mission resume point (2026-08-07)
+
+New human authority: exact Call of the Wild 1.14.4c-2.1 reaches character
+creation with its added classes visible, but Gunslinger absent. This is
+`CONFLICT-CONFIRMED`, superseding timeout-only classification for the
+player-facing catalog. Keep it independent from detached Dodge. Exact compiled
+IL now proves CotW writes `Main.library.Root` while exact game chargen reads
+`Game.Instance.BlueprintRoot`; Gunslinger publishes through
+`BlueprintRoot.Instance`. Diagnostic-only lifecycle/root/catalog snapshots are
+source-qualified with 911/911 tests and strict packaging. Instrumented run
+`20260807T2132214591875Z-9fc724aa137b43b7b92d9907706743f6`
+proved all roots identical and case A: Evasive's vanilla-only native component
+count assertion rejected CotW-mutated donors and rolled back 146 registrations.
+The narrow current-donor ordered-type validation repair is implemented without
+a CotW dependency and is published at `b00e7e8`. Fresh CotW load
+`20260807T2146571019519Z-mod-load-smoke` and strengthened observer
+`20260807T2149121927539Z-a37fb450a1164ec9b664812be3073704` pass with exact
+restoration. The observer proves Gunslinger exactly once in the final root and
+chargen input while retaining all 46 compiled CotW helper classes. Candidate
+package/DLL SHA-256 are `37B4C25A...AC0DBE5` /
+`B8799B41...3A69E8B`. Human chargen confirmation remains pending. Next: build
+the separate guarded view-backed Dodge qualification on the exact
+`KMG_AUTOMATION_WORKING` receiver-bound load path; do not change production
+Dodge unless that real player path fails.
+
+Branch `codex/postbase-archetypes-compatibility` starts from clean integrated
+`master` commit `d03dfe9eae65f5cd1395df7337f21dfdb4357661`, version `0.0.71`.
+Unchanged repository validation, 911/911 deterministic tests, exact-reference
+Release build, build-output, SoundBank, package creation, and strict package
+validation pass. Baseline package/DLL SHA-256 are
+`1815C6A37C935A61223D026E03A8E6D50A0D949066CD41F9D2A17479D9197CC2` /
+`F879904D51DDAA0B226375048EF0C7983F44158B8441EC1EC4616C00CB204BEB`.
+Durable compatibility mission documents and the read-only inventory/catalog
+checkpoint are established at version `0.0.72`. Its full source/build/package
+gate passes with package/DLL SHA-256
+`43D48259B890F7F600DF6E2FFC1B5D142ED0948FF1A1BD4FE1F0181E9779B006` /
+`BD1BD66C690A4689A2125CE4D6CC8ED3CFC36962ADB222A131F1BDA856FA0339`.
+Static audit and the eight-profile manifest are source-qualified. Next command
+after the external publication policy is resolved:
+`.\scripts\compatibility\Test-KingmakerCompatibilityProfile.ps1`, after
+implementing the exact profile resolver and transaction framework entirely
+against temporary fixtures. Do not touch the real Mods directory before all
+transaction safety fixtures pass.
+Checkpoint `1062676` is published and verified on the identically named origin
+branch. Profile resolution and transaction fixtures pass. The guarded
+`observe-optional-mod-compatibility` source is exact-reference qualified with
+911/911 tests and strict package validation. Next action after publishing this
+observer checkpoint: the compatibility profile wrapper now enters the
+transaction, invokes the existing Steam/App ID 640820 harness with the typed
+profile ID, and restores in `finally`. Publish/rebuild this runner checkpoint,
+then rerun `gunslinger-only` mod-load and observer fresh processes after the
+bounded inter-scenario exit-wait repair. The first real mod-load run
+`20260807T1912134251961Z-379f7fd088d945fca5a7e663ed6c1262` passed and
+transaction `compat-20260807T191144Z-9ce245d1f232` restored exactly; the
+observer was not launched because the prior process was still exiting.
+The next repaired run reached the observer but failed at its first UMM field
+lookup; transaction `compat-20260807T191438Z-3adf77ada3af` restored exactly.
+The observer now resolves `modEntries` from the live ModEntry declaring type and
+is fully source/build/package qualified. Commit/publish/rebuild, then rerun the
+gunslinger-only observer before advancing.
+The live-type rerun identified the final exact mismatch: UMM 0.32.4 declares
+`modEntries` as `Public, Static, InitOnly`, not private. Binding flags now cover
+the proven public field. Transaction `compat-20260807T192017Z-17a2340a5202`
+restored exactly. Source-qualify/publish/rebuild and rerun the observer.
+Run `20260807T1924016022942Z-fce5fc0272f9417a968fbbb87d3fd868`
+then passed every product/UMM assertion and exposed only an overload-collapsing
+Harmony diagnostic false positive. Target identities now include parameter
+types. Source-qualify/publish/rebuild and rerun gunslinger-only observer.
+Gunslinger-only observer now passes twice with exact restoration. Call of the
+Wild's first process exceeded the default 120-second result bound and then
+exited safely; transaction `compat-20260807T192918Z-c9ce6b83ef83` restored
+exactly. The profile wrapper now uses 300-second guarded startup/result bounds.
+Commit/publish, then rerun Call of the Wild mod-load plus observer.
+Call of the Wild again reached structured 300-second `TIMEOUT`; restoration
+verified. Continue independent profiles. Arms & Armor passed every substantive
+observer assertion; only expected-ID array order differed from actual UMM order
+`ArmsArmor,KingmakerGunslinger`. Exact membership comparison now ignores order
+while retaining actual load order evidence. Qualify/publish, then rerun Arms &
+Armor observer and continue Toggle Custom Soundpacks.
+Arms & Armor now passes its exact observer, visual-rig, and production-switching
+matrix; Toggle Custom Soundpacks passes exact load, observer, and Wwise runs.
+All associated transactions restored Mods and `KMG_Firearms.bnk` exactly.
+Call of the Wild remains `CONFLICT-OBSERVED` at the exact 300-second readiness
+timeout. Next command is the guarded `gunslinger-high-risk-combined`
+`mod-load-smoke` attempt; restore and classify before attempting the separately
+named all-loadable profile. Do not rerun the unchanged individual CotW timeout.
+Both combined profile names reproduced the 300-second `request-accepted`
+timeout and restored exactly. The wrapper now permits a bounded explicit
+timeout. Source-qualify and publish it, then run exactly one Call of the Wild
+`mod-load-smoke` with `-RuntimeTimeoutSeconds 600`. If readiness still does not
+occur, preserve `CONFLICT-OBSERVED` and do not retry unchanged.
+The 600-second attempt also timed out at `request-accepted`; transaction
+`compat-20260807T201206Z-e36dbdadd645` restored exactly. Do not retry Call of
+the Wild or either current combined profile unchanged. Continue gunslinger-only
+class/presentation and working-save qualification, then define the maximum
+passing combination from Arms & Armor plus Toggle Custom Soundpacks if the
+committed schema permits an evidence-backed extension profile.
+The extension profile `gunslinger-qualified-combined` now exists with only
+Arms & Armor and Toggle Custom Soundpacks; all nine dry runs, 911/911 tests,
+and package gates pass. Commit/publish, then run its load, compatibility
+observer, and full high-risk scenario matrix in fresh processes. It is the
+maximum passing candidate, not evidence for Call of the Wild.
+Its first `mod-load-smoke` passed under transaction
+`compat-20260807T202946Z-28927c42d2fd`; observer launch then exposed a remaining
+typed ValidateSet in `Invoke-KingmakerRuntimeTest.ps1`, and restoration verified.
+The allowlist is repaired. Source-qualify/publish, then rerun the combined
+matrix beginning with the observer (load smoke is already evidenced).
+The qualified combination passed observer plus all targeted high-risk scenarios
+but comprehensive acceptance failed on two fixtures; standalone reproduced
+both. The Grit fixture's impossible post-spend expectation is corrected. Full
+inner Dodge exceptions are now preserved and the dedicated Dodge scenario is
+allowed by the profile wrapper. Source-qualify/publish, run standalone Dodge,
+then make only an evidence-backed fixture or Gunslinger repair and rerun
+standalone before the combined comprehensive repetition.
+Dedicated Dodge run `20260807T2050596684740Z-855d97503f97488086afa4b2c7268038`
+still lacked its inner exception because the top-level summary truncated it.
+The central summary now preserves the full exception chain. Qualify/publish and
+run exactly one more standalone Dodge diagnostic before choosing a repair.
+The full exception proves a finished detached command reports `Interrupt`.
+The fixture now records the enum and evaluates the actual strict Dodge effects.
+Qualify/publish and rerun standalone Dodge once; its effect assertions will
+decide whether further repair is required.
+The effect-based run proved no timed buff was applied. Preserve
+`GUNSLINGER-REPAIR-REQUIRED`; do not weaken the assertions or run working-save
+smoke until standalone comprehensive acceptance is repaired. Finalize exact
+reports/hashes and publish the blocker checkpoint. No merge occurred.
+
+The user-authoritative accepted native-rig history is: attach-slot Experiment A
+still left held Musket and Blunderbuss invisible; the later isolated holster-
+patch experiment restored visibility. Minor residual clipping is accepted and
+firearm visual calibration is frozen for this mission. The older active summary
+below is retained as historical provenance but is superseded where it says
+Experiment A passed or Experiment B was unnecessary.
+
+## Superseded firearm native-rig handoff
 
 Branch `codex/firearm-native-weapon-rigs` has published isolated attach-slot
 experiment A `6e3aa3782eb6328786b60330ae453fa2d5241f6a`, version `0.0.71`. Human testing

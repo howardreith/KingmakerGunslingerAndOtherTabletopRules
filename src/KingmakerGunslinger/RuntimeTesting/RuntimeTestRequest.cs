@@ -267,6 +267,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal)
                         ? "baseline-save-forbidden" : "save-name-not-allowed";
             }
+            else if (request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 1 ||
+                    request.Parameters.Property("profileId") == null ||
+                    request.Parameters["profileId"].Type != JTokenType.String ||
+                    !OptionalModCompatibilityObserver.IsAllowedProfile(
+                        (string)request.Parameters["profileId"]))
+                    return "compatibility-profile-not-allowed";
+            }
             else
             {
                 if (request.MainMenuTimeoutSeconds != 0 ||

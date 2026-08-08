@@ -154,6 +154,7 @@
     <Compile Include="Classes\GunTrainingPolicy.cs" />
     <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
+    <Compile Include="Compatibility\ClassCatalogDiagnostics.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
@@ -574,6 +575,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />

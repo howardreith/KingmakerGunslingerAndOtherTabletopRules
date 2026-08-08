@@ -1,5 +1,38 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 Call of the Wild character-class catalog
+
+- Human exact-build evidence reached new-game character creation. Call of the
+  Wild classes were visible, but Gunslinger was absent.
+- Disposition is `CONFLICT-CONFIRMED`: final character-creation catalog omits
+  Gunslinger. Root-catalog versus selector-cache causality is not yet proven.
+- This is independent of the standalone Dodge fixture blocker below.
+
+## 2026-08-07 standalone comprehensive qualification
+
+- Standalone and Arms & Armor plus Toggle Custom Soundpacks comprehensive runs
+  reproduce the same failure. The detached Gunslinger's Dodge command finishes
+  as `Interrupt` and applies no timed buff. Exact diagnostic run:
+  `20260807T2057209416590Z-a48e33c01d6f48f2b407eb08fe361035`.
+- This prevents comprehensive and working-save qualification and is classified
+  `GUNSLINGER-REPAIR-REQUIRED`, not an optional-mod interaction defect. The
+  strict mechanic assertions were not weakened.
+- Call of the Wild 1.14.4c-2.1 independently remains `CONFLICT-OBSERVED` after
+  300- and 600-second guarded readiness timeouts.
+
+## 2026-08-07 optional-mod compatibility publication policy
+
+- Resolved 2026-08-07: the user updated the approved helper allowlist. Exact
+  helper publication succeeded and local/origin both pointed to `9da61a4`.
+- Validated checkpoint `274d4d7` on required branch
+  `codex/postbase-archetypes-compatibility` invoked the exact approved push
+  helper.
+- The helper refused the branch because its external allowlist contains only
+  `codex/firearm-wwise-audio` and `codex/firearm-native-weapon-rigs`.
+- Raw push and policy workarounds are prohibited. Safe local work and durable
+  commits may continue, but publication remains externally blocked until the
+  user updates the approved helper allowlist.
+
 ## 2026-08-04 sixth-playtest external gates
 
 - Functional 0.0.66 qualification is complete at `448e0d1`, including two

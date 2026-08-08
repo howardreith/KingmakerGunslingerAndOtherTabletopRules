@@ -1,6 +1,7 @@
 using System;
 using Harmony12;
 using Kingmaker.Blueprints;
+using KingmakerGunslinger.Compatibility;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -12,6 +13,11 @@ namespace KingmakerGunslinger.Bootstrap
     [HarmonyPatch(typeof(LibraryScriptableObject), "LoadDictionary", new Type[0])]
     internal static class BlueprintLifecyclePatch
     {
+        private static void Prefix(LibraryScriptableObject __instance)
+        {
+            ClassCatalogDiagnostics.BeginLoadDictionary(__instance);
+        }
+
         private static void Postfix(LibraryScriptableObject __instance)
         {
             try
@@ -30,6 +36,10 @@ namespace KingmakerGunslinger.Bootstrap
                         "An unexpected exception reached the blueprint lifecycle patch; content initialization is disabled.",
                         exception);
                 }
+            }
+            finally
+            {
+                ClassCatalogDiagnostics.Capture("gunslinger-postfix-return", __instance);
             }
         }
     }

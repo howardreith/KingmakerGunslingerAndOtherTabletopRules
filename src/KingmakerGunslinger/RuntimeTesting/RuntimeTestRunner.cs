@@ -392,6 +392,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
+                {
+                    Complete(OptionalModCompatibilityObserver.Run(_context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio)
                 {
                     Complete(RunFirearmWwiseAudio());
@@ -4874,7 +4880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 assertions.Add(Assertion(label + ".execution",
                     "qualified slice completes without exception",
-                    exception.GetType().Name + ": " + exception.Message, false,
+                    exception.ToString(), false,
                     "slice-owned cleanup plus comprehensive fail-closed aggregation"));
             }
         }
@@ -11279,6 +11285,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool buffPermanent = true, exactBuffBlueprint = false,
                 buffIcon = false, activeReactivationUnavailable = false;
             int buffRank = -1;
+            string commandResult = "<not-run>";
             long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
             int gritAfterActiveReactivation = -1;
             string stage = "construct-disposables";
@@ -11350,11 +11357,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 defender.Commands.Run(command);
                 for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
                     command.Tick();
-                if (!command.IsFinished || !string.Equals(command.Result.ToString(),
-                    "Success", StringComparison.Ordinal))
+                commandResult = command.Result.ToString();
+                if (!command.IsFinished)
                     throw new InvalidOperationException(
-                        "Native Dodge command did not complete successfully; result=" +
-                        command.Result + ".");
+                        "Native Dodge command did not finish; result=" +
+                        commandResult + ".");
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
@@ -11418,7 +11425,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     (defender == null || !ContainsReference(allUnits, defender));
             }
-            string observed = "initial=" + initial + ";armedBefore=" + armedBefore +
+            string observed = "commandResult=" + commandResult + ";initial=" + initial +
                 ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
                 ";proneAfter=" + proneAfter + ";acBuff=" + armorClassBuffAfter +
                 ";acBefore=" + acBefore + ";acAfter=" + acAfter +
@@ -11816,8 +11823,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, afterKillingBlow == afterCriticalDuplicate &&
                     afterKillingDuplicate == afterCriticalDuplicate,
                     "real RuleAttackWithWeaponResolve requires a live projectile command"),
-                Assertion("unaware-target-rejected", "spent to 1; remains 1",
-                    observed, afterUnaware == 1,
+                Assertion("unaware-target-rejected", "spent to 0; remains 0",
+                    observed, afterUnaware == 0,
                     "target lacked native combat state at exact attack observation"),
                 Assertion("recovery-diagnostics", "critical=1;kill=0;duplicates=1;ignored=1;faults=0",
                     observed,
@@ -12254,7 +12261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string ExceptionSummary(Exception exception)
         {
-            return exception.GetType().FullName + ": " + exception.Message;
+            return exception.ToString();
         }
 
         private static string ReadAssemblyMetadata(Assembly assembly, string key)

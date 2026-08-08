@@ -8,6 +8,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-optional-mod-compatibility' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-firearm-wwise-audio' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -516,8 +522,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.71') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.71.'
+    if ($ExpectedVersion -cne '0.0.72') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.72.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -539,6 +545,23 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.saveName -isnot [string] -or
             $Parameters.saveName -cne $metadata.PermittedSaveName) {
             throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
+        }
+    }
+    elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
+        $allowedProfiles = @(
+            'gunslinger-only',
+            'gunslinger-call-of-the-wild',
+            'gunslinger-arms-armor',
+            'gunslinger-toggle-custom-soundpacks',
+            'gunslinger-high-risk-combined',
+            'gunslinger-all-loadable-local',
+            'gunslinger-qualified-combined'
+        )
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('profileId') -or
+            $Parameters.profileId -isnot [string] -or
+            $Parameters.profileId -cnotin $allowedProfiles) {
+            throw "$Scenario requires exactly one committed runtime-capable profileId."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -635,6 +658,8 @@ function New-KmgRuntimeRequest {
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
         parameters = if ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
+        } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
+            [ordered]@{ profileId = [string]$Parameters.profileId }
         } else { [ordered]@{} }
     }
 }

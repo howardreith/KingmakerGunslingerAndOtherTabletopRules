@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.71-firearm-native-weapon-rigs",
-  "version": "0.0.71",
+  "milestone": "0.0.72-optional-mod-compatibility",
+  "version": "0.0.72",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

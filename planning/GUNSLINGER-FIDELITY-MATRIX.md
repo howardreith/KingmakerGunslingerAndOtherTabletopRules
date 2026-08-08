@@ -1,5 +1,9 @@
 # Base Gunslinger fidelity matrix
 
+Optional-mod compatibility note (0.0.72): compatibility work adds no tabletop
+adaptation or balance rule. Existing base and Mysterious Stranger fidelity
+dispositions remain authoritative and regression-sensitive under every profile.
+
 Sixth-playtest note: Dodge and Deadeye now pay immediately; Gunsmithing has the
 documented 20/20 once-per-rest Kingmaker adaptation; BTSL testing vendors use
 exact optional native tables. Presentation/projectile/audio structural repairs

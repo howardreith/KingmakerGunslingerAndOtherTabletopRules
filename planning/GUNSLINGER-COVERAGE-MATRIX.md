@@ -1,5 +1,9 @@
 # Gunslinger mandatory coverage matrix
 
+Optional-mod compatibility note (0.0.72): the base coverage rows remain frozen
+and must be re-proven under exact eligible profiles. Framework inventory and
+static audit are source-qualified; no optional profile is runtime-qualified yet.
+
 Status values follow `AUTONOMOUS-GUNSLINGER-MISSION.md`. This initial audit is
 conservative: a lower-level subsystem or old sprint label is not completion.
 

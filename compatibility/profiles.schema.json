@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kingmakergunslinger.local/compatibility/profiles.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profiles"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "requiredGunslingerPackage", "modKeys", "runtimeLoadableRequired", "scenarios", "workingSaveSmokePermitted", "expectedUmmIds", "disposition", "notes"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^gunslinger(?:-[a-z0-9]+)*$" },
+          "description": { "type": "string", "minLength": 1 },
+          "requiredGunslingerPackage": { "const": "KingmakerGunslinger-0.0.72-local-runtime.zip" },
+          "modKeys": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "runtimeLoadableRequired": { "type": "boolean" },
+          "scenarios": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "workingSaveSmokePermitted": { "type": "boolean" },
+          "expectedUmmIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "disposition": { "enum": ["RUNTIME-QUALIFIED-EXACT", "STATIC-AUDITED-ONLY", "UNAVAILABLE-LOCAL-REFERENCE", "INVALID-LOADABLE-REFERENCE", "CONFLICT-OBSERVED", "CONFLICT-CONFIRMED", "GUNSLINGER-REPAIR-REQUIRED", "UNSUPPORTED-INVASIVE", "NOT-TESTED"] },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

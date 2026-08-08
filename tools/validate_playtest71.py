@@ -9,7 +9,7 @@ def validate(root:Path)->None:
     validate_playtest67.VERSION=VERSION;validate_playtest67.INFORMATIONAL_VERSION=INFORMATIONAL_VERSION
     validate_playtest67.validate(root,890);validate_mysterious_stranger.validate(root)
     ui=(root/"src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
-    if "Kingmaker Gunslinger - 0.0.71 FIREARM-NATIVE-WEAPON-RIGS" not in ui:raise AssertionError("0.0.71 build label missing")
+    if f"Kingmaker Gunslinger - {VERSION} " not in ui or "FIREARM-NATIVE-WEAPON-RIGS" not in ui:raise AssertionError(f"{VERSION} build label missing")
     profile=(root/"src/KingmakerGunslinger/Assets/FirearmPresentationProfile.cs").read_text(encoding="utf-8")
     if profile.count("FirearmPresentationReadiness.AutonomousCandidate") < 5:raise AssertionError("all five candidates not enabled")
     if "FirearmPresentationReadiness.HumanAccepted," in profile:raise AssertionError("weapon falsely marked HumanAccepted")

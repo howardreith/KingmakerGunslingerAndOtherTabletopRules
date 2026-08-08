@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kingmakergunslinger.local/compatibility/reference-catalog.schema.json",
+  "title": "Kingmaker Gunslinger optional-mod reference catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "references"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "folderAliases", "role", "runtimeStagingAllowed", "availabilityDisposition"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "folderAliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "role": { "enum": ["compiled-mod", "source-reference", "asset-reference-group", "future-extension"] },
+          "runtimeStagingAllowed": { "type": "boolean" },
+          "availabilityDisposition": { "enum": ["NOT-TESTED", "UNAVAILABLE-LOCAL-REFERENCE"] },
+          "sourceTwinKey": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}
