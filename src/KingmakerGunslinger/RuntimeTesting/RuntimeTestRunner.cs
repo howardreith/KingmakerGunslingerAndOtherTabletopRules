@@ -91,6 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ILevelUpInitiateUIHandler
         {
             internal BlueprintCharacterClass SelectedClass;
+            internal BlueprintArchetype SelectedArchetype = null;
             internal UnitDescriptor Replacement;
             internal object Controller;
             internal bool Invoked;
@@ -112,6 +113,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
                 MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
                     BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo addArchetype = type.GetMethod("AddArchetype",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintArchetype) }, null);
                 MethodInfo commit = type.GetMethod("Commit",
                     BindingFlags.Public | BindingFlags.Instance);
                 if (unit == null || SelectedClass == null || selectClass == null ||
@@ -125,6 +129,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!Selected)
                     throw new InvalidOperationException(
                         "Broad respec Gunslinger selection was rejected.");
+                if (SelectedArchetype != null && (addArchetype == null ||
+                    !(bool)addArchetype.Invoke(Controller,
+                        new object[] { SelectedArchetype })))
+                    throw new InvalidOperationException(
+                        "Broad respec archetype selection was rejected.");
                 mechanics.Invoke(Controller, null);
                 commit.Invoke(Controller, null);
                 Controller = null;
