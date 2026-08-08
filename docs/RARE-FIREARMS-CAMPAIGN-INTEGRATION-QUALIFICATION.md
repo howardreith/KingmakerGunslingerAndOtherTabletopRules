@@ -100,3 +100,12 @@ Enhancement +4 `783d7d496da6ac44f9511011fc5f1979` plus Reliable
 rolls 10/1 produced one target misfire without aggregate condition damage;
 forced 1/1 produced two misfires and one Normal-to-Broken transition. Exact
 event `IsSuccessRoll(d20)` fallback, one-chamber transaction, and cleanup passed.
+
+## Static enchantment maintenance lifecycle
+
+Guarded run `20260808T2040179460252Z-5438cbb8e26c4cdeb513b3a8d8ba03ba`
+passed on source `ae4b309d4574eea28f67ea3254177ac4db1cebf2`. The Last Word's
+Enhancement +5, Reliable, and Seeking static enchantments remained exactly
+`3,3,3` through Wrecked-to-Broken Overhaul and Broken-to-Normal Repair. The
+configured one-minute delivery, interruption atomicity, combat gate, exact kit
+consumption, condition logs, and complete cleanup also passed.

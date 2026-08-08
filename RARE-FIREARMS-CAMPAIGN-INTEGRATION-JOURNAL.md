@@ -309,3 +309,16 @@ gates and guarded blueprint contracts before vendor/loot publication.
   Normal-to-Broken log. The runtime item contained exactly Enhancement +4
   `783d7d496da6ac44f9511011fc5f1979` and Reliable
   `ea10817126e14703878d00e84329244e`, with no Thundering, and cleanup passed.
+
+## 2026-08-08 — named magic maintenance lifecycle PASS
+
+- Guarded `disposable-overhaul-maintenance` run
+  `20260808T2040179460252Z-5438cbb8e26c4cdeb513b3a8d8ba03ba` passed on source
+  `ae4b309d4574eea28f67ea3254177ac4db1cebf2`.
+- The exact serialized test firearm and Overhaul Kit proved the one-minute
+  delivery, interruption atomicity, and combat gate. A separate exact The Last
+  Word instance retained all three static enchantments before Overhaul, after
+  Wrecked-to-Broken, and after Repair to Normal (`3,3,3`).
+- One Overhaul Kit and one Firearm Repair Kit were consumed by their respective
+  transitions; two exact condition logs and complete inventory/item cleanup
+  passed.
