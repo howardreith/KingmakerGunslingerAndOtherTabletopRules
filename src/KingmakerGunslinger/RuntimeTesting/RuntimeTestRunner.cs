@@ -12722,7 +12722,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             BlueprintAbilityResource grit = gunslinger.Grit.Resource;
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -12740,6 +12740,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             bool nativePresentation = false, brokenAvailable = false,
                 wreckedRejected = false, zeroGritRejected = false;
+            int staticBefore = -1, staticAfterStandard = -1,
+                staticAfterMove = -1, staticAfterRejected = -1;
             QuickClearRuntimeDiagnostics.Reset();
             try
             {
@@ -12775,6 +12777,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 if (!ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon))
                     throw new InvalidOperationException("Exact pistol was not equipped.");
+                staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
                 initial = unit.Descriptor.Resources.GetResourceAmount(grit);
 
                 stage = "standard-action";
@@ -12810,6 +12814,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterStandard = unit.Descriptor.Resources.GetResourceAmount(grit);
                 standardCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterStandard = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
 
                 stage = "move-action";
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
@@ -12818,6 +12824,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterMove = unit.Descriptor.Resources.GetResourceAmount(grit);
                 moveCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterMove = weapon.Enchantments.Count(value => value != null &&
+                    entryBlueprint(weapon, value.Blueprint));
 
                 stage = "insufficient-rejection";
                 FirearmRuntimeState.Service.Set(weapon, FirearmStateMachine.ApplyMisfireDamage(
@@ -12828,6 +12836,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterRejected = unit.Descriptor.Resources.GetResourceAmount(grit);
                 rejectedCondition = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State.Condition;
+                staticAfterRejected = weapon.Enchantments.Count(value =>
+                    value != null && entryBlueprint(weapon, value.Blueprint));
             }
             catch (Exception exception)
             {
@@ -12859,7 +12869,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 QuickClearRuntimeDiagnostics.Faults + ";presentation=" +
                 nativePresentation + ";brokenAvailable=" + brokenAvailable +
                 ";wreckedRejected=" + wreckedRejected + ";zeroGritRejected=" +
-                zeroGritRejected + ";conditionLogs=" +
+                zeroGritRejected + ";static=" + staticBefore + "," +
+                staticAfterStandard + "," + staticAfterMove + "," +
+                staticAfterRejected + ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
@@ -12895,6 +12907,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmConditionCombatLog.LastMessage.Contains(
                         "Broken -> Normal (Quick Clear)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                Assertion("magic-static-quick-clear-lifecycle",
+                    "The Last Word retains +5, Reliable, and Seeking through both Quick Clear paths and rejection",
+                    observed, staticBefore == 3 && staticAfterStandard == 3 &&
+                        staticAfterMove == 3 && staticAfterRejected == 3,
+                    "exact runtime static enchantments across state-token replacement"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "firearm forgotten and detached unit disposed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
