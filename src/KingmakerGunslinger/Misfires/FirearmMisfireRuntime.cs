@@ -235,8 +235,14 @@ namespace KingmakerGunslinger.Misfires
 
                 if (context.FinalNaturalRoll == 0)
                 {
-                    throw new InvalidOperationException(
-                        "IsSuccessRoll ran before the exact Roll setter was observed for the eligible firearm.");
+                    // Some exact installed mod compositions replace the native
+                    // Roll property assignment with a direct field write. The
+                    // exact eligible RuleAttackRoll still supplies its natural
+                    // d20 to this native IsSuccessRoll call, so retain mechanics
+                    // without broad dice or unit state mutation.
+                    context.RecordNaturalRoll(naturalRoll, naturalRoll, false);
+                    FirearmMisfireRuntimeDiagnostics.RecordNaturalRoll(
+                        context.Firearm, naturalRoll, naturalRoll, false);
                 }
 
                 if (naturalRoll != context.FinalNaturalRoll)

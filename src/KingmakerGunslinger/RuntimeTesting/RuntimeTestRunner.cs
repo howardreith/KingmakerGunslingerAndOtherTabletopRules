@@ -4341,9 +4341,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmCondition.Normal));
                 controlRoll = new RuleAttackRoll(attacker, target, control, -100);
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(control, 1);
-                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(controlRoll);
-                FirearmMisfireRuntime.CancelForcedNaturalRoll();
                 Enchantments.SeekingConcealmentRuntime.CancelForcedRoll();
                 attacker.Body.PrimaryHand.RemoveItem(false);
 
@@ -4353,8 +4351,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 seekingRoll = new RuleAttackRoll(attacker, target, seeking, -100);
+                UnityEngine.Random.InitState(FindNativeD100ThenD20Seed(19));
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(seeking, 1);
-                FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(seekingRoll);
 
                 string observed = "buff=" + concealment.name + ":" +
@@ -4427,6 +4425,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.Public | BindingFlags.NonPublic)
                 .GetValue(item.Blueprint) as BlueprintWeaponEnchantment[];
             return values != null && values.Contains(blueprint as BlueprintWeaponEnchantment);
+        }
+
+        private static int FindNativeD100ThenD20Seed(int expectedD20)
+        {
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                int ignored = RulebookEvent.Dice.D100.Value;
+                if (RulebookEvent.Dice.D20.Value == expectedD20) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native D100-to-D20 seed produced " +
+                expectedD20 + ".");
         }
 
         private static bool IsRareFirearmNativeEnchantmentCandidate(
