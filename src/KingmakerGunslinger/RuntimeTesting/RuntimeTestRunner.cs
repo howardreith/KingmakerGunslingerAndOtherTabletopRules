@@ -10382,7 +10382,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 immuneConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
 
                 stage = "up-close-critical";
-                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                marker = ArmPistoleroMarker(attacker, pistolero, context);
                 hp = target.HPLeft;
                 RuleAttackWithWeapon critical = CreateResolvedPistoleroAttack(
                     attacker, target, weapon, true, false, 19);
@@ -10396,7 +10396,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
 
                 stage = "up-close-misfire";
-                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                marker = ArmPistoleroMarker(attacker, pistolero, context);
                 int gritBeforeRejected = attacker.Descriptor.Resources
                     .GetResourceAmount(gunslinger.Grit.Resource);
                 RuleAttackWithWeapon misfire = CreateResolvedPistoleroAttack(
@@ -10411,7 +10411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.Descriptor.Buffs.RemoveFact(marker);
 
                 stage = "up-close-scatter";
-                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                marker = ArmPistoleroMarker(attacker, pistolero, context);
                 RuleAttackWithWeapon scatter = CreateResolvedPistoleroAttack(
                     attacker, target, weapon, true, false, 19);
                 ScatterVolleyRuntime.Register(scatter, target, target.UniqueId,
@@ -10427,7 +10427,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.Descriptor.Buffs.RemoveFact(marker);
 
                 stage = "up-close-dead-shot";
-                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                marker = ArmPistoleroMarker(attacker, pistolero, context);
                 RuleAttackWithWeapon deadShot = CreateResolvedPistoleroAttack(
                     attacker, target, weapon, true, false, 19);
                 DeadShotRuntime.RegisterDelivery(deadShot, true, false, 0, 3);
@@ -10552,6 +10552,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
             SetExactProperty(roll, "ImmuneToSneakAttack", precisionImmune);
             return attack;
+        }
+
+        private static Buff ArmPistoleroMarker(UnitEntityData attacker,
+            PistoleroBlueprintSet pistolero, MechanicsContext context)
+        {
+            Buff marker = attacker.Descriptor.Buffs.AddBuff(
+                pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
+            marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                    pistolero.UpCloseArmed));
+            marker = marker ?? attacker.Descriptor.AddFact(
+                pistolero.UpCloseArmed) as Buff;
+            marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                    pistolero.UpCloseArmed));
+            if (marker == null)
+                throw new InvalidOperationException(
+                    "The request-local Up Close marker was rejected.");
+            return marker;
         }
 
         private static int FindNativeD6Seed(int expected)

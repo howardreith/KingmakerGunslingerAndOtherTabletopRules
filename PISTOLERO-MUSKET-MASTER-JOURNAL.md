@@ -993,3 +993,18 @@ before persistence, presentation, compatibility, version, and final gates.
 Commit/publish the expanded fixture and run it on the exact committed package;
 then add marker-expiry/delivery-fault evidence and harden Twin Shot lifecycle
 cleanup and authoritative RTWP action-cycle state.
+
+## 2026-08-08 - Expanded Pistolero detached-marker repair
+
+- Guarded directory `20260808T1401511057242Z-disposable-pistolero-deeds`, run
+  ID `20260808T1401511443981Z-70aa608643f64be4bb86b84df5e97935`, stopped at
+  `up-close-critical` because detached `AddFact` returned null before mutation.
+- Centralized the already-proven request-local timed-buff/raw-fact/direct-fact
+  fallback for all new branches. Production arming remains strict and unchanged.
+- Repository validation, 930/930 tests, clean Release, SoundBank, package, and
+  strict validation pass after repair.
+
+## Exact next action
+
+Commit/publish the detached-marker repair and rerun the expanded Pistolero
+scenario on the exact committed package.
