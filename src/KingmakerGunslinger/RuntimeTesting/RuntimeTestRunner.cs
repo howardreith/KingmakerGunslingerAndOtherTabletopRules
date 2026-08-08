@@ -3821,6 +3821,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new RuleAttackWithWeapon(unit, target, weapon, 0));
                 command.AllAttacks.Add(new AttackHandInfo(unit.Body.PrimaryHand, 0, 1)
                     { Target = target });
+                SetExactField(command, "m_AttackIndex", 0);
                 int paperStart = inventory.Count(ReloadInventoryComponent.PaperCartridge);
                 UnitCommand.ResultType result;
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());

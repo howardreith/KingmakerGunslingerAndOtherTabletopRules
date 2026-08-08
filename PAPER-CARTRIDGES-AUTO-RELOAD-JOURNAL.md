@@ -243,3 +243,11 @@
   property helper found inherited/declared `UnitAttack.Target` ambiguous. The
   fixture now uses a narrow declared-type setter for the three exact UnitAttack
   properties; production mechanics are unchanged.
+- Second full-attack run
+  `20260808T2304152732713Z-bcc2ee8c7b474fd3a522650a7e584f03` completed cleanly
+  but FAILed all mechanical assertions with `attempted=0`, proving the prefix
+  returned before recognizing a planned iteration. Bounded installed IL for
+  `UnitAttack.get_PlannedAttack` reads only `m_AllAttacks.Count` and
+  `m_AttackIndex`, rejecting the constructor's `-1` index by unsigned comparison.
+  The fixture now sets the exact demonstrated index to 0 after adding its native
+  `AttackHandInfo`; no production logic changed.
