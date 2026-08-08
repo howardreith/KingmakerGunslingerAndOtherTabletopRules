@@ -1221,3 +1221,7 @@ Standalone 0.0.73 profile PASS is complete under sentinel transaction
 and exact restoration verified. Commit/publish this evidence, then continue
 immediately with Arms & Armor, Toggle Custom Soundpacks, qualified combined,
 and the bounded Call of the Wild profile.
+
+Arms & Armor profile is now also fully PASS with exact restoration under
+`compat-20260808T150037Z-9db324f97b45`. Publish this evidence and proceed with
+Toggle Custom Soundpacks next.

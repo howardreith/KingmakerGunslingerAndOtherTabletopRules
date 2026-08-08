@@ -1213,3 +1213,26 @@ complete PASS plus exact restoration before advancing.
 Commit/publish the standalone profile evidence, then run the Arms & Armor exact
 profile's committed archetype/identity/high-risk matrix and require sentinel
 restoration before continuing to Toggle Custom Soundpacks.
+
+## 2026-08-08 - Arms & Armor 0.0.73 exact profile PASS
+
+- Sentinel transaction `compat-20260808T150037Z-9db324f97b45` passed all nine
+  committed scenarios and finished `Restored` with exact restoration verified.
+- PASS directories, in order: `20260808T1501073953965Z-mod-load-smoke`,
+  `20260808T1502358809145Z-observe-optional-mod-compatibility`,
+  `20260808T1504048349749Z-observe-class-blueprint-contracts`,
+  `20260808T1505340813697Z-observe-gunslinger-presentation`,
+  `20260808T1507032256151Z-disposable-firearm-dependent-feats`,
+  `20260808T1508326102262Z-disposable-pistolero-deeds`,
+  `20260808T1510025877352Z-disposable-archetype-reconciliation`,
+  `20260808T1511345714730Z-disposable-firearm-visual-rigs`, and
+  `20260808T1513047673827Z-disposable-production-firearm-switching`.
+- Evidence retains exact ArmsArmor 1.0.10 identity/load coexistence, all
+  production firearm identities/rigs/switching, all three archetype catalog
+  rows, scoped feat menus, Pistolero mechanics, and reconciliation isolation.
+
+## Exact next action
+
+Commit/publish this exact-profile evidence, then run the Toggle Custom
+Soundpacks committed archetype/Wwise matrix under a fresh sentinel transaction
+and require exact Mods/SoundBank restoration.
