@@ -3621,11 +3621,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.NonPublic).GetValue(logic) as BlueprintItemWeapon;
             if (pistol == null) throw new InvalidOperationException(
                 "Overhaul ability exposed no exact configured firearm.");
+            BlueprintItem overhaulKit = typeof(OverhaulTestMusketAbilityLogic)
+                .GetField("m_RepairKit", BindingFlags.Instance |
+                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItem;
+            if (overhaulKit == null) throw new InvalidOperationException(
+                "Overhaul ability exposed no exact configured kit.");
             BlueprintItemWeapon magicPistol =
                 BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
             int kitsBefore = player.Inventory.Count(repairKit);
+            int overhaulKitsBefore = player.Inventory.Count(overhaulKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
@@ -3645,6 +3651,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out ignored, out method))
                     throw new InvalidOperationException(
                         "Temporary Firearm Repair Kit could not be added.");
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { overhaulKit, 1 },
+                        new object[] { overhaulKit } }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Temporary Overhaul Kit could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
@@ -3663,11 +3674,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(unit), null);
                 int kitsAtStart = player.Inventory.Count(repairKit);
+                int overhaulKitsAtStart = player.Inventory.Count(overhaulKit);
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 delayed = delivery.MoveNext() && delivery.Current == null;
                 delivery.Dispose();
                 delivery = null;
                 interruptionAtomic = player.Inventory.Count(repairKit) == kitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
                         .Condition == FirearmCondition.Wrecked;
 
@@ -3675,7 +3688,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactField(combat, "m_InCombat", true);
                 SetExactProperty(unit, "CombatState", combat);
                 combatBlocked = unit.IsInCombat && !logic.IsAvailableFor(data) &&
-                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol, repairKit)
+                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol,
+                        overhaulKit)
                         .Reason.IndexOf("out of combat",
                             StringComparison.OrdinalIgnoreCase) >= 0;
                 SetExactProperty(unit, "CombatState", null);
@@ -3693,11 +3707,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmOverhaulRuntimeResult completed =
                     OverhaulTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
-                        repairKit);
+                        overhaulKit);
                 exactCompletion = completed.Succeeded &&
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 1;
                 staticAfterOverhaul = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 overhaulLog = FirearmConditionCombatLog.LastMessage;
@@ -3709,7 +3723,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         FirearmCondition.Broken &&
                     repaired.AfterFirearm.Repository.State.Condition ==
                         FirearmCondition.Normal &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 2;
+                    player.Inventory.Count(repairKit) == kitsAtStart - 1;
                 staticAfterRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
@@ -3727,8 +3741,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 int excess = player.Inventory.Count(repairKit) - kitsBefore;
                 if (excess > 0) player.Inventory.Remove(repairKit, excess);
+                int overhaulExcess = player.Inventory.Count(overhaulKit) -
+                    overhaulKitsBefore;
+                if (overhaulExcess > 0)
+                    player.Inventory.Remove(overhaulKit, overhaulExcess);
                 if (unit != null) unit.Dispose();
-                cleaned = player.Inventory.Count(repairKit) == kitsBefore;
+                cleaned = player.Inventory.Count(repairKit) == kitsBefore &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore;
             }
             string observed = "duration=" + blueprint.LocalizedDuration +
                 ";delayed=" + delayed + ";interruptionAtomic=" + interruptionAtomic +
