@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
@@ -56,6 +57,24 @@ namespace KingmakerGunslinger.Blueprints
                     "Gunslinger progression exposed no player-facing UI groups.");
         }
 
+        internal static void ApplyArchetypes(BlueprintCharacterClass characterClass,
+            Sprite fallbackIcon)
+        {
+            if (characterClass == null) throw new ArgumentNullException("characterClass");
+            if (fallbackIcon == null) throw new ArgumentNullException("fallbackIcon");
+            var visited = new HashSet<BlueprintUnitFact>();
+            foreach (BlueprintArchetype archetype in characterClass.Archetypes ??
+                Array.Empty<BlueprintArchetype>())
+                foreach (LevelEntry entry in archetype == null ||
+                    archetype.AddFeatures == null ? Array.Empty<LevelEntry>() :
+                    archetype.AddFeatures)
+                    foreach (BlueprintFeatureBase feature in entry == null ||
+                        entry.Features == null ? new List<BlueprintFeatureBase>() :
+                        entry.Features)
+                        Visit(feature, fallbackIcon, visited);
+            ValidateAbilities(visited);
+        }
+
         private static void CompleteTooltipMetadata(BlueprintAbility ability)
         {
             string description = ability.Description ?? string.Empty;
@@ -100,10 +119,41 @@ namespace KingmakerGunslinger.Blueprints
                 foreach (BlueprintFeature child in selection.AllFeatures)
                     Visit(child, fallbackIcon, visited);
             if (fact.ComponentsArray == null) return;
-            foreach (AddFacts grant in fact.ComponentsArray.OfType<AddFacts>())
-                if (grant.Facts != null)
-                    foreach (BlueprintUnitFact child in grant.Facts)
-                        Visit(child, fallbackIcon, visited);
+            foreach (BlueprintComponent component in fact.ComponentsArray)
+                foreach (BlueprintUnitFact child in ReferencedFacts(component))
+                    Visit(child, fallbackIcon, visited);
+        }
+
+        private static IEnumerable<BlueprintUnitFact> ReferencedFacts(
+            BlueprintComponent component)
+        {
+            if (component == null) yield break;
+            foreach (FieldInfo field in component.GetType().GetFields(
+                BindingFlags.Instance | BindingFlags.Public))
+            {
+                object value = field.GetValue(component);
+                BlueprintUnitFact fact = value as BlueprintUnitFact;
+                if (fact != null) yield return fact;
+                var facts = value as IEnumerable<BlueprintUnitFact>;
+                if (facts != null)
+                    foreach (BlueprintUnitFact child in facts)
+                        if (child != null) yield return child;
+            }
+        }
+
+        private static void ValidateAbilities(
+            IEnumerable<BlueprintUnitFact> visited)
+        {
+            foreach (BlueprintAbility ability in visited.OfType<BlueprintAbility>()
+                .Where(value => !value.Hidden))
+            {
+                CompleteTooltipMetadata(ability);
+                if (string.IsNullOrWhiteSpace(ability.LocalizedDuration.ToString()) ||
+                    string.IsNullOrWhiteSpace(ability.LocalizedSavingThrow.ToString()))
+                    throw new InvalidOperationException(
+                        "Archetype ability tooltip metadata is incomplete: " +
+                        ability.name);
+            }
         }
 
         private static bool IsVisibleProjectFeature(BlueprintFeatureBase feature)

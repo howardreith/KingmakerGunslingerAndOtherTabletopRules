@@ -44,7 +44,7 @@ def validate(root: Path, version: str = VERSION,
          "FirearmKind.Revolver"], "Sprint 42 selection blueprints")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs"),
-        ["EffectiveMisfireValue", "HasGunTraining"],
+        ["EffectiveMisfireValue", "FirearmTrainingRuntime.Resolve"],
         "Sprint 42 misfire integration")
     require_tokens(read(root,
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs"),

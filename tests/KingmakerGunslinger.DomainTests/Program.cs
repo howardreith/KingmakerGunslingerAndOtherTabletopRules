@@ -25,6 +25,25 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("archetype-handedness.catalog-exact", ArchetypeFoundationTests.HandednessCatalogExact),
+            Case("archetype-handedness.family-matching", ArchetypeFoundationTests.HandednessFamilyMatching),
+            Case("archetype-handedness.unknown-fails-closed", ArchetypeFoundationTests.HandednessUnknownFailsClosed),
+            Case("archetype-proficiency.full-permits-all", ArchetypeFoundationTests.FullProficiencyPermitsAll),
+            Case("archetype-proficiency.one-handed-exact", ArchetypeFoundationTests.OneHandedProficiencyExact),
+            Case("archetype-proficiency.two-handed-exact", ArchetypeFoundationTests.TwoHandedProficiencyExact),
+            Case("archetype-proficiency.absent-and-marker-fail-closed", ArchetypeFoundationTests.ProficiencyFailsClosed),
+            Case("archetype-proficiency.action-access", ArchetypeFoundationTests.ScopedActionAccess),
+            Case("archetype-proficiency.ewp-selection", ArchetypeFoundationTests.ExoticWeaponProficiencySelection),
+            Case("archetype-starter.precedence", ArchetypeFoundationTests.StartingFirearmPrecedence),
+            Case("archetype-starter.exact-kind", ArchetypeFoundationTests.StartingFirearmExactKind),
+            Case("archetype-training.thresholds-and-families", ArchetypeFoundationTests.TrainingThresholdsAndFamilies),
+            Case("archetype-training.overlap-and-negative-dex", ArchetypeFoundationTests.TrainingOverlapAndNegativeDexterity),
+            Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
+            Case("archetype-range.effective-boundaries", ArchetypeFoundationTests.EffectiveRangeContextBoundaries),
+            Case("archetype-pistolero.up-close-policy", ArchetypeFoundationTests.UpCloseAndDeadlyPolicyContract),
+            Case("archetype-pistolero.twin-shot-policy", ArchetypeFoundationTests.TwinShotPolicyContract),
+            Case("archetype-musket-master.native-starter-skeleton", MusketMasterStarterSkeleton),
+            Case("archetype-pistolero.replacement-skeleton", PistoleroReplacementSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
@@ -972,13 +991,94 @@ namespace KingmakerGunslinger.DomainTests
                 relative.Replace('/', Path.DirectorySeparatorChar)));
         }
 
+        private static void MusketMasterStarterSkeleton()
+        {
+            string archetypeSource = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/MusketMasterBlueprints.cs");
+            string source = archetypeSource + ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs");
+            foreach (string token in new[] {
+                "archetype.ReplaceStartingEquipment = true",
+                "productionFirearms.Musket.Item",
+                "basicAmmunition.BlackPowder",
+                "basicAmmunition.LeadBall",
+                "gunsmithingSupplies.GunsmithKit",
+                "Entry(1, g.Proficiencies, g.Dodge.Feature, g.DeedTiers[0])",
+                "Entry(3, g.UtilityShot.Feature)",
+                "Entry(5, g.GunTraining.Selection)",
+                "Entry(17, g.GunTraining.Selection)",
+                "Entry(5, training.Musket)",
+                "Entry(17, training.Musket)" })
+                Assertions.True(source.Contains(token),
+                    "Musket Master skeleton lacks exact token: " + token);
+            Assertions.False(archetypeSource.Contains("TestMusket"),
+                "Musket Master skeleton references the development Test Musket.");
+            Assertions.False(archetypeSource.Contains("HeavyCrossbow"),
+                "Musket Master skeleton references the donor Heavy Crossbow.");
+            string observerSource = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            foreach (string token in new[] {
+                "musket-master-registration",
+                "musket-master-starting-items",
+                "musket-master-replacement-rows",
+                "musket-master-starter-resolver",
+                "steady-aim-blueprint-contract",
+                "GunslingerStartingFirearmResolver.MatchesConfiguration" })
+                Assertions.True(observerSource.Contains(token),
+                    "Musket Master runtime observer lacks exact token: " + token);
+            int classObserver = observerSource.IndexOf(
+                "private RuntimeTestResult RunClassBlueprintContractObservation()",
+                StringComparison.Ordinal);
+            int creationObserver = observerSource.IndexOf(
+                "private RuntimeTestResult RunCharacterCreationContractObservation()",
+                StringComparison.Ordinal);
+            Assertions.True(classObserver >= 0 && creationObserver > classObserver &&
+                observerSource.Substring(classObserver,
+                    creationObserver - classObserver).Contains(
+                        "AddMusketMasterBlueprintAssertions(assertions)"),
+                "Musket Master assertions are not invoked by the exact class observer.");
+        }
+
+        private static void PistoleroReplacementSkeleton()
+        {
+            string source = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/PistoleroBlueprints.cs");
+            foreach (string token in new[] {
+                "result.ReplaceStartingEquipment = false",
+                "Entry(1, g.Proficiencies, g.Deadeye.Feature, g.DeedTiers[0])",
+                "Entry(7, g.StartlingShot.Feature, g.DeedTiers[1])",
+                "Entry(11, g.BleedingWound.Feature, g.DeedTiers[2])",
+                "Entry(7, g.Deadeye.Feature, tiers[1])",
+                "Entry(5, training.Pistol)",
+                "Entry(17, training.Pistol)",
+                "Pistolero Deeds — Level" })
+                Assertions.True(source.Contains(token),
+                    "Pistolero skeleton lacks exact token: " + token);
+            Assertions.False(source.Contains("ProductionFirearms.Musket"),
+                "Pistolero skeleton references the Musket starter.");
+            Assertions.False(source.Contains("new BlueprintItem"),
+                "Pistolero skeleton manufactures starting equipment.");
+            string observer = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            foreach (string token in new[] { "pistolero-registration",
+                "pistolero-replacement-rows", "pistolero-starter-resolver",
+                "project-archetype-order", "up-close-and-deadly-blueprint-contract",
+                "twin-shot-knockdown-blueprint-contract",
+                "AddPistoleroBlueprintAssertions(assertions)" })
+                Assertions.True(observer.Contains(token),
+                    "Pistolero guarded observer lacks token: " + token);
+        }
+
         private static void ThirdPlaytestNativeParentOnly()
         {
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs");
             Assertions.True(source.Contains(
-                "var additions = new BlueprintFeature[] { set.RapidReload }"),
-                "A wrapper feat is still published at top level.");
+                "set.RapidReload, set.ExoticWeaponProficiency"),
+                "The authorized standalone firearm feats are not published together.");
+            Assertions.False(source.Contains(
+                "set.WeaponFocus, set.NativeWeaponFocusWithFirearms"),
+                "A hidden Weapon Focus compatibility wrapper is still published at top level.");
         }
 
         private static void ThirdPlaytestNativeIconGuard()

@@ -71,6 +71,8 @@ namespace KingmakerGunslinger.Rules
                     RuntimeHelpers.GetHashCode(ruleAttackRoll),
                     marker,
                     DeadeyeRuntime.IsAuthorized(
+                        ruleAttackRoll as Kingmaker.RuleSystem.Rules.RuleAttackRoll),
+                    EffectiveFirearmRangeRuntime.GetBonusFeet(
                         ruleAttackRoll as Kingmaker.RuleSystem.Rules.RuleAttackRoll)));
             }
             catch (Exception exception)
@@ -187,7 +189,8 @@ namespace KingmakerGunslinger.Rules
                         touchArmorClass,
                         currentTargetArmorClass,
                         false,
-                        ResolveDeadeyeAuthorization()));
+                        ResolveDeadeyeAuthorization(),
+                        ResolveRangeIncrementBonusFeet()));
 
                 if (!decision.UsesTouchArmorClass)
                 {
@@ -272,6 +275,12 @@ namespace KingmakerGunslinger.Rules
         {
             return _attackFrames != null && _attackFrames.Count != 0 &&
                 _attackFrames.Peek().DeadeyeAuthorized;
+        }
+
+        private static int ResolveRangeIncrementBonusFeet()
+        {
+            return _attackFrames != null && _attackFrames.Count != 0
+                ? _attackFrames.Peek().RangeIncrementBonusFeet : 0;
         }
 
         private static bool IsStamped(object ruleCalculateArmorClass)
@@ -391,11 +400,12 @@ namespace KingmakerGunslinger.Rules
         private sealed class AttackFrame
         {
             internal AttackFrame(int eventIdentity, FirearmMarkerSnapshot marker,
-                bool deadeyeAuthorized)
+                bool deadeyeAuthorized, int rangeIncrementBonusFeet)
             {
                 EventIdentity = eventIdentity;
                 Marker = marker ?? FirearmMarkerSnapshot.NoWeapon();
                 DeadeyeAuthorized = deadeyeAuthorized;
+                RangeIncrementBonusFeet = rangeIncrementBonusFeet;
             }
 
             internal int EventIdentity { get; private set; }
@@ -403,6 +413,7 @@ namespace KingmakerGunslinger.Rules
             internal FirearmMarkerSnapshot Marker { get; private set; }
 
             internal bool DeadeyeAuthorized { get; private set; }
+            internal int RangeIncrementBonusFeet { get; private set; }
         }
 
         private sealed class MutationStamp

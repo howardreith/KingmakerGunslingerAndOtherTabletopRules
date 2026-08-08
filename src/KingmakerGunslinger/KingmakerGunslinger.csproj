@@ -42,6 +42,9 @@
   <ItemGroup>
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
+    <Compile Include="Archetypes\SteadyAimMechanics.cs" />
+    <Compile Include="Archetypes\UpCloseAndDeadlyMechanics.cs" />
+    <Compile Include="Archetypes\TwinShotKnockdownMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
@@ -133,6 +136,11 @@
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmScopedProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmTrainingBlueprints.cs" />
+    <Compile Include="Blueprints\ArchetypeProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\MusketMasterBlueprints.cs" />
+    <Compile Include="Blueprints\PistoleroBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProjectileBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />
@@ -151,6 +159,8 @@
     <Compile Include="Classes\GunslingerInitiativeRuntime.cs" />
     <Compile Include="Classes\BonusFeatProgression.cs" />
     <Compile Include="Classes\GunTrainingDamage.cs" />
+    <Compile Include="Classes\FirearmTrainingPolicy.cs" />
+    <Compile Include="Classes\FirearmTrainingRuntime.cs" />
     <Compile Include="Classes\GunTrainingPolicy.cs" />
     <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
@@ -265,6 +275,8 @@
     <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
     <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs" />
+    <Compile Include="Gunsmithing\GunslingerStartingFirearmResolver.cs" />
+    <Compile Include="Gunsmithing\StartingFirearmPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
@@ -272,12 +284,15 @@
     <Compile Include="Gunsmithing\BatteredFirearmSaleValueRuntime.cs" />
     <Compile Include="Blueprints\BatteredFirearmOriginBlueprints.cs" />
     <Compile Include="Firearms\FirearmDefinition.cs" />
+    <Compile Include="Firearms\FirearmHandedness.cs" />
+    <Compile Include="Firearms\FirearmHandednessPolicy.cs" />
     <Compile Include="Firearms\FirearmDefinitionComponent.cs" />
     <Compile Include="Firearms\FirearmDefinitions.cs" />
     <Compile Include="Firearms\ProductionFirearmCatalog.cs" />
     <Compile Include="Firearms\ProductionFirearmWeaponSpec.cs" />
     <Compile Include="Firearms\FirearmDomainProbe.cs" />
     <Compile Include="Firearms\FirearmProficiencyRestriction.cs" />
+    <Compile Include="Firearms\FirearmProficiencyPolicy.cs" />
     <Compile Include="Firearms\FirearmItemId.cs" />
     <Compile Include="Firearms\IFirearmItemIdentityProvider.cs" />
     <Compile Include="Firearms\IFirearmStateIdentityRecordStore.cs" />
@@ -489,12 +504,16 @@
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
+    <Compile Include="Reloading\FastMusketRuntime.cs" />
+    <Compile Include="Rules\UpCloseAndDeadlyPolicy.cs" />
+    <Compile Include="Rules\TwinShotKnockdownPolicy.cs" />
     <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
     <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />
+    <Compile Include="Feats\PrerequisiteFirearmProficiency.cs" />
     <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
     <Compile Include="Blueprints\ProjectAssetIcons.cs" />
@@ -552,6 +571,9 @@
     <Compile Include="Rules\FirearmArmorClassRequest.cs" />
     <Compile Include="Rules\FirearmArmorClassRuntime.cs" />
     <Compile Include="Rules\FirearmArmorClassService.cs" />
+    <Compile Include="Rules\EffectiveFirearmRangePolicy.cs" />
+    <Compile Include="Rules\EffectiveFirearmRangeRuntime.cs" />
+    <Compile Include="Rules\SteadyAimPolicy.cs" />
     <Compile Include="Rules\KingmakerArmorClassAccess.cs" />
     <Compile Include="Scatter\ScatterGeometryDisposition.cs" />
     <Compile Include="Scatter\ScatterConeDistanceDecision.cs" />

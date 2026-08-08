@@ -16,6 +16,10 @@ param(
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',
         'observe-gunslinger-presentation',
+        'disposable-firearm-dependent-feats',
+        'disposable-pistolero-deeds',
+        'disposable-archetype-reconciliation',
+        'musket-master-mechanics-and-starter',
         'disposable-firearm-visual-rigs',
         'disposable-production-firearm-switching',
         'disposable-gunslinger-targeting-arms',
@@ -51,7 +55,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.72'
+            ExpectedVersion = '0.0.73'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
@@ -59,6 +63,9 @@ try {
         }
         if ($name -ceq 'observe-optional-mod-compatibility') {
             $arguments.CompatibilityProfileId = $ProfileId
+        }
+        if ($name -ceq 'musket-master-mechanics-and-starter') {
+            $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
         $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `

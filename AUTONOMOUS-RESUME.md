@@ -1,5 +1,33 @@
 # Autonomous Gunslinger resume handoff
 
+## Pistolero and Musket Master mission resume point (2026-08-07)
+
+Revision 2 begins from exact merged master
+`10b792735db5d685b46749dc08ea819f31fa8052`, version 0.0.72, on dedicated branch
+`codex/pistolero-musket-master-archetypes`. Unchanged repository validation,
+911/911 domain tests, exact Release/build-output/SoundBank/strict packaging, and
+guarded mod-load/class-contract/presentation observers pass. Exact evidence and
+hashes are in `PISTOLERO-MUSKET-MASTER-JOURNAL.md`.
+
+Durable mission documents are locally committed at `c962e33`. The exact
+approved push helper refused the branch because its external allowlist has not
+been updated for this mission. Do not raw-push, edit/bypass the helper, or reuse
+the obsolete compatibility branch. Human action required: allowlist
+`codex/pistolero-musket-master-archetypes`, rerun the approved helper, and verify
+origin points to `c962e33` (or the immediately following blocker-record commit).
+
+After publication, the exact next engineering action is the mandatory
+pre-implementation inventory of starting-item, proficiency, training, reload,
+range, deed, True Grit, presentation, bootstrap, compatibility, observer, test,
+and installed Kingmaker contracts. Do not write archetype features before that
+inventory and replacement-symbol annotation are complete.
+
+Publication is now restored: branch/local/origin were verified at `8ade461` and
+the approved helper accepts the branch. The mandatory inventory is complete in
+`planning/PISTOLERO-MUSKET-MASTER-INVENTORY.md`, including exact installed IL
+for archetype starter selection. Next: commit/push that inventory, then implement
+canonical handedness and scoped proficiency foundations with focused tests.
+
 ## Optional-mod compatibility mission resume point (2026-08-07)
 
 New human authority: exact Call of the Wild 1.14.4c-2.1 reaches character
@@ -1157,3 +1185,72 @@ only `KMG_AUTOMATION_WORKING`; never load or mutate
 `KMG_AUTOMATION_BASELINE`. Never save, quicksave, send UI input, or infer a save
 from Continue/newest ordering. Stop on ambiguous identity, entitlement, UI,
 prerequisite, save-write, or result evidence.
+
+Pistolero/Musket Master active checkpoint: exact `e178ec6` passed the combined
+Musket Master mechanics/starter scenario with exact Musket/no-Pistol, 20/20,
+kit, battered ownership, repeat stability, scoped proficiency, reload, range,
+training, rollback, and no save writes. Commit the curated evidence, then close
+the remaining expanded Pistolero deed branches and Twin Shot cleanup/turn
+boundaries before persistence, compatibility, version, and final gates.
+
+The expanded Pistolero and combined Musket Master fixtures are guarded-runtime
+qualified. Generic archetype presentation and class observers passed on exact
+`1cd4b2785052acbe5be03a7426c064ba14c2ee46` in directories
+`20260808T1412495842884Z-observe-gunslinger-presentation` and
+`20260808T1414251995558Z-observe-class-blueprint-contracts`. Next implement
+and qualify archetype persistence/reconciliation transitions and starter
+identity invariants, then continue to the bounded base-starter investigation,
+version/profile transaction, compatibility profiles, and final gates.
+
+Reconciliation is now runtime-qualified on exact `e47bf17` in
+`20260808T1425513568150Z-disposable-archetype-reconciliation`; the five native
+respec transitions all passed with exact external rollback. The next action is
+the bounded installed-code base-starter-choice investigation, followed by the
+version/profile transaction and final qualification matrix.
+
+The optional base starter was safely deferred after exact installed-code
+inspection. The 0.0.73 version/profile transaction now passes the full 930-test
+build/package gate and all profile fixture/restoration tests; its local-runtime
+package/DLL hashes are `506CBF11...57F6F8` / `7DE2A590...2564B`. Commit and
+publish this transaction, then execute the required exact-profile matrices in
+the order standalone, Arms & Armor, Toggle Custom Soundpacks, qualified
+combined, and one bounded Call of the Wild sequence.
+
+Standalone 0.0.73 profile PASS is complete under sentinel transaction
+`compat-20260808T144718Z-253cb669aa6d`, with all eight committed scenarios PASS
+and exact restoration verified. Commit/publish this evidence, then continue
+immediately with Arms & Armor, Toggle Custom Soundpacks, qualified combined,
+and the bounded Call of the Wild profile.
+
+Arms & Armor profile is now also fully PASS with exact restoration under
+`compat-20260808T150037Z-9db324f97b45`. Publish this evidence and proceed with
+Toggle Custom Soundpacks next.
+
+Toggle Custom Soundpacks also passed its complete eight-scenario matrix with
+exact Mods/SoundBank restoration under `compat-20260808T151456Z-9d71de2d9c6e`.
+Publish this evidence, then run qualified combined followed by the single
+bounded Call of the Wild sequence.
+
+Qualified combined core and high-risk transactions passed and restored exactly.
+Its comprehensive run retains inherited Dodge and newly reproduces the
+unchanged-source Torso cached-threat defect documented in the journal/blockers;
+all archetype-specific slices remain PASS. Next run exactly one bounded Call of
+the Wild sequence, then proceed to final fresh archetype passes and reports.
+
+The single bounded Call of the Wild repaired-candidate sequence passed all
+seven authorized scenarios under `compat-20260808T160604Z-d19d00ad690b` and
+restored exactly. Preserve the public `CONFLICT-CONFIRMED` classification until
+human chargen confirmation. Next rebuild the committed package, run two final
+fresh-process passes of all complete archetype slices, and run two eligible
+canonical working-save smokes before final reports and hashes.
+
+Pistolero and Musket Master are independently qualified at the final 0.0.73
+candidate. Exact `b705dab64f319cb009ef62f14242468b9f974efe` passed the clean
+930-test/package gate, two Pistolero processes, two exact Musket Master starter/
+mechanics processes, and two canonical working-save smokes. Final package/DLL
+hashes are `CFFD4404...692868` / `66DC6C2D...536683`. The full Gunslinger
+aggregate remains blocked only by the recorded inherited Dodge and unchanged-
+source Torso defects. After the final documentation commit is published and
+local/origin equality is verified, no autonomous archetype mission action
+remains; do not merge. Call of the Wild still requires the short human chargen
+catalog check before its public classification may change.

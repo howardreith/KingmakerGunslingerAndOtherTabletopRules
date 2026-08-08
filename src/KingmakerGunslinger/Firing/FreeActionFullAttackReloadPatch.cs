@@ -86,6 +86,8 @@ namespace KingmakerGunslinger.Firing
 
                 EffectiveReloadAction action = ReloadActionEconomy.Evaluate(
                     firearm.Definition,
+                    FastMusketRuntime.IsAvailable(
+                        __instance.Executor.Descriptor),
                     RapidReloadRuntime.HasMatchingChoice(
                         __instance.Executor.Descriptor,
                         firearm.Definition.Kind));

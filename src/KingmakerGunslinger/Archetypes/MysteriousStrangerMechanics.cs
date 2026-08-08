@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Firearms;
 using Kingmaker.Utility;
 
@@ -42,11 +43,22 @@ namespace KingmakerGunslinger.Archetypes
         public BlueprintAbilityResource Resource;
         public int Cost;
         public bool SpendOnActivation;
+        public bool UsesFocusedAimTrueGrit;
+
+        private TrueGritDecision Decision(UnitDescriptor owner)
+        {
+            return UsesFocusedAimTrueGrit
+                ? TrueGritRuntime.Evaluate(owner, TrueGritDeed.FocusedAim,
+                    Cost, false)
+                : new TrueGritService().Evaluate(new TrueGritRequest(
+                    owner.Resources.GetResourceAmount(Resource), Cost,
+                    false, false));
+        }
 
         public bool IsAvailableFor(AbilityData ability)
         {
             return ability != null && ability.Caster != null && Marker != null &&
-                Resource != null && ability.Caster.Resources.GetResourceAmount(Resource) >= Cost &&
+                Resource != null && Decision(ability.Caster).Available &&
                 !ability.Caster.Buffs.RawFacts.OfType<Buff>().Any(value =>
                     ReferenceEquals(value.Blueprint, Marker));
         }
@@ -56,12 +68,16 @@ namespace KingmakerGunslinger.Archetypes
         {
             if (context == null || context.Caster == null || !IsAvailableFor(context.Ability))
                 throw new InvalidOperationException("Mysterious Stranger deed prerequisites changed.");
-            bool spent = SpendOnActivation && Cost > 0;
-            if (spent) context.Caster.Descriptor.Resources.Spend(Resource, Cost);
+            TrueGritDecision decision = Decision(context.Caster.Descriptor);
+            int effectiveCost = SpendOnActivation ? decision.EffectiveCost : 0;
+            bool spent = effectiveCost > 0;
+            if (spent) context.Caster.Descriptor.Resources.Spend(Resource,
+                effectiveCost);
             if (context.Caster.Descriptor.Buffs.AddBuff(Marker, context,
                     TimeSpan.FromSeconds(6d)) == null)
             {
-                if (spent) context.Caster.Descriptor.Resources.Restore(Resource, Cost);
+                if (spent) context.Caster.Descriptor.Resources.Restore(Resource,
+                    effectiveCost);
                 throw new InvalidOperationException("Mysterious Stranger deed marker was rejected.");
             }
             yield return new AbilityDeliveryTarget(target);

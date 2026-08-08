@@ -146,7 +146,8 @@ namespace KingmakerGunslinger.Scatter
 
             int threshold = Classes.GunTrainingPolicy.EffectiveMisfireValue(
                 firearm.Definition.MisfireValue, firearm.EffectiveCondition,
-                HasGunTraining(caster, firearm.Definition.Kind));
+                Classes.FirearmTrainingRuntime.Resolve(caster,
+                    firearm.Definition.Kind).ReducedBrokenMisfire);
             var attacks = new RuleAttackWithWeapon[plan.TargetCount];
             var observations = new ScatterAttackRollObservation[plan.TargetCount];
             for (int index = 0; index < plan.TargetCount; index++)
@@ -225,14 +226,5 @@ namespace KingmakerGunslinger.Scatter
             });
         }
 
-        private static bool HasGunTraining(UnitEntityData caster,
-            FirearmKind kind)
-        {
-            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            return caster != null && gunslinger != null &&
-                gunslinger.GunTraining != null &&
-                Classes.GunTrainingPolicy.IsSupportedKind(kind) &&
-                caster.Descriptor.HasFact(gunslinger.GunTraining.ChoiceFor(kind));
-        }
     }
 }

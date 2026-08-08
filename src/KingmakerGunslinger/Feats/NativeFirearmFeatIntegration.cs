@@ -20,20 +20,31 @@ namespace KingmakerGunslinger.Feats
         private static BlueprintParametrizedFeature[] _native;
         private static BlueprintFeature[] _parameters;
         private static BlueprintComponent[][] _originalComponents;
+        private static BlueprintFeature _fullProficiency;
+        private static BlueprintFeature _oneHandedProficiency;
+        private static BlueprintFeature _twoHandedProficiency;
 
         internal static void Configure(BlueprintParametrizedFeature weaponFocus,
             BlueprintParametrizedFeature[] dependent,
-            BlueprintFeature[] parameters, BlueprintFeature[][] legacyDependent)
+            BlueprintFeature[] parameters, BlueprintFeature[][] legacyDependent,
+            BlueprintFeature fullProficiency,
+            BlueprintFeature oneHandedProficiency,
+            BlueprintFeature twoHandedProficiency)
         {
             if (weaponFocus == null || dependent == null || dependent.Length != 4 ||
                 dependent.Any(value => value == null) || parameters == null ||
-                parameters.Length != 5 || parameters.Any(value => value == null))
+                parameters.Length != 5 || parameters.Any(value => value == null) ||
+                fullProficiency == null || oneHandedProficiency == null ||
+                twoHandedProficiency == null)
                 throw new ArgumentException("Native firearm feat integration is incomplete.");
             lock (Sync)
             {
                 RollbackLocked();
                 _native = new[] { weaponFocus }.Concat(dependent).ToArray();
                 _parameters = (BlueprintFeature[])parameters.Clone();
+                _fullProficiency = fullProficiency;
+                _oneHandedProficiency = oneHandedProficiency;
+                _twoHandedProficiency = twoHandedProficiency;
                 _originalComponents = _native.Select(value =>
                     value.ComponentsArray).ToArray();
                 FirearmWeaponFeatEffect[] effects = {
@@ -64,6 +75,9 @@ namespace KingmakerGunslinger.Feats
             _native = null;
             _parameters = null;
             _originalComponents = null;
+            _fullProficiency = null;
+            _oneHandedProficiency = null;
+            _twoHandedProficiency = null;
         }
 
         private static void AddAdapter(BlueprintParametrizedFeature feature,
@@ -85,7 +99,8 @@ namespace KingmakerGunslinger.Feats
         }
 
         internal static IEnumerable<FeatureUIData> Append(
-            BlueprintParametrizedFeature feature, IEnumerable<FeatureUIData> source)
+            BlueprintParametrizedFeature feature, IEnumerable<FeatureUIData> source,
+            UnitDescriptor unit = null)
         {
             FeatureUIData[] existing = (source ?? Enumerable.Empty<FeatureUIData>())
                 .ToArray();
@@ -100,6 +115,8 @@ namespace KingmakerGunslinger.Feats
             for (int index = 0; index < parameters.Length; index++)
             {
                 BlueprintFeature parameter = parameters[index];
+                if (unit != null && !CanUse(unit,
+                    FirearmFeatBlueprints.Kinds[index])) continue;
                 if (existing.Any(value => value != null &&
                     ReferenceEquals(value.Param.Blueprint, parameter))) continue;
                 string displayName = DisplayName(FirearmFeatBlueprints.Kinds[index]);
@@ -109,6 +126,23 @@ namespace KingmakerGunslinger.Feats
             }
             return result.OrderBy(value => value == null ? string.Empty : value.Name,
                 StringComparer.CurrentCultureIgnoreCase).ToArray();
+        }
+
+        private static bool CanUse(UnitDescriptor unit, FirearmKind kind)
+        {
+            BlueprintFeature full, oneHanded, twoHanded;
+            lock (Sync)
+            {
+                full = _fullProficiency;
+                oneHanded = _oneHandedProficiency;
+                twoHanded = _twoHandedProficiency;
+            }
+            return unit != null && unit.Progression != null &&
+                full != null && oneHanded != null && twoHanded != null &&
+                FirearmProficiencyPolicy.CanUse(1, kind,
+                    unit.Progression.Features.GetRank(full) > 0,
+                    unit.Progression.Features.GetRank(oneHanded) > 0,
+                    unit.Progression.Features.GetRank(twoHanded) > 0);
         }
 
         private static string DisplayName(FirearmKind kind)
@@ -196,7 +230,8 @@ namespace KingmakerGunslinger.Feats
         {
             IEnumerable<FeatureUIData> source = (__result ??
                 Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();
-            __result = NativeFirearmFeatIntegration.Append(__instance, source)
+            __result = NativeFirearmFeatIntegration.Append(__instance, source,
+                    previewUnit ?? beforeLevelUpUnit)
                 .Cast<IFeatureSelectionItem>();
         }
     }

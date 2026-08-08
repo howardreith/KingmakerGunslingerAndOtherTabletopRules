@@ -28,6 +28,69 @@
       "notes": "Hidden shared firearm-proficiency fact used by firearm equipment restrictions and future class progression."
     },
     {
+      "symbol": "KMG.Firearms.OneHandedFirearmProficiency", "guid": "1c6f66f734f64535a7de50030023a0dd", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Hidden scoped proficiency fact for exact one-handed firearm kinds."
+    },
+    {
+      "symbol": "KMG.Firearms.TwoHandedFirearmProficiency", "guid": "cbf3d4e79b6144b9b76480d8b242d37c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Hidden scoped proficiency fact for exact two-handed firearm kinds."
+    },
+    {
+      "symbol": "KMG.Feats.ExoticWeaponProficiencyFirearms", "guid": "b1a58cfdbf004f04ade7765373484c29", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Player-facing combat feat granting the preserved full firearm-proficiency fact."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistolTraining", "guid": "f375ad103ba74c0a8681088c67543bf8", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Four-rank one-handed Pistol Training feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.MusketTraining", "guid": "283b26ca325c499cbe34299994519b26", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Four-rank two-handed Musket Training feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroProficiencies", "guid": "6938d078ca724a8cb40a20063ac75c44", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/one-handed proficiency grant."
+    },
+    {
+      "symbol": "KMG.Archetypes.MusketMasterProficiencies", "guid": "3001d47f279f43fdbbec8955499d777b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Visible simple/martial/light/two-handed proficiency grant."
+    },
+    {
+      "symbol": "KMG.Archetypes.Pistolero", "guid": "32a41699a7bf42dbbe7ae755d68d73cb", "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Native one-handed firearm Gunslinger archetype."
+    },
+    {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadly", "guid": "de285a78190e4c73a83f05705f36133d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-1 Up Close and Deadly deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadlyAbility", "guid": "0fb1ef47da6040088db3946815419723", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Free-action single-shot Up Close and Deadly arming ability."
+    },
+    {
+      "symbol": "KMG.Archetypes.UpCloseAndDeadlyArmed", "guid": "b881cfed156749dca0c7db968f626656", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Ephemeral owner-scoped Up Close and Deadly attack marker."
+    },
+    {
+      "symbol": "KMG.Archetypes.TwinShotKnockdown", "guid": "cd4b145b016d4db6ac60dc3c8aa8e396", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Pistolero level-11 Twin Shot Knockdown deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.TwinShotKnockdownAbility", "guid": "87d1967bdbbd4ab98fe65e8bb9838eb8", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Targeted free-action Twin Shot Knockdown delivery."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel1", "guid": "6e3066820a3245eb80726e77e2627a36", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-1 deed summary."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel7", "guid": "8eb4316856e649db9d78b8ee97521c69", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-7 deed summary."
+    },
+    {
+      "symbol": "KMG.Archetypes.PistoleroDeedsLevel11", "guid": "a4cd03a8470f419eabdb79d508be43ab", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Pistolero level-11 deed summary."
+    },
+    {
+      "symbol": "KMG.Archetypes.MusketMaster", "guid": "468ebf7536f04f498749869396189fbd", "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Native Gunslinger archetype with exact Musket starting equipment."
+    },
+    {
+      "symbol": "KMG.Archetypes.SteadyAim", "guid": "c4ec2b80c01147d6ae387197e9f5ab9b", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-1 Steady Aim deed feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.SteadyAimAbility", "guid": "6309970e44b949db80bfd2fda8b62e31", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Move-action single-shot Steady Aim arming ability."
+    },
+    {
+      "symbol": "KMG.Archetypes.SteadyAimArmed", "guid": "f1457546b92d497d9c5924296d358a18", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Ephemeral owner-scoped Steady Aim marker."
+    },
+    {
+      "symbol": "KMG.Archetypes.FastMusket", "guid": "0d52210d53424464836106b08bc87d4d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Musket Master level-3 passive Fast Musket deed."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",
@@ -905,6 +968,11 @@
     { "symbol": "KMG.Archetypes.StrangersFortuneFeature", "guid": "4f75451043784ecf9db475199ca8c914", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Stranger's Fortune replacing Gun Training 1." },
     { "symbol": "KMG.Archetypes.ClippingShotArmed", "guid": "cbceda9bb0a24f29b14091c2b8e51915", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot next-attack marker." },
     { "symbol": "KMG.Archetypes.ClippingShotAbility", "guid": "5b5aa8c8e2434509a46d464d87b97316", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot free action." },
-    { "symbol": "KMG.Archetypes.ClippingShotFeature", "guid": "937af7e5746740c29dd833b50b98f817", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot deed replacing Bleeding Wound." }
+    { "symbol": "KMG.Archetypes.ClippingShotFeature", "guid": "937af7e5746740c29dd833b50b98f817", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Mysterious Stranger", "notes": "Clipping Shot deed replacing Bleeding Wound." },
+    { "symbol": "KMG.Classes.TrueGritFocusedAim", "guid": "2ecd9a3d016f43228e2f3ca74729dabb", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Focused Aim." },
+    { "symbol": "KMG.Classes.TrueGritTwinShotKnockdown", "guid": "a6ff971cfff3415b889672a276d5ed4d", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Twin Shot Knockdown." },
+    { "symbol": "KMG.Classes.TrueGritSteadyAim", "guid": "7b49e3ca3b6b4cacb7c7fefb1f57616c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Steady Aim." },
+    { "symbol": "KMG.Classes.TrueGritFastMusket", "guid": "6d4d4fe700fb4aceb30c6afd8dc8450a", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Archetype-aware True Grit choice for Fast Musket." },
+    { "symbol": "KMG.Archetypes.MusketMasterDeedsLevel1", "guid": "87b5317499d6488685df7564b8b09c9e", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Truthful Musket Master level-1 deed summary replacing the base summary." }
   ]
 }

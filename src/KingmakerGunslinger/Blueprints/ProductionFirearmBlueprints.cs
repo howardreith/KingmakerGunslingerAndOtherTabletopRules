@@ -39,12 +39,15 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library,
             BlueprintRegistry registry,
             ModLogger logger,
-            BlueprintFeature firearmProficiency)
+            BlueprintFeature firearmProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
             if (logger == null) throw new ArgumentNullException("logger");
             if (firearmProficiency == null) throw new ArgumentNullException("firearmProficiency");
+            if (scopedProficiencies == null)
+                throw new ArgumentNullException("scopedProficiencies");
 
             BlueprintWeaponType lightType = BlueprintLibraryLookup.RequireExact<BlueprintWeaponType>(
                 library,
@@ -77,6 +80,7 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintEntry pistol = RegisterOne(
                 registry,
                 firearmProficiency,
+                scopedProficiencies,
                 firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
@@ -91,6 +95,7 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintEntry musket = RegisterOne(
                 registry,
                 firearmProficiency,
+                scopedProficiencies,
                 firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
@@ -105,6 +110,7 @@ namespace KingmakerGunslinger.Blueprints
             ProductionFirearmBlueprintEntry blunderbuss = RegisterOne(
                 registry,
                 firearmProficiency,
+                scopedProficiencies,
                 firearmProjectile,
                 itemTypeAccess,
                 mechanicalAccess,
@@ -117,12 +123,12 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG_EarlyBlunderbuss_WeaponType",
                 "KMG_EarlyBlunderbuss_Item");
             ProductionFirearmBlueprintEntry rifle = RegisterOne(
-                registry, firearmProficiency, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
+                registry, firearmProficiency, scopedProficiencies, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
                 heavyType, heavyItem, ProductionFirearmCatalog.CreateAdvancedRifle(),
                 AdvancedRifleWeaponTypeSymbol, AdvancedRifleItemSymbol,
                 "KMG_AdvancedRifle_WeaponType", "KMG_AdvancedRifle_Item");
             ProductionFirearmBlueprintEntry revolver = RegisterOne(
-                registry, firearmProficiency, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
+                registry, firearmProficiency, scopedProficiencies, firearmProjectile, itemTypeAccess, mechanicalAccess, itemAccess,
                 lightType, lightItem, ProductionFirearmCatalog.CreateAdvancedRevolver(),
                 AdvancedRevolverWeaponTypeSymbol, AdvancedRevolverItemSymbol,
                 "KMG_AdvancedRevolver_WeaponType", "KMG_AdvancedRevolver_Item");
@@ -175,6 +181,7 @@ namespace KingmakerGunslinger.Blueprints
         private static ProductionFirearmBlueprintEntry RegisterOne(
             BlueprintRegistry registry,
             BlueprintFeature firearmProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies,
             BlueprintProjectile firearmProjectile,
             WeaponBlueprintAccess itemTypeAccess,
             WeaponTypeMechanicalAccess mechanicalAccess,
@@ -230,7 +237,8 @@ namespace KingmakerGunslinger.Blueprints
                         spec.WeightPounds);
                     FirearmWeaponPresentation.Apply(clone, spec.Definition,
                         firearmProjectile);
-                    AppendProficiencyRestriction(clone, firearmProficiency);
+                    AppendProficiencyRestriction(clone, firearmProficiency,
+                        scopedProficiencies, spec.Definition.Kind);
                     if (!spec.IsPlayerFireable)
                     {
                         AppendUnavailableRestriction(clone);
@@ -242,6 +250,8 @@ namespace KingmakerGunslinger.Blueprints
                 item,
                 spec,
                 firearmProficiency,
+                scopedProficiencies.OneHanded,
+                scopedProficiencies.TwoHanded,
                 weaponTypeInternalName,
                 itemInternalName,
                 name,
@@ -280,7 +290,12 @@ namespace KingmakerGunslinger.Blueprints
                 .ToArray();
             if (restrictions.Length != 1 ||
                 !string.Equals(restrictions[0].name, ProficiencyRestrictionName, StringComparison.Ordinal) ||
-                !ReferenceEquals(restrictions[0].RequiredProficiency, entry.FirearmProficiency))
+                !ReferenceEquals(restrictions[0].RequiredProficiency, entry.FirearmProficiency) ||
+                !ReferenceEquals(restrictions[0].OneHandedProficiency,
+                    entry.OneHandedProficiency) ||
+                !ReferenceEquals(restrictions[0].TwoHandedProficiency,
+                    entry.TwoHandedProficiency) ||
+                restrictions[0].FirearmKind != entry.Spec.Definition.Kind)
             {
                 throw new InvalidOperationException(
                     "A production firearm item must contain exactly one firearm-proficiency restriction.");
@@ -326,7 +341,9 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void AppendProficiencyRestriction(
             BlueprintItemWeapon item,
-            BlueprintFeature firearmProficiency)
+            BlueprintFeature firearmProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies,
+            FirearmKind kind)
         {
             BlueprintComponent[] components = item.ComponentsArray ?? Array.Empty<BlueprintComponent>();
             if (components.OfType<FirearmProficiencyRestriction>().Any())
@@ -335,7 +352,9 @@ namespace KingmakerGunslinger.Blueprints
                     "A source item clone already contains a firearm-proficiency restriction.");
             }
             FirearmProficiencyRestriction restriction =
-                FirearmProficiencyRestriction.Create(firearmProficiency);
+                FirearmProficiencyRestriction.Create(firearmProficiency,
+                    scopedProficiencies.OneHanded,
+                    scopedProficiencies.TwoHanded, kind);
             restriction.name = ProficiencyRestrictionName;
             item.ComponentsArray = Append(components, restriction);
         }
@@ -473,6 +492,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItemWeapon item,
             ProductionFirearmWeaponSpec spec,
             BlueprintFeature firearmProficiency,
+            BlueprintFeature oneHandedProficiency,
+            BlueprintFeature twoHandedProficiency,
             string weaponTypeInternalName,
             string itemInternalName,
             Kingmaker.Localization.LocalizedString name,
@@ -482,6 +503,10 @@ namespace KingmakerGunslinger.Blueprints
             Item = item ?? throw new ArgumentNullException("item");
             Spec = spec ?? throw new ArgumentNullException("spec");
             FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
+            OneHandedProficiency = oneHandedProficiency ??
+                throw new ArgumentNullException("oneHandedProficiency");
+            TwoHandedProficiency = twoHandedProficiency ??
+                throw new ArgumentNullException("twoHandedProficiency");
             WeaponTypeInternalName = weaponTypeInternalName ?? throw new ArgumentNullException("weaponTypeInternalName");
             ItemInternalName = itemInternalName ?? throw new ArgumentNullException("itemInternalName");
             Name = name ?? throw new ArgumentNullException("name");
@@ -492,6 +517,8 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintItemWeapon Item { get; private set; }
         internal ProductionFirearmWeaponSpec Spec { get; private set; }
         internal BlueprintFeature FirearmProficiency { get; private set; }
+        internal BlueprintFeature OneHandedProficiency { get; private set; }
+        internal BlueprintFeature TwoHandedProficiency { get; private set; }
         internal string WeaponTypeInternalName { get; private set; }
         internal string ItemInternalName { get; private set; }
         internal Kingmaker.Localization.LocalizedString Name { get; private set; }

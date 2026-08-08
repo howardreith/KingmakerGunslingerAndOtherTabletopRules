@@ -17,14 +17,37 @@ namespace KingmakerGunslinger.Reloading
         internal static EffectiveReloadAction Evaluate(
             FirearmDefinition definition, bool hasMatchingRapidReload)
         {
+            return Evaluate(definition, false, hasMatchingRapidReload);
+        }
+
+        internal static EffectiveReloadAction Evaluate(
+            FirearmDefinition definition, bool fastMusketAvailable,
+            bool hasMatchingRapidReload)
+        {
             if (definition == null) throw new ArgumentNullException("definition");
-            if (!hasMatchingRapidReload)
-                return Convert(definition.Reload.BaseAction);
-            if (definition.Era == FirearmEra.Advanced)
-                return EffectiveReloadAction.Free;
-            return definition.Reload.BaseAction == ReloadActionType.FullRound
-                ? EffectiveReloadAction.Standard
-                : EffectiveReloadAction.Move;
+            EffectiveReloadAction action = Convert(definition.Reload.BaseAction);
+            if (fastMusketAvailable && FirearmHandednessPolicy.Matches(
+                    definition.Kind, FirearmHandedness.TwoHanded) &&
+                action == EffectiveReloadAction.FullRound)
+                action = EffectiveReloadAction.Standard;
+            return hasMatchingRapidReload ? ReduceOneStep(action) : action;
+        }
+
+        private static EffectiveReloadAction ReduceOneStep(
+            EffectiveReloadAction action)
+        {
+            switch (action)
+            {
+                case EffectiveReloadAction.FullRound:
+                    return EffectiveReloadAction.Standard;
+                case EffectiveReloadAction.Standard:
+                    return EffectiveReloadAction.Move;
+                case EffectiveReloadAction.Move:
+                case EffectiveReloadAction.Free:
+                    return EffectiveReloadAction.Free;
+                default:
+                    throw new ArgumentOutOfRangeException("action");
+            }
         }
 
         private static EffectiveReloadAction Convert(ReloadActionType action)

@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-The append-only contract contains 207 stable identifiers: 206 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities add the Mysterious Stranger Gunslinger archetype and its replacement features without changing any established GUID.
+The append-only contract contains 233 stable identifiers: 232 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the native Pistolero/Musket Master archetypes, truthful archetype deed summaries, Steady Aim and Up Close and Deadly action/marker pairs, Twin Shot Knockdown's targeted action, four archetype-aware True Grit choices, and supporting scoped features without changing any established GUID.
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.

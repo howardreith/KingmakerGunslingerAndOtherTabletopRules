@@ -54,9 +54,8 @@ namespace KingmakerGunslinger.Firearms
                 throw new ArgumentOutOfRangeException("criticalMultiplier");
             }
 
-            bool requiresTwoHands = definition.Kind == FirearmKind.Musket ||
-                definition.Kind == FirearmKind.Blunderbuss ||
-                definition.Kind == FirearmKind.Rifle;
+            bool requiresTwoHands = FirearmHandednessPolicy.Require(
+                definition.Kind) == FirearmHandedness.TwoHanded;
             if (requiresTwoHands != isTwoHanded)
             {
                 throw new ArgumentException(

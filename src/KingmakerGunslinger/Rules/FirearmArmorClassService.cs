@@ -58,7 +58,9 @@ namespace KingmakerGunslinger.Rules
             try
             {
                 double incrementMeters =
-                    request.Definition.RangeIncrementFeet * MetersPerFoot;
+                    EffectiveFirearmRangePolicy.IncrementFeet(
+                        request.Definition, request.RangeIncrementBonusFeet) *
+                    MetersPerFoot;
                 double tolerantDistance = Math.Max(
                     0d,
                     request.DistanceMeters - RangeBoundaryToleranceMeters);

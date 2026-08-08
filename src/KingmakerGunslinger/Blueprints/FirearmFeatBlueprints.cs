@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection nativeWeaponFocusWithFirearms,
             BlueprintFeatureSelection rapidReload,
             BlueprintFeature[] rapidReloadChoices,
+            BlueprintFeature exoticWeaponProficiency,
             BlueprintFeatureSelection[] dependentSelections,
             BlueprintFeature[][] dependentChoices)
         {
@@ -27,6 +28,7 @@ namespace KingmakerGunslinger.Blueprints
             NativeWeaponFocusWithFirearms = nativeWeaponFocusWithFirearms;
             RapidReload = rapidReload;
             RapidReloadChoices = rapidReloadChoices;
+            ExoticWeaponProficiency = exoticWeaponProficiency;
             DependentSelections = dependentSelections;
             DependentChoices = dependentChoices;
         }
@@ -35,6 +37,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeatureSelection NativeWeaponFocusWithFirearms { get; private set; }
         internal BlueprintFeatureSelection RapidReload { get; private set; }
         internal BlueprintFeature[] RapidReloadChoices { get; private set; }
+        internal BlueprintFeature ExoticWeaponProficiency { get; private set; }
         internal BlueprintFeatureSelection[] DependentSelections { get; private set; }
         internal BlueprintFeature[][] DependentChoices { get; private set; }
     }
@@ -57,6 +60,8 @@ namespace KingmakerGunslinger.Blueprints
         internal const string NativeWeaponFocusWrapperSymbol =
             "KMG.Feats.NativeWeaponFocusWithFirearms";
         internal const string RapidReloadSelectionSymbol = "KMG.Feats.RapidReload";
+        internal const string ExoticWeaponProficiencySymbol =
+            "KMG.Feats.ExoticWeaponProficiencyFirearms";
         internal static readonly FirearmKind[] Kinds = { FirearmKind.Pistol,
             FirearmKind.Musket, FirearmKind.Blunderbuss, FirearmKind.Rifle,
             FirearmKind.Revolver };
@@ -71,9 +76,14 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static FirearmFeatBlueprintSet Register(LibraryScriptableObject library,
             BlueprintRegistry registry,
-            BlueprintFeature firearmProficiency)
+            BlueprintFeature firearmProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies)
         {
             if (library == null) throw new ArgumentNullException("library");
+            if (registry == null) throw new ArgumentNullException("registry");
+            if (firearmProficiency == null) throw new ArgumentNullException("firearmProficiency");
+            if (scopedProficiencies == null)
+                throw new ArgumentNullException("scopedProficiencies");
             BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
                 BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
             var focus = new BlueprintFeature[Kinds.Length];
@@ -82,9 +92,11 @@ namespace KingmakerGunslinger.Blueprints
             {
                 FirearmKind kind = Kinds[i];
                 focus[i] = registry.Register<BlueprintFeature>(WeaponFocusSymbols[i],
-                    () => CreateChoice(kind, firearmProficiency, false));
+                    () => CreateChoice(kind, firearmProficiency,
+                        scopedProficiencies, false));
                 rapid[i] = registry.Register<BlueprintFeature>(RapidReloadSymbols[i],
-                    () => CreateChoice(kind, firearmProficiency, true));
+                    () => CreateChoice(kind, firearmProficiency,
+                        scopedProficiencies, true));
             }
             BlueprintFeatureSelection focusSelection = registry.Register<BlueprintFeatureSelection>(
                 WeaponFocusSelectionSymbol, () => CreateSelection("Firearm Weapon Focus",
@@ -116,7 +128,8 @@ namespace KingmakerGunslinger.Blueprints
                     dependentChoices[family][kindIndex] = registry.Register<BlueprintFeature>(
                         symbol, () => CreateDependentChoice(capturedFamily,
                             Kinds[capturedKind], native, focus[capturedKind],
-                            capturedFamily == 2 ? dependentChoices[1][capturedKind] : null));
+                            capturedFamily == 2 ? dependentChoices[1][capturedKind] : null,
+                            firearmProficiency, scopedProficiencies));
                 }
                 var choices = new BlueprintFeature[Kinds.Length + 1];
                 choices[0] = native;
@@ -132,10 +145,16 @@ namespace KingmakerGunslinger.Blueprints
                 NativeDependentGuids.Select((guid, index) =>
                     BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
                         library, guid, "native " + DependentNames[index])).ToArray(),
-                focus, dependentChoices);
+                focus, dependentChoices, firearmProficiency,
+                scopedProficiencies.OneHanded, scopedProficiencies.TwoHanded);
             RapidReloadRuntime.Configure(Kinds, rapid);
+            BlueprintFeature exoticWeaponProficiency =
+                registry.Register<BlueprintFeature>(
+                    ExoticWeaponProficiencySymbol,
+                    () => CreateExoticWeaponProficiency(firearmProficiency));
             return new FirearmFeatBlueprintSet(focusSelection, focus, wrapper,
-                rapidSelection, rapid, dependentSelections, dependentChoices);
+                rapidSelection, rapid, exoticWeaponProficiency,
+                dependentSelections, dependentChoices);
         }
 
         internal static FirearmFeatCatalogPublication Publish(
@@ -151,17 +170,21 @@ namespace KingmakerGunslinger.Blueprints
             var publication = new FirearmFeatCatalogPublication(basic, fighter);
             BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
                 BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
-            // Only Rapid Reload is a new top-level feat. Firearm parameters are
+            // Rapid Reload and Exotic Weapon Proficiency (Firearms) are the
+            // only project-owned top-level feats. Firearm parameters are
             // appended inside the five native parametrized feat menus by the
             // native integration adapter. The retained wrappers are hidden
             // compatibility blueprints for existing 0.0.61/0.0.62 saves.
-            var additions = new BlueprintFeature[] { set.RapidReload };
+            var additions = new BlueprintFeature[] {
+                set.RapidReload, set.ExoticWeaponProficiency };
             publication.Publish(nativeWeaponFocus, additions);
             return publication;
         }
 
         private static BlueprintFeature CreateChoice(FirearmKind kind,
-            BlueprintFeature proficiency, bool rapid)
+            BlueprintFeature proficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies,
+            bool rapid)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_" + (rapid ? "RapidReload_" : "WeaponFocus_") + kind;
@@ -169,8 +192,9 @@ namespace KingmakerGunslinger.Blueprints
             feature.IsClassFeature = false;
             feature.HideInUI = false;
             feature.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };
-            var proficiencyPrerequisite = ScriptableObject.CreateInstance<PrerequisiteFeature>();
-            proficiencyPrerequisite.Feature = proficiency;
+            PrerequisiteFirearmProficiency proficiencyPrerequisite =
+                CreateProficiencyPrerequisite(kind, proficiency,
+                    scopedProficiencies);
             if (rapid)
                 feature.ComponentsArray = new BlueprintComponent[] { proficiencyPrerequisite };
             else
@@ -195,7 +219,9 @@ namespace KingmakerGunslinger.Blueprints
 
         private static BlueprintFeature CreateDependentChoice(int family,
             FirearmKind kind, BlueprintParametrizedFeature native,
-            BlueprintFeature weaponFocus, BlueprintFeature specialization)
+            BlueprintFeature weaponFocus, BlueprintFeature specialization,
+            BlueprintFeature fullProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_" + DependentSymbolStems[family] + "_" + kind;
@@ -206,6 +232,8 @@ namespace KingmakerGunslinger.Blueprints
                     value is PrerequisiteClassLevel)
                 .Select(value => (BlueprintComponent)UnityEngine.Object.Instantiate(value))
                 .ToList();
+            components.Add(CreateProficiencyPrerequisite(kind,
+                fullProficiency, scopedProficiencies));
             if (family != 3)
             {
                 var prerequisite = ScriptableObject.CreateInstance<PrerequisiteFeature>();
@@ -232,6 +260,47 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Feats." + DependentSymbolStems[family] + kind + ".Name", name),
                 LocalizationService.Create("KMG.Feats." + DependentSymbolStems[family] + kind + ".Description",
                     "Gain the " + DependentNames[family] + " benefit with " + kind + " firearms only."), null);
+            return feature;
+        }
+
+        private static PrerequisiteFirearmProficiency
+            CreateProficiencyPrerequisite(FirearmKind kind,
+                BlueprintFeature fullProficiency,
+                FirearmScopedProficiencyBlueprintSet scopedProficiencies)
+        {
+            var prerequisite = ScriptableObject.CreateInstance<
+                PrerequisiteFirearmProficiency>();
+            prerequisite.FullProficiency = fullProficiency;
+            prerequisite.OneHandedProficiency = scopedProficiencies.OneHanded;
+            prerequisite.TwoHandedProficiency = scopedProficiencies.TwoHanded;
+            prerequisite.Kind = kind;
+            return prerequisite;
+        }
+
+        private static BlueprintFeature CreateExoticWeaponProficiency(
+            BlueprintFeature fullProficiency)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = "KMG_ExoticWeaponProficiency_Firearms";
+            feature.Ranks = 1;
+            feature.HideInUI = false;
+            feature.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };
+            var bab = ScriptableObject.CreateInstance<PrerequisiteStatValue>();
+            bab.Stat = StatType.BaseAttackBonus;
+            bab.Value = 1;
+            var absent = ScriptableObject.CreateInstance<PrerequisiteNoFeature>();
+            absent.Feature = fullProficiency;
+            var grant = ScriptableObject.CreateInstance<Kingmaker.UnitLogic.FactLogic.AddFacts>();
+            grant.Facts = new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] {
+                fullProficiency };
+            grant.DoNotRestoreMissingFacts = false;
+            feature.ComponentsArray = new BlueprintComponent[] { bab, absent, grant };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.Feats.EWPFirearms.Name",
+                    "Exotic Weapon Proficiency (Firearms)"),
+                LocalizationService.Create("KMG.Feats.EWPFirearms.Description",
+                    "You are proficient with all firearms, including firearm families outside an archetype's normal proficiency."),
+                null);
             return feature;
         }
 

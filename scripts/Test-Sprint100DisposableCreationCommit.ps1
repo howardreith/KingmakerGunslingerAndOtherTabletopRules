@@ -29,8 +29,8 @@ $checks = [ordered]@{
     'no-save-or-ui' = -not $method.Contains('SaveGame') -and
         -not $method.Contains('Game.Instance.SaveGame') -and
         -not $method.Contains('StartNewGame')
-    'absent-detached-grant-safe' = $binder.Contains('if (addedPistols.Length == 0) return;') -and
-        $binder.Contains('if (addedPistols.Length != 1)')
+    'absent-detached-grant-safe' = $binder.Contains('if (addedFirearms.Length == 0) return;') -and
+        $binder.Contains('if (addedFirearms.Length != 1 || !ReferenceEquals(')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) { throw "Sprint 100 creation commit tests failed: $($failed -join ', ')" }

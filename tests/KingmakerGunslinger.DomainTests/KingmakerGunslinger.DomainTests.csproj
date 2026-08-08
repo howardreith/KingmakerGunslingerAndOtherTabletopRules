@@ -34,6 +34,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ArchetypeFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandedness.cs"><Link>Domain\FirearmHandedness.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandednessPolicy.cs"><Link>Domain\FirearmHandednessPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmProficiencyPolicy.cs"><Link>Domain\FirearmProficiencyPolicy.cs</Link></Compile>
     <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundEventCatalog.cs"><Link>Audio\FirearmSoundEventCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifest.cs"><Link>Audio\FirearmSoundBankManifest.cs</Link></Compile>
@@ -62,6 +66,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipRecord.cs"><Link>Gunsmithing\BatteredFirearmOwnershipRecord.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipLedger.cs"><Link>Gunsmithing\BatteredFirearmOwnershipLedger.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\StartingFirearmPolicy.cs"><Link>Gunsmithing\StartingFirearmPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\VendorCatalogPublication.cs"><Link>Acquisition\VendorCatalogPublication.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotStatus.cs"><Link>Deeds\StunningShotStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>
@@ -187,6 +192,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunslingerInitiativeService.cs"><Link>Classes\GunslingerInitiativeService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\BonusFeatProgression.cs"><Link>Classes\BonusFeatProgression.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingPolicy.cs"><Link>Classes\GunTrainingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Classes\FirearmTrainingPolicy.cs"><Link>Classes\FirearmTrainingPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingProgression.cs"><Link>Classes\GunTrainingProgression.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -486,6 +492,18 @@
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassService.cs">
       <Link>Rules\FirearmArmorClassService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\EffectiveFirearmRangePolicy.cs">
+      <Link>Rules\EffectiveFirearmRangePolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\SteadyAimPolicy.cs">
+      <Link>Rules\SteadyAimPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\UpCloseAndDeadlyPolicy.cs">
+      <Link>Rules\UpCloseAndDeadlyPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\TwinShotKnockdownPolicy.cs">
+      <Link>Rules\TwinShotKnockdownPolicy.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\KingmakerArmorClassAccess.cs">
       <Link>Rules\KingmakerArmorClassAccess.cs</Link>

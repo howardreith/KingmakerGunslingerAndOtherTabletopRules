@@ -65,6 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-respec-commit";
         internal const string DisposableGunslingerBroadRespec =
             "disposable-gunslinger-broad-respec";
+        internal const string DisposableArchetypeReconciliation =
+            "disposable-archetype-reconciliation";
         internal const string DisposableGunslingerGritResource =
             "disposable-gunslinger-grit-resource";
         internal const string DisposableGunslingerGritRest =
@@ -135,6 +137,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-deaths-shot";
         internal const string DisposableGunslingerTrueGrit =
             "disposable-gunslinger-true-grit";
+        internal const string DisposablePistoleroDeeds =
+            "disposable-pistolero-deeds";
         internal const string ObserveManualSaveLoad = "observe-manual-save-load";
         internal const string ObserveSaveCatalogAndSelection =
             "observe-save-catalog-and-selection";
@@ -150,6 +154,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string AdvancedCapacity = "advanced-capacity";
         internal const string GunslingerStartingItems =
             "gunslinger-starting-items";
+        internal const string MusketMasterMechanicsAndStarter =
+            "musket-master-mechanics-and-starter";
         internal const string ObserveWorkingSaveEntryAction =
             "observe-working-save-entry-action";
         internal const string ObserveWorkingSaveSelectionLoadAction =
@@ -191,6 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerRespecPreview,
                 DisposableGunslingerRespecCommit,
                 DisposableGunslingerBroadRespec,
+                DisposableArchetypeReconciliation,
                 DisposableGunslingerGritResource,
                 DisposableGunslingerGritRest,
                 DisposableGunslingerGritPersistence,
@@ -226,6 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerStunningShot,
                 DisposableGunslingerDeathsShot,
                 DisposableGunslingerTrueGrit,
+                DisposablePistoleroDeeds,
                 ObserveManualSaveLoad,
                 ObserveSaveCatalogAndSelection,
                 ObserveSaveCatalogProvider,
@@ -235,6 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ProductionFirearmCatalog,
                 AdvancedCapacity,
                 GunslingerStartingItems,
+                MusketMasterMechanicsAndStarter,
                 ObserveWorkingSaveEntryAction,
                 ObserveWorkingSaveSelectionLoadAction,
                 ObserveWorkingSaveReceiverBoundAction

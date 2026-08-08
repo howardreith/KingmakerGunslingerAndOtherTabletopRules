@@ -1,5 +1,21 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 Pistolero/Musket Master branch publication
+
+- Revision 2 mission baseline, unchanged qualification, and durable mission
+  documents are committed locally as `c962e33` on required branch
+  `codex/pistolero-musket-master-archetypes`.
+- The exact approved push helper refused the branch because its external
+  allowlist contains only `codex/firearm-wwise-audio`,
+  `codex/firearm-native-weapon-rigs`, and
+  `codex/postbase-archetypes-compatibility`.
+- Raw push, helper modification, policy workaround, and reuse of the obsolete
+  compatibility branch are prohibited. The work order classifies this required
+  policy conflict as a hard stop.
+- Human action: add `codex/pistolero-musket-master-archetypes` to the approved
+  helper allowlist. Then publish `c962e33`, verify the remote SHA, and resume at
+  the mandatory pre-implementation inventory.
+
 ## 2026-08-07 Call of the Wild character-class catalog
 
 - Human exact-build evidence reached new-game character creation. Call of the
@@ -284,3 +300,23 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   evidence as proof. One human must complete
   `FOURTH-PLAYTEST-VISUAL-ACCEPTANCE-CHECKLIST.md`; no autonomous engineering
   alternative remains unless that session reports a concrete failure.
+- The Pistolero/Musket Master mission has no newly established hard stop. Its
+  combined Musket Master starter/mechanics, expanded Pistolero deed, generic
+  presentation, and class observers are runtime-qualified. Persistence,
+  compatibility, and final integration gates remain autonomous.
+- Archetype reconciliation is now independently runtime-qualified across five
+  native respec transitions. No new blocker was established; the bounded
+  ordinary-Gunslinger starting-firearm choice remains a non-blocking secondary
+  investigation.
+- The 0.0.73 qualified-combined comprehensive run reproduced the inherited
+  detached Dodge missing-buff failure and additionally exposed an unchanged-
+  source Targeting Torso cache defect: forced natural 19 and live edge 19 are
+  observed, but Kingmaker's cached `IsCriticalRoll` remains false. Two bounded
+  event-order adapters failed to alter that native cache and the ineffective
+  adapter was removed. This does not block independent archetype qualification,
+  but it blocks a full-mod aggregate claim alongside Dodge.
+- These two aggregate defects do not block the archetypes' independent
+  definition of done. Exact final 0.0.73 Pistolero and Musket Master runtime
+  pairs and the canonical working-save pair all pass. No additional autonomous
+  archetype repair is justified; retain both defects as full-Gunslinger
+  blockers without attributing them to this mission.

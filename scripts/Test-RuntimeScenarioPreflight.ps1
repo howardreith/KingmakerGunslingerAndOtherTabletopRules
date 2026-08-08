@@ -62,6 +62,7 @@ $expected = @(
     'disposable-gunslinger-respec-preview',
     'disposable-gunslinger-respec-commit',
     'disposable-gunslinger-broad-respec',
+    'disposable-archetype-reconciliation',
     'disposable-gunslinger-grit-resource',
     'disposable-gunslinger-grit-rest',
     'disposable-gunslinger-grit-persistence',
@@ -97,6 +98,9 @@ $expected = @(
     'observe-stunning-shot-native-stunned',
     'disposable-gunslinger-stunning-shot',
     'disposable-gunslinger-true-grit',
+    'disposable-pistolero-deeds',
+    'musket-master-mechanics-and-starter',
+    'observe-optional-mod-compatibility',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -284,7 +288,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.72'
+    ExpectedVersion = '0.0.73'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -317,7 +321,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.72' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.73' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -372,7 +376,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.72' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.73' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

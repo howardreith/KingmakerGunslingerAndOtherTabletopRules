@@ -10,6 +10,9 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Compatibility;
+using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.Reloading;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -21,13 +24,15 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 206;
+        internal const int ExpectedRegisteredBlueprintCount = 232;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
         private static LibraryScriptableObject _library;
         private static BlueprintFeature _diagnosticFeature;
         private static BlueprintFeature _firearmProficiency;
+        private static FirearmScopedProficiencyBlueprintSet _scopedFirearmProficiencies;
+        private static FirearmTrainingBlueprintSet _firearmTraining;
         private static BlueprintAbility _reloadTestMusketAbility;
         private static BlueprintAbility _overhaulTestMusketAbility;
         private static BlueprintAbility _repairTestMusketAbility;
@@ -77,6 +82,16 @@ namespace KingmakerGunslinger.Bootstrap
                     return _firearmProficiency;
                 }
             }
+        }
+
+        internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
+        {
+            get { lock (Gate) { return _scopedFirearmProficiencies; } }
+        }
+
+        internal static FirearmTrainingBlueprintSet FirearmTraining
+        {
+            get { lock (Gate) { return _firearmTraining; } }
         }
 
         internal static BlueprintAbility ReloadTestMusketAbility
@@ -270,6 +285,12 @@ namespace KingmakerGunslinger.Bootstrap
                         count++;
                     }
 
+                    if (_scopedFirearmProficiencies != null)
+                    {
+                        count += _scopedFirearmProficiencies.Count;
+                    }
+                    if (_firearmTraining != null) count += _firearmTraining.Count;
+
                     if (_reloadTestMusketAbility != null)
                     {
                         count++;
@@ -427,6 +448,8 @@ namespace KingmakerGunslinger.Bootstrap
                     _library = library;
                     _diagnosticFeature = result.DiagnosticFeature;
                     _firearmProficiency = result.FirearmProficiency;
+                    _scopedFirearmProficiencies = result.ScopedFirearmProficiencies;
+                    _firearmTraining = result.FirearmTraining;
                     _reloadTestMusketAbility = result.ReloadTestMusketAbility;
                     _overhaulTestMusketAbility = result.OverhaulTestMusketAbility;
                     _repairTestMusketAbility = result.RepairTestMusketAbility;
@@ -527,9 +550,14 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintFeature firearmProficiency =
                     FirearmProficiencyBlueprints.Register(registry);
                 FirearmProficiencyBlueprints.ValidateBase(firearmProficiency);
+                FirearmScopedProficiencyBlueprintSet scopedFirearmProficiencies =
+                    FirearmScopedProficiencyBlueprints.Register(registry);
+                FirearmTrainingBlueprintSet firearmTraining =
+                    FirearmTrainingBlueprints.Register(registry);
 
                 FirearmFeatBlueprintSet firearmFeats =
-                    FirearmFeatBlueprints.Register(library, registry, firearmProficiency);
+                    FirearmFeatBlueprints.Register(library, registry,
+                        firearmProficiency, scopedFirearmProficiencies);
                 featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
 
                 TestMusketBlueprintSet testMusket = TestMusketBlueprints.Register(
@@ -543,7 +571,8 @@ namespace KingmakerGunslinger.Bootstrap
                         library,
                         registry,
                         context.Logger,
-                        firearmProficiency);
+                        firearmProficiency,
+                        scopedFirearmProficiencies);
 
                 FirearmStateTokenBlueprintSet firearmStateTokens =
                     FirearmStateTokenBlueprints.Register(registry, context.Logger);
@@ -598,6 +627,10 @@ namespace KingmakerGunslinger.Bootstrap
                     firearmProficiency,
                     reloadTestMusketAbility,
                     scatterShotAbility);
+                FirearmScopedProficiencyBlueprints.AttachActions(
+                    scopedFirearmProficiencies,
+                    reloadTestMusketAbility,
+                    scatterShotAbility);
 
                 BlueprintFeature gunsmithing = GunsmithingBlueprints.Register(
                     registry, overhaulTestMusketAbility, repairTestMusketAbility,
@@ -605,11 +638,61 @@ namespace KingmakerGunslinger.Bootstrap
 
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
-                        library, registry, firearmProficiency, gunsmithing,
+                        library, registry, firearmProficiency,
+                        scopedFirearmProficiencies, gunsmithing,
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,
                         gunsmithingSupplies.GunsmithKit);
+                gunslingerClassBlueprints.Pistolero =
+                    PistoleroBlueprints.Register(registry,
+                        gunslingerClassBlueprints, firearmTraining,
+                        gunslingerClassBlueprints.Grit.Resource);
+                gunslingerClassBlueprints.MusketMaster =
+                    MusketMasterBlueprints.Register(registry,
+                        gunslingerClassBlueprints, firearmTraining,
+                        firearmFeats.RapidReloadChoices[1],
+                        gunslingerClassBlueprints.Grit.Resource,
+                        productionFirearms.Musket.Item,
+                        basicAmmunition.BlackPowder,
+                        basicAmmunition.LeadBall,
+                        gunsmithingSupplies.GunsmithKit);
+                GunslingerStartingFirearmResolver.Configure(
+                    gunslingerClassBlueprints.CharacterClass,
+                    productionFirearms.Pistol.Item,
+                    productionFirearms.Musket.Item,
+                    gunslingerClassBlueprints.Pistolero.Archetype,
+                    gunslingerClassBlueprints.MusketMaster.Archetype);
+                TrueGritBlueprints.ConfigureOwnership(
+                    gunslingerClassBlueprints.TrueGrit,
+                    gunslingerClassBlueprints.Deadeye.Feature,
+                    gunslingerClassBlueprints.Dodge.Feature,
+                    gunslingerClassBlueprints.QuickClear.Feature,
+                    gunslingerClassBlueprints.Initiative,
+                    gunslingerClassBlueprints.PistolWhip.Feature,
+                    gunslingerClassBlueprints.UtilityShot.Feature,
+                    gunslingerClassBlueprints.DeadShot.Feature,
+                    gunslingerClassBlueprints.StartlingShot.Feature,
+                    gunslingerClassBlueprints.TargetingArms.Feature,
+                    gunslingerClassBlueprints.TargetingHead.Feature,
+                    gunslingerClassBlueprints.TargetingTorso.Feature,
+                    gunslingerClassBlueprints.TargetingLegs.Feature,
+                    gunslingerClassBlueprints.BleedingWound.Feature,
+                    gunslingerClassBlueprints.ExpertLoading.Feature,
+                    gunslingerClassBlueprints.LightningReload.Feature,
+                    gunslingerClassBlueprints.Evasive.Feature,
+                    gunslingerClassBlueprints.MenacingShot.Feature,
+                    gunslingerClassBlueprints.CheatDeath,
+                    gunslingerClassBlueprints.DeathsShot.Feature,
+                    gunslingerClassBlueprints.StunningShot.Feature,
+                    gunslingerClassBlueprints.MysteriousStranger.FocusedAim,
+                    gunslingerClassBlueprints.Pistolero.TwinShotKnockdown,
+                    gunslingerClassBlueprints.MusketMaster.SteadyAim,
+                    gunslingerClassBlueprints.MusketMaster.FastMusket);
+                FastMusketRuntime.Configure(
+                    gunslingerClassBlueprints.MusketMaster.FastMusket,
+                    gunslingerClassBlueprints.TrueGrit.ChoiceFor(
+                        TrueGritDeed.FastMusket));
                 ClassCatalogDiagnostics.Capture("after-registration", library,
                     gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
@@ -623,6 +706,9 @@ namespace KingmakerGunslinger.Bootstrap
                     gunsmithingSupplies,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
+                PlayerFacingPresentation.ApplyArchetypes(
+                    gunslingerClassBlueprints.CharacterClass,
+                    gunslingerClassBlueprints.CharacterClass.Icon);
                 ClassCatalogDiagnostics.Capture("before-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
                 classPublication = GunslingerClassBlueprints.Publish(
@@ -660,6 +746,8 @@ namespace KingmakerGunslinger.Bootstrap
                 return new BlueprintInitializationResult(
                     diagnosticFeature,
                     firearmProficiency,
+                    scopedFirearmProficiencies,
+                    firearmTraining,
                     reloadTestMusketAbility,
                     overhaulTestMusketAbility,
                     repairTestMusketAbility,
@@ -682,6 +770,8 @@ namespace KingmakerGunslinger.Bootstrap
                     initializationException);
                 try
                 {
+                    GunslingerStartingFirearmResolver.Rollback();
+                    Reloading.FastMusketRuntime.Rollback();
                     Feats.NativeFirearmFeatIntegration.Rollback();
                 }
                 catch (Exception nativeFeatRollbackException)
@@ -793,6 +883,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintInitializationResult(
                 BlueprintFeature diagnosticFeature,
                 BlueprintFeature firearmProficiency,
+                FirearmScopedProficiencyBlueprintSet scopedFirearmProficiencies,
+                FirearmTrainingBlueprintSet firearmTraining,
                 BlueprintAbility reloadTestMusketAbility,
                 BlueprintAbility overhaulTestMusketAbility,
                 BlueprintAbility repairTestMusketAbility,
@@ -808,6 +900,10 @@ namespace KingmakerGunslinger.Bootstrap
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
+                ScopedFirearmProficiencies = scopedFirearmProficiencies ??
+                    throw new ArgumentNullException("scopedFirearmProficiencies");
+                FirearmTraining = firearmTraining ??
+                    throw new ArgumentNullException("firearmTraining");
                 ReloadTestMusketAbility = reloadTestMusketAbility ?? throw new ArgumentNullException("reloadTestMusketAbility");
                 OverhaulTestMusketAbility = overhaulTestMusketAbility ?? throw new ArgumentNullException("overhaulTestMusketAbility");
                 RepairTestMusketAbility = repairTestMusketAbility ?? throw new ArgumentNullException("repairTestMusketAbility");
@@ -826,6 +922,12 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintFeature DiagnosticFeature { get; private set; }
 
             internal BlueprintFeature FirearmProficiency { get; private set; }
+
+            internal FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
+            { get; private set; }
+
+            internal FirearmTrainingBlueprintSet FirearmTraining
+            { get; private set; }
 
             internal BlueprintAbility ReloadTestMusketAbility { get; private set; }
 
