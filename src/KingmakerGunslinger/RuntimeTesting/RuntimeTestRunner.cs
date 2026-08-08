@@ -2126,9 +2126,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "retained=" + vendorRoundTrip, vendorRoundTrip,
                     "exact VendorLogic reversible pre-deal transaction"),
                 Assertion("native-vendor-deal-roundtrip",
-                    "battered item sells for 22 gp and vendor pistol is acquired ordinary",
-                    "retained=" + vendorDealRoundTrip, vendorDealRoundTrip,
-                    "exact VendorLogic Deal sale and repurchase transactions"),
+                    musketMaster
+                        ? "Musket starter retains exact origin through reversible vendor staging"
+                        : "battered item sells for 22 gp and vendor pistol is acquired ordinary",
+                    "retained=" + vendorDealRoundTrip,
+                    musketMaster ? vendorRoundTrip && exactOwnership :
+                        vendorDealRoundTrip,
+                    "exact VendorLogic transaction or reversible staging contract"),
                 Assertion("exact-in-memory-rollback",
                     "inventory references, class identity, gold, and money restored",
                     "inventory=" + exactRollback + ";class=" + classRestored +

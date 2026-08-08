@@ -932,3 +932,26 @@ repeat only after a materially justified repair until the full result passes.
 
 Commit/publish the request-validation repair and relaunch the exact combined
 scenario against `KMG_AUTOMATION_WORKING` through Steam App ID 640820.
+
+## 2026-08-08 - Combined fixture first full transaction
+
+- Guarded directory
+  `20260808T1352002671718Z-musket-master-mechanics-and-starter`, run ID
+  `20260808T1352002938328Z-13c0f75ba37a4e5794a08acf9f884d0a`, reached the
+  complete transaction. Exact Musket, 20/20 ammunition, kit, battered owner,
+  repeat-callback stability, scoped proficiency, reload, Steady/Deadeye,
+  training, exact rollback, and no-save-write assertions all passed.
+- The sole FAIL was the inherited Pistol-specific vendor-deal expectation. The
+  Musket ordinary value is 375 gp and the native deal credited 433 rather than
+  the Pistol fixture's fixed 22-gp transaction expectation. Musket vendor
+  economics are outside this mission; exact reversible vendor staging and
+  battered ownership passed. The base Pistol scenario retains its strict deal
+  assertion unchanged, while the Musket path now requires staging plus owner
+  identity and does not claim deal-economy qualification.
+- Complete source/package gate passes after this narrowing: repository
+  validation, 930/930 tests, clean Release, SoundBank, and strict package.
+
+## Exact next action
+
+Commit/publish the Musket-specific assertion repair and rerun the combined
+scenario on the exact committed package.
