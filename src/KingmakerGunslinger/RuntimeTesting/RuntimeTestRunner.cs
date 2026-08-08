@@ -33,6 +33,7 @@ using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Grit;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Archetypes;
+using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
 using Kingmaker.View.Animation;
@@ -10288,7 +10289,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 gritAfterMiss = -1, gritAfterImmune = -1, gritAfterTwin = -1;
             bool hitConsumed = false, missConsumed = false,
                 immuneConsumed = false, twinProne = false,
-                twinDuplicateRejected = false, twinSecondTargetIsolated = false;
+                twinDuplicateRejected = false, twinSecondTargetIsolated = false,
+                criticalUnmultiplied = false, misfireRetained = false,
+                scatterRetained = false, deadShotOnce = false;
             string stage = "setup";
             try
             {
@@ -10378,8 +10381,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 immuneConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
 
+                stage = "up-close-critical";
+                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                hp = target.HPLeft;
+                RuleAttackWithWeapon critical = CreateResolvedPistoleroAttack(
+                    attacker, target, weapon, true, false, 19);
+                SetExactProperty(critical.AttackRoll,
+                    "IsCriticalConfirmed", true);
+                UnityEngine.Random.InitState(FindNativeD6Seed(6));
+                marker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(critical));
+                criticalUnmultiplied = hp - target.HPLeft == hitDamage &&
+                    !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
+
+                stage = "up-close-misfire";
+                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                int gritBeforeRejected = attacker.Descriptor.Resources
+                    .GetResourceAmount(gunslinger.Grit.Resource);
+                RuleAttackWithWeapon misfire = CreateResolvedPistoleroAttack(
+                    attacker, target, weapon, false, false, 1);
+                marker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(misfire));
+                misfireRetained = attacker.Descriptor.HasFact(
+                        pistolero.UpCloseArmed) &&
+                    attacker.Descriptor.Resources.GetResourceAmount(
+                        gunslinger.Grit.Resource) == gritBeforeRejected;
+                attacker.Descriptor.Buffs.RemoveFact(marker);
+
+                stage = "up-close-scatter";
+                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                RuleAttackWithWeapon scatter = CreateResolvedPistoleroAttack(
+                    attacker, target, weapon, true, false, 19);
+                ScatterVolleyRuntime.Register(scatter, target, target.UniqueId,
+                    1, 19);
+                marker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(scatter));
+                scatterRetained = attacker.Descriptor.HasFact(
+                        pistolero.UpCloseArmed) &&
+                    attacker.Descriptor.Resources.GetResourceAmount(
+                        gunslinger.Grit.Resource) == gritBeforeRejected;
+                ScatterVolleyRuntime.Cancel(scatter);
+                attacker.Descriptor.Buffs.RemoveFact(marker);
+
+                stage = "up-close-dead-shot";
+                marker = attacker.Descriptor.AddFact(pistolero.UpCloseArmed) as Buff;
+                RuleAttackWithWeapon deadShot = CreateResolvedPistoleroAttack(
+                    attacker, target, weapon, true, false, 19);
+                DeadShotRuntime.RegisterDelivery(deadShot, true, false, 0, 3);
+                int gritBeforeDeadShot = attacker.Descriptor.Resources
+                    .GetResourceAmount(gunslinger.Grit.Resource);
+                UnityEngine.Random.InitState(FindNativeD6Seed(6));
+                marker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(deadShot));
+                marker.CallComponents<IInitiatorRulebookHandler<
+                    RuleAttackWithWeapon>>(handler =>
+                        handler.OnEventDidTrigger(deadShot));
+                deadShotOnce = !attacker.Descriptor.HasFact(
+                        pistolero.UpCloseArmed) &&
+                    attacker.Descriptor.Resources.GetResourceAmount(
+                        gunslinger.Grit.Resource) == gritBeforeDeadShot - 1;
+                DeadShotRuntime.CancelDelivery(deadShot);
+
                 stage = "twin-shot";
-                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 3);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 5);
                 RuleAttackWithWeapon first = CreateResolvedPistoleroAttack(attacker,
                     target, weapon, true, false, 19);
                 RuleAttackWithWeapon second = CreateResolvedPistoleroAttack(attacker,
@@ -10434,6 +10502,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "marker consumed without grit", observed,
                     gritAfterImmune == 3 && immuneConsumed,
                     "RuleAttackRoll.ImmuneToSneakAttack"),
+                Assertion("up-close-critical",
+                    "extra packet is not multiplied on a critical",
+                    observed, criticalUnmultiplied,
+                    "separate fixed precision packet"),
+                Assertion("up-close-misfire-and-scatter",
+                    "misfire and scatter neither consume marker nor grit",
+                    observed, misfireRetained && scatterRetained,
+                    "completed-misfire ledger and scatter marker"),
+                Assertion("up-close-dead-shot-once",
+                    "final Dead Shot delivery spends/applies once despite duplicate callback",
+                    observed, deadShotOnce,
+                    "Dead Shot delivery marker and attack reference gate"),
                 Assertion("twin-shot-distinct-same-target",
                     "two reference-distinct hits; duplicate ignored; other target isolated",
                     observed, twinDuplicateRejected && twinSecondTargetIsolated,

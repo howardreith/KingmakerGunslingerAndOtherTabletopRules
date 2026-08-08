@@ -978,3 +978,18 @@ Commit/publish this curated PASS, then audit and close the remaining expanded
 Pistolero deed branches (critical, misfire, scatter, Dead Shot, expiry,
 duplicate callback, delivery rollback) and Twin Shot cleanup/turn boundaries
 before persistence, presentation, compatibility, version, and final gates.
+
+## 2026-08-08 - Expanded Pistolero deed runtime fixture
+
+- Extended `disposable-pistolero-deeds` with a confirmed critical packet that
+  must equal the ordinary deed packet, genuine misfire and registered scatter
+  rejection that retain marker/grit, final Dead Shot delivery with three hits,
+  and duplicate callback delivery/spend suppression.
+- Repository validation, 930/930 tests, clean exact-reference Release build,
+  build-output, SoundBank, package, and strict validation pass.
+
+## Exact next action
+
+Commit/publish the expanded fixture and run it on the exact committed package;
+then add marker-expiry/delivery-fault evidence and harden Twin Shot lifecycle
+cleanup and authoritative RTWP action-cycle state.

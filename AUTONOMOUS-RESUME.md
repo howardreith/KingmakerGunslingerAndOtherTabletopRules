@@ -1192,3 +1192,7 @@ kit, battered ownership, repeat stability, scoped proficiency, reload, range,
 training, rollback, and no save writes. Commit the curated evidence, then close
 the remaining expanded Pistolero deed branches and Twin Shot cleanup/turn
 boundaries before persistence, compatibility, version, and final gates.
+
+The expanded Pistolero guarded fixture now covers critical, misfire, scatter,
+Dead Shot final delivery, and duplicate callback source contracts. Commit and
+run it, then close marker-expiry/fault and Twin Shot lifecycle cleanup.
