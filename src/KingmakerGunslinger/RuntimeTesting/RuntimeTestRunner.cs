@@ -4370,7 +4370,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "none" : seekingRoll.ConcealmentCheck.Concealment + ":" +
                         seekingRoll.ConcealmentCheck.Roll) + ",roll=" +
                     seekingRoll.Roll + ",bonus=" + seekingRoll.AttackBonus +
-                    ",ac=" + seekingRoll.TargetAC;
+                    ",ac=" + seekingRoll.TargetAC + ";discharge=" +
+                    FirearmDischargeRuntimeDiagnostics.Describe() +
+                    ";misfire=" + FirearmMisfireRuntime.Describe();
                 bool sameNativeConcealment = controlRoll.ConcealmentCheck != null &&
                     seekingRoll.ConcealmentCheck != null &&
                     controlRoll.ConcealmentCheck.Concealment ==
