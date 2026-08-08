@@ -105,7 +105,7 @@ def validate(root: Path, test_count: int = 877) -> None:
     validate_playtest66.require(
         root / "src/KingmakerGunslinger/Reloading/FullAttackAutoReloadPolicy.cs",
         "FullAttackReloadDecision.Reload", "FullAttackReloadDecision.EndFullAttack",
-        "ContinueLoaded", "reloadAction != EffectiveReloadAction.Free",
+        "ContinueLoaded", "reloadAction == EffectiveReloadAction.Free",
         "!sameExactWeapon || !targetAlive")
 
     profile = root / (

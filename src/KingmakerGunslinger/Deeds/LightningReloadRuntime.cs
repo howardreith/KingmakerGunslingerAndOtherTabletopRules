@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -31,18 +33,20 @@ namespace KingmakerGunslinger.Deeds
             FirearmState state = exact ? firearm.Firearm.Repository.State :
                 FirearmState.CreateEmpty();
             int capacity = exact ? firearm.Firearm.Definition.Capacity : 1;
-            KingmakerBasicAmmunitionInventory inventory = null;
+            KingmakerReloadAmmunitionInventory inventory = null;
+            FirearmReloadPlan reloadPlan = null;
             bool ammunition = false;
             Game game = Game.Instance;
             if (exact && blackPowder != null && leadBall != null && game != null &&
                 game.Player != null && game.Player.Inventory != null)
             {
-                inventory = new KingmakerBasicAmmunitionInventory(
-                    game.Player.Inventory, blackPowder, leadBall);
-                BasicAmmunitionInventorySnapshot snapshot =
-                    BasicAmmunitionInventorySnapshot.Capture(inventory);
-                ammunition = snapshot.BlackPowderCharges > 0 &&
-                    snapshot.LeadBalls > 0;
+                inventory = new KingmakerReloadAmmunitionInventory(
+                    game.Player.Inventory, blackPowder, leadBall,
+                    BlueprintBootstrap.BasicAmmunition.PaperCartridge);
+                ReloadTestMusketAvailability normal = ReloadTestMusketRuntime.Evaluate(
+                    caster, firearm.Weapon.Blueprint, blackPowder, leadBall);
+                reloadPlan = normal.Plan;
+                ammunition = normal.IsAvailable;
             }
             bool used = caster != null && usedMarker != null &&
                 caster.Buffs.RawFacts.OfType<Buff>().Any(value =>
@@ -51,10 +55,12 @@ namespace KingmakerGunslinger.Deeds
                 new LightningReloadRequest(exact,
                     exact ? firearm.EffectiveCondition : state.Condition,
                     state.LoadedRounds, capacity, ReadGrit(caster), ammunition,
-                    used));
+                    used, ResolveAction(caster, exact ? firearm : null,
+                        reloadPlan)));
             return new LightningReloadAvailability(decision,
                 decision.IsAvailable ? firearm : null,
-                decision.IsAvailable ? inventory : null);
+                decision.IsAvailable ? inventory : null,
+                decision.IsAvailable ? reloadPlan : null);
         }
 
         internal static FirearmReloadResult Execute(UnitDescriptor caster,
@@ -81,13 +87,11 @@ namespace KingmakerGunslinger.Deeds
                 var stateStore = new FirearmItemReloadStateStore(
                     FirearmRuntimeState.Service,
                     availability.Firearm.Weapon);
-                var rules = new FirearmStateRules(
-                    availability.Firearm.Firearm.Definition.Capacity,
-                    new[] { availability.Firearm.Firearm.Definition.Reload.Ammunition });
+                FirearmStateRules rules = FirearmStateRules.CreateForDefinition(
+                    availability.Firearm.Firearm.Definition);
                 FirearmReloadResult result = new FirearmReloadTransactionService()
-                    .TryReloadOneBasicRound(stateStore, availability.Inventory,
-                        rules,
-                        availability.Firearm.Firearm.Definition.Reload.Ammunition);
+                    .TryReloadRounds(stateStore, availability.Inventory, rules,
+                        availability.ReloadPlan.Profile, 1);
                 if (!result.Succeeded)
                 {
                     caster.Buffs.RemoveFact(marker);
@@ -104,6 +108,32 @@ namespace KingmakerGunslinger.Deeds
             }
         }
 
+        internal static FirearmReloadResult ExecuteInline(UnitEntityData caster,
+            BlueprintItem blackPowder, BlueprintItem leadBall,
+            BlueprintBuff usedMarker)
+        {
+            if (caster == null || caster.Descriptor == null)
+                throw new ArgumentNullException("caster");
+            BlueprintAbility blueprint = BlueprintBootstrap.GunslingerClass == null
+                ? null : BlueprintBootstrap.GunslingerClass.LightningReload.Ability;
+            Kingmaker.UnitLogic.Abilities.Ability granted = blueprint == null
+                ? null : caster.Descriptor.Abilities.GetAbility(blueprint);
+            if (granted == null)
+                throw new InvalidOperationException(
+                    "Lightning Reload is not granted to the exact unit.");
+            var data = new AbilityData(granted);
+            var context = new AbilityExecutionContext(data, new AbilityParams(),
+                new Kingmaker.Utility.TargetWrapper(caster), null);
+            LightningReloadAvailability availability = Evaluate(caster.Descriptor,
+                blackPowder, leadBall, usedMarker);
+            if (!availability.Decision.IsAvailable ||
+                availability.Decision.Action != LightningReloadAction.Free)
+                throw new InvalidOperationException(
+                    "Inline Lightning Reload is not currently legal and Free.");
+            return Execute(caster.Descriptor, context, blackPowder, leadBall,
+                usedMarker);
+        }
+
         private static int ReadGrit(UnitDescriptor caster)
         {
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
@@ -111,6 +141,17 @@ namespace KingmakerGunslinger.Deeds
             int current = caster.Resources.GetResourceAmount(gunslinger.Grit.Resource);
             return TrueGritRuntime.Evaluate(caster, TrueGritDeed.LightningReload,
                 0, true).Available ? Math.Max(1, current) : current;
+        }
+
+        private static LightningReloadAction ResolveAction(UnitDescriptor caster,
+            ExactEquippedFirearmContext firearm, FirearmReloadPlan plan)
+        {
+            if (plan != null && plan.Profile.SourceKind ==
+                ReloadAmmunitionSourceKind.PaperCartridge)
+                return LightningReloadAction.Free;
+            return firearm != null && RapidReloadRuntime.HasMatchingChoice(caster,
+                firearm.Firearm.Definition.Kind)
+                ? LightningReloadAction.Free : LightningReloadAction.Swift;
         }
     }
 }

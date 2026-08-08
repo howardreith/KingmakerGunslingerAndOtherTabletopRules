@@ -20,6 +20,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Abilities;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -371,6 +372,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposablePaperCartridgeLightningReload &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvasive &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
@@ -768,7 +770,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload)
+                    RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposablePaperCartridgeLightningReload)
                 {
                     Complete(RunDisposableGunslingerLightningReload());
                     return;
@@ -10095,12 +10099,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
             ItemEntityWeapon weapon = null;
-            KingmakerBasicAmmunitionInventory inventory = null;
-            BasicAmmunitionInventorySnapshot inventoryBefore = null;
+            KingmakerReloadAmmunitionInventory inventory = null;
+            ReloadAmmunitionInventorySnapshot inventoryBefore = null;
             int gritBefore = -1, gritAfter = -1, normalRounds = -1,
                 brokenRounds = -1;
             bool marked = false, sameRoundRejected = false,
-                roundReset = false, noGritRejected = false, cleaned = false;
+                roundReset = false, noGritRejected = false, cleaned = false,
+                paperFree = false, paperConsumed = false;
+            ActivatableAbility paperMode = null;
             FirearmCondition brokenCondition = FirearmCondition.Normal;
             string stage = "blueprint-contract";
             bool blueprintContract = gunslinger.Progression.LevelEntries[10]
@@ -10117,12 +10123,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 weapon = new ItemEntityWeapon(pistol);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
-                inventory = new KingmakerBasicAmmunitionInventory(
+                inventory = new KingmakerReloadAmmunitionInventory(
                     Kingmaker.Game.Instance.Player.Inventory,
-                    ammunition.BlackPowder, ammunition.LeadBall);
-                inventoryBefore = BasicAmmunitionInventorySnapshot.Capture(inventory);
-                inventory.Add(BasicAmmunitionComponent.BlackPowderCharge, 2);
-                inventory.Add(BasicAmmunitionComponent.LeadBall, 2);
+                    ammunition.BlackPowder, ammunition.LeadBall,
+                    ammunition.PaperCartridge);
+                inventoryBefore = ReloadAmmunitionInventorySnapshot.Capture(inventory);
+                inventory.Add(ReloadInventoryComponent.BlackPowderCharge, 2);
+                inventory.Add(ReloadInventoryComponent.LeadBall, 2);
+                inventory.Add(ReloadInventoryComponent.PaperCartridge, 1);
                 var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
                     set.Ability, attacker.Descriptor);
                 var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
@@ -10161,10 +10169,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 brokenRounds = broken.LoadedRounds;
                 brokenCondition = broken.Condition;
 
-                stage = "zero-grit-gate";
+                stage = "paper-free-reload";
                 Buff second = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Single(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
                 second.Get<LightningReloadRoundMarker>().OnNewRound();
+                attacker.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                paperMode = attacker.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+                paperMode.IsOn = true;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                int paperBefore = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                var paperData = new AbilityData(set.Ability, attacker.Descriptor);
+                LightningReloadAvailability paperAvailability = LightningReloadRuntime.Evaluate(
+                    attacker.Descriptor, ammunition.BlackPowder,
+                    ammunition.LeadBall, set.UsedMarker);
+                paperFree = paperAvailability.Decision.IsAvailable &&
+                    paperAvailability.Decision.Action == LightningReloadAction.Free &&
+                    paperData.ActionType == UnitCommand.CommandType.Free &&
+                    paperData.RuntimeActionType == UnitCommand.CommandType.Free;
+                var paperExecution = new AbilityExecutionContext(paperData,
+                    new AbilityParams(), new TargetWrapper(attacker), null);
+                LightningReloadRuntime.Execute(attacker.Descriptor, paperExecution,
+                    ammunition.BlackPowder, ammunition.LeadBall, set.UsedMarker);
+                paperConsumed = inventory.Count(ReloadInventoryComponent.PaperCartridge) ==
+                    paperBefore - 1 && FirearmRuntimeState.Service.GetOrCreate(weapon)
+                        .Repository.State.LoadedAmmunition ==
+                        ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                paperMode.IsOn = false;
+
+                stage = "zero-grit-gate";
+                Buff third = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
+                third.Get<LightningReloadRoundMarker>().OnNewRound();
                 attacker.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
                     gritAfter);
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
@@ -10181,8 +10218,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (paperMode != null && paperMode.IsOn) paperMode.IsOn = false;
                 if (inventory != null && inventoryBefore != null)
-                    new BasicAmmunitionTransactionService().RestoreExact(
+                    new ReloadAmmunitionTransactionService().RestoreExact(
                         inventory, inventoryBefore);
                 if (weapon != null)
                 {
@@ -10199,7 +10237,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";rounds=" + normalRounds + "," + brokenRounds +
                 ";broken=" + brokenCondition + ";marked=" + marked +
                 ";sameRoundRejected=" + sameRoundRejected +
-                ";roundReset=" + roundReset + ";noGrit=" + noGritRejected;
+                ";roundReset=" + roundReset + ";paperFree=" + paperFree +
+                ";paperConsumed=" + paperConsumed + ";noGrit=" + noGritRejected;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("lightning-reload-progression",
@@ -10217,6 +10256,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Broken preserved; zero grit rejected", observed,
                     brokenRounds == 1 && brokenCondition == FirearmCondition.Broken &&
                         noGritRejected, "second atomic reload and policy gate"),
+                Assertion("lightning-reload-paper-dynamic-action",
+                    "Paper mode is Free in decision, AbilityData and runtime action; consumes one cartridge",
+                    observed, paperFree && paperConsumed,
+                    "selected plan plus dynamic action patches and generic transaction"),
                 Assertion("external-isolation",
                     "unchanged inventory, party, and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,

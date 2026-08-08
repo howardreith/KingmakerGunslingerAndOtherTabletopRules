@@ -144,6 +144,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingDecision.cs"><Link>Deeds\ExpertLoadingDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingService.cs"><Link>Deeds\ExpertLoadingService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadRequest.cs"><Link>Deeds\LightningReloadRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadAction.cs"><Link>Deeds\LightningReloadAction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadStatus.cs"><Link>Deeds\LightningReloadStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadDecision.cs"><Link>Deeds\LightningReloadDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadService.cs"><Link>Deeds\LightningReloadService.cs</Link></Compile>

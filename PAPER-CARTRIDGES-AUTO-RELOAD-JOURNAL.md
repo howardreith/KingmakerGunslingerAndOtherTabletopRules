@@ -186,3 +186,33 @@
 - Next exact action: bind native auto-use/full-attack policy and Lightning Reload
   to the same plan, require exact Reload Firearm auto-use, and add the one-use
   genuinely-free Lightning fallback.
+
+## 2026-08-08 — Phase 3 deterministic candidate
+
+- Starting commit `c3b9957fdfc7fc901fd231f2547b61505743faba` was clean,
+  pushed, and remote-equal.
+- Architecture: Lightning Reload now reuses the selected `FirearmReloadPlan` and
+  generic exact-source transaction. Its independent action result is Swift for
+  loose/no matching Rapid Reload and Free for matching Rapid Reload or Paper.
+  Dynamic `AbilityData`, runtime action, and `UnitUseAbility` constructor patches
+  use that result. Marker addition remains success-bound with exact removal on
+  transaction failure.
+- Full-attack policy now requires exact Reload Firearm native auto-use, selected
+  source availability, same item/target/native full-attack boundaries, and gives
+  unlimited normal Free reload priority over a genuinely-Free, granted, unused
+  Lightning Reload fallback. Non-free/unavailable cases end before an empty shot.
+- Empty-attack continuation now also binds and revalidates the per-unit Paper
+  mode state in addition to exact item/target/condition/action state.
+- Focused tests: Lightning Swift/Free/selected-source/used-marker decisions and
+  full-attack auto-use/no-fallback/Free-priority/one-fallback branches. Complete
+  suite 950/950 PASS; guarded preflight 86 PASS.
+- Clean Release/build-output/SoundBank/strict-package gate PASS. Candidate package
+  SHA-256 `e583143792982e8d02790f125bb688ef7dff107590f8d432263c20d41393b60b`;
+  DLL SHA-256 `15374279ea0a7a03c34474135da28860483c90720231c82015ec43dbad511f07`.
+- Runtime scenario `disposable-paper-cartridge-lightning-reload` is allowlisted
+  and extends the established level-11 fixture with real native Paper activation,
+  Free `AbilityData`/runtime action, exact paper consumption, loaded identity,
+  round reset, loose Swift control, Broken preservation, grit, and cleanup.
+- Runtime run IDs: pending clean candidate publication and exact-build smoke.
+- Next exact action: publish candidate; smoke and qualify Lightning; then add and
+  qualify the dedicated native `UnitAttack` full-attack fixture.

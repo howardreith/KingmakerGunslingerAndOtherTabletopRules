@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.LightningReload.Ability.Name",
                     "Lightning Reload"),
                 LocalizationService.Create("KMG.LightningReload.Ability.Description",
-                    "While you have at least 1 grit, reload one chamber of your equipped firearm as a swift action once per round without spending grit or provoking attacks of opportunity."), null);
+                    "While you have at least 1 grit, reload one chamber once per round without spending grit. This is a swift action with loose ammunition, free with matching Rapid Reload, and free when Use Paper Cartridges is active. Paper mode never falls back to loose ammunition."), null);
             result.Type = AbilityType.Extraordinary;
             result.Range = AbilityRange.Personal;
             result.CanTargetSelf = true;
@@ -106,7 +106,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.LightningReload.Feature.Name",
                     "Lightning Reload"),
                 LocalizationService.Create("KMG.LightningReload.Feature.Description",
-                    "While grit remains, reload one equipped firearm chamber as a swift action once per round."), null);
+                    "While grit remains, reload one equipped firearm chamber once per round as a swift or free action according to Rapid Reload and the selected ammunition."), null);
             return result;
         }
 

@@ -419,6 +419,7 @@
     <Compile Include="Deeds\ExpertLoadingRuntime.cs" />
     <Compile Include="Blueprints\ExpertLoadingBlueprints.cs" />
     <Compile Include="Deeds\LightningReloadRequest.cs" />
+    <Compile Include="Deeds\LightningReloadAction.cs" />
     <Compile Include="Deeds\LightningReloadStatus.cs" />
     <Compile Include="Deeds\LightningReloadDecision.cs" />
     <Compile Include="Deeds\LightningReloadService.cs" />
@@ -426,6 +427,7 @@
     <Compile Include="Deeds\LightningReloadRoundMarker.cs" />
     <Compile Include="Deeds\LightningReloadRuntime.cs" />
     <Compile Include="Deeds\LightningReloadAbilityLogic.cs" />
+    <Compile Include="Deeds\LightningReloadPresentationPatches.cs" />
     <Compile Include="Blueprints\LightningReloadBlueprints.cs" />
     <Compile Include="Deeds\EvasiveRequest.cs" />
     <Compile Include="Deeds\EvasiveDecision.cs" />

@@ -121,7 +121,10 @@ namespace KingmakerGunslinger.Firing
                         new Kingmaker.Utility.TargetWrapper(executor));
                     lock (PendingGate)
                         Pending[command] = new PendingAttack(executor, target,
-                            firearmWeapon: ResolveExactWeapon(executor));
+                            firearmWeapon: ResolveExactWeapon(executor),
+                            paperMode: PaperCartridgeModeRuntime.IsActive(
+                                executor.Descriptor,
+                                BlueprintBootstrap.PaperCartridgeMode.Marker));
                     result = command;
                 }
             }
@@ -189,6 +192,8 @@ namespace KingmakerGunslinger.Firing
                 !ExactEquippedFirearmResolver.TryResolve(executor.Descriptor,
                     out resolved, out reason) ||
                 !ReferenceEquals(resolved.Weapon, pending.FirearmWeapon) ||
+                PaperCartridgeModeRuntime.IsActive(executor.Descriptor,
+                    BlueprintBootstrap.PaperCartridgeMode.Marker) != pending.PaperMode ||
                 resolved.Firearm.Repository.State.IsEmpty ||
                 resolved.EffectiveCondition == Firearms.FirearmCondition.Wrecked ||
                 !TurnBasedAllowsStandardAttack())
@@ -229,16 +234,18 @@ namespace KingmakerGunslinger.Firing
         private sealed class PendingAttack
         {
             internal PendingAttack(UnitEntityData executor, UnitEntityData target,
-                Kingmaker.Items.ItemEntityWeapon firearmWeapon)
+                Kingmaker.Items.ItemEntityWeapon firearmWeapon, bool paperMode)
             {
                 Executor = executor;
                 Target = target;
                 FirearmWeapon = firearmWeapon;
+                PaperMode = paperMode;
             }
 
             internal UnitEntityData Executor { get; private set; }
             internal UnitEntityData Target { get; private set; }
             internal Kingmaker.Items.ItemEntityWeapon FirearmWeapon { get; private set; }
+            internal bool PaperMode { get; private set; }
         }
     }
 }

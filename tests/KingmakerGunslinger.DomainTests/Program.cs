@@ -38,6 +38,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("paper-reload.state-failure-rollback", PaperCartridgeFoundationTests.PaperStateFailureRestoresInventory),
             Case("paper-reload.mixed-identity-rejected", PaperCartridgeFoundationTests.MixedIdentityRejected),
             Case("paper-mode.source-contract", PaperCartridgeFoundationTests.ModeSourceContract),
+            Case("paper-lightning.dynamic-actions", PaperCartridgeFoundationTests.LightningReloadDynamicActions),
+            Case("paper-full-attack.reload-branches", PaperCartridgeFoundationTests.FullAttackReloadBranches),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),

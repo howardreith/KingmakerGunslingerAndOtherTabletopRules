@@ -4,6 +4,7 @@ using System.IO;
 using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -250,6 +251,57 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(localBuild.Contains("{ 43 } else { 41 }") &&
                 packager.Contains("choices=(41, 43)"),
                 "deterministic package counts include the project-owned Paper Cartridge icon");
+        }
+
+        internal static void LightningReloadDynamicActions()
+        {
+            var service = new LightningReloadService();
+            LightningReloadDecision swift = service.Evaluate(new LightningReloadRequest(
+                true, FirearmCondition.Normal, 0, 1, 1, true, false,
+                LightningReloadAction.Swift));
+            LightningReloadDecision free = service.Evaluate(new LightningReloadRequest(
+                true, FirearmCondition.Normal, 0, 1, 1, true, false,
+                LightningReloadAction.Free));
+            Assertions.True(swift.IsAvailable, "loose Lightning available");
+            Assertions.Equal(LightningReloadAction.Swift, swift.Action,
+                "loose/no Rapid is Swift");
+            Assertions.Equal(LightningReloadAction.Free, free.Action,
+                "paper or matching Rapid is Free");
+            LightningReloadDecision missing = service.Evaluate(new LightningReloadRequest(
+                true, FirearmCondition.Normal, 0, 1, 1, false, false,
+                LightningReloadAction.Free));
+            Assertions.False(missing.IsAvailable, "selected source missing");
+            Assertions.Equal(LightningReloadAction.Unknown, missing.Action,
+                "unavailable action fails closed");
+            LightningReloadDecision used = service.Evaluate(new LightningReloadRequest(
+                true, FirearmCondition.Normal, 0, 1, 1, true, true,
+                LightningReloadAction.Free));
+            Assertions.False(used.IsAvailable, "one use per round");
+        }
+
+        internal static void FullAttackReloadBranches()
+        {
+            FirearmState empty = FirearmState.CreateEmpty();
+            Assertions.Equal(FullAttackReloadDecision.EndFullAttack,
+                FullAttackAutoReloadPolicy.Evaluate(true, true, true, true, true,
+                    false, true, EffectiveReloadAction.Free, false, empty,
+                    FirearmCondition.Normal), "auto-use off ends attack");
+            Assertions.Equal(FullAttackReloadDecision.EndFullAttack,
+                FullAttackAutoReloadPolicy.Evaluate(true, true, true, true, true,
+                    true, false, EffectiveReloadAction.Free, true, empty,
+                    FirearmCondition.Normal), "missing selected ammunition ends attack");
+            Assertions.Equal(FullAttackReloadDecision.Reload,
+                FullAttackAutoReloadPolicy.Evaluate(true, true, true, true, true,
+                    true, true, EffectiveReloadAction.Free, true, empty,
+                    FirearmCondition.Normal), "normal Free takes priority");
+            Assertions.Equal(FullAttackReloadDecision.LightningReload,
+                FullAttackAutoReloadPolicy.Evaluate(true, true, true, true, true,
+                    true, true, EffectiveReloadAction.Move, true, empty,
+                    FirearmCondition.Normal), "one free Lightning fallback");
+            Assertions.Equal(FullAttackReloadDecision.EndFullAttack,
+                FullAttackAutoReloadPolicy.Evaluate(true, true, true, true, true,
+                    true, true, EffectiveReloadAction.Move, false, empty,
+                    FirearmCondition.Normal), "non-free plan without fallback ends");
         }
 
         private static EffectiveReloadAction Action(FirearmDefinition definition,

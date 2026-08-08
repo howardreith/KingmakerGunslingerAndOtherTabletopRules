@@ -8,8 +8,10 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -84,13 +86,38 @@ namespace KingmakerGunslinger.Firing
                 if (!exactEquipped) return true;
                 recognizedFirearm = true;
 
-                EffectiveReloadAction action = ReloadActionEconomy.Evaluate(
-                    firearm.Definition,
-                    FastMusketRuntime.IsAvailable(
-                        __instance.Executor.Descriptor),
-                    RapidReloadRuntime.HasMatchingChoice(
+                FirearmState currentState = firearm.Firearm.Repository.State;
+                ReloadTestMusketAvailability availability = null;
+                EffectiveReloadAction action = EffectiveReloadAction.Unknown;
+                bool normalAvailable = !currentState.IsEmpty;
+                if (currentState.IsEmpty)
+                {
+                    availability = ReloadTestMusketRuntime.Evaluate(
+                        __instance.Executor.Descriptor, firearm.Weapon.Blueprint,
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                        BlueprintBootstrap.BasicAmmunition.LeadBall);
+                    normalAvailable = availability.IsAvailable;
+                    if (availability.Plan != null) action = availability.Plan.Action;
+                }
+                bool exactAutoUse = __instance.Executor.AutoUseAbility != null &&
+                    ReferenceEquals(__instance.Executor.AutoUseAbility.Blueprint,
+                        BlueprintBootstrap.ReloadTestMusketAbility);
+                LightningReloadBlueprintSet lightning =
+                    BlueprintBootstrap.GunslingerClass.LightningReload;
+                bool lightningGranted = lightning != null &&
+                    __instance.Executor.Descriptor.Abilities.GetAbility(
+                        lightning.Ability) != null;
+                LightningReloadAvailability lightningAvailability =
+                    currentState.IsEmpty && normalAvailable &&
+                    action != EffectiveReloadAction.Free && lightningGranted
+                    ? LightningReloadRuntime.Evaluate(
                         __instance.Executor.Descriptor,
-                        firearm.Definition.Kind));
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                        BlueprintBootstrap.BasicAmmunition.LeadBall,
+                        lightning.UsedMarker) : null;
+                bool freeLightning = lightningAvailability != null &&
+                    lightningAvailability.Decision.IsAvailable &&
+                    lightningAvailability.Decision.Action == LightningReloadAction.Free;
                 bool targetAlive = __instance.Target != null &&
                     __instance.Target.Descriptor != null &&
                     __instance.Target.Descriptor.State != null &&
@@ -102,8 +129,11 @@ namespace KingmakerGunslinger.Firing
                         planned != null,
                         sameWeapon,
                         targetAlive,
+                        exactAutoUse,
+                        normalAvailable,
                         action,
-                        firearm.Firearm.Repository.State,
+                        freeLightning,
+                        currentState,
                         firearm.EffectiveCondition);
 
                 if (decision == FullAttackReloadDecision.None ||
@@ -122,12 +152,6 @@ namespace KingmakerGunslinger.Firing
                 }
 
                 Interlocked.Increment(ref _attempted);
-                ReloadTestMusketAvailability availability =
-                    ReloadTestMusketRuntime.Evaluate(
-                        __instance.Executor.Descriptor,
-                        firearm.Weapon.Blueprint,
-                        BlueprintBootstrap.BasicAmmunition.BlackPowder,
-                        BlueprintBootstrap.BasicAmmunition.LeadBall);
                 if (!availability.IsAvailable)
                 {
                     Interlocked.Increment(ref _unavailable);
@@ -139,11 +163,17 @@ namespace KingmakerGunslinger.Firing
                     return false;
                 }
 
-                FirearmReloadResult result = ReloadTestMusketRuntime.Execute(
-                    __instance.Executor.Descriptor,
-                    firearm.Weapon.Blueprint,
-                    BlueprintBootstrap.BasicAmmunition.BlackPowder,
-                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                FirearmReloadResult result = decision ==
+                    FullAttackReloadDecision.LightningReload
+                    ? LightningReloadRuntime.ExecuteInline(__instance.Executor,
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                        BlueprintBootstrap.BasicAmmunition.LeadBall,
+                        lightning.UsedMarker)
+                    : ReloadTestMusketRuntime.Execute(
+                        __instance.Executor.Descriptor,
+                        firearm.Weapon.Blueprint,
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                        BlueprintBootstrap.BasicAmmunition.LeadBall);
                 if (!result.Succeeded)
                     throw new InvalidOperationException(
                         "Free-action full-attack reload was rejected: " + result);
@@ -154,6 +184,8 @@ namespace KingmakerGunslinger.Firing
                     ";kind=" + firearm.Definition.Kind +
                     ";rounds=" + result.RoundsLoaded +
                     ";action=" + action +
+                    ";source=" + (decision == FullAttackReloadDecision.LightningReload
+                        ? "lightning" : "normal") +
                     ";nextAttackContinues=true");
                 return true;
             }

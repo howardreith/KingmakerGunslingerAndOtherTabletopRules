@@ -125,6 +125,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-expert-loading";
         internal const string DisposableGunslingerLightningReload =
             "disposable-gunslinger-lightning-reload";
+        internal const string DisposablePaperCartridgeLightningReload =
+            "disposable-paper-cartridge-lightning-reload";
         internal const string DisposableGunslingerEvasive =
             "disposable-gunslinger-evasive";
         internal const string ObserveEvasiveNativeFeatures =
@@ -239,6 +241,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerBleedingWound,
                 DisposableGunslingerExpertLoading,
                 DisposableGunslingerLightningReload,
+                DisposablePaperCartridgeLightningReload,
                 DisposableGunslingerEvasive,
                 ObserveEvasiveNativeFeatures,
                 ObserveMenacingShotNativeFear,
