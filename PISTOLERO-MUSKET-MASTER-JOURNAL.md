@@ -382,3 +382,26 @@ proficiency blueprint facts before wiring full archetype replacement rows.
 
 Commit/publish this evidence record, then add stable Pistol/Musket Training facts
 and visible scoped-proficiency grants before constructing the exact archetypes.
+
+## 2026-08-08 - Rankable archetype training facts
+
+- Added stable four-rank Pistol Training and Musket Training feature identities.
+  Each uses the authoritative shared event component and carries exact family,
+  rank-scaling, and Broken-misfire player text.
+- Registered both transactionally before class/archetype wiring and configured
+  the shared runtime service with their exact facts. Existing Mysterious Stranger
+  validation now scopes its historical 17-asset assertion to its own identities.
+- Bootstrap count is 211 active; manifest ledger is 212 stable IDs including one
+  reserved. No established GUID changed.
+- Complete suite remains 926/926; exact-reference Release, build-output,
+  SoundBank, package creation, and strict validation pass.
+- Candidate package SHA-256:
+  `EC15842222B00C37AECEC00DDDA2B6FE302B41F1210BBC5B85690A0E910C19CC`;
+  DLL SHA-256:
+  `EC7F7EAB030159780265997CB497CAFA4EB2FD4A0CE3FBA7313066F298E48D91`.
+
+## Exact next action
+
+Commit/publish the rankable training facts, then create visible Pistolero/Musket
+Master proficiency features from the exact native simple/martial/light facts and
+the matching scoped firearm fact before archetype progression wiring.

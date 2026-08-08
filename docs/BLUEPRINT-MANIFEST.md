@@ -2,7 +2,7 @@
 
 ## Sprint 55 status
 
-The append-only contract contains 210 stable identifiers: 209 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append one-handed/two-handed scoped firearm-proficiency facts and Exotic Weapon Proficiency (Firearms) without changing any established GUID.
+The append-only contract contains 212 stable identifiers: 211 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append scoped firearm-proficiency facts, Exotic Weapon Proficiency (Firearms), and rankable Pistol/Musket Training facts without changing any established GUID.
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.

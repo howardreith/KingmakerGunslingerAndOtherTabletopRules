@@ -134,6 +134,7 @@
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmScopedProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmTrainingBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProjectileBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />

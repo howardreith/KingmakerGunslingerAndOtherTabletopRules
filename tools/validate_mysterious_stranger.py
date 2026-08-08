@@ -17,7 +17,9 @@ def validate(root: Path) -> None:
                   "PhysicalDamage", "Modifier = 0.5f", "DeadShotRuntime"]:
         if token not in mechanics: raise AssertionError(f"Mechanics lack {token}")
     ledger=json.loads((root/"blueprints/blueprints.json").read_text(encoding="utf-8"))
-    entries=[e for e in ledger["entries"] if e["symbol"].startswith("KMG.Archetypes.")]
+    entries=[e for e in ledger["entries"] if e["symbol"].startswith("KMG.Archetypes.")
+             and e["symbol"] not in {"KMG.Archetypes.PistolTraining",
+                                      "KMG.Archetypes.MusketTraining"}]
     if len(entries)!=17: raise AssertionError(f"Expected 17 archetype assets, found {len(entries)}")
     if len({e["guid"] for e in ledger["entries"]})!=len(ledger["entries"]):
         raise AssertionError("Blueprint GUIDs are not unique")

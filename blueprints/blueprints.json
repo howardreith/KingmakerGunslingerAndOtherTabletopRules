@@ -37,6 +37,12 @@
       "symbol": "KMG.Feats.ExoticWeaponProficiencyFirearms", "guid": "b1a58cfdbf004f04ade7765373484c29", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Player-facing combat feat granting the preserved full firearm-proficiency fact."
     },
     {
+      "symbol": "KMG.Archetypes.PistolTraining", "guid": "f375ad103ba74c0a8681088c67543bf8", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Four-rank one-handed Pistol Training feature."
+    },
+    {
+      "symbol": "KMG.Archetypes.MusketTraining", "guid": "283b26ca325c499cbe34299994519b26", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Four-rank two-handed Musket Training feature."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",
