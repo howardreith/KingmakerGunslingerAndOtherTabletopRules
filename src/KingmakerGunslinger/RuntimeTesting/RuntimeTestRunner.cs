@@ -9245,35 +9245,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData first = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData second = null;
+            Kingmaker.EntitySystem.SceneEntitiesState disposableScene = null;
             ItemEntityWeapon weapon = null;
             Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
             int targetCount = -1, registeredCount = -1;
-            bool firstRegistered = false, secondRegistered = false,
-                cleaned = false, commandConstructed = false;
+            bool cleaned = false, commandConstructed = false;
             long conditionLogsBefore = FirearmConditionCombatLog.Published;
             try
             {
-                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                Vector3 origin = new Vector3(10000f, 0f, 10000f);
+                disposableScene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Rare_Firearm_Scatter_Fixture");
+                attacker = Kingmaker.Game.Instance.EntityCreator.SpawnUnit(
+                    source, origin, Quaternion.identity, disposableScene);
                 attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 20;
                 attacker.Descriptor.Stats.Dexterity.BaseValue = 30;
-                first = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
-                second = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                first = Kingmaker.Game.Instance.EntityCreator.SpawnUnit(source,
+                    origin + new Vector3(2f, 0f, 0.3f), Quaternion.identity,
+                    disposableScene);
+                second = Kingmaker.Game.Instance.EntityCreator.SpawnUnit(source,
+                    origin + new Vector3(3f, 0f, -0.3f), Quaternion.identity,
+                    disposableScene);
                 first.Descriptor.State.Immortality.Retain();
                 second.Descriptor.State.Immortality.Retain();
-                Vector3 origin = new Vector3(10000f, 0f, 10000f);
-                SetExactProperty(attacker, "Position", origin);
-                SetExactProperty(first, "Position", origin + new Vector3(2f, 0f, 0.3f));
-                SetExactProperty(second, "Position", origin + new Vector3(3f, 0f, -0.3f));
                 weapon = new ItemEntityWeapon(blunderbuss);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
                 var combat = new Kingmaker.Controllers.Combat.UnitCombatState(attacker);
                 SetExactProperty(attacker, "CombatState", combat);
-                firstRegistered = Kingmaker.Game.Instance.State.Units.All.Add(first);
-                if (!firstRegistered) throw new InvalidOperationException(
-                    "First disposable scatter target was already registered.");
-                secondRegistered = Kingmaker.Game.Instance.State.Units.All.Add(second);
-                if (!secondRegistered) throw new InvalidOperationException(
-                    "Second disposable scatter target was already registered.");
                 registeredCount = Kingmaker.Game.Instance.State.Units.Count -
                     unitPoolBefore;
                 Kingmaker.EntitySystem.Entities.UnitEntityData[] targets =
@@ -9301,10 +9299,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
                     data, new TargetWrapper(first));
-                // Detached chargen units have no animation view, so running the
-                // command would test fixture interruption rather than player
-                // delivery. Record construction/availability separately; the
-                // transaction below remains explicitly non-acceptance evidence.
                 commandConstructed = command.CanStart && data.IsAvailable &&
                     ReferenceEquals(command.Spell.Blueprint, scatterAbility);
                 mixed = Scatter.ScatterShotRuntime.Execute(
@@ -9335,19 +9329,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
                 if (attacker != null) SetExactProperty(attacker, "CombatState", null);
-                if (secondRegistered &&
-                    !Kingmaker.Game.Instance.State.Units.All.Remove(second))
-                    throw new InvalidOperationException(
-                        "Second disposable scatter target cleanup failed.");
-                if (firstRegistered &&
-                    !Kingmaker.Game.Instance.State.Units.All.Remove(first))
-                    throw new InvalidOperationException(
-                        "First disposable scatter target cleanup failed.");
                 if (second != null) second.Descriptor.State.Immortality.ReleaseAll();
                 if (first != null) first.Descriptor.State.Immortality.ReleaseAll();
                 if (second != null) second.Dispose();
                 if (first != null) first.Dispose();
                 if (attacker != null) attacker.Dispose();
+                if (disposableScene != null) disposableScene.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     Kingmaker.Game.Instance.State.Units.Count == unitPoolBefore &&
@@ -9365,7 +9352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Published - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
-            bool transaction = registeredCount == 2 && commandConstructed &&
+            bool transaction = registeredCount == 3 && commandConstructed &&
                 mixed != null &&
                 allMisfire != null &&
                 mixed.Plan.TargetCount == 2 && mixed.After.IsEmpty &&
