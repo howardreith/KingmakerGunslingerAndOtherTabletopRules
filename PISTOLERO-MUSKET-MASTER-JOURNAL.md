@@ -285,3 +285,19 @@ Scatter Shot, and Broken-misfire callers to consume it.
 Commit and publish the shared training service, then run the existing Gun
 Training, Dead Shot, and Scatter Shot guarded scenarios against the exact commit
 before extending the central reload-action policy for Fast Musket.
+
+## 2026-08-08 - Shared training runtime evidence
+
+- Exact published commit `3abaecb42975fc9a5f334be0cf79630fe3354ae5`
+  passed three guarded fresh-process runtime regressions:
+  `20260808T0439425292781Z-disposable-gunslinger-gun-training`,
+  `20260808T0441466553851Z-disposable-gunslinger-dead-shot`, and
+  `20260808T0443494220099Z-disposable-gunslinger-scatter-shot`.
+- The exact-kind base training behavior and both centralized Broken-misfire
+  callers remain runtime-correct. All runs produced structured PASS results.
+
+## Exact next action
+
+Commit/publish this evidence record, then extend the existing central reload
+policy with Fast Musket state and the complete required Musket/Blunderbuss/Rifle
+matrix, preserving current base and Lightning Reload behavior.
