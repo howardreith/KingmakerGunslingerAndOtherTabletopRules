@@ -16,9 +16,20 @@
   tables, 26 associations, exact fixed fields and all current project counts.
 - Jhod is structurally over-shared and rejected. Merchant ownership and fixed
   loot/reference uniqueness require a bounded observer extension.
+- Extended the existing save-free vendor observer in place (no new activation
+  surface) to enumerate exact candidate native weapon enchantments and donors,
+  keyword-bounded fixed `BlueprintLoot`/`BlueprintUnitLoot` contents, areas,
+  components, and shallow direct reference owners. The code performs only
+  reads; no table, loot, inventory, UI, or save API is invoked.
+- Source qualification: repository validation PASS; complete 930/930 domain
+  suite PASS with its established authorized temp access. The initial sandboxed
+  run reproduced only the inherited audio `File.Replace` access denial.
+- Clean exact-reference Release, build-output, SoundBank, package creation, and
+  strict package validation PASS for 0.0.73. The first guarded invocation
+  correctly refused the uncommitted source state; no Kingmaker launch occurred.
 
 ## Exact next action
 
-Commit/publish this durable checkpoint; add and run a guarded read-only native
-enchantment, merchant-owner, loot-content and reference-uniqueness observer;
-complete and publish the inventory before production blueprint registration.
+Commit/publish the qualified observer, run `observe-vendor-table-contracts` on
+the clean commit, curate exact enchantment/merchant/loot evidence, and publish
+the completed inventory before production blueprint registration.

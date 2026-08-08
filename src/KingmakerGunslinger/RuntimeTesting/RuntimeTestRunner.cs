@@ -14,6 +14,7 @@ using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
@@ -3738,6 +3739,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var capitalEntries = new List<string>();
             var capitalReferenceContracts = new HashSet<string>(StringComparer.Ordinal);
             var fixedEntryPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
+            var enchantmentRecords = new List<string>();
+            var lootCandidateRecords = new List<string>();
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
             int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
@@ -3765,6 +3768,59 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (table == null ? "<null>" : table.name + ":" +
                             table.AssetGuid));
                 }
+            }
+            BlueprintScriptableObject[] allBlueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
+                .OfType<BlueprintWeaponEnchantment>()
+                .Where(value => IsRareFirearmNativeEnchantmentCandidate(value.name))
+                .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
+            FieldInfo enchantmentsField = typeof(BlueprintItemWeapon).GetField(
+                "m_Enchantments", Flags);
+            foreach (BlueprintWeaponEnchantment enchantment in nativeEnchantments)
+            {
+                string[] donors = enchantmentsField == null ? Array.Empty<string>() :
+                    allBlueprints.OfType<BlueprintItemWeapon>().Where(item =>
+                    {
+                        var values = enchantmentsField.GetValue(item) as
+                            BlueprintWeaponEnchantment[];
+                        return values != null && values.Any(value =>
+                            ReferenceEquals(value, enchantment));
+                    }).OrderBy(item => item.name, StringComparer.Ordinal)
+                    .Take(12).Select(item => item.name + ":" + item.AssetGuid)
+                    .ToArray();
+                enchantmentRecords.Add("enchantment=" + enchantment.name + ":" +
+                    enchantment.AssetGuid + ";display=" + enchantment.Name +
+                    ";cost=" + enchantment.EnchantmentCost + ";components=" +
+                    DescribeBlueprintComponents(enchantment) + ";donors=" +
+                    string.Join(",", donors));
+            }
+            BlueprintScriptableObject[] lootCandidates = allBlueprints.Where(value =>
+                (value is BlueprintLoot || value is BlueprintUnitLoot) &&
+                IsRareFirearmLootCandidate(value)).OrderBy(value => value.name,
+                    StringComparer.Ordinal).ThenBy(value => value.AssetGuid,
+                    StringComparer.Ordinal).ToArray();
+            foreach (BlueprintScriptableObject candidate in lootCandidates)
+            {
+                var loot = candidate as BlueprintLoot;
+                string fixedItems = loot == null ? DescribeFixedLootComponents(candidate) :
+                    string.Join(",", (loot.Items ?? Array.Empty<LootEntry>())
+                        .Where(entry => entry != null).Select(entry =>
+                            (entry.Item == null ? "<null>" : entry.Item.name + ":" +
+                                entry.Item.AssetGuid) + "*" + entry.Count).ToArray());
+                string area = loot == null || loot.Area == null ? "<none>" :
+                    loot.Area.name + ":" + loot.Area.AssetGuid;
+                string container = loot == null ? "<unit-loot>" :
+                    loot.ContainerName ?? string.Empty;
+                string[] references = FindDirectBlueprintReferences(allBlueprints,
+                    candidate).Take(20).ToArray();
+                lootCandidateRecords.Add("loot=" + candidate.GetType().FullName +
+                    ":" + candidate.name + ":" + candidate.AssetGuid + ";area=" +
+                    area + ";container=" + container + ";setting=" +
+                    (loot == null ? "<unit-loot>" : loot.Setting.ToString()) +
+                    ";contents=" + fixedItems + ";components=" +
+                    DescribeBlueprintComponents(candidate) + ";references=" +
+                    references.Length + ":" + string.Join(",", references));
             }
             foreach (BlueprintUnit unit in BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintUnit>().OrderBy(value => value.AssetGuid,
@@ -3948,6 +4004,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparer.Ordinal).Select(value => value.Key + ":frequency=" +
                             value.Value).ToArray()) + ";records=" +
                     string.Join(" | ", records.ToArray());
+            observed += ";nativeEnchantments=" + string.Join(" | ",
+                enchantmentRecords.ToArray()) + ";lootCandidates=" + string.Join(
+                    " | ", lootCandidateRecords.ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("vendor-table-catalog",
@@ -4006,6 +4065,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,
                     "scenario contains no assignment, AddLoot, GetTable, shop, or save call"),
+                Assertion("rare-firearm-native-enchantment-forensics",
+                    "installed enhancement +1/+2/+4/+5, Seeking, Thundering, and Fey Bane candidates with exact contracts",
+                    string.Join(" | ", enchantmentRecords.ToArray()),
+                    enchantmentsField != null && enchantmentRecords.Count > 0,
+                    "read-only BlueprintWeaponEnchantment and donor item graph"),
+                Assertion("rare-firearm-loot-candidate-forensics",
+                    "nonempty exact fixed campaign loot candidate inventory",
+                    string.Join(" | ", lootCandidateRecords.ToArray()),
+                    lootCandidateRecords.Count > 0,
+                    "read-only BlueprintLoot/BlueprintUnitLoot graph and direct references"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -4014,6 +4083,84 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private static bool IsRareFirearmNativeEnchantmentCandidate(string name)
+        {
+            string value = name == null ? string.Empty : name.ToLowerInvariant();
+            return value.Contains("enhancement1") || value.Contains("enhancement2") ||
+                value.Contains("enhancement4") || value.Contains("enhancement5") ||
+                value.Contains("seeking") || value.Contains("thundering") ||
+                (value.Contains("fey") && value.Contains("bane"));
+        }
+
+        private static bool IsRareFirearmLootCandidate(BlueprintScriptableObject value)
+        {
+            var loot = value as BlueprintLoot;
+            string text = (value.name ?? string.Empty) + " " +
+                (loot == null ? string.Empty : (loot.ContainerName ?? string.Empty) +
+                    " " + (loot.Area == null ? string.Empty : loot.Area.name));
+            string lower = text.ToLowerInvariant();
+            string[] terms = { "pitax", "irovetti", "palace", "armory", "treasur",
+                "duel", "officer", "noble", "cache", "academy", "bard", "opera",
+                "houseattheedge", "house_at_the_edge", "hateot", "finaldungeon",
+                "firstworld", "lanternking", "worldend" };
+            return terms.Any(lower.Contains);
+        }
+
+        private static string DescribeFixedLootComponents(
+            BlueprintScriptableObject blueprint)
+        {
+            return string.Join(",", (blueprint.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                .Select(component =>
+                {
+                    BlueprintItem item = CapitalVendorBlueprints.ReadItem(component);
+                    return (item == null ? "<null>" : item.name + ":" +
+                        item.AssetGuid) + "*" + CapitalVendorBlueprints.ReadCount(component);
+                }).ToArray());
+        }
+
+        private static IEnumerable<string> FindDirectBlueprintReferences(
+            BlueprintScriptableObject[] owners, BlueprintScriptableObject target)
+        {
+            foreach (BlueprintScriptableObject owner in owners)
+            {
+                int count = CountDirectReferences(owner, target);
+                foreach (BlueprintComponent component in owner.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                    count += CountDirectReferences(component, target);
+                if (count > 0)
+                    yield return owner.GetType().FullName + ":" + owner.name + ":" +
+                        owner.AssetGuid + "*" + count;
+            }
+        }
+
+        private static int CountDirectReferences(object owner, object target)
+        {
+            if (owner == null || target == null) return 0;
+            int count = 0;
+            for (Type type = owner.GetType(); type != null; type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    object value;
+                    try { value = field.GetValue(owner); }
+                    catch { continue; }
+                    if (ReferenceEquals(value, target)) count++;
+                    var enumerable = value as IEnumerable;
+                    if (enumerable == null || value is string) continue;
+                    try
+                    {
+                        foreach (object element in enumerable)
+                            if (ReferenceEquals(element, target)) count++;
+                    }
+                    catch { }
+                }
+            }
+            return count;
         }
 
         private RuntimeTestResult RunProductionFirearmFallbackObservation()

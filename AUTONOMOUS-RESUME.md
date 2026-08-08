@@ -6,9 +6,10 @@
   `1c570bd4211d69c5c29f6af46a870146adb1645b`, version 0.0.73.
 - Durable records exist; guarded read-only vendor run
   `20260808T1720275373614Z-observe-vendor-table-contracts` passed.
-- Next: commit/publish this checkpoint, then add and run bounded read-only native
-  enchantment/merchant/loot/reference forensics and publish completed inventory
-  before production registration.
+- Observer source is qualified (validation, 930/930, clean Release/SoundBank/
+  strict package). Next: commit/publish it, run `observe-vendor-table-contracts`
+  on the clean commit, curate exact enchantment/merchant/loot evidence, and
+  publish the completed inventory before production registration.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
   the approved helper and verify exact remote SHA after every commit.
 
