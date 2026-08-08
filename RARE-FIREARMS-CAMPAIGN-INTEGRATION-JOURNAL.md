@@ -47,9 +47,18 @@
   vendor owner graph did not identify Smith/general table owners. A final
   bounded forensics refinement now also matches enchantment display names and
   indexes direct references for all 43 vendor tables.
+- Final vendor-reference run
+  `20260808T1739377557378Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1739377910467Z-f45ce288a1504610a85c458eb6de1e26`, passed on exact
+  `9ba25bd`. It proved `SmithVendorTable` is directly referenced once by each of
+  `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith`; this capital
+  blacksmith table is selected. No enchantment internal or display name matched
+  Seeking. A last materially distinct component-type scan is being added for
+  concealment mechanics before applying the nonoptional-property hard stop.
 
 ## Exact next action
 
-Qualify, commit and publish the display-name/vendor-reference refinement; run
-it on the clean commit; select the exact capital merchant and Seeking contract;
-then publish the completed inventory before production blueprint registration.
+Qualify, commit and publish the component-type Seeking scan; run it on the clean
+commit. If no native concealment enchantment exists, record the exact required-
+property absence and stop under the mission hard-stop contract; otherwise
+complete and publish the inventory before production blueprint registration.

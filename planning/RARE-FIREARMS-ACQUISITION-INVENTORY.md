@@ -10,7 +10,7 @@ Guarded read-only baseline run
 |---|---|---|---|---|
 | afa2c7f292b8e1c4d9c835f0e8047dd3 | BlueprintSharedVendorTable | C11_JhodVendorTable; 61 fixed entries after current ten-entry publication | Base campaign; shared by Capital_Jhod and many priest/Jhod variants | Reject future firearm stock |
 | f720440559fc00949900bfa1575196ac | BlueprintSharedVendorTable | C11_OlegVendorTable; 84 fixed entries | Base campaign; exact ownership pending | General-merchant candidate |
-| 7de959347266092448d8a72089ef9778 | BlueprintSharedVendorTable | SmithVendorTable; 16 fixed entries | Exact campaign ownership pending | Preferred blacksmith candidate |
+| 7de959347266092448d8a72089ef9778 | BlueprintSharedVendorTable | SmithVendorTable; 16 fixed entries | Base capital; exact owners `CapitalOwlbearAttack_Blacksmith` (`ba7a7a2842d072046be55b3f9034d04e`) and `VerdelBlacksmith` (`478862ab88b8ef24385cb386c1644dc2`), one direct reference each | Selected capital blacksmith table |
 | 03139ca71b2f2a34bae0a8a11a342fe4 | BlueprintSharedVendorTable | C2_VendorTableLarge; 52 fixed entries | Exact ownership pending | Candidate |
 | b3bc1bb9f4a59f3438edc505e0f3b407 | BlueprintSharedVendorTable | C3_VendorTableLarge; 50 fixed entries | Exact ownership pending | Candidate |
 | fc01b45fee3606749a21d9612c5629a6 | BlueprintSharedVendorTable | C4_VendorTableLarge; 50 fixed entries | Exact ownership pending | Candidate |
@@ -61,3 +61,11 @@ The same run resolved exact installed authorities: Enhancement +1
 Thundering `690e762f7704e1f4aa1ac69ef0ce6a96`, cost 1, uses one
 `WeaponEnergyDamageDice` and has multiple native weapon donors. The exact
 Seeking identity/component remains pending a display-name/component-aware pass.
+
+Final vendor-reference PASS
+`20260808T1739377557378Z-observe-vendor-table-contracts`, runtime ID
+`20260808T1739377910467Z-f45ce288a1504610a85c458eb6de1e26`, proved the
+selected `SmithVendorTable` is owned only by the two exact capital blacksmith
+unit blueprints above. Oleg is rejected as an early trading-post table and the
+chapter-generic large tables exposed no registered direct owner. The selected
+smith table is the narrowest plausible established capital arms merchant.

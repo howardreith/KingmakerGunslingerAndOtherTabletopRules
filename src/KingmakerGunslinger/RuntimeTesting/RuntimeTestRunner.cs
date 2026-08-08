@@ -4104,7 +4104,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             string value = ((enchantment == null ? string.Empty : enchantment.name) +
                 " " + (enchantment == null ? string.Empty : enchantment.Name))
                 .ToLowerInvariant();
-            return value.Contains("enhancement1") || value.Contains("enhancement2") ||
+            bool concealmentComponent = enchantment != null &&
+                (enchantment.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Any(component => component != null &&
+                    (component.GetType().FullName ?? string.Empty).IndexOf(
+                        "conceal", StringComparison.OrdinalIgnoreCase) >= 0);
+            return concealmentComponent || value.Contains("enhancement1") ||
+                value.Contains("enhancement2") ||
                 value.Contains("enhancement4") || value.Contains("enhancement5") ||
                 value.Contains("seeking") || value.Contains("thundering") ||
                 (value.Contains("fey") && value.Contains("bane"));
