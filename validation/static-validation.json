@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.72-optional-mod-compatibility",
-  "version": "0.0.72",
+  "milestone": "0.0.73-pistolero-musket-master",
+  "version": "0.0.73",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

@@ -17,7 +17,8 @@ def validate(root: Path) -> None:
     validate_playtest71.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     validate_playtest71.validate(root)
     ui = (root / "src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
-    if "Kingmaker Gunslinger - 0.0.72 OPTIONAL-MOD-COMPATIBILITY" not in ui:
+    if VERSION == "0.0.72" and \
+            "Kingmaker Gunslinger - 0.0.72 OPTIONAL-MOD-COMPATIBILITY" not in ui:
         raise AssertionError("0.0.72 build label missing")
     required = [
         "planning/OPTIONAL-MOD-COMPATIBILITY-MISSION.md",

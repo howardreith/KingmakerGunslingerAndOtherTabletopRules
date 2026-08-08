@@ -1130,3 +1130,33 @@ Derive and apply the next patch-version transaction, updating Info/assembly
 identity plus the compatibility schema and every exact package pin without
 changing profile identities or historical evidence. Run the complete clean
 gate, commit/publish, then begin the required exact-profile runtime matrix.
+
+## 2026-08-08 - Version 0.0.73 and exact-profile transaction
+
+- Advanced all active version surfaces from 0.0.72 to 0.0.73 with
+  informational identity `0.0.73-pistolero-musket-master` and added the
+  version-aware archetype validator while preserving the historical 0.0.72
+  validator.
+- Updated the profile schema constant and all nine exact package pins to
+  `KingmakerGunslinger-0.0.73-local-runtime.zip`; preserved every profile ID,
+  mod key, UMM identity, disposition, and historical note.
+- Added class, presentation, scoped-feat, Pistolero, and reconciliation
+  scenarios to runtime-capable profiles. Added the working-save Musket Master
+  transaction only to the standalone and qualified-combined profiles where
+  working-save execution is permitted.
+- Repository validation, 930/930 tests, clean Release, build-output,
+  SoundBank, strict complete package, exact local-runtime package, all-nine
+  profile resolution dry-runs, transaction restoration fixture, and observer
+  wrapper tests pass.
+- Local-runtime package SHA-256
+  `506CBF117B4591A46FDBC1E8A122242DB7D3BFA4D8ABF78C9563786D2A57F6F8`;
+  DLL SHA-256
+  `7DE2A590B70B4C3BCBD4BED2A19C6A91CA7D398D26978EB290BF8732D682564B`.
+
+## Exact next action
+
+Commit/publish the atomic 0.0.73 version/profile transaction, then run the
+committed `gunslinger-only` profile matrix through the sentinel-owned wrapper,
+requiring exact Mods/SoundBank restoration before proceeding to Arms & Armor,
+Toggle Custom Soundpacks, qualified combined, and the one bounded Call of the
+Wild sequence.

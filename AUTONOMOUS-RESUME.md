@@ -1207,3 +1207,11 @@ Reconciliation is now runtime-qualified on exact `e47bf17` in
 respec transitions all passed with exact external rollback. The next action is
 the bounded installed-code base-starter-choice investigation, followed by the
 version/profile transaction and final qualification matrix.
+
+The optional base starter was safely deferred after exact installed-code
+inspection. The 0.0.73 version/profile transaction now passes the full 930-test
+build/package gate and all profile fixture/restoration tests; its local-runtime
+package/DLL hashes are `506CBF11...57F6F8` / `7DE2A590...2564B`. Commit and
+publish this transaction, then execute the required exact-profile matrices in
+the order standalone, Arms & Armor, Toggle Custom Soundpacks, qualified
+combined, and one bounded Call of the Wild sequence.
