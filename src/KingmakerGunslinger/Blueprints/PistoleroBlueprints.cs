@@ -145,7 +145,6 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_UpCloseAndDeadly_Armed";
-            result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<
                 UpCloseAndDeadlyAttackHandler>();

@@ -52,8 +52,10 @@ namespace KingmakerGunslinger.Archetypes
                 !IsAvailableFor(context.Ability))
                 throw new InvalidOperationException(
                     "Up Close and Deadly prerequisites changed before execution.");
-            if (context.Caster.Descriptor.Buffs.AddBuff(ArmedMarker, context,
-                    null) == null)
+            context.Caster.Descriptor.Buffs.AddBuff(ArmedMarker, context,
+                TimeSpan.FromSeconds(6d));
+            if (!context.Caster.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(
+                    value => ReferenceEquals(value.Blueprint, ArmedMarker)))
                 throw new InvalidOperationException(
                     "Up Close and Deadly armed marker was rejected.");
             yield return new AbilityDeliveryTarget(target);
@@ -63,7 +65,7 @@ namespace KingmakerGunslinger.Archetypes
     }
 
     public sealed class UpCloseAndDeadlyAttackHandler :
-        RuleInitiatorLogicComponent<RuleAttackWithWeapon>, ITickEachRound
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
     {
         private static readonly ConditionalWeakTable<RuleAttackWithWeapon, object>
             ConsumedAttacks = new ConditionalWeakTable<RuleAttackWithWeapon, object>();
@@ -107,14 +109,26 @@ namespace KingmakerGunslinger.Archetypes
                     UpCloseAndDeadlyPolicy.FixedGritCost);
                 try
                 {
-                    var packet = new PhysicalDamage(
-                        new DiceFormula(decision.Dice, DiceType.D6),
-                        PhysicalDamageForm.Piercing);
+                    BaseDamage packet;
+                    if (decision.Modifier < 1f)
+                    {
+                        int fullRoll = 0;
+                        for (int index = 0; index < decision.Dice; index++)
+                            fullRoll += RulebookEvent.Dice.D6;
+                        packet = new DirectDamage(
+                            new DiceFormula(0, DiceType.D6), fullRoll / 2);
+                    }
+                    else
+                    {
+                        packet = new PhysicalDamage(
+                            new DiceFormula(decision.Dice, DiceType.D6),
+                            PhysicalDamageForm.Piercing);
+                    }
                     var damage = new RuleDealDamage(evt.Initiator, evt.Target,
                         new DamageBundle(evt.Weapon,
                             evt.WeaponStats.WeaponSize, packet))
                     {
-                        Modifier = decision.Modifier,
+                        Modifier = 1f,
                         // This isolated packet is itself the deed's precision
                         // damage; suppress native sneak/precision discovery so
                         // the independent event cannot add another source.
@@ -140,10 +154,5 @@ namespace KingmakerGunslinger.Archetypes
             }
         }
 
-        public void OnNewRound()
-        {
-            if (Owner != null && Owner.Buffs != null && Fact != null)
-                Owner.Buffs.RemoveFact(Fact);
-        }
     }
 }

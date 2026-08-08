@@ -46,8 +46,10 @@ namespace KingmakerGunslinger.Archetypes
                 !IsAvailableFor(context.Ability))
                 throw new InvalidOperationException(
                     "Steady Aim prerequisites changed before execution.");
-            if (context.Caster.Descriptor.Buffs.AddBuff(ArmedMarker, context,
-                    null) == null)
+            context.Caster.Descriptor.Buffs.AddBuff(ArmedMarker, context,
+                TimeSpan.FromSeconds(6d));
+            if (!context.Caster.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(
+                    value => ReferenceEquals(value.Blueprint, ArmedMarker)))
                 throw new InvalidOperationException(
                     "Steady Aim armed marker was rejected.");
             yield return new AbilityDeliveryTarget(target);
@@ -57,7 +59,7 @@ namespace KingmakerGunslinger.Archetypes
     }
 
     public sealed class SteadyAimAttackHandler :
-        RuleInitiatorLogicComponent<RuleAttackWithWeapon>, ITickEachRound
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
     {
         public BlueprintAbilityResource Grit;
         public BlueprintUnitFact TrueGritChoice;
@@ -84,11 +86,6 @@ namespace KingmakerGunslinger.Archetypes
 
         public override void OnEventDidTrigger(RuleAttackWithWeapon evt) { }
 
-        public void OnNewRound()
-        {
-            if (Owner != null && Owner.Buffs != null && Fact != null)
-                Owner.Buffs.RemoveFact(Fact);
-        }
     }
 
     internal static class SteadyAimRuntime

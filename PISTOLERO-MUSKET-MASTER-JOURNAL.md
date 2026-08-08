@@ -739,3 +739,34 @@ Up Close and Twin Shot assertions.
 Commit/publish this curated Twin Shot blueprint evidence, then add the combined
 guarded disposable Pistolero deed mechanics fixture with distinct structured
 assertions for every Up Close and Deadly and Twin Shot Knockdown behavior.
+
+## 2026-08-08 - Disposable Pistolero deed fixture and runtime repairs
+
+- Registered the no-save `disposable-pistolero-deeds` scenario and exercised
+  exact firearm rolls, the production Up Close marker handler, grit, isolated
+  damage packets, precision immunity, Twin Shot reference deduplication,
+  per-target isolation, direct native Prone, and request-local cleanup.
+- Exploratory runs exposed three exact engine contracts and changed strategy:
+  `RuleAttackRoll.IsHit` is read-only; `AutoHit` bypasses the firearm success
+  evaluation needed for the completed non-misfire outcome; and
+  `RuleDealDamage.Modifier` did not halve this independent deed packet in the
+  guarded runtime. The fixture now creates ordinary natural-19 hits/misses, and
+  miss delivery uses the mission-authorized fallback: roll all deed dice once,
+  integer-divide by two, then deliver the fixed packet.
+- Detached `BuffCollection.AddBuff` returned null for the new armed marker. The
+  request-local fixture falls back to direct exact fact attachment, while the
+  production arming logic verifies actual fact presence instead of trusting the
+  return value. Up Close and Steady Aim use the proven six-second current-turn
+  duration and ordinary buff facts.
+- Exploratory dirty-candidate run
+  `20260808T1306113831555Z-917a7c6016bd4da28e16d47529a691ac` passed all seven
+  structured assertions in directory
+  `20260808T1306113518940Z-disposable-pistolero-deeds`. This is repair evidence,
+  not final source evidence; a clean committed-SHA rerun is mandatory.
+
+## Exact next action
+
+Commit/publish the passing disposable Pistolero fixture and armed-marker
+hardening, rebuild at that exact commit, rerun `disposable-pistolero-deeds`
+without dirty-state authorization, and record only the clean PASS as final deed
+behavior evidence.

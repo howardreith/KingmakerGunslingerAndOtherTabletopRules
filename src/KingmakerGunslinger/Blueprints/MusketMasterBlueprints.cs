@@ -82,7 +82,6 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_SteadyAim_Armed";
-            result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<SteadyAimAttackHandler>();
             handler.name = "$KMG_SteadyAim_Attack";

@@ -16,6 +16,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.EntitySystem.Entities;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -367,6 +368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveStunningShotNativeStunned &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerStunningShot &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposablePistoleroDeeds &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
@@ -414,6 +416,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveGunslingerPresentation)
                 {
                     Complete(RunGunslingerPresentationObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePistoleroDeeds)
+                {
+                    Complete(RunDisposablePistoleroDeeds());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -10110,6 +10118,217 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePistoleroDeeds()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            PistoleroBlueprintSet pistolero = gunslinger.Pistolero;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            UnitEntityData attacker = null, target = null, secondTarget = null;
+            ItemEntityWeapon weapon = null;
+            object controller = null;
+            bool cleaned = false;
+            int hitDamage = 0, missDamage = 0, gritAfterHit = -1,
+                gritAfterMiss = -1, gritAfterImmune = -1, gritAfterTwin = -1;
+            bool hitConsumed = false, missConsumed = false,
+                immuneConsumed = false, twinProne = false,
+                twinDuplicateRejected = false, twinSecondTargetIsolated = false;
+            string stage = "setup";
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                secondTarget = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 20;
+                AdvanceDisposableGunslinger(attacker.Descriptor, gunslinger, 1,
+                    ref controller);
+                attacker.Descriptor.AddFact(pistolero.UpCloseAndDeadly);
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 5);
+                weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                var context = new MechanicsContext(attacker, attacker.Descriptor,
+                    pistolero.UpCloseAbility, null, new TargetWrapper(attacker));
+
+                stage = "up-close-hit-arm";
+                Buff marker = attacker.Descriptor.Buffs.AddBuff(
+                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
+                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                        pistolero.UpCloseArmed));
+                marker = marker ?? attacker.Descriptor.AddFact(
+                    pistolero.UpCloseArmed) as Buff;
+                if (marker == null) throw new InvalidOperationException(
+                    "Hit marker was rejected.");
+                stage = "up-close-hit-resolve";
+                int hp = target.HPLeft;
+                RuleAttackWithWeapon hit = CreateResolvedPistoleroAttack(attacker,
+                    target, weapon, true, false, 19);
+                UnityEngine.Random.InitState(FindNativeD6Seed(6));
+                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
+                    handler => handler.OnEventDidTrigger(hit));
+                hitDamage = hp - target.HPLeft;
+                gritAfterHit = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                hitConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                stage = "up-close-miss-arm";
+                marker = attacker.Descriptor.Buffs.AddBuff(
+                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
+                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                        pistolero.UpCloseArmed));
+                marker = marker ?? attacker.Descriptor.AddFact(
+                    pistolero.UpCloseArmed) as Buff;
+                if (marker == null) throw new InvalidOperationException(
+                    "Miss marker was rejected.");
+                stage = "up-close-miss-resolve";
+                target.Descriptor.Stats.Dexterity.BaseValue = 100;
+                hp = target.HPLeft;
+                RuleAttackWithWeapon miss = CreateResolvedPistoleroAttack(attacker,
+                    target, weapon, false, false, 19);
+                UnityEngine.Random.InitState(FindNativeD6Seed(6));
+                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
+                    handler => handler.OnEventDidTrigger(miss));
+                missDamage = hp - target.HPLeft;
+                gritAfterMiss = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                missConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
+                target.Descriptor.Stats.Dexterity.BaseValue = 10;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                stage = "up-close-immune-arm";
+                marker = attacker.Descriptor.Buffs.AddBuff(
+                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
+                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                        pistolero.UpCloseArmed));
+                marker = marker ?? attacker.Descriptor.AddFact(
+                    pistolero.UpCloseArmed) as Buff;
+                if (marker == null) throw new InvalidOperationException(
+                    "Immunity marker was rejected.");
+                stage = "up-close-immune-resolve";
+                RuleAttackWithWeapon immune = CreateResolvedPistoleroAttack(attacker,
+                    target, weapon, true, true, 19);
+                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
+                    handler => handler.OnEventDidTrigger(immune));
+                gritAfterImmune = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+                immuneConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
+
+                stage = "twin-shot";
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 3);
+                RuleAttackWithWeapon first = CreateResolvedPistoleroAttack(attacker,
+                    target, weapon, true, false, 19);
+                RuleAttackWithWeapon second = CreateResolvedPistoleroAttack(attacker,
+                    target, weapon, true, false, 19);
+                TwinShotKnockdownRuntime.Record(attacker, target, first);
+                TwinShotKnockdownRuntime.Record(attacker, target, first);
+                TwinShotKnockdownRuntime.Record(attacker, target, second);
+                twinDuplicateRejected =
+                    TwinShotKnockdownRuntime.HitCount(attacker, target) == 2;
+                twinSecondTargetIsolated =
+                    TwinShotKnockdownRuntime.HitCount(attacker, secondTarget) == 0;
+                TwinShotKnockdownRuntime.Execute(attacker, target,
+                    gunslinger.Grit.Resource);
+                twinProne = target.Descriptor.State.HasCondition(UnitCondition.Prone);
+                gritAfterTwin = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Pistolero deeds failed at " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (attacker != null) TwinShotKnockdownRuntime.Clear(attacker);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                        attacker.Body.PrimaryHand.RemoveItem(false);
+                }
+                if (secondTarget != null) secondTarget.Dispose();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            string observed = "damage=" + hitDamage + "," + missDamage +
+                ";grit=" + gritAfterHit + "," + gritAfterMiss + "," +
+                gritAfterImmune + "," + gritAfterTwin +
+                ";twinProne=" + twinProne;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("up-close-hit", "positive full damage, one grit, marker consumed",
+                    observed, hitDamage > 0 && gritAfterHit == 4 && hitConsumed,
+                    "native RuleDealDamage and exact armed marker"),
+                Assertion("up-close-miss", "positive half packet, one grit, marker consumed",
+                    observed, missDamage > 0 && missDamage <= hitDamage &&
+                    gritAfterMiss == 3 && missConsumed,
+                    "one full deed roll, integer half, then isolated RuleDealDamage"),
+                Assertion("up-close-precision-immunity",
+                    "marker consumed without grit", observed,
+                    gritAfterImmune == 3 && immuneConsumed,
+                    "RuleAttackRoll.ImmuneToSneakAttack"),
+                Assertion("twin-shot-distinct-same-target",
+                    "two reference-distinct hits; duplicate ignored; other target isolated",
+                    observed, twinDuplicateRejected && twinSecondTargetIsolated,
+                    "owner/target reference-identity ledger"),
+                Assertion("twin-shot-prone", "native Prone and one grit spent",
+                    observed, twinProne && gritAfterTwin == 4,
+                    "native UnitCondition.Prone; disposables subsequently cleaned"),
+                Assertion("external-isolation", "disposables and ephemeral state cleaned",
+                    "cleaned=" + cleaned, cleaned, "request-local fixture cleanup"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+        }
+
+        private static RuleAttackWithWeapon CreateResolvedPistoleroAttack(
+            UnitEntityData attacker, UnitEntityData target,
+            ItemEntityWeapon weapon, bool hit, bool precisionImmune,
+            int naturalRoll)
+        {
+            var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+            var roll = new RuleAttackRoll(attacker, target, weapon, 0);
+            roll.RuleAttackWithWeapon = attack;
+            roll.AutoHit = false;
+            SetExactProperty(attack, "AttackRoll", roll);
+            FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                FirearmState.CurrentSchemaVersion, 1,
+                FirearmStateTokenCatalog.DiagnosticLeadBall,
+                FirearmCondition.Normal));
+            FirearmMisfireRuntime.QueueForcedNaturalRoll(naturalRoll);
+            try { Rulebook.Trigger(roll); }
+            finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
+            SetExactProperty(roll, "ImmuneToSneakAttack", precisionImmune);
+            return attack;
+        }
+
+        private static int FindNativeD6Seed(int expected)
+        {
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                if (RulebookEvent.Dice.D6 == expected) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native d6 seed produced " + expected + ".");
         }
 
         private RuntimeTestResult RunDisposableGunslingerDeathsShot()
