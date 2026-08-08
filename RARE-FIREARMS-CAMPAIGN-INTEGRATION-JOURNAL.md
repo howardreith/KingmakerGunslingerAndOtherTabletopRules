@@ -27,6 +27,16 @@
 - Clean exact-reference Release, build-output, SoundBank, package creation, and
   strict package validation PASS for 0.0.73. The first guarded invocation
   correctly refused the uncommitted source state; no Kingmaker launch occurred.
+- Published observer `b657dc2` launched guarded run
+  `20260808T1729448091782Z-observe-vendor-table-contracts`, but its first
+  reference strategy timed out before a result: it rescanned the full graph for
+  every candidate and enumerated arbitrary collections. Kingmaker exited and no
+  mutation/result artifact was produced. This is a rejected instrumentation
+  strategy, not content evidence.
+- Narrow repair builds one direct-reference index in a single pass and inspects
+  only blueprint-valued fields and arrays. The repaired source again passed
+  repository validation, 930/930 tests, clean Release, build-output, SoundBank,
+  package creation, and strict package validation.
 
 ## Exact next action
 

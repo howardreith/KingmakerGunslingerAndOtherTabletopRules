@@ -3800,6 +3800,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 IsRareFirearmLootCandidate(value)).OrderBy(value => value.name,
                     StringComparer.Ordinal).ThenBy(value => value.AssetGuid,
                     StringComparer.Ordinal).ToArray();
+            Dictionary<string, List<string>> lootReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints, lootCandidates);
             foreach (BlueprintScriptableObject candidate in lootCandidates)
             {
                 var loot = candidate as BlueprintLoot;
@@ -3812,8 +3814,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     loot.Area.name + ":" + loot.Area.AssetGuid;
                 string container = loot == null ? "<unit-loot>" :
                     loot.ContainerName ?? string.Empty;
-                string[] references = FindDirectBlueprintReferences(allBlueprints,
-                    candidate).Take(20).ToArray();
+                List<string> indexedReferences;
+                string[] references = lootReferences.TryGetValue(candidate.AssetGuid,
+                    out indexedReferences) ? indexedReferences.Take(20).ToArray() :
+                    Array.Empty<string>();
                 lootCandidateRecords.Add("loot=" + candidate.GetType().FullName +
                     ":" + candidate.name + ":" + candidate.AssetGuid + ";area=" +
                     area + ";container=" + container + ";setting=" +
@@ -4121,25 +4125,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }).ToArray());
         }
 
-        private static IEnumerable<string> FindDirectBlueprintReferences(
-            BlueprintScriptableObject[] owners, BlueprintScriptableObject target)
+        private static Dictionary<string, List<string>>
+            BuildDirectBlueprintReferenceIndex(BlueprintScriptableObject[] owners,
+                BlueprintScriptableObject[] targets)
         {
+            var targetGuids = new HashSet<string>(targets.Select(value =>
+                value.AssetGuid), StringComparer.Ordinal);
+            var result = targetGuids.ToDictionary(value => value,
+                value => new List<string>(), StringComparer.Ordinal);
             foreach (BlueprintScriptableObject owner in owners)
             {
-                int count = CountDirectReferences(owner, target);
+                var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+                CountSelectedDirectReferences(owner, targetGuids, counts);
                 foreach (BlueprintComponent component in owner.ComponentsArray ??
                     Array.Empty<BlueprintComponent>())
-                    count += CountDirectReferences(component, target);
-                if (count > 0)
-                    yield return owner.GetType().FullName + ":" + owner.name + ":" +
-                        owner.AssetGuid + "*" + count;
+                    CountSelectedDirectReferences(component, targetGuids, counts);
+                foreach (KeyValuePair<string, int> match in counts)
+                    result[match.Key].Add(owner.GetType().FullName + ":" +
+                        owner.name + ":" + owner.AssetGuid + "*" + match.Value);
             }
+            return result;
         }
 
-        private static int CountDirectReferences(object owner, object target)
+        private static void CountSelectedDirectReferences(object owner,
+            HashSet<string> targetGuids, Dictionary<string, int> counts)
         {
-            if (owner == null || target == null) return 0;
-            int count = 0;
+            if (owner == null) return;
             for (Type type = owner.GetType(); type != null; type = type.BaseType)
             {
                 foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
@@ -4149,18 +4160,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     object value;
                     try { value = field.GetValue(owner); }
                     catch { continue; }
-                    if (ReferenceEquals(value, target)) count++;
-                    var enumerable = value as IEnumerable;
-                    if (enumerable == null || value is string) continue;
-                    try
+                    var direct = value as BlueprintScriptableObject;
+                    if (direct != null && targetGuids.Contains(direct.AssetGuid))
+                        IncrementReferenceCount(counts, direct.AssetGuid);
+                    var array = value as Array;
+                    if (array == null) continue;
+                    foreach (object element in array)
                     {
-                        foreach (object element in enumerable)
-                            if (ReferenceEquals(element, target)) count++;
+                        var referenced = element as BlueprintScriptableObject;
+                        if (referenced != null &&
+                            targetGuids.Contains(referenced.AssetGuid))
+                            IncrementReferenceCount(counts, referenced.AssetGuid);
                     }
-                    catch { }
                 }
             }
-            return count;
+        }
+
+        private static void IncrementReferenceCount(
+            Dictionary<string, int> counts, string guid)
+        {
+            int current;
+            counts.TryGetValue(guid, out current);
+            counts[guid] = current + 1;
         }
 
         private RuntimeTestResult RunProductionFirearmFallbackObservation()

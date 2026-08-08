@@ -7,7 +7,9 @@
 - Durable records exist; guarded read-only vendor run
   `20260808T1720275373614Z-observe-vendor-table-contracts` passed.
 - Observer source is qualified (validation, 930/930, clean Release/SoundBank/
-  strict package). Next: commit/publish it, run `observe-vendor-table-contracts`
+  strict package). The first live graph-rescan strategy timed out without a
+  result and is replaced by a bounded single-pass direct-reference index. Next:
+  commit/publish the repair, run `observe-vendor-table-contracts`
   on the clean commit, curate exact enchantment/merchant/loot evidence, and
   publish the completed inventory before production registration.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
