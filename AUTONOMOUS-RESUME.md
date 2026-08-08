@@ -1422,6 +1422,7 @@ Baseline: `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`
 
 Durable contract: `planning/PAPER-CARTRIDGES-AUTO-RELOAD-MISSION.md`
 
-Current checkpoint: Phase 0 intake. Finish the current-source replacement
-inventory, run unchanged baseline gates, commit and publish the durable intake
-checkpoint, and verify remote equality before production mechanics.
+Current checkpoint: Phase 1 foundation is source-qualified at 941/941 with 245
+active registrations and 246 ledger identities. Commit/publish Phase 1 and
+verify remote equality, then begin Phase 2's one reload plan, generic atomic
+source transaction, native Paper mode/grants, and manual reload runtime path.

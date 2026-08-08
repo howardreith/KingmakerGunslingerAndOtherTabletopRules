@@ -105,3 +105,10 @@ It is 999,390 bytes with SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 Media is embedded; no `.wem` or generated `Init.bnk` is distributed. The
 existing Unity bundle's legacy embedded clips remain unused cleanup debt.
+# Project-owned Paper Cartridge icon
+
+`assets/game/icons/paper-cartridge.png` is a project-owned derivative of an
+OpenAI-generated chroma-key source created specifically for this repository.
+Its source and transformation record is in
+`assets-source/original-icons/paper-cartridge/SOURCE.md`; it contains no
+downloaded third-party asset.

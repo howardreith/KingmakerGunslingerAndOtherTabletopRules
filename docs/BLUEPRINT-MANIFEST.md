@@ -4,10 +4,19 @@
 
 The append-only contract contains 233 stable identifiers: 232 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the native Pistolero/Musket Master archetypes, truthful archetype deed summaries, Steady Aim and Up Close and Deadly action/marker pairs, Twin Shot Knockdown's targeted action, four archetype-aware True Grit choices, and supporting scoped features without changing any established GUID.
 
-The Rare Firearms continuation appends ten collision-free identities. During the
-project-Seeking checkpoint the manifest contains 243 stable identifiers: 242 active and one reserved.
-Seeking, Reliable, and all eight item identities are active in the bounded
-catalog. Bootstrap therefore uses the complete two-hundred-forty-two-blueprint transaction.
+The Rare Firearms continuation appended ten collision-free identities and
+activated Seeking, Reliable, and all eight item identities. Paper Cartridges
+Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
+manifest contains 246 stable identifiers: 245 active and one reserved.
+Bootstrap therefore uses the complete two-hundred-forty-five-blueprint transaction.
+
+Paper Cartridges Phase 1 identities are append-only:
+
+| Symbol | GUID | Type | Status | Purpose |
+| --- | --- | --- | --- | --- |
+| `KMG.Ammunition.PaperCartridge` | `fea7337cfd06417a853546af9d950f77` | `BlueprintItem` | Active | Stackable prepared early-firearm ammunition |
+| `KMG.Ammunition.PaperLoadedNormalStateToken` | `a6344f33e7344d4aab249485faedf7fd` | `BlueprintWeaponEnchantment` | Active | Inert Normal paper-loaded item state |
+| `KMG.Ammunition.PaperBrokenLoadedStateToken` | `fdd814300fff4eea89d9d508663aebc0` | `BlueprintWeaponEnchantment` | Active | Inert Broken paper-loaded item state |
 Bootstrap validates and rolls back the complete one-hundred-fifty-eight-blueprint transaction. The historical complete twenty-four-blueprint transaction remains part of the append-only identity record.
 Expert Loading adds one feature, one free-action pre-shot ability, and one
 unit-owned armed marker. Sprint 50 added Bleeding Wound's thirteen facts.

@@ -6,9 +6,9 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 |---|---|---:|---|
 | Intake | Clean exact remote baseline and required branch | PASS | 2026-08-08: local/remote master `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`; branch created |
 | Inventory | Current source/tests/docs inventory and replacement matrix | TODO | Phase 0 journal |
-| Profile/item | One paper profile/item; cost 12, stackable, inert, zero weight/resale | TODO | |
-| Compatibility | Definition-driven Early Pistol/Musket/Blunderbuss; magic families included; advanced rejected | TODO | |
-| State | Two append-only paper tokens; old identities unchanged; codec/reconciliation/static enchantments | TODO | |
+| Profile/item | One paper profile/item; cost 12, stackable, inert, zero weight/resale | PASS (Phase 1 foundation; resale pending Phase 5) | `ReloadAmmunitionProfileCatalog`; `KMG.Ammunition.PaperCartridge`; 941/941 |
+| Compatibility | Definition-driven Early Pistol/Musket/Blunderbuss; magic families included; advanced rejected | PASS (domain foundation) | `FirearmStateRules.CreateForDefinition`; no item whitelist |
+| State | Two append-only paper tokens; old identities unchanged; codec/reconciliation/static enchantments | PASS (token/codec foundation; lifecycle runtime pending Phase 6) | Six-token catalog; old four IDs asserted exact; paper round trips |
 | Action economy | Every required Pistol/Musket/Blunderbuss/Fast Musket/Rapid/Paper row | TODO | |
 | Mode/grants | Per-unit off-default toggle; exact grants; no fallback/leak/duplicate/auto-disable | TODO | |
 | Transaction | Atomic loose/paper sources, exact rollback, no mix/substitution/double-consume | TODO | |

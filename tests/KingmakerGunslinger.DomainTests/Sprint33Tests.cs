@@ -198,8 +198,8 @@ namespace KingmakerGunslinger.DomainTests
         private static void CapacityTokensSixRoundComplete()
         {
             FirearmStateTokenCatalog catalog = FirearmStateTokenCatalog.CreateBasicCapacity(6);
-            Assertions.Equal(14, catalog.Definitions.Count,
-                "Six-round finite catalog does not cover normal/broken counts plus empty broken/Wrecked.");
+            Assertions.Equal(16, catalog.Definitions.Count,
+                "Six-round finite catalog does not cover Lead counts, two paper states, empty broken, and Wrecked.");
             for (int rounds = 1; rounds <= 6; rounds++)
             {
                 FirearmState normal = new FirearmState(FirearmState.CurrentSchemaVersion,

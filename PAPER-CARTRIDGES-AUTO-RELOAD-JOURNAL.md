@@ -41,3 +41,39 @@
   expected registration count is 242. `git diff --check` and the initial
   generated/binary/save/credential tracked-file audit passed; generated package
   and build outputs remain ignored/untracked.
+
+## 2026-08-08 — Phase 1 ammunition/state foundation
+
+- Branch: `codex/paper-cartridges-auto-reload`; base/intake commit
+  `97432a9ca1b3c8c5876591950b7ae164b290bb9b` published and remote-equal.
+- Version remains intentionally intermediate `0.0.73` /
+  `0.0.73-pistolero-musket-master`.
+- Architecture: immutable profile/catalog; definition-driven compatibility;
+  exact paper loaded ID; early-family state-rule factory; append-only finite
+  token states; inert cloned inventory item; project-owned semantic icon.
+- Stable additions: Paper item `fea7337cfd06417a853546af9d950f77`, Normal
+  paper token `a6344f33e7344d4aab249485faedf7fd`, Broken paper token
+  `fdd814300fff4eea89d9d508663aebc0`.
+- Ledger/bootstrap: 246 total / 245 active / one reserved; expected registration
+  245. All prior 243 rows are untouched.
+- Focused tests: six new profile/compatibility/fail-closed/token/item-source
+  cases plus updated legacy token totals; complete suite 941/941 PASS.
+- Failure/strategy evidence: two legacy token-count assertions correctly failed
+  at 14/4 versus 16/6 and were narrowed without altering old token meanings.
+  Strict packaging correctly rejected the newly packaged icon until the exact
+  release allowlist added `paper-cartridge.png`.
+- Validation/build/package: repository PASS; clean exact-reference Release PASS;
+  build-output PASS; SoundBank PASS; package creation/strict validation PASS.
+- Package SHA-256:
+  `9c019ff426484b8d3ddc65f1d4b1164288efe4f594e10c37cfbb17fe68ac0139`.
+  DLL SHA-256:
+  `69bc766e65fc13f0b239c6805ef5bb07bd0e990747bd1d230b9c2b2d9c381168`.
+- Runtime run IDs/process freshness: none; Phase 1 does not wire a selectable
+  production reload and therefore makes no runtime mechanic claim.
+- Compatibility transactions: none.
+- Next exact action: commit/publish Phase 1, verify remote equality, then build
+  the authoritative plan, generalized atomic source transaction, native Paper
+  mode/grants, and manual Reload integration with focused rollback/action tests.
+- Uncertainty: native activatable exact fields and Paper mode ownership still
+  require installed-contract inspection in Phase 2.
+- Remote branch equals local HEAD: pending Phase 1 publication.

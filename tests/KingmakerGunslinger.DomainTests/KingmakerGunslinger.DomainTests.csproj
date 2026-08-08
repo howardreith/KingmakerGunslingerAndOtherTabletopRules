@@ -36,6 +36,10 @@
   <ItemGroup>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
+    <Compile Include="PaperCartridgeFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionSourceKind.cs"><Link>Ammunition\ReloadAmmunitionSourceKind.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfile.cs"><Link>Ammunition\ReloadAmmunitionProfile.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfileCatalog.cs"><Link>Ammunition\ReloadAmmunitionProfileCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Enchantments\SeekingConcealmentPolicy.cs"><Link>Enchantments\SeekingConcealmentPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandedness.cs"><Link>Domain\FirearmHandedness.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandednessPolicy.cs"><Link>Domain\FirearmHandednessPolicy.cs</Link></Compile>

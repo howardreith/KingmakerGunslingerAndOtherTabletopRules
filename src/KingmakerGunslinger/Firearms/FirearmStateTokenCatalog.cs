@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.Ammunition;
 
 namespace KingmakerGunslinger.Firearms
 {
@@ -15,6 +16,10 @@ namespace KingmakerGunslinger.Firearms
         internal const string LoadedNormalTokenId = "kmg.state.v1.loaded-normal.lead-ball";
         internal const string BrokenEmptyTokenId = "kmg.state.v1.broken-empty";
         internal const string BrokenLoadedTokenId = "kmg.state.v1.broken-loaded.lead-ball";
+        internal const string PaperLoadedNormalTokenId =
+            "kmg.state.v1.loaded-normal.paper-cartridge";
+        internal const string PaperBrokenLoadedTokenId =
+            "kmg.state.v1.broken-loaded.paper-cartridge";
         internal const string WreckedTokenId = "kmg.state.v1.wrecked";
 
         internal static readonly AmmunitionId DiagnosticLeadBall =
@@ -106,6 +111,12 @@ namespace KingmakerGunslinger.Firearms
                 State(0, null, FirearmCondition.Broken)));
             definitions.Add(new FirearmStateTokenDefinition(WreckedTokenId,
                 State(0, null, FirearmCondition.Wrecked)));
+            definitions.Add(new FirearmStateTokenDefinition(PaperLoadedNormalTokenId,
+                State(1, ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition,
+                    FirearmCondition.Normal)));
+            definitions.Add(new FirearmStateTokenDefinition(PaperBrokenLoadedTokenId,
+                State(1, ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition,
+                    FirearmCondition.Broken)));
             for (int rounds = 1; rounds <= capacity; rounds++)
             {
                 string normalToken = rounds == 1

@@ -25,6 +25,12 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),
+            Case("paper-foundation.compatibility-definition-driven", PaperCartridgeFoundationTests.CompatibilityIsDefinitionDriven),
+            Case("paper-foundation.unknown-fails-closed", PaperCartridgeFoundationTests.UnknownIdentityFailsClosed),
+            Case("paper-foundation.tokens-round-trip", PaperCartridgeFoundationTests.PaperTokensRoundTrip),
+            Case("paper-foundation.old-tokens-exact", PaperCartridgeFoundationTests.OldTokensRemainExact),
+            Case("paper-foundation.item-source-contract", PaperCartridgeFoundationTests.BlueprintSourceContract),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
@@ -5253,7 +5259,8 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void TokenCatalogContainsFourDefinitions()
         {
-            Assertions.Equal(4, TokenCatalog().Definitions.Count, "The capacity-one catalog changed size.");
+            Assertions.Equal(6, TokenCatalog().Definitions.Count,
+                "The capacity-one catalog must include four legacy and two paper states.");
         }
 
         private static void TokenCatalogDefinitionsAreSorted()

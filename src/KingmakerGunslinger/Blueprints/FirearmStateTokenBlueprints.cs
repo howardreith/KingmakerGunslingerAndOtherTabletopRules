@@ -11,7 +11,7 @@ using UnityEngine;
 namespace KingmakerGunslinger.Blueprints
 {
     /// <summary>
-    /// Registers four component-only, mechanically inert weapon enchantments that encode
+    /// Registers six component-only, mechanically inert weapon enchantments that encode
     /// every non-default state supported by the Sprint 12 capacity-one persistence spike.
     /// </summary>
     internal static class FirearmStateTokenBlueprints
@@ -20,6 +20,10 @@ namespace KingmakerGunslinger.Blueprints
         internal const string BrokenEmptySymbol = "KMG.Test.BrokenEmptyStateToken";
         internal const string BrokenLoadedSymbol = "KMG.Test.BrokenLoadedStateToken";
         internal const string WreckedSymbol = "KMG.Test.WreckedStateToken";
+        internal const string PaperLoadedNormalSymbol =
+            "KMG.Ammunition.PaperLoadedNormalStateToken";
+        internal const string PaperBrokenLoadedSymbol =
+            "KMG.Ammunition.PaperBrokenLoadedStateToken";
 
         private const string ComponentName = "$KMG_FirearmStateToken";
 
@@ -65,6 +69,18 @@ namespace KingmakerGunslinger.Blueprints
                 WreckedSymbol,
                 "KMG_StateToken_Wrecked",
                 catalog.RequireDefinition(FirearmStateTokenCatalog.WreckedTokenId));
+            RegisterOne(
+                registry,
+                byToken,
+                PaperLoadedNormalSymbol,
+                "KMG_StateToken_LoadedNormal_PaperCartridge",
+                catalog.RequireDefinition(FirearmStateTokenCatalog.PaperLoadedNormalTokenId));
+            RegisterOne(
+                registry,
+                byToken,
+                PaperBrokenLoadedSymbol,
+                "KMG_StateToken_BrokenLoaded_PaperCartridge",
+                catalog.RequireDefinition(FirearmStateTokenCatalog.PaperBrokenLoadedTokenId));
 
             var set = new FirearmStateTokenBlueprintSet(catalog, byToken);
             Validate(set);
@@ -85,10 +101,10 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("set");
             }
 
-            if (set.Count != 4 || set.Catalog.Definitions.Count != 4)
+            if (set.Count != 6 || set.Catalog.Definitions.Count != 6)
             {
                 throw new InvalidOperationException(
-                    "The Sprint 12 token blueprint set must contain exactly four non-default states.");
+                    "The firearm token blueprint set must contain exactly six non-default states.");
             }
 
             foreach (FirearmStateTokenDefinition definition in set.Catalog.Definitions)
