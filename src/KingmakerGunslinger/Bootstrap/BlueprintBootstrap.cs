@@ -548,6 +548,7 @@ namespace KingmakerGunslinger.Bootstrap
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
+            RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
             try
             {
@@ -733,11 +734,13 @@ namespace KingmakerGunslinger.Bootstrap
                     gunslingerClassBlueprints.CharacterClass);
 
                 capitalVendorPublication = CapitalVendorBlueprints.Publish(
-                    library, productionFirearms, basicAmmunition,
+                    library, productionFirearms, magicFirearms, basicAmmunition,
                     firearmRepairKit, gunsmithingSupplies, context.Logger);
                 btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
-                    library, productionFirearms, basicAmmunition,
+                    library, productionFirearms, magicFirearms, basicAmmunition,
                     firearmRepairKit, gunsmithingSupplies, context.Logger);
+                rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
+                    library, magicFirearms, context.Logger);
                 ProjectAssetIcons.ValidateSupplyPublication(registry,
                     basicAmmunition, firearmRepairKit, gunsmithingSupplies,
                     gunsmithingCrafting, capitalVendorPublication,
@@ -810,6 +813,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "btsl-vendors.rollback-failed",
                             "Blueprint initialization failed and BTSL vendor rollback was refused.",
                             vendorRollbackException);
+                    }
+                }
+                if (rareFirearmLootPublication != null)
+                {
+                    try { rareFirearmLootPublication.Rollback(); }
+                    catch (Exception lootRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "rare-firearm-loot.rollback-failed",
+                            "Blueprint initialization failed and rare-firearm fixed-loot rollback was refused.",
+                            lootRollbackException);
                     }
                 }
                 if (capitalVendorPublication != null)

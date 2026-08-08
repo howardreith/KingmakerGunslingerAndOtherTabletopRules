@@ -168,3 +168,22 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - The guarded bootstrap observer correctly refused the dirty source state. The
   next action is to publish this coherent passing source checkpoint, then run the
   save-free live blueprint observer from its clean exact source SHA.
+## 2026-08-08 acquisition publication source checkpoint
+
+- Published checkpoint `3c412a0eab9dbb17446a3f7184553005fbd1d005` passed the
+  guarded save-free live bootstrap observer at evidence directory
+  `20260808T1853527250733Z-observe-vendor-table-contracts`.
+- Replaced Jhod-oriented testing stock with exact `SmithVendorTable`
+  (`7de959347266092448d8a72089ef9778`) early-firearm/+1 stock and supplies;
+  Advanced Rifle/Revolver and named uniques are excluded. BTSL tables receive
+  the same permitted early roster and continue to skip absent DLC tables.
+- Added transactional count-one fixed publication for the five accepted exact
+  `BlueprintLoot` targets, with exact target name/area validation, normalization
+  limited to the five project uniques, idempotence, and exact snapshot rollback.
+- Repository validation, 935/935 tests, exact-reference Release build, build
+  output, SoundBank, and strict package validation pass. Intermediate package /
+  DLL hashes are `9c977288fa2904776364129198dbff468c11f0b4829a2f898992e274c47e8045` /
+  `88a4caa4328ea00f2b7f9492e6e59721d84d4bc88682d94fac9aca13b63d4df4`.
+- Next: publish this coherent source checkpoint and run the guarded live graph
+  observer to validate all selected loot target names/types/areas and vendor
+  bootstrap mutation against the installed graph.

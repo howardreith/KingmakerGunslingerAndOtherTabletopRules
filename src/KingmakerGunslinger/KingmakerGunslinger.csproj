@@ -143,6 +143,7 @@
     <Compile Include="Blueprints\OverhaulTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\ProductionFirearmBlueprints.cs" />
     <Compile Include="Blueprints\MagicFirearmBlueprints.cs" />
+    <Compile Include="Blueprints\RareFirearmCampaignLootBlueprints.cs" />
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />

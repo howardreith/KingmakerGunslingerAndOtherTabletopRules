@@ -1325,3 +1325,10 @@ The exact next action is to commit and publish this coherent source checkpoint,
 run a guarded save-free bootstrap observer from the clean SHA, record its exact
 run ID, then implement the accepted capital/BTSL vendor and five-target fixed-loot
 publication transactions. Do not revisit native Seeking forensics.
+## Current resume point — acquisition publication
+
+The bounded capital/BTSL vendor normalization and five-target fixed-loot
+transactions pass source/build/package gates. Commit and publish this checkpoint,
+then run the guarded save-free live graph observer from its clean SHA. After live
+bootstrap proof, implement the dedicated acquisition observer and development-only
+Rare Firearm Acceptance catalog/spawn/location-audit panel.
