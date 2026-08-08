@@ -328,3 +328,13 @@ gates and guarded blueprint contracts before vendor/loot publication.
   `a329a1260beb73bde362b506e8ab1c96ab7de1ba`. Standard and move paths restored
   The Last Word from Broken to Normal; Wrecked and zero-grit paths rejected
   atomically. Its +5, Reliable, and Seeking static set remained `3,3,3,3`.
+
+## 2026-08-08 — human acceptance
+
+- The user manually tested the installed build at feature commit
+  `71368cb62ee8a001997d53d77ec22ca67c83a620` and reported that all guns work
+  great.
+- The user accepted the work for local integration and explicitly requested a
+  local merge to `master`.
+- Some graphical issues remain and are explicitly deferred to a later cleanup
+  effort; they are not treated as mechanical or campaign-placement blockers.

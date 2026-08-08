@@ -58,3 +58,8 @@ The final fallback scatter run
 `9d9e4c88201e40e06030f26674d0b7c1969c0495`: exact +4/Reliable static array,
 no Thundering, mixed and all-misfire per-target decisions, one aggregate
 condition transition, one chamber transaction, and exact cleanup all passed.
+
+Human manual acceptance was received on 2026-08-08 for installed feature commit
+`71368cb62ee8a001997d53d77ec22ca67c83a620`: all guns were reported working
+great. Graphical issues were observed but explicitly deferred to a separate
+cleanup effort. The user authorized local integration into `master`.

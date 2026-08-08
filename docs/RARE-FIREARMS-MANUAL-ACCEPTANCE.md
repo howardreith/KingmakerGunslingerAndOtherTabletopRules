@@ -88,3 +88,11 @@ opened/instantiated, and the panel audit text.
   Watch at the World's End's Fey Bane presentation/target isolation. Confirm no
   Rifle/Revolver appears in ordinary capital or BTSL stock and no obvious visual
   or firearm Wwise audio regression is present.
+
+## Human acceptance — 2026-08-08
+
+The user completed manual testing of the installed build from feature commit
+`71368cb62ee8a001997d53d77ec22ca67c83a620` and reported that all firearms work
+great. The feature is accepted for integration. Some graphical issues were
+observed and are intentionally deferred to a separate cleanup effort; they do
+not block the accepted firearm mechanics or campaign integration.
