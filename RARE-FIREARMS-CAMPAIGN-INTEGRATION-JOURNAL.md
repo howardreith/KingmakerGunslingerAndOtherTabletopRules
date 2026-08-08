@@ -63,9 +63,15 @@
   Together with the prior two live strategies and installed-assembly search,
   this establishes the work order's critical required-native-property hard stop.
   No production blueprint, vendor, loot, Reliable, or version change began.
+- Continuation audit identified one remaining false-negative route: a native
+  enchantment may use a generic component whose scalar/enum field selects a
+  concealment mechanic. The observer now scans every weapon-enchantment
+  component's primitive, enum, and string fields and records their exact values.
+  This deeper strategy passed repository validation, 930/930 tests, clean
+  Release, build-output, SoundBank, package creation, and strict validation.
 
 ## Exact next action
 
-Stop. Await new authority changing the nonoptional native Seeking requirement
-or an authoritative installed-game asset providing it. Do not implement a
-custom substitute or begin production registration.
+Commit/publish and run the deeper scalar/enum observer. If it resolves a native
+Seeking authority, remove the provisional hard stop and continue inventory;
+otherwise retain the stop with the stronger exhaustive evidence.

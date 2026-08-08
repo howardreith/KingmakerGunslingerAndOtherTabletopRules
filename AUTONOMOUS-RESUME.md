@@ -23,6 +23,10 @@
   assembly inspection. Await new authority changing the nonoptional property or
   an authoritative asset supplying it. Do not implement a custom substitute or
   begin production registration.
+- Continuation audit reopened one narrow evidence gap: generic enchantment
+  components may encode concealment via scalar/enum values. A deeper observer is
+  qualified and awaiting commit/publish/runtime execution; its result controls
+  whether the provisional Seeking stop remains.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
   the approved helper and verify exact remote SHA after every commit.
 

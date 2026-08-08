@@ -3792,7 +3792,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 enchantmentRecords.Add("enchantment=" + enchantment.name + ":" +
                     enchantment.AssetGuid + ";display=" + enchantment.Name +
                     ";cost=" + enchantment.EnchantmentCost + ";components=" +
-                    DescribeBlueprintComponents(enchantment) + ";donors=" +
+                    DescribeBlueprintComponents(enchantment) + ";componentValues=" +
+                    DescribeComponentScalarContracts(enchantment.ComponentsArray) +
+                    ";donors=" +
                     string.Join(",", donors));
             }
             BlueprintScriptableObject[] lootCandidates = allBlueprints.Where(value =>
@@ -4109,11 +4111,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Any(component => component != null &&
                     (component.GetType().FullName ?? string.Empty).IndexOf(
                         "conceal", StringComparison.OrdinalIgnoreCase) >= 0);
-            return concealmentComponent || value.Contains("enhancement1") ||
+            bool concealmentValue = enchantment != null &&
+                DescribeComponentScalarContracts(enchantment.ComponentsArray)
+                    .IndexOf("conceal", StringComparison.OrdinalIgnoreCase) >= 0;
+            return concealmentComponent || concealmentValue ||
+                value.Contains("enhancement1") ||
                 value.Contains("enhancement2") ||
                 value.Contains("enhancement4") || value.Contains("enhancement5") ||
                 value.Contains("seeking") || value.Contains("thundering") ||
                 (value.Contains("fey") && value.Contains("bane"));
+        }
+
+        private static string DescribeComponentScalarContracts(
+            BlueprintComponent[] components)
+        {
+            var values = new List<string>();
+            foreach (BlueprintComponent component in components ??
+                Array.Empty<BlueprintComponent>())
+            {
+                if (component == null) continue;
+                for (Type type = component.GetType(); type != null;
+                    type = type.BaseType)
+                {
+                    foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.DeclaredOnly))
+                    {
+                        Type fieldType = field.FieldType;
+                        if (!(fieldType.IsEnum || fieldType.IsPrimitive ||
+                            fieldType == typeof(string))) continue;
+                        object fieldValue;
+                        try { fieldValue = field.GetValue(component); }
+                        catch { continue; }
+                        values.Add(component.GetType().FullName + "." + field.Name +
+                            "=" + (fieldValue == null ? "<null>" :
+                                fieldValue.ToString()));
+                    }
+                }
+            }
+            return string.Join(",", values.OrderBy(entry => entry,
+                StringComparer.Ordinal).ToArray());
         }
 
         private static bool IsRareFirearmLootCandidate(BlueprintScriptableObject value)
