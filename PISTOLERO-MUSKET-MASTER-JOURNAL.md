@@ -71,3 +71,25 @@ Exact next action: a human must add
 `codex/pistolero-musket-master-archetypes` to the approved push helper allowlist.
 Then rerun the exact helper, verify origin points to `c962e33`, and resume with
 the mandatory pre-implementation source and installed-contract inventory.
+
+## 2026-08-07 - Publication restored and inventory completed
+
+- Human updated the external helper policy and published exact clean checkpoint
+  `8ade461eab25f8fc2b068d8a739aa8ee1044f850`.
+- Verified branch, local HEAD, and origin branch all equal that SHA; worktree was
+  clean; the approved helper returned `Everything up-to-date` and explicitly
+  confirmed publication without merge, force-push, reset, clean, rebase, or
+  history rewrite.
+- Completed the mandatory source/test/runtime-harness inventory in
+  `planning/PISTOLERO-MUSKET-MASTER-INVENTORY.md`.
+- Read-only exact installed IL proves public archetype
+  `ReplaceStartingEquipment`/`StartingItems` fields and native
+  `LevelUpHelper.AddStartingItems(UnitDescriptor)` selection/grant behavior.
+  The native contract directly supports the exact Musket Master array and
+  explains the existing detached no-inventory-delta path.
+
+## Exact next action
+
+Commit and publish the pre-implementation inventory, then implement the
+canonical handedness policy and scoped proficiency foundations with focused
+tests before generalizing the starting-firearm observer.

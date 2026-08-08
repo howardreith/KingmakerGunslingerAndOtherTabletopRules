@@ -22,6 +22,12 @@ range, deed, True Grit, presentation, bootstrap, compatibility, observer, test,
 and installed Kingmaker contracts. Do not write archetype features before that
 inventory and replacement-symbol annotation are complete.
 
+Publication is now restored: branch/local/origin were verified at `8ade461` and
+the approved helper accepts the branch. The mandatory inventory is complete in
+`planning/PISTOLERO-MUSKET-MASTER-INVENTORY.md`, including exact installed IL
+for archetype starter selection. Next: commit/push that inventory, then implement
+canonical handedness and scoped proficiency foundations with focused tests.
+
 ## Optional-mod compatibility mission resume point (2026-08-07)
 
 New human authority: exact Call of the Wild 1.14.4c-2.1 reaches character
