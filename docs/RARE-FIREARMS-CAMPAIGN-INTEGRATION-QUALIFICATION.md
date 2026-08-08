@@ -50,3 +50,12 @@ exact-reference Release compilation, build-output validation, SoundBank
 validation, package creation, and strict package validation passed for the
 242-active registration source. This is source/package evidence only; the clean
 SHA live bootstrap observer and combat scenarios remain required.
+## Rare blueprint and state-token runtime evidence
+
+Guarded run `20260808T1915428002243Z-99c2bd30714c4647a7d91e40b494a6b0`
+(`observe-rare-firearm-blueprint-contracts`) passed on published commit
+`2fb5391ba27edfe67d032812ea94129ce6dc6086`, version `0.0.73`. The live graph
+and runtime items proved the exact eight-item identity/family/cost/weight/static
+enchantment catalog, exact-item Reliable and Seeking qualification, effective
+Reliable thresholds 0 and 2, and preservation of The Last Word's Enhancement
++5, Reliable, and Seeking enchantments across Loaded and Broken token changes.

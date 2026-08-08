@@ -1351,3 +1351,14 @@ lifecycle, native enhancement/Fey Bane, and Thundering scatter qualification.
 The typed rare-firearm blueprint/state observer passes all source/build/package
 gates. Commit and publish it, run it from the clean SHA, then implement the live
 Reliable direct/scatter matrix and Seeking/native-property combat scenarios.
+
+## Current resume point — combat-property runtime fixtures
+
+The guarded `observe-rare-firearm-blueprint-contracts` run
+`20260808T1915428002243Z-99c2bd30714c4647a7d91e40b494a6b0` passed on exact
+published source `2fb5391ba27edfe67d032812ea94129ce6dc6086`. It proved all eight
+live item identities/families/costs/weights/static enchantments, exact-item
+Reliable and Seeking resolution, Reliable thresholds 0 and 2, and preservation
+of The Last Word's three static enchantments across Loaded and Broken token
+replacement. Next implement the deterministic live Reliable direct/scatter and
+Seeking/native enhancement/Fey Bane/Thundering combat-property scenarios.

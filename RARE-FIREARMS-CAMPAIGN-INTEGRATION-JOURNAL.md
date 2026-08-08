@@ -239,3 +239,18 @@ gates and guarded blueprint contracts before vendor/loot publication.
   weakening request validation. Source validation, 935/935 tests, exact-reference
   Release, SoundBank, and strict package validation pass. Next: publish and run
   the clean-SHA observer, then build deterministic live combat scenarios.
+## 2026-08-08 — rare blueprint and token observer PASS
+
+- Published source: `2fb5391ba27edfe67d032812ea94129ce6dc6086`.
+- Guarded scenario: `observe-rare-firearm-blueprint-contracts`.
+- Run ID: `20260808T1915428002243Z-99c2bd30714c4647a7d91e40b494a6b0`.
+- Evidence directory: `20260808T1915427845823Z-observe-rare-firearm-blueprint-contracts`.
+- Result: PASS at loaded version `0.0.73` with exact source identity.
+- All eight live blueprint/item pairs matched GUID, canonical family, exact
+  price, family weight, and static-enchantment count. The Last Word authorized
+  Seeking while the +1 Pistol control did not; Duelist's Rebuttal supplied the
+  one-point Reliable reduction while the control supplied none.
+- The shared effective threshold service returned 0 for a normal Reliable
+  Pistol and 2 for a trained Broken Reliable Pistol. The Last Word retained all
+  three static enchantments before, during Loaded, and during Broken state-token
+  replacement (`3,3,3`).
