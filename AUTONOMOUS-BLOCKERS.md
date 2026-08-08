@@ -315,3 +315,8 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   event-order adapters failed to alter that native cache and the ineffective
   adapter was removed. This does not block independent archetype qualification,
   but it blocks a full-mod aggregate claim alongside Dodge.
+- These two aggregate defects do not block the archetypes' independent
+  definition of done. Exact final 0.0.73 Pistolero and Musket Master runtime
+  pairs and the canonical working-save pair all pass. No additional autonomous
+  archetype repair is justified; retain both defects as full-Gunslinger
+  blockers without attributing them to this mission.

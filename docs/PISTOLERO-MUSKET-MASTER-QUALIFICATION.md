@@ -1,6 +1,46 @@
 # Pistolero and Musket Master Qualification
 
-Status: archetype implementation complete; final repeated acceptance gates in progress.
+Status: Pistolero and Musket Master independently qualified; full Gunslinger
+aggregate remains blocked by inherited Dodge and unchanged-source Targeting
+Torso defects.
+
+## Final acceptance
+
+- Exact source used for final repeated runtime qualification:
+  `b705dab64f319cb009ef62f14242468b9f974efe`.
+- Repository validation, 930/930 deterministic tests, clean exact-reference
+  Release build, build-output validation, SoundBank validation, package
+  creation, and strict package validation: PASS.
+- Local-runtime package SHA-256:
+  `CFFD4404E27C3E1F914BFB639E91B25F279C0AF30D08700C243F1BADDE692868`.
+- DLL SHA-256:
+  `66DC6C2D6ED6EE3A3D8C1C6384838381E002518BC43CA797CFC1B26043536683`.
+- Final Pistolero fresh-process pair:
+  `20260808T1624471355384Z-disposable-pistolero-deeds` and
+  `20260808T1629242711771Z-disposable-pistolero-deeds` (PASS).
+- Final Musket Master fresh-process pair:
+  `20260808T1626568223855Z-musket-master-mechanics-and-starter` and
+  `20260808T1631331624682Z-musket-master-mechanics-and-starter` (PASS).
+- Canonical `KMG_AUTOMATION_WORKING` smoke pair:
+  `20260808T1633593219138Z-working-save-smoke` and
+  `20260808T1636230328110Z-working-save-smoke` (PASS, exact save correlation,
+  unchanged fingerprint, and no save-writing API).
+
+All required standalone, Arms & Armor, Toggle Custom Soundpacks, and qualified
+combined independently eligible archetype/high-risk matrices passed with exact
+sentinel restoration. The combined comprehensive assertion correctly remains
+failed for the two unrelated defects recorded in `AUTONOMOUS-BLOCKERS.md`.
+
+## Human-only Call of the Wild checklist
+
+In a new-game character-creation screen with the exact committed Call of the
+Wild profile, confirm only these catalog facts:
+
+- Gunslinger appears exactly once.
+- Mysterious Stranger, Pistolero, and Musket Master each appear exactly once.
+
+Until that check is complete, retain the public `CONFLICT-CONFIRMED` claim;
+the automated result is only a repaired-candidate PASS.
 
 ## Call of the Wild bounded repaired-candidate result
 

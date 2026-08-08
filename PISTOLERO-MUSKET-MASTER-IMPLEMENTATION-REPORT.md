@@ -1,6 +1,28 @@
 # Pistolero and Musket Master Implementation Report
 
-Status: mission-planning checkpoint only; implementation has not begun.
+Status: Pistolero and Musket Master independently implemented and qualified.
+
+The complete feature set is present at version 0.0.73. It includes stable
+archetype identities, canonical handedness, scoped proficiency and firearm EWP,
+the generalized exact starter transaction, family training, shared reload and
+per-attack range policies, both archetype progressions and deeds, archetype-
+aware True Grit, truthful presentation, reconciliation, and guarded fixtures.
+Existing identities and the merged optional-mod compatibility transaction and
+current-donor validation architecture are preserved.
+
+The optional ordinary-Gunslinger starter selection was safely deferred: the
+installed 2.1.7b API exposes only static class/archetype starting arrays and an
+`AddStartingItems(UnitDescriptor)` transaction with no committed selection
+input. Implementing it would require the post-hoc inventory surgery prohibited
+by the mission. Base Gunslinger, Mysterious Stranger, and Pistolero therefore
+retain the backward-compatible exact Pistol; Musket Master uses the native
+archetype replacement contract for the exact Musket.
+
+The full Gunslinger aggregate is not claimed green. It remains blocked by the
+inherited detached Gunslinger's Dodge missing-buff defect and an unchanged-
+source Targeting Torso cached-threat defect reproduced during the combined
+profile. Neither failure is caused by the archetypes, and no assertion was
+weakened.
 
 The feature branch starts from exact merged compatibility baseline
 `10b792735db5d685b46749dc08ea819f31fa8052`, version 0.0.72. The intended

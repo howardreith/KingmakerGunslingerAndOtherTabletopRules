@@ -1319,3 +1319,31 @@ Commit and publish this bounded compatibility evidence, then rebuild the exact
 committed package and run two fresh-process passes of every complete
 archetype-specific runtime slice followed by two eligible canonical
 `KMG_AUTOMATION_WORKING` save smokes.
+
+## 2026-08-08 - Final independent archetype acceptance PASS
+
+- Exact source `b705dab64f319cb009ef62f14242468b9f974efe` passed repository
+  validation, 930/930 tests, clean exact-reference Release, build-output,
+  SoundBank, package creation, and strict package validation.
+- Final package SHA-256 is
+  `CFFD4404E27C3E1F914BFB639E91B25F279C0AF30D08700C243F1BADDE692868`;
+  DLL SHA-256 is
+  `66DC6C2D6ED6EE3A3D8C1C6384838381E002518BC43CA797CFC1B26043536683`.
+- Pistolero fresh-process PASS pair: `20260808T1624471355384Z` and
+  `20260808T1629242711771Z`. Musket Master exact starter/mechanics PASS pair:
+  `20260808T1626568223855Z` and `20260808T1631331624682Z`.
+- Canonical working-save PASS pair: `20260808T1633593219138Z` and
+  `20260808T1636230328110Z`; both positively correlated
+  `KMG_AUTOMATION_WORKING`, preserved the fingerprint, and observed no save
+  write.
+- Pistolero and Musket Master are independently qualified. The full Gunslinger
+  aggregate remains blocked by the inherited detached Dodge missing-buff and
+  unchanged-source Targeting Torso cached-threat defects. The public Call of
+  the Wild claim remains `CONFLICT-CONFIRMED` pending the short human chargen
+  catalog check.
+
+## Exact next action
+
+Commit and publish this final curated handoff, verify the worktree is clean and
+local/origin SHA equality. No autonomous mission work remains after that
+publication; do not merge to master.

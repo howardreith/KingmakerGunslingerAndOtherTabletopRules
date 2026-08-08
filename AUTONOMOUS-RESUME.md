@@ -1243,3 +1243,14 @@ restored exactly. Preserve the public `CONFLICT-CONFIRMED` classification until
 human chargen confirmation. Next rebuild the committed package, run two final
 fresh-process passes of all complete archetype slices, and run two eligible
 canonical working-save smokes before final reports and hashes.
+
+Pistolero and Musket Master are independently qualified at the final 0.0.73
+candidate. Exact `b705dab64f319cb009ef62f14242468b9f974efe` passed the clean
+930-test/package gate, two Pistolero processes, two exact Musket Master starter/
+mechanics processes, and two canonical working-save smokes. Final package/DLL
+hashes are `CFFD4404...692868` / `66DC6C2D...536683`. The full Gunslinger
+aggregate remains blocked only by the recorded inherited Dodge and unchanged-
+source Torso defects. After the final documentation commit is published and
+local/origin equality is verified, no autonomous archetype mission action
+remains; do not merge. Call of the Wild still requires the short human chargen
+catalog check before its public classification may change.
