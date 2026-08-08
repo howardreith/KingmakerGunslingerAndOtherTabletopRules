@@ -60,7 +60,11 @@ The same run resolved exact installed authorities: Enhancement +1
 `WeaponConditionalDamageDice` and one `WeaponConditionalEnhancementBonus`;
 Thundering `690e762f7704e1f4aa1ac69ef0ce6a96`, cost 1, uses one
 `WeaponEnergyDamageDice` and has multiple native weapon donors. The exact
-Seeking identity/component remains pending a display-name/component-aware pass.
+Seeking is absent. Three materially distinct guarded graph strategies found no
+internal name, display name, donor, or concealment-component weapon enchantment;
+final run `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime ID
+`20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`. This triggers the
+work order's critical required-native-property stop.
 
 Final vendor-reference PASS
 `20260808T1739377557378Z-observe-vendor-table-contracts`, runtime ID

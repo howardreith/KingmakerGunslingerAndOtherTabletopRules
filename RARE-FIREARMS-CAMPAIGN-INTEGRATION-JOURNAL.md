@@ -55,10 +55,17 @@
   blacksmith table is selected. No enchantment internal or display name matched
   Seeking. A last materially distinct component-type scan is being added for
   concealment mechanics before applying the nonoptional-property hard stop.
+- Final component-based PASS
+  `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`, exact source
+  `d0e039a`, enumerated 17 relevant weapon enchantments and found neither a
+  Seeking identity/display nor any enchantment with a concealment component.
+  Together with the prior two live strategies and installed-assembly search,
+  this establishes the work order's critical required-native-property hard stop.
+  No production blueprint, vendor, loot, Reliable, or version change began.
 
 ## Exact next action
 
-Qualify, commit and publish the component-type Seeking scan; run it on the clean
-commit. If no native concealment enchantment exists, record the exact required-
-property absence and stop under the mission hard-stop contract; otherwise
-complete and publish the inventory before production blueprint registration.
+Stop. Await new authority changing the nonoptional native Seeking requirement
+or an authoritative installed-game asset providing it. Do not implement a
+custom substitute or begin production registration.

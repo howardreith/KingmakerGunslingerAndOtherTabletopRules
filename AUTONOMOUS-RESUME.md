@@ -17,6 +17,12 @@
   action is to qualify/commit/publish the display-name/vendor-reference observer
   refinement, resolve Seeking and the exact capital merchant, then publish the
   completed inventory before production registration.
+- CRITICAL STOP: final component-based run
+  `20260808T1744000629586Z-observe-vendor-table-contracts` found no native
+  Seeking enchantment, confirming two earlier name/display scans and installed-
+  assembly inspection. Await new authority changing the nonoptional property or
+  an authoritative asset supplying it. Do not implement a custom substitute or
+  begin production registration.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
   the approved helper and verify exact remote SHA after every commit.
 

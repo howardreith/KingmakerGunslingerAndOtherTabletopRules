@@ -1,5 +1,35 @@
 # Autonomous Gunslinger blockers
 
+## Rare Firearms mission — critical native Seeking absence (2026-08-08)
+
+The Rare Firearms and Campaign Integration work order requires The Last Word to
+use the installed native Seeking weapon enchantment and defines absence or
+unsafe impossibility of a required accepted native property other than optional
+Thundering as a critical hard stop.
+
+Three materially distinct checks found no native Seeking authority:
+
+1. Guarded blueprint-graph run
+   `20260808T1734599486274Z-observe-vendor-table-contracts` enumerated native
+   weapon enchantments by internal name and exact donors/components: no Seeking.
+2. Guarded run `20260808T1739377557378Z-observe-vendor-table-contracts` expanded
+   matching to localized display names: no Seeking.
+3. Guarded run `20260808T1744000629586Z-observe-vendor-table-contracts`, runtime
+   ID `20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`, exact source
+   `d0e039a705075f971673b660f742650b4d8f20b2`, independently selected every
+   `BlueprintWeaponEnchantment` with a concealment-related component as well as
+   name/display candidates. It returned 17 relevant enchantments and none was
+   Seeking or carried a concealment component. A separate exact installed
+   Assembly-CSharp type/string contract search found concealment/reroll mechanics
+   but no native Seeking enchantment authority.
+
+Do not custom-reimplement Seeking, remove it, rename another property, or begin
+production registration. Required resolution is new user authority changing the
+nonoptional native-property requirement or an authoritative installed-game asset
+that supplies the missing native enchantment.
+
+---
+
 ## 2026-08-07 Pistolero/Musket Master branch publication
 
 - Revision 2 mission baseline, unchanged qualification, and durable mission
