@@ -1215,3 +1215,9 @@ package/DLL hashes are `506CBF11...57F6F8` / `7DE2A590...2564B`. Commit and
 publish this transaction, then execute the required exact-profile matrices in
 the order standalone, Arms & Armor, Toggle Custom Soundpacks, qualified
 combined, and one bounded Call of the Wild sequence.
+
+Standalone 0.0.73 profile PASS is complete under sentinel transaction
+`compat-20260808T144718Z-253cb669aa6d`, with all eight committed scenarios PASS
+and exact restoration verified. Commit/publish this evidence, then continue
+immediately with Arms & Armor, Toggle Custom Soundpacks, qualified combined,
+and the bounded Call of the Wild profile.

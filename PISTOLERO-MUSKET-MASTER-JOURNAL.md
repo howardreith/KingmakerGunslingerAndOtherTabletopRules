@@ -1182,3 +1182,34 @@ Wild sequence.
 Rebuild the exact committed 0.0.73 local-runtime package, rerun the standalone
 profile matrix from the start under a fresh sentinel transaction, and require
 complete PASS plus exact restoration before advancing.
+
+## 2026-08-08 - Standalone 0.0.73 exact profile PASS
+
+- Exact source `571142b0952dee9b9fc3b4ebb720b2d2ea9bfa97`, package
+  `32A8932C202D3A0A8F002B6E760B34E601B19C5EEB1CCD35A90DE05BC618FB8C`,
+  and DLL `02D49756748E53DD2A63894A410C42F91F49D3E4EC9325A29DBAB833F5AFA4C4`
+  passed the complete committed `gunslinger-only` matrix.
+- Sentinel transaction `compat-20260808T144718Z-253cb669aa6d` finished
+  `Restored` with `restorationVerified=true`. Fresh PASS directories/run IDs:
+  - `20260808T1447492073497Z-mod-load-smoke` /
+    `20260808T1447492355401Z-334ab3a638ba4ce8b4311ee220abd89f`;
+  - `20260808T1449171091111Z-observe-optional-mod-compatibility` /
+    `20260808T1449171091111Z-e7dfa1d3c2f4424c9fd230b729184e14`;
+  - `20260808T1450447245633Z-observe-class-blueprint-contracts` /
+    `20260808T1450447458302Z-211886bfad55419ba05b8690f806d9d6`;
+  - `20260808T1452123012979Z-observe-gunslinger-presentation` /
+    `20260808T1452123012979Z-fd48134d9ee74280a396e6fab86077c6`;
+  - `20260808T1453394627264Z-disposable-firearm-dependent-feats` /
+    `20260808T1453394627264Z-33c3ee5ee61245c5b2ac7037f62e9c58`;
+  - `20260808T1455082601556Z-disposable-pistolero-deeds` /
+    `20260808T1455082601556Z-86749cab8bf7448cb1ea45435452636e`;
+  - `20260808T1456365229414Z-disposable-archetype-reconciliation` /
+    `20260808T1456365229414Z-d69c604c7d1246b5bbfc2872e41788d8`;
+  - `20260808T1458069915913Z-musket-master-mechanics-and-starter` /
+    `20260808T1458069915913Z-816b26aca1c144aabb3b40f1debea3be`.
+
+## Exact next action
+
+Commit/publish the standalone profile evidence, then run the Arms & Armor exact
+profile's committed archetype/identity/high-risk matrix and require sentinel
+restoration before continuing to Toggle Custom Soundpacks.
