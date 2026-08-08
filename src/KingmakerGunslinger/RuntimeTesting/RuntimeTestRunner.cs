@@ -3616,7 +3616,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
             OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
                 .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon pistol = typeof(OverhaulTestMusketAbilityLogic)
+                .GetField("m_TestMusket", BindingFlags.Instance |
+                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItemWeapon;
+            if (pistol == null) throw new InvalidOperationException(
+                "Overhaul ability exposed no exact configured firearm.");
             BlueprintItemWeapon magicPistol =
                 BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
