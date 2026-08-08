@@ -22,6 +22,13 @@ Three materially distinct checks found no native Seeking authority:
    Seeking or carried a concealment component. A separate exact installed
    Assembly-CSharp type/string contract search found concealment/reroll mechanics
    but no native Seeking enchantment authority.
+4. Continuation audit guarded run
+   `20260808T1748440170104Z-observe-vendor-table-contracts`, runtime ID
+   `20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, exact source
+   `ebef1c36d0cccf3e8db0bdb95051eda2a7bbf669`, inspected primitive, enum, and
+   string values on every weapon-enchantment component. The same 17 relevant
+   enchantments contained no Seeking, concealment, miss-chance, or blindness-
+   suppression value.
 
 Do not custom-reimplement Seeking, remove it, rename another property, or begin
 production registration. Required resolution is new user authority changing the

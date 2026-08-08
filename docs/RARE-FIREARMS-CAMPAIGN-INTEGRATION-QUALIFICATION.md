@@ -9,6 +9,12 @@ Kingmaker graph. Final component-based guarded PASS directory
 or concealment-component weapon enchantment. Production implementation and
 0.0.74 qualification did not begin.
 
+Continuation audit run
+`20260808T1748440170104Z-observe-vendor-table-contracts`, runtime ID
+`20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, also inspected
+all primitive, enum, and string component values and found no generically
+encoded concealment/Seeking mechanic. The hard stop is confirmed.
+
 - Baseline: `1c570bd4211d69c5c29f6af46a870146adb1645b`, 0.0.73.
 - Accepted prior evidence: 930/930 deterministic and clean Release/build/
   SoundBank/package plus repeated archetype and working-save runtime PASS.

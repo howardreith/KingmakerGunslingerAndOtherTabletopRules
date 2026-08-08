@@ -27,6 +27,9 @@
   components may encode concealment via scalar/enum values. A deeper observer is
   qualified and awaiting commit/publish/runtime execution; its result controls
   whether the provisional Seeking stop remains.
+- That deeper run passed at `20260808T1748440170104Z` and found no generic
+  concealment value. The Seeking hard stop is confirmed; no independent safe
+  forensics strategy remains. Await changed authority or an authoritative asset.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
   the approved helper and verify exact remote SHA after every commit.
 

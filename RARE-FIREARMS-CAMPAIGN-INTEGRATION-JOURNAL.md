@@ -69,9 +69,13 @@
   component's primitive, enum, and string fields and records their exact values.
   This deeper strategy passed repository validation, 930/930 tests, clean
   Release, build-output, SoundBank, package creation, and strict validation.
+- Deeper guarded run
+  `20260808T1748440170104Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, passed on exact
+  `ebef1c3` and found no generic scalar/enum/string concealment mechanic. The
+  provisional stop is confirmed; no independent safe evidence strategy remains.
 
 ## Exact next action
 
-Commit/publish and run the deeper scalar/enum observer. If it resolves a native
-Seeking authority, remove the provisional hard stop and continue inventory;
-otherwise retain the stop with the stronger exhaustive evidence.
+Stop under the confirmed required-native-Seeking hard stop. Await new authority
+or an authoritative installed asset; do not custom-implement or weaken Seeking.

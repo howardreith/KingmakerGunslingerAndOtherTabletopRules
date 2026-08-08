@@ -5,9 +5,10 @@ Status: forensics phase; no production behavior changed.
 Mission status: critical hard stop: the authoritative installed game contains
 no native Seeking weapon enchantment. Three materially distinct live graph
 strategies plus installed-assembly contract inspection found no identity,
-display name, donor, or concealment-component enchantment. Exact final run:
-`20260808T1744000629586Z-observe-vendor-table-contracts`, runtime ID
-`20260808T1744000942305Z-9576e406512a450bbe5766283bc57d5b`, source `d0e039a`.
+display name, donor, component type, or scalar/enum/string component value.
+Exact final run: `20260808T1748440170104Z-observe-vendor-table-contracts`,
+runtime ID `20260808T1748440250732Z-7e65d222eca74ef59b9522c572e1ac8e`, source
+`ebef1c3`.
 The work order forbids custom reimplementation and makes a missing required
 property other than optional Thundering a critical stop.
 
