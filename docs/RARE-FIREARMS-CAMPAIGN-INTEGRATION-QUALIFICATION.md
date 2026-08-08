@@ -91,3 +91,12 @@ Two guarded scatter strategies (runtime IDs
 the completed-native-roll boundary. Ovation is therefore qualified only as the
 specified +4 Reliable, effective +5, 52,300 gp fallback; final positive scatter
 qualification remains required after removal of the incompatible property.
+
+Final positive fallback qualification passed in guarded run
+`20260808T2025312832560Z-6f915d9e74bc4165963f48798ce00149` on source
+`9d9e4c88201e40e06030f26674d0b7c1969c0495`. The exact runtime static array was
+Enhancement +4 `783d7d496da6ac44f9511011fc5f1979` plus Reliable
+`ea10817126e14703878d00e84329244e`, with native Thundering absent. Mixed forced
+rolls 10/1 produced one target misfire without aggregate condition damage;
+forced 1/1 produced two misfires and one Normal-to-Broken transition. Exact
+event `IsSuccessRoll(d20)` fallback, one-chamber transaction, and cleanup passed.

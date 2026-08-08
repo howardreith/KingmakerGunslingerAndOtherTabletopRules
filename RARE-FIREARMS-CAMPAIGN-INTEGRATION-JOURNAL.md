@@ -300,3 +300,12 @@ gates and guarded blueprint contracts before vendor/loot publication.
 - This is the bounded installed-contract mismatch anticipated by the original
   work order. The authorized fallback is selected automatically: Irovetti's
   Ovation is +4 Reliable, effective +5, exact cost 52,300 gp, no Thundering.
+- Final fallback PASS: run
+  `20260808T2025312832560Z-6f915d9e74bc4165963f48798ce00149`, source
+  `9d9e4c88201e40e06030f26674d0b7c1969c0495`. The installed composition bypassed
+  the attack-roll setter, so Scatter now records the exact scoped
+  `IsSuccessRoll(d20)` value just as ordinary fire does. Mixed 10/1 yielded one
+  misfire and Normal condition; 1/1 yielded two misfires and exactly one
+  Normal-to-Broken log. The runtime item contained exactly Enhancement +4
+  `783d7d496da6ac44f9511011fc5f1979` and Reliable
+  `ea10817126e14703878d00e84329244e`, with no Thundering, and cleanup passed.

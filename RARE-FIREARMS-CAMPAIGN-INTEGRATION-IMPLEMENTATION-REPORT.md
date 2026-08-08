@@ -52,3 +52,9 @@ Thundering disposition is now resolved: installed
 a critical predicate, and two independent guarded scatter fixtures failed
 closed at native attack-roll completion. The authorized fallback is selected;
 Irovetti's Ovation is +4 Reliable, effective +5, exact cost 52,300 gp.
+
+The final fallback scatter run
+`20260808T2025312832560Z-6f915d9e74bc4165963f48798ce00149` passed on source
+`9d9e4c88201e40e06030f26674d0b7c1969c0495`: exact +4/Reliable static array,
+no Thundering, mixed and all-misfire per-target decisions, one aggregate
+condition transition, one chamber transaction, and exact cleanup all passed.
