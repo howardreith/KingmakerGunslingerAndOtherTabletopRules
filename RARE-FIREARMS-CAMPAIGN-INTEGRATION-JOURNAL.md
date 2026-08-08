@@ -133,3 +133,19 @@ and blueprint-contract observation on its exact clean SHA. Curate the run ID,
 then implement the remaining nine-blueprint magic-firearm catalog and shared
 Reliable threshold service; do not treat this scoped Seeking checkpoint as
 mission completion.
+
+- Published source `2ba3866a991df9107209a93dd7369d5072cc0cd7` passed the
+  guarded save-free observer. Evidence directory
+  `20260808T1839549682548Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1839549954807Z-f994425a76d245288d0c0bec7b29e2b6`, status PASS,
+  loaded 0.0.73 and exact Git source, duration 116,410 ms. The invoking command
+  host reached its 60-second wait limit while the independently guarded process
+  continued; the authenticated final structured result is authoritative and
+  Kingmaker exited normally. No save/UI/inventory mutation occurred.
+
+### Revised exact next action
+
+Implement the bounded Reliable enchantment and eight-item magic-firearm catalog
+as the remaining nine active registrations, including the shared effective
+misfire threshold service and canonical-family validation. Then re-run source
+gates and guarded blueprint contracts before vendor/loot publication.

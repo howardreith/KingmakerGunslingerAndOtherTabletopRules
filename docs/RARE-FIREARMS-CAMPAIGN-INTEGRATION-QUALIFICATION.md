@@ -37,3 +37,9 @@ exact stored-check/parent-attack/item resolver is fail-closed. Focused policy
 tests and the complete suite pass 935/935; clean Release, build-output,
 SoundBank, package and strict validation pass at the still-intermediate 0.0.73.
 Guarded runtime behavior and integrated 0.0.74 qualification remain pending.
+
+Seeking bootstrap checkpoint guarded PASS:
+`20260808T1839549682548Z-observe-vendor-table-contracts`, runtime ID
+`20260808T1839549954807Z-f994425a76d245288d0c0bec7b29e2b6`, exact source
+`2ba3866a991df9107209a93dd7369d5072cc0cd7`. This proves registration and patch
+load compatibility only; deterministic concealment combat remains pending.

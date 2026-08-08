@@ -21,6 +21,10 @@
   next action after commit/publication is guarded save-free bootstrap/blueprint
   observation on the clean SHA, followed by the remaining nine-blueprint magic
   catalog and Reliable shared threshold service.
+- Guarded save-free observer PASS on exact `2ba3866`: evidence
+  `20260808T1839549682548Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1839549954807Z-f994425a76d245288d0c0bec7b29e2b6`. Next implement
+  Reliable plus all eight items and the shared 0..20 threshold service.
 
 ---
 
