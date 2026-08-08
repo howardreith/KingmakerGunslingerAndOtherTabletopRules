@@ -3652,7 +3652,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
                 modeGranted = unit.Descriptor.HasFact(mode.Ability);
                 offByDefault = !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
-                marker = unit.Descriptor.AddFact(mode.Marker) as Buff;
+                var modeContext = new MechanicsContext(unit, unit.Descriptor,
+                    BlueprintBootstrap.ReloadTestMusketAbility, null,
+                    new TargetWrapper(unit));
+                marker = unit.Descriptor.Buffs.AddBuff(mode.Marker, modeContext, null);
+                marker = marker ?? unit.Descriptor.AddFact(mode.Marker) as Buff;
                 if (marker == null || !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker))
                     throw new InvalidOperationException("The request-local paper mode marker was rejected.");
                 weapon = new ItemEntityWeapon(pistol);

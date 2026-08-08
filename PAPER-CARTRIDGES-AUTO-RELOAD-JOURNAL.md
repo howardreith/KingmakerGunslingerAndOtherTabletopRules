@@ -146,3 +146,11 @@
   catalog was. Added the same save-free/basic-timeout scenario contract to
   `RuntimeAutomation.Common.ps1` and its exact preflight test list; 86 preflight
   checks PASS. No second Kingmaker process was created by that rejected request.
+- Exact-commit smoke on `6d81f96a679b6d14d52c845f786b35c9258e9e4e`
+  passed (evidence directory `20260808T2218450837788Z-mod-load-smoke`). The first
+  launched Paper scenario run
+  `20260808T2221032802923Z-71effcc5272d44c2823e830ac010dae6` ended ERROR before
+  ammunition/state mutation: the disposable fixture used `UnitDescriptor.AddFact`
+  for a `BlueprintBuff`, which returned no live Buff. Changed only the fixture to
+  established native `Buffs.AddBuff` with an exact `MechanicsContext`, retaining
+  AddFact as a narrow fallback. Production mode state remains native fact-owned.
