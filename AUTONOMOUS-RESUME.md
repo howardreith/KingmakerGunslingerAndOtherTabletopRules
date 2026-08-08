@@ -1201,3 +1201,9 @@ qualified. Generic archetype presentation and class observers passed on exact
 and qualify archetype persistence/reconciliation transitions and starter
 identity invariants, then continue to the bounded base-starter investigation,
 version/profile transaction, compatibility profiles, and final gates.
+
+Reconciliation is now runtime-qualified on exact `e47bf17` in
+`20260808T1425513568150Z-disposable-archetype-reconciliation`; the five native
+respec transitions all passed with exact external rollback. The next action is
+the bounded installed-code base-starter-choice investigation, followed by the
+version/profile transaction and final qualification matrix.

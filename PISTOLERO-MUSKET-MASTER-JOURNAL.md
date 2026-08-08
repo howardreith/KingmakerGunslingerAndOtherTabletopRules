@@ -1071,3 +1071,37 @@ Implement and qualify archetype persistence/reconciliation coverage for
 base-to-archetype, archetype-to-base, and archetype-to-archetype transitions,
 including stale deed/marker/training/proficiency cleanup and invariant starter
 identity with no repeated native grant.
+
+## 2026-08-08 - Archetype reconciliation guarded PASS
+
+- Added native `LevelUpController.AddArchetype(BlueprintArchetype)` selection
+  to the existing reversible broad-respec handler and a five-transition matrix:
+  base to Pistolero, base to Musket Master, each archetype to base, and
+  Pistolero to Musket Master.
+- Repository validation, 930/930 deterministic tests, clean Release,
+  SoundBank, package, and strict package validation pass.
+- The first guarded run produced a complete runtime PASS but its outer command
+  timeout interrupted orchestration finalization, so it is retained only as
+  diagnostic evidence and was not accepted.
+- Exact committed source `e47bf17881e01ac0c3ab47c11f234f4edbb4b50b`
+  passed unambiguously in directory
+  `20260808T1425513568150Z-disposable-archetype-reconciliation`, run ID
+  `20260808T1425513926441Z-748835f6d40d4c5b95f0c73b151f0521`.
+  Every transition installed the exact target archetype/family proficiency and
+  Grit, removed the replaced archetype, and restored party, unit, companion,
+  cross-scene, shared-inventory, and money references exactly. No save
+  interaction occurred.
+- Package SHA-256
+  `7666A16E0A4502B93AE79939F8CB473EB41D06165887910344FA8BBD93976BB1`;
+  DLL SHA-256
+  `E328D511087BB8D16EBE0949B203C9EAAF2044ACE511C42B133F3463C22604E8`.
+  The combined Musket fixture separately proves repeated starting-item
+  observations retain one exact owner-bound Musket and stable 20/20 stacks.
+
+## Exact next action
+
+Perform the bounded installed-code investigation for an explicit ordinary
+Gunslinger starting-firearm choice. Implement only if the initial native
+starting-item transaction can consume the committed selection without delayed
+inventory surgery; otherwise record exact deferral evidence, then execute the
+version/profile transaction and final compatibility/runtime gates.

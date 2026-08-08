@@ -304,3 +304,7 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   combined Musket Master starter/mechanics, expanded Pistolero deed, generic
   presentation, and class observers are runtime-qualified. Persistence,
   compatibility, and final integration gates remain autonomous.
+- Archetype reconciliation is now independently runtime-qualified across five
+  native respec transitions. No new blocker was established; the bounded
+  ordinary-Gunslinger starting-firearm choice remains a non-blocking secondary
+  investigation.
