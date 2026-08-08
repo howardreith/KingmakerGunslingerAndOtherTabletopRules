@@ -1105,3 +1105,28 @@ Gunslinger starting-firearm choice. Implement only if the initial native
 starting-item transaction can consume the committed selection without delayed
 inventory surgery; otherwise record exact deferral evidence, then execute the
 version/profile transaction and final compatibility/runtime gates.
+
+## 2026-08-08 - Base starting-firearm choice safely deferred
+
+- Exact installed 2.1.7b reflection confirms `BlueprintCharacterClass` has one
+  static `BlueprintItem[] StartingItems`; `BlueprintArchetype` has only static
+  `ReplaceStartingEquipment`, `StartingGold`, and `StartingItems` fields.
+- The native grant entry point is exactly
+  `void LevelUpHelper.AddStartingItems(UnitDescriptor)` and receives no
+  committed feature-selection/item argument. Although `LevelUpController`
+  exposes `SelectFeature` and `AddArchetype`, the installed blueprint/runtime
+  surface contains no conditional starting-item map.
+- An explicit ordinary-class choice would therefore require synthesized or
+  delayed inventory replacement, or unsafe shared-array mutation. All are
+  forbidden by the secondary objective. Weapon Focus remains rejected because
+  it does not resolve timing, multiplicity, respec, or old-save ambiguity.
+- Decision: defer the optional choice. Preserve exact Pistol default for base
+  Gunslinger/Mysterious Stranger and Pistolero; preserve Musket Master's native
+  exact Musket replacement contract.
+
+## Exact next action
+
+Derive and apply the next patch-version transaction, updating Info/assembly
+identity plus the compatibility schema and every exact package pin without
+changing profile identities or historical evidence. Run the complete clean
+gate, commit/publish, then begin the required exact-profile runtime matrix.

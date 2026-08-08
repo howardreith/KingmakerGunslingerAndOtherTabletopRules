@@ -83,6 +83,27 @@ event and target isolation, native Prone delivery, and cleanup. The remaining
 critical/misfire/scatter/Dead Shot/expiry/fault/True Grit branches are not yet
 claimed and remain required in the expanded final scenario.
 
+Expanded Pistolero mechanics subsequently passed on exact `c381eb0` in
+`20260808T1405262267429Z-disposable-pistolero-deeds`, including critical,
+misfire, scatter, final Dead Shot, and duplicate-callback contracts. Combined
+Musket Master mechanics and exact starter qualification passed on exact
+`e178ec6` in `20260808T1356019112005Z-musket-master-mechanics-and-starter`.
+
+Generic presentation and class observers passed exact `1cd4b27` in
+`20260808T1412495842884Z-observe-gunslinger-presentation` and
+`20260808T1414251995558Z-observe-class-blueprint-contracts`. Five native
+archetype reconciliation transitions passed exact `e47bf17` in
+`20260808T1425513568150Z-disposable-archetype-reconciliation`; the fixture
+restored all external collections, inventory, and money and performed no save
+interaction.
+
+The optional explicit base starting-firearm choice is safely deferred. Exact
+installed-code inspection found only static class/archetype starting-item
+arrays and `AddStartingItems(UnitDescriptor)`, with no native conditional item
+selection contract. Implementing it would require prohibited synthesized or
+post-hoc inventory mutation. This does not affect the mandatory exact Musket
+Master grant or core completion.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,

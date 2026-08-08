@@ -67,3 +67,24 @@ owns the exact battered expected starter. The base default remains Pistol until
 the archetype identities are wired. This shared phase passes 922 tests and the
 full Release/package gate; mandatory Musket runtime proof still awaits the
 Musket Master blueprint.
+
+## Explicit base starting-firearm choice decision
+
+Deferred as the authorized non-blocking outcome. Exact installed Kingmaker
+2.1.7b reflection shows that `BlueprintCharacterClass` exposes only one static
+`BlueprintItem[] StartingItems`, while `BlueprintArchetype` exposes the static
+`ReplaceStartingEquipment`, `StartingGold`, and `BlueprintItem[] StartingItems`
+contract used by Musket Master. The exact native grant surface is only
+`LevelUpHelper.AddStartingItems(UnitDescriptor)`; it accepts no selection or
+selected-item argument. `LevelUpController` can commit feature selections and
+archetypes, but there is no native conditional starting-item mapping.
+
+Consequently an ordinary-Gunslinger Pistol/Musket feature selection could only
+affect inventory through a Harmony-side synthesized grant, delayed replacement,
+or global/static starting-array mutation. Those designs violate the mission's
+no-synthesis/no-post-hoc-surgery and save-safety requirements. Weapon Focus was
+also rejected: the installed surface does not cure its ambiguous timing,
+multiplicity, later-level, and respec semantics. Base Gunslinger and Mysterious
+Stranger therefore retain the exact backward-compatible Pistol default;
+Pistolero resolves Pistol and Musket Master uses the mandatory native archetype
+Musket array.
