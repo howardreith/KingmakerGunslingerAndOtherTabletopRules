@@ -18,3 +18,14 @@ This report will be updated at every coherent implementation checkpoint with:
 - remaining uncertainty and human-only observations.
 
 No completion claim is made at this checkpoint.
+
+## Publication hard stop
+
+Local durable-document commit `c962e33` is clean and ready to publish. The
+required approved helper refused the feature branch because its external
+allowlist does not contain `codex/pistolero-musket-master-archetypes`. No raw
+push or policy workaround was attempted. Implementation has not begun, so no
+partially registered blueprints or runtime behavior exist.
+
+Required human action: update the repository push-helper allowlist for the
+exact feature branch, then rerun the approved helper and verify the remote SHA.

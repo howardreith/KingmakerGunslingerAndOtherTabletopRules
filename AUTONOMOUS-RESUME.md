@@ -1,5 +1,27 @@
 # Autonomous Gunslinger resume handoff
 
+## Pistolero and Musket Master mission resume point (2026-08-07)
+
+Revision 2 begins from exact merged master
+`10b792735db5d685b46749dc08ea819f31fa8052`, version 0.0.72, on dedicated branch
+`codex/pistolero-musket-master-archetypes`. Unchanged repository validation,
+911/911 domain tests, exact Release/build-output/SoundBank/strict packaging, and
+guarded mod-load/class-contract/presentation observers pass. Exact evidence and
+hashes are in `PISTOLERO-MUSKET-MASTER-JOURNAL.md`.
+
+Durable mission documents are locally committed at `c962e33`. The exact
+approved push helper refused the branch because its external allowlist has not
+been updated for this mission. Do not raw-push, edit/bypass the helper, or reuse
+the obsolete compatibility branch. Human action required: allowlist
+`codex/pistolero-musket-master-archetypes`, rerun the approved helper, and verify
+origin points to `c962e33` (or the immediately following blocker-record commit).
+
+After publication, the exact next engineering action is the mandatory
+pre-implementation inventory of starting-item, proficiency, training, reload,
+range, deed, True Grit, presentation, bootstrap, compatibility, observer, test,
+and installed Kingmaker contracts. Do not write archetype features before that
+inventory and replacement-symbol annotation are complete.
+
 ## Optional-mod compatibility mission resume point (2026-08-07)
 
 New human authority: exact Call of the Wild 1.14.4c-2.1 reaches character

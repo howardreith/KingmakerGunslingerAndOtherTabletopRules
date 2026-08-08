@@ -24,6 +24,13 @@ The inherited detached Dodge failure and the two distinct Call of the Wild
 evidence classifications are recorded in the journal. No feature evidence or
 runtime qualification is claimed yet.
 
+## Current blocker
+
+The required publication helper refused local checkpoint `c962e33` because the
+new feature branch is not in its external allowlist. This is a policy blocker,
+not a source, build, package, runtime, or compatibility failure. No bypass was
+attempted and feature implementation has not started.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,

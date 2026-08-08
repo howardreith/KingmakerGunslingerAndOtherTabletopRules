@@ -55,6 +55,19 @@
 
 ## Exact next action
 
-Commit and publish the five durable mission documents, verify the remote SHA,
-then inspect and document every mandatory pre-implementation source and exact
-installed Kingmaker contract before writing archetype features.
+Checkpoint `c962e33` committed the five durable mission documents. The exact
+required push helper was invoked and refused the branch before network access:
+
+`Refusing to push non-allowlisted branch
+'codex/pistolero-musket-master-archetypes'. Allowed branches:
+codex/firearm-wwise-audio, codex/firearm-native-weapon-rigs,
+codex/postbase-archetypes-compatibility`.
+
+This is a workstation-policy hard stop under section 17 of the work order. Raw
+push, helper modification, policy workaround, reuse of the obsolete compatibility
+branch, or further unpublishable source commits are not authorized.
+
+Exact next action: a human must add
+`codex/pistolero-musket-master-archetypes` to the approved push helper allowlist.
+Then rerun the exact helper, verify origin points to `c962e33`, and resume with
+the mandatory pre-implementation source and installed-contract inventory.

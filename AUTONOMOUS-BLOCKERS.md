@@ -1,5 +1,21 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-07 Pistolero/Musket Master branch publication
+
+- Revision 2 mission baseline, unchanged qualification, and durable mission
+  documents are committed locally as `c962e33` on required branch
+  `codex/pistolero-musket-master-archetypes`.
+- The exact approved push helper refused the branch because its external
+  allowlist contains only `codex/firearm-wwise-audio`,
+  `codex/firearm-native-weapon-rigs`, and
+  `codex/postbase-archetypes-compatibility`.
+- Raw push, helper modification, policy workaround, and reuse of the obsolete
+  compatibility branch are prohibited. The work order classifies this required
+  policy conflict as a hard stop.
+- Human action: add `codex/pistolero-musket-master-archetypes` to the approved
+  helper allowlist. Then publish `c962e33`, verify the remote SHA, and resume at
+  the mandatory pre-implementation inventory.
+
 ## 2026-08-07 Call of the Wild character-class catalog
 
 - Human exact-build evidence reached new-game character creation. Call of the
