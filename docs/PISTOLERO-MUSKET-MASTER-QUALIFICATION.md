@@ -74,6 +74,15 @@ Twin Shot Knockdown's live blueprint contract passed under exact source
 The result proves the targeted free action, feature-owned tracker, AddFacts
 link, and shared-Grit reference. Behavioral qualification remains pending.
 
+The first clean combined Pistolero mechanics slice passed under exact source
+`ebafc8ba8b87d6976448797a9f9e65fddb48f2a7` in guarded directory
+`20260808T1309347685793Z-disposable-pistolero-deeds`, runtime run ID
+`20260808T1309347962805Z-5e29dca207904e6fafa2aed622f074c8`.
+It proves Up Close hit/miss/immunity grit and marker effects, Twin Shot distinct
+event and target isolation, native Prone delivery, and cleanup. The remaining
+critical/misfire/scatter/Dead Shot/expiry/fault/True Grit branches are not yet
+claimed and remain required in the expanded final scenario.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,

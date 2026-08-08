@@ -770,3 +770,30 @@ Commit/publish the passing disposable Pistolero fixture and armed-marker
 hardening, rebuild at that exact commit, rerun `disposable-pistolero-deeds`
 without dirty-state authorization, and record only the clean PASS as final deed
 behavior evidence.
+
+## 2026-08-08 - Clean Pistolero deed mechanics evidence
+
+- Clean committed-source guarded directory
+  `20260808T1309347685793Z-disposable-pistolero-deeds` passed under runtime run
+  ID `20260808T1309347962805Z-5e29dca207904e6fafa2aed622f074c8`,
+  exact source `ebafc8ba8b87d6976448797a9f9e65fddb48f2a7`, version 0.0.72.
+- All seven assertions passed: Up Close hit, miss roll-once half packet, and
+  precision-immunity consumption; Twin Shot distinct-event deduplication,
+  per-target isolation, native Prone and grit; exact fixture cleanup; and loaded
+  version. Observed grit was `5 -> 4 -> 3 -> 3`, then Twin Shot refilled to five
+  and spent to four. The test difficulty multiplier transformed the fixed half
+  packet after its pre-delivery integer halving, so structured damage observed
+  6 for both the 1d6 full packet and fixed 3-point half packet.
+- Exact committed package SHA-256:
+  `F57368F75BF64C1A69C5EE40743368F41EE4F2C38DF380575774B4152344BE62`;
+  DLL SHA-256:
+  `BB89B8B0204C88471DC3E1A4855E61E41C093369E3080865DD1CA2E94F30D518`.
+- This fixture qualifies the implemented core slice. Critical, misfire,
+  scatter, Dead Shot, marker expiry, fault injection, True Grit, and full
+  progression reconciliation remain in the expanded scenario matrix.
+
+## Exact next action
+
+Commit/publish this clean deed evidence, then implement archetype-aware True
+Grit ownership choices and wire Steady Aim, Fast Musket, Twin Shot Knockdown,
+and Focused Aim into the authoritative runtime cost/positive-grit service.
