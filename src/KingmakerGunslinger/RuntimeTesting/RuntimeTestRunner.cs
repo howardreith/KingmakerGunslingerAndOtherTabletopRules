@@ -9379,6 +9379,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             string firstDamage = mixed == null || mixed.Attacks.Length == 0 ||
                 mixed.Attacks[0] == null ? "<missing>" :
                 DescribeNestedObject(mixed.Attacks[0].MeleeDamage, 8);
+            BlueprintWeaponEnchantment[] fallbackEnchantments =
+                typeof(BlueprintItemWeapon).GetField("m_Enchantments",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic).GetValue(blunderbuss) as
+                    BlueprintWeaponEnchantment[];
+            bool fallbackStatic = fallbackEnchantments != null &&
+                fallbackEnchantments.Length == 2 &&
+                fallbackEnchantments.Any(value => value != null &&
+                    value.AssetGuid == MagicFirearmBlueprints.Enhancement4Guid) &&
+                fallbackEnchantments.Any(value => ReferenceEquals(value,
+                    BlueprintBootstrap.MagicFirearms.Reliable)) &&
+                !fallbackEnchantments.Any(value => value != null &&
+                    value.AssetGuid == "690e762f7704e1f4aa1ac69ef0ce6a96");
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("scatter-command-contract-and-transaction",
@@ -9394,15 +9407,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Normal -> Broken (scatter misfire)"),
                     "IWarningNotificationUIHandler event consumed by BattleLogManager"),
                 Assertion("scatter-thundering-fallback",
-                    "authorized +4 Reliable fallback contains no Sonic/Thundering damage packet",
-                    firstDamage,
+                    "authorized fallback is exactly +4 Reliable, excludes native Thundering, and still hits",
+                    "static=" + (fallbackEnchantments == null ? "<null>" :
+                        string.Join(",", fallbackEnchantments.Select(value =>
+                            value.name + ":" + value.AssetGuid).ToArray())) +
+                        ";damageGraph=" + firstDamage,
                     mixed != null && mixed.Attacks.Length > 0 &&
                     mixed.Attacks[0].AttackRoll != null &&
                     mixed.Attacks[0].AttackRoll.IsHit &&
-                    mixed.Attacks[0].MeleeDamage != null &&
-                    firstDamage.IndexOf("Sonic", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    firstDamage.IndexOf("Thundering", StringComparison.OrdinalIgnoreCase) < 0,
-                    "native RuleAttackWithWeapon damage graph after installed-contract fallback"),
+                    fallbackStatic,
+                    "exact BlueprintItemWeapon static enchantment array plus native scatter attack"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned, "disposable units and item token removed"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
