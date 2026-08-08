@@ -1186,8 +1186,9 @@ only `KMG_AUTOMATION_WORKING`; never load or mutate
 from Continue/newest ordering. Stop on ambiguous identity, entitlement, UI,
 prerequisite, save-write, or result evidence.
 
-Pistolero/Musket Master active checkpoint: the combined
-`musket-master-mechanics-and-starter` fixture is source-qualified on the current
-branch. Commit/publish it, then run it only through the guarded Steam harness
-with exact save `KMG_AUTOMATION_WORKING`; preserve the native inventory,
-class/archetype, money, and no-save-write rollback assertions.
+Pistolero/Musket Master active checkpoint: exact `e178ec6` passed the combined
+Musket Master mechanics/starter scenario with exact Musket/no-Pistol, 20/20,
+kit, battered ownership, repeat stability, scoped proficiency, reload, range,
+training, rollback, and no save writes. Commit the curated evidence, then close
+the remaining expanded Pistolero deed branches and Twin Shot cleanup/turn
+boundaries before persistence, compatibility, version, and final gates.

@@ -955,3 +955,26 @@ scenario against `KMG_AUTOMATION_WORKING` through Steam App ID 640820.
 
 Commit/publish the Musket-specific assertion repair and rerun the combined
 scenario on the exact committed package.
+
+## 2026-08-08 - Combined Musket Master runtime PASS
+
+- Exact committed source `e178ec680ea169e33d40304a78075c6a1fb0b472`
+  passed `musket-master-mechanics-and-starter` in directory
+  `20260808T1356019112005Z-musket-master-mechanics-and-starter`, runtime run ID
+  `20260808T1356019268485Z-7808ed952fa7458dab8395135cc948c3`.
+- Live evidence proves the exact production Musket and no Pistol, 20 powder,
+  20 balls, one kit, exact battered owner/receiver, stable repeated native
+  callback, two-handed scoped proficiency, Fast Musket/Rapid Reload ordering,
+  Steady Aim before Deadeye increment/cost, rank-4 Musket Training, exact
+  inventory/class/archetype/gold/money rollback, and no save-writing API.
+- Package SHA-256
+  `F807B79490F1363DACE7EFC63AB2D8F38F64C0F58377FB3AEF88875C52D608B3`;
+  DLL SHA-256
+  `5F6B316D3050E5B504A1D79FEF82420D223F587862C91E1E6C643BE779BE71C4`.
+
+## Exact next action
+
+Commit/publish this curated PASS, then audit and close the remaining expanded
+Pistolero deed branches (critical, misfire, scatter, Dead Shot, expiry,
+duplicate callback, delivery rollback) and Twin Shot cleanup/turn boundaries
+before persistence, presentation, compatibility, version, and final gates.
