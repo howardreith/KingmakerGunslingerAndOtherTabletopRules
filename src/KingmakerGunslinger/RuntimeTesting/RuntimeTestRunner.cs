@@ -4339,7 +4339,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                controlRoll = new RuleAttackRoll(attacker, target, control, 0);
+                controlRoll = new RuleAttackRoll(attacker, target, control, -100);
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(control, 1);
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(controlRoll);
@@ -4352,7 +4352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
-                seekingRoll = new RuleAttackRoll(attacker, target, seeking, 0);
+                seekingRoll = new RuleAttackRoll(attacker, target, seeking, -100);
                 Enchantments.SeekingConcealmentRuntime.QueueForcedRoll(seeking, 1);
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
                 Rulebook.Trigger(seekingRoll);
@@ -4362,11 +4362,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ",success=" + controlRoll.IsHit + ",concealment=" +
                     (controlRoll.ConcealmentCheck == null ? "none" :
                         controlRoll.ConcealmentCheck.Concealment + ":" +
-                        controlRoll.ConcealmentCheck.Roll) + ";seeking=" +
+                        controlRoll.ConcealmentCheck.Roll) + ",roll=" +
+                    controlRoll.Roll + ",bonus=" + controlRoll.AttackBonus +
+                    ",ac=" + controlRoll.TargetAC + ";seeking=" +
                     seekingRoll.Result + ",success=" + seekingRoll.IsHit +
                     ",concealment=" + (seekingRoll.ConcealmentCheck == null ?
                         "none" : seekingRoll.ConcealmentCheck.Concealment + ":" +
-                        seekingRoll.ConcealmentCheck.Roll);
+                        seekingRoll.ConcealmentCheck.Roll) + ",roll=" +
+                    seekingRoll.Roll + ",bonus=" + seekingRoll.AttackBonus +
+                    ",ac=" + seekingRoll.TargetAC;
                 bool sameNativeConcealment = controlRoll.ConcealmentCheck != null &&
                     seekingRoll.ConcealmentCheck != null &&
                     controlRoll.ConcealmentCheck.Concealment ==
