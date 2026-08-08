@@ -710,6 +710,7 @@ namespace KingmakerGunslinger.Bootstrap
                 try
                 {
                     GunslingerStartingFirearmResolver.Rollback();
+                    Reloading.FastMusketRuntime.Rollback();
                     Feats.NativeFirearmFeatIntegration.Rollback();
                 }
                 catch (Exception nativeFeatRollbackException)

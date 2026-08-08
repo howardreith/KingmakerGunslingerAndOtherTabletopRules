@@ -497,6 +497,7 @@
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
+    <Compile Include="Reloading\FastMusketRuntime.cs" />
     <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />

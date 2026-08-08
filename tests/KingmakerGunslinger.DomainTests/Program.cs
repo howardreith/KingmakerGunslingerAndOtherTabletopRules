@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-starter.exact-kind", ArchetypeFoundationTests.StartingFirearmExactKind),
             Case("archetype-training.thresholds-and-families", ArchetypeFoundationTests.TrainingThresholdsAndFamilies),
             Case("archetype-training.overlap-and-negative-dex", ArchetypeFoundationTests.TrainingOverlapAndNegativeDexterity),
+            Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),

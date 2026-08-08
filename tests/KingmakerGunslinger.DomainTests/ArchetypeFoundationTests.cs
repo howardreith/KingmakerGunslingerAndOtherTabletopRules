@@ -2,6 +2,7 @@ using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Classes;
+using KingmakerGunslinger.Reloading;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -220,6 +221,37 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 FirearmTrainingPolicy.Evaluate(FirearmKind.Pistol, 1,
                     false, 5, 0), "Invalid training rank did not fail closed.");
+        }
+
+        internal static void FastMusketReloadMatrix()
+        {
+            var musket = FirearmDefinitions.CreateEarlyMusket();
+            var blunderbuss = FirearmDefinitions.CreateEarlyBlunderbuss();
+            var rifle = FirearmDefinitions.CreateAdvancedRifle();
+            Assertions.Equal(EffectiveReloadAction.Standard,
+                ReloadActionEconomy.Evaluate(musket, false, true),
+                "Ordinary Rapid Reload Musket changed.");
+            Assertions.Equal(EffectiveReloadAction.Move,
+                ReloadActionEconomy.Evaluate(musket, true, true),
+                "Fast Musket plus Rapid Reload Musket changed.");
+            Assertions.Equal(EffectiveReloadAction.Standard,
+                ReloadActionEconomy.Evaluate(musket, true, false),
+                "Fast Musket did not make Musket use the one-handed profile.");
+            Assertions.Equal(EffectiveReloadAction.Standard,
+                ReloadActionEconomy.Evaluate(blunderbuss, true, false),
+                "Fast Musket did not apply to direct two-handed Blunderbuss reload.");
+            Assertions.Equal(EffectiveReloadAction.Move,
+                ReloadActionEconomy.Evaluate(blunderbuss, true, true),
+                "Fast Musket/Rapid Reload Blunderbuss composition changed.");
+            Assertions.Equal(EffectiveReloadAction.Move,
+                ReloadActionEconomy.Evaluate(rifle, true, false),
+                "Fast Musket incorrectly accelerated an already-Move rifle.");
+            Assertions.Equal(EffectiveReloadAction.Free,
+                ReloadActionEconomy.Evaluate(rifle, true, true),
+                "Rapid Reload did not reduce Fast-Musket-eligible rifle to Free.");
+            Assertions.Equal(EffectiveReloadAction.Standard,
+                ReloadActionEconomy.Evaluate(FirearmDefinitions.CreateEarlyPistol(),
+                    true, false), "Fast Musket affected a one-handed firearm.");
         }
     }
 }

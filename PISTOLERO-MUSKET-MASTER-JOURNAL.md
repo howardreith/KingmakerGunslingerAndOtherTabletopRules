@@ -301,3 +301,28 @@ before extending the central reload-action policy for Fast Musket.
 Commit/publish this evidence record, then extend the existing central reload
 policy with Fast Musket state and the complete required Musket/Blunderbuss/Rifle
 matrix, preserving current base and Lightning Reload behavior.
+
+## 2026-08-08 - Fast Musket reload-policy foundation
+
+- Extended the single existing reload-action policy with a Fast Musket input.
+  It first maps eligible two-handed FullRound profiles to Standard, then applies
+  matching Rapid Reload one step. Already-Move advanced rifles remain Move until
+  Rapid Reload reduces them to Free; one-handed firearms are unaffected.
+- Added the complete Musket/Blunderbuss/Rifle matrix plus one-handed regression
+  coverage. Existing two-argument callers retain their exact behavior.
+- Added one configurable state service that requires the exact Fast Musket fact
+  and either positive grit or its exact future True Grit choice. Presentation,
+  command construction, ordinary availability, and full-attack auto-reload all
+  re-read this state; until the archetype fact is registered it fails closed.
+- Complete suite passes 925/925; exact-reference Release, build-output,
+  SoundBank, package creation, and strict validation pass.
+- Candidate package SHA-256:
+  `46A419FF6E779115CA67D1A7DDA5611679433B8038E4FDA77009DA8E3D4CFAB5`;
+  DLL SHA-256:
+  `46355F9241789C796D8C1ADD8593A4C28405F5C88472A3520623D4A6375A012C`.
+
+## Exact next action
+
+Commit/publish the Fast Musket policy foundation, run existing reload and
+full-attack reload guarded regressions, record evidence, then inspect and add
+the per-attack effective-range context required by Steady Aim.

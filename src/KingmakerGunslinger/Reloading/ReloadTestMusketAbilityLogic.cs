@@ -90,6 +90,7 @@ namespace KingmakerGunslinger.Reloading
                         m_LeadBall);
                 return result.IsAvailable && (m_DynamicAction || ReloadActionEconomy.Evaluate(
                     result.Firearm.Definition,
+                    FastMusketRuntime.IsAvailable(ability.Caster),
                     RapidReloadRuntime.HasMatchingChoice(ability.Caster,
                         result.Firearm.Definition.Kind)) == m_Action);
             }
