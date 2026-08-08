@@ -3773,7 +3773,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
                 .OfType<BlueprintWeaponEnchantment>()
-                .Where(value => IsRareFirearmNativeEnchantmentCandidate(value.name))
+                .Where(IsRareFirearmNativeEnchantmentCandidate)
                 .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
             FieldInfo enchantmentsField = typeof(BlueprintItemWeapon).GetField(
                 "m_Enchantments", Flags);
@@ -3802,6 +3802,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparer.Ordinal).ToArray();
             Dictionary<string, List<string>> lootReferences =
                 BuildDirectBlueprintReferenceIndex(allBlueprints, lootCandidates);
+            Dictionary<string, List<string>> vendorReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints, tables);
             foreach (BlueprintScriptableObject candidate in lootCandidates)
             {
                 var loot = candidate as BlueprintLoot;
@@ -4010,7 +4012,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(" | ", records.ToArray());
             observed += ";nativeEnchantments=" + string.Join(" | ",
                 enchantmentRecords.ToArray()) + ";lootCandidates=" + string.Join(
-                    " | ", lootCandidateRecords.ToArray());
+                    " | ", lootCandidateRecords.ToArray()) +
+                ";vendorDirectReferences=" + string.Join(" | ", tables.Select(table =>
+                {
+                    List<string> references;
+                    return table.name + ":" + table.AssetGuid + "=" +
+                        (vendorReferences.TryGetValue(table.AssetGuid, out references) ?
+                            string.Join(",", references.Take(30).ToArray()) : string.Empty);
+                }).ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("vendor-table-catalog",
@@ -4089,9 +4098,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
-        private static bool IsRareFirearmNativeEnchantmentCandidate(string name)
+        private static bool IsRareFirearmNativeEnchantmentCandidate(
+            BlueprintWeaponEnchantment enchantment)
         {
-            string value = name == null ? string.Empty : name.ToLowerInvariant();
+            string value = ((enchantment == null ? string.Empty : enchantment.name) +
+                " " + (enchantment == null ? string.Empty : enchantment.Name))
+                .ToLowerInvariant();
             return value.Contains("enhancement1") || value.Contains("enhancement2") ||
                 value.Contains("enhancement4") || value.Contains("enhancement5") ||
                 value.Contains("seeking") || value.Contains("thundering") ||

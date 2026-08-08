@@ -12,6 +12,11 @@
   commit/publish the repair, run `observe-vendor-table-contracts`
   on the clean commit, curate exact enchantment/merchant/loot evidence, and
   publish the completed inventory before production registration.
+- The repaired run passed at `20260808T1734599486274Z`; five fixed targets and
+  native enhancement/Fey Bane/Thundering contracts are recorded. Current next
+  action is to qualify/commit/publish the display-name/vendor-reference observer
+  refinement, resolve Seeking and the exact capital merchant, then publish the
+  completed inventory before production registration.
 - Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
   the approved helper and verify exact remote SHA after every commit.
 

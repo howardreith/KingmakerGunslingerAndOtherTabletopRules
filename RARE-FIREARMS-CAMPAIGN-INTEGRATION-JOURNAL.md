@@ -37,9 +37,19 @@
   only blueprint-valued fields and arrays. The repaired source again passed
   repository validation, 930/930 tests, clean Release, build-output, SoundBank,
   package creation, and strict package validation.
+- Repaired guarded PASS:
+  `20260808T1734599486274Z-observe-vendor-table-contracts`, runtime ID
+  `20260808T1734599848444Z-0502d6b37e1a4049a522927f30c23f3a`, exact source
+  `2dc9f99`. It resolved native enhancement, Fey Bane and Thundering contracts
+  and 437 bounded fixed loot candidates. Five exact base-campaign targets were
+  selected in the acquisition inventory using area/chapter/theme/distinctness.
+- The internal-name filter did not resolve Seeking, and the existing unit-only
+  vendor owner graph did not identify Smith/general table owners. A final
+  bounded forensics refinement now also matches enchantment display names and
+  indexes direct references for all 43 vendor tables.
 
 ## Exact next action
 
-Commit/publish the qualified observer, run `observe-vendor-table-contracts` on
-the clean commit, curate exact enchantment/merchant/loot evidence, and publish
-the completed inventory before production blueprint registration.
+Qualify, commit and publish the display-name/vendor-reference refinement; run
+it on the clean commit; select the exact capital merchant and Seeking contract;
+then publish the completed inventory before production blueprint registration.

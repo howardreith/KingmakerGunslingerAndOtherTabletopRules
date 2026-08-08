@@ -27,3 +27,37 @@ No fixed loot target is selected yet. The next observer must inventory exact
 `BlueprintLoot`/`BlueprintUnitLoot` candidates, contents, owners, areas, DLC,
 fixed/random contract and reference counts for Act 3/4, Pitax and final act.
 Static shared publication is proven; save-owned legacy vendor cleanup is not.
+
+## Fixed campaign selections from live graph
+
+Guarded PASS `20260808T1734599486274Z-observe-vendor-table-contracts`, runtime
+ID `20260808T1734599848444Z-0502d6b37e1a4049a522927f30c23f3a`, enumerated
+437 bounded candidates. Each selection is `BlueprintLoot`, fixed `LootEntry[]`,
+base-campaign area-owned, and has zero direct references from another registered
+blueprint in the exposed graph (the exact area field is the ownership evidence).
+
+| Item | Target GUID / exact name | Area / chapter | Existing fixed contents | References / nature | Disposition |
+|---|---|---|---|---|---|
+| Duelist's Rebuttal | `193b1222846a0114197e716cb35d3ce8` / `Forest_cache` | `VordakaiTombLevel2` (`b4789ad28d5ae9340bf4ea2ed747a8b0`), Act 4 | BreastplateStandartPlus3 ×1 | zero registered direct refs; area-owned fixed martial cache | Selected |
+| The River King's Measure | `b34367a637010f743815aed5875152bd` / `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` | `IrovettiPalace` (`bf9dbc2998849ee40bbdba9cb40a7d4c`), Pitax | fixed gems/valuables (full record in run) | zero registered direct refs; royal-chambers fixed chest | Selected |
+| Irovetti's Ovation | `485300a2036a763499aa77ebac1f83c6` / `Forest_PoorLoot_PuzzleItem3_Instrument` | `IrovettiPalace`, Pitax | `PuzzleItem3_Instrument` ×1 | zero registered direct refs; distinct performance-instrument cache | Selected |
+| The Last Word | `36d315a81b36980438e2ef1a866791d1` / `FirstWorld_BasementGoodLoot01` | `HouseAtTheEdgeOfTime_Basement` (`859897014d874bb4a9d8ad1a94d266bb`), final act | `TheEndItem` ×1 | zero registered direct refs; non-hidden good-loot capstone | Selected |
+| Watch at the World's End | `5a9b9e4b884ae064fa7caa5a13eab065` / `FirstWorld_VeryGoodHiddenLoot02` | `HouseAtTheEdgeOfTime` (`13e7006bce054ce4e82b5064b2f3f8ff`), final act | `ForewarningShieldItem` ×1 | zero registered direct refs; separate deterministic hidden treasure | Selected |
+
+Rejected examples include repeated generic `Forest_FatLoot`/`PoorLoot` palace
+containers, empty/quest-book placeholders, and DLC/other-area armories. The two
+Pitax and two final targets are distinct exact blueprints.
+
+## Native enchantment contracts
+
+The same run resolved exact installed authorities: Enhancement +1
+`d42fc23b92c640846ac137dc26e000d4`, +2
+`eb2faccc4c9487d43b3575d7e77ff3f5`, +4
+`783d7d496da6ac44f9511011fc5f1979`, and +5
+`bdba267e951851449af552aa9f9e3992`, each using exactly one native
+`WeaponEnhancementBonus` and matching `EnchantmentCost`; Fey Bane
+`b6948040cdb601242884744a543050d4`, cost 1, uses one
+`WeaponConditionalDamageDice` and one `WeaponConditionalEnhancementBonus`;
+Thundering `690e762f7704e1f4aa1ac69ef0ce6a96`, cost 1, uses one
+`WeaponEnergyDamageDice` and has multiple native weapon donors. The exact
+Seeking identity/component remains pending a display-name/component-aware pass.
