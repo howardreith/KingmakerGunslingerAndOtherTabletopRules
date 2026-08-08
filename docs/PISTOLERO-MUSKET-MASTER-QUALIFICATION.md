@@ -45,6 +45,13 @@ evidence: its PASS contained only the inherited class assertions because the
 new assertion call was registered in the wrong scenario. The correction and a
 method-local source test preceded the passing run above.
 
+Steady Aim's live blueprint contract passed under source
+`a0fe0e8018216f8e73d57e5c925e34edd98d04d0` in guarded directory
+`20260808T1204211142376Z-observe-class-blueprint-contracts`, runtime run ID
+`20260808T1204211365604Z-b1036159eeab40a3a958d461fa91b107`. The result proves
+the move action, exact feature/ability/marker linkage, and shared Grit identity;
+it does not yet qualify behavioral attack consumption or range delivery.
+
 ## Required final evidence
 
 The final report will separate deterministic, exact-reference, package,

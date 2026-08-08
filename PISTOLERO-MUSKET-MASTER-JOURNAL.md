@@ -562,3 +562,25 @@ Commit/publish Steady Aim, then run the fresh guarded class-blueprint observer
 and require the new `steady-aim-blueprint-contract` assertion before adding a
 dedicated disposable mechanics scenario for arming, consumption, range, grit,
 scatter exclusion, expiry, and metadata immutability.
+
+## 2026-08-08 - Steady Aim live blueprint evidence
+
+- Guarded directory
+  `20260808T1204211142376Z-observe-class-blueprint-contracts` produced a final
+  PASS after the outer shell reached its 120-second wait ceiling. The final
+  artifact was inspected directly; Kingmaker then completed its requested exit.
+- Runtime run ID `20260808T1204211365604Z-b1036159eeab40a3a958d461fa91b107`,
+  exact source `a0fe0e8018216f8e73d57e5c925e34edd98d04d0`, version 0.0.72.
+- `steady-aim-blueprint-contract` PASS proves the live move-action ability,
+  exact AddFacts/armed-marker linkage, and exact shared Grit references. All
+  prior Musket Master native assertions remained PASS.
+- This is live blueprint evidence. Behavioral qualification still requires the
+  dedicated disposable Steady Aim scenario.
+
+## Exact next action
+
+Commit/publish the curated Steady Aim blueprint evidence, then add the guarded
+disposable Steady Aim mechanics scenario and prove positive/zero grit, arming,
+wrong-family preservation, direct-shot consumption, +10-foot context, scatter
+exclusion, round expiry, unit isolation, duplicate-callback idempotence, and
+unchanged shared firearm metadata.
