@@ -366,3 +366,9 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   pairs and the canonical working-save pair all pass. No additional autonomous
   archetype repair is justified; retain both defects as full-Gunslinger
   blockers without attributing them to this mission.
+# Paper Cartridges work order status
+
+No new mission hard stop is known at intake. The inherited detached Gunslinger's
+Dodge and Targeting Torso aggregate defects remain unrelated and out of scope.
+Bokken is unresolved pending the bounded exact installed-table investigation;
+an evidence-backed Bokken-only defer is explicitly non-blocking.

@@ -1414,3 +1414,14 @@ Quick Clear static lifecycle passed in run
 `a329a1260beb73bde362b506e8ab1c96ab7de1ba`. Next complete reconciliation and
 inventory-transfer isolation, then native enhancement/Fey Bane damage evidence,
 0.0.74 versioning, compatibility profiles, and final regression passes.
+# Active work order: Paper Cartridges
+
+Branch: `codex/paper-cartridges-auto-reload`
+
+Baseline: `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`
+
+Durable contract: `planning/PAPER-CARTRIDGES-AUTO-RELOAD-MISSION.md`
+
+Current checkpoint: Phase 0 intake. Finish the current-source replacement
+inventory, run unchanged baseline gates, commit and publish the durable intake
+checkpoint, and verify remote equality before production mechanics.
