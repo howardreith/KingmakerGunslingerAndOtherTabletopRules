@@ -1230,3 +1230,9 @@ Toggle Custom Soundpacks also passed its complete eight-scenario matrix with
 exact Mods/SoundBank restoration under `compat-20260808T151456Z-9d71de2d9c6e`.
 Publish this evidence, then run qualified combined followed by the single
 bounded Call of the Wild sequence.
+
+Qualified combined core and high-risk transactions passed and restored exactly.
+Its comprehensive run retains inherited Dodge and newly reproduces the
+unchanged-source Torso cached-threat defect documented in the journal/blockers;
+all archetype-specific slices remain PASS. Next run exactly one bounded Call of
+the Wild sequence, then proceed to final fresh archetype passes and reports.

@@ -308,3 +308,10 @@ The Sprint 83 human-input gate is resolved by explicit authorization of option
   native respec transitions. No new blocker was established; the bounded
   ordinary-Gunslinger starting-firearm choice remains a non-blocking secondary
   investigation.
+- The 0.0.73 qualified-combined comprehensive run reproduced the inherited
+  detached Dodge missing-buff failure and additionally exposed an unchanged-
+  source Targeting Torso cache defect: forced natural 19 and live edge 19 are
+  observed, but Kingmaker's cached `IsCriticalRoll` remains false. Two bounded
+  event-order adapters failed to alter that native cache and the ineffective
+  adapter was removed. This does not block independent archetype qualification,
+  but it blocks a full-mod aggregate claim alongside Dodge.

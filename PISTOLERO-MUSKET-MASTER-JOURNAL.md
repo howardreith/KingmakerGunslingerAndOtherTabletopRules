@@ -1259,3 +1259,35 @@ Commit/publish this profile evidence, then execute the qualified combined
 Arms & Armor plus Toggle Custom Soundpacks committed matrix, including Musket
 Master, inherited firearm high-risk scenarios, and the comprehensive expected
 inherited-Dodge attribution, with exact transaction restoration.
+
+## 2026-08-08 - Qualified combined core/high-risk PASS; aggregate blockers
+
+- Core transaction `compat-20260808T152745Z-35e5eadbd66c` passed load,
+  compatibility/class/presentation observers, scoped feats, Pistolero,
+  reconciliation, and exact Musket Master starter/mechanics; restoration PASS.
+- High-risk transaction `compat-20260808T153737Z-6b2000910f38` passed firearm
+  rigs, production switching, Targeting Arms, Wwise, Scatter Shot, and reload
+  autocast; restoration PASS.
+- Comprehensive transaction `compat-20260808T154549Z-ef344b998e51` restored
+  exactly but failed two slices in directory
+  `20260808T1546182219418Z-disposable-gunslinger-comprehensive-acceptance`:
+  the byte/evidence-equivalent inherited Dodge missing-buff failure, plus a
+  newly surfaced unchanged-source Targeting Torso cached-threat failure.
+- Focused Torso runs `20260808T1548345846739Z`,
+  `20260808T1554027866534Z`, `20260808T1557582993861Z`, and
+  `20260808T1602084417244Z` prove forced natural 19, live critical edge 19,
+  bonus 1, hit/native damage, but cached `IsCriticalRoll=false`. The Torso
+  runtime and RuleAttackRoll patch are byte/source-unchanged from baseline.
+  Two bounded event-order adapters were tested; neither changed the cached
+  engine state and the ineffective adapter was removed. This unrelated defect
+  is not silently waived or attributed to either archetype.
+- All archetype-specific and independently eligible combined-profile scenarios
+  remain PASS. Full Gunslinger aggregate remains blocked by inherited Dodge and
+  the newly reproduced unchanged-source Torso cache defect.
+
+## Exact next action
+
+Commit/publish the clean diagnostic state and evidence, then execute exactly
+one bounded Call of the Wild profile sequence (load, compatibility, class,
+presentation, scoped feats, Pistolero, reconciliation) and preserve its public
+CONFLICT-CONFIRMED classification pending human chargen confirmation.
