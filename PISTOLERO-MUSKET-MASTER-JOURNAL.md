@@ -116,3 +116,35 @@ tests before generalizing the starting-firearm observer.
 Commit/publish canonical handedness, then add stable one-handed/two-handed
 proficiency blueprints and a pure full-or-matching-scope policy. Transactionally
 rewire production firearm restrictions and focused tests before adding EWP.
+
+## 2026-08-08 - Scoped firearm proficiency foundation
+
+- Added stable manifest-backed one-handed and two-handed proficiency facts; the
+  existing full `KMG.Firearms.FirearmProficiency` GUID and behavior are unchanged.
+- Added one pure `FirearmProficiencyPolicy`: exactly one known marker is required;
+  full proficiency permits all five kinds; one-handed permits Pistol/Revolver;
+  two-handed permits Musket/Blunderbuss/Rifle; missing facts, unknown kinds, and
+  ambiguous marker counts fail closed.
+- Each production firearm restriction now stores its exact project kind plus
+  exact full/one-/two-handed facts. The development Test Musket retains its
+  historical full-only overload and cannot leak into archetype starter logic.
+- Scoped action grants are exact: one-handed grants the existing Reload action;
+  two-handed grants the same Reload plus existing Scatter Shot. No duplicate
+  abilities were created.
+- Appended two new GUIDs without changing existing entries. Bootstrap count is
+  208 active; manifest ledger is 209 stable IDs including one reserved.
+- Repository validation, complete 919/919 suite, clean exact-reference Release,
+  build-output, SoundBank, package creation, and strict validation pass.
+- Candidate package SHA-256:
+  `D3627BBCFDC818D2D25E0CB5795B21A87B91C5B2EB73F04AA8A6CA072648E17F`;
+  DLL SHA-256:
+  `2A8A2846464A339342F6E8A18E8CB7415D66581F4FB9077FA9FF4379D58A05AB`.
+- Guarded mod load requires a clean Git state, so the first dirty-tree launch
+  was correctly rejected before deployment. Commit/publish this source-qualified
+  phase, then run fresh mod load against the exact commit.
+
+## Exact next action
+
+Commit/publish scoped proficiency, run guarded `mod-load-smoke`, record the run,
+then inspect exact BAB/duplicate prerequisite APIs and implement the single EWP
+(Firearms) publication plus scoped firearm-feat prerequisites.

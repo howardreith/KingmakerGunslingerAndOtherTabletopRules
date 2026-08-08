@@ -133,6 +133,7 @@
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
+    <Compile Include="Blueprints\FirearmScopedProficiencyBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProjectileBlueprints.cs" />
     <Compile Include="Blueprints\FirearmRepairKitBlueprints.cs" />
     <Compile Include="Blueprints\GunslingerClassBlueprints.cs" />
@@ -280,6 +281,7 @@
     <Compile Include="Firearms\ProductionFirearmWeaponSpec.cs" />
     <Compile Include="Firearms\FirearmDomainProbe.cs" />
     <Compile Include="Firearms\FirearmProficiencyRestriction.cs" />
+    <Compile Include="Firearms\FirearmProficiencyPolicy.cs" />
     <Compile Include="Firearms\FirearmItemId.cs" />
     <Compile Include="Firearms\IFirearmItemIdentityProvider.cs" />
     <Compile Include="Firearms\IFirearmStateIdentityRecordStore.cs" />

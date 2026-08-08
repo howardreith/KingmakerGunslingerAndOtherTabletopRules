@@ -28,6 +28,12 @@
       "notes": "Hidden shared firearm-proficiency fact used by firearm equipment restrictions and future class progression."
     },
     {
+      "symbol": "KMG.Firearms.OneHandedFirearmProficiency", "guid": "1c6f66f734f64535a7de50030023a0dd", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Hidden scoped proficiency fact for exact one-handed firearm kinds."
+    },
+    {
+      "symbol": "KMG.Firearms.TwoHandedFirearmProficiency", "guid": "cbf3d4e79b6144b9b76480d8b242d37c", "plannedType": "BlueprintFeature", "status": "active", "milestone": "Pistolero and Musket Master", "notes": "Hidden scoped proficiency fact for exact two-handed firearm kinds."
+    },
+    {
       "symbol": "KMG.Test.TestMusketWeaponType",
       "guid": "6e499550b44c41b3a1ef0693904a46b8",
       "plannedType": "BlueprintWeaponType",

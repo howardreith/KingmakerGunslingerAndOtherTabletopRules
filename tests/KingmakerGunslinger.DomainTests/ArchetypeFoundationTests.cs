@@ -62,5 +62,65 @@ namespace KingmakerGunslinger.DomainTests
                 FirearmHandednessPolicy.Require((FirearmKind)999),
                 "Undefined kind did not fail closed.");
         }
+
+        internal static void FullProficiencyPermitsAll()
+        {
+            foreach (FirearmKind kind in new[] { FirearmKind.Pistol,
+                FirearmKind.Revolver, FirearmKind.Musket,
+                FirearmKind.Blunderbuss, FirearmKind.Rifle })
+                Assertions.True(FirearmProficiencyPolicy.CanUse(1, kind,
+                    true, false, false), "Full proficiency rejected " + kind + ".");
+        }
+
+        internal static void OneHandedProficiencyExact()
+        {
+            Assertions.True(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Pistol,
+                false, true, false), "Pistolero scope rejected Pistol.");
+            Assertions.True(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Revolver,
+                false, true, false), "Pistolero scope rejected Revolver.");
+            foreach (FirearmKind kind in new[] { FirearmKind.Musket,
+                FirearmKind.Blunderbuss, FirearmKind.Rifle })
+                Assertions.False(FirearmProficiencyPolicy.CanUse(1, kind,
+                    false, true, false), "Pistolero scope admitted " + kind + ".");
+        }
+
+        internal static void TwoHandedProficiencyExact()
+        {
+            foreach (FirearmKind kind in new[] { FirearmKind.Musket,
+                FirearmKind.Blunderbuss, FirearmKind.Rifle })
+                Assertions.True(FirearmProficiencyPolicy.CanUse(1, kind,
+                    false, false, true), "Musket Master scope rejected " + kind + ".");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Pistol,
+                false, false, true), "Musket Master scope admitted Pistol.");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Revolver,
+                false, false, true), "Musket Master scope admitted Revolver.");
+        }
+
+        internal static void ProficiencyFailsClosed()
+        {
+            Assertions.False(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Pistol,
+                false, false, false), "Absent proficiency admitted a firearm.");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(0, FirearmKind.Pistol,
+                true, true, true), "Missing marker admitted a firearm.");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(2, FirearmKind.Pistol,
+                true, true, true), "Multiple markers admitted a firearm.");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(1, FirearmKind.Unknown,
+                true, true, true), "Unknown kind was admitted.");
+            Assertions.False(FirearmProficiencyPolicy.CanUse(1, (FirearmKind)999,
+                true, true, true), "Undefined kind was admitted.");
+        }
+
+        internal static void ScopedActionAccess()
+        {
+            Assertions.False(FirearmProficiencyPolicy.GrantsScatter(
+                FirearmHandedness.OneHanded),
+                "One-handed proficiency incorrectly grants Scatter Shot.");
+            Assertions.True(FirearmProficiencyPolicy.GrantsScatter(
+                FirearmHandedness.TwoHanded),
+                "Two-handed proficiency did not grant Scatter Shot.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                FirearmProficiencyPolicy.GrantsScatter(FirearmHandedness.Unknown),
+                "Unknown proficiency scope did not fail closed.");
+        }
     }
 }
