@@ -1,5 +1,19 @@
 # Autonomous Gunslinger resume handoff
 
+## Active rare-firearms mission — 2026-08-08
+
+- Branch `codex/rare-firearms-campaign-integration`; exact baseline
+  `1c570bd4211d69c5c29f6af46a870146adb1645b`, version 0.0.73.
+- Durable records exist; guarded read-only vendor run
+  `20260808T1720275373614Z-observe-vendor-table-contracts` passed.
+- Next: commit/publish this checkpoint, then add and run bounded read-only native
+  enchantment/merchant/loot/reference forensics and publish completed inventory
+  before production registration.
+- Preserve inherited Dodge/Targeting Torso and CotW classifications. Use only
+  the approved helper and verify exact remote SHA after every commit.
+
+---
+
 ## Pistolero and Musket Master mission resume point (2026-08-07)
 
 Revision 2 begins from exact merged master
