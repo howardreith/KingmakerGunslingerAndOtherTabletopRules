@@ -619,3 +619,13 @@
 - Candidate package SHA-256 `334537365c7f60affd53f6699183108cb3f84b302e42f219425d4eaea8ed55bd`; DLL SHA-256 `231da5dc57e770764a221c707c901a001f9a2c61722e65f29541a388357167f9`.
 - Current uncertainty: integrated and standalone guarded runs must prove exact native Cord interception and damage after the corrected buff lifecycle.
 - Next concrete action: commit/publish the lifecycle correction, rerun integrated Acadamae, then rerun standalone Cord.
+
+## 2026-08-09 — integrated Acadamae and Cord runtime PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `0ba00d8dfeb158f38549c7a3c45726194e2165fc`; active version 0.0.74.
+- Guarded directory `20260809T1707329121440Z-disposable-acadamae-graduate`, run `20260809T1707329436853Z-db01bfecec7e499cbab79df10c51cf1c`, PASS 7/7 in 102,601 ms through Steam App ID 640820; no save interaction.
+- Exact native spell: `SummonMonsterISingle` GUID `8fd74eddd9b6c224693d9ab241f25e84`, Wizard level 1. Prepared invocation and Full-Round-to-Standard presentation/runtime parity passed. Native Fortitude success and failure completed once each at DC 16; failed save applied the exact native Fatigued buff. Cancellation left completion count unchanged and applied no fatigue.
+- Integrated Cord chain passed: failed save reached the exact equipped Cord, native d6 roll 2 produced exactly 2 capped untyped self-damage, no Fatigued condition remained, and cleanup passed. `cordHpBefore=31`, `cordRoll=2`, `cordApplied=2`, `cordDamage=2`.
+- Settings/live deployment transaction preserved the guarded request boundary; orchestration recorded automatic exit and no save interaction.
+- Current uncertainty: the new player-facing Cord substitution notification needs a standalone Cord regression run, followed by a second fresh integrated PASS for the required primary pair.
+- Next concrete action: publish this runtime checkpoint, rerun `disposable-cord-of-stubborn-resolve`, then obtain a second fresh integrated Acadamae PASS.
