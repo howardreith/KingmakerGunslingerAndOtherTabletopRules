@@ -110,3 +110,13 @@
 - Rejected theory: continue trying common external naming variants. The installed graph is now authoritative.
 - Current uncertainty: donor GUID and actual +2 equip delta remain for the dedicated Cord observer, but identity bootstrap can now proceed against a proven singular installed internal asset.
 - Next concrete action: correct the donor name to `BeltOfConstitution2`, run all gates, commit/publish, and repeat guarded `mod-load-smoke` for 250/250 registration proof.
+
+## 2026-08-09 — always-loaded identity runtime PASS
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `b1a4c77e0caabbb1072a60cfba7788294f9cd26c`; active version 0.0.74.
+- Guarded Steam-backed scenario directory `20260809T1349054900940Z-mod-load-smoke`, run ID `20260809T1349055057348Z-7613cbfdc1df4925a9005c417a483da7`, PASS in 94,295 ms.
+- Structured assertions PASS 3/3: loaded version 0.0.74, executing runtime identity, and ready core initialization. UMM evidence records exact successful registrations for Acadamae `7939ff087cb843729448589ba2de19f1` and Cord `c4b804d9ebf941b4842b0a461a2b6b6d`, followed by `blueprints.initialize.complete`; the enforced registry invariant is 250.
+- This launch used the installed exact Call of the Wild order (`BagOfTricks`, `CallOfTheWild` 1.14.4c-2.1, then Gunslinger) and retained Gunslinger once in the final 48-class catalog. That is useful exact-order evidence but does not yet prove final selector reconciliation or Acadamae feat publication.
+- Candidate package SHA-256 `e63c654beaae1c577aabff30850fc525b24d5bb6519b48253c088a2e22120a44`; DLL SHA-256 `c3b0c287ffe7cdb632bc4ad1b1c2639d4918eea38ab24d00c4418a36da79539b` from the source qualification preceding commit `b1a4c77`.
+- Current uncertainty: prerequisite, publication, action/cast correlation, Cord substitution, and vendor mechanics remain unimplemented; identity existence alone makes no claim about them.
+- Next concrete action: implement and test the exact specialist-Wizard/no-Conjuration-opposition prerequisite adapter and Acadamae general-feat publication transaction.

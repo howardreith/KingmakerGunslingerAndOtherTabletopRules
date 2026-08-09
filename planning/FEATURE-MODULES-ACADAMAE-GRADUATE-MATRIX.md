@@ -8,7 +8,7 @@
 | Durable mission records | PASS | This matrix and companion inventories |
 | UMM settings contract | PASS | Exact 0.32.4 signatures recorded; project JSON selected for malformed-byte quarantine/atomicity |
 | Four module combinations | TODO | Deterministic and fresh-process runtime matrix |
-| Constant identity set | IN PROGRESS | 250 active identities planned: 248 unchanged plus append-only Acadamae and Cord GUIDs; registration proof pending |
+| Constant identity set | PASS | Guarded run `20260809T1349054900940Z-mod-load-smoke`: bootstrap complete with both appended GUIDs and expected 250-registration invariant |
 | Gunslinger publication boundary | IN PROGRESS | Boundary inventory underway |
 | Acadamae prerequisite/publication | TODO | Exact installed blueprint inventory required |
 | Acadamae casting/save mechanics | TODO | Exact action/cast lifecycle inventory required |
