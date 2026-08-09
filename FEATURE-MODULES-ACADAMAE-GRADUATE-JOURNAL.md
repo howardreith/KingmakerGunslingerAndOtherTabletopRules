@@ -517,3 +517,20 @@
 - Candidate package SHA-256 `be59a56e3a9fe4d993dc0e09b83cfbcb77706f17ae1766a95878a30e31743260`; DLL SHA-256 `135c2271508b89fffa144a4020bf990b5530b16df8ef658d644e7525029c083d`.
 - Current uncertainty: runtime must show whether Intelligence 18 causes the committed Wizard spellbook to materialize its owned level-one slots.
 - Next concrete action: commit/publish the casting-stat correction and rerun the guarded Acadamae scenario.
+
+## 2026-08-09 — casting score alone does not refresh native daily slots
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `7607223ceafe976b903808d88996b4429cd47751`; active version 0.0.74.
+- Guarded directory `20260809T1639451960618Z-disposable-acadamae-graduate`, run `20260809T1639452142795Z-d6cb2e845fec4db4805bd4ed68cb804a`, ERROR after 85,577 ms with the same empty owned level-one slot result. Automatic cleanup/exit completed.
+- Rejected theory: Intelligence 18 alone causes `ApplyLevelup` to materialize memorization slots on a detached CharGen unit. It does not.
+- Exact installed public contract inspection found `Spellbook.UpdateAllSlotsSize(bool allowShrink)` and `Spellbook.Rest()`, alongside private `SureMemorizedSpells`. The fixture now invokes the public non-shrinking slot refresh and native rest after level commit, before adding/memorizing the candidate. It does not use reflection or mutate private serialized lists.
+- Current uncertainty: the public slot refresh must be observed against this detached committed spellbook; downstream assertions remain pending.
+- Next concrete action: fully qualify and publish the public native slot-refresh fixture, then rerun the guarded scenario.
+
+## 2026-08-09 — public native slot refresh source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `7607223ceafe976b903808d88996b4429cd47751`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `d34b097a0a052a6d2ce533a3e099f1eb1a5cadd0b3135656102960c46a67301d`; DLL SHA-256 `3e09e9fecbb46752f6494130ceb648e9f907779e261e1263e9037000f295776c`.
+- Current uncertainty: the public refresh/rest behavior and downstream Acadamae chain require guarded runtime observation.
+- Next concrete action: commit/publish this exact lifecycle fixture and rerun `disposable-acadamae-graduate`.

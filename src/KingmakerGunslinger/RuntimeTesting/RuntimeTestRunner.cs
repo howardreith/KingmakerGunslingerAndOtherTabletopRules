@@ -6972,6 +6972,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
                 if (spellbook == null) throw new InvalidOperationException(
                     "Native Wizard level did not create its spellbook.");
+                spellbook.UpdateAllSlotsSize(false);
+                spellbook.Rest();
                 spellbook.AddKnown(spellLevel, spell, true);
                 unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
 
