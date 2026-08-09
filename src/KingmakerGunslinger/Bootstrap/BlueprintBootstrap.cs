@@ -582,6 +582,7 @@ namespace KingmakerGunslinger.Bootstrap
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
+            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -591,6 +592,9 @@ namespace KingmakerGunslinger.Bootstrap
                     AcadamaeGraduateBlueprints.Register(library, registry);
                 BlueprintItemEquipmentBelt cordOfStubbornResolve =
                     CordOfStubbornResolveBlueprints.Register(library, registry);
+                if (publicationPlan.AcadamaeFeat)
+                    acadamaeFeatPublication = AcadamaeFeatCatalogPublication.Publish(
+                        library, acadamaeGraduate);
 
                 BlueprintFeature firearmProficiency =
                     FirearmProficiencyBlueprints.Register(registry);
@@ -902,6 +906,16 @@ namespace KingmakerGunslinger.Bootstrap
                     {
                         context.Logger.Failure("blueprints", "firearm-feats.rollback-failed",
                             "Blueprint initialization failed and firearm feat catalog rollback was refused.",
+                            featRollbackException);
+                    }
+                }
+                if (acadamaeFeatPublication != null)
+                {
+                    try { acadamaeFeatPublication.Rollback(); }
+                    catch (Exception featRollbackException)
+                    {
+                        context.Logger.Failure("blueprints", "acadamae-feat.rollback-failed",
+                            "Blueprint initialization failed and Acadamae feat rollback was refused.",
                             featRollbackException);
                     }
                 }

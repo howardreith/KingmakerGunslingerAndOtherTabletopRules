@@ -47,6 +47,7 @@
     <Compile Include="Acadamae\AcadamaePrerequisiteRequest.cs" />
     <Compile Include="Acadamae\AcadamaePrerequisiteDecision.cs" />
     <Compile Include="Acadamae\AcadamaePrerequisitePolicy.cs" />
+    <Compile Include="Acadamae\PrerequisiteAcadamaeGraduate.cs" />
     <Compile Include="Cord\CordConditionKind.cs" />
     <Compile Include="Cord\CordSubstitutionDecision.cs" />
     <Compile Include="Cord\CordSubstitutionPolicy.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
+    <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\CordOfStubbornResolveBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintId.cs" />
     <Compile Include="Blueprints\BlueprintLibraryLookup.cs" />

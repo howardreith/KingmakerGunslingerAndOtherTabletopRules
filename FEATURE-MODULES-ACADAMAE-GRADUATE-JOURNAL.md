@@ -129,3 +129,13 @@
 - Candidate package SHA-256 `58964913dfe5ca2838a39adb3c18a7b9dd50bee44a525914b611a1aa1af81495`; DLL SHA-256 `e0348a3d380b359fcaf3e9e256a39f5fbc82d0fcc2f6942b7fe7afc53709368e`.
 - Current uncertainty: the policy is not yet connected to exact `UnitDescriptor` and `LevelUpState` contracts, and exact local Call of the Wild school-replacement shapes remain adapter work.
 - Next concrete action: implement the native prerequisite component/adapter and attach it to Acadamae, then implement singular ordered basic-feat publication.
+
+## 2026-08-09 — native prerequisite and feat-publication checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `fc31eb30b39ea02462eb63a118cc060994a8027f`; active version 0.0.74.
+- Attached `PrerequisiteAcadamaeGraduate` using exact Wizard class, school selection, opposition selection, and Universalist identities. It combines committed spellbook specialization/opposition data with pending `LevelUpState.Selections` and selected-class state, without localized-name inference.
+- Added an Acadamae-only basic-feat publication transaction that merges against current `Features` and `AllFeatures`, removes only duplicate exact project GUID/reference entries, inserts at the current localized alphabetical boundary, validates singularity, and refuses rollback after later array replacement.
+- Tests/gates: complete deterministic suite PASS 964/964; repository validation PASS; exact-reference clean Release, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `d91bd07c3828311ae26284554c80332a39ecd5eaa7831254321de9ed37f8ed8d`; DLL SHA-256 `26fdadc4a557898c408f841b9aac28c20cd58da6c42b977af3a92964637a5f51`.
+- Current uncertainty: runtime prerequisite cases and visible predecessor/successor have not yet been observed; later read-time reconciliation remains pending.
+- Next concrete action: commit/publish this checkpoint and run guarded bootstrap proof before adding the dedicated Acadamae observer.
