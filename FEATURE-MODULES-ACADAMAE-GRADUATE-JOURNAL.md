@@ -351,3 +351,14 @@
 - Candidate package SHA-256 `c019ee0cb3b90c070fd72090b5fad6d012941c37e1811f6f9c004e71b032f384`; DLL SHA-256 `363192f19c9551c6e3f1af765577d8bf0c88bc7dde2d68d3ef5dcae94d3e38b4`.
 - Current uncertainty: live deployment has not yet demonstrated that the prewritten OFF/ON fixture survives package replacement and reaches the process snapshot.
 - Next concrete action: commit and publish the deployment repair, then repeat OFF/ON and verify the run plus original-settings restoration hashes.
+
+## 2026-08-09 — OFF/ON module publication PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `497fb145359469c829b2d9cd65c2f4fb4d0b7b26`; active version 0.0.74.
+- Guarded directory `20260809T1530259062634Z-observe-feature-module-settings`, run ID `20260809T1530259471327Z-d642dcc1e3c34d718cd32467f4399367`, PASS in 87,649 ms with 5/5 assertions.
+- Exact observation: expected/active OFF/ON; registered identities 250; Gunslinger class count 0; Paper Cartridge Smith-stock rows 0; Acadamae Graduate count 1 in both `Features` and `AllFeatures`; Cord Smith-stock rows 1.
+- Deployment `20260809T1530258952067Z` reports `featureModuleSettingsPreserved=true`; deployed package SHA-256 `c9d05013fb21ee3bfb27a562cb20b54df97facc5121aa64960b99ebf9cedeb09`; deployed DLL SHA-256 `a572898980134083137a7df634a20a1de6df3a06b04d659e06a4b8c7653f09f1`.
+- The wrapper restored the original settings byte-for-byte; original and final SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Rejected theory: disabling Gunslinger necessarily disables shared bootstrap or Acadamae. The live process retained all identities and published the independent Acadamae module while withholding the observed Gunslinger surfaces.
+- Current uncertainty: ON/OFF and OFF/OFF fresh-process publication remain unobserved; the focused observer currently covers class, Paper stock, Acadamae feat arrays, and Cord stock rather than every Gunslinger boundary surface.
+- Next concrete action: commit and publish this runtime checkpoint, then run ON/OFF followed by OFF/OFF with identical restoration verification.
