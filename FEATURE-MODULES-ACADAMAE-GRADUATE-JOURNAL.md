@@ -434,3 +434,14 @@
 - Every transaction reports `status=Restored`, `restorationVerified=true`, and `stagedMutationObserved=true`, proving isolated standalone Mods staging and exact restoration. Four BTSL table identities were installed in the base game and correctly contained 48/0 project rows according to Gunslinger state.
 - Current uncertainty: exact Call of the Wild ON/ON and OFF/ON retention remain to be run; the observer proves project singularity but does not yet explicitly count every CotW-added class/feat before and after reconciliation.
 - Next concrete action: commit/publish standalone proof, then run exact local Call of the Wild ON/ON and OFF/ON profile transactions and inspect readiness/retention evidence.
+
+## 2026-08-09 — exact Call of the Wild module states PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `6ebc5c189f9f9f10a1bd7c09922a9ba8288f7ba4`; active version 0.0.74.
+- Exact staged Call of the Wild DLL: 7,935,488 bytes, SHA-256 `4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915`.
+- ON/ON transaction `compat-20260809T160833Z-d0690dcc874b`, directory `20260809T1609118493867Z-observe-feature-module-settings`, run `20260809T1609118816995Z-8ae70453762245acb06f99029490ec2c`, PASS in 87,102 ms. After CotW load, Gunslinger class/feats/25 parameter rows/vendors/fixed loot and Acadamae/Cord were all singular at their expected counts; identities 250.
+- OFF/ON transaction `compat-20260809T161101Z-55224493129e`, directory `20260809T1611407405340Z-observe-feature-module-settings`, run `20260809T1611407561886Z-bae8a60f5b4c4af1a9ca052fa56f02ed`, PASS in 85,323 ms. Gunslinger class, feats, parameters, vendors, BTSL stock, and fixed loot were absent while Acadamae remained singular in both basic-feat arrays and Cord stock remained singular; identities 250.
+- Both transactions reached guarded readiness and report exact profile restoration verified. The managed SoundBank original/restored identity is 999,390 bytes, SHA-256 `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+- This supersedes the inherited startup-readiness limitation for these focused module scenarios but does not yet erase historical class-selector or broader comprehensive-profile evidence.
+- Current uncertainty: the observer proves project publication after CotW but does not count a before/after fingerprint of every foreign class and feat entry. Exact additive retention needs an explicit foreign-catalog baseline/reconciliation assertion.
+- Next concrete action: commit/publish the focused CotW proof, then add deterministic and runtime foreign-catalog preservation fingerprints around idempotent reconciliation without modifying CotW.
