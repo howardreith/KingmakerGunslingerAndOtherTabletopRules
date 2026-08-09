@@ -79,8 +79,10 @@ namespace KingmakerGunslinger.Cord
             return false;
         }
 
-        internal static bool BeginBuff(BuffCollection buffs, BlueprintBuff blueprint)
+        internal static bool BeginBuff(BuffCollection buffs, BlueprintBuff blueprint,
+            out bool skipOriginal)
         {
+            skipOriginal = false;
             _beginBuffCalls++;
             if (buffs == null || buffs.Owner == null || blueprint == null ||
                 _buffSubstitutionState != null) return false;
@@ -96,6 +98,11 @@ namespace KingmakerGunslinger.Cord
 
             int damage = DealNonlethalEquivalent(state);
             PublishSubstitution(condition, damage);
+            if (ReferenceEquals(blueprint, _fatiguedBlueprint))
+            {
+                skipOriginal = true;
+                return false;
+            }
             if (condition == UnitCondition.Exhausted)
             {
                 try
@@ -203,9 +210,14 @@ namespace KingmakerGunslinger.Cord
         new[] { typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
     internal static class CordRuleApplyBuffPatch
     {
-        private static void Prefix(BuffCollection __instance, BlueprintBuff __0,
+        private static bool Prefix(BuffCollection __instance, BlueprintBuff __0,
             ref bool __state)
-        { __state = CordConditionRuntime.BeginBuff(__instance, __0); }
+        {
+            bool skipOriginal;
+            __state = CordConditionRuntime.BeginBuff(__instance, __0,
+                out skipOriginal);
+            return !skipOriginal;
+        }
 
         private static void Postfix(bool __state)
         { CordConditionRuntime.EndBuff(__state); }

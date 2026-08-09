@@ -742,3 +742,20 @@
 - Candidate local-runtime package SHA-256 `a1f340769f9432afa0ee8a9a89f71cc36801b92d3b952f13bcd018850d9a8d5b`; DLL SHA-256 `d010b9c5000fd0fac4dab96fb24b75709e32b435475d923807582edebdbefa22`.
 - Current uncertainty: guarded runtime must prove the corrected Cord phase reaches the exact native fatigue-buff boundary once and applies one d6 substitution.
 - Next concrete action: commit/publish the fixture correction and run `disposable-acadamae-graduate` in a fresh guarded process.
+
+## 2026-08-09 — clean-first Cord substitution passes and exposes inert-buff retention
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `8b6fed1c2ba59ee0e8a3b15e4f10e6ff65664c16`; active version 0.0.74.
+- Guarded directory `20260809T1751413072452Z-disposable-acadamae-graduate`, run `20260809T1751413339180Z-883f7690451d42999a8ecfa6f43284c5`, FAIL 6/7 in 82,087 ms. The clean-first integration chain itself passed: exact canonical fatigue match 1, one Cord roll 5, applied damage 5, damage delta 5, and no Fatigued condition. Prepared spell, action parity, success, cancellation, and cleanup also passed.
+- The later unequipped fatigue assertion failed because the canonical Fatigued buff fact remained after its condition component was suppressed. Its next application deduplicated against that inert retained fact. This is a production lifecycle defect, not a fixture failure.
+- The exact canonical Fatigued blueprint is now rejected at `TriggerRuleApplyBuff` after substitution, preventing an inert buff fact. Semantically classified composite buffs still run so unrelated components are preserved while only their Fatigued/Exhausted condition is suppressed. Runtime evidence now explicitly requires that no canonical fatigue buff remains after Cord substitution.
+- Current uncertainty: source qualification and a fresh guarded run must prove canonical rejection, later ordinary fatigue, and composite-path invariants.
+- Next concrete action: run complete source qualification, commit/publish the canonical-buff rejection, then rerun the integrated scenario.
+
+## 2026-08-09 — canonical fatigue-buff rejection source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `8b6fed1c2ba59ee0e8a3b15e4f10e6ff65664c16`; active version 0.0.74.
+- Repository validation PASS; deterministic/domain/reflection suite PASS 967/967; clean exact-reference Release build, exact-reference/output/icon/manifest/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `7f068e3e9265fa61757892c00949322dfb1fd08566d31f4a78cfa1c2e457f2e8`; DLL SHA-256 `13927623067fdbea231168d79dd924f11e7661d2c01bb274e9dd8738af8479ca`.
+- Current uncertainty: guarded runtime must prove no inert canonical buff remains and a later unequipped native fatigue application succeeds.
+- Next concrete action: commit/publish this lifecycle fix and rerun the integrated scenario in a fresh guarded process.

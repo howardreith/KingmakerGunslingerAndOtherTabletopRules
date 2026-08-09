@@ -6916,7 +6916,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string spellIdentity = "<none>";
             bool prepared = false, presentation = false, successObserved = false,
                 failureObserved = false, cancellationObserved = false,
-                cordObserved = false, cleaned = false;
+                cordObserved = false, cordBuffRetained = false, cleaned = false;
             int spellLevel = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
@@ -7046,10 +7046,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordApplied = Cord.CordConditionRuntime.LastAppliedDamage;
                 cordBuffCalls = Cord.CordConditionRuntime.BeginBuffCalls;
                 cordExactMatches = Cord.CordConditionRuntime.ExactBuffMatches;
+                cordBuffRetained = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) != null;
                 cordObserved = cordRule.Success && cordCount == 2 &&
                     cordDamage >= 1 && cordDamage <= 6 &&
                     cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
                     cordBuffCalls >= 1 && cordExactMatches >= 1 &&
+                    !cordBuffRetained &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
                 unit.Body.Belt.RemoveItem(false);
 
@@ -7112,6 +7114,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cordRoll=" + cordRoll + ";cordApplied=" + cordApplied +
                 ";cordDamage=" + cordDamage + ";cordBuffCalls=" + cordBuffCalls +
                 ";cordExactMatches=" + cordExactMatches +
+                ";cordBuffRetained=" + cordBuffRetained +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
