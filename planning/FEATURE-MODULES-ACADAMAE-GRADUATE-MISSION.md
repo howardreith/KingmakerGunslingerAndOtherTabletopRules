@@ -1,6 +1,6 @@
 # Feature Modules, Acadamae Graduate, and Cord Mission
 
-Status: IN PROGRESS
+Status: COMPLETE
 
 This durable record adopts the user work order dated 2026-08-09 as the controlling scope and stopping contract. Work is confined to two independent, default-enabled process-startup modules (`gunslinger` and `acadamae-graduate`), Acadamae Graduate, Cord of Stubborn Resolve, exact Call of the Wild reconciliation, guarded qualification, and release 0.0.75.
 
@@ -10,4 +10,6 @@ The identity layer always registers every stable project blueprint. Settings gat
 
 No merge, force push, history rewrite, save mutation, third-party binary mutation, or direct Kingmaker launch is authorized. Runtime launches must use the guarded Steam App ID 640820 harness. The definition of done and hard stops are exactly those in the work order.
 
-Next concrete action: complete exact UMM, blueprint, spellcasting, condition, nonlethal, vendor, and Call of the Wild contract inventories.
+Completed on branch `codex/feature-modules-acadamae-graduate`; final qualification evidence is recorded in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`.
+
+Next concrete action: retain the branch unmerged for user review.

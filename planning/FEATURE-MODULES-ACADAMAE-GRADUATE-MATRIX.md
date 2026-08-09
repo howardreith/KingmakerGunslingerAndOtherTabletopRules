@@ -18,6 +18,6 @@
 | Call of the Wild reconciliation | PASS | Exact ON/ON and OFF/ON publication; final ON/ON mechanics; exact foreign retention |
 | Guarded scenarios | PASS | Settings, Acadamae, Cord, integration and vendor scenarios registered/preflighted and runtime-proven |
 | Optional-mod regression | PASS | CotW, Arms & Armor, soundpacks, qualified combined and high-risk targeted transactions |
-| Release/package/docs | IN PROGRESS | 0.0.75 pins applied; final hashes/runtime repetitions/clean remote proof pending |
+| Release/package/docs | PASS | 0.0.75 exact-commit package, final runtime repetitions, restoration, documentation, and publication proof |
 
-Next concrete action: complete final 0.0.75 build, package, runtime, working-save, restoration, and remote-equality gates.
+Next concrete action: retain the clean published branch unmerged for user review.

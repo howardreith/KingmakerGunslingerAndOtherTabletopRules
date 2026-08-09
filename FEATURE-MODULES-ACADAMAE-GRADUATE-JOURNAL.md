@@ -806,3 +806,14 @@
 - Pre-commit 0.0.75 candidate package SHA-256 `a37dc173013c5b9e05fbda6b6593a6e2793c323e838f8767e5aaeb8034f5c83a`; DLL SHA-256 `2e405ef0d509148bdfbc3113c30d8b09e152f1f7a038efc14317df94c80514b7`. These are not final because the exact release commit is embedded at the next clean build.
 - Current uncertainty: exact release-commit build/hashes and final fresh-process runtime repetitions remain.
 - Next concrete action: commit/publish the coherent 0.0.75 release transaction, rebuild from that exact commit, then execute final runtime gates.
+
+## 2026-08-09 — exact 0.0.75 final qualification PASS
+
+- Branch/release source: `codex/feature-modules-acadamae-graduate` / `8fea913d7baba880496012576878ac95eaadc74d`; version 0.0.75 / `0.0.75-feature-modules-acadamae-graduate`.
+- Exact-release clean qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; blueprint, output, icon/provenance, managed SoundBank, deterministic package, and strict package audits. Package SHA-256 `f05edc2d2176969b33132b367c5734e60248ba06aaf8a44ecd0c2cc3fb51e7f7`; DLL SHA-256 `ee6b4d1d255871d6037574ba421c1e55c5cf7aa1730ebe96b71ee1bf16178df2`.
+- Four fresh standalone settings configurations PASS with exactly 250 registered identities and exact publication gates: ON/ON `20260809T1838372808172Z-4927799a93f44d998efc9e863db8db9f`; ON/OFF `20260809T1840307929902Z-04f511e7e57b4658b8a51472faf83a96`; OFF/ON `20260809T1842235876138Z-5006b0d9c2684d5d890386913fbc483d`; OFF/OFF `20260809T1844174053649Z-82dbf807da964ff4979e7b316c0a4ccf`. Original settings SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470` was restored.
+- Consecutive final standalone integration PASS 7/7: `20260809T1846323677611Z-74ab07c5ebd44802822a6ba8f84051d9` and `20260809T1848327947827Z-bfb68bd37e3c46659b954b21d590caed`.
+- Maximum-risk exact Call of the Wild + Arms & Armor + Toggle transaction `compat-20260809T185022Z-8c3b1f71592d` observed mutation, ran integration PASS 7/7 twice (`20260809T1850531512993Z-a7e8a8bd3c5a471fbc8c0564ac9f3f46`, `20260809T1852513094584Z-1007aca1a53244eead770f7c312ae5ca`), and verified exact restoration.
+- Guarded default-ON/ON working-save smoke for exact `KMG_AUTOMATION_WORKING` PASS 11/11 twice: `20260809T1855052943753Z-b458c2e848e94ba7a792f7e1883e3452` and `20260809T1857286797079Z-33d09ced9bce4aee828216b6b7a33ff3`. No protected-baseline selection or mutation occurred.
+- Rejected theories and failures remain recorded above; no unresolved feature-specific engineering uncertainty or human-only acceptance step remains. Historical broader Call of the Wild limitations remain narrowly documented.
+- Next concrete action: commit/publish final evidence and prove clean local/remote equality without merging.

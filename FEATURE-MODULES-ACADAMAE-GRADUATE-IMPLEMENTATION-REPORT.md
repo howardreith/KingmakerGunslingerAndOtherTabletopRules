@@ -1,6 +1,6 @@
 # Feature Modules, Acadamae Graduate, and Cord Implementation Report
 
-Status: RELEASE QUALIFICATION IN PROGRESS
+Status: COMPLETE
 
 Base is `7a99ce5ac6d6976212310f997bd39ddfe4a57935` (0.0.74). The release candidate is 0.0.75 / `0.0.75-feature-modules-acadamae-graduate` on `codex/feature-modules-acadamae-graduate`.
 
@@ -25,10 +25,10 @@ The exact equipped item intercepts canonical Fatigued buffs at `BuffCollection.T
 
 The Cord is published once, count one, to `SmithVendorTable` (`7de959347266092448d8a72089ef9778`), whose exact capital owners are `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith`. No other merchant, loot, BTSL, or crafting path is added.
 
-## Current qualification
+## Final qualification
 
-Repository/source/build/package gates pass with 967/967 deterministic tests. All four standalone module combinations pass with a constant 250-identity set. Consecutive standalone integrated runs `20260809T1800412559535Z-5388e10cbfb04d1980bcfd98c5cc9115` and `20260809T1802420337279Z-aca388acadfa448a80f2e44ce76771b1` pass 7/7. Exact Call of the Wild, Arms & Armor, Toggle Custom Soundpacks, qualified combined, and high-risk combined targeted transactions pass and restore exact state; transaction IDs are in the journal and qualification document.
+Repository/source/build/package gates pass with 967/967 deterministic tests. All four standalone module combinations pass with a constant 250-identity set. The exact release commit passed consecutive standalone integration, consecutive highest-risk combined-profile integration, and two guarded `KMG_AUTOMATION_WORKING` smoke runs. Exact Call of the Wild, Arms & Armor, Toggle Custom Soundpacks, qualified combined, and high-risk combined transactions pass and restore exact state; transaction and run IDs are in the journal and qualification document.
 
-Remaining work is final 0.0.75 validation/build/package hashes, required final fresh-process repetitions, eligible working-save smoke, documentation audit, and clean local/remote equality proof.
+The qualified package built from exact release source `8fea913d7baba880496012576878ac95eaadc74d` has SHA-256 `f05edc2d2176969b33132b367c5734e60248ba06aaf8a44ecd0c2cc3fb51e7f7`; its DLL SHA-256 is `ee6b4d1d255871d6037574ba421c1e55c5cf7aa1730ebe96b71ee1bf16178df2`.
 
-Next concrete action: complete the transactional 0.0.75 release pins and final qualification gates.
+Next concrete action: retain the clean published branch unmerged for user review.

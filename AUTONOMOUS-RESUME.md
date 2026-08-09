@@ -1494,3 +1494,7 @@ Repair qualification is complete. On 2026-08-09 the user successfully loaded an
 affected game and traveled between dungeon floors, closing the final human recovery
 gate. The unchanged marker identity, autonomous lifecycle/compatibility evidence,
 and human area-transition result jointly qualify the repaired 0.0.74 candidate.
+
+## Current resume point — feature modules release complete
+
+The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order is complete on `codex/feature-modules-acadamae-graduate`. Exact release source `8fea913d7baba880496012576878ac95eaadc74d` passed 967/967 deterministic tests, clean Release/package qualification, all four standalone module settings, consecutive standalone and maximum-risk combined integration runs, and two guarded working-save smokes. Final evidence is in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`. Next retain the branch unmerged for user review.
