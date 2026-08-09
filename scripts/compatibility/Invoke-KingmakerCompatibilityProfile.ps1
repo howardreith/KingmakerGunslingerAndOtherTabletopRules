@@ -27,6 +27,10 @@ param(
         'disposable-firearm-wwise-audio',
         'disposable-gunslinger-scatter-shot',
         'disposable-reload-autocast',
+        'observe-rare-firearm-blueprint-contracts',
+        'magic-firearm-native-properties',
+        'reliable-firearm-misfire-matrix',
+        'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
         'disposable-gunslinger-comprehensive-acceptance')]
     [string[]]$Scenario,
