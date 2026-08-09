@@ -150,3 +150,12 @@
 - Rejected theory: Universalist can be required as the exact base feature type merely because `BlueprintProgression` is assignable to `BlueprintFeature`; this repository's exact lookup deliberately requires concrete installed type equality.
 - Current uncertainty: the corrected clean commit still needs guarded runtime bootstrap proof and exact visible feat-order observation.
 - Next concrete action: commit and publish the exact-type repair, then rerun guarded `mod-load-smoke` from the clean commit.
+
+## 2026-08-09 — corrected prerequisite bootstrap runtime PASS
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `f7e2364574e6405b5bf4016b00bd3f9fb379d025`; active version 0.0.74; local and remote were equal before launch.
+- Guarded Steam-backed scenario directory `20260809T1408016092567Z-mod-load-smoke`, run ID `20260809T1408016324772Z-b188fadeeda244168c34b165ff76c8a2`, PASS in 85,441 ms.
+- Structured assertions PASS 3/3: loaded version 0.0.74, executing cached DLL identity, and ready core initialization. This proves the installed game accepts the exact Universalist/Conjuration progression types and the attached prerequisite/publication bootstrap; it does not yet prove character-creation eligibility or visible ordering.
+- Built/deployed DLL SHA-256 `3400c18697888d81f6befc39cf9ddf8c1b400348ac81f200a8fb4894e16fcdc1`; deterministic local-runtime package SHA-256 `9f203a1271c65945d0706d907346323429d4336882949f0ef73f1685d4f55be4`. Evidence recorded exact game version `2018.4.10.10503941`, empty pre-run Git status, and matching built/deployed DLL bytes.
+- Current uncertainty: exact casting action/presentation/execution composition and invocation correlation are not implemented; prerequisite/UI ordering still require focused runtime scenarios.
+- Next concrete action: inspect exact installed `AbilityData`, `UnitUseAbility`, and `RuleCastSpell` signatures/IL plus exact local Call of the Wild patch ownership before implementing the per-invocation casting adapter.
