@@ -14,11 +14,15 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
-            BlueprintItemEquipmentBelt[] donors = library.GetAllBlueprints()
-                .OfType<BlueprintItemEquipmentBelt>()
+            BlueprintItemEquipmentBelt[] allBelts = library.GetAllBlueprints()
+                .OfType<BlueprintItemEquipmentBelt>().ToArray();
+            BlueprintItemEquipmentBelt[] donors = allBelts
                 .Where(IsNativeConstitutionTwoBelt).ToArray();
             if (donors.Length != 1)
-                throw new InvalidOperationException("Expected exactly one native +2 Constitution belt donor; observed " + donors.Length + ".");
+                throw new InvalidOperationException("Expected exactly one native +2 Constitution belt donor; observed " + donors.Length +
+                    "; installed belts=" + string.Join("|", allBelts
+                        .OrderBy(b => b.name, StringComparer.Ordinal)
+                        .Select(b => b.name + ":" + b.Cost).ToArray()) + ".");
             BlueprintItemEquipmentBelt donor = donors[0];
             return registry.Register<BlueprintItemEquipmentBelt>(Symbol, () =>
             {

@@ -93,3 +93,11 @@
 - Rejected theory: absence from that direct component array means native +2 Constitution belt support is absent. The native asset contract may route through a referenced feature/context component.
 - Current uncertainty: exact donor internal identity must be selected independently of the disproven direct-component shape and its inherited +2 behavior later proven by equip runtime.
 - Next concrete action: bind the documented native `BeltOfMightyConstitution2` asset by exact internal name and 4,000-gp donor invariant, rerun all gates, then repeat guarded identity qualification.
+
+## 2026-08-09 — identity runtime attempt 3
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `b6e2e10c9cadee8942f8bc520f5a73e9684146cb`; active version 0.0.74.
+- Guarded Steam-backed run `20260809T1339276023679Z-mod-load-smoke` ended `TIMEOUT`; exact internal-name hypothesis `BeltOfMightyConstitution2` matched zero installed belt blueprints, and the registry again rolled back all three registrations.
+- Rejected theory: public/common Owlcat naming can substitute for inspecting the installed asset graph. It cannot; the next fail-closed diagnostic will enumerate only installed belt internal names and costs.
+- Current uncertainty: exact installed Constitution belt internal identity and price encoding.
+- Next concrete action: add bounded belt name/cost diagnostics to the existing fail-closed exception, qualify and publish it, then use one guarded launch to select the exact installed donor.
