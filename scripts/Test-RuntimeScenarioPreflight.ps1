@@ -39,6 +39,7 @@ $expected = @(
     'disposable-overhaul-maintenance',
     'disposable-reload-autocast',
     'disposable-paper-cartridge-reload',
+    'disposable-paper-cartridge-mode-view-lifecycle',
     'disposable-paper-cartridge-full-attack',
     'disposable-paper-cartridge-misfire',
     'disposable-paper-cartridge-scatter',
