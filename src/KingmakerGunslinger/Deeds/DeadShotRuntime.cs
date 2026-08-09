@@ -71,7 +71,10 @@ namespace KingmakerGunslinger.Deeds
         {
             if (caster == null || target == null) throw new ArgumentNullException("caster");
             return Execute(caster.Descriptor, caster, target,
-                delegate(RuleAttackRoll rule) { Rulebook.Trigger(rule); },
+                delegate(RuleAttackRoll rule) {
+                    PrepareRuntimeTestRoll(rule);
+                    Rulebook.Trigger(rule);
+                },
                 delegate(RuleAttackWithWeapon rule) { Rulebook.Trigger(rule); },
                 forcedRolls);
         }
@@ -345,6 +348,8 @@ namespace KingmakerGunslinger.Deeds
             ProbeContext context;
             if (!TryGet(attackRoll, out context)) return;
             Interlocked.Increment(ref _successProbes);
+            if (!context.HasNaturalRoll)
+                context.RecordNaturalRoll(naturalRoll);
             context.VerifyNaturalRoll(naturalRoll);
             if (context.IsMisfire) nativeResult = false;
         }
@@ -382,6 +387,23 @@ namespace KingmakerGunslinger.Deeds
             lock (Gate) { return Probes.TryGetValue(attackRoll, out context); }
         }
 
+        private static void PrepareRuntimeTestRoll(RuleAttackRoll attackRoll)
+        {
+            ProbeContext context;
+            if (!TryGet(attackRoll, out context) ||
+                !context.ForcedNaturalRoll.HasValue) return;
+            int expected = context.ForcedNaturalRoll.Value;
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                if (RulebookEvent.Dice.D20.Value != expected) continue;
+                UnityEngine.Random.InitState(seed);
+                return;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native d20 seed produced " + expected + ".");
+        }
+
         private sealed class ProbeContext
         {
             private int _naturalRoll;
@@ -407,6 +429,10 @@ namespace KingmakerGunslinger.Deeds
                 if (_naturalRoll == 0 || _naturalRoll != value)
                     throw new InvalidOperationException(
                         "Dead Shot success evaluation did not match its natural roll.");
+                if (ForcedNaturalRoll.HasValue &&
+                    ForcedNaturalRoll.Value != value)
+                    throw new InvalidOperationException(
+                        "Dead Shot runtime-test forced roll did not match the native d20.");
             }
         }
 

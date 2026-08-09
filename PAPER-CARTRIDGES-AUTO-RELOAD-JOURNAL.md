@@ -330,3 +330,11 @@
   source regression rather than Paper-fixture construction. Narrow counters are
   added at registration, exact Roll-setter prefix, and success postfix so the
   next structured failure identifies the first missing native boundary.
+- Diagnostic run
+  `20260808T2359038674190Z-b4309659f0c34d978069812c3a9f6f9f` observed
+  `registered=1;rollSetter=0;success=1`. This exactly matches the installed
+  direct-field-write composition already handled by ordinary misfire: native
+  `IsSuccessRoll(d20)` is authoritative when the Roll setter is bypassed. Dead
+  Shot now records and verifies that exact d20 at the success postfix. Its
+  runtime-only forced hook seeds the native d20 to the requested value and then
+  verifies equality; production attacks retain native randomness.
