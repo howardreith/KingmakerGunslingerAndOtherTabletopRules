@@ -2811,7 +2811,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int afterSelected=-1,afterOrdinary=-1,afterMisfire=-1;
             uint ordinaryPlayingId=0;
             string selectedDiagnostics="<not-run>",ordinaryDiagnostics="<not-run>",
-                misfireDiagnostics="<not-run>";
+                misfireDiagnostics="<not-run>", ordinaryMisfireDiagnostics="<not-run>",
+                forcedMisfireDiagnostics="<not-run>";
             bool cleaned=false;
             try
             {
@@ -2839,6 +2840,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterOrdinary=Audio.FirearmSoundRuntime.AcceptedPosts;
                 ordinaryPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
                 ordinaryDiagnostics=Audio.FirearmSoundRuntime.Describe();
+                ordinaryMisfireDiagnostics=FirearmMisfireRuntime.Describe();
 
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
@@ -2847,6 +2849,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
                 afterMisfire=Audio.FirearmSoundRuntime.AcceptedPosts;
                 misfireDiagnostics=Audio.FirearmSoundRuntime.Describe();
+                forcedMisfireDiagnostics=FirearmMisfireRuntime.Describe();
             }
             finally
             {
@@ -2879,7 +2882,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.Diagnostics.Add(globalDiagnostics);
             result.Diagnostics.Add(selectedDiagnostics);
             result.Diagnostics.Add(ordinaryDiagnostics);
+            result.Diagnostics.Add(ordinaryMisfireDiagnostics);
             result.Diagnostics.Add(misfireDiagnostics);
+            result.Diagnostics.Add(forcedMisfireDiagnostics);
             result.Warnings.Add("A valid Wwise playing ID proves event acceptance, not audible speaker output.");
             return result;
         }
