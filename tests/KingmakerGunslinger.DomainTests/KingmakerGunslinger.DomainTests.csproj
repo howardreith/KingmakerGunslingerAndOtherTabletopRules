@@ -39,6 +39,7 @@
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleConfiguration.cs"><Link>FeatureModules\FeatureModuleConfiguration.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModulePublicationPlan.cs"><Link>FeatureModules\FeatureModulePublicationPlan.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsState.cs"><Link>FeatureModules\FeatureModuleSettingsState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsStore.cs"><Link>FeatureModules\FeatureModuleSettingsStore.cs</Link></Compile>
     <Compile Include="PaperCartridgeFoundationTests.cs" />

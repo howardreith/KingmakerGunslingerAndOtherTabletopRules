@@ -14,6 +14,7 @@ using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.FeatureModules;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -559,6 +560,8 @@ namespace KingmakerGunslinger.Bootstrap
                     probeDefinition));
 
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
+            FeatureModulePublicationPlan publicationPlan =
+                new FeatureModulePublicationPlan(context.FeatureModules.Active);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
@@ -579,8 +582,10 @@ namespace KingmakerGunslinger.Bootstrap
 
                 FirearmFeatBlueprintSet firearmFeats =
                     FirearmFeatBlueprints.Register(library, registry,
-                        firearmProficiency, scopedFirearmProficiencies);
-                featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
+                        firearmProficiency, scopedFirearmProficiencies,
+                        publicationPlan.FirearmParameters);
+                if (publicationPlan.GunslingerFeats)
+                    featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
 
                 TestMusketBlueprintSet testMusket = TestMusketBlueprints.Register(
                     library,
@@ -749,23 +754,29 @@ namespace KingmakerGunslinger.Bootstrap
                     gunslingerClassBlueprints.CharacterClass.Icon);
                 ClassCatalogDiagnostics.Capture("before-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
-                classPublication = GunslingerClassBlueprints.Publish(
-                    gunslingerClassBlueprints.CharacterClass);
+                if (publicationPlan.GunslingerClass)
+                    classPublication = GunslingerClassBlueprints.Publish(
+                        gunslingerClassBlueprints.CharacterClass);
                 ClassCatalogDiagnostics.Capture("after-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
 
-                capitalVendorPublication = CapitalVendorBlueprints.Publish(
-                    library, productionFirearms, magicFirearms, basicAmmunition,
-                    firearmRepairKit, gunsmithingSupplies, context.Logger);
-                btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
-                    library, productionFirearms, magicFirearms, basicAmmunition,
-                    firearmRepairKit, gunsmithingSupplies, context.Logger);
-                rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
-                    library, magicFirearms, context.Logger);
-                ProjectAssetIcons.ValidateSupplyPublication(registry,
-                    basicAmmunition, firearmRepairKit, gunsmithingSupplies,
-                    gunsmithingCrafting, capitalVendorPublication,
-                    btslVendorPublication, context.Logger);
+                if (publicationPlan.CapitalGunslingerStock)
+                    capitalVendorPublication = CapitalVendorBlueprints.Publish(
+                        library, productionFirearms, magicFirearms, basicAmmunition,
+                        firearmRepairKit, gunsmithingSupplies, context.Logger);
+                if (publicationPlan.BeneathStolenLandsStock)
+                    btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
+                        library, productionFirearms, magicFirearms, basicAmmunition,
+                        firearmRepairKit, gunsmithingSupplies, context.Logger);
+                if (publicationPlan.RareFirearmLoot)
+                    rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
+                        library, magicFirearms, context.Logger);
+                if (publicationPlan.CapitalGunslingerStock &&
+                    publicationPlan.BeneathStolenLandsStock)
+                    ProjectAssetIcons.ValidateSupplyPublication(registry,
+                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,
+                        gunsmithingCrafting, capitalVendorPublication,
+                        btslVendorPublication, context.Logger);
 
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {

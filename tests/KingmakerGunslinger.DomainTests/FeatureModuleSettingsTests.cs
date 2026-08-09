@@ -72,6 +72,26 @@ namespace KingmakerGunslinger.DomainTests
                 "Acadamae module ID changed.");
         }
 
+        internal static void PublicationPlansAreIndependent()
+        {
+            foreach (bool gunslinger in new[] { false, true })
+            foreach (bool acadamae in new[] { false, true })
+            {
+                var plan = new FeatureModulePublicationPlan(
+                    new FeatureModuleConfiguration(gunslinger, acadamae));
+                Assertions.True(plan.GunslingerClass == gunslinger &&
+                    plan.GunslingerFeats == gunslinger &&
+                    plan.FirearmParameters == gunslinger &&
+                    plan.CapitalGunslingerStock == gunslinger &&
+                    plan.BeneathStolenLandsStock == gunslinger &&
+                    plan.RareFirearmLoot == gunslinger,
+                    "A Gunslinger publication surface escaped its module gate.");
+                Assertions.True(plan.AcadamaeFeat == acadamae &&
+                    plan.CordCapitalStock == acadamae,
+                    "Acadamae and Cord publication gates are not independent.");
+            }
+        }
+
         private static void WithDirectory(Action<string> action)
         {
             string path = Path.Combine(Path.GetTempPath(),

@@ -44,3 +44,12 @@
 - Publication: the approved helper rejected the exact mandated branch because its external allowlist still omits `codex/feature-modules-acadamae-graduate`. No direct push or policy bypass attempted; retry after each coherent commit while independent work continues.
 - Current uncertainty: live UMM save-callback behavior and exact settings-path runtime evidence remain pending the clean-commit guarded run.
 - Next concrete action: commit the passing settings checkpoint, retry the approved push helper, then run guarded `mod-load-smoke` on the clean commit and inspect structured evidence.
+
+## 2026-08-09 — settings runtime and Gunslinger publication boundary
+
+- Clean settings commit `9e35311` passed guarded Steam-backed `mod-load-smoke`; evidence `20260809T1306044924746Z-mod-load-smoke`, structured status PASS. The run rebuilt/revalidated 958/958 tests and strict package validation before Steam App ID 640820 launch.
+- Implemented the first explicit publication plan: Gunslinger class catalog, basic/Fighter feat entries, native firearm parameter enumeration, capital stock, all installed BTSL stock, and five fixed rare-firearm loot targets are gated together by the immutable `gunslinger` active snapshot. All 248 identities and existing-save mechanics still register/configure when OFF. Acadamae and Cord gates are represented independently for their upcoming publishers.
+- Focused four-combination publication-plan test PASS; complete suite PASS 959/959; repository validation, exact-reference Release, build output, SoundBank, deterministic package, and strict validation PASS.
+- Candidate package SHA-256 `874a8be270acd4b3256c568858ccec6b8df5d1da83b27db715ba19f8b8f78cc7`; DLL SHA-256 `310d6b23ff8e1e6f78ba23b7a1f77610a873246f2ac8281b77ecebdaf42c62e6`.
+- Current uncertainty: OFF-state player-facing proof awaits the dedicated guarded settings/publication scenario and transactional live-settings fixture; Call of the Wild reconciliation is not yet implemented.
+- Next concrete action: commit this narrow publication-boundary checkpoint, then complete the exact Wizard/spell/nonlethal inventories and register Acadamae/Cord stable identities.

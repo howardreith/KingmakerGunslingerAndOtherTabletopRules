@@ -23,13 +23,15 @@ namespace KingmakerGunslinger.Feats
         private static BlueprintFeature _fullProficiency;
         private static BlueprintFeature _oneHandedProficiency;
         private static BlueprintFeature _twoHandedProficiency;
+        private static bool _publicationEnabled;
 
         internal static void Configure(BlueprintParametrizedFeature weaponFocus,
             BlueprintParametrizedFeature[] dependent,
             BlueprintFeature[] parameters, BlueprintFeature[][] legacyDependent,
             BlueprintFeature fullProficiency,
             BlueprintFeature oneHandedProficiency,
-            BlueprintFeature twoHandedProficiency)
+            BlueprintFeature twoHandedProficiency,
+            bool publicationEnabled)
         {
             if (weaponFocus == null || dependent == null || dependent.Length != 4 ||
                 dependent.Any(value => value == null) || parameters == null ||
@@ -45,6 +47,7 @@ namespace KingmakerGunslinger.Feats
                 _fullProficiency = fullProficiency;
                 _oneHandedProficiency = oneHandedProficiency;
                 _twoHandedProficiency = twoHandedProficiency;
+                _publicationEnabled = publicationEnabled;
                 _originalComponents = _native.Select(value =>
                     value.ComponentsArray).ToArray();
                 FirearmWeaponFeatEffect[] effects = {
@@ -78,6 +81,7 @@ namespace KingmakerGunslinger.Feats
             _fullProficiency = null;
             _oneHandedProficiency = null;
             _twoHandedProficiency = null;
+            _publicationEnabled = false;
         }
 
         private static void AddAdapter(BlueprintParametrizedFeature feature,
@@ -107,7 +111,8 @@ namespace KingmakerGunslinger.Feats
             BlueprintFeature[] parameters;
             lock (Sync)
             {
-                if (_native == null || Array.IndexOf(_native, feature) < 0)
+                if (!_publicationEnabled || _native == null ||
+                    Array.IndexOf(_native, feature) < 0)
                     return existing;
                 parameters = (BlueprintFeature[])_parameters.Clone();
             }
