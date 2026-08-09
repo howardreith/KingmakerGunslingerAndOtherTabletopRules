@@ -376,3 +376,12 @@
 - Next exact action: publish this source checkpoint, run the vendor observer to
   capture bounded Bokken owner/table evidence, then implement only an exact safe
   Bokken target or document an evidence-backed defer.
+- Vendor graph observation PASS:
+  `20260809T0023419883620Z-05148294115f464c8e6deb578ace0270` after smoke
+  `20260809T0021341618639Z-mod-load-smoke`. Smith/BTSL Paper publication passed
+  the updated exact 12-entry/48-total assertions; rejected Jhod and all five rare
+  fixed-loot relationships remained exact.
+- Bokken outcome: evidence-backed defer. The exhaustive installed shared-vendor
+  owner/unit/direct-reference graph contains no Bokken-named identity or unique
+  safe Bokken table/lifecycle tuple. Exact evidence and the no-guess conclusion
+  are recorded in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`.
