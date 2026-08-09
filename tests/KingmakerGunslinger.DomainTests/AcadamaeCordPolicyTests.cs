@@ -139,9 +139,10 @@ namespace KingmakerGunslinger.DomainTests
                 "[HarmonyPatch(typeof(UnitState), \"AddCondition\"",
                 "ReferenceEquals(state.Owner.Unit.Body.Belt.Item.Blueprint",
                 "BlueprintBootstrap.CordOfStubbornResolve",
-                "new DiceFormula(1, DiceType.D6)",
+                "new RuleRollDice(state.Owner.Unit",
+                "state.Owner.Unit.HPLeft - 1",
+                "new DiceFormula(0, DiceType.D6), amount",
                 "IgnoreDamageReduction = true",
-                "MinHPAfterDamage = 1",
                 "[System.ThreadStatic] private static UnitState _fatigueBypass",
                 "ConditionalWeakTable<Buff, object> ExhaustionSources",
                 "state.AddCondition(UnitCondition.Fatigued, source)" })

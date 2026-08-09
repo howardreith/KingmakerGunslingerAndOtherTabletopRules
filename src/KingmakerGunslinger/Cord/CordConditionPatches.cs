@@ -54,12 +54,16 @@ namespace KingmakerGunslinger.Cord
 
         private static void DealNonlethalEquivalent(UnitState state)
         {
-            var direct = new DirectDamage(new DiceFormula(1, DiceType.D6), 0);
+            int roll = Rulebook.Trigger(new RuleRollDice(state.Owner.Unit,
+                new DiceFormula(1, DiceType.D6))).Result;
+            int amount = System.Math.Min(roll,
+                System.Math.Max(0, state.Owner.Unit.HPLeft - 1));
+            if (amount == 0) return;
+            var direct = new DirectDamage(new DiceFormula(0, DiceType.D6), amount);
             var damage = new RuleDealDamage(state.Owner.Unit, state.Owner.Unit,
                 new DamageBundle(direct)) {
                     DisablePrecisionDamage = true,
-                    IgnoreDamageReduction = true,
-                    MinHPAfterDamage = 1
+                    IgnoreDamageReduction = true
                 };
             Rulebook.Trigger(damage);
         }

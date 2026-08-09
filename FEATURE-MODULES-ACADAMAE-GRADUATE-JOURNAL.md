@@ -268,3 +268,13 @@
 - Narrow fixture repair: assign 30 base HP on the disposable unit before equip. This changes no production mechanics and permits both ordinary d6 observation and a later explicit 1-HP-floor case.
 - Current uncertainty: d6 application and exhaustion downgrade need a fresh run with the corrected positive-HP fixture.
 - Next concrete action: run all gates, commit/publish the fixture correction, and repeat the disposable Cord scenario.
+
+## 2026-08-09 — Cord d6 PASS exposes ineffective native floor property
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `8a1b7c18f6986cc7ae2fc9f575c4578c4a590fcf`; active version 0.0.74.
+- Guarded scenario directory `20260809T1501225854922Z-disposable-cord-of-stubborn-resolve`, run ID `20260809T1501226186906Z-d553e6df0a8d4d38bc379ba81173658a`, FAIL in 86,594 ms with 6/7 assertions PASS.
+- Real outcomes: Constitution 10 -> 12; fatigue rolled/dealt 5 and left no Fatigued; exhaustion rolled/dealt 2 and left Fatigued but not Exhausted; equipped/inventory/unequipped scope and cleanup passed. At staged 1 HP, however, the d6 dealt 6: installed `RuleDealDamage.MinHPAfterDamage` does not enforce a floor on this direct self-damage route.
+- Production repair: roll the exact d6 through native `RuleRollDice`, cap to `max(0, HPLeft - 1)`, and submit only the capped flat amount through native untyped self `RuleDealDamage`; skip the damage event when capped to zero. This is the explicitly authorized nonlethal-equivalent adaptation and preserves native RNG.
+- Rejected theory: setting `MinHPAfterDamage = 1` is sufficient merely because the property exists. Direct runtime evidence disproves it.
+- Current uncertainty: the explicit cap needs full source and guarded runtime qualification; combat-log wording remains a separate narrow boundary.
+- Next concrete action: run all gates, commit/publish the explicit-floor repair, then rerun the full disposable Cord scenario.
