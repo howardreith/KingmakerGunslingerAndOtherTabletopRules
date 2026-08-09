@@ -413,3 +413,13 @@
 - After every deployment/test transaction and at the end, original feature-settings bytes were restored. Final SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
 - Current uncertainty: these runs used the current live optional-mod population. The required isolated standalone and exact Call of the Wild profile matrices need transactional Mods-directory staging and restoration.
 - Next concrete action: commit/publish the comprehensive matrix evidence, then adapt the compatibility-profile transaction to carry request-local module settings into isolated standalone and Call of the Wild runs.
+
+## 2026-08-09 — profile-isolated module fixture support source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `b7d46e83627bd69763035e3f1c335c7e9dd523d8`; active version 0.0.74.
+- The existing compatibility transaction now accepts `observe-feature-module-settings` with exactly the two Boolean module parameters, writes schema 1 settings only after the isolated profile is staged, passes the same expectations to the guarded request, and relies on the existing exact Mods/SoundBank restoration transaction. Other scenarios reject arbitrary parameters.
+- Added the scenario to the standalone and exact Call of the Wild profile allowlists. No optional-mod dependency or binary reference was added.
+- Focused compatibility wrapper contracts PASS. Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `4581934b91a104dd4f1b1e36a26d3dd8fd8c93fbd10c873dda6d8b689fde2bfb`; DLL SHA-256 `60428bbec6eabe69bd212b187a0815caec07bbfb9b99d84b5f44342ecff3960d`.
+- Current uncertainty: the first standalone isolated transaction must prove both the settings fixture and exact external-state restoration in practice.
+- Next concrete action: commit/publish the wrapper support, then run standalone ON/ON followed by the remaining standalone combinations through separate exact profile transactions.

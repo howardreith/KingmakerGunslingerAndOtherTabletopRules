@@ -69,7 +69,10 @@ $wrapper = Get-Content -LiteralPath (Join-Path $root `
 foreach ($contract in @('[ValidateRange(120, 900)]',
     '[int]$RuntimeTimeoutSeconds = 300',
     'TimeoutSeconds = $RuntimeTimeoutSeconds',
-    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds')) {
+    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds',
+    "'observe-feature-module-settings'", '[hashtable]$Parameters = @{}',
+    "'Mods\KingmakerGunslinger\FeatureModules.json'",
+    '$arguments.Parameters = $Parameters')) {
     if (-not $wrapper.Contains($contract)) {
         throw "Compatibility wrapper timeout contract missing: $contract"
     }
