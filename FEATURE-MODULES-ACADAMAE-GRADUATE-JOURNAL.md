@@ -382,3 +382,22 @@
 - Candidate package SHA-256 `88014ec81d3fba02d9ca7d6891a3fee1f9aab351e31311f1892593f0c5153412`; DLL SHA-256 `4fefb7fbdad72a84e2b6245411d74cd8d7e12dbf7f920135419b77e9e3ae658a`.
 - Current uncertainty: calling the real native parameter enumerators and resolving every optional table/loot target needs guarded runtime proof, especially with Gunslinger OFF.
 - Next concrete action: commit/publish the comprehensive observer, then run OFF/OFF first to detect any leaked publication before repeating ON/ON.
+
+## 2026-08-09 — comprehensive OFF/OFF and ON/ON PASS; inter-run exit race isolated
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `1e82824ad17b9d1618bf89f30b4cdcc5ae9a9c74`; active version 0.0.74.
+- OFF/OFF directory `20260809T1541458507495Z-observe-feature-module-settings`, run ID `20260809T1541458689089Z-ffcf91f145d4418bb95d6dad5c399fd5`, PASS in 87,416 ms. All public counts were zero; 250 identities remained; four installed BTSL tables contributed 0 project rows.
+- A subsequent `-Combination all` invocation completed its first ON/ON process at directory `20260809T1544194627698Z-observe-feature-module-settings`, run ID `20260809T1544195001351Z-b04237e19a374607a16032ed439342d4`, PASS. Exact counts: class 1; basic and Fighter project feats 2/2 in both arrays; 25 native parameter rows; 12 capital rows; 48 rows across four BTSL tables; five fixed-loot rows; Acadamae 1/1; Cord 1; identities 250.
+- The wrapper then stopped before state two because mission-launched PID 31672 still existed briefly after the final result. It exited normally before inspection; no force termination occurred. Settings had already restored to SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Narrow orchestration repair: after each successful result with automatic exit requested, wait up to 30 seconds in 250 ms intervals for Kingmaker to exit, then fail closed. This changes no game mechanics or permission boundary.
+- Rejected theory: the comprehensive ON publication assertion failed. Its structured result is PASS; only the next launch's preflight observed the normal process-exit tail.
+- Current uncertainty: the bounded exit wait needs source qualification, then the complete uninterrupted four-state matrix must be repeated.
+- Next concrete action: qualify, commit, and publish the bounded exit wait, then rerun `-Combination all` and inspect all four structured results.
+
+## 2026-08-09 — bounded inter-run exit wait source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `1e82824ad17b9d1618bf89f30b4cdcc5ae9a9c74`; active version 0.0.74.
+- PowerShell parse validation and complete source gates PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits; strict package validation.
+- Candidate package SHA-256 `101a23e3351030630f00a13a1da91ebf6037052f44e7629644eb54d667bcaf4e`; DLL SHA-256 `f79636da90457b1ad2ed248a6e5d794c86af3feff9214c32b50657e69228c52e`.
+- Current uncertainty: the complete four-process loop must demonstrate that normal process teardown consistently fits within the new 30-second bound.
+- Next concrete action: commit/publish this orchestration checkpoint, then rerun the complete comprehensive matrix without force termination.

@@ -61,6 +61,16 @@ try {
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."
         }
+        if ($ExitAfterCompletion) {
+            $exitDeadline = [DateTime]::UtcNow.AddSeconds(30)
+            while ((Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) -and
+                [DateTime]::UtcNow -lt $exitDeadline) {
+                Start-Sleep -Milliseconds 250
+            }
+            if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) {
+                throw "Kingmaker did not exit within 30 seconds after combination $($entry.Key)."
+            }
+        }
     }
 } catch {
     $failure = $_
