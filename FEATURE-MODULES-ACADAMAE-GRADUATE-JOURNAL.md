@@ -776,3 +776,12 @@
 - Candidate package SHA-256 `28dcafdf0df10245e01dd5fde2a05faaef5f8ce4c4f9b2a318b5dd9f9986ef82`; DLL SHA-256 `065108fe8c8484297fe54c8d8f5058e08f2244d54e4ae74f9d29370a1d8f561d`.
 - Current uncertainty: guarded runtime must prove exact native natural-roll forcing and all seven integrated assertions in one fresh process.
 - Next concrete action: commit/publish deterministic save control and run the integrated scenario.
+
+## 2026-08-09 — consecutive deterministic Acadamae/Cord integration PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `207a405e3cb608def0d73f03b4ca8e38b44a0dd2`; active version 0.0.74.
+- Fresh guarded directory `20260809T1800412424422Z-disposable-acadamae-graduate`, run `20260809T1800412559535Z-5388e10cbfb04d1980bcfd98c5cc9115`, PASS 7/7 in 80,713 ms. Native prepared summon level 1; presentation/command parity PASS; DC 16; Cord exact match 1; roll/applied/delta 6/6/6; canonical buff retained false; cleanup PASS.
+- Immediately following fresh guarded directory `20260809T1802419998162Z-disposable-acadamae-graduate`, run `20260809T1802420337279Z-aca388acadfa448a80f2e44ce76771b1`, PASS 7/7 in 81,444 ms. The same exact mechanics passed with Cord roll/applied/delta 5/5/5 and canonical buff retained false.
+- Both runs used Steam App ID 640820, exact commit `207a405e3cb608def0d73f03b4ca8e38b44a0dd2`, request-local natural-roll forcing, no save interaction, automatic exit, and full request-local cleanup. The current-source consecutive primary integration gate is satisfied.
+- Current uncertainty: exact Call of the Wild mechanics and the remaining optional-mod profiles require fresh qualification before release versioning.
+- Next concrete action: commit/publish this evidence, then execute exact Call of the Wild ON/ON feature publication and integrated mechanics transaction.
