@@ -655,3 +655,20 @@
 - Both ran through Steam App ID 640820, loaded exact commit `9aeb778634e51e61323564748a89e939d0d13d6f`, made no save interaction, and automatically exited. The consecutive fresh-process integrated mechanics gate is satisfied for the current 0.0.74 candidate.
 - Current uncertainty: optional-mod mechanics/profile reruns, final 0.0.75 qualification, documentation, and working-save smoke remain.
 - Next concrete action: audit and execute the required Arms & Armor, Toggle Custom Soundpacks, combined, and exact Call of the Wild profile gates before transactional versioning.
+
+## 2026-08-09 — exact Call of the Wild mechanics exposes integration-order weakness
+
+- Branch/runtime package identity: `codex/feature-modules-acadamae-graduate` / `b06678da6cce944b013105511038c568b3a836cc`; active version 0.0.74.
+- Exact Call of the Wild transaction `compat-20260809T172224Z-4921726e6f05` staged the locally supplied bytes, ran ON/ON feature publication PASS, then restored exact Mods/settings/SoundBank state with `restorationVerified=true` after the mechanics result. No third-party bytes were modified in place.
+- Mechanics directory `20260809T1725392736142Z-disposable-acadamae-graduate`, run `20260809T1725392756950Z-2c761a26b2894cd9b94b25fd0a305e2a`, FAIL 6/7 in 100,068 ms. Prepared spell, action parity, success/failure, cancellation, and cleanup passed; the Cord phase recorded no new roll.
+- The fixture still tested ordinary failed-save fatigue before equipping the Cord, contrary to the required integration order and vulnerable to a foreign buff publisher retaining/deduplicating the prior fatigue application. The scenario now performs success, cancellation, the clean first failed save with Cord, then unequips the Cord and performs the ordinary failed-save fatigue proof. Expected completion counts are updated to 1/2/3 without weakening any mechanical assertion.
+- Current uncertainty: standalone and exact CotW reruns must prove this clean ordering; other optional profiles remain pending.
+- Next concrete action: fully qualify/publish the integration-order correction, rerun standalone consecutive proof, then rerun exact CotW ON/ON mechanics.
+
+## 2026-08-09 — clean-first Cord integration order source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `b06678da6cce944b013105511038c568b3a836cc`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `4b95c95d1d9f42a6fba2d9901c867c842f064662894d8936265b6473c98e7150`; DLL SHA-256 `f071b50009bc580965b23ef72e1d213c46b1920f63af622801410a89f7f5e2a8`.
+- Current uncertainty: standalone and exact CotW guarded mechanics must validate the corrected order.
+- Next concrete action: commit/publish this fixture correction, run standalone integrated proof, then repeat exact CotW ON/ON mechanics.

@@ -7013,28 +7013,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AcadamaeCastingRuntime.LastSavePassed &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
 
-                AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
-                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
-                UnitUseAbility failedCommand = new UnitUseAbility(failed,
-                    new TargetWrapper(unit));
-                AcadamaeCastingRuntime.Begin(failedCommand);
-                RuleCastSpell failedRule = new RuleCastSpell(failed,
-                    new TargetWrapper(unit));
-                Rulebook.Trigger(failedRule);
-                AcadamaeCastingRuntime.End(failedCommand);
-                failureCount = AcadamaeCastingRuntime.CompletedCount;
-                Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
-                failureObserved = failedRule.Success && failureCount == 2 &&
-                    !AcadamaeCastingRuntime.LastSavePassed &&
-                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
-                if (failedFatigue != null)
-                    unit.Descriptor.Buffs.RemoveFact(failedFatigue);
-                else if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
-                    unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
-                if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
-                    throw new InvalidOperationException(
-                        "Native Fatigued state remained after request-local cleanup.");
-
                 AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
                     new TargetWrapper(unit));
@@ -7043,7 +7021,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(unit));
                 Rulebook.Trigger(cancelledRule);
                 cancellationCount = AcadamaeCastingRuntime.CompletedCount;
-                cancellationObserved = cancelledRule.Success && cancellationCount == 2 &&
+                cancellationObserved = cancelledRule.Success && cancellationCount == 1 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
 
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
@@ -7065,10 +7043,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordDamage = unit.Damage - damageBefore;
                 cordRoll = Cord.CordConditionRuntime.LastRoll;
                 cordApplied = Cord.CordConditionRuntime.LastAppliedDamage;
-                cordObserved = cordRule.Success && cordCount == 3 &&
+                cordObserved = cordRule.Success && cordCount == 2 &&
                     cordDamage >= 1 && cordDamage <= 6 &&
                     cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                unit.Body.Belt.RemoveItem(false);
+
+                AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
+                UnitUseAbility failedCommand = new UnitUseAbility(failed,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(failedCommand);
+                RuleCastSpell failedRule = new RuleCastSpell(failed,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(failedRule);
+                AcadamaeCastingRuntime.End(failedCommand);
+                failureCount = AcadamaeCastingRuntime.CompletedCount;
+                Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
+                failureObserved = failedRule.Success && failureCount == 3 &&
+                    !AcadamaeCastingRuntime.LastSavePassed &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                if (failedFatigue != null)
+                    unit.Descriptor.Buffs.RemoveFact(failedFatigue);
+                else if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                    unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                    throw new InvalidOperationException(
+                        "Native Fatigued state remained after request-local cleanup.");
             }
             finally
             {
