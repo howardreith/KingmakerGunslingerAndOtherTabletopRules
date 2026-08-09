@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Kingmaker.EntitySystem.Entities;
 using Harmony12;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -9,6 +11,10 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Abilities;
 using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Cord
@@ -16,6 +22,8 @@ namespace KingmakerGunslinger.Cord
     internal static class CordConditionRuntime
     {
         [System.ThreadStatic] private static UnitState _fatigueBypass;
+        [System.ThreadStatic] private static UnitState _buffSubstitutionState;
+        [System.ThreadStatic] private static UnitCondition _buffSubstitutionCondition;
         private static readonly ConditionalWeakTable<Buff, object> ExhaustionSources =
             new ConditionalWeakTable<Buff, object>();
         private static readonly object Marker = new object();
@@ -36,6 +44,8 @@ namespace KingmakerGunslinger.Cord
         internal static bool Prefix(UnitState state, UnitCondition condition, Buff source)
         {
             if (state == null || ReferenceEquals(_fatigueBypass, state)) return true;
+            if (ReferenceEquals(_buffSubstitutionState, state) &&
+                _buffSubstitutionCondition == condition) return false;
             if (condition != UnitCondition.Fatigued &&
                 condition != UnitCondition.Exhausted) return true;
             if (!HasExactEquippedCord(state)) return true;
@@ -58,6 +68,57 @@ namespace KingmakerGunslinger.Cord
                 }
                 finally { _fatigueBypass = null; }
             }
+            return false;
+        }
+
+        internal static bool BeginBuff(BuffCollection buffs, BlueprintBuff blueprint)
+        {
+            if (buffs == null || buffs.Owner == null || blueprint == null ||
+                _buffSubstitutionState != null) return false;
+            UnitCondition condition;
+            if (!TryClassifyCondition(blueprint, out condition)) return false;
+            UnitState state = buffs.Owner.State;
+            if (state == null || !HasExactEquippedCord(state)) return false;
+
+            int damage = DealNonlethalEquivalent(state);
+            PublishSubstitution(condition, damage);
+            if (condition == UnitCondition.Exhausted)
+            {
+                try
+                {
+                    _fatigueBypass = state;
+                    state.AddCondition(UnitCondition.Fatigued, null);
+                }
+                finally { _fatigueBypass = null; }
+            }
+            _buffSubstitutionState = state;
+            _buffSubstitutionCondition = condition;
+            return true;
+        }
+
+        internal static void EndBuff(bool owner)
+        {
+            if (!owner) return;
+            _buffSubstitutionState = null;
+            _buffSubstitutionCondition = default(UnitCondition);
+        }
+
+        private static bool TryClassifyCondition(BlueprintBuff blueprint,
+            out UnitCondition condition)
+        {
+            UnitCondition[] conditions = (blueprint.ComponentsArray ??
+                    new Kingmaker.Blueprints.BlueprintComponent[0])
+                .OfType<AddCondition>()
+                .Select(component => component.Condition)
+                .Where(value => value == UnitCondition.Fatigued ||
+                    value == UnitCondition.Exhausted)
+                .Distinct().ToArray();
+            if (conditions.Length == 1)
+            {
+                condition = conditions[0];
+                return true;
+            }
+            condition = default(UnitCondition);
             return false;
         }
 
@@ -122,5 +183,30 @@ namespace KingmakerGunslinger.Cord
         private static bool Prefix(UnitState __instance, UnitCondition condition,
             Buff sourceBuff)
         { return CordConditionRuntime.Prefix(__instance, condition, sourceBuff); }
+    }
+
+    [HarmonyPatch(typeof(BuffCollection), "AddBuff",
+        typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?))]
+    internal static class CordAddContextBuffPatch
+    {
+        private static void Prefix(BuffCollection __instance, BlueprintBuff __0,
+            ref bool __state)
+        { __state = CordConditionRuntime.BeginBuff(__instance, __0); }
+
+        private static void Postfix(bool __state)
+        { CordConditionRuntime.EndBuff(__state); }
+    }
+
+    [HarmonyPatch(typeof(BuffCollection), "AddBuff",
+        typeof(BlueprintBuff), typeof(UnitEntityData), typeof(TimeSpan?),
+        typeof(AbilityParams))]
+    internal static class CordAddCasterBuffPatch
+    {
+        private static void Prefix(BuffCollection __instance, BlueprintBuff __0,
+            ref bool __state)
+        { __state = CordConditionRuntime.BeginBuff(__instance, __0); }
+
+        private static void Postfix(bool __state)
+        { CordConditionRuntime.EndBuff(__state); }
     }
 }

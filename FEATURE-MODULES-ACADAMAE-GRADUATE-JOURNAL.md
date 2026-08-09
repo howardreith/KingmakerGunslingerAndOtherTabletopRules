@@ -672,3 +672,21 @@
 - Candidate package SHA-256 `4b95c95d1d9f42a6fba2d9901c867c842f064662894d8936265b6473c98e7150`; DLL SHA-256 `f071b50009bc580965b23ef72e1d213c46b1920f63af622801410a89f7f5e2a8`.
 - Current uncertainty: standalone and exact CotW guarded mechanics must validate the corrected order.
 - Next concrete action: commit/publish this fixture correction, run standalone integrated proof, then repeat exact CotW ON/ON mechanics.
+
+## 2026-08-09 — clean-first run proves condition-only Cord hook is incomplete
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `fe8a558051af6d07271c6fd2a6ff670268572c4e`; active version 0.0.74.
+- Guarded standalone directory `20260809T1730176080564Z-disposable-acadamae-graduate`, run `20260809T1730176347231Z-e6cdb06982b1452b9cf0f9c00c470ad6`, FAIL 6/7 in 52,428 ms. Clean-first Cord phase suppressed Fatigued but recorded no condition-hook roll; after unequip, the same exact failed-save path applied ordinary Fatigued. All other assertions passed.
+- Exact installed contract inspection found two public `BuffCollection.AddBuff` overloads: `(BlueprintBuff, MechanicsContext, TimeSpan?)` and `(BlueprintBuff, UnitEntityData, TimeSpan?, AbilityParams)`, both owning a `UnitDescriptor`. This proves an effect can be rejected at the buff boundary before `UnitState.AddCondition`, so condition-only interception is incomplete.
+- Added narrow semantic buff-boundary composition for blueprints containing exactly one native `AddCondition` component whose exact enum is Fatigued or Exhausted. It substitutes before any foreign/native immunity rejection, allows the buff to retain all unrelated components, and uses a thread-local state/condition token so the later `UnitState.AddCondition` is suppressed without a second roll. Direct condition sources continue through the original exact hook; no display-name matching or Call of the Wild dependency is introduced.
+- Exhaustion at the buff boundary uses the same one-use native Fatigued bypass as the direct condition path. Focused source tests guard both exact overload patches, semantic classification, and lifecycle token.
+- Current uncertainty: compile signatures, native one-roll behavior, and exact CotW composition require full qualification and guarded reruns.
+- Next concrete action: fully qualify/publish the buff-boundary Cord interception, run standalone Cord/integration, then repeat exact CotW mechanics.
+
+## 2026-08-09 — semantic buff-boundary Cord interception source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `fe8a558051af6d07271c6fd2a6ff670268572c4e`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `6f965f87ecb15949cd25e238a9ebe0562813c674ef60f34f6bad777fceab13be`; DLL SHA-256 `4d98a5a188fac23d1b3021b1cc80129aa13c72a82d63a9d5e3162cc26d52ba40`.
+- Current uncertainty: native Harmony execution and exact optional-mod composition remain guarded runtime evidence.
+- Next concrete action: commit/publish the buff-boundary implementation, run standalone Cord/integration, then exact CotW mechanics.
