@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Kingmaker.EntitySystem.Entities;
 using Harmony12;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -14,7 +13,6 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
-using Kingmaker.UnitLogic.Abilities;
 using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Cord
@@ -201,9 +199,9 @@ namespace KingmakerGunslinger.Cord
         { return CordConditionRuntime.Prefix(__instance, condition, sourceBuff); }
     }
 
-    [HarmonyPatch(typeof(BuffCollection), "AddBuff",
-        typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?))]
-    internal static class CordAddContextBuffPatch
+    [HarmonyPatch(typeof(BuffCollection), "TriggerRuleApplyBuff",
+        new[] { typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
+    internal static class CordRuleApplyBuffPatch
     {
         private static void Prefix(BuffCollection __instance, BlueprintBuff __0,
             ref bool __state)
@@ -213,16 +211,4 @@ namespace KingmakerGunslinger.Cord
         { CordConditionRuntime.EndBuff(__state); }
     }
 
-    [HarmonyPatch(typeof(BuffCollection), "AddBuff",
-        typeof(BlueprintBuff), typeof(UnitEntityData), typeof(TimeSpan?),
-        typeof(AbilityParams))]
-    internal static class CordAddCasterBuffPatch
-    {
-        private static void Prefix(BuffCollection __instance, BlueprintBuff __0,
-            ref bool __state)
-        { __state = CordConditionRuntime.BeginBuff(__instance, __0); }
-
-        private static void Postfix(bool __state)
-        { CordConditionRuntime.EndBuff(__state); }
-    }
 }

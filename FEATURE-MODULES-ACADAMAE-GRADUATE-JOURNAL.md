@@ -707,3 +707,20 @@
 - Candidate package SHA-256 `d1e5dcd88806950bac6c8e37d5d4973a5240f5decde12ba187f12f41fbc68a33`; DLL SHA-256 `eea082ab227a6186b6754464700d09ae42a46ae009c1d755e1755510273f6ac5`.
 - Current uncertainty: exact overload counters and the native damage/substitution result remain guarded runtime evidence.
 - Next concrete action: commit/publish canonical binding, then rerun standalone integration and Cord scenarios.
+
+## 2026-08-09 — public AddBuff overloads are not the executed rule boundary
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `e166909b009630ead76d1f1a747f124a2d122e9a`; active version 0.0.74.
+- Guarded directory `20260809T1739390460562Z-disposable-acadamae-graduate`, run `20260809T1739390823953Z-5247be636e644a1cba3afb5c3223332f`, FAIL 6/7 in 59,768 ms. Diagnostics recorded `cordBuffCalls=0`, proving neither public `AddBuff` overload patch was executed by this native fatigue path; exact identity configuration was not the issue.
+- The repository's already-qualified Dodge lifecycle instrumentation identifies `BuffCollection.TriggerRuleApplyBuff(BlueprintBuff, MechanicsContext, TimeSpan?)` as the patchable authoritative application boundary immediately before rule/immunity handling, with `AddBuffInternal` downstream. Replaced the two unexecuted public-overload patches with one exact `TriggerRuleApplyBuff` prefix/postfix using the same semantic/exact classification and one-use state token.
+- Direct `UnitState.AddCondition` remains the second and only other hook. This is a narrower exact set than patching three overloads and intercepts an effect before immunity rejection while preserving unrelated buff components.
+- Current uncertainty: the authoritative boundary counter and one-roll result require guarded runtime proof.
+- Next concrete action: fully qualify/publish the TriggerRuleApplyBuff correction, then rerun standalone integration and Cord scenarios.
+
+## 2026-08-09 — TriggerRuleApplyBuff Cord boundary source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `e166909b009630ead76d1f1a747f124a2d122e9a`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `40e3a30740bcf53c6d77a0770916081ff4b4313bf03d4ece54f5123f4d716620`; DLL SHA-256 `27977754559e1ea6bb7349b30c6deb496cabeb8ee87b26ee2e4bda5a922e340c`.
+- Current uncertainty: exact rule-boundary execution and singular substitution remain guarded runtime evidence.
+- Next concrete action: commit/publish the authoritative boundary, then rerun standalone integration and Cord scenarios.

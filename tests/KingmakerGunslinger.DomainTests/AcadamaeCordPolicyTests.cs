@@ -151,7 +151,7 @@ namespace KingmakerGunslinger.DomainTests
                 "new DiceFormula(0, DiceType.D6), amount",
                 "IgnoreDamageReduction = true",
                 "IWarningNotificationUIHandler",
-                "[HarmonyPatch(typeof(BuffCollection), \"AddBuff\"",
+                "[HarmonyPatch(typeof(BuffCollection), \"TriggerRuleApplyBuff\"",
                 ".OfType<AddCondition>()",
                 "component.Condition",
                 "CordConditionRuntime.BeginBuff(__instance, __0)",
