@@ -8,20 +8,20 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Inventory | Current source/tests/docs inventory and replacement matrix | TODO | Phase 0 journal |
 | Profile/item | One paper profile/item; cost 12, stackable, inert, zero weight/resale | PASS (Phase 1 foundation; resale pending Phase 5) | `ReloadAmmunitionProfileCatalog`; `KMG.Ammunition.PaperCartridge`; 941/941 |
 | Compatibility | Definition-driven Early Pistol/Musket/Blunderbuss; magic families included; advanced rejected | PASS (domain foundation) | `FirearmStateRules.CreateForDefinition`; no item whitelist |
-| State | Two append-only paper tokens; old identities unchanged; codec/reconciliation/static enchantments | PASS (token/codec foundation; lifecycle runtime pending Phase 6) | Six-token catalog; old four IDs asserted exact; paper round trips |
-| Action economy | Every required Pistol/Musket/Blunderbuss/Fast Musket/Rapid/Paper row | TODO | |
-| Mode/grants | Per-unit off-default toggle; exact grants; no fallback/leak/duplicate/auto-disable | TODO | |
-| Transaction | Atomic loose/paper sources, exact rollback, no mix/substitution/double-consume | TODO | |
-| Manual/auto-use | Shared plan drives availability, UI, command, delivery, native continuation | TODO | |
-| Full attack | Exact auto-use gate; Free normal or one Free Lightning fallback; fail closed | TODO | |
-| Lightning | Swift/Free dynamic action/source; one chamber/round; True Grit; rollback/reset | TODO | |
-| Misfire | Shared exact-weapon policy; paper before Reliable; threshold 0; ordinary/Dead Shot/Scatter | TODO | |
-| Scatter/audio | One paper, all-roll rule, triple explosion, single transition/sound, no multi-cone | TODO | |
-| Crafting | 20 for 120; existing kit/gates/shared marker; atomic rollback; basic unchanged | TODO | |
-| Vendors | Smith 200; installed BTSL 200; bounded idempotent normalization/rollback | TODO | |
-| Acquisition controls | No Jhod/starting/fixed-loot paper; roster preserved; Bokken exact or evidenced defer | TODO | |
+| State | Two append-only paper tokens; old identities unchanged; codec/reconciliation/static enchantments | PASS | 954-test suite; Paper reload `20260809T0038463040427Z`; lifecycle `20260809T0042467907112Z`; switching `20260809T0046598688957Z` |
+| Action economy | Every required Pistol/Musket/Blunderbuss/Fast Musket/Rapid/Paper row | PASS | `paper-reload.action-matrix`; reload/Lightning/full-attack runtime PASSes |
+| Mode/grants | Per-unit off-default toggle; exact grants; no fallback/leak/duplicate/auto-disable | PASS | Enhanced reload scenario proves two-unit isolation and zero-stock retention |
+| Transaction | Atomic loose/paper sources, exact rollback, no mix/substitution/double-consume | PASS | Domain rollback matrix plus reload/full-attack runtime cleanup |
+| Manual/auto-use | Shared plan drives availability, UI, command, delivery, native continuation | PASS | Reload and full-attack guarded PASSes |
+| Full attack | Exact auto-use gate; Free normal or one Free Lightning fallback; fail closed | PASS | `20260808T2327250125449Z-4dc36ba60fe44e9c9af7ca06fb32912b` |
+| Lightning | Swift/Free dynamic action/source; one chamber/round; True Grit; rollback/reset | PASS | `20260808T2249322389967Z-45e14b6dfb8f4312bc591156fdf7ec28` |
+| Misfire | Shared exact-weapon policy; paper before Reliable; threshold 0; ordinary/Dead Shot/Scatter | PASS | Phase 4 domain and guarded ordinary/Dead Shot/Scatter PASSes |
+| Scatter/audio | One paper, all-roll rule, triple explosion, single transition/sound, no multi-cone | PASS | `20260809T0011589772079Z-885ae93125bf4979adf69afe8b7948eb` |
+| Crafting | 20 for 120; existing kit/gates/shared marker; atomic rollback; basic unchanged | PASS | `20260809T0031147623118Z-dad8b1e070d049d09c4f22c295fb6504` |
+| Vendors | Smith 200; installed BTSL 200; bounded idempotent normalization/rollback | PASS | Vendor observer and crafting/vendor guarded PASSes |
+| Acquisition controls | No Jhod/starting/fixed-loot paper; roster preserved; Bokken exact or evidenced defer | DEFER (evidenced) | Core paths PASS; Bokken alone deferred in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md` |
 | Presentation | Item/mode/reload/Lightning/Gunsmithing/help/icons/logs/build/changelog | TODO | |
-| Runtime | Reload scenario | TODO | |
+| Runtime | Reload scenario | PASS | `20260809T0038463040427Z-disposable-paper-cartridge-reload` |
 | Runtime | Native full-attack scenario | TODO | |
 | Runtime | Ordinary/Dead Shot misfire scenario | TODO | |
 | Runtime | Scatter scenario | TODO | |

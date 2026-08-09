@@ -394,3 +394,41 @@
   shared atomic crafting, exact vendor stock, zero-sale source policy, and bounded
   Bokken defer. Next exact action is Phase 6 paper-token persistence,
   reconstruction, static-enchantment lifecycle, and per-unit mode isolation.
+
+## Phase 6 persistence and lifecycle checkpoint
+
+- Published fixture checkpoint `2da2f60948c8e70b964e88e54675e069c042a457`
+  adds request-local two-unit Paper mode isolation and proves that exhausting the
+  exact Paper Cartridge stack does not deactivate the native activatable mode.
+  Cleanup restores a nonzero pre-fixture cartridge snapshot as well as loose ammo.
+- Repository validation and the complete deterministic suite passed: 954 PASS,
+  0 failures. Two sandboxed attempts failed only because the audio staging test's
+  deliberate Windows-Temp `File.Replace` was outside the workspace write root;
+  the same unchanged suite passed with the required disposable-temp permission.
+- Clean Release build, build-output validation, SoundBank validation, package
+  creation, and strict standalone package validation: PASS.
+- Guarded exact-build runtime evidence on the published checkpoint:
+  - smoke `20260809T0036508292089Z-mod-load-smoke` PASS;
+  - enhanced Paper reload
+    `20260809T0038463040427Z-disposable-paper-cartridge-reload` PASS;
+  - lifecycle prerequisite smoke `20260809T0040527737094Z-mod-load-smoke` PASS;
+  - installed item lifecycle
+    `20260809T0042467907112Z-observe-firearm-item-lifecycle-contracts` PASS;
+  - switching prerequisite smoke `20260809T0045098278584Z-mod-load-smoke` PASS;
+  - production firearm switching
+    `20260809T0046598688957Z-disposable-production-firearm-switching` PASS.
+- The enhanced reload fixture proves exact Normal and Broken Paper token use on a
+  named Reliable Pistol while preserving its two static enchantments. Existing
+  deterministic token/codec/repository/reconciliation tests prove round trips,
+  exact old meanings, two-item isolation, corruption fail-closed behavior, and
+  token-only replacement. The installed lifecycle and switching scenarios prove
+  the inherited carrier/equip boundaries remain exact.
+- Persistence limitation is deliberate: no autonomous save was created or
+  written. Fresh save/restart persistence of the two newly appended Paper tokens
+  remains one narrow human-only checklist item; inherited item-token persistence
+  evidence is reused only for the carrier contract, not misreported as a fresh
+  Paper-token save round trip.
+- Current version remains `0.0.73`; blueprint registry remains 248 active and the
+  append-only ledger 249 identities including one reserved. Next exact action:
+  publish this Phase 6 evidence, then begin the transactional 0.0.74 release pin
+  and final comprehensive/compatibility qualification.

@@ -1,5 +1,26 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Paper Cartridges Phase 7 (2026-08-09)
+
+- Branch `codex/paper-cartridges-auto-reload`; baseline
+  `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`; latest published source checkpoint
+  `2da2f60948c8e70b964e88e54675e069c042a457`.
+- Phases 1–6 mechanics and guarded vertical scenarios pass. Complete deterministic
+  total is 954. Registry is 248 active; append-only ledger is 249 identities with
+  one reserved. Bokken alone is safely deferred by exact installed graph evidence.
+- Phase 6 PASS IDs: enhanced reload
+  `20260809T0038463040427Z-disposable-paper-cartridge-reload`, item lifecycle
+  `20260809T0042467907112Z-observe-firearm-item-lifecycle-contracts`, and switching
+  `20260809T0046598688957Z-disposable-production-firearm-switching`.
+- No save write was performed. Do not claim a fresh Paper-token restart; retain one
+  narrow human checklist while relying on deterministic Paper round trips and the
+  inherited qualified item-token carrier lifecycle.
+- Exact next action: commit/push Phase 6 evidence, transactionally advance all
+  actual 0.0.73 pins to 0.0.74 / `0.0.74-paper-cartridges-auto-reload`, implement
+  the comprehensive guarded scenario, then run final standalone/compatibility,
+  two fresh comprehensive PASSes, eligible working-save smokes, hashes, audits,
+  reports, clean-tree and remote-equality proof. Do not merge.
+
 ## Current resume — Rare Firearms project-owned Seeking authority (2026-08-08)
 
 - Exact branch/checkpoint verified clean and published:
