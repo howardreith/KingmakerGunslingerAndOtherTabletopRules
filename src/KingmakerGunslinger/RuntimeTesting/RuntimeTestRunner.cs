@@ -3662,14 +3662,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             int powderBefore = player.Inventory.Count(ammunition.BlackPowder);
             int ballBefore = player.Inventory.Count(ammunition.LeadBall);
             int paperBefore = player.Inventory.Count(ammunition.PaperCartridge);
-            UnitEntityData unit = null;
+            UnitEntityData unit = null, secondUnit = null;
             ItemEntityWeapon weapon = null;
             Buff marker = null;
-            ActivatableAbility nativeMode = null;
+            ActivatableAbility nativeMode = null, secondMode = null;
             bool modeGranted = false, offByDefault = false, pistolLoaded = false,
                 actionExact = false, noLooseConsumption = false,
                 magicCompatible = false, staticPreserved = false,
-                advancedRejected = false, brokenRetained = false, cleaned = false;
+                advancedRejected = false, brokenRetained = false,
+                modeIsolated = false, exhaustionRetainsMode = false, cleaned = false;
             string observed = null;
             try
             {
@@ -3693,6 +3694,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault(value => ReferenceEquals(value.Blueprint, mode.Marker));
                 if (marker == null || !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker))
                     throw new InvalidOperationException("The request-local paper mode marker was rejected.");
+                secondUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                secondUnit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                secondMode = secondUnit.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint, mode.Ability));
+                modeIsolated = !secondMode.IsOn &&
+                    !PaperCartridgeModeRuntime.IsActive(secondUnit.Descriptor, mode.Marker) &&
+                    PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
@@ -3743,15 +3752,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Descriptor, rifle, ammunition.BlackPowder, ammunition.LeadBall);
                 advancedRejected = !rejected.IsAvailable && rejected.Plan != null &&
                     rejected.Plan.Status == FirearmReloadPlanStatus.IncompatibleAmmunition;
+                int remainingPaper = player.Inventory.Count(ammunition.PaperCartridge);
+                if (remainingPaper > 0)
+                    player.Inventory.Remove(ammunition.PaperCartridge, remainingPaper);
+                exhaustionRetainsMode = nativeMode.IsOn &&
+                    PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
                 observed = "modeGranted=" + modeGranted + ";offDefault=" + offByDefault +
                     ";action=" + actionExact + ";pistol=" + pistolLoaded +
                     ";looseUntouched=" + noLooseConsumption + ";magic=" + magicCompatible +
                     ";static=" + staticPreserved + ";broken=" + brokenRetained +
-                    ";advancedRejected=" + advancedRejected;
+                    ";advancedRejected=" + advancedRejected +
+                    ";modeIsolated=" + modeIsolated +
+                    ";exhaustionRetainsMode=" + exhaustionRetainsMode;
             }
             finally
             {
                 if (nativeMode != null && nativeMode.IsOn) nativeMode.IsOn = false;
+                if (secondMode != null && secondMode.IsOn) secondMode.IsOn = false;
                 if (unit != null && marker != null && unit.Descriptor.Buffs.RawFacts.Contains(marker))
                     unit.Descriptor.Buffs.RemoveFact(marker);
                 if (weapon != null)
@@ -3763,7 +3780,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 int excess = player.Inventory.Count(ammunition.PaperCartridge) - paperBefore;
                 if (excess > 0) player.Inventory.Remove(ammunition.PaperCartridge, excess);
+                int deficit = paperBefore - player.Inventory.Count(ammunition.PaperCartridge);
+                if (deficit > 0)
+                {
+                    object ignored; string method;
+                    ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                        new[] { new object[] { ammunition.PaperCartridge, deficit } },
+                        out ignored, out method);
+                }
                 if (unit != null) unit.Dispose();
+                if (secondUnit != null) secondUnit.Dispose();
                 cleaned = player.Inventory.Count(ammunition.PaperCartridge) == paperBefore &&
                     player.Inventory.Count(ammunition.BlackPowder) == powderBefore &&
                     player.Inventory.Count(ammunition.LeadBall) == ballBefore;
@@ -3780,6 +3806,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("paper-magic-family-state", "named Reliable Pistol shares compatibility and retains two static enchantments",
                     observed, magicCompatible && staticPreserved && brokenRetained,
                     "canonical family definition and item-token replacement"),
+                Assertion("paper-mode-unit-isolation",
+                    "a second unit remains independently off while the first is active",
+                    observed, modeIsolated, "two native activatable facts and marker buffs"),
+                Assertion("paper-mode-stock-exhaustion",
+                    "zero Paper Cartridge stock does not deactivate the selected mode",
+                    observed, exhaustionRetainsMode, "native activatable state independent of inventory"),
                 Assertion("paper-advanced-rejection", "Advanced Rifle rejects paper without fallback",
                     observed, advancedRejected,
                     "definition-driven profile compatibility"),
