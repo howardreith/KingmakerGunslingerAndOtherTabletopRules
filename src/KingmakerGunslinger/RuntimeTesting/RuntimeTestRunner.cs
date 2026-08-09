@@ -556,6 +556,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposablePaperCartridgeCraftingVendors());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeComprehensive)
+                {
+                    Complete(RunDisposablePaperCartridgeComprehensive());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableOverhaulMaintenance)
                 {
@@ -6528,6 +6534,41 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeComprehensive()
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            RuntimeTestResult reload = RunDisposablePaperCartridgeReload();
+            assertions.Add(PaperComprehensiveSlice("reload", reload));
+            RuntimeTestResult fullAttack = RunDisposablePaperCartridgeFullAttack();
+            assertions.Add(PaperComprehensiveSlice("full-attack", fullAttack));
+            RuntimeTestResult lightning = RunDisposableGunslingerLightningReload();
+            assertions.Add(PaperComprehensiveSlice("lightning-reload", lightning));
+            RuntimeTestResult misfire = RunDisposablePaperCartridgeMisfire();
+            assertions.Add(PaperComprehensiveSlice("misfire-and-dead-shot", misfire));
+            RuntimeTestResult scatter = RunDisposableGunslingerScatterShot(
+                ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition);
+            assertions.Add(PaperComprehensiveSlice("scatter", scatter));
+            RuntimeTestResult crafting = RunDisposablePaperCartridgeCraftingVendors();
+            assertions.Add(PaperComprehensiveSlice("crafting-and-vendors", crafting));
+            bool passed = assertions.All(value => value != null && value.Status == "PASS");
+            return CreateResult(passed ? "PASS" : "FAIL", assertions,
+                passed ? string.Empty : "One or more Paper Cartridge comprehensive slices failed.");
+        }
+
+        private static RuntimeTestAssertion PaperComprehensiveSlice(
+            string name, RuntimeTestResult result)
+        {
+            int total = result == null || result.Assertions == null ? 0 : result.Assertions.Count;
+            int passed = result == null || result.Assertions == null ? 0 :
+                result.Assertions.Count(value => value != null && value.Status == "PASS");
+            bool exact = result != null && result.Status == "PASS" && total > 0 && passed == total;
+            return Assertion("paper-comprehensive-" + name,
+                "the complete request-local slice passes and restores external state",
+                "result=" + (result == null ? "null" : result.Status) +
+                    ";assertions=" + passed + "/" + total,
+                exact, "composed guarded slice with its own guaranteed cleanup");
         }
 
         private RuntimeTestResult RunDisposablePaperCartridgeCraftingVendors()

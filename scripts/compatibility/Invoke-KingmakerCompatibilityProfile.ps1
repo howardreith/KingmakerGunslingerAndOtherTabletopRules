@@ -27,6 +27,7 @@ param(
         'disposable-firearm-wwise-audio',
         'disposable-gunslinger-scatter-shot',
         'disposable-reload-autocast',
+        'disposable-paper-cartridge-comprehensive',
         'disposable-gunslinger-comprehensive-acceptance')]
     [string[]]$Scenario,
     [ValidateRange(120, 900)]
@@ -55,7 +56,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.73'
+            ExpectedVersion = '0.0.74'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
