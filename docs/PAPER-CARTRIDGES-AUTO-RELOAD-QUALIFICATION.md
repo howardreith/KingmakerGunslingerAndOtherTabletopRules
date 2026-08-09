@@ -1,8 +1,8 @@
 # Paper Cartridges Qualification
 
-Status: qualification suspended. The recorded evidence below is historical for the
-rejected pre-repair 0.0.74 candidate pending persistent-mode crash repair and repeat
-view-backed/save-load qualification; branch remains unmerged.
+Status: fully qualified. The rejected pre-repair evidence remains historical;
+the repaired 0.0.74 candidate passed autonomous qualification and human recovery
+acceptance on 2026-08-09.
 
 The minimal unchanged-GUID repair passes 954 deterministic tests and every clean
 exact-reference build/package/SoundBank gate. It is not yet runtime acceptance:
@@ -96,3 +96,7 @@ repair package without editing any save, then:
 The decisive result is step 1: a previously failing save loads with the unchanged
 marker GUID. Do not delete/edit saves, overwrite `KMG_AUTOMATION_BASELINE`, or
 remove Call of the Wild from a save that depends on it.
+
+Human acceptance completed 2026-08-09: the user successfully loaded a previously
+affected game and traveled between dungeon floors without the modal exception.
+This closes the final recovery and area-transition acceptance gate.

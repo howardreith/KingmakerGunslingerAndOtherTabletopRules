@@ -1,7 +1,7 @@
 # Paper Cartridges Implementation Report
 
-Status: prior 0.0.74 candidate rejected for a release-blocking persistent-mode
-view-reconstruction crash; repair investigation active on the same unmerged branch.
+Status: repaired and fully qualified. The prior 0.0.74 binary remains rejected;
+the unchanged-GUID repair passed autonomous and human recovery acceptance.
 
 Exact installed IL identifies the marker's null `FxOnStart` dereference in native
 view reconstruction; `FxOnRemove` is independently null-sensitive. The unchanged-
@@ -24,6 +24,10 @@ live view-backed and human failing-save acceptance remain pending.
   GUID `69a804ea1fd14a5da3ba893c373f481f` to the corrected blueprint definition.
   Loading one of the user's already-failing saves remains the decisive human-only
   recovery acceptance item.
+
+Human recovery acceptance completed 2026-08-09: the user successfully loaded an
+affected game and traveled between dungeon floors. Existing-save reconstruction
+and area-transition recovery are therefore confirmed on the repaired build.
 
 ## Baseline
 

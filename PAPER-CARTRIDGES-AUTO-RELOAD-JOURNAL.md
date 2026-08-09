@@ -575,3 +575,11 @@
 - One human-only acceptance remains: install the distinct repair package and load
   a preserved previously failing quicksave, then perform the requested dungeon
   transitions, disposable save/reload, mode off/on transitions, and reload/full attack.
+
+### Human recovery acceptance — 2026-08-09
+
+- User report: “Successfully loaded a game and traveled between floors in the dungeon.”
+- This directly passes the release-blocking existing-save reconstruction and
+  dungeon area/floor-transition acceptance boundary with the unchanged marker GUID.
+- The repaired 0.0.74 candidate is fully qualified; next action is the explicitly
+  authorized commit, feature-branch publication, and merge to `master`.

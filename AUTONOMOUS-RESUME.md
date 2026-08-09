@@ -1483,8 +1483,7 @@ initializes both empty FX links and both marker/mode empty resource-ID arrays,
 with startup validation. Next: deterministic/build gates, then an exact live
 party-view lifecycle observer under standalone and required compatibility profiles.
 
-Repair source and autonomous qualification are complete. Existing stable marker
-identity is unchanged, all view lifecycle/compatibility/comprehensive gates pass,
-and the distinct recovery package is ready under `artifacts/local-runtime/0.0.74`.
-Only the human load of a preserved previously failing quicksave and requested
-dungeon-transition acceptance sequence remains; do not delete, edit, or migrate saves.
+Repair qualification is complete. On 2026-08-09 the user successfully loaded an
+affected game and traveled between dungeon floors, closing the final human recovery
+gate. The unchanged marker identity, autonomous lifecycle/compatibility evidence,
+and human area-transition result jointly qualify the repaired 0.0.74 candidate.
