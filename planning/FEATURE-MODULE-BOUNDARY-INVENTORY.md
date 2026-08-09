@@ -6,7 +6,7 @@ UMM 0.32.4 exact public contract: `ModSettings.GetPath(ModEntry)`, `Load<T>(ModE
 
 | Surface | Layer | Module | Baseline owner / note |
 |---|---|---|---|
-| All 248 active project blueprint GUIDs | Identity | Infrastructure | Unconditional registration; must remain constant across settings |
+| All 250 active project blueprint GUIDs | Identity | Infrastructure | Unconditional registration; includes unchanged 248 plus Acadamae and Cord; must remain constant across settings |
 | Gunslinger class, progression, archetypes, deeds | Identity + public class catalog | Gunslinger | Register always; gate catalog publication only |
 | Firearm proficiency and project feat choices | Identity + feat selections | Gunslinger | Gate basic/Fighter publications |
 | Native firearm parameter menus | Native catalog mutation | Gunslinger | Gate exact firearm additions; preserve native/foreign entries |

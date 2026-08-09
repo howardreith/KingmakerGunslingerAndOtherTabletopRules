@@ -64,3 +64,14 @@
 - Candidate package SHA-256 `f5b296f1738db7016759b6e83614255225691a0ffe98a411ce5c3949b58c23c4`; DLL SHA-256 `ca3398571374a6e8640a88b04c02fc32190aa7d4d2a449330db6862fee518ab8`.
 - Current uncertainty: exact game-object adapters, invocation correlation, condition interception, and blueprint identities are intentionally not claimed by these pure-policy tests.
 - Next concrete action: commit and publish this policy checkpoint, then append stable Acadamae/Cord identities and implement their always-loaded blueprints.
+
+## 2026-08-09 — append-only identity source checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `f7f188fe1f8964f45e1d082c550c07fa6b333b35`; active version 0.0.74.
+- Appended stable IDs `KMG.Feats.AcadamaeGraduate` = `7939ff087cb843729448589ba2de19f1` and `KMG.Items.CordOfStubbornResolve` = `c4b804d9ebf941b4842b0a461a2b6b6d`; no existing ID changed. Ledger is now 250 active plus one reserved, and bootstrap expects exactly 250 registrations in every module configuration.
+- Registered both identities before settings-controlled publication. Acadamae uses the exact native Conjuration specialization as its icon donor. Cord selects the unique installed 4,000-gp belt whose equipment enchantment carries Constitution +2 Enhancement, clones its native belt/equipment/enchantment contract, and deliberately replaces metadata with 15,000 gp and 1 lb.
+- Tests/gates: repository validation PASS; complete deterministic suite PASS 963/963; exact-reference clean Release build, build-output validation, supply-icon audit, SoundBank validation, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `93c39880cb66100701748ec2e5cdcff3cbc9a69b217123af600480b96b50b13e`; DLL SHA-256 `02ac967c19deb9ced6166675f2fb911e4ef280413c415b840ba9b7c96c05b3dc`.
+- Rejected theory: a guessed belt GUID or localized name is sufficient donor proof. Selection instead uses exact installed type, price, stat, value, and descriptor and fails closed unless singular; runtime bootstrap must still prove the installed cardinality.
+- Current uncertainty: the clean-process runtime has not yet proved that the installed donor query is singular or that both identities register successfully.
+- Next concrete action: commit and publish the clean identity checkpoint, then run guarded `mod-load-smoke` and inspect structured bootstrap/count evidence.

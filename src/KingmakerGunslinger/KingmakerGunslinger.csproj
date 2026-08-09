@@ -152,6 +152,8 @@
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
+    <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
+    <Compile Include="Blueprints\CordOfStubbornResolveBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintId.cs" />
     <Compile Include="Blueprints\BlueprintLibraryLookup.cs" />
     <Compile Include="Blueprints\BlueprintManifest.cs" />

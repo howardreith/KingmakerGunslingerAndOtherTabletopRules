@@ -7,7 +7,7 @@ The append-only contract contains 233 stable identifiers: 232 active and one res
 The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
-manifest contains 249 stable identifiers: 248 active and one reserved.
+manifest contains 251 stable identifiers: 250 active and one reserved.
 Bootstrap therefore uses the complete two-hundred-forty-seven-blueprint transaction.
 
 Paper Cartridges Phase 1 identities are append-only:
@@ -214,6 +214,8 @@ The absence of a state-token enchantment represents canonical Empty/Normal state
 | `KMG.Deeds.DeathsShotArmed` | `dfc8df775a53441292502d05f13334e4` | `BlueprintBuff` | Active | Next-firearm marker |
 | `KMG.Deeds.DeathsShotDeathEffect` | `b3ed104593874cdc9a0f5bbf99d26cd2` | `BlueprintBuff` | Active | Native death carrier |
 | `KMG.Classes.TrueGritDeathsShot` | `0e96be083f894aa19ae9a8c9eeeff4fc` | `BlueprintFeature` | Active | Death's Shot choice |
+| `KMG.Feats.AcadamaeGraduate` | `7939ff087cb843729448589ba2de19f1` | `BlueprintFeature` | Active | General Acadamae Graduate feat identity |
+| `KMG.Items.CordOfStubbornResolve` | `c4b804d9ebf941b4842b0a461a2b6b6d` | `BlueprintItemEquipmentBelt` | Active | Belt-slot Cord identity |
 
 ## Editing policy
 
