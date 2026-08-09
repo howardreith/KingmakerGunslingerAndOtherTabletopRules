@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItemEquipmentBelt belt)
         {
             return belt != null && belt.Cost == 4000 && string.Equals(
-                belt.name, "BeltOfMightyConstitution2", StringComparison.Ordinal);
+                belt.name, "BeltOfConstitution2", StringComparison.Ordinal);
         }
     }
 }

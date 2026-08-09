@@ -101,3 +101,12 @@
 - Rejected theory: public/common Owlcat naming can substitute for inspecting the installed asset graph. It cannot; the next fail-closed diagnostic will enumerate only installed belt internal names and costs.
 - Current uncertainty: exact installed Constitution belt internal identity and price encoding.
 - Next concrete action: add bounded belt name/cost diagnostics to the existing fail-closed exception, qualify and publish it, then use one guarded launch to select the exact installed donor.
+
+## 2026-08-09 — exact installed belt graph resolved
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `6738e0487743ceba3aa068907c8269fd0d48035b`; active version 0.0.74.
+- Guarded Steam-backed run `20260809T1344106768806Z-mod-load-smoke` intentionally failed closed after recording the bounded installed belt graph. It contains exactly `BeltOfConstitution2:4000`, plus separate Strength, Dexterity, dual-stat, perfection, and named belts; the guessed `BeltOfMightyConstitution2` does not exist.
+- Exact selection decision: bind `BeltOfConstitution2` with the independently observed 4,000-gp invariant. This preserves the native belt slot, icon, enchantment, and equip lifecycle without localized display-name matching.
+- Rejected theory: continue trying common external naming variants. The installed graph is now authoritative.
+- Current uncertainty: donor GUID and actual +2 equip delta remain for the dedicated Cord observer, but identity bootstrap can now proceed against a proven singular installed internal asset.
+- Next concrete action: correct the donor name to `BeltOfConstitution2`, run all gates, commit/publish, and repeat guarded `mod-load-smoke` for 250/250 registration proof.

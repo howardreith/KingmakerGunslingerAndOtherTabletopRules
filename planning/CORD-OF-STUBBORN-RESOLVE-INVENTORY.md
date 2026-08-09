@@ -8,7 +8,7 @@ Required item: belt, 15,000 gp, 1 lb., caster level 8, moderate transmutation, n
 
 | Contract | Status | Evidence sought |
 |---|---|---|
-| Native +2 Constitution belt donor | TODO | Exact installed item/component GUID and equip lifecycle |
+| Native +2 Constitution belt donor | IN PROGRESS | Guarded installed graph `20260809T1344106768806Z-mod-load-smoke`: unique internal `BeltOfConstitution2`, cost 4,000; exact GUID/equip delta still pending |
 | Belt slot/cost/weight metadata | TODO | BlueprintItemEquipment contract |
 | Fatigued application paths | TODO | Buff, condition, RuleApplyBuff, context action, direct AddBuff/AddCondition |
 | Exhausted application paths | TODO | Same, including nested fatigue behavior |
