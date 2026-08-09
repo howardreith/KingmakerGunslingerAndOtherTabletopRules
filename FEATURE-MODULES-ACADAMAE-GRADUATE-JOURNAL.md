@@ -585,3 +585,20 @@
 - Candidate package SHA-256 `87773be4cd60d1a5600608c37aad4aa7a88aceb3089c9d9c0157d2741ea026ba`; DLL SHA-256 `1e6c356ae17ca8e0accb1b361a28c5a7e602c3cd92e1e9de91df8a967f7c259d`.
 - Current uncertainty: a fresh guarded run must prove the integrated Cord damage delta and no-fatigue result.
 - Next concrete action: commit/publish the HP normalization and rerun the integrated Acadamae scenario.
+
+## 2026-08-09 — integrated Cord damage rule isolates nested self-damage rejection
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `700a0baaf0b5ea0fe89c043725553befa0dcadde`; active version 0.0.74.
+- Guarded directory `20260809T1657090959046Z-disposable-acadamae-graduate`, run `20260809T1657091272109Z-50d21a0f6fa74be8ab67f020b2b21399`, FAIL 6/7 in 110,471 ms. The combined fixture recorded `cordHpBefore=31`, ruling out the 1-HP floor, while the exact Cord still suppressed Fatigued and the self-targeted nested `RuleDealDamage` produced no damage delta.
+- Production hardening: retain native `RuleRollDice` and the self-targeted untyped `RuleDealDamage` first. If that synchronous native rule produces no serialized damage delta after the condition was suppressed, apply the already-authorized capped amount through Kingmaker's serialized `UnitEntityData.Damage` accumulator. The precomputed `HPLeft - 1` cap remains authoritative, so this cannot reduce the wearer below 1 HP.
+- Added truthful player-facing substitution notification for fatigue/exhaustion, the applied amount, and an explicit 1-HP-floor label when zero. Added bounded runtime diagnostics for roll, applied damage, and whether the direct fallback was necessary; focused source tests guard both fallback and notification contracts.
+- Current uncertainty: runtime must prove exactly one 1d6 delta through the nested Acadamae path and ensure no regression in the standalone Cord scenario.
+- Next concrete action: fully qualify/publish the nested fallback, rerun integrated Acadamae, then rerun standalone Cord.
+
+## 2026-08-09 — nested Cord fallback source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `700a0baaf0b5ea0fe89c043725553befa0dcadde`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `d7c2f8670762441dc808331684dd0ffd9a25d7dad2fbbe60b94b34651ebc3719`; DLL SHA-256 `0923db6317b0da924d7b572af680ac7a762ffdf1fc2899ccb8baa6f11a200ef7`.
+- Current uncertainty: guarded integration and standalone Cord runs must prove the fallback is singular, capped, and non-regressive.
+- Next concrete action: commit/publish this production hardening, run integrated Acadamae, then rerun standalone Cord.

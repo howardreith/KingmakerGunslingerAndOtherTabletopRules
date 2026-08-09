@@ -6918,7 +6918,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordObserved = false, cleaned = false;
             int spellLevel = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
-                cordHpBefore = -1, observedDc = -1;
+                cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
+                observedDc = -1;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -7039,6 +7040,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Stats.HitPoints.BaseValue = 30;
                 unit.Damage = 0;
                 cordHpBefore = unit.HPLeft;
+                Cord.CordConditionRuntime.ResetDiagnostics();
                 int damageBefore = unit.Damage;
                 AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
@@ -7050,8 +7052,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AcadamaeCastingRuntime.End(cordCommand);
                 cordCount = AcadamaeCastingRuntime.CompletedCount;
                 cordDamage = unit.Damage - damageBefore;
+                cordRoll = Cord.CordConditionRuntime.LastRoll;
+                cordApplied = Cord.CordConditionRuntime.LastAppliedDamage;
                 cordObserved = cordRule.Success && cordCount == 3 &&
                     cordDamage >= 1 && cordDamage <= 6 &&
+                    cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
             }
             finally
@@ -7083,6 +7088,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
                 ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
                 ";dc=" + observedDc + ";cordHpBefore=" + cordHpBefore +
+                ";cordRoll=" + cordRoll + ";cordApplied=" + cordApplied +
                 ";cordDamage=" + cordDamage +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
