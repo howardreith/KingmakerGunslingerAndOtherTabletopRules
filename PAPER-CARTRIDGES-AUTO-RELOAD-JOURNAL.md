@@ -352,3 +352,27 @@
   exact pre-discharge ammunition across ordinary/Dead Shot/Scatter, Reliable
   ordering, direct-write d20 fallback, aggregation, transition, and cleanup
   evidence. Next exact action is Phase 5 crafting/vendor/economy implementation.
+
+## Phase 5 crafting/vendor source checkpoint
+
+- Appended `KMG.Gunsmithing.CraftPaperCartridges` at stable GUID
+  `936ffac5400b46b3a72fe503e0947288`; registry is now 248 active and the
+  append-only ledger is 249 identities including one reserved.
+- Extracted one shared crafting transaction for both recipes. It snapshots exact
+  money, output counts, and the shared marker; verifies 20-output commits; and
+  restores marker, inventory, and money on failure. Existing basic output/cost is
+  unchanged; Paper is exactly 20 for 120 gp and both abilities use the same marker.
+- Gunsmithing grants four facts exactly: Repair, Overhaul, basic crafting, and
+  Paper crafting. Paper now has zero sale value.
+- Smith and all installed BTSL bounded normalization desired/owned sets now
+  contain exactly one Paper entry at count 200. Advanced/named exclusions and
+  fixed rare-loot code are unchanged.
+- Focused plus complete deterministic suite: 954 PASS, 0 failures. Clean Release,
+  build-output, SoundBank, package, and strict standalone validation: PASS.
+- DLL SHA-256:
+  `4D91A3A45FDAA9639A0B2A1B06EBC26649C311467CD7F13661736CFF7E224272`.
+- Package SHA-256:
+  `E3C022FF4A7E34FD8B086235F4C752937CE2882502D152336276400A549ED234`.
+- Next exact action: publish this source checkpoint, run the vendor observer to
+  capture bounded Bokken owner/table evidence, then implement only an exact safe
+  Bokken target or document an evidence-backed defer.

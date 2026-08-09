@@ -42,6 +42,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("paper-full-attack.reload-branches", PaperCartridgeFoundationTests.FullAttackReloadBranches),
             Case("paper-misfire.authoritative-order", PaperCartridgeFoundationTests.MisfireAuthoritativeOrder),
             Case("paper-misfire.central-consumers", PaperCartridgeFoundationTests.MisfireCentralConsumers),
+            Case("paper-crafting.shared-transaction-contract", PaperCartridgeFoundationTests.CraftingSharedTransactionContract),
+            Case("paper-vendors.normalization-contract", PaperCartridgeFoundationTests.VendorNormalizationContract),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),

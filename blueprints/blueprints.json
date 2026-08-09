@@ -988,6 +988,7 @@
     { "symbol": "KMG.Ammunition.PaperLoadedNormalStateToken", "guid": "a6344f33e7344d4aab249485faedf7fd", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Inert item-owned Normal paper-loaded state token." },
     { "symbol": "KMG.Ammunition.PaperBrokenLoadedStateToken", "guid": "fdd814300fff4eea89d9d508663aebc0", "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Inert item-owned Broken paper-loaded state token." },
     { "symbol": "KMG.Ammunition.PaperCartridgeModeMarker", "guid": "69a804ea1fd14a5da3ba893c373f481f", "plannedType": "BlueprintBuff", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Hidden unit-local selected-ammunition marker." },
-    { "symbol": "KMG.Ammunition.UsePaperCartridges", "guid": "b0f16e90dc4e48929e111a7d56b62e5d", "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Visible off-by-default Paper Cartridge reload-source mode." }
+    { "symbol": "KMG.Ammunition.UsePaperCartridges", "guid": "b0f16e90dc4e48929e111a7d56b62e5d", "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Visible off-by-default Paper Cartridge reload-source mode." },
+    { "symbol": "KMG.Gunsmithing.CraftPaperCartridges", "guid": "936ffac5400b46b3a72fe503e0947288", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Paper Cartridges 0.0.74", "notes": "Shared-entitlement recipe creating 20 Paper Cartridges for 120 gp." }
   ]
 }

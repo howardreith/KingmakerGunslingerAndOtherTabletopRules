@@ -4330,6 +4330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                    { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
                     { BlueprintBootstrap.FirearmRepairKit, 10 },
                     { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                     { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
@@ -4364,6 +4365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
                 { BlueprintBootstrap.FirearmRepairKit, 10 },
                 { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                 { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
@@ -4519,18 +4521,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 27 &&
+                        fixedCountField != null && capitalEntries.Count == 28 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "eleven exact early/+1/supply entries including one Blunderbuss",
-                    observed, projectEntries == 11 && invalidProjectCounts == 0 &&
+                    "twelve exact early/+1/supply entries including Paper and one Blunderbuss",
+                    observed, projectEntries == 12 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
                     "registered early and +1 firearms, ammunition, and supplies"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; eleven unique entries each",
-                    observed, btslTables == 4 && btslEntries == 44 &&
+                    "four exact standalone/campaign tables; twelve unique entries each",
+                    observed, btslTables == 4 && btslEntries == 48 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("rare-firearm-acquisition-exclusions",

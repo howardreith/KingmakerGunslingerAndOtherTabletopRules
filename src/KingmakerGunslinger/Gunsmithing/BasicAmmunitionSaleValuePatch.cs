@@ -14,7 +14,8 @@ namespace KingmakerGunslinger.Gunsmithing
             var ammo = BlueprintBootstrap.BasicAmmunition;
             if (item != null && ammo != null &&
                 (ReferenceEquals(item.Blueprint, ammo.BlackPowder) ||
-                 ReferenceEquals(item.Blueprint, ammo.LeadBall)))
+                 ReferenceEquals(item.Blueprint, ammo.LeadBall) ||
+                 ReferenceEquals(item.Blueprint, ammo.PaperCartridge)))
                 __result = 0L;
         }
     }

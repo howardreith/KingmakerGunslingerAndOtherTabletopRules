@@ -116,6 +116,69 @@ namespace KingmakerGunslinger.DomainTests
                 "Dead Shot accepts centralized zero-to-twenty thresholds");
         }
 
+        internal static void CraftingSharedTransactionContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string paper = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Gunsmithing",
+                "CraftPaperCartridgesAbilityLogic.cs"));
+            string transaction = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Gunsmithing",
+                "FirearmCraftingTransactionService.cs"));
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "GunsmithingCraftingBlueprints.cs"));
+            string grants = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "GunsmithingBlueprints.cs"));
+            string sale = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Gunsmithing",
+                "BasicAmmunitionSaleValuePatch.cs"));
+            foreach (string token in new[] { "BatchSize = 20", "GoldCost = 120",
+                "FirearmCraftingTransactionService.Complete", "m_UsedMarker" })
+                Assertions.True(paper.Contains(token), "paper craft: " + token);
+            foreach (string token in new[] { "SpendMoney(goldCost)",
+                "caster.RemoveFact(marker)", "GainMoney(missingMoney)",
+                "countsBefore[index]" })
+                Assertions.True(transaction.Contains(token),
+                    "shared rollback: " + token);
+            Assertions.True(blueprints.Contains("PaperAbilitySymbol") &&
+                blueprints.Contains("CraftPaperCartridgesAbilityLogic.Create"),
+                "paper recipe blueprint");
+            Assertions.True(grants.Contains("Facts.Length != 4") &&
+                grants.Contains("paperCraftingAbility"), "shared Gunsmithing grants");
+            Assertions.True(sale.Contains("ammo.PaperCartridge"),
+                "paper zero resale");
+        }
+
+        internal static void VendorNormalizationContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string capital = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "CapitalVendorBlueprints.cs"));
+            string btsl = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "BeneathStolenLandsVendorBlueprints.cs"));
+            Assertions.True(capital.Contains("7de959347266092448d8a72089ef9778") &&
+                capital.Contains("SmithVendorTable"), "exact capital authority");
+            Assertions.True(Count(capital, "ammunition.PaperCartridge") >= 2 &&
+                capital.Contains("AmmunitionCount = 200"),
+                "capital desired and owned Paper stock");
+            Assertions.True(Count(btsl, "ammunition.PaperCartridge") >= 2 &&
+                btsl.Contains("200, 200, 200"),
+                "BTSL desired and owned Paper stock");
+            Assertions.False(capital.Contains("afa2c7f292b8e1c4d9c835f0e8047dd3"),
+                "rejected Jhod absent");
+        }
+
+        private static int Count(string source, string token)
+        {
+            int count = 0, index = 0;
+            while ((index = source.IndexOf(token, index,
+                StringComparison.Ordinal)) >= 0)
+            { count++; index += token.Length; }
+            return count;
+        }
+
         internal static void PaperTokensRoundTrip()
         {
             FirearmStateTokenCatalog catalog =

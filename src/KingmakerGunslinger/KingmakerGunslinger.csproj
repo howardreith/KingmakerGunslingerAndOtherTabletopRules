@@ -300,6 +300,8 @@
     <Compile Include="Gunsmithing\GunslingerStartingFirearmResolver.cs" />
     <Compile Include="Gunsmithing\StartingFirearmPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\CraftPaperCartridgesAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmRuntimeUseResolver.cs" />

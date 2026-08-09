@@ -7,7 +7,7 @@ The append-only contract contains 233 stable identifiers: 232 active and one res
 The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
-manifest contains 248 stable identifiers: 247 active and one reserved.
+manifest contains 249 stable identifiers: 248 active and one reserved.
 Bootstrap therefore uses the complete two-hundred-forty-seven-blueprint transaction.
 
 Paper Cartridges Phase 1 identities are append-only:
@@ -15,6 +15,7 @@ Paper Cartridges Phase 1 identities are append-only:
 | Symbol | GUID | Type | Status | Purpose |
 | --- | --- | --- | --- | --- |
 | `KMG.Ammunition.PaperCartridge` | `fea7337cfd06417a853546af9d950f77` | `BlueprintItem` | Active | Stackable prepared early-firearm ammunition |
+| `KMG.Gunsmithing.CraftPaperCartridges` | `936ffac5400b46b3a72fe503e0947288` | `BlueprintAbility` | Active | Shared-entitlement 20-for-120 gp Paper Cartridge recipe |
 | `KMG.Ammunition.PaperLoadedNormalStateToken` | `a6344f33e7344d4aab249485faedf7fd` | `BlueprintWeaponEnchantment` | Active | Inert Normal paper-loaded item state |
 | `KMG.Ammunition.PaperBrokenLoadedStateToken` | `fdd814300fff4eea89d9d508663aebc0` | `BlueprintWeaponEnchantment` | Active | Inert Broken paper-loaded item state |
 | `KMG.Ammunition.PaperCartridgeModeMarker` | `69a804ea1fd14a5da3ba893c373f481f` | `BlueprintBuff` | Active | Hidden unit-local selected-source marker |

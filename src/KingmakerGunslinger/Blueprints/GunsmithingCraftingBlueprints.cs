@@ -14,16 +14,21 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal sealed class GunsmithingCraftingBlueprintSet
     {
-        internal GunsmithingCraftingBlueprintSet(BlueprintAbility ability,
-            BlueprintFeature marker) { Ability = ability; UsedMarker = marker; }
-        internal BlueprintAbility Ability { get; private set; }
+        internal GunsmithingCraftingBlueprintSet(BlueprintAbility basicAbility,
+            BlueprintAbility paperAbility, BlueprintFeature marker)
+        { BasicAbility = basicAbility; PaperAbility = paperAbility; UsedMarker = marker; }
+        internal BlueprintAbility Ability { get { return BasicAbility; } }
+        internal BlueprintAbility BasicAbility { get; private set; }
+        internal BlueprintAbility PaperAbility { get; private set; }
         internal BlueprintFeature UsedMarker { get; private set; }
-        internal int Count { get { return 2; } }
+        internal int Count { get { return 3; } }
     }
 
     internal static class GunsmithingCraftingBlueprints
     {
         internal const string AbilitySymbol = "KMG.Gunsmithing.CraftBasicAmmunition";
+        internal const string PaperAbilitySymbol =
+            "KMG.Gunsmithing.CraftPaperCartridges";
         internal const string MarkerSymbol = "KMG.Gunsmithing.CraftedThisRest";
         internal static GunsmithingCraftingBlueprintSet Register(BlueprintRegistry registry,
             BasicAmmunitionBlueprintSet ammo, BlueprintItem tool)
@@ -56,7 +61,34 @@ namespace KingmakerGunslinger.Blueprints
             });
             if (ability.ComponentsArray.OfType<CraftBasicAmmunitionAbilityLogic>().Single().GoldCost != 22)
                 throw new InvalidOperationException("Basic ammunition craft cost must equal 22 gp.");
-            return new GunsmithingCraftingBlueprintSet(ability, marker);
+            BlueprintAbility paperAbility = registry.Register<BlueprintAbility>(
+                PaperAbilitySymbol, () =>
+            {
+                var value = ScriptableObject.CreateInstance<BlueprintAbility>();
+                value.name = "KMG_CraftPaperCartridges_Ability";
+                BlueprintUnitFactAccess.Resolve().Configure(value,
+                    LocalizationService.Create("KMG.Crafting.PaperCartridges.Name",
+                        "Craft Paper Cartridges"),
+                    LocalizationService.Create("KMG.Crafting.PaperCartridges.Description",
+                        "Once per rest, use a Gunsmith's Kit outside combat to pay 120 gp and create 20 Paper Cartridges. This shares the same entitlement as Craft Basic Firearm Ammunition; choosing either recipe prevents the other until rest. A failed transaction restores gold, inventory, and the entitlement exactly."),
+                    ammo.PaperCartridge.Icon);
+                value.Type = AbilityType.Extraordinary;
+                value.Range = AbilityRange.Personal;
+                value.CanTargetSelf = true;
+                value.ActionType = UnitCommand.CommandType.Free;
+                value.SetIsFullRoundAction(false);
+                value.NeedEquipWeapons = false;
+                value.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Self;
+                value.LocalizedDuration = LocalizationService.Create(
+                    "KMG.Crafting.PaperCartridges.Duration", "Instantaneous");
+                value.LocalizedSavingThrow = LocalizationService.Create(
+                    "KMG.Crafting.PaperCartridges.Save", "None");
+                value.ComponentsArray = new BlueprintComponent[] {
+                    CraftPaperCartridgesAbilityLogic.Create(ammo.PaperCartridge,
+                        tool, marker) };
+                return value;
+            });
+            return new GunsmithingCraftingBlueprintSet(ability, paperAbility, marker);
         }
     }
 }

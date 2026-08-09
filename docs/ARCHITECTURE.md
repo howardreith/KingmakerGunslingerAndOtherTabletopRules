@@ -448,7 +448,7 @@ The blueprint ledger contains 233 stable IDs: 232 active and one reserved. Sixth
 The Rare Firearms amendment added ten append-only identities and activated
 Seeking, Reliable, and eight magic items. Paper Cartridges Phase 1 appends three
 more identities: the stackable cartridge item and Normal/Broken paper-loaded
-state tokens and the unit-local Paper Cartridge reload-source mode. The ledger now contains 248 stable IDs: 247 active and one reserved.
+state tokens, the unit-local Paper Cartridge reload-source mode, and its shared-entitlement crafting recipe. The ledger now contains 249 stable IDs: 248 active and one reserved.
 The runtime completes the current two-hundred-forty-five active blueprints
 transaction without changing prior identities. The immutable
 `ReloadAmmunitionProfileCatalog` owns loose and paper loaded IDs, inventory

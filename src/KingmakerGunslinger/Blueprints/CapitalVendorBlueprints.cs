@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.Blueprints
                 magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
+                ammunition.PaperCartridge,
                 repairKit,
                 gunsmithingSupplies.OverhaulKit,
                 gunsmithingSupplies.GunsmithKit
@@ -61,12 +62,14 @@ namespace KingmakerGunslinger.Blueprints
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
                 WeaponCount,
-                AmmunitionCount, AmmunitionCount, 10, 5, WeaponCount
+                AmmunitionCount, AmmunitionCount, AmmunitionCount,
+                10, 5, WeaponCount
             };
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
-                        ammunition.BlackPowder, ammunition.LeadBall, repairKit,
+                        ammunition.BlackPowder, ammunition.LeadBall,
+                        ammunition.PaperCartridge, repairKit,
                         gunsmithingSupplies.OverhaulKit,
                         gunsmithingSupplies.GunsmithKit }).Distinct().ToArray();
             BlueprintComponent[] existing = table.ComponentsArray ??
