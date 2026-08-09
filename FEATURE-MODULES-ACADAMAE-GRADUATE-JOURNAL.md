@@ -759,3 +759,20 @@
 - Candidate package SHA-256 `7f068e3e9265fa61757892c00949322dfb1fd08566d31f4a78cfa1c2e457f2e8`; DLL SHA-256 `13927623067fdbea231168d79dd924f11e7661d2c01bb274e9dd8738af8479ca`.
 - Current uncertainty: guarded runtime must prove no inert canonical buff remains and a later unequipped native fatigue application succeeds.
 - Next concrete action: commit/publish this lifecycle fix and rerun the integrated scenario in a fresh guarded process.
+
+## 2026-08-09 — natural 20 disproves modifier-only save forcing
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `4249d62e7f281a0be777d2637a86b64ba9846430`; active version 0.0.74.
+- Guarded directory `20260809T1755546601741Z-disposable-acadamae-graduate`, run `20260809T1755546758177Z-079e42462e8c40bda14a69ca82629692`, FAIL 6/7 in 81,224 ms. The later unequipped native fatigue phase passed and `cordBuffRetained=False`, proving the canonical-buff lifecycle repair. The Cord phase made no fatigue attempt because its saving throw succeeded despite a -100 modifier, consistent with Pathfinder's natural-20 automatic success.
+- Rejected the theory that a large save modifier is deterministic. Added a request-local, thread-scoped, single-use `RuleRollD20.PreRollDice` control that is active only while Acadamae triggers its native `RuleSavingThrow`. The guarded scenario forces natural 10 for success and natural 1 for each failure; production behavior is unchanged when no guarded roll is queued.
+- Added source guards for exact patch target, one-success/two-failure sequencing, bounded consumption, and cleanup.
+- Current uncertainty: exact compile contract and fresh runtime must prove forced rolls traverse the native saving-throw result correctly without leakage.
+- Next concrete action: run complete source qualification, commit/publish deterministic save control, then rerun integrated runtime qualification.
+
+## 2026-08-09 — guarded native saving-roll control source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `4249d62e7f281a0be777d2637a86b64ba9846430`; active version 0.0.74.
+- Repository validation PASS; deterministic/domain/reflection suite PASS 967/967; clean exact-reference Release build, exact-reference/output/icon/manifest/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `28dcafdf0df10245e01dd5fde2a05faaef5f8ce4c4f9b2a318b5dd9f9986ef82`; DLL SHA-256 `065108fe8c8484297fe54c8d8f5058e08f2244d54e4ae74f9d29370a1d8f561d`.
+- Current uncertainty: guarded runtime must prove exact native natural-roll forcing and all seven integrated assertions in one fresh process.
+- Next concrete action: commit/publish deterministic save control and run the integrated scenario.

@@ -7000,6 +7000,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 AcadamaeCastingRuntime.ResetDiagnostics();
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
+                AcadamaeSavingThrowTestControl.Queue(10);
                 UnitUseAbility successCommand = new UnitUseAbility(first,
                     new TargetWrapper(unit));
                 AcadamaeCastingRuntime.Begin(successCommand);
@@ -7031,6 +7032,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordHpBefore = unit.HPLeft;
                 Cord.CordConditionRuntime.ResetDiagnostics();
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
+                AcadamaeSavingThrowTestControl.Queue(1);
                 int damageBefore = unit.Damage;
                 AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
@@ -7056,6 +7058,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.Belt.RemoveItem(false);
 
                 AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                AcadamaeSavingThrowTestControl.Queue(1);
                 UnitUseAbility failedCommand = new UnitUseAbility(failed,
                     new TargetWrapper(unit));
                 AcadamaeCastingRuntime.Begin(failedCommand);
@@ -7105,6 +7108,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Dispose();
                 }
                 AcadamaeCastingRuntime.ResetDiagnostics();
+                AcadamaeSavingThrowTestControl.Cancel();
             }
             string observed = "spell=" + spellIdentity + ";level=" + spellLevel +
                 ";prepared=" + prepared + ";presentation=" + presentation +

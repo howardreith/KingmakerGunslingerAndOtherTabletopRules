@@ -96,6 +96,17 @@ namespace KingmakerGunslinger.DomainTests
                 prerequisite.Contains(
                     "OppositionSelection).Any(IsConjurationOpposition)"),
                 "Pending prerequisites must inspect every selected opposition school.");
+            string casting = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Acadamae",
+                "AcadamaeCastingPatches.cs"));
+            foreach (string token in new[] {
+                "AcadamaeSavingThrowTestControl.Begin()",
+                "finally { AcadamaeSavingThrowTestControl.End(); }",
+                "[HarmonyPatch(typeof(RuleRollD20), \"PreRollDice\")]",
+                "AcadamaeSavingThrowTestControl.TryConsume(out naturalRoll)",
+                "__result = naturalRoll" })
+                Assertions.True(casting.Contains(token),
+                    "Guarded Acadamae saving-throw control lacks exact token: " + token);
             string runtime = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
             int forcedFailure = runtime.IndexOf(
@@ -106,6 +117,10 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(forcedFailure >= 0 && cordCast > forcedFailure,
                 "The clean-first Cord integration phase must force a failed Fortitude save before casting.");
+            Assertions.True(runtime.Contains("AcadamaeSavingThrowTestControl.Queue(10)") &&
+                runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
+                    StringSplitOptions.None).Length == 3,
+                "The guarded scenario must force one native success and two native failures.");
         }
 
         internal static void AcadamaeInvocationCorrelation()

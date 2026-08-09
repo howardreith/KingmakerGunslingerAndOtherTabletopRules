@@ -78,13 +78,64 @@ namespace KingmakerGunslinger.Acadamae
                 !Invocations.ConsumeSuccessful(rule.Spell)) return false;
             var saving = new RuleSavingThrow(rule.Initiator,
                 SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
-            Rulebook.Trigger(saving);
+            AcadamaeSavingThrowTestControl.Begin();
+            try { Rulebook.Trigger(saving); }
+            finally { AcadamaeSavingThrowTestControl.End(); }
             _completedCount++;
             _lastDifficultyClass = saving.DifficultyClass;
             _lastSavePassed = saving.IsPassed;
             if (!saving.IsPassed)
                 rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued, rule.Context, null);
             return true;
+        }
+    }
+
+    // Guarded runtime scenarios arm this immediately before the real cast. It is
+    // otherwise inert and scopes one pre-roll to Acadamae's native saving throw.
+    internal static class AcadamaeSavingThrowTestControl
+    {
+        [System.ThreadStatic] private static int? _queued;
+        [System.ThreadStatic] private static int? _active;
+
+        internal static void Queue(int naturalRoll)
+        {
+            if (naturalRoll < 1 || naturalRoll > 20)
+                throw new System.ArgumentOutOfRangeException("naturalRoll");
+            _queued = naturalRoll;
+        }
+
+        internal static void Begin()
+        {
+            _active = _queued;
+            _queued = null;
+        }
+
+        internal static bool TryConsume(out int naturalRoll)
+        {
+            if (!_active.HasValue)
+            {
+                naturalRoll = 0;
+                return false;
+            }
+            naturalRoll = _active.Value;
+            _active = null;
+            return true;
+        }
+
+        internal static void End() { _active = null; }
+        internal static void Cancel() { _queued = null; _active = null; }
+    }
+
+    [HarmonyPatch(typeof(RuleRollD20), "PreRollDice")]
+    internal static class AcadamaeSavingThrowTestRollPatch
+    {
+        private static bool Prefix(ref int __result)
+        {
+            int naturalRoll;
+            if (!AcadamaeSavingThrowTestControl.TryConsume(out naturalRoll))
+                return true;
+            __result = naturalRoll;
+            return false;
         }
     }
 
