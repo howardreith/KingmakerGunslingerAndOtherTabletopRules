@@ -338,3 +338,17 @@
   Shot now records and verifies that exact d20 at the success postfix. Its
   runtime-only forced hook seeds the native d20 to the requested value and then
   verifies equality; production attacks retain native randomness.
+- Phase 4 final runtime evidence on published commit
+  `30536b5174923c306fdae3955b2ae8c263ffd24e`:
+  - smoke `20260809T0003000198385Z-mod-load-smoke` PASS;
+  - legacy Dead Shot regression
+    `20260809T0005170088591Z-05e0389ee5354550a79a12fd20a5f141` PASS;
+  - Paper ordinary/Dead Shot
+    `20260809T0007093055795Z-14d2669b768a48b09fd7e560d546fb93` PASS;
+  - separate Scatter smoke `20260809T0009488210941Z-mod-load-smoke` PASS;
+  - Paper Scatter
+    `20260809T0011589772079Z-885ae93125bf4979adf69afe8b7948eb` PASS.
+- Phase 4 is complete with 952 deterministic tests, clean Release/package gates,
+  exact pre-discharge ammunition across ordinary/Dead Shot/Scatter, Reliable
+  ordering, direct-write d20 fallback, aggregation, transition, and cleanup
+  evidence. Next exact action is Phase 5 crafting/vendor/economy implementation.

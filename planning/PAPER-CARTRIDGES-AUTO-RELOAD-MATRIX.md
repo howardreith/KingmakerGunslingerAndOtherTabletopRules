@@ -27,6 +27,8 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Runtime | Scatter scenario | TODO | |
 | Runtime | Lightning Reload scenario | PASS | `20260808T2249322389967Z-45e14b6dfb8f4312bc591156fdf7ec28` |
 | Runtime | Native full-attack scenario | PASS | `20260808T2327250125449Z-4dc36ba60fe44e9c9af7ca06fb32912b`; repeated reload, auto-use-off, and no-fallback controls |
+| Runtime | Paper ordinary/Dead Shot misfire | PASS | `20260809T0007093055795Z-14d2669b768a48b09fd7e560d546fb93`; legacy Dead Shot control also PASS |
+| Runtime | Paper Scatter scenario | PASS | `20260809T0011589772079Z-885ae93125bf4979adf69afe8b7948eb` |
 | Runtime | Crafting/vendor scenario | TODO | |
 | Runtime | Two independent final comprehensive PASSes | TODO | |
 | Compatibility | Standalone, A&A, soundpacks, combined, one bounded CotW; exact restoration | TODO | |
