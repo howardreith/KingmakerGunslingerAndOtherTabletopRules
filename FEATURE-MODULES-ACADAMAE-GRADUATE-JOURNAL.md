@@ -248,3 +248,13 @@
 - Rejected theory: the owner relationship is necessarily represented by `AddSharedVendor`. The exact serialized owner fields are authoritative; imposing a component type not established by evidence created the false failure.
 - Current uncertainty: the corrected exact two-owner/two-reference assertion needs a fresh guarded run.
 - Next concrete action: qualify, commit, and publish the direct-reference observer repair, then perform the final bounded vendor rerun before moving to equipped-Cord mechanics.
+
+## 2026-08-09 — capital Cord vendor PASS and equipped-Cord scenario checkpoint
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `3d89f037d35a8136e056e6c00b716201ef856948`; active version 0.0.74.
+- Guarded scenario directory `20260809T1453463087274Z-observe-capital-cord-vendor` completed PASS. The live default ON/ON process proved exactly one fixed Cord row at count 1, exact Cord GUID/cost/weight, and exactly one serialized Smith-table reference from each exact owner `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith`.
+- Added `disposable-cord-of-stubborn-resolve` through catalog, dispatcher, and harness metadata. Its request-local unit equips a real Cord item entity and observes native Constitution delta, fatigue substitution, exhaustion downgrade, d6 ranges, 1-HP floor, inventory/unequipped scope, and exact cleanup without a save API.
+- Tests/gates: complete deterministic suite PASS 967/967; repository validation, exact-reference clean Release build, build-output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `f93fc20c0a04dbd4825a3daec5fe7e67d3b884118af224b531c6f87687c1e08a`; DLL SHA-256 `61448bdbf293de28a4f1e3c0b413521565f7f44de97d0485b91d0654055861ef`.
+- Current uncertainty: the equipped-Cord scenario is source-qualified but has not yet run in Kingmaker; it may reveal exact equipment or damage lifecycle details requiring a narrow correction.
+- Next concrete action: commit/publish the equipped-Cord scenario and run it through the guarded Steam-backed harness, then inspect structured mechanics evidence.

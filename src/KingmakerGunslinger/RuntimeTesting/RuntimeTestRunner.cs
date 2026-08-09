@@ -471,6 +471,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunCapitalCordVendorObservation());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableCordOfStubbornResolve)
+                {
+                    Complete(RunDisposableCordOfStubbornResolve());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveRareFirearmAcquisition)
                 {
@@ -6704,6 +6710,100 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "result=" + (result == null ? "null" : result.Status) +
                     ";assertions=" + passed + "/" + total,
                 exact, "composed guarded slice with its own guaranteed cleanup");
+        }
+
+        private RuntimeTestResult RunDisposableCordOfStubbornResolve()
+        {
+            UnitEntityData unit = null;
+            ItemEntity cord = null;
+            int constitutionBefore = 0, constitutionCord = 0;
+            int fatigueDamage = -1, exhaustionDamage = -1, floorDamage = -1;
+            bool fatigueSuppressed = false, exhaustionDowngraded = false,
+                inventoryInert = false, unequippedOrdinary = false, cleaned = false;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                constitutionBefore = unit.Descriptor.Stats.Constitution.ModifiedValue;
+                cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
+                inventoryInert = !unit.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued) && unit.Damage == 0;
+                unit.Body.Belt.InsertItem(cord);
+                constitutionCord = unit.Descriptor.Stats.Constitution.ModifiedValue;
+
+                int before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                fatigueDamage = unit.Damage - before;
+                fatigueSuppressed = fatigueDamage >= 1 && fatigueDamage <= 6 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Exhausted, null);
+                exhaustionDamage = unit.Damage - before;
+                exhaustionDowngraded = exhaustionDamage >= 1 &&
+                    exhaustionDamage <= 6 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+
+                unit.Damage = Math.Max(0,
+                    unit.Descriptor.Stats.HitPoints.ModifiedValue - 1);
+                before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                floorDamage = unit.Damage - before;
+
+                unit.Body.Belt.RemoveItem(false);
+                unit.Damage = 0;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                unequippedOrdinary = unit.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued) && unit.Damage == 0;
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Exhausted))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Exhausted);
+                    if (unit.Body.Belt.MaybeItem != null)
+                        unit.Body.Belt.RemoveItem(false);
+                    unit.Damage = 0;
+                    cleaned = !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) &&
+                        !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted) &&
+                        unit.Body.Belt.MaybeItem == null;
+                    unit.Dispose();
+                }
+            }
+            string observed = "constitution=" + constitutionBefore + "->" +
+                constitutionCord + ";fatigueDamage=" + fatigueDamage +
+                ";exhaustionDamage=" + exhaustionDamage + ";floorDamage=" +
+                floorDamage + ";inventoryInert=" + inventoryInert +
+                ";unequippedOrdinary=" + unequippedOrdinary + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("cord-constitution", "+2 Constitution while equipped",
+                    observed, constitutionCord == constitutionBefore + 2,
+                    "native belt enchantment equip lifecycle"),
+                Assertion("cord-fatigue", "one d6 damage and no Fatigued",
+                    observed, fatigueSuppressed, "native UnitState.AddCondition"),
+                Assertion("cord-exhaustion", "one d6 damage plus Fatigued, no Exhausted",
+                    observed, exhaustionDowngraded, "native UnitState.AddCondition"),
+                Assertion("cord-one-hp-floor", "zero damage at exactly 1 HP",
+                    observed, floorDamage == 0, "RuleDealDamage.MinHPAfterDamage=1"),
+                Assertion("cord-equipped-scope", "inventory inert and unequipped behavior native",
+                    observed, inventoryInert && unequippedOrdinary,
+                    "exact belt-slot identity gate"),
+                Assertion("request-local-cleanup", "conditions, damage, slot, and unit restored",
+                    observed, cleaned, "finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
         }
 
         private RuntimeTestResult RunCapitalCordVendorObservation()
