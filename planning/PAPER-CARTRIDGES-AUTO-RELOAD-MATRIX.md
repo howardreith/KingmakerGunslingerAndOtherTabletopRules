@@ -29,7 +29,7 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Runtime | Native full-attack scenario | PASS | `20260808T2327250125449Z-4dc36ba60fe44e9c9af7ca06fb32912b`; repeated reload, auto-use-off, and no-fallback controls |
 | Runtime | Paper ordinary/Dead Shot misfire | PASS | `20260809T0007093055795Z-14d2669b768a48b09fd7e560d546fb93`; legacy Dead Shot control also PASS |
 | Runtime | Paper Scatter scenario | PASS | `20260809T0011589772079Z-885ae93125bf4979adf69afe8b7948eb` |
-| Runtime | Crafting/vendor scenario | TODO | |
+| Runtime | Crafting/vendor scenario | PASS | `20260809T0031147623118Z-dad8b1e070d049d09c4f22c295fb6504`; Bokken safely deferred by exact graph evidence |
 | Runtime | Two independent final comprehensive PASSes | TODO | |
 | Compatibility | Standalone, A&A, soundpacks, combined, one bounded CotW; exact restoration | TODO | |
 | Release | Version/pins, complete gates, clean package, hashes, docs, pushed remote equality | TODO | |

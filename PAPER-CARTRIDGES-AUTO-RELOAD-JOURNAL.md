@@ -385,3 +385,12 @@
   owner/unit/direct-reference graph contains no Bokken-named identity or unique
   safe Bokken table/lifecycle tuple. Exact evidence and the no-guess conclusion
   are recorded in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`.
+- Dedicated crafting/vendor runtime PASS on published commit
+  `49dc01a51d31690b3f2697e4f0c8d06cbc13d667` after smoke
+  `20260809T0029043362376Z-mod-load-smoke`: run
+  `20260809T0031147623118Z-dad8b1e070d049d09c4f22c295fb6504` observed
+  `crafted=True;sharedBlocked=True;smith=1:200;btsl=4/4;jhod=0;cleaned=True`.
+- Phase 5 is complete: 954 deterministic tests, clean Release/package gates,
+  shared atomic crafting, exact vendor stock, zero-sale source policy, and bounded
+  Bokken defer. Next exact action is Phase 6 paper-token persistence,
+  reconstruction, static-enchantment lifecycle, and per-unit mode isolation.
