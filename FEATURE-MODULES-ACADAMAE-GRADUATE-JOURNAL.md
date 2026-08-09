@@ -84,3 +84,12 @@
 - Rejected theory: the timeout was an unexplained startup stall. UMM structured log proves the exact type mismatch and later runner timeout with `bootstrap=False`.
 - Current uncertainty: Cord donor cardinality remains unobserved because initialization stopped at the earlier Acadamae icon donor lookup.
 - Next concrete action: bind the icon donor to exact `BlueprintProgression`, rerun deterministic/build/package gates, commit/publish the repair, and repeat guarded `mod-load-smoke`.
+
+## 2026-08-09 — identity runtime attempt 2
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `8bb9794a63ebf4dfb3190b7f63f7d8d330d1c11e`; active version 0.0.74.
+- Guarded Steam-backed run `20260809T1334301522468Z-mod-load-smoke` ended `TIMEOUT`, again with a precise fail-closed bootstrap cause: the enchantment-level `AddStatBonus` query found zero belt donors. Acadamae registered first, then both new registrations and the diagnostic identity rolled back transactionally.
+- Exact installed evidence shows the native belt's Constitution benefit is not exposed as a direct `AddStatBonus` on its equipment enchantment array at dictionary-load time. The earlier query therefore asserted an unproven storage shape.
+- Rejected theory: absence from that direct component array means native +2 Constitution belt support is absent. The native asset contract may route through a referenced feature/context component.
+- Current uncertainty: exact donor internal identity must be selected independently of the disproven direct-component shape and its inherited +2 behavior later proven by equip runtime.
+- Next concrete action: bind the documented native `BeltOfMightyConstitution2` asset by exact internal name and 4,000-gp donor invariant, rerun all gates, then repeat guarded identity qualification.

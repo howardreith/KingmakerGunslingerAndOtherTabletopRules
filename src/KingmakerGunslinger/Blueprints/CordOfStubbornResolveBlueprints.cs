@@ -2,9 +2,6 @@ using System;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Equipment;
-using Kingmaker.EntitySystem.Stats;
-using Kingmaker.Enums;
-using Kingmaker.UnitLogic.FactLogic;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -42,12 +39,8 @@ namespace KingmakerGunslinger.Blueprints
         private static bool IsNativeConstitutionTwoBelt(
             BlueprintItemEquipmentBelt belt)
         {
-            if (belt == null || belt.Cost != 4000) return false;
-            return belt.Enchantments.SelectMany(e => e.ComponentsArray ??
-                    Array.Empty<BlueprintComponent>())
-                .OfType<AddStatBonus>()
-                .Any(b => b.Stat == StatType.Constitution && b.Value == 2 &&
-                    b.Descriptor == ModifierDescriptor.Enhancement);
+            return belt != null && belt.Cost == 4000 && string.Equals(
+                belt.name, "BeltOfMightyConstitution2", StringComparison.Ordinal);
         }
     }
 }
