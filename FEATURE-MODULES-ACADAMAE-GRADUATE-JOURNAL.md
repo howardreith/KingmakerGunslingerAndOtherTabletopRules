@@ -455,3 +455,14 @@
 - Candidate package SHA-256 `2d3aa51cfc38b9d67ff0b61003cdbf93aacf59e5f556c4112862da11fbe2869b`; DLL SHA-256 `c31d7eeb1c03aaf544f0473ba7ae4101a72bf829bb9129f1f9ac7ae6445733d2`.
 - Current uncertainty: a realistic level-up fixture and real prepared spell invocation are still required for runtime proof.
 - Next concrete action: commit/publish the prerequisite correction, then construct the guarded Acadamae runtime fixture from exact native Wizard/spellbook contracts.
+
+## 2026-08-09 — realistic Acadamae scenario source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `561eb42665bc797b8c92e5109f4455437c6b5be1`; active version 0.0.74.
+- Added `disposable-acadamae-graduate` to the C# catalog, PowerShell metadata, compatibility wrapper, and documented preflight catalog. The fixture semantically selects a native Wizard-list Conjuration spell with the native Summoning descriptor and full-round flag; creates a real Wizard spellbook and memorized slot; grants the exact feat; observes Full-Round-to-Standard presentation/runtime parity; triggers successful native `RuleCastSpell` events with guaranteed Fortitude success/failure bounds; verifies cancellation consumption; and proves failed-save Cord substitution.
+- Added bounded Acadamae runtime diagnostics for completed invocation count, actual native save DC, and save result. Diagnostics do not alter rolls or mechanics and reset during fixture cleanup.
+- First compile rejected an omitted `RuleCastSpell` namespace and inaccessible internal slot mutator. The final fixture uses the installed public `GetMemorizedSpellSlots` contract and an existing caster-level-created slot; no reflection or private game API is used.
+- Focused scenario preflight PASS 86/86. Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `773cb98c597ea4d83dcf5110d82879ef95e016fe580602cf929fd7ed101b3219`; DLL SHA-256 `d990a3f819f431e30946d09bd6fe403c7aca697eb24f2347ba33e9f7c0a3fcb9`.
+- Current uncertainty: the fixture needs its first guarded Kingmaker run; native slot creation, RuleCastSpell success, and fatigue-to-Cord flow may expose lifecycle details requiring a narrower adjustment.
+- Next concrete action: commit/publish the source-qualified scenario, then run `disposable-acadamae-graduate` through the guarded Steam-backed harness and inspect every structured assertion.

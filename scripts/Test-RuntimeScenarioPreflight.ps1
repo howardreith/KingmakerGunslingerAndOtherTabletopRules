@@ -33,6 +33,10 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 
 $expected = @(
     'mod-load-smoke',
+    'observe-feature-module-settings',
+    'observe-capital-cord-vendor',
+    'disposable-cord-of-stubborn-resolve',
+    'disposable-acadamae-graduate',
     'disposable-firearm-wwise-audio',
     'disposable-empty-firearm-command',
     'disposable-firearm-dependent-feats',

@@ -41,11 +41,13 @@ using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Feats;
+using KingmakerGunslinger.Acadamae;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.RuleSystem.Rules.Abilities;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
@@ -417,6 +419,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveFeatureModuleSettings)
                 {
                     Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableAcadamaeGraduate)
+                {
+                    Complete(RunDisposableAcadamaeGraduate());
                     return;
                 }
                 if (_request.Scenario ==
@@ -6896,6 +6904,173 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<LootItemsPackFixed>().Count(value => targets.Any(target =>
                     ReferenceEquals(CapitalVendorBlueprints.ReadItem(value), target)));
+        }
+
+        private RuntimeTestResult RunDisposableAcadamaeGraduate()
+        {
+            UnitEntityData unit = null;
+            ItemEntity cord = null;
+            BlueprintSpellbook wizardBookBlueprint = null;
+            string spellIdentity = "<none>";
+            bool prepared = false, presentation = false, successObserved = false,
+                failureObserved = false, cancellationObserved = false,
+                cordObserved = false, cleaned = false;
+            int spellLevel = -1, successCount = -1, failureCount = -1,
+                cancellationCount = -1, cordCount = -1, cordDamage = -1,
+                observedDc = -1;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<
+                    BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                        "ba34257984f4c41408ce1dc2004e342e", "native Wizard class");
+                wizardBookBlueprint = wizard.Spellbook;
+                BlueprintAbility spell = Enumerable.Range(0,
+                        wizardBookBlueprint.SpellList.MaxLevel + 1)
+                    .SelectMany(level => wizardBookBlueprint.SpellList.GetSpells(level)
+                        .Select(value => new { Level = level, Spell = value }))
+                    .Where(value => value.Spell != null && value.Spell.IsSpell &&
+                        value.Spell.School == SpellSchool.Conjuration &&
+                        (value.Spell.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
+                        value.Spell.IsFullRoundAction)
+                    .OrderBy(value => value.Level).ThenBy(value => value.Spell.AssetGuid,
+                        StringComparer.Ordinal).Select(value => value.Spell).First();
+                spellLevel = wizardBookBlueprint.SpellList.GetLevel(spell);
+                spellIdentity = spell.name + ":" + spell.AssetGuid;
+                Spellbook spellbook = unit.Descriptor.DemandSpellbook(
+                    wizardBookBlueprint);
+                for (int level = 0; level <= spellLevel; level++)
+                    spellbook.AddCasterLevel();
+                spellbook.AddKnown(spellLevel, spell, true);
+                unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
+
+                AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                prepared = spellbook.CanSpend(first, false) &&
+                    ReferenceEquals(first.Spellbook, spellbook);
+                presentation = AcadamaeCastingRuntime.InspectPreAcadamae(first) &&
+                    !first.RequireFullRoundAction &&
+                    first.RuntimeActionType == UnitCommand.CommandType.Standard;
+
+                AcadamaeCastingRuntime.ResetDiagnostics();
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
+                UnitUseAbility successCommand = new UnitUseAbility(first,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(successCommand);
+                RuleCastSpell successRule = new RuleCastSpell(first,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(successRule);
+                AcadamaeCastingRuntime.End(successCommand);
+                successCount = AcadamaeCastingRuntime.CompletedCount;
+                observedDc = AcadamaeCastingRuntime.LastDifficultyClass;
+                successObserved = successRule.Success && successCount == 1 &&
+                    AcadamaeCastingRuntime.LastSavePassed &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
+                UnitUseAbility failedCommand = new UnitUseAbility(failed,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(failedCommand);
+                RuleCastSpell failedRule = new RuleCastSpell(failed,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(failedRule);
+                AcadamaeCastingRuntime.End(failedCommand);
+                failureCount = AcadamaeCastingRuntime.CompletedCount;
+                failureObserved = failedRule.Success && failureCount == 2 &&
+                    !AcadamaeCastingRuntime.LastSavePassed &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+
+                AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Cancel(cancelledCommand);
+                RuleCastSpell cancelledRule = new RuleCastSpell(cancelled,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(cancelledRule);
+                cancellationCount = AcadamaeCastingRuntime.CompletedCount;
+                cancellationObserved = cancelledRule.Success && cancellationCount == 2 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
+                unit.Body.Belt.InsertItem(cord);
+                int damageBefore = unit.Damage;
+                AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(cordCommand);
+                RuleCastSpell cordRule = new RuleCastSpell(cordCast,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(cordRule);
+                AcadamaeCastingRuntime.End(cordCommand);
+                cordCount = AcadamaeCastingRuntime.CompletedCount;
+                cordDamage = unit.Damage - damageBefore;
+                cordObserved = cordRule.Success && cordCount == 3 &&
+                    cordDamage >= 1 && cordDamage <= 6 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    if (unit.Body.Belt.MaybeItem != null)
+                        unit.Body.Belt.RemoveItem(false);
+                    if (wizardBookBlueprint != null)
+                        unit.Descriptor.DeleteSpellbook(wizardBookBlueprint);
+                    unit.Damage = 0;
+                    cleaned = !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) && unit.Body.Belt.MaybeItem == null;
+                    unit.Dispose();
+                }
+                AcadamaeCastingRuntime.ResetDiagnostics();
+            }
+            string observed = "spell=" + spellIdentity + ";level=" + spellLevel +
+                ";prepared=" + prepared + ";presentation=" + presentation +
+                ";successCount=" + successCount + ";failureCount=" + failureCount +
+                ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
+                ";dc=" + observedDc + ";cordDamage=" + cordDamage +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("acadamae-prepared-summoning",
+                    "real prepared arcane Conjuration (Summoning) spell", observed,
+                    prepared && spellLevel >= 0, "native Wizard spellbook and slot"),
+                Assertion("acadamae-action-parity", "Full-Round becomes Standard in UI/runtime",
+                    observed, presentation, "AbilityData full-round and runtime action surfaces"),
+                Assertion("acadamae-save-success", "one Fortitude save succeeds; no fatigue",
+                    observed, successObserved && observedDc == 15 + spellLevel,
+                    "native RuleCastSpell and RuleSavingThrow"),
+                Assertion("acadamae-save-failure", "next Fortitude save fails; Fatigued applies",
+                    observed, failureObserved, "native Fatigued blueprint"),
+                Assertion("acadamae-cancellation", "cancelled marker causes no save or fatigue",
+                    observed, cancellationObserved, "exact command marker cancellation"),
+                Assertion("acadamae-cord-integration",
+                    "failed save becomes one d6 Cord damage and no fatigue", observed,
+                    cordObserved, "shared native fatigue application boundary"),
+                Assertion("request-local-cleanup", "spellbook, conditions, belt, damage, unit cleaned",
+                    observed, cleaned, "finally cleanup; no save API")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
+        private static AbilityData PrepareAcadamaeSpell(Spellbook spellbook,
+            BlueprintAbility spell, int spellLevel)
+        {
+            var data = new AbilityData(spell, spellbook);
+            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                .FirstOrDefault();
+            if (slot == null) throw new InvalidOperationException(
+                "Wizard fixture did not produce a memorization slot at level " +
+                spellLevel + ".");
+            slot.Spell = data;
+            slot.Available = true;
+            data.ParamSpellSlot = slot;
+            return data;
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

@@ -19,9 +19,17 @@ namespace KingmakerGunslinger.Acadamae
             new AcadamaeInvocationTracker<UnitUseAbility, AbilityData>();
         [System.ThreadStatic] private static bool _inspectPreAcadamae;
         private static BlueprintBuff _fatigued;
+        private static int _completedCount;
+        private static int _lastDifficultyClass;
+        private static bool _lastSavePassed;
 
         internal static void Configure(BlueprintBuff fatigued)
         { _fatigued = fatigued; }
+        internal static int CompletedCount { get { return _completedCount; } }
+        internal static int LastDifficultyClass { get { return _lastDifficultyClass; } }
+        internal static bool LastSavePassed { get { return _lastSavePassed; } }
+        internal static void ResetDiagnostics()
+        { _completedCount = 0; _lastDifficultyClass = 0; _lastSavePassed = false; }
 
         internal static bool IsEligible(AbilityData ability, bool longerThanStandard)
         {
@@ -71,6 +79,9 @@ namespace KingmakerGunslinger.Acadamae
             var saving = new RuleSavingThrow(rule.Initiator,
                 SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
             Rulebook.Trigger(saving);
+            _completedCount++;
+            _lastDifficultyClass = saving.DifficultyClass;
+            _lastSavePassed = saving.IsPassed;
             if (!saving.IsPassed)
                 rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued, rule.Context, null);
             return true;
