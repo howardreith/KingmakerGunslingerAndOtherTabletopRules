@@ -1,7 +1,11 @@
 using Harmony12;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
@@ -14,6 +18,10 @@ namespace KingmakerGunslinger.Acadamae
         private static readonly AcadamaeInvocationTracker<UnitUseAbility, AbilityData> Invocations =
             new AcadamaeInvocationTracker<UnitUseAbility, AbilityData>();
         [System.ThreadStatic] private static bool _inspectPreAcadamae;
+        private static BlueprintBuff _fatigued;
+
+        internal static void Configure(BlueprintBuff fatigued)
+        { _fatigued = fatigued; }
 
         internal static bool IsEligible(AbilityData ability, bool longerThanStandard)
         {
@@ -57,7 +65,16 @@ namespace KingmakerGunslinger.Acadamae
         internal static void End(UnitUseAbility command) { Invocations.EndAction(command); }
         internal static void Cancel(UnitUseAbility command) { Invocations.Cancel(command); }
         internal static bool Complete(RuleCastSpell rule)
-        { return rule != null && rule.Success && Invocations.ConsumeSuccessful(rule.Spell); }
+        {
+            if (rule == null || !rule.Success || _fatigued == null ||
+                !Invocations.ConsumeSuccessful(rule.Spell)) return false;
+            var saving = new RuleSavingThrow(rule.Initiator,
+                SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
+            Rulebook.Trigger(saving);
+            if (!saving.IsPassed)
+                rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued, rule.Context, null);
+            return true;
+        }
     }
 
     [HarmonyPatch(typeof(AbilityData), "get_RequireFullRoundAction")]

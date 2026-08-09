@@ -86,6 +86,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(source.Contains(
                 "BlueprintProgression iconDonor = BlueprintLibraryLookup.RequireExact<BlueprintProgression>"),
                 "The exact installed Conjuration specialization donor is a BlueprintProgression.");
+            Assertions.True(source.Contains(
+                "BlueprintLibraryLookup.RequireExact<BlueprintBuff>"),
+                "Acadamae fatigue must use the exact native BlueprintBuff contract.");
         }
 
         internal static void AcadamaeInvocationCorrelation()

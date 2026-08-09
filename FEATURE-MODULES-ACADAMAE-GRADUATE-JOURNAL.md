@@ -171,3 +171,14 @@
 - Rejected theory: arm a global or ability-scoped “next summon” flag from action getters. Getter calls are presentation-only and repeat; the authoritative command/rule chain provides exact bounded identity instead.
 - Current uncertainty: this checkpoint intentionally consumes but does not yet roll the Fortitude save or apply fatigue; runtime patch installation and exact CotW order require a clean-commit launch.
 - Next concrete action: commit/publish this coherent action/correlation checkpoint and run guarded bootstrap proof, then attach the Fortitude/fatigue outcome to the consumed invocation.
+
+## 2026-08-09 — casting-patch bootstrap PASS and native save/fatigue checkpoint
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `87951d122633cde39744f12e1a706b4c7349e6bc`; active version 0.0.74.
+- Guarded Steam-backed scenario directory `20260809T1419218087746Z-mod-load-smoke`, run ID `20260809T1419218435963Z-27de5012644f48738593b042ae46fa3a`, PASS in 85,090 ms with 3/3 structured assertions. This proves the new exact protected-method Harmony patches install and bootstrap in the real CotW-loaded process; it is not yet a player-cast proof.
+- Exact local CotW IL independently binds canonical native `BlueprintBuff` identities: Fatigued `e6f2fc5d73d88064583cb828801212f4`, Exhausted `46d1b9cc3d0fd36469a471b047d773a2`. Installed game reflection proves the generic native application surface `BuffCollection.AddBuff(BlueprintBuff, MechanicsContext, TimeSpan?)`.
+- Configured the exact native Fatigued blueprint during identity bootstrap. A successfully consumed accelerated invocation now triggers native `RuleSavingThrow(caster, Fortitude, 15 + actual AbilityData.SpellLevel)` exactly once and, only on failure, applies the native Fatigued buff through the generic buff collection using the cast context. This preserves the future Cord interception boundary.
+- Tests/gates: deterministic suite PASS 966/966; repository validation PASS; exact-reference clean Release, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `413cb05149b051a7eb86192d472b46f622af7642f13ac15087129f54198d866e`; DLL SHA-256 `32ef01fccf51caa957c4a83752fedfb1c7711182356f7b55374d52664e62692b`.
+- Current uncertainty: deterministic forced-save runtime proof and realistic prepared-slot construction remain scenario work; Cord interception is not implemented yet.
+- Next concrete action: commit/publish the native save/fatigue checkpoint, verify clean bootstrap, then inspect and implement the exact Cord equipment/fatigue boundary.

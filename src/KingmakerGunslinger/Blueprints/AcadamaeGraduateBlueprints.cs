@@ -2,6 +2,7 @@ using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Acadamae;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string SchoolSelectionGuid = "5f838049069f1ac4d804ce0862ab5110";
         private const string OppositionSelectionGuid = "6c29030e9fea36949877c43a6f94ff31";
         private const string UniversalistGuid = "0933849149cfc9244ac05d6a5b57fd80";
+        private const string FatiguedBuffGuid = "e6f2fc5d73d88064583cb828801212f4";
 
         internal static BlueprintFeature Register(LibraryScriptableObject library,
             BlueprintRegistry registry)
@@ -33,6 +35,9 @@ namespace KingmakerGunslinger.Blueprints
                 library, OppositionSelectionGuid, "native opposition-school selection");
             BlueprintProgression universalist = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(
                 library, UniversalistGuid, "native Universalist progression");
+            BlueprintBuff fatigued = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, FatiguedBuffGuid, "native Fatigued buff");
+            AcadamaeCastingRuntime.Configure(fatigued);
             return registry.Register<BlueprintFeature>(Symbol,
                 () => Create(iconDonor, wizard, schools, opposition, universalist));
         }
