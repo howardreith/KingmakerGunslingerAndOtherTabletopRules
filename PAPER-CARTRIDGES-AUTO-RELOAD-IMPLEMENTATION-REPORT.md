@@ -1,8 +1,7 @@
 # Paper Cartridges Implementation Report
 
-Status: implementation not yet started. This report will be updated after every
-qualified phase and finalized only after the complete work-order definition of
-done is met.
+Status: implementation and autonomous qualification complete on the dedicated
+feature branch; not merged.
 
 ## Baseline
 
@@ -45,3 +44,59 @@ done is met.
   `9c019ff426484b8d3ddc65f1d4b1164288efe4f594e10c37cfbb17fe68ac0139`.
   DLL SHA-256:
   `69bc766e65fc13f0b239c6805ef5bb07bd0e990747bd1d230b9c2b2d9c381168`.
+
+### Phases 2–6 — mechanics and integrated lifecycle
+
+- One immutable reload plan now binds exact unit, equipped item, canonical
+  definition, condition, selected profile/source, loadable rounds, action, and
+  Lightning legality across presentation, delivery, native auto-use, and full
+  attacks. Loose and Paper inventory sources use one rollback transaction.
+- A native per-unit activatable mode is off by default, remains selected at zero
+  stock, grants through full and scoped proficiency, and never rewrites a loaded
+  chamber or falls back to loose ammunition.
+- Lightning Reload dynamically executes Swift/Free, consumes one selected source,
+  keeps one use per round, and is used at most once as a genuinely Free inline
+  fallback. Normal Free reloads do not spend it.
+- Ordinary, Dead Shot, and Scatter use one effective misfire policy: condition
+  and training, Paper +1, exact-item Reliable, then one 0..20 clamp. The exact
+  pre-discharge ammunition identity survives until evaluation.
+- Crafting creates 20 Paper Cartridges for 120 gp using the basic recipe's shared
+  rest marker. Paper has zero resale. Smith and every installed BTSL table receive
+  one normalized 200-count entry; Jhod and the five rare-firearm loot targets are
+  unchanged. Bokken alone is deferred by the exact bounded graph evidence in
+  `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`.
+- Deterministic token/codec/repository tests plus guarded reload/lifecycle/switching
+  evidence prove Paper Normal/Broken identity, two-item isolation, reconciliation,
+  and static-enchantment preservation. No autonomous save write was performed.
+
+### Phase 7 — release and final qualification
+
+- Version is `0.0.74`; informational version is
+  `0.0.74-paper-cartridges-auto-reload`. Registry is 248 active blueprints; the
+  append-only ledger is 249 identities including one reserved (six additions).
+- A final compatibility run exposed an installed direct-field roll composition in
+  the ordinary forced-roll diagnostic hook. The exact eligible context now consumes
+  and evaluates its authoritative queued roll; production native rolls are unchanged.
+  The repaired Wwise regression passed as
+  `20260809T0134477575049Z-disposable-firearm-wwise-audio`.
+- Complete deterministic suite: 954 PASS, 0 failures. Clean Release, build-output,
+  SoundBank, strict standalone package, scenario preflight, and request tests pass.
+- Exact final comprehensive PASSes:
+  `20260809T0223531574928Z-disposable-paper-cartridge-comprehensive` and
+  `20260809T0228043712566Z-disposable-paper-cartridge-comprehensive`.
+- Compatibility transactions (all exact restoration `True`): standalone
+  `compat-20260809T013637Z-4660ecf4446e`; Arms & Armor
+  `compat-20260809T015702Z-08d5c0a31965`; Toggle Custom Soundpacks
+  `compat-20260809T020420Z-0100b5e97026`; qualified combined
+  `compat-20260809T021134Z-a8ec10bef81e`; bounded Call of the Wild smoke
+  `compat-20260809T021852Z-bf16e6df813d` (PASS, public human-gate conflict
+  classification unchanged).
+- Canonical working-save smokes PASS:
+  `20260809T0230156578884Z-working-save-smoke` and
+  `20260809T0232431480084Z-working-save-smoke`.
+- Final DLL SHA-256:
+  `24C06ABAADB0F6CD9BD9BDE1153766C5F343933D93D1CE3F5FD6B94750A1B928`.
+  Local-runtime package SHA-256:
+  `19AE04841664CF5C54C02D70140D932ED30315DA5026184874F1E20D8B16CE94`.
+  Strict release package SHA-256:
+  `86C701611008EC9DDD11072130E0B45CF06768444F80C51E3429A877AAC93B4F`.

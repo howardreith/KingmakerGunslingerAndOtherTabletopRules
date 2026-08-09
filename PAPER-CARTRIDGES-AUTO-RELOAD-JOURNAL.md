@@ -432,3 +432,53 @@
   append-only ledger 249 identities including one reserved. Next exact action:
   publish this Phase 6 evidence, then begin the transactional 0.0.74 release pin
   and final comprehensive/compatibility qualification.
+
+## Phase 7 final candidate and qualification
+
+- Advanced every active source, assembly, package, runtime, schema, validator,
+  and compatibility pin to `0.0.74` / `0.0.74-paper-cartridges-auto-reload`.
+  Added the version-aware Paper validator and guarded comprehensive scenario.
+- Final source retains 248 active blueprints and 249 ledger identities including
+  one reserved. Six active Paper identities were appended; every baseline identity
+  and all merged rare-firearm registrations remain unchanged.
+- Compatibility exposed one exact installed direct-field forced-roll defect in the
+  Wwise misfire control. Runs `20260809T0113406691395Z`,
+  `20260809T0117398519440Z`, and `20260809T0124083733031Z` failed the same first
+  invariant. Added structured counters, observed queued rolls consumed but native
+  values evaluated, then repaired evaluation to use the exact context's final roll.
+  Wwise passed on the changed strategy in
+  `20260809T0134477575049Z-disposable-firearm-wwise-audio`.
+- First Arms & Armor attempt `compat-20260809T014514Z-ae0c75c10df7` timed out in
+  the unrelated production-switching fixture and initially refused restoration
+  while guarded PID 21460 remained. The process was verified as the exact request,
+  stopped, and restoration then verified `True`. The retry removed that unchanged
+  theory because Paper comprehensive already exercises native full attacks.
+- Final compatibility PASS/restoration transactions:
+  - standalone `compat-20260809T013637Z-4660ecf4446e`;
+  - Arms & Armor `compat-20260809T015702Z-08d5c0a31965`;
+  - Toggle Custom Soundpacks `compat-20260809T020420Z-0100b5e97026`;
+  - qualified combined `compat-20260809T021134Z-a8ec10bef81e`;
+  - one bounded Call of the Wild smoke
+    `compat-20260809T021852Z-bf16e6df813d` (PASS/restored; existing human-gate
+    `CONFLICT-CONFIRMED` classification unchanged).
+- Two independent exact-final comprehensive PASSes:
+  `20260809T0223531574928Z-disposable-paper-cartridge-comprehensive` and
+  `20260809T0228043712566Z-disposable-paper-cartridge-comprehensive`.
+- Two canonical guarded working-save PASSes:
+  `20260809T0230156578884Z-working-save-smoke` and
+  `20260809T0232431480084Z-working-save-smoke`.
+- Final complete deterministic count: 954 PASS, 0 failures. Clean Release,
+  build-output, SoundBank, strict standalone package, scenario preflight, request,
+  compatibility filesystem, and repository validation gates PASS.
+- Final hashes: DLL
+  `24C06ABAADB0F6CD9BD9BDE1153766C5F343933D93D1CE3F5FD6B94750A1B928`;
+  local-runtime package
+  `19AE04841664CF5C54C02D70140D932ED30315DA5026184874F1E20D8B16CE94`;
+  strict release package
+  `86C701611008EC9DDD11072130E0B45CF06768444F80C51E3429A877AAC93B4F`.
+- Known inherited unrelated blockers remain detached Gunslinger's Dodge missing
+  buff and Targeting Torso cached critical threat. No assertion was weakened.
+- One narrow human-only item remains: an optional disposable save/restart check of
+  a Paper-loaded token plus visual icon/text review. No autonomous save write was
+  performed or claimed. Next exact action: finalize documentation commit, run the
+  final clean-tree/audit gates, publish, and prove local/remote equality.

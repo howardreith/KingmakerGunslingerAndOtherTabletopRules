@@ -372,3 +372,9 @@ No new mission hard stop is known at intake. The inherited detached Gunslinger's
 Dodge and Targeting Torso aggregate defects remain unrelated and out of scope.
 Bokken is unresolved pending the bounded exact installed-table investigation;
 an evidence-backed Bokken-only defer is explicitly non-blocking.
+
+The bounded installed graph investigation is complete: no unique Bokken owner,
+table, and lifecycle tuple could be proven, so Bokken alone is evidence-deferred
+in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`. Mandatory Smith, BTSL, and
+renewable crafting acquisition paths passed. No Paper Cartridges mission hard
+stop remains. The inherited Dodge and Targeting Torso blockers are unchanged.

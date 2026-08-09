@@ -20,7 +20,7 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Crafting | 20 for 120; existing kit/gates/shared marker; atomic rollback; basic unchanged | PASS | `20260809T0031147623118Z-dad8b1e070d049d09c4f22c295fb6504` |
 | Vendors | Smith 200; installed BTSL 200; bounded idempotent normalization/rollback | PASS | Vendor observer and crafting/vendor guarded PASSes |
 | Acquisition controls | No Jhod/starting/fixed-loot paper; roster preserved; Bokken exact or evidenced defer | DEFER (evidenced) | Core paths PASS; Bokken alone deferred in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md` |
-| Presentation | Item/mode/reload/Lightning/Gunsmithing/help/icons/logs/build/changelog | TODO | |
+| Presentation | Item/mode/reload/Lightning/Gunsmithing/help/icons/logs/build/changelog | PASS | Blueprint presentation, semantic icon checks, 0.0.74 build label and changelog |
 | Runtime | Reload scenario | PASS | `20260809T0038463040427Z-disposable-paper-cartridge-reload` |
 | Runtime | Native full-attack scenario | TODO | |
 | Runtime | Ordinary/Dead Shot misfire scenario | TODO | |
@@ -30,9 +30,9 @@ Status values: `TODO`, `PASS`, `FAIL`, `DEFER (evidenced)`.
 | Runtime | Paper ordinary/Dead Shot misfire | PASS | `20260809T0007093055795Z-14d2669b768a48b09fd7e560d546fb93`; legacy Dead Shot control also PASS |
 | Runtime | Paper Scatter scenario | PASS | `20260809T0011589772079Z-885ae93125bf4979adf69afe8b7948eb` |
 | Runtime | Crafting/vendor scenario | PASS | `20260809T0031147623118Z-dad8b1e070d049d09c4f22c295fb6504`; Bokken safely deferred by exact graph evidence |
-| Runtime | Two independent final comprehensive PASSes | TODO | |
-| Compatibility | Standalone, A&A, soundpacks, combined, one bounded CotW; exact restoration | TODO | |
-| Release | Version/pins, complete gates, clean package, hashes, docs, pushed remote equality | TODO | |
+| Runtime | Two independent final comprehensive PASSes | PASS | `20260809T0223531574928Z`; `20260809T0228043712566Z` |
+| Compatibility | Standalone, A&A, soundpacks, combined, one bounded CotW; exact restoration | PASS | `compat-20260809T013637Z-4660ecf4446e`; `compat-20260809T015702Z-08d5c0a31965`; `compat-20260809T020420Z-0100b5e97026`; `compat-20260809T021134Z-a8ec10bef81e`; `compat-20260809T021852Z-bf16e6df813d` |
+| Release | Version/pins, complete gates, clean package, hashes, docs, pushed remote equality | PASS (publication pending final docs commit) | 0.0.74; 954 tests; exact hashes in qualification report |
 
 ## Pre-implementation inventory and replacement/extension map
 

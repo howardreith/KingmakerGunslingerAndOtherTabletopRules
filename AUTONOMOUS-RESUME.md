@@ -20,6 +20,12 @@
   the comprehensive guarded scenario, then run final standalone/compatibility,
   two fresh comprehensive PASSes, eligible working-save smokes, hashes, audits,
   reports, clean-tree and remote-equality proof. Do not merge.
+- Mission mechanics and autonomous runtime/compatibility qualification are now
+  complete at version 0.0.74. Final comprehensive runs are
+  `20260809T0223531574928Z` and `20260809T0228043712566Z`; working-save runs are
+  `20260809T0230156578884Z` and `20260809T0232431480084Z`. Five compatibility
+  transactions restored exactly. Exact next action is the final documentation
+  commit, complete audit, approved-helper publication, and remote-equality proof.
 
 ## Current resume — Rare Firearms project-owned Seeking authority (2026-08-08)
 
