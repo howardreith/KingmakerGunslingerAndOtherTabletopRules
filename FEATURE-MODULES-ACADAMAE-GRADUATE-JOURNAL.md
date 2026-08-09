@@ -500,3 +500,20 @@
 - Candidate package SHA-256 `4cc81415feddc58d62f52b9cbf897c84b46b29a8da7aace1c5c582b71554e317`; DLL SHA-256 `5ea1aea0db6964ac0911a8698397e7b9eed2bdc0659690d5c9830edeaa43a9e1`.
 - Current uncertainty: the guarded process must prove that the committed Wizard level creates a real owned memorization slot and that the production action/save/Cord chain accepts it.
 - Next concrete action: commit and publish the native Wizard level fixture, then repeat `disposable-acadamae-graduate` and inspect every structured assertion.
+
+## 2026-08-09 — native Wizard spellbook isolates casting-stat prerequisite
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `66caad43c795fdb01acc9a24a2e6744e733167a2`; active version 0.0.74.
+- Guarded directory `20260809T1635321184982Z-disposable-acadamae-graduate`, run `20260809T1635321534764Z-d6f008efa3c44003960fc19b87d3c4fe`, ERROR after 90,294 ms before assertions: `Committed Wizard fixture has no empty native memorization slot at level 1.` Automatic cleanup/exit completed.
+- This advances the exact contract: native CharGen successfully committed the Wizard level and created the exact Wizard spellbook, but the uninitialized disposable unit had no casting ability score from which the engine could calculate spell slots.
+- Narrow fixture correction: set the disposable Wizard's Intelligence base value to 18 before class mechanics and level-up are applied. This uses the native spellbook calculation instead of mutating serialized memorization collections.
+- Current uncertainty: native slot generation after a valid casting score and the downstream production action/save/Cord chain remain to be observed.
+- Next concrete action: fully qualify, commit, and publish the casting-stat fixture correction, then rerun `disposable-acadamae-graduate`.
+
+## 2026-08-09 — casting-stat fixture source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `66caad43c795fdb01acc9a24a2e6744e733167a2`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `be59a56e3a9fe4d993dc0e09b83cfbcb77706f17ae1766a95878a30e31743260`; DLL SHA-256 `135c2271508b89fffa144a4020bf990b5530b16df8ef658d644e7525029c083d`.
+- Current uncertainty: runtime must show whether Intelligence 18 causes the committed Wizard spellbook to materialize its owned level-one slots.
+- Next concrete action: commit/publish the casting-stat correction and rerun the guarded Acadamae scenario.

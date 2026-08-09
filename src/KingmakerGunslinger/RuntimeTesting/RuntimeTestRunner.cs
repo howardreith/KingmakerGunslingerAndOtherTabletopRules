@@ -6924,6 +6924,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                unit.Descriptor.Stats.Intelligence.BaseValue = 18;
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<
                     BlueprintCharacterClass>(BlueprintBootstrap.Library,
                         "ba34257984f4c41408ce1dc2004e342e", "native Wizard class");
