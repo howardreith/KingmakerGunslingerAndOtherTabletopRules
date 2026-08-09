@@ -7099,16 +7099,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static AbilityData PrepareAcadamaeSpell(Spellbook spellbook,
             BlueprintAbility spell, int spellLevel)
         {
-            var data = new AbilityData(spell, spellbook);
             SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
-                .FirstOrDefault(value => value != null && value.Spell == null);
-            if (slot == null) throw new InvalidOperationException(
-                "Committed Wizard fixture has no empty native memorization slot at level " +
+                .FirstOrDefault(value => value != null && value.Spell != null &&
+                    ReferenceEquals(value.Spell.Blueprint, spell));
+            if (slot == null)
+            {
+                var prepared = new AbilityData(spell, spellbook);
+                if (!spellbook.Memorize(prepared, null))
+                    throw new InvalidOperationException(
+                        "Native Wizard spellbook rejected memorization at level " +
+                        spellLevel + "; spellsPerDay=" +
+                        spellbook.GetSpellsPerDay(spellLevel) + ".");
+                slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                    .FirstOrDefault(value => value != null && value.Spell != null &&
+                        ReferenceEquals(value.Spell.Blueprint, spell));
+            }
+            if (slot == null || slot.Spell == null) throw new InvalidOperationException(
+                "Native Wizard memorization succeeded without an owned invocation slot at level " +
                 spellLevel + ".");
-            slot.Spell = data;
             slot.Available = true;
-            data.ParamSpellSlot = slot;
-            return data;
+            slot.Spell.ParamSpellSlot = slot;
+            return slot.Spell;
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

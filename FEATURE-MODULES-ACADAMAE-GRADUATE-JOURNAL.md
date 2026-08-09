@@ -534,3 +534,20 @@
 - Candidate package SHA-256 `d34b097a0a052a6d2ce533a3e099f1eb1a5cadd0b3135656102960c46a67301d`; DLL SHA-256 `3e09e9fecbb46752f6494130ceb648e9f907779e261e1263e9037000f295776c`.
 - Current uncertainty: the public refresh/rest behavior and downstream Acadamae chain require guarded runtime observation.
 - Next concrete action: commit/publish this exact lifecycle fixture and rerun `disposable-acadamae-graduate`.
+
+## 2026-08-09 — empty-slot enumeration theory rejected
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `9fe43245fa6ba9fdf54cb1ecd109cac4e540ff42`; active version 0.0.74.
+- Guarded directory `20260809T1644270134108Z-disposable-acadamae-graduate`, run `20260809T1644270461165Z-9b2e2f755201474db12e0a8026e6e6be`, ERROR after 85,906 ms: public non-shrinking slot refresh/rest completed but `GetMemorizedSpellSlots(1)` still exposed no empty entry. Automatic cleanup/exit completed.
+- Rejected theory: the native memorized-slot enumerable exposes vacant daily capacity ready for direct assignment. Exact installed public API instead provides `Spellbook.Memorize(AbilityData, SpellSlot)` for materialization.
+- The helper now asks the exact spellbook to memorize the known spell, retrieves the resulting spellbook-owned slot by exact blueprint reference, marks that native prepared slot available, and returns its owned `AbilityData`. A rejection reports native `GetSpellsPerDay(level)` evidence.
+- Current uncertainty: native memorization may reveal a missing school/slot-capacity selection, or it may advance into the action/save assertions.
+- Next concrete action: fully qualify and publish native memorization, then repeat the guarded scenario.
+
+## 2026-08-09 — native memorization fixture source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `9fe43245fa6ba9fdf54cb1ecd109cac4e540ff42`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `9818b7236c7cc7ca476fdc3a35263c1737d069800431bfcf940ad0437669d3c5`; DLL SHA-256 `b9866bdb8c55e0d5daa00a02d49c93896ba5c9bb4bb79ddb92f9da83860e0ec6`.
+- Current uncertainty: the exact spellbook's `Memorize` result and all mechanics assertions remain runtime evidence.
+- Next concrete action: commit/publish the native memorization fixture, then repeat the guarded Acadamae scenario.
