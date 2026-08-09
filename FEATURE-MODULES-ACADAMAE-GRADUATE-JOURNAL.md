@@ -296,3 +296,11 @@
 - Root cause: runtime request parsing had the new strict Boolean contract, but repository preflight retained its general zero-parameter fallback. Added the identical two-key Boolean validation to preflight.
 - Current uncertainty: the synchronized preflight/parser contract needs full gates and a clean guarded ON/ON run.
 - Next concrete action: qualify, commit, and publish the preflight repair, then rerun ON/ON.
+
+## 2026-08-09 — module request serializer mismatch
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `b794d51f80284030964d69797caa82eccd2f619e`; active version 0.0.74.
+- Guarded ON/ON attempt directory `20260809T1512051774335Z-observe-feature-module-settings` was rejected before hook installation with sanitized reason `module-states-required`. Its request file showed `parameters: {}` despite preflight accepting the two Booleans.
+- Root cause: `New-KmgRuntimeRequest` serialized parameters only for save and compatibility-profile scenarios. Added an exact module-observer branch that writes only the two typed Boolean fields.
+- Current uncertainty: synchronized preflight, serializer, and in-game parser require a clean full run.
+- Next concrete action: qualify, commit, and publish the serializer repair, then rerun ON/ON.

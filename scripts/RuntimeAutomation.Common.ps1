@@ -783,6 +783,11 @@ function New-KmgRuntimeRequest {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
             [ordered]@{ profileId = [string]$Parameters.profileId }
+        } elseif ($Scenario -ceq 'observe-feature-module-settings') {
+            [ordered]@{
+                gunslinger = [bool]$Parameters.gunslinger
+                acadamaeGraduate = [bool]$Parameters.acadamaeGraduate
+            }
         } else { [ordered]@{} }
     }
 }
