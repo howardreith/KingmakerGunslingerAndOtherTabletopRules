@@ -3896,6 +3896,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "deactivate-reactivate";
                 mode.IsOn = false;
+                // The blueprint deliberately does not force immediate deactivation;
+                // drive the public native stop boundary so this synchronous fixture
+                // observes Buff.OnRemove before reactivation.
+                mode.Stop(true);
                 deactivated = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value =>
                     ReferenceEquals(value.Blueprint,
                         BlueprintBootstrap.PaperCartridgeMode.Marker));
