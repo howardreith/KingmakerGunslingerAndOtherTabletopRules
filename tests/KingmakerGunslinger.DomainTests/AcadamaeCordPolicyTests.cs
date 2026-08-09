@@ -96,6 +96,16 @@ namespace KingmakerGunslinger.DomainTests
                 prerequisite.Contains(
                     "OppositionSelection).Any(IsConjurationOpposition)"),
                 "Pending prerequisites must inspect every selected opposition school.");
+            string runtime = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            int forcedFailure = runtime.IndexOf(
+                "GetStat(StatType.SaveFortitude).BaseValue = -100;",
+                StringComparison.Ordinal);
+            int cordCast = runtime.IndexOf(
+                "AbilityData cordCast = PrepareAcadamaeSpell",
+                StringComparison.Ordinal);
+            Assertions.True(forcedFailure >= 0 && cordCast > forcedFailure,
+                "The clean-first Cord integration phase must force a failed Fortitude save before casting.");
         }
 
         internal static void AcadamaeInvocationCorrelation()

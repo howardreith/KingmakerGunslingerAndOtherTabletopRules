@@ -7030,6 +7030,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Damage = 0;
                 cordHpBefore = unit.HPLeft;
                 Cord.CordConditionRuntime.ResetDiagnostics();
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
                 int damageBefore = unit.Damage;
                 AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
@@ -7053,7 +7054,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.Belt.RemoveItem(false);
 
                 AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
-                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
                 UnitUseAbility failedCommand = new UnitUseAbility(failed,
                     new TargetWrapper(unit));
                 AcadamaeCastingRuntime.Begin(failedCommand);

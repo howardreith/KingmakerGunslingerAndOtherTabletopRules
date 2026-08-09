@@ -724,3 +724,21 @@
 - Candidate package SHA-256 `40e3a30740bcf53c6d77a0770916081ff4b4313bf03d4ece54f5123f4d716620`; DLL SHA-256 `27977754559e1ea6bb7349b30c6deb496cabeb8ee87b26ee2e4bda5a922e340c`.
 - Current uncertainty: exact rule-boundary execution and singular substitution remain guarded runtime evidence.
 - Next concrete action: commit/publish the authoritative boundary, then rerun standalone integration and Cord scenarios.
+
+## 2026-08-09 — clean-first failure traced to the guarded fixture's save modifier
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `99b66160ed6cfc0f767b5b0b44c61101102fe197`; active version 0.0.74.
+- Guarded directory `20260809T1743341288921Z-disposable-acadamae-graduate`, run `20260809T1743341470582Z-5a67d2a589ae4636ac55da36dba86719`, FAIL 6/7. Prepared casting, presentation/command parity, cancellation, and ordinary unequipped fatigue passed; the Cord phase recorded `cordBuffCalls=0`, no roll, and no damage.
+- Exact source review disproved the buff-boundary theory: the fixture set Fortitude to `+100` for the success phase, moved the Cord phase ahead of the ordinary failure phase, but left the `-100` assignment after the Cord cast. The Cord phase therefore succeeded its save and correctly made no fatigue application at any hook. This also explains why three different exact buff-boundary probes all recorded zero calls.
+- Moved the forced-failure assignment immediately before the clean-first Cord cast and added a deterministic source-order guard. No production mechanic was weakened or bypassed.
+- Current uncertainty: full source qualification and a guarded run must prove the exact native `TriggerRuleApplyBuff` path, singular d6 substitution, and later unequipped fatigue result.
+- Next concrete action: run focused and complete qualification, commit/publish the fixture correction, then rerun standalone Acadamae integration.
+
+## 2026-08-09 — forced-failure fixture correction source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `99b66160ed6cfc0f767b5b0b44c61101102fe197`; active version 0.0.74.
+- Repository validation PASS; deterministic/domain/reflection suite PASS 967/967; clean exact-reference Release build, build-output/icon/manifest/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Two sandboxed deterministic runs reached 966/967 with only the unchanged audio staging lifecycle failing `File.Replace` in the operating-system temp directory. The same exact suite outside that restricted temp sandbox passed 967/967, classifying the failures as sandbox access behavior rather than a source regression.
+- Candidate local-runtime package SHA-256 `a1f340769f9432afa0ee8a9a89f71cc36801b92d3b952f13bcd018850d9a8d5b`; DLL SHA-256 `d010b9c5000fd0fac4dab96fb24b75709e32b435475d923807582edebdbefa22`.
+- Current uncertainty: guarded runtime must prove the corrected Cord phase reaches the exact native fatigue-buff boundary once and applies one d6 substitution.
+- Next concrete action: commit/publish the fixture correction and run `disposable-acadamae-graduate` in a fresh guarded process.
