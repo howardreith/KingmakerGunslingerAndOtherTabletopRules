@@ -150,7 +150,6 @@ namespace KingmakerGunslinger.DomainTests
                 "state.Owner.Unit.HPLeft - 1",
                 "new DiceFormula(0, DiceType.D6), amount",
                 "IgnoreDamageReduction = true",
-                "state.Owner.Unit.Damage = damageBefore + amount",
                 "IWarningNotificationUIHandler",
                 "[System.ThreadStatic] private static UnitState _fatigueBypass",
                 "ConditionalWeakTable<Buff, object> ExhaustionSources",

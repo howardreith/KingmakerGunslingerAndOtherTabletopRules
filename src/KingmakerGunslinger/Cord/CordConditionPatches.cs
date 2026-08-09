@@ -21,19 +21,16 @@ namespace KingmakerGunslinger.Cord
         private static readonly object Marker = new object();
         private static int _lastRoll;
         private static int _lastAppliedDamage;
-        private static bool _usedDirectFallback;
         private static long _publishedLogs;
 
         internal static int LastRoll { get { return _lastRoll; } }
         internal static int LastAppliedDamage { get { return _lastAppliedDamage; } }
-        internal static bool UsedDirectFallback { get { return _usedDirectFallback; } }
         internal static long PublishedLogs { get { return Interlocked.Read(ref _publishedLogs); } }
 
         internal static void ResetDiagnostics()
         {
             _lastRoll = 0;
             _lastAppliedDamage = 0;
-            _usedDirectFallback = false;
         }
 
         internal static bool Prefix(UnitState state, UnitCondition condition, Buff source)
@@ -81,7 +78,6 @@ namespace KingmakerGunslinger.Cord
                 System.Math.Max(0, state.Owner.Unit.HPLeft - 1));
             _lastRoll = roll;
             _lastAppliedDamage = 0;
-            _usedDirectFallback = false;
             if (amount == 0) return 0;
             var direct = new DirectDamage(new DiceFormula(0, DiceType.D6), amount);
             var damage = new RuleDealDamage(state.Owner.Unit, state.Owner.Unit,
@@ -91,15 +87,6 @@ namespace KingmakerGunslinger.Cord
                 };
             int damageBefore = state.Owner.Unit.Damage;
             Rulebook.Trigger(damage);
-            if (state.Owner.Unit.Damage == damageBefore)
-            {
-                // Nested condition callbacks can reject a self-targeted damage rule
-                // even though the Cord substitution has already suppressed the
-                // condition. Preserve the authorized nonlethal-equivalent floor
-                // through Kingmaker's serialized damage accumulator.
-                state.Owner.Unit.Damage = damageBefore + amount;
-                _usedDirectFallback = true;
-            }
             _lastAppliedDamage = state.Owner.Unit.Damage - damageBefore;
             return _lastAppliedDamage;
         }

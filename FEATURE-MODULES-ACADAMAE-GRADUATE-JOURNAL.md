@@ -602,3 +602,20 @@
 - Candidate package SHA-256 `d7c2f8670762441dc808331684dd0ffd9a25d7dad2fbbe60b94b34651ebc3719`; DLL SHA-256 `0923db6317b0da924d7b572af680ac7a762ffdf1fc2899ccb8baa6f11a200ef7`.
 - Current uncertainty: guarded integration and standalone Cord runs must prove the fallback is singular, capped, and non-regressive.
 - Next concrete action: commit/publish this production hardening, run integrated Acadamae, then rerun standalone Cord.
+
+## 2026-08-09 — Cord hook absence traces to retained native fatigue buff
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `38460e36e6d3f2ae17797259b556ee77d67d9815`; active version 0.0.74.
+- Guarded directory `20260809T1702592377522Z-disposable-acadamae-graduate`, run `20260809T1702592810669Z-19c590a36cc544e5814f3f88dac8f850`, FAIL 6/7 in 106,513 ms. Diagnostics recorded `cordRoll=0`, `cordApplied=0`, proving the Cord hook did not execute; this rejects the nested-damage-rule theory.
+- Root cause: after the ordinary failed-save assertion, the fixture removed only `UnitCondition.Fatigued` while leaving the exact native Fatigued buff installed. The later `Buffs.AddBuff` was deduplicated, so no new condition application reached the Cord.
+- Fixture correction removes the exact live native Fatigued buff fact before cancellation/integration and during cleanup. The unproven direct serialized-damage fallback has been withdrawn; native `RuleRollDice`, capped native `RuleDealDamage`, diagnostics, and truthful player-facing substitution notification remain.
+- Current uncertainty: a clean application must now reach the exact Cord hook and prove native 1d6 damage once.
+- Next concrete action: fully qualify/publish the native-buff lifecycle correction, rerun integrated Acadamae, then rerun standalone Cord.
+
+## 2026-08-09 — native fatigue-buff lifecycle source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `38460e36e6d3f2ae17797259b556ee77d67d9815`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `334537365c7f60affd53f6699183108cb3f84b302e42f219425d4eaea8ed55bd`; DLL SHA-256 `231da5dc57e770764a221c707c901a001f9a2c61722e65f29541a388357167f9`.
+- Current uncertainty: integrated and standalone guarded runs must prove exact native Cord interception and damage after the corrected buff lifecycle.
+- Next concrete action: commit/publish the lifecycle correction, rerun integrated Acadamae, then rerun standalone Cord.

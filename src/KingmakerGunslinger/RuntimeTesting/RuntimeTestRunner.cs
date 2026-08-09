@@ -6912,6 +6912,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntity cord = null;
             object wizardController = null;
             BlueprintSpellbook wizardBookBlueprint = null;
+            BlueprintBuff fatiguedBlueprint = null;
             string spellIdentity = "<none>";
             bool prepared = false, presentation = false, successObserved = false,
                 failureObserved = false, cancellationObserved = false,
@@ -6929,6 +6930,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<
                     BlueprintCharacterClass>(BlueprintBootstrap.Library,
                         "ba34257984f4c41408ce1dc2004e342e", "native Wizard class");
+                fatiguedBlueprint = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library, "e6f2fc5d73d88064583cb828801212f4",
+                    "native Fatigued buff");
                 Type controllerType = typeof(
                     Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
                 MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
@@ -7019,10 +7023,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(failedRule);
                 AcadamaeCastingRuntime.End(failedCommand);
                 failureCount = AcadamaeCastingRuntime.CompletedCount;
+                Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
                 failureObserved = failedRule.Success && failureCount == 2 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
+                    failedFatigue != null &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
-                unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                if (failedFatigue != null)
+                    unit.Descriptor.Buffs.RemoveFact(failedFatigue);
 
                 AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
@@ -7072,6 +7079,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
                         unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    if (fatiguedBlueprint != null)
+                    {
+                        Buff liveFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
+                        if (liveFatigue != null)
+                            unit.Descriptor.Buffs.RemoveFact(liveFatigue);
+                    }
                     if (unit.Body.Belt.MaybeItem != null)
                         unit.Body.Belt.RemoveItem(false);
                     if (wizardBookBlueprint != null)
