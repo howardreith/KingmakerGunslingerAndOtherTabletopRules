@@ -331,3 +331,23 @@
 - No deployment or settings mutation occurred during source qualification. The wrapper retains original settings bytes/hash or absence, launches each requested combination in a fresh guarded process, restores in `finally`, and refuses to operate while Kingmaker is already running.
 - Current uncertainty: the live OFF/ON transaction has not yet proved both settings restoration and settings-aware publication in a fresh process.
 - Next concrete action: commit and publish the qualified wrapper, then run the OFF/ON guarded transaction and inspect both structured scenario evidence and byte-restoration output.
+
+## 2026-08-09 — OFF/ON run isolates deployment settings loss
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `e0bd6d5bef9c68ac91e9d4f019402b309f1b9541`; active version 0.0.74.
+- Guarded directory `20260809T1525115900212Z-observe-feature-module-settings`, run ID `20260809T1525116241936Z-d0c42c8f414e496fb72ca8524b8eed21`, FAIL with 3/5 assertions PASS. The request expected OFF/ON, but bootstrap observed ON/ON, 250 identities, class/Paper present, and Acadamae/Cord present.
+- The matrix wrapper restored the original live settings bytes exactly; pre-run and post-run SHA-256 are both `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Root cause: the guarded orchestrator deploys the strict package after the wrapper writes its fixture. The package correctly excludes generated `FeatureModules.json`, while `Deploy-Local.ps1` replaced the complete live mod directory and thereby removed the fixture; missing settings then correctly defaulted to ON/ON.
+- Narrow repair in progress: preserve an existing feature settings file byte-for-byte across the deployment transaction, outside the package, and report that preservation in deployment evidence. This also prevents ordinary local deployment from erasing a user's saved module preference.
+- Rejected theory: OFF publication is faulty. The active snapshot never received OFF in this run, so no OFF publication behavior was exercised.
+- Current uncertainty: the deployment preservation repair needs full qualification and a repeated OFF/ON run.
+- Next concrete action: run focused deployment safety tests and all repository gates, then commit/publish the settings-preserving deployment repair before retrying OFF/ON.
+
+## 2026-08-09 — settings-preserving deployment repair qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `e0bd6d5bef9c68ac91e9d4f019402b309f1b9541`; active version 0.0.74.
+- `Deploy-Local.ps1` now captures an existing `FeatureModules.json` before package replacement and restores those exact bytes atomically in `finally`. Package file validation still occurs against the strict package alone, and deployment evidence records whether settings were preserved.
+- Focused deployment safety tests PASS 17/17. Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank audits; deterministic package creation; strict package validation.
+- Candidate package SHA-256 `c019ee0cb3b90c070fd72090b5fad6d012941c37e1811f6f9c004e71b032f384`; DLL SHA-256 `363192f19c9551c6e3f1af765577d8bf0c88bc7dde2d68d3ef5dcae94d3e38b4`.
+- Current uncertainty: live deployment has not yet demonstrated that the prewritten OFF/ON fixture survives package replacement and reaches the process snapshot.
+- Next concrete action: commit and publish the deployment repair, then repeat OFF/ON and verify the run plus original-settings restoration hashes.

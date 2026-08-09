@@ -66,8 +66,13 @@ Assert-True ($orchestrator.Contains('Start-KmgSteamKingmaker')) `
     'manual-observation-preserves-steam-launch'
 Assert-True (-not $orchestrator.Contains('Kingmaker.exe')) `
     'manual-orchestrator-has-no-direct-launch'
+Assert-True ($deployment.Contains("Join-Path `$live 'FeatureModules.json'") -and
+    $deployment.Contains('[IO.File]::ReadAllBytes($featureSettingsPath)') -and
+    $deployment.Contains('[IO.File]::WriteAllBytes($featureSettingsTemporary, $featureSettingsBytes)') -and
+    $deployment.Contains('featureModuleSettingsPreserved = $featureSettingsExisted')) `
+    'deployment-preserves-feature-settings-bytes-outside-package'
 
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 16'
+Write-Host 'Runtime deployment safety tests passed: 17'
