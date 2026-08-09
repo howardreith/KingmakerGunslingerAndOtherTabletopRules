@@ -646,3 +646,12 @@
 - Candidate package SHA-256 `a53445d03f3608c2a07176a55df0846672d7f88e4443fe0aa8c3f1e449ffb155`; DLL SHA-256 `b3d5488696101ee4d36e28c7ff238da570a877f436aea38a404343950f5dcf42`.
 - Current uncertainty: two consecutive fresh integrated PASS runs remain runtime evidence.
 - Next concrete action: commit/publish the assertion correction and run the integrated Acadamae scenario twice consecutively.
+
+## 2026-08-09 — consecutive integrated Acadamae/Cord runtime pair PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `9aeb778634e51e61323564748a89e939d0d13d6f`; active version 0.0.74.
+- Fresh guarded directory `20260809T1716543579252Z-disposable-acadamae-graduate`, run `20260809T1716543806514Z-a7441daf5db94d0bad9cb9b6012fecf4`, PASS 7/7 in 88,687 ms. DC 16; Cord roll/applied/delta 5/5/5; cleanup PASS.
+- Immediately following fresh guarded directory `20260809T1719062958268Z-disposable-acadamae-graduate`, run `20260809T1719063199940Z-4af92cea4eb2483998f26b1c488b6cb4`, PASS 7/7 in 104,555 ms. DC 16; Cord roll/applied/delta 3/3/3; cleanup PASS.
+- Both ran through Steam App ID 640820, loaded exact commit `9aeb778634e51e61323564748a89e939d0d13d6f`, made no save interaction, and automatically exited. The consecutive fresh-process integrated mechanics gate is satisfied for the current 0.0.74 candidate.
+- Current uncertainty: optional-mod mechanics/profile reruns, final 0.0.75 qualification, documentation, and working-save smoke remain.
+- Next concrete action: audit and execute the required Arms & Armor, Toggle Custom Soundpacks, combined, and exact Call of the Wild profile gates before transactional versioning.
