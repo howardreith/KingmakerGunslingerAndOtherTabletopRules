@@ -27,6 +27,7 @@ param(
         'disposable-firearm-wwise-audio',
         'disposable-gunslinger-scatter-shot',
         'disposable-reload-autocast',
+        'disposable-paper-cartridge-mode-view-lifecycle',
         'observe-rare-firearm-blueprint-contracts',
         'magic-firearm-native-properties',
         'reliable-firearm-misfire-matrix',
