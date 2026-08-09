@@ -258,3 +258,13 @@
 - Candidate package SHA-256 `f93fc20c0a04dbd4825a3daec5fe7e67d3b884118af224b531c6f87687c1e08a`; DLL SHA-256 `61448bdbf293de28a4f1e3c0b413521565f7f44de97d0485b91d0654055861ef`.
 - Current uncertainty: the equipped-Cord scenario is source-qualified but has not yet run in Kingmaker; it may reveal exact equipment or damage lifecycle details requiring a narrow correction.
 - Next concrete action: commit/publish the equipped-Cord scenario and run it through the guarded Steam-backed harness, then inspect structured mechanics evidence.
+
+## 2026-08-09 — first equipped-Cord run isolates level-zero HP fixture
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `4c9266ebc456887efe9b39ddb375ae692a56ae30`; active version 0.0.74.
+- Guarded scenario directory `20260809T1457410525894Z-disposable-cord-of-stubborn-resolve`, run ID `20260809T1457410872456Z-1c6eeceb156c441599411b87ea30302f`, FAIL in 87,522 ms with 5/7 assertions PASS.
+- Real native belt equip changed Constitution 10 -> 12. Inventory-only and unequipped scopes were inert/native, exhaustion was downgraded rather than left Exhausted, the floor observation was zero damage, and cleanup passed. Fatigue/exhaustion d6 assertions failed because the level-0 `ChargenUnit` fixture had no positive HP pool, causing the deliberate `MinHPAfterDamage = 1` floor to cap every roll to zero.
+- Rejected theory: the Harmony condition hook did not run. Fatigued was suppressed while equipped and ordinary Fatigued applied after unequip, proving exact interception; only the damage-observation prerequisite was invalid.
+- Narrow fixture repair: assign 30 base HP on the disposable unit before equip. This changes no production mechanics and permits both ordinary d6 observation and a later explicit 1-HP-floor case.
+- Current uncertainty: d6 application and exhaustion downgrade need a fresh run with the corrected positive-HP fixture.
+- Next concrete action: run all gates, commit/publish the fixture correction, and repeat the disposable Cord scenario.

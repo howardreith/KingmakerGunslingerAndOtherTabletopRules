@@ -6724,6 +6724,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
                 constitutionBefore = unit.Descriptor.Stats.Constitution.ModifiedValue;
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
                 inventoryInert = !unit.Descriptor.State.HasCondition(
