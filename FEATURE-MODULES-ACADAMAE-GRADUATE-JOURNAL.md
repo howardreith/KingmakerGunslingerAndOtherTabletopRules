@@ -785,3 +785,15 @@
 - Both runs used Steam App ID 640820, exact commit `207a405e3cb608def0d73f03b4ca8e38b44a0dd2`, request-local natural-roll forcing, no save interaction, automatic exit, and full request-local cleanup. The current-source consecutive primary integration gate is satisfied.
 - Current uncertainty: exact Call of the Wild mechanics and the remaining optional-mod profiles require fresh qualification before release versioning.
 - Next concrete action: commit/publish this evidence, then execute exact Call of the Wild ON/ON feature publication and integrated mechanics transaction.
+
+## 2026-08-09 — exact optional-mod targeted matrix PASS
+
+- Branch/runtime package identity: `codex/feature-modules-acadamae-graduate` / `653164d6fbd11e62b3566f8ac47ce0df6b1f8e27`; active version 0.0.74.
+- Exact Call of the Wild transaction `compat-20260809T180508Z-605e9298769e`: ON/ON `observe-feature-module-settings` PASS; `disposable-acadamae-graduate` PASS 7/7; exact restoration verified. This supersedes the earlier mechanics failure without erasing its fixture-order evidence.
+- Exact Arms & Armor transaction `compat-20260809T180912Z-5659b0e869da`: ON/ON publication PASS; Acadamae/Cord mechanics PASS; firearm visual-rig regression PASS; exact restoration verified.
+- Exact Toggle Custom Soundpacks transaction `compat-20260809T181332Z-976be191b230`: ON/ON publication PASS; Acadamae/Cord mechanics PASS; Wwise firearm-audio regression PASS; exact restoration verified.
+- Qualified combined Arms & Armor + Toggle transaction `compat-20260809T181800Z-27b037d8f332`: ON/ON publication, Acadamae/Cord mechanics, firearm visuals, and Wwise audio all PASS in separate fresh processes; exact restoration verified.
+- Maximum high-risk Call of the Wild + Arms & Armor + Toggle transaction `compat-20260809T182354Z-275df7b55c5d`: guarded readiness reached; ON/ON publication PASS; Acadamae/Cord mechanics PASS; exact restoration verified. This is stronger than the historical startup-timeout evidence but does not by itself qualify every older comprehensive scenario.
+- Every transaction observed a staged mutation and restored the original Mods manifest, module-settings bytes/absence, and managed SoundBank. Managed SoundBank SHA-256 before/after remained `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+- Current uncertainty: the final 0.0.75 candidate must repeat its required consecutive primary and highest-risk gates; profile documentation/dispositions must be updated without overstating unrerun comprehensive coverage.
+- Next concrete action: commit/publish targeted compatibility evidence, then perform transactional version/documentation/profile updates for 0.0.75.
