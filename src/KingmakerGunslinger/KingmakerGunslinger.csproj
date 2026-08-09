@@ -53,6 +53,7 @@
     <Compile Include="Cord\CordConditionKind.cs" />
     <Compile Include="Cord\CordSubstitutionDecision.cs" />
     <Compile Include="Cord\CordSubstitutionPolicy.cs" />
+    <Compile Include="Cord\CordConditionPatches.cs" />
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />

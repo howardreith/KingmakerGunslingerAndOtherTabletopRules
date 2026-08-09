@@ -182,3 +182,14 @@
 - Candidate package SHA-256 `413cb05149b051a7eb86192d472b46f622af7642f13ac15087129f54198d866e`; DLL SHA-256 `32ef01fccf51caa957c4a83752fedfb1c7711182356f7b55374d52664e62692b`.
 - Current uncertainty: deterministic forced-save runtime proof and realistic prepared-slot construction remain scenario work; Cord interception is not implemented yet.
 - Next concrete action: commit/publish the native save/fatigue checkpoint, verify clean bootstrap, then inspect and implement the exact Cord equipment/fatigue boundary.
+
+## 2026-08-09 — native Acadamae save bootstrap and Cord condition boundary
+
+- Branch/HEAD at Cord implementation start: `codex/feature-modules-acadamae-graduate` / `0af8bea23bcb1fb1d60595d8ccfc418b840febf7`; active version 0.0.74.
+- Guarded Steam-backed scenario directory `20260809T1423555509087Z-mod-load-smoke`, run ID `20260809T1423555822438Z-157bfe1cc50d4f3689e95cd6428bb92c`, PASS in 85,749 ms with 3/3 structured assertions. This proves the Acadamae native save/fatigue patch set bootstraps under the exact installed Call of the Wild order; it is not yet a forced-save cast proof.
+- Exact assembly investigation found that native buff-owned and direct fatigue/exhaustion applications converge on `UnitState.AddCondition(UnitCondition, Buff)`. The Cord patch intercepts only those two exact conditions and only when the exact Cord blueprint is in the wearer's belt slot. Inventory possession is inert.
+- Installed Kingmaker initializes and serializes `CharacterStats.DamageNonLethal`, but exhaustive member and IL-reference inspection found no rule-event/write/combat-log/healing/unconsciousness path that makes it a usable native system. Selected the authorized fallback: one self-originated untyped native d6, DR ignored, with `RuleDealDamage.MinHPAfterDamage = 1`; the item description names this adaptation explicitly.
+- Exhaustion uses a thread-local one-call fatigue bypass and weak source-bound classification so its deliberate downgrade remains Fatigued without a recursive second roll; a later nested Fatigued application from the same native source is suppressed.
+- Source qualification before this journal checkpoint: complete deterministic suite PASS 966/966; repository validation, exact-reference clean Release build, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS. Candidate package SHA-256 `2d37dc631cb5e31f3050f60fde177cb377db92d2e36b42b29308a35dc77d4ca2`; DLL SHA-256 `260b207ad736ad07289410c145961d57fd7153e271004b5079af513267adb454`.
+- Current uncertainty: real equip delta, native fatigue/exhaustion interception, exact one-roll behavior, combat-log wording, and the 1-HP floor still require focused guarded runtime evidence.
+- Next concrete action: rerun the focused and complete deterministic gates with the Cord source-contract guard, then commit/publish and prove real-process Harmony bootstrap before adding the focused Cord runtime scenario.

@@ -37,6 +37,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("acadamae.invocation-correlation", AcadamaeCordPolicyTests.AcadamaeInvocationCorrelation),
             Case("cord.fatigue-and-exhaustion", AcadamaeCordPolicyTests.CordFatigueAndExhaustion),
             Case("cord.damage-boundaries", AcadamaeCordPolicyTests.CordDamageBoundaries),
+            Case("cord.native-condition-source-contract", AcadamaeCordPolicyTests.CordNativeConditionSourceContract),
             Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),
             Case("paper-foundation.compatibility-definition-driven", PaperCartridgeFoundationTests.CompatibilityIsDefinitionDriven),
             Case("paper-foundation.unknown-fails-closed", PaperCartridgeFoundationTests.UnknownIdentityFailsClosed),

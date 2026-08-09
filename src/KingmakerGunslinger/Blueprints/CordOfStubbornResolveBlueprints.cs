@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.Blueprints
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Name",
                         "Cord of Stubborn Resolve"),
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Description",
-                        "This belt grants a +2 enhancement bonus to Constitution. While equipped, an effect that would cause fatigue instead deals 1d6 nonlethal damage. An effect that would cause exhaustion instead deals 1d6 nonlethal damage and leaves the wearer fatigued."),
+                        "This belt grants a +2 enhancement bonus to Constitution. Kingmaker has no usable native nonlethal-damage rule path, so while equipped an effect that would cause fatigue instead deals 1d6 untyped, non-hostile self-damage that cannot reduce you below 1 hit point. An effect that would cause exhaustion deals that damage and leaves you fatigued instead."),
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Flavor",
                         "This tightly knotted cord steadies body and resolve against consuming weariness."),
                     15000, 1f);

@@ -131,6 +131,24 @@ namespace KingmakerGunslinger.DomainTests
                     0, 10, false), "A d6 roll below one must fail.");
         }
 
+        internal static void CordNativeConditionSourceContract()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Cord", "CordConditionPatches.cs"));
+            foreach (string token in new[] {
+                "[HarmonyPatch(typeof(UnitState), \"AddCondition\"",
+                "ReferenceEquals(state.Owner.Unit.Body.Belt.Item.Blueprint",
+                "BlueprintBootstrap.CordOfStubbornResolve",
+                "new DiceFormula(1, DiceType.D6)",
+                "IgnoreDamageReduction = true",
+                "MinHPAfterDamage = 1",
+                "[System.ThreadStatic] private static UnitState _fatigueBypass",
+                "ConditionalWeakTable<Buff, object> ExhaustionSources",
+                "state.AddCondition(UnitCondition.Fatigued, source)" })
+                Assertions.True(source.Contains(token),
+                    "Cord native condition hook lacks exact token: " + token);
+        }
+
         private static AcadamaeCastRequest Valid()
         {
             return new AcadamaeCastRequest { HasFeat = true, IsRealSpell = true,
