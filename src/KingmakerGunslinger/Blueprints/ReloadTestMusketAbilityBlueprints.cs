@@ -25,8 +25,9 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Actions.ReloadStandard", "KMG.Actions.ReloadFullRound" };
 
         private const string Description =
-            "Reload the exact equipped firearm with compatible Black Powder Charges and Lead Balls. " +
-            "The required action is determined by the firearm and a matching Rapid Reload feat.";
+            "Left-click to manually reload the exact equipped firearm. Right-click enables or disables Kingmaker's automatic Reload Firearm use. " +
+            "Use Paper Cartridges selects cartridges for future reloads; when that mode is active, there is no fallback to loose Black Powder Charges and Lead Balls. " +
+            "The required action is determined from the firearm, Fast Musket, matching Rapid Reload, and the selected ammunition.";
 
         internal static BlueprintAbility Register(BlueprintRegistry registry,
             ModLogger logger, BlueprintItemWeapon iconSource,

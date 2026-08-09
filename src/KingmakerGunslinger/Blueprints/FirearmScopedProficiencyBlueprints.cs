@@ -4,6 +4,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.FactLogic;
 using UnityEngine;
 
@@ -43,21 +44,24 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static void AttachActions(
             FirearmScopedProficiencyBlueprintSet set,
-            BlueprintAbility reload, BlueprintAbility scatter)
+            BlueprintAbility reload, BlueprintAbility scatter,
+            BlueprintActivatableAbility paperCartridgeMode)
         {
             if (set == null) throw new ArgumentNullException("set");
             if (reload == null) throw new ArgumentNullException("reload");
             if (scatter == null) throw new ArgumentNullException("scatter");
-            Attach(set.OneHanded, reload);
-            Attach(set.TwoHanded, reload, scatter);
-            Validate(set, reload, scatter);
+            if (paperCartridgeMode == null) throw new ArgumentNullException("paperCartridgeMode");
+            Attach(set.OneHanded, reload, paperCartridgeMode);
+            Attach(set.TwoHanded, reload, scatter, paperCartridgeMode);
+            Validate(set, reload, scatter, paperCartridgeMode);
         }
 
         internal static void Validate(FirearmScopedProficiencyBlueprintSet set,
-            BlueprintAbility reload, BlueprintAbility scatter)
+            BlueprintAbility reload, BlueprintAbility scatter,
+            BlueprintActivatableAbility paperCartridgeMode)
         {
-            ValidateOne(set.OneHanded, reload);
-            ValidateOne(set.TwoHanded, reload, scatter);
+            ValidateOne(set.OneHanded, reload, paperCartridgeMode);
+            ValidateOne(set.TwoHanded, reload, scatter, paperCartridgeMode);
         }
 
         private static BlueprintFeature Create(string suffix)
@@ -71,20 +75,20 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void Attach(BlueprintFeature feature,
-            params BlueprintAbility[] abilities)
+            params BlueprintUnitFact[] abilities)
         {
             if (feature.ComponentsArray == null || feature.ComponentsArray.Length != 0)
                 throw new InvalidOperationException(
                     "Scoped firearm proficiency actions were already attached.");
             var facts = ScriptableObject.CreateInstance<AddFacts>();
             facts.name = "$KMG_GrantScopedFirearmActions";
-            facts.Facts = abilities.Cast<BlueprintUnitFact>().ToArray();
+            facts.Facts = abilities.ToArray();
             facts.DoNotRestoreMissingFacts = false;
             feature.ComponentsArray = new BlueprintComponent[] { facts };
         }
 
         private static void ValidateOne(BlueprintFeature feature,
-            params BlueprintAbility[] expected)
+            params BlueprintUnitFact[] expected)
         {
             AddFacts[] grants = (feature.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AddFacts>().ToArray();

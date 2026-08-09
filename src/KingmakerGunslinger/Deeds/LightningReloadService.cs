@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.Deeds
             else if (request.LoadedRounds >= request.Capacity) status = LightningReloadStatus.Loaded;
             else if (!request.HasBasicAmmunition) status = LightningReloadStatus.MissingAmmunition;
             else status = LightningReloadStatus.Available;
-            return new LightningReloadDecision(status);
+            return new LightningReloadDecision(status, request.Action);
         }
     }
 }

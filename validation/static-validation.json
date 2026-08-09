@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.73-pistolero-musket-master",
-  "version": "0.0.73",
+  "milestone": "0.0.74-paper-cartridges-auto-reload",
+  "version": "0.0.74",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

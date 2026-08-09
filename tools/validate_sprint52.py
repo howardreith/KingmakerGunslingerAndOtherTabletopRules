@@ -52,7 +52,7 @@ def validate(root: Path, version: str = VERSION,
          "LightningReloadAbilityLogic"], "Sprint 52 blueprints")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Deeds/LightningReloadRuntime.cs"),
-        ["TryReloadOneBasicRound", "ReadGrit", "RemoveFact(marker)"],
+        ["TryReloadRounds", "ReadGrit", "RemoveFact(marker)"],
         "Sprint 52 runtime")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs"),

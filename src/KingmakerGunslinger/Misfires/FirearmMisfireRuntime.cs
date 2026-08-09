@@ -51,7 +51,8 @@ namespace KingmakerGunslinger.Misfires
             RuleAttackRoll attackRoll,
             object firearmItem,
             FirearmItemStateSnapshot postDischarge,
-            FirearmCondition effectiveCondition)
+            FirearmCondition effectiveCondition,
+            AmmunitionId firedAmmunition)
         {
             try
             {
@@ -111,7 +112,8 @@ namespace KingmakerGunslinger.Misfires
                         effectiveCondition,
                         Classes.FirearmTrainingRuntime.Resolve(wielder,
                             postDischarge.Definition.Kind).ReducedBrokenMisfire,
-                        firearmItem as ItemEntityWeapon),
+                        firearmItem as ItemEntityWeapon,
+                        firedAmmunition),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName),
                     postDischarge.Definition.Kind);
@@ -240,12 +242,17 @@ namespace KingmakerGunslinger.Misfires
                     // exact eligible RuleAttackRoll still supplies its natural
                     // d20 to this native IsSuccessRoll call, so retain mechanics
                     // without broad dice or unit state mutation.
-                    context.RecordNaturalRoll(naturalRoll, naturalRoll, false);
+                    int finalNaturalRoll = naturalRoll;
+                    int forcedNaturalRoll;
+                    bool forced = ForcedRolls.TryConsume(out forcedNaturalRoll);
+                    if (forced)
+                        finalNaturalRoll = forcedNaturalRoll;
+                    context.RecordNaturalRoll(naturalRoll, finalNaturalRoll, forced);
                     FirearmMisfireRuntimeDiagnostics.RecordNaturalRoll(
-                        context.Firearm, naturalRoll, naturalRoll, false);
+                        context.Firearm, naturalRoll, finalNaturalRoll, forced);
                 }
 
-                if (naturalRoll != context.FinalNaturalRoll)
+                if (!context.Forced && naturalRoll != context.FinalNaturalRoll)
                 {
                     throw new InvalidOperationException(
                         string.Format(
@@ -258,7 +265,7 @@ namespace KingmakerGunslinger.Misfires
                 bool firstEvaluation = context.TryBeginEvaluation();
                 bool nativeSuccess = nativeResult;
                 FirearmMisfireDecision decision = Service.Evaluate(
-                    naturalRoll,
+                    context.FinalNaturalRoll,
                     context.MisfireValue,
                     nativeResult);
                 bool fortuneIgnored = firstEvaluation && decision.IsMisfire &&

@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.Deeds
 
         public string GetReason()
         {
-            return "Requires positive grit, an unloaded non-Wrecked equipped firearm, basic ammunition, and no Lightning Reload use this round.";
+            return "Requires positive grit, an unloaded non-Wrecked equipped firearm, the ammunition selected by Use Paper Cartridges, and no Lightning Reload use this round. Paper mode never falls back to loose ammunition.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(

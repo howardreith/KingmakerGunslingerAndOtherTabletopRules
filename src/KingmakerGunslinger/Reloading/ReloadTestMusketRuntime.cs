@@ -8,6 +8,8 @@ using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Actions;
+using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 
 namespace KingmakerGunslinger.Reloading
@@ -30,7 +32,10 @@ namespace KingmakerGunslinger.Reloading
                 return Unavailable("No concrete caster descriptor is available.");
             }
 
-            if (testMusket == null || blackPowder == null || leadBall == null)
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            PaperCartridgeModeBlueprintSet mode = BlueprintBootstrap.PaperCartridgeMode;
+            if (testMusket == null || blackPowder == null || leadBall == null ||
+                ammunition == null || ammunition.PaperCartridge == null || mode == null)
             {
                 return Unavailable("Reload blueprint dependencies are not initialized.");
             }
@@ -45,11 +50,12 @@ namespace KingmakerGunslinger.Reloading
             ItemEntityWeapon weapon = context.Weapon;
             FirearmItemStateSnapshot firearm = context.Firearm;
 
-            KingmakerBasicAmmunitionInventory inventoryAdapter;
+            KingmakerReloadAmmunitionInventory inventoryAdapter;
             string inventoryReason;
             if (!TryResolveInventory(
                 blackPowder,
                 leadBall,
+                ammunition.PaperCartridge,
                 out inventoryAdapter,
                 out inventoryReason))
             {
@@ -58,57 +64,37 @@ namespace KingmakerGunslinger.Reloading
                     inventoryReason,
                     weapon,
                     firearm,
+                    null,
                     null);
             }
 
-            BasicAmmunitionInventorySnapshot inventory =
-                BasicAmmunitionInventorySnapshot.Capture(inventoryAdapter);
+            ReloadAmmunitionInventorySnapshot inventory =
+                ReloadAmmunitionInventorySnapshot.Capture(inventoryAdapter);
             FirearmState actualState = firearm.Repository.State;
             FirearmState state = actualState.Condition == context.EffectiveCondition
                 ? actualState
                 : new FirearmState(actualState.SchemaVersion,
                     actualState.LoadedRounds, actualState.LoadedAmmunition,
                     context.EffectiveCondition);
-            FirearmActionDecision action = FirearmActionPolicy.Evaluate(
-                FirearmActionKind.Reload,
-                firearm.Definition,
-                state,
-                inventory.BlackPowderCharges > 0 && inventory.LeadBalls > 0);
-            if (!action.IsAvailable)
-            {
-                return Rejected(action.Reason, weapon, firearm, inventory);
-            }
-
-            if (state.Condition == FirearmCondition.Wrecked)
-            {
-                return Rejected("The equipped firearm is Wrecked and cannot be reloaded.", weapon, firearm, inventory);
-            }
-
-            if (state.LoadedRounds >= firearm.Definition.Capacity)
-            {
-                return Rejected("The equipped firearm is already full.", weapon, firearm, inventory);
-            }
-
-            if (inventory.BlackPowderCharges == 0)
-            {
-                return Rejected("A Black Powder Charge is required.", weapon, firearm, inventory);
-            }
-
-            if (inventory.LeadBalls == 0)
-            {
-                return Rejected("A Lead Ball is required.", weapon, firearm, inventory);
-            }
-
-            int rounds = Math.Min(firearm.Definition.Reload.RoundsPerAction,
-                firearm.Definition.Capacity - state.LoadedRounds);
+            ReloadAmmunitionProfile profile = PaperCartridgeModeRuntime.IsActive(caster,
+                mode.Marker) ? ReloadAmmunitionProfileCatalog.PaperCartridge :
+                ReloadAmmunitionProfileCatalog.LooseBasic;
+            FirearmReloadPlan plan = FirearmReloadPlanner.Evaluate(caster, weapon,
+                firearm.Definition, state, profile, inventory,
+                FastMusketRuntime.IsAvailable(caster),
+                RapidReloadRuntime.HasMatchingChoice(caster, firearm.Definition.Kind),
+                firearm.Definition.Reload.RoundsPerAction);
+            if (!plan.IsAvailable)
+                return Rejected(plan.Reason, weapon, firearm, inventory, plan);
             return new ReloadTestMusketAvailability(
                 true,
                 state.Condition == FirearmCondition.Broken
-                    ? "Ready to reload " + rounds + " round(s); the firearm will remain Broken."
-                    : "Ready to reload " + rounds + " round(s).",
+                    ? plan.Reason + " The firearm will remain Broken."
+                    : plan.Reason,
                 weapon,
                 firearm,
-                inventory);
+                inventory,
+                plan);
         }
 
         internal static FirearmReloadResult Execute(
@@ -127,23 +113,23 @@ namespace KingmakerGunslinger.Reloading
                 throw new InvalidOperationException(availability.Reason);
             }
 
-            var inventory = new KingmakerBasicAmmunitionInventory(
+            var inventory = new KingmakerReloadAmmunitionInventory(
                 Game.Instance.Player.Inventory,
                 blackPowder,
-                leadBall);
+                leadBall,
+                BlueprintBootstrap.BasicAmmunition.PaperCartridge);
             var stateStore = new FirearmItemReloadStateStore(
                 FirearmRuntimeState.Service,
                 availability.Weapon);
-            var rules = new FirearmStateRules(
-                availability.Firearm.Definition.Capacity,
-                new[] { availability.Firearm.Definition.Reload.Ammunition });
+            FirearmStateRules rules = FirearmStateRules.CreateForDefinition(
+                availability.Firearm.Definition);
 
-            return new FirearmReloadTransactionService().TryReloadBasicRounds(
+            return new FirearmReloadTransactionService().TryReloadRounds(
                 stateStore,
                 inventory,
                 rules,
-                availability.Firearm.Definition.Reload.Ammunition,
-                availability.Firearm.Definition.Reload.RoundsPerAction);
+                availability.Plan.Profile,
+                availability.Plan.RoundsLoadable);
         }
 
         private static bool TryResolveSingleEquippedTestMusket(
@@ -191,7 +177,8 @@ namespace KingmakerGunslinger.Reloading
         private static bool TryResolveInventory(
             BlueprintItem blackPowder,
             BlueprintItem leadBall,
-            out KingmakerBasicAmmunitionInventory inventory,
+            BlueprintItem paperCartridge,
+            out KingmakerReloadAmmunitionInventory inventory,
             out string reason)
         {
             inventory = null;
@@ -203,10 +190,11 @@ namespace KingmakerGunslinger.Reloading
                 return false;
             }
 
-            inventory = new KingmakerBasicAmmunitionInventory(
+            inventory = new KingmakerReloadAmmunitionInventory(
                 game.Player.Inventory,
                 blackPowder,
-                leadBall);
+                leadBall,
+                paperCartridge);
             return true;
         }
 
@@ -217,6 +205,7 @@ namespace KingmakerGunslinger.Reloading
                 reason,
                 null,
                 null,
+                null,
                 null);
         }
 
@@ -224,14 +213,16 @@ namespace KingmakerGunslinger.Reloading
             string reason,
             ItemEntityWeapon weapon,
             FirearmItemStateSnapshot firearm,
-            BasicAmmunitionInventorySnapshot inventory)
+            ReloadAmmunitionInventorySnapshot inventory,
+            FirearmReloadPlan plan)
         {
             return new ReloadTestMusketAvailability(
                 false,
                 reason,
                 weapon,
                 firearm,
-                inventory);
+                inventory,
+                plan);
         }
 
         private static void AddDistinct(

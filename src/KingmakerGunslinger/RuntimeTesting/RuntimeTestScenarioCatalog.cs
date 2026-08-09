@@ -41,6 +41,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-firearm-item-lifecycle-contracts";
         internal const string DisposableReloadAutocast =
             "disposable-reload-autocast";
+        internal const string DisposablePaperCartridgeReload =
+            "disposable-paper-cartridge-reload";
+        internal const string DisposablePaperCartridgeModeViewLifecycle =
+            "disposable-paper-cartridge-mode-view-lifecycle";
+        internal const string DisposablePaperCartridgeFullAttack =
+            "disposable-paper-cartridge-full-attack";
+        internal const string DisposablePaperCartridgeMisfire =
+            "disposable-paper-cartridge-misfire";
+        internal const string DisposablePaperCartridgeScatter =
+            "disposable-paper-cartridge-scatter";
+        internal const string DisposablePaperCartridgeCraftingVendors =
+            "disposable-paper-cartridge-crafting-vendors";
+        internal const string DisposablePaperCartridgeComprehensive =
+            "disposable-paper-cartridge-comprehensive";
         internal const string DisposableOverhaulMaintenance =
             "disposable-overhaul-maintenance";
         internal const string DisposableProductionFirearmSwitching =
@@ -123,6 +137,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-gunslinger-expert-loading";
         internal const string DisposableGunslingerLightningReload =
             "disposable-gunslinger-lightning-reload";
+        internal const string DisposablePaperCartridgeLightningReload =
+            "disposable-paper-cartridge-lightning-reload";
         internal const string DisposableGunslingerEvasive =
             "disposable-gunslinger-evasive";
         internal const string ObserveEvasiveNativeFeatures =
@@ -194,6 +210,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,
+                DisposablePaperCartridgeReload,
+                DisposablePaperCartridgeModeViewLifecycle,
+                DisposablePaperCartridgeFullAttack,
+                DisposablePaperCartridgeMisfire,
+                DisposablePaperCartridgeScatter,
+                DisposablePaperCartridgeCraftingVendors,
+                DisposablePaperCartridgeComprehensive,
                 DisposableOverhaulMaintenance,
                 DisposableProductionFirearmSwitching,
                 DisposableGunslingerComprehensiveAcceptance,
@@ -236,6 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGunslingerBleedingWound,
                 DisposableGunslingerExpertLoading,
                 DisposableGunslingerLightningReload,
+                DisposablePaperCartridgeLightningReload,
                 DisposableGunslingerEvasive,
                 ObserveEvasiveNativeFeatures,
                 ObserveMenacingShotNativeFear,

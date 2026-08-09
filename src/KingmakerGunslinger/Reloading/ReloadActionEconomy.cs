@@ -24,13 +24,24 @@ namespace KingmakerGunslinger.Reloading
             FirearmDefinition definition, bool fastMusketAvailable,
             bool hasMatchingRapidReload)
         {
+            return Evaluate(definition, fastMusketAvailable, hasMatchingRapidReload, 0);
+        }
+
+        internal static EffectiveReloadAction Evaluate(
+            FirearmDefinition definition, bool fastMusketAvailable,
+            bool hasMatchingRapidReload, int ammunitionStepReduction)
+        {
             if (definition == null) throw new ArgumentNullException("definition");
+            if (ammunitionStepReduction < 0 || ammunitionStepReduction > 3)
+                throw new ArgumentOutOfRangeException("ammunitionStepReduction");
             EffectiveReloadAction action = Convert(definition.Reload.BaseAction);
             if (fastMusketAvailable && FirearmHandednessPolicy.Matches(
                     definition.Kind, FirearmHandedness.TwoHanded) &&
                 action == EffectiveReloadAction.FullRound)
                 action = EffectiveReloadAction.Standard;
-            return hasMatchingRapidReload ? ReduceOneStep(action) : action;
+            if (hasMatchingRapidReload) action = ReduceOneStep(action);
+            for (int step = 0; step < ammunitionStepReduction; step++) action = ReduceOneStep(action);
+            return action;
         }
 
         private static EffectiveReloadAction ReduceOneStep(

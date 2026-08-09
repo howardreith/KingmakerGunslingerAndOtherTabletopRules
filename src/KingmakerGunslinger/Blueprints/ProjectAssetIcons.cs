@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.Blueprints
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
-                "gunsmith-kit", "overhaul-kit", "focused-aim" };
+                "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim" };
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.Blueprints
             MagicFirearmBlueprintCatalog magicFirearms,
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet supplies,
+            PaperCartridgeModeBlueprintSet paperCartridgeMode,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -110,6 +111,9 @@ namespace KingmakerGunslinger.Blueprints
             }
             items.SetIcon(ammunition.LeadBall, Require("lead-ball"));
             items.SetIcon(ammunition.BlackPowder, Require("black-powder"));
+            items.SetIcon(ammunition.PaperCartridge, Require("paper-cartridge"));
+            BlueprintUnitFactAccess.Resolve().SetIcon(
+                paperCartridgeMode.Ability, Require("paper-cartridge"));
             items.SetIcon(repairKit, Require("repair-kit"));
             items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"));
             items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"));
@@ -169,6 +173,7 @@ namespace KingmakerGunslinger.Blueprints
             GunsmithingSupplyBlueprintSet supplies)
         {
             BlueprintItem[] items = { ammunition.LeadBall, ammunition.BlackPowder,
+                ammunition.PaperCartridge,
                 repairKit, supplies.GunsmithKit, supplies.OverhaulKit };
             if (items.Any(item => item == null || item.Icon == null) ||
                 items.Select(item => item.Icon).Distinct().Count() != items.Length ||

@@ -1,5 +1,49 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Paper mode area-transition/save-load crash repair
+
+- Clean branch/local/remote intake SHA:
+  `82de97fdc3e5c00d063b24d06b3d387075430d40` on
+  `codex/paper-cartridges-auto-reload`; version remains 0.0.74.
+- Prior full qualification is suspended. User reproduced a modal null reference
+  in composed `Buff.SpawnParticleEffect_Patch1` across four quicksaves and dungeon
+  area/level transitions. Saves are potentially recoverable and must not be edited.
+- High-confidence hypothesis pending exact proof: the from-scratch persistent
+  Paper mode marker leaves `FxOnStart`/`FxOnRemove` null, so live view reconstruction
+  reaches an invalid no-FX lifecycle shape. CotW is visible in composition but is
+  not yet classified as causal.
+- Exact next action: bounded installed IL/signature/field inspection plus four-way
+  runtime blueprint comparison; record rejected theories, then make only the
+  minimal unchanged-GUID save-compatible repair and qualify it on a real view-backed
+  party unit in standalone, CotW, qualified combined, and reachable combined-CotW.
+
+## Current resume — Paper Cartridges Phase 7 (2026-08-09)
+
+- Branch `codex/paper-cartridges-auto-reload`; baseline
+  `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`; latest published source checkpoint
+  `2da2f60948c8e70b964e88e54675e069c042a457`.
+- Phases 1–6 mechanics and guarded vertical scenarios pass. Complete deterministic
+  total is 954. Registry is 248 active; append-only ledger is 249 identities with
+  one reserved. Bokken alone is safely deferred by exact installed graph evidence.
+- Phase 6 PASS IDs: enhanced reload
+  `20260809T0038463040427Z-disposable-paper-cartridge-reload`, item lifecycle
+  `20260809T0042467907112Z-observe-firearm-item-lifecycle-contracts`, and switching
+  `20260809T0046598688957Z-disposable-production-firearm-switching`.
+- No save write was performed. Do not claim a fresh Paper-token restart; retain one
+  narrow human checklist while relying on deterministic Paper round trips and the
+  inherited qualified item-token carrier lifecycle.
+- Exact next action: commit/push Phase 6 evidence, transactionally advance all
+  actual 0.0.73 pins to 0.0.74 / `0.0.74-paper-cartridges-auto-reload`, implement
+  the comprehensive guarded scenario, then run final standalone/compatibility,
+  two fresh comprehensive PASSes, eligible working-save smokes, hashes, audits,
+  reports, clean-tree and remote-equality proof. Do not merge.
+- Mission mechanics and autonomous runtime/compatibility qualification are now
+  complete at version 0.0.74. Final comprehensive runs are
+  `20260809T0223531574928Z` and `20260809T0228043712566Z`; working-save runs are
+  `20260809T0230156578884Z` and `20260809T0232431480084Z`. Five compatibility
+  transactions restored exactly. Exact next action is the final documentation
+  commit, complete audit, approved-helper publication, and remote-equality proof.
+
 ## Current resume — Rare Firearms project-owned Seeking authority (2026-08-08)
 
 - Exact branch/checkpoint verified clean and published:
@@ -1414,3 +1458,32 @@ Quick Clear static lifecycle passed in run
 `a329a1260beb73bde362b506e8ab1c96ab7de1ba`. Next complete reconciliation and
 inventory-transfer isolation, then native enhancement/Fey Bane damage evidence,
 0.0.74 versioning, compatibility profiles, and final regression passes.
+# Active work order: Paper Cartridges
+
+Branch: `codex/paper-cartridges-auto-reload`
+
+Baseline: `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`
+
+Durable contract: `planning/PAPER-CARTRIDGES-AUTO-RELOAD-MISSION.md`
+
+Current checkpoint: Phase 1 foundation is source-qualified at 941/941 with 245
+active registrations and 246 ledger identities. Commit/publish Phase 1 and
+verify remote equality, then begin Phase 2's one reload plan, generic atomic
+source transaction, native Paper mode/grants, and manual reload runtime path.
+
+## Current resume point — Paper persistent-mode crash repair
+
+The published 0.0.74 candidate at `82de97fdc3e5c00d063b24d06b3d387075430d40`
+is rejected pending repair qualification. Exact installed IL proves the marker's
+null `FxOnStart` is dereferenced by original view-backed
+`Buff.SpawnParticleEffect`; `FxOnRemove` has the same unsafe removal contract.
+The installed Call of the Wild prefix only checks `Fact.Active`, so it exposes
+the composed stack name but is not the null cause. The unchanged-GUID repair
+initializes both empty FX links and both marker/mode empty resource-ID arrays,
+with startup validation. Next: deterministic/build gates, then an exact live
+party-view lifecycle observer under standalone and required compatibility profiles.
+
+Repair qualification is complete. On 2026-08-09 the user successfully loaded an
+affected game and traveled between dungeon floors, closing the final human recovery
+gate. The unchanged marker identity, autonomous lifecycle/compatibility evidence,
+and human area-transition result jointly qualify the repaired 0.0.74 candidate.

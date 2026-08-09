@@ -176,7 +176,7 @@ def validate(
         proficiency,
         [
             "BlueprintAbility repairAbility",
-            "grants[0].Facts.Length != 3",
+            "grants[0].Facts.Length != 4",
             "grants[0].Facts[0], overhaulAbility",
             "grants[0].Facts[1], repairAbility",
             "DoNotRestoreMissingFacts = false",
@@ -367,6 +367,8 @@ def validate(
         active_words = "two-hundred-thirty-three"
     if expected_active_blueprints == 242:
         active_words = "two-hundred-forty-two"
+    if expected_active_blueprints == 245:
+        active_words = "two-hundred-forty-five"
     reserved_blueprints = expected_ledger_entries - expected_active_blueprints
     reserved_words = ("one reserved" if reserved_blueprints == 1 else
                       f"{reserved_blueprints} reserved")

@@ -111,7 +111,8 @@ namespace KingmakerGunslinger.Firing
                             attackRoll,
                             weapon,
                             after,
-                            result.EffectiveCondition))
+                            result.EffectiveCondition,
+                            before.Repository.State.LoadedAmmunition))
                     {
                         // The round has already discharged. Fail the unresolved attack
                         // closed rather than allowing a hit without misfire evaluation.

@@ -46,7 +46,7 @@ try {
         'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
         'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
         'rifle','revolver','lead-ball','black-powder','repair-kit',
-        'gunsmith-kit','overhaul-kit','focused-aim')
+        'gunsmith-kit','overhaul-kit','paper-cartridge','focused-aim')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
     $packagedBank=Join-Path $modDirectory 'assets\soundbanks\KMG_Firearms.bnk'
     if(Test-Path -LiteralPath $packagedBank -PathType Leaf){

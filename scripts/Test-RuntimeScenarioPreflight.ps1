@@ -38,6 +38,14 @@ $expected = @(
     'disposable-firearm-dependent-feats',
     'disposable-overhaul-maintenance',
     'disposable-reload-autocast',
+    'disposable-paper-cartridge-reload',
+    'disposable-paper-cartridge-mode-view-lifecycle',
+    'disposable-paper-cartridge-full-attack',
+    'disposable-paper-cartridge-misfire',
+    'disposable-paper-cartridge-scatter',
+    'disposable-paper-cartridge-crafting-vendors',
+    'disposable-paper-cartridge-lightning-reload',
+    'disposable-paper-cartridge-comprehensive',
     'observe-native-weapon-feat-contracts',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
@@ -293,7 +301,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.73'
+    ExpectedVersion = '0.0.74'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -326,7 +334,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.73' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.74' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -381,7 +389,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.73' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.74' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

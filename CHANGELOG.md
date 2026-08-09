@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.74 Paper mode view-lifecycle repair
+
+- Initialized the persistent Use Paper Cartridges marker's no-FX resource links
+  so existing marker facts reconstruct safely during save load and area changes.
+- Preserved every Paper Cartridge blueprint identity and all ammunition behavior.
+- Added guarded attached-view lifecycle coverage, including Call of the Wild's
+  composed `Buff.SpawnParticleEffect` path.
+
+## 0.0.74 - Paper Cartridges, auto-reload, and rare firearms
+
+- Adds stackable 12-gp Paper Cartridges for every canonical early Pistol,
+  Musket, and Blunderbuss family, including +1 and named magic firearms.
+- Adds a per-unit Use Paper Cartridges mode, persistent loaded-ammunition state,
+  one-step faster reloads, and the exact +1 misfire modifier before Reliable.
+- Uses one atomic reload plan for manual reload, native right-click auto-use,
+  free-action full attacks, and once-per-round Lightning Reload fallback.
+- Adds shared-entitlement crafting (20 for 120 gp), zero resale, and normalized
+  stock of 200 at the capital blacksmith and installed BTSL vendors.
+- Includes the merged rare-firearm release: eight project-owned magic early
+  firearms, Reliable and Seeking, capital/BTSL stock, and five named campaign
+  loot publications remain intact.
+
 ## 0.0.72 - Optional-mod compatibility framework
 
 - Establishes the manifest-driven, exact-local-reference compatibility mission,

@@ -20,7 +20,7 @@ def require(path: Path, *tokens: str) -> None:
 
 def validate(root: Path, test_count: int = 865) -> None:
     validate_playtest64.validate_playtest63.validate_sprint60.validate(
-        root, VERSION, INFORMATIONAL_VERSION, test_count, 242, 243)
+        root, VERSION, INFORMATIONAL_VERSION, test_count, 248, 249)
     require(root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
             "ExtractSelectionItems", "IEnumerable<IFeatureSelectionItem>",
             "NativeFirearmFeatLevelUpMenuPatch")
@@ -37,7 +37,11 @@ def validate(root: Path, test_count: int = 865) -> None:
     require(root / "src/KingmakerGunslinger/Blueprints/BeneathStolenLandsVendorBlueprints.cs",
             "StandaloneHonestGuyTableGuid", "CampaignXellirenTableGuid", "200, 200, 10, 5, 1")
     require(root / "src/KingmakerGunslinger/Gunsmithing/CraftBasicAmmunitionAbilityLogic.cs",
-            "BatchSize = 20", "Complete(context.Caster.Descriptor)", "SpendMoney(cost)", "GainMoney(cost)")
+            "BatchSize = 20", "Complete(context.Caster.Descriptor)",
+            "FirearmCraftingTransactionService.Complete")
+    require(root / "src/KingmakerGunslinger/Gunsmithing/FirearmCraftingTransactionService.cs",
+            "SpendMoney(goldCost)", "GainMoney(missingMoney)",
+            "caster.RemoveFact(marker)")
     require(root / "src/KingmakerGunslinger/Deeds/DeadeyeAbilityLogic.cs",
             "class DeadeyeGritResourceLogic", "Spend(RequiredResource", "AddBuff(m_ArmedBuff")
     require(root / "src/KingmakerGunslinger/Blueprints/FirearmProjectileBlueprints.cs",

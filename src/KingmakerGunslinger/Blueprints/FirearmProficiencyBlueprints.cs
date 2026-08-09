@@ -4,6 +4,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.FactLogic;
 using UnityEngine;
 
@@ -37,7 +38,8 @@ namespace KingmakerGunslinger.Blueprints
         internal static void AttachReload(
             BlueprintFeature feature,
             BlueprintAbility reloadAbility,
-            BlueprintAbility scatterShotAbility)
+            BlueprintAbility scatterShotAbility,
+            BlueprintActivatableAbility paperCartridgeMode)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
@@ -45,6 +47,7 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("reloadAbility");
             }
             if (scatterShotAbility == null) throw new ArgumentNullException("scatterShotAbility");
+            if (paperCartridgeMode == null) throw new ArgumentNullException("paperCartridgeMode");
 
             if (feature.ComponentsArray.Length != 0)
             {
@@ -57,11 +60,12 @@ namespace KingmakerGunslinger.Blueprints
             addFacts.Facts = new BlueprintUnitFact[]
             {
                 reloadAbility,
-                scatterShotAbility
+                scatterShotAbility,
+                paperCartridgeMode
             };
             addFacts.DoNotRestoreMissingFacts = false;
             feature.ComponentsArray = new BlueprintComponent[] { addFacts };
-            Validate(feature, reloadAbility, scatterShotAbility);
+            Validate(feature, reloadAbility, scatterShotAbility, paperCartridgeMode);
         }
 
         internal static void ValidateBase(BlueprintFeature feature)
@@ -99,7 +103,8 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Validate(
             BlueprintFeature feature,
             BlueprintAbility reloadAbility,
-            BlueprintAbility scatterShotAbility)
+            BlueprintAbility scatterShotAbility,
+            BlueprintActivatableAbility paperCartridgeMode)
         {
             ValidateBase(feature);
             if (reloadAbility == null)
@@ -121,9 +126,10 @@ namespace KingmakerGunslinger.Blueprints
                     StringComparison.Ordinal) ||
                 grant.DoNotRestoreMissingFacts ||
                 grant.Facts == null ||
-                grant.Facts.Length != 2 ||
+                grant.Facts.Length != 3 ||
                 !ReferenceEquals(grant.Facts[0], reloadAbility) ||
-                !ReferenceEquals(grant.Facts[1], scatterShotAbility))
+                !ReferenceEquals(grant.Facts[1], scatterShotAbility) ||
+                !ReferenceEquals(grant.Facts[2], paperCartridgeMode))
             {
                 throw new InvalidOperationException(
                     "The Firearm Proficiency Reload grant has incorrect identity, restore policy, or target ability.");

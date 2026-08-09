@@ -55,6 +55,15 @@
     <Compile Include="Enchantments\ReliableBlueprints.cs" />
     <Compile Include="Enchantments\FirearmMisfireReductionResolver.cs" />
     <Compile Include="Misfires\EffectiveFirearmMisfirePolicy.cs" />
+    <Compile Include="Misfires\EffectiveFirearmMisfireValuePolicy.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionSourceKind.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionProfile.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionProfileCatalog.cs" />
+    <Compile Include="Ammunition\ReloadInventoryComponent.cs" />
+    <Compile Include="Ammunition\IReloadAmmunitionInventory.cs" />
+    <Compile Include="Ammunition\BasicReloadAmmunitionInventoryAdapter.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionInventorySnapshot.cs" />
+    <Compile Include="Ammunition\ReloadAmmunitionTransactionService.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -127,7 +136,9 @@
     <Compile Include="Ammunition\BasicAmmunitionTransactionService.cs" />
     <Compile Include="Ammunition\IBasicAmmunitionInventory.cs" />
     <Compile Include="Ammunition\KingmakerBasicAmmunitionInventory.cs" />
+    <Compile Include="Ammunition\KingmakerReloadAmmunitionInventory.cs" />
     <Compile Include="Blueprints\BasicAmmunitionBlueprints.cs" />
+    <Compile Include="Blueprints\PaperCartridgeModeBlueprints.cs" />
     <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
@@ -289,6 +300,8 @@
     <Compile Include="Gunsmithing\GunslingerStartingFirearmResolver.cs" />
     <Compile Include="Gunsmithing\StartingFirearmPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\CraftPaperCartridgesAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmRuntimeUseResolver.cs" />
@@ -409,6 +422,7 @@
     <Compile Include="Deeds\ExpertLoadingRuntime.cs" />
     <Compile Include="Blueprints\ExpertLoadingBlueprints.cs" />
     <Compile Include="Deeds\LightningReloadRequest.cs" />
+    <Compile Include="Deeds\LightningReloadAction.cs" />
     <Compile Include="Deeds\LightningReloadStatus.cs" />
     <Compile Include="Deeds\LightningReloadDecision.cs" />
     <Compile Include="Deeds\LightningReloadService.cs" />
@@ -416,6 +430,7 @@
     <Compile Include="Deeds\LightningReloadRoundMarker.cs" />
     <Compile Include="Deeds\LightningReloadRuntime.cs" />
     <Compile Include="Deeds\LightningReloadAbilityLogic.cs" />
+    <Compile Include="Deeds\LightningReloadPresentationPatches.cs" />
     <Compile Include="Blueprints\LightningReloadBlueprints.cs" />
     <Compile Include="Deeds\EvasiveRequest.cs" />
     <Compile Include="Deeds\EvasiveDecision.cs" />
@@ -515,6 +530,9 @@
     <Compile Include="Reloading\ReloadRuntimeDiagnostics.cs" />
     <Compile Include="Reloading\ReloadTestMusketAbilityLogic.cs" />
     <Compile Include="Reloading\ReloadActionEconomy.cs" />
+    <Compile Include="Reloading\FirearmReloadPlanStatus.cs" />
+    <Compile Include="Reloading\FirearmReloadPlan.cs" />
+    <Compile Include="Reloading\FirearmReloadPlanner.cs" />
     <Compile Include="Reloading\FastMusketRuntime.cs" />
     <Compile Include="Rules\UpCloseAndDeadlyPolicy.cs" />
     <Compile Include="Rules\TwinShotKnockdownPolicy.cs" />
@@ -531,6 +549,7 @@
     <Compile Include="Blueprints\DeedTierBlueprints.cs" />
     <Compile Include="Reloading\ReloadTestMusketAvailability.cs" />
     <Compile Include="Reloading\ReloadTestMusketRuntime.cs" />
+    <Compile Include="Reloading\PaperCartridgeModeRuntime.cs" />
     <Compile Include="Recovery\FirearmItemOverhaulStateStore.cs" />
     <Compile Include="Recovery\FirearmOverhaulAvailability.cs" />
     <Compile Include="Recovery\FirearmOverhaulResult.cs" />

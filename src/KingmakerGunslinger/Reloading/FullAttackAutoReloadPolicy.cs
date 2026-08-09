@@ -8,7 +8,8 @@ namespace KingmakerGunslinger.Reloading
         None = 0,
         ContinueLoaded = 1,
         Reload = 2,
-        EndFullAttack = 3
+        EndFullAttack = 3,
+        LightningReload = 4
     }
 
     /// <summary>
@@ -32,6 +33,24 @@ namespace KingmakerGunslinger.Reloading
             FirearmState state,
             FirearmCondition effectiveCondition)
         {
+            return Evaluate(isFullAttack, hasPreviousAttack, hasPlannedAttack,
+                sameExactWeapon, targetAlive, true, true, reloadAction, false,
+                state, effectiveCondition);
+        }
+
+        internal static FullAttackReloadDecision Evaluate(
+            bool isFullAttack,
+            bool hasPreviousAttack,
+            bool hasPlannedAttack,
+            bool sameExactWeapon,
+            bool targetAlive,
+            bool exactReloadAutoUse,
+            bool normalReloadAvailable,
+            EffectiveReloadAction reloadAction,
+            bool freeLightningReloadAvailable,
+            FirearmState state,
+            FirearmCondition effectiveCondition)
+        {
             if (state == null) throw new ArgumentNullException("state");
             if (!Enum.IsDefined(typeof(EffectiveReloadAction), reloadAction))
                 throw new ArgumentOutOfRangeException("reloadAction");
@@ -45,9 +64,13 @@ namespace KingmakerGunslinger.Reloading
                 return FullAttackReloadDecision.EndFullAttack;
             if (!state.IsEmpty)
                 return FullAttackReloadDecision.ContinueLoaded;
-            if (reloadAction != EffectiveReloadAction.Free)
+            if (!exactReloadAutoUse || !normalReloadAvailable)
                 return FullAttackReloadDecision.EndFullAttack;
-            return FullAttackReloadDecision.Reload;
+            if (reloadAction == EffectiveReloadAction.Free)
+                return FullAttackReloadDecision.Reload;
+            return freeLightningReloadAvailable
+                ? FullAttackReloadDecision.LightningReload
+                : FullAttackReloadDecision.EndFullAttack;
         }
     }
 }

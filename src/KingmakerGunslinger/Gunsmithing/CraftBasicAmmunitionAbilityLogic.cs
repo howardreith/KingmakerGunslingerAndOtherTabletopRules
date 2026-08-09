@@ -65,38 +65,9 @@ namespace KingmakerGunslinger.Gunsmithing
 
         internal void Complete(UnitDescriptor caster)
         {
-            if (caster == null || caster.Unit == null || caster.Unit.IsInCombat ||
-                !caster.State.IsConscious || !caster.State.CanAct ||
-                caster.HasFact(m_UsedMarker))
-                throw new InvalidOperationException(
-                    "Crafting requires an able conscious caster and an unused rest entitlement.");
-            var player = Game.Instance.Player;
-            if (player.Inventory.Count(m_GunsmithKit) < 1)
-                throw new InvalidOperationException("Crafting requires a Gunsmith's Kit.");
-            int powderBefore = player.Inventory.Count(m_BlackPowder);
-            int ballBefore = player.Inventory.Count(m_LeadBall);
-            int cost = GoldCost;
-            if (!player.SpendMoney(cost))
-                throw new InvalidOperationException("Crafting gold removal failed.");
-            try
-            {
-                player.Inventory.Add(m_BlackPowder, BatchSize);
-                player.Inventory.Add(m_LeadBall, BatchSize);
-                if (player.Inventory.Count(m_BlackPowder) != powderBefore + BatchSize ||
-                    player.Inventory.Count(m_LeadBall) != ballBefore + BatchSize)
-                    throw new InvalidOperationException("Crafted ammunition inventory verification failed.");
-                if (caster.AddFact(m_UsedMarker) == null)
-                    throw new InvalidOperationException("Crafting entitlement marker was not persisted.");
-            }
-            catch
-            {
-                int powderAdded = player.Inventory.Count(m_BlackPowder) - powderBefore;
-                int ballsAdded = player.Inventory.Count(m_LeadBall) - ballBefore;
-                if (powderAdded > 0) player.Inventory.Remove(m_BlackPowder, powderAdded);
-                if (ballsAdded > 0) player.Inventory.Remove(m_LeadBall, ballsAdded);
-                player.GainMoney(cost);
-                throw;
-            }
+            FirearmCraftingTransactionService.Complete(caster, m_GunsmithKit,
+                m_UsedMarker, GoldCost, new[] { m_BlackPowder, m_LeadBall },
+                new[] { BatchSize, BatchSize });
         }
 
         public override void Cleanup(AbilityExecutionContext context) { }

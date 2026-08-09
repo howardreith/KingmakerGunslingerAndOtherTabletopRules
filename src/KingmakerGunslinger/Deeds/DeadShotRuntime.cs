@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Runtime.CompilerServices;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
@@ -21,6 +22,9 @@ namespace KingmakerGunslinger.Deeds
         private static readonly object Gate = new object();
         private static readonly ConditionalWeakTable<RuleAttackRoll, ProbeContext>
             Probes = new ConditionalWeakTable<RuleAttackRoll, ProbeContext>();
+        private static long _registeredProbes;
+        private static long _rollSetterProbes;
+        private static long _successProbes;
         private static readonly ConditionalWeakTable<RuleAttackWithWeapon, DeliveryMarker>
             Deliveries = new ConditionalWeakTable<RuleAttackWithWeapon, DeliveryMarker>();
         private static readonly DeadShotService Policy = new DeadShotService();
@@ -67,7 +71,10 @@ namespace KingmakerGunslinger.Deeds
         {
             if (caster == null || target == null) throw new ArgumentNullException("caster");
             return Execute(caster.Descriptor, caster, target,
-                delegate(RuleAttackRoll rule) { Rulebook.Trigger(rule); },
+                delegate(RuleAttackRoll rule) {
+                    PrepareRuntimeTestRoll(rule);
+                    Rulebook.Trigger(rule);
+                },
                 delegate(RuleAttackWithWeapon rule) { Rulebook.Trigger(rule); },
                 forcedRolls);
         }
@@ -114,7 +121,7 @@ namespace KingmakerGunslinger.Deeds
                     firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                     Classes.FirearmTrainingRuntime.Resolve(casterEntity,
                         firearm.Definition.Kind).ReducedBrokenMisfire,
-                    firearm.Weapon);
+                    firearm.Weapon, before.LoadedAmmunition);
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
@@ -233,7 +240,10 @@ namespace KingmakerGunslinger.Deeds
             int misfireThreshold, int? forcedNaturalRoll = null)
         {
             if (attackRoll == null) throw new ArgumentNullException("attackRoll");
-            if (misfireThreshold < 1 || misfireThreshold > 20)
+            if (misfireThreshold <
+                    global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.MinimumEffectiveValue ||
+                misfireThreshold >
+                    global::KingmakerGunslinger.Misfires.EffectiveFirearmMisfirePolicy.MaximumEffectiveValue)
                 throw new ArgumentOutOfRangeException("misfireThreshold");
             if (forcedNaturalRoll.HasValue && (forcedNaturalRoll.Value < 1 ||
                 forcedNaturalRoll.Value > 20))
@@ -243,6 +253,7 @@ namespace KingmakerGunslinger.Deeds
                 Probes.Remove(attackRoll);
                 Probes.Add(attackRoll, new ProbeContext(misfireThreshold,
                     forcedNaturalRoll));
+                Interlocked.Increment(ref _registeredProbes);
             }
         }
 
@@ -317,6 +328,7 @@ namespace KingmakerGunslinger.Deeds
         {
             ProbeContext context;
             if (!TryGet(attackRoll, out context)) return;
+            Interlocked.Increment(ref _rollSetterProbes);
             if (context.ForcedNaturalRoll.HasValue)
             {
                 int forced = context.ForcedNaturalRoll.Value;
@@ -335,6 +347,9 @@ namespace KingmakerGunslinger.Deeds
         {
             ProbeContext context;
             if (!TryGet(attackRoll, out context)) return;
+            Interlocked.Increment(ref _successProbes);
+            if (!context.HasNaturalRoll)
+                context.RecordNaturalRoll(naturalRoll);
             context.VerifyNaturalRoll(naturalRoll);
             if (context.IsMisfire) nativeResult = false;
         }
@@ -350,7 +365,11 @@ namespace KingmakerGunslinger.Deeds
                 Probes.Remove(attackRoll);
             }
             if (!context.HasNaturalRoll)
-                throw new InvalidOperationException("Dead Shot probe exposed no natural roll.");
+                throw new InvalidOperationException(
+                    "Dead Shot probe exposed no natural roll; registered=" +
+                    Interlocked.Read(ref _registeredProbes) + ";rollSetter=" +
+                    Interlocked.Read(ref _rollSetterProbes) + ";success=" +
+                    Interlocked.Read(ref _successProbes) + ".");
             return new DeadShotRollObservation(attackRoll.IsHit,
                 context.IsMisfire, attackRoll.IsCriticalRoll && attackRoll.IsHit);
         }
@@ -366,6 +385,23 @@ namespace KingmakerGunslinger.Deeds
             context = null;
             if (attackRoll == null) return false;
             lock (Gate) { return Probes.TryGetValue(attackRoll, out context); }
+        }
+
+        private static void PrepareRuntimeTestRoll(RuleAttackRoll attackRoll)
+        {
+            ProbeContext context;
+            if (!TryGet(attackRoll, out context) ||
+                !context.ForcedNaturalRoll.HasValue) return;
+            int expected = context.ForcedNaturalRoll.Value;
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                if (RulebookEvent.Dice.D20.Value != expected) continue;
+                UnityEngine.Random.InitState(seed);
+                return;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native d20 seed produced " + expected + ".");
         }
 
         private sealed class ProbeContext
@@ -393,6 +429,10 @@ namespace KingmakerGunslinger.Deeds
                 if (_naturalRoll == 0 || _naturalRoll != value)
                     throw new InvalidOperationException(
                         "Dead Shot success evaluation did not match its natural roll.");
+                if (ForcedNaturalRoll.HasValue &&
+                    ForcedNaturalRoll.Value != value)
+                    throw new InvalidOperationException(
+                        "Dead Shot runtime-test forced roll did not match the native d20.");
             }
         }
 

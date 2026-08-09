@@ -46,13 +46,15 @@ namespace KingmakerGunslinger.Blueprints
                 magicFirearms.Require(MagicFirearmBlueprints.MusketPlus1Symbol).Item,
                 magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
                 ammunition.BlackPowder,
-                ammunition.LeadBall, repairKit, supplies.OverhaulKit,
+                ammunition.LeadBall, ammunition.PaperCartridge,
+                repairKit, supplies.OverhaulKit,
                 supplies.GunsmithKit };
-            int[] counts = { 1, 1, 1, 1, 1, 1, 200, 200, 10, 5, 1 };
+            int[] counts = { 1, 1, 1, 1, 1, 1, 200, 200, 200, 10, 5, 1 };
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
-                        ammunition.BlackPowder, ammunition.LeadBall, repairKit,
+                        ammunition.BlackPowder, ammunition.LeadBall,
+                        ammunition.PaperCartridge, repairKit,
                         supplies.OverhaulKit, supplies.GunsmithKit }).Distinct().ToArray();
             var publications = new List<CapitalVendorPublication>();
             try

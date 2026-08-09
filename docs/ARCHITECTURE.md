@@ -445,12 +445,15 @@ The qualification harness remains outside gameplay. `MaintenanceQualificationBas
 
 The blueprint ledger contains 233 stable IDs: 232 active and one reserved. Sixth-playtest additions are append-only: a visible Deadeye Armed buff, Gunsmith's Kit, Firearm Overhaul Kit, basic-ammunition crafting action, once-per-rest marker, and clone-derived renderer-free firearm projectile. The Mysterious Stranger extension adds one subordinate Gunslinger archetype and sixteen supporting feature, ability, buff, and resource identities. The Pistolero/Musket Master foundation appends stable scoped firearm-proficiency facts, visible archetype proficiency grants, Exotic Weapon Proficiency (Firearms), rankable Pistol/Musket Training facts, both native archetypes, truthful archetype deed summaries, Steady Aim's owner-scoped action/marker, Up Close and Deadly's owner-scoped action/marker, Twin Shot Knockdown's targeted action, and four deed-ownership-gated True Grit choices, while preserving the existing full-proficiency identity and behavior. Existing firearm, feat, item, resource, and save identities remain unchanged. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
 
-The Rare Firearms amendment reserves ten append-only identities. At the scoped
-Seeking checkpoint the ledger contains 243 stable IDs: 242 active and one reserved;
-project Seeking is active while Reliable and eight magic items remain reserved
-until their single bootstrap transaction is implemented. The runtime completes
-the current two-hundred-forty-two active blueprints transaction without
-changing prior identities.
+The Rare Firearms amendment added ten append-only identities and activated
+Seeking, Reliable, and eight magic items. Paper Cartridges Phase 1 appends three
+more identities: the stackable cartridge item and Normal/Broken paper-loaded
+state tokens, the unit-local Paper Cartridge reload-source mode, and its shared-entitlement crafting recipe. The ledger now contains 249 stable IDs: 248 active and one reserved.
+The runtime completes the current two-hundred-forty-five active blueprints
+transaction without changing prior identities. The immutable
+`ReloadAmmunitionProfileCatalog` owns loose and paper loaded IDs, inventory
+source shapes, definition-family compatibility, reload reductions, and misfire
+modifiers; mutable selection is deliberately outside firearm definitions.
 # Native firearm audio boundary
 
 `Audio.FirearmSoundRuntime` is a fail-soft side-effect adapter outside the pure

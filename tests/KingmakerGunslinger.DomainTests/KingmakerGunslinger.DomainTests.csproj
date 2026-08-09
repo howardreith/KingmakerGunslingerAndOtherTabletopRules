@@ -36,6 +36,19 @@
   <ItemGroup>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
+    <Compile Include="PaperCartridgeFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionSourceKind.cs"><Link>Ammunition\ReloadAmmunitionSourceKind.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfile.cs"><Link>Ammunition\ReloadAmmunitionProfile.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfileCatalog.cs"><Link>Ammunition\ReloadAmmunitionProfileCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Misfires\EffectiveFirearmMisfireValuePolicy.cs"><Link>Misfires\EffectiveFirearmMisfireValuePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadInventoryComponent.cs"><Link>Ammunition\ReloadInventoryComponent.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\IReloadAmmunitionInventory.cs"><Link>Ammunition\IReloadAmmunitionInventory.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\BasicReloadAmmunitionInventoryAdapter.cs"><Link>Ammunition\BasicReloadAmmunitionInventoryAdapter.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionInventorySnapshot.cs"><Link>Ammunition\ReloadAmmunitionInventorySnapshot.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionTransactionService.cs"><Link>Ammunition\ReloadAmmunitionTransactionService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadPlanStatus.cs"><Link>Reloading\FirearmReloadPlanStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadPlan.cs"><Link>Reloading\FirearmReloadPlan.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FirearmReloadPlanner.cs"><Link>Reloading\FirearmReloadPlanner.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Enchantments\SeekingConcealmentPolicy.cs"><Link>Enchantments\SeekingConcealmentPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandedness.cs"><Link>Domain\FirearmHandedness.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmHandednessPolicy.cs"><Link>Domain\FirearmHandednessPolicy.cs</Link></Compile>
@@ -132,6 +145,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingDecision.cs"><Link>Deeds\ExpertLoadingDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\ExpertLoadingService.cs"><Link>Deeds\ExpertLoadingService.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadRequest.cs"><Link>Deeds\LightningReloadRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadAction.cs"><Link>Deeds\LightningReloadAction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadStatus.cs"><Link>Deeds\LightningReloadStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadDecision.cs"><Link>Deeds\LightningReloadDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\LightningReloadService.cs"><Link>Deeds\LightningReloadService.cs</Link></Compile>

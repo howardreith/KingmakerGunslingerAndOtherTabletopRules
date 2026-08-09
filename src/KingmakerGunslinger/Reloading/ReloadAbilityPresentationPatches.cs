@@ -21,11 +21,8 @@ namespace KingmakerGunslinger.Reloading
                     BlueprintBootstrap.ProductionFirearms.Musket.Item,
                     BlueprintBootstrap.BasicAmmunition.BlackPowder,
                     BlueprintBootstrap.BasicAmmunition.LeadBall);
-            if (!availability.IsAvailable || availability.Firearm == null) return false;
-            action = ReloadActionEconomy.Evaluate(availability.Firearm.Definition,
-                FastMusketRuntime.IsAvailable(ability.Caster),
-                RapidReloadRuntime.HasMatchingChoice(ability.Caster,
-                    availability.Firearm.Definition.Kind));
+            if (!availability.IsAvailable || availability.Plan == null) return false;
+            action = availability.Plan.Action;
             return action != EffectiveReloadAction.Unknown;
         }
 

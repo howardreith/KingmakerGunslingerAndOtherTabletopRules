@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using KingmakerGunslinger.Ammunition;
 
 namespace KingmakerGunslinger.Firearms
 {
@@ -72,6 +73,19 @@ namespace KingmakerGunslinger.Firearms
         internal int Capacity
         {
             get { return _capacity; }
+        }
+
+        internal static FirearmStateRules CreateForDefinition(
+            FirearmDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException("definition");
+            var compatible = new List<AmmunitionId>
+            {
+                definition.Reload.Ammunition
+            };
+            if (ReloadAmmunitionProfileCatalog.PaperCartridge.IsCompatible(definition))
+                compatible.Add(ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition);
+            return new FirearmStateRules(definition.Capacity, compatible);
         }
 
         internal int CompatibleAmmunitionCount

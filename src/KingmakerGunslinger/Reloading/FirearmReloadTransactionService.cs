@@ -11,15 +11,15 @@ namespace KingmakerGunslinger.Reloading
     /// </summary>
     internal sealed class FirearmReloadTransactionService
     {
-        private readonly BasicAmmunitionTransactionService _ammunitionService;
+        private readonly ReloadAmmunitionTransactionService _ammunitionService;
 
         internal FirearmReloadTransactionService()
-            : this(new BasicAmmunitionTransactionService())
+            : this(new ReloadAmmunitionTransactionService())
         {
         }
 
         internal FirearmReloadTransactionService(
-            BasicAmmunitionTransactionService ammunitionService)
+            ReloadAmmunitionTransactionService ammunitionService)
         {
             _ammunitionService = ammunitionService ??
                 throw new ArgumentNullException("ammunitionService");
@@ -41,6 +41,28 @@ namespace KingmakerGunslinger.Reloading
             AmmunitionId ammunition,
             int roundsPerAction)
         {
+            if (ammunition == null)
+            {
+                throw new ArgumentNullException("ammunition");
+            }
+            ReloadAmmunitionProfile legacyProfile =
+                ammunition == ReloadAmmunitionProfileCatalog.LooseBasic.LoadedAmmunition
+                    ? ReloadAmmunitionProfileCatalog.LooseBasic
+                    : new ReloadAmmunitionProfile(ammunition,
+                        ReloadAmmunitionSourceKind.LooseBasic, "Loose basic ammunition",
+                        null, new FirearmKind[0], 1, 0, 0);
+            return TryReloadRounds(stateStore,
+                new BasicReloadAmmunitionInventoryAdapter(inventory), rules,
+                legacyProfile, roundsPerAction);
+        }
+
+        internal FirearmReloadResult TryReloadRounds(
+            IFirearmReloadStateStore stateStore,
+            IReloadAmmunitionInventory inventory,
+            FirearmStateRules rules,
+            ReloadAmmunitionProfile profile,
+            int roundsPerAction)
+        {
             if (stateStore == null)
             {
                 throw new ArgumentNullException("stateStore");
@@ -56,9 +78,9 @@ namespace KingmakerGunslinger.Reloading
                 throw new ArgumentNullException("rules");
             }
 
-            if (ammunition == null)
+            if (profile == null)
             {
-                throw new ArgumentNullException("ammunition");
+                throw new ArgumentNullException("profile");
             }
             if (roundsPerAction <= 0 || roundsPerAction > rules.Capacity)
             {
@@ -72,14 +94,14 @@ namespace KingmakerGunslinger.Reloading
                     "The firearm reload state store returned a null state.");
             }
 
-            BasicAmmunitionInventorySnapshot beforeInventory =
-                BasicAmmunitionInventorySnapshot.Capture(inventory);
+            ReloadAmmunitionInventorySnapshot beforeInventory =
+                ReloadAmmunitionInventorySnapshot.Capture(inventory);
 
             FirearmReloadStatus? rejected = GetRejection(
                 beforeState,
                 beforeInventory,
                 rules,
-                ammunition,
+                profile,
                 roundsPerAction);
             if (rejected.HasValue)
             {
@@ -87,6 +109,7 @@ namespace KingmakerGunslinger.Reloading
                     rejected.Value,
                     beforeState,
                     beforeState,
+                    profile,
                     beforeInventory,
                     beforeInventory);
             }
@@ -95,7 +118,7 @@ namespace KingmakerGunslinger.Reloading
             FirearmState loadedState = FirearmStateMachine.Load(
                 beforeState,
                 rules,
-                ammunition,
+                profile.LoadedAmmunition,
                 roundsToLoad);
             bool inventoryMayHaveChanged = false;
             bool stateMayHaveChanged = false;
@@ -106,9 +129,9 @@ namespace KingmakerGunslinger.Reloading
                 // as potentially changed before invoking it. A synthetic or engine failure
                 // may occur after a partial write and before that inner rollback completes.
                 inventoryMayHaveChanged = true;
-                BasicAmmunitionTransactionResult consumption =
-                    _ammunitionService.TryConsumeLoads(inventory, roundsToLoad);
-                if (!consumption.Succeeded)
+                ReloadAmmunitionInventorySnapshot afterConsumption =
+                    _ammunitionService.Consume(inventory, profile, roundsToLoad);
+                if (afterConsumption == null)
                 {
                     throw new InvalidOperationException(
                         "Basic ammunition became unavailable after reload eligibility was established.");
@@ -126,9 +149,9 @@ namespace KingmakerGunslinger.Reloading
                         "The exact firearm did not retain the expected loaded state after replacement.");
                 }
 
-                BasicAmmunitionInventorySnapshot verifiedInventory =
-                    BasicAmmunitionInventorySnapshot.Capture(inventory);
-                if (!consumption.After.Equals(verifiedInventory))
+                ReloadAmmunitionInventorySnapshot verifiedInventory =
+                    ReloadAmmunitionInventorySnapshot.Capture(inventory);
+                if (!afterConsumption.Equals(verifiedInventory))
                 {
                     throw new InvalidOperationException(
                         "Shared inventory changed unexpectedly after the firearm state was written.");
@@ -138,6 +161,7 @@ namespace KingmakerGunslinger.Reloading
                     FirearmReloadStatus.Loaded,
                     beforeState,
                     verifiedState,
+                    profile,
                     beforeInventory,
                     verifiedInventory);
             }
@@ -184,9 +208,11 @@ namespace KingmakerGunslinger.Reloading
             FirearmState state,
             BasicAmmunitionInventorySnapshot inventory)
         {
-            return GetRejection(state, inventory, new FirearmStateRules(1,
+            return GetRejection(state,
+                new ReloadAmmunitionInventorySnapshot(inventory.BlackPowderCharges, inventory.LeadBalls, 0),
+                new FirearmStateRules(1,
                 new[] { FirearmStateTokenCatalog.DiagnosticLeadBall }),
-                FirearmStateTokenCatalog.DiagnosticLeadBall, 1);
+                ReloadAmmunitionProfileCatalog.LooseBasic, 1);
         }
 
         internal static FirearmReloadStatus? GetRejection(
@@ -194,6 +220,22 @@ namespace KingmakerGunslinger.Reloading
             BasicAmmunitionInventorySnapshot inventory,
             FirearmStateRules rules,
             AmmunitionId ammunition,
+            int roundsPerAction)
+        {
+            if (ammunition != ReloadAmmunitionProfileCatalog.LooseBasic.LoadedAmmunition)
+            {
+                throw new ArgumentException("The legacy reload overload supports only loose basic ammunition.", "ammunition");
+            }
+            return GetRejection(state,
+                new ReloadAmmunitionInventorySnapshot(inventory.BlackPowderCharges, inventory.LeadBalls, 0),
+                rules, ReloadAmmunitionProfileCatalog.LooseBasic, roundsPerAction);
+        }
+
+        internal static FirearmReloadStatus? GetRejection(
+            FirearmState state,
+            ReloadAmmunitionInventorySnapshot inventory,
+            FirearmStateRules rules,
+            ReloadAmmunitionProfile profile,
             int roundsPerAction)
         {
             if (state == null)
@@ -216,7 +258,14 @@ namespace KingmakerGunslinger.Reloading
                 return FirearmReloadStatus.AlreadyLoaded;
             }
 
-            if (!state.IsEmpty && state.LoadedAmmunition != ammunition)
+            if (!rules.IsCompatible(profile.LoadedAmmunition))
+            {
+                throw new FirearmStateTransitionException(
+                    FirearmStateTransitionError.IncompatibleAmmunition,
+                    "The selected ammunition is incompatible with this firearm.");
+            }
+
+            if (!state.IsEmpty && state.LoadedAmmunition != profile.LoadedAmmunition)
             {
                 throw new FirearmStateTransitionException(
                     FirearmStateTransitionError.MixedAmmunition,
@@ -224,6 +273,13 @@ namespace KingmakerGunslinger.Reloading
             }
 
             int required = Math.Min(roundsPerAction, rules.Capacity - state.LoadedRounds);
+
+            if (profile.SourceKind == ReloadAmmunitionSourceKind.PaperCartridge)
+            {
+                return inventory.PaperCartridges < required
+                    ? FirearmReloadStatus.InsufficientPaperCartridge
+                    : (FirearmReloadStatus?)null;
+            }
 
             if (inventory.BlackPowderCharges < required)
             {

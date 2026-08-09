@@ -25,6 +25,25 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),
+            Case("paper-foundation.compatibility-definition-driven", PaperCartridgeFoundationTests.CompatibilityIsDefinitionDriven),
+            Case("paper-foundation.unknown-fails-closed", PaperCartridgeFoundationTests.UnknownIdentityFailsClosed),
+            Case("paper-foundation.tokens-round-trip", PaperCartridgeFoundationTests.PaperTokensRoundTrip),
+            Case("paper-foundation.old-tokens-exact", PaperCartridgeFoundationTests.OldTokensRemainExact),
+            Case("paper-foundation.item-source-contract", PaperCartridgeFoundationTests.BlueprintSourceContract),
+            Case("paper-reload.action-matrix", PaperCartridgeFoundationTests.ActionMatrix),
+            Case("paper-reload.no-fallback", PaperCartridgeFoundationTests.NoFallback),
+            Case("paper-reload.atomic-sources", PaperCartridgeFoundationTests.AtomicSources),
+            Case("paper-reload.transaction-success", PaperCartridgeFoundationTests.PaperReloadTransactionSuccess),
+            Case("paper-reload.state-failure-rollback", PaperCartridgeFoundationTests.PaperStateFailureRestoresInventory),
+            Case("paper-reload.mixed-identity-rejected", PaperCartridgeFoundationTests.MixedIdentityRejected),
+            Case("paper-mode.source-contract", PaperCartridgeFoundationTests.ModeSourceContract),
+            Case("paper-lightning.dynamic-actions", PaperCartridgeFoundationTests.LightningReloadDynamicActions),
+            Case("paper-full-attack.reload-branches", PaperCartridgeFoundationTests.FullAttackReloadBranches),
+            Case("paper-misfire.authoritative-order", PaperCartridgeFoundationTests.MisfireAuthoritativeOrder),
+            Case("paper-misfire.central-consumers", PaperCartridgeFoundationTests.MisfireCentralConsumers),
+            Case("paper-crafting.shared-transaction-contract", PaperCartridgeFoundationTests.CraftingSharedTransactionContract),
+            Case("paper-vendors.normalization-contract", PaperCartridgeFoundationTests.VendorNormalizationContract),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
@@ -5253,7 +5272,8 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void TokenCatalogContainsFourDefinitions()
         {
-            Assertions.Equal(4, TokenCatalog().Definitions.Count, "The capacity-one catalog changed size.");
+            Assertions.Equal(6, TokenCatalog().Definitions.Count,
+                "The capacity-one catalog must include four legacy and two paper states.");
         }
 
         private static void TokenCatalogDefinitionsAreSorted()

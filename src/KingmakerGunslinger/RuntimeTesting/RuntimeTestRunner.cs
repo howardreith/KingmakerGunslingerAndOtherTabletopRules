@@ -19,6 +19,9 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Commands;
 using Newtonsoft.Json;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -370,6 +373,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerBleedingWound &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerExpertLoading &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposablePaperCartridgeLightningReload &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerEvasive &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveEvasiveNativeFeatures &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveMenacingShotNativeFear &&
@@ -519,6 +523,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableReloadAutocast)
                 {
                     Complete(RunDisposableReloadAutocast());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeReload)
+                {
+                    Complete(RunDisposablePaperCartridgeReload());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeModeViewLifecycle)
+                {
+                    Complete(RunDisposablePaperCartridgeModeViewLifecycle());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeFullAttack)
+                {
+                    Complete(RunDisposablePaperCartridgeFullAttack());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeMisfire)
+                {
+                    Complete(RunDisposablePaperCartridgeMisfire());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposablePaperCartridgeScatter)
+                {
+                    Complete(RunDisposableGunslingerScatterShot(
+                        ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeCraftingVendors)
+                {
+                    Complete(RunDisposablePaperCartridgeCraftingVendors());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeComprehensive)
+                {
+                    Complete(RunDisposablePaperCartridgeComprehensive());
                     return;
                 }
                 if (_request.Scenario ==
@@ -761,7 +808,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload)
+                    RuntimeTestScenarioCatalog.DisposableGunslingerLightningReload ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposablePaperCartridgeLightningReload)
                 {
                     Complete(RunDisposableGunslingerLightningReload());
                     return;
@@ -2768,7 +2817,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int afterSelected=-1,afterOrdinary=-1,afterMisfire=-1;
             uint ordinaryPlayingId=0;
             string selectedDiagnostics="<not-run>",ordinaryDiagnostics="<not-run>",
-                misfireDiagnostics="<not-run>";
+                misfireDiagnostics="<not-run>", ordinaryMisfireDiagnostics="<not-run>",
+                forcedMisfireDiagnostics="<not-run>";
             bool cleaned=false;
             try
             {
@@ -2796,6 +2846,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 afterOrdinary=Audio.FirearmSoundRuntime.AcceptedPosts;
                 ordinaryPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
                 ordinaryDiagnostics=Audio.FirearmSoundRuntime.Describe();
+                ordinaryMisfireDiagnostics=FirearmMisfireRuntime.Describe();
 
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
@@ -2804,6 +2855,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
                 afterMisfire=Audio.FirearmSoundRuntime.AcceptedPosts;
                 misfireDiagnostics=Audio.FirearmSoundRuntime.Describe();
+                forcedMisfireDiagnostics=FirearmMisfireRuntime.Describe();
             }
             finally
             {
@@ -2836,7 +2888,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.Diagnostics.Add(globalDiagnostics);
             result.Diagnostics.Add(selectedDiagnostics);
             result.Diagnostics.Add(ordinaryDiagnostics);
+            result.Diagnostics.Add(ordinaryMisfireDiagnostics);
             result.Diagnostics.Add(misfireDiagnostics);
+            result.Diagnostics.Add(forcedMisfireDiagnostics);
             result.Warnings.Add("A valid Wwise playing ID proves event acceptance, not audible speaker output.");
             return result;
         }
@@ -3611,6 +3665,452 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
+        private RuntimeTestResult RunDisposablePaperCartridgeReload()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player inventory is unavailable.");
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            PaperCartridgeModeBlueprintSet mode = BlueprintBootstrap.PaperCartridgeMode;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon rifle = BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item;
+            MagicFirearmBlueprintEntry namedEntry = BlueprintBootstrap.MagicFirearms.Entries[3];
+            BlueprintItemWeapon named = namedEntry.Item;
+            int powderBefore = player.Inventory.Count(ammunition.BlackPowder);
+            int ballBefore = player.Inventory.Count(ammunition.LeadBall);
+            int paperBefore = player.Inventory.Count(ammunition.PaperCartridge);
+            UnitEntityData unit = null, secondUnit = null;
+            ItemEntityWeapon weapon = null;
+            Buff marker = null;
+            ActivatableAbility nativeMode = null, secondMode = null;
+            bool modeGranted = false, offByDefault = false, pistolLoaded = false,
+                actionExact = false, noLooseConsumption = false,
+                magicCompatible = false, staticPreserved = false,
+                advancedRejected = false, brokenRetained = false,
+                modeIsolated = false, exhaustionRetainsMode = false, cleaned = false;
+            string observed = null;
+            try
+            {
+                object ignored; string method;
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { ammunition.PaperCartridge, 3 },
+                        new object[] { ammunition.PaperCartridge } },
+                    out ignored, out method))
+                    throw new InvalidOperationException("Temporary Paper Cartridges could not be added.");
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                nativeMode = unit.Descriptor.ActivatableAbilities.Enumerable
+                    .SingleOrDefault(value => value != null &&
+                        ReferenceEquals(value.Blueprint, mode.Ability));
+                modeGranted = nativeMode != null;
+                offByDefault = nativeMode != null && !nativeMode.IsOn &&
+                    !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
+                if (nativeMode != null) nativeMode.IsOn = true;
+                marker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .SingleOrDefault(value => ReferenceEquals(value.Blueprint, mode.Marker));
+                if (marker == null || !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker))
+                    throw new InvalidOperationException("The request-local paper mode marker was rejected.");
+                secondUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                secondUnit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                secondMode = secondUnit.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint, mode.Ability));
+                modeIsolated = !secondMode.IsOn &&
+                    !PaperCartridgeModeRuntime.IsActive(secondUnit.Descriptor, mode.Marker) &&
+                    PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability plan = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, pistol, ammunition.BlackPowder, ammunition.LeadBall);
+                actionExact = plan.IsAvailable && plan.Plan.Action == EffectiveReloadAction.Move &&
+                    ReferenceEquals(plan.Plan.ExactItem, weapon) &&
+                    plan.Plan.Profile == ReloadAmmunitionProfileCatalog.PaperCartridge;
+                FirearmReloadResult reload = ReloadTestMusketRuntime.Execute(unit.Descriptor,
+                    pistol, ammunition.BlackPowder, ammunition.LeadBall);
+                FirearmState loaded = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State;
+                pistolLoaded = reload.Succeeded && loaded.LoadedAmmunition ==
+                    ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                noLooseConsumption = player.Inventory.Count(ammunition.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammunition.LeadBall) == ballBefore;
+
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(named);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                int staticBefore = weapon.Enchantments.Count(value => value != null &&
+                    namedEntry.Spec.Enchantments.Contains(value.Blueprint as BlueprintWeaponEnchantment));
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability namedPlan = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, named, ammunition.BlackPowder, ammunition.LeadBall);
+                FirearmReloadResult namedReload = ReloadTestMusketRuntime.Execute(unit.Descriptor,
+                    named, ammunition.BlackPowder, ammunition.LeadBall);
+                int staticAfter = weapon.Enchantments.Count(value => value != null &&
+                    namedEntry.Spec.Enchantments.Contains(value.Blueprint as BlueprintWeaponEnchantment));
+                magicCompatible = namedPlan.IsAvailable && namedReload.Succeeded;
+                staticPreserved = staticBefore == staticAfter && staticBefore == 2;
+
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null, FirearmCondition.Broken));
+                ReloadTestMusketRuntime.Execute(unit.Descriptor, named,
+                    ammunition.BlackPowder, ammunition.LeadBall);
+                brokenRetained = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.Condition == FirearmCondition.Broken;
+
+                FirearmRuntimeState.Service.Forget(weapon);
+                unit.Body.PrimaryHand.RemoveItem(false);
+                weapon.Dispose();
+                weapon = new ItemEntityWeapon(rifle);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                ReloadTestMusketAvailability rejected = ReloadTestMusketRuntime.Evaluate(
+                    unit.Descriptor, rifle, ammunition.BlackPowder, ammunition.LeadBall);
+                advancedRejected = !rejected.IsAvailable && rejected.Plan != null &&
+                    rejected.Plan.Status == FirearmReloadPlanStatus.IncompatibleAmmunition;
+                int remainingPaper = player.Inventory.Count(ammunition.PaperCartridge);
+                if (remainingPaper > 0)
+                    player.Inventory.Remove(ammunition.PaperCartridge, remainingPaper);
+                exhaustionRetainsMode = nativeMode.IsOn &&
+                    PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker);
+                observed = "modeGranted=" + modeGranted + ";offDefault=" + offByDefault +
+                    ";action=" + actionExact + ";pistol=" + pistolLoaded +
+                    ";looseUntouched=" + noLooseConsumption + ";magic=" + magicCompatible +
+                    ";static=" + staticPreserved + ";broken=" + brokenRetained +
+                    ";advancedRejected=" + advancedRejected +
+                    ";modeIsolated=" + modeIsolated +
+                    ";exhaustionRetainsMode=" + exhaustionRetainsMode;
+            }
+            finally
+            {
+                if (nativeMode != null && nativeMode.IsOn) nativeMode.IsOn = false;
+                if (secondMode != null && secondMode.IsOn) secondMode.IsOn = false;
+                if (unit != null && marker != null && unit.Descriptor.Buffs.RawFacts.Contains(marker))
+                    unit.Descriptor.Buffs.RemoveFact(marker);
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                int excess = player.Inventory.Count(ammunition.PaperCartridge) - paperBefore;
+                if (excess > 0) player.Inventory.Remove(ammunition.PaperCartridge, excess);
+                int deficit = paperBefore - player.Inventory.Count(ammunition.PaperCartridge);
+                if (deficit > 0)
+                {
+                    object ignored; string method;
+                    ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                        new[] { new object[] { ammunition.PaperCartridge, deficit } },
+                        out ignored, out method);
+                }
+                if (unit != null) unit.Dispose();
+                if (secondUnit != null) secondUnit.Dispose();
+                cleaned = player.Inventory.Count(ammunition.PaperCartridge) == paperBefore &&
+                    player.Inventory.Count(ammunition.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammunition.LeadBall) == ballBefore;
+            }
+            observed = (observed ?? "fixture-failed-before-observation") + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-mode-native-grant", "granted exactly through proficiency and off by default",
+                    observed, modeGranted && offByDefault,
+                    "native AddFacts plus absence of hidden marker"),
+                Assertion("paper-manual-reload", "Move-action Pistol plan loads exact paper identity",
+                    observed, actionExact && pistolLoaded && noLooseConsumption,
+                    "authoritative plan and atomic manual reload transaction"),
+                Assertion("paper-magic-family-state", "named Reliable Pistol shares compatibility and retains two static enchantments",
+                    observed, magicCompatible && staticPreserved && brokenRetained,
+                    "canonical family definition and item-token replacement"),
+                Assertion("paper-mode-unit-isolation",
+                    "a second unit remains independently off while the first is active",
+                    observed, modeIsolated, "two native activatable facts and marker buffs"),
+                Assertion("paper-mode-stock-exhaustion",
+                    "zero Paper Cartridge stock does not deactivate the selected mode",
+                    observed, exhaustionRetainsMode, "native activatable state independent of inventory"),
+                Assertion("paper-advanced-rejection", "Advanced Rifle rejects paper without fallback",
+                    observed, advancedRejected,
+                    "definition-driven profile compatibility"),
+                Assertion("request-local-cleanup", "temporary cartridges, unit, facts, and items restored",
+                    observed, cleaned, "guaranteed finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeModeViewLifecycle()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player is unavailable.");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(ReadExactMember(Game.Instance, "State"),
+                "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            int paperBefore = player.Inventory.Count(
+                BlueprintBootstrap.BasicAmmunition.PaperCartridge);
+            UnitEntityData unit = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            ActivatableAbility mode = null;
+            Buff firstMarker = null, secondMarker = null;
+            bool attachedView = false, exactOne = false, firstNoFx = false,
+                deactivated = false, reactivated = false, secondNoFx = false,
+                stateUnchanged = false, inventoryUnchanged = false, cleaned = false;
+            string stage = "spawn-view-backed-unit";
+            try
+            {
+                scene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Paper_Mode_View_Lifecycle");
+                unit = Game.Instance.EntityCreator.SpawnUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter, Vector3.zero,
+                    Quaternion.identity, scene);
+                attachedView = unit != null && unit.View != null && unit.View.Data != null;
+                if (!attachedView)
+                    throw new InvalidOperationException("Native spawn did not attach a live unit view.");
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                mode = unit.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+
+                stage = "activate-and-spawn";
+                mode.IsOn = true;
+                firstMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                exactOne = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker)) == 1;
+                firstMarker.SpawnParticleEffect();
+                firstMarker.SpawnParticleEffect();
+                FieldInfo particle = typeof(Buff).GetField("m_ParticleEffect",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (particle == null) throw new MissingFieldException(
+                    typeof(Buff).FullName, "m_ParticleEffect");
+                firstNoFx = particle.GetValue(firstMarker) == null;
+
+                stage = "deactivate-reactivate";
+                mode.IsOn = false;
+                // The blueprint deliberately does not force immediate deactivation;
+                // drive the public native stop boundary so this synchronous fixture
+                // observes Buff.OnRemove before reactivation.
+                mode.Stop(true);
+                deactivated = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                mode.IsOn = true;
+                secondMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                secondMarker.SpawnParticleEffect();
+                reactivated = mode.IsOn && !ReferenceEquals(firstMarker, secondMarker);
+                secondNoFx = particle.GetValue(secondMarker) == null;
+                stateUnchanged = unit.Body.PrimaryHand.MaybeItem == null &&
+                    unit.Body.SecondaryHand.MaybeItem == null;
+                inventoryUnchanged = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.PaperCartridge) == paperBefore;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Paper mode view lifecycle failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                if (mode != null && mode.IsOn) mode.IsOn = false;
+                if (unit != null) unit.Dispose();
+                if (scene != null) scene.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit)) &&
+                    player.Inventory.Count(BlueprintBootstrap.BasicAmmunition.PaperCartridge) ==
+                        paperBefore;
+            }
+            string observed = "view=" + attachedView + ";one=" + exactOne +
+                ";firstNoFx=" + firstNoFx + ";off=" + deactivated +
+                ";reactivated=" + reactivated + ";secondNoFx=" + secondNoFx +
+                ";state=" + stateUnchanged + ";inventory=" + inventoryUnchanged +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-mode-attached-view", "live native UnitEntityView with Data",
+                    observed, attachedView, "EntityCreator.SpawnUnit in disposable scene"),
+                Assertion("paper-mode-native-particle-lifecycle",
+                    "exact marker invokes SpawnParticleEffect twice without exception or FX",
+                    observed, exactOne && firstNoFx,
+                    "native Buff.SpawnParticleEffect on an attached view"),
+                Assertion("paper-mode-reactivation-lifecycle",
+                    "deactivation/removal and reactivation remain no-FX and selected",
+                    observed, deactivated && reactivated && secondNoFx,
+                    "native activatable ownership and Buff removal/spawn paths"),
+                Assertion("paper-mode-lifecycle-isolation",
+                    "inventory and firearm state unchanged; fixture restored",
+                    observed, stateUnchanged && inventoryUnchanged && cleaned,
+                    "no save API; disposable scene cleanup"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeFullAttack()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player inventory is unavailable.");
+            BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintFeature rapidPistol = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                BlueprintBootstrap.Library, "070f4f07b5164d8a82d647a93539746d",
+                "Rapid Reload (Pistol)");
+            var inventory = new KingmakerReloadAmmunitionInventory(player.Inventory,
+                ammunition.BlackPowder, ammunition.LeadBall, ammunition.PaperCartridge);
+            ReloadAmmunitionInventorySnapshot before =
+                ReloadAmmunitionInventorySnapshot.Capture(inventory);
+            UnitEntityData unit = null, target = null;
+            ItemEntityWeapon weapon = null;
+            ActivatableAbility mode = null;
+            bool repeated = false, autoOff = false, exhausted = false, cleaned = false;
+            string observed = null;
+            try
+            {
+                inventory.Add(ReloadInventoryComponent.PaperCartridge, 3);
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                unit.Descriptor.AddFact(rapidPistol);
+                Kingmaker.UnitLogic.Abilities.Ability reload = unit.Descriptor.Abilities
+                    .GetAbility(BlueprintBootstrap.ReloadTestMusketAbility);
+                if (reload == null) throw new InvalidOperationException(
+                    "The native Reload Firearm auto-use fact was not granted.");
+                unit.AutoUseAbility = new AbilityData(reload);
+                mode = unit.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+                mode.IsOn = true;
+                weapon = new ItemEntityWeapon(pistol);
+                unit.Body.PrimaryHand.InsertItem(weapon);
+                var command = new UnitAttack(unit);
+                SetDeclaredProperty(command, typeof(UnitCommand), "Executor", unit);
+                SetDeclaredProperty(command, typeof(UnitAttack), "IsFullAttack", true);
+                SetDeclaredProperty(command, typeof(UnitAttack), "Target", target);
+                SetDeclaredProperty(command, typeof(UnitAttack), "LastAttackRule",
+                    new RuleAttackWithWeapon(unit, target, weapon, 0));
+                var nativeAttacks = new List<AttackHandInfo>
+                {
+                    new AttackHandInfo(unit.Body.PrimaryHand, 0, 1) { Target = target }
+                };
+                SetExactField(command, "m_AllAttacks", nativeAttacks);
+                SetExactField(command, "m_AttackIndex", 0);
+                RuleAttackWithWeapon observedPrevious = command.LastAttackRule;
+                AttackHandInfo observedPlanned = command.PlannedAttack;
+                ExactEquippedFirearmContext observedFirearm;
+                string observedReason;
+                bool observedExact = ExactEquippedFirearmResolver.TryResolve(
+                    unit.Descriptor, out observedFirearm, out observedReason);
+                string nativeBoundary = "isFull=" + command.IsFullAttack +
+                    ";executor=" + ReferenceEquals(command.Executor, unit) +
+                    ";previous=" + (observedPrevious != null) +
+                    ";previousWeapon=" + (observedPrevious != null &&
+                        ReferenceEquals(observedPrevious.Weapon, weapon)) +
+                    ";planned=" + (observedPlanned != null) +
+                    ";plannedWeapon=" + (observedPlanned != null &&
+                        ReferenceEquals(observedPlanned.Weapon, weapon)) +
+                    ";exact=" + observedExact +
+                    ";exactWeapon=" + (observedExact &&
+                        ReferenceEquals(observedFirearm.Weapon, weapon)) +
+                    ";auto=" + (unit.AutoUseAbility != null &&
+                        ReferenceEquals(unit.AutoUseAbility.Blueprint,
+                            BlueprintBootstrap.ReloadTestMusketAbility)) +
+                    ";reason=" + observedReason;
+                int paperStart = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                UnitCommand.ResultType result;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool firstContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                bool firstLoaded = FirearmRuntimeState.Service.GetOrCreate(weapon)
+                    .Repository.State.LoadedAmmunition ==
+                    ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool secondContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                repeated = firstContinues && secondContinues && firstLoaded &&
+                    inventory.Count(ReloadInventoryComponent.PaperCartridge) == paperStart - 2;
+
+                unit.AutoUseAbility = null;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                int beforeOff = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                bool offContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                autoOff = !offContinues && result == UnitCommand.ResultType.Success &&
+                    inventory.Count(ReloadInventoryComponent.PaperCartridge) == beforeOff;
+
+                unit.AutoUseAbility = new AbilityData(reload);
+                int remaining = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                if (remaining > 0) inventory.Remove(
+                    ReloadInventoryComponent.PaperCartridge, remaining);
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                bool exhaustedContinues = FreeActionFullAttackReloadPatch.ApplyForRuntimeTest(
+                    command, out result);
+                exhausted = !exhaustedContinues && result == UnitCommand.ResultType.Success &&
+                    inventory.Count(ReloadInventoryComponent.BlackPowderCharge) ==
+                        before.BlackPowderCharges &&
+                    inventory.Count(ReloadInventoryComponent.LeadBall) == before.LeadBalls;
+                observed = nativeBoundary + ";repeated=" + repeated + ";autoOff=" + autoOff +
+                    ";exhausted=" + exhausted + ";attempted=" +
+                    FreeActionFullAttackReloadPatch.Attempted + ";succeeded=" +
+                    FreeActionFullAttackReloadPatch.Succeeded;
+            }
+            finally
+            {
+                if (mode != null && mode.IsOn) mode.IsOn = false;
+                if (unit != null) unit.AutoUseAbility = null;
+                if (weapon != null)
+                {
+                    FirearmRuntimeState.Service.Forget(weapon);
+                    if (unit != null && unit.Body.PrimaryHand.MaybeItem != null)
+                        unit.Body.PrimaryHand.RemoveItem(false);
+                    weapon.Dispose();
+                }
+                new ReloadAmmunitionTransactionService().RestoreExact(inventory, before);
+                if (unit != null) unit.Dispose();
+                if (target != null) target.Dispose();
+                cleaned = before.Equals(ReloadAmmunitionInventorySnapshot.Capture(inventory));
+            }
+            observed = (observed ?? "fixture-failed") + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-full-attack-native-boundary",
+                    "two planned iterations on one native UnitAttack reload the exact Pistol",
+                    observed, repeated,
+                    "UnitAttack IsFullAttack/LastAttackRule/PlannedAttack Harmony prefix boundary"),
+                Assertion("paper-full-attack-auto-use-control",
+                    "auto-use off ends remaining attacks without cartridge consumption",
+                    observed, autoOff, "exact native AutoUseAbility identity"),
+                Assertion("paper-full-attack-no-fallback",
+                    "cartridge exhaustion ends before an empty shot despite loose stock",
+                    observed, exhausted, "selected plan availability and no-fallback policy"),
+                Assertion("request-local-cleanup", "exact inventory/unit/item restoration",
+                    observed, cleaned, "finally restoration; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
         private RuntimeTestResult RunDisposableOverhaulMaintenance()
         {
             BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
@@ -4003,6 +4503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                    { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
                     { BlueprintBootstrap.FirearmRepairKit, 10 },
                     { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                     { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
@@ -4037,6 +4538,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
+                { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
                 { BlueprintBootstrap.FirearmRepairKit, 10 },
                 { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                 { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
@@ -4192,18 +4694,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 27 &&
+                        fixedCountField != null && capitalEntries.Count == 28 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "eleven exact early/+1/supply entries including one Blunderbuss",
-                    observed, projectEntries == 11 && invalidProjectCounts == 0 &&
+                    "twelve exact early/+1/supply entries including Paper and one Blunderbuss",
+                    observed, projectEntries == 12 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
                     "registered early and +1 firearms, ammunition, and supplies"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; eleven unique entries each",
-                    observed, btslTables == 4 && btslEntries == 44 &&
+                    "four exact standalone/campaign tables; twelve unique entries each",
+                    observed, btslTables == 4 && btslEntries == 48 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("rare-firearm-acquisition-exclusions",
@@ -4624,16 +5126,123 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
+        private RuntimeTestResult RunDisposablePaperCartridgeMisfire()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData attacker = null, target = null;
+            ItemEntityWeapon reliablePistol = null, reliableMusket = null,
+                deadShotPistol = null;
+            Deeds.DeadShotExecutionResult deadShot = null;
+            bool cleaned = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            try
+            {
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
+                attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
+                attacker.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(
+                    BlueprintBootstrap.GunslingerClass.Grit.Resource, 4);
+                reliablePistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[3].Item);
+                reliableMusket = new ItemEntityWeapon(
+                    BlueprintBootstrap.MagicFirearms.Entries[4].Item);
+                deadShotPistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                AmmunitionId paper = ReloadAmmunitionProfileCatalog
+                    .PaperCartridge.LoadedAmmunition;
+                AmmunitionId loose = ReloadAmmunitionProfileCatalog
+                    .LooseBasic.LoadedAmmunition;
+
+                RuleAttackRoll pistolPaper = TriggerReliableMatrixAttack(
+                    attacker, target, reliablePistol, 1,
+                    FirearmCondition.Normal, paper);
+                FirearmCondition pistolPaperAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliablePistol).Repository.State.Condition;
+                RuleAttackRoll pistolLoose = TriggerReliableMatrixAttack(
+                    attacker, target, reliablePistol, 1,
+                    FirearmCondition.Normal, loose);
+                FirearmCondition pistolLooseAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliablePistol).Repository.State.Condition;
+                RuleAttackRoll musketPaper = TriggerReliableMatrixAttack(
+                    attacker, target, reliableMusket, 2,
+                    FirearmCondition.Normal, paper);
+                FirearmCondition musketPaperAfter = FirearmRuntimeState.Service
+                    .GetOrCreate(reliableMusket).Repository.State.Condition;
+
+                if (attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                attacker.Body.PrimaryHand.InsertItem(deadShotPistol);
+                FirearmRuntimeState.Service.Set(deadShotPistol, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1, paper,
+                    FirearmCondition.Normal));
+                deadShot = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(
+                    attacker, target, 2, 2, 2);
+
+                string observed = "pistolPaper=" + pistolPaper.Result + ":" +
+                    pistolPaperAfter + ";pistolLoose=" + pistolLoose.Result + ":" +
+                    pistolLooseAfter + ";musketPaper=" + musketPaper.Result + ":" +
+                    musketPaperAfter + ";deadShotThreshold=" +
+                    (deadShot == null ? "missing" : string.Join(",",
+                        deadShot.Probes.Select(value => value.Roll.Value))) +
+                    ";deadShotCondition=" + (deadShot == null ? "missing" :
+                        deadShot.After.Condition.ToString());
+                assertions.Add(Assertion("paper-reliable-pistol-boundary",
+                    "Reliable Pistol natural 1: paper misfires, next loose load does not",
+                    observed, pistolPaperAfter == FirearmCondition.Broken &&
+                        pistolLooseAfter == FirearmCondition.Normal,
+                    "native ordinary attacks and exact pre-discharge ammunition"));
+                assertions.Add(Assertion("paper-reliable-musket-boundary",
+                    "Reliable Musket paper threshold includes +1 so natural 2 misfires",
+                    observed, musketPaperAfter == FirearmCondition.Broken,
+                    "central condition/ammunition/Reliable policy"));
+                assertions.Add(Assertion("paper-dead-shot-shared-threshold",
+                    "one paper chamber; natural 2 probes use its raised threshold and transition once",
+                    observed, deadShot != null && deadShot.Before.LoadedAmmunition == paper &&
+                        deadShot.Probes.Length == 3 && deadShot.Outcome.Misfires &&
+                        deadShot.After.Condition == FirearmCondition.Broken,
+                    "pre-discharge identity and shared Dead Shot threshold"));
+            }
+            catch (Exception exception)
+            {
+                assertions.Add(Assertion("paper-misfire-exception", "no exception",
+                    exception.ToString(), false, "exception-contained fixture"));
+            }
+            finally
+            {
+                FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                foreach (ItemEntityWeapon item in new[] {
+                    reliablePistol, reliableMusket, deadShotPistol })
+                    if (item != null) FirearmRuntimeState.Service.Forget(item);
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            assertions.Add(Assertion("request-local-cleanup",
+                "disposable units, items, tokens, grit, and forced rolls removed",
+                "cleaned=" + cleaned, cleaned, "bounded fixture cleanup; no save API"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
         private static RuleAttackRoll TriggerReliableMatrixAttack(
             UnitEntityData attacker, UnitEntityData target,
-            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition)
+            ItemEntityWeapon weapon, int naturalRoll, FirearmCondition condition,
+            AmmunitionId ammunition = null)
         {
             if (attacker.Body.PrimaryHand.MaybeItem != null)
                 attacker.Body.PrimaryHand.RemoveItem(false);
             attacker.Body.PrimaryHand.InsertItem(weapon);
             FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                 FirearmState.CurrentSchemaVersion, 1,
-                FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+                ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
             var attack = new RuleAttackRoll(attacker, target, weapon, -100);
             UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
             Rulebook.Trigger(attack);
@@ -6054,6 +6663,175 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeComprehensive()
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            RuntimeTestResult reload = RunDisposablePaperCartridgeReload();
+            assertions.Add(PaperComprehensiveSlice("reload", reload));
+            RuntimeTestResult fullAttack = RunDisposablePaperCartridgeFullAttack();
+            assertions.Add(PaperComprehensiveSlice("full-attack", fullAttack));
+            RuntimeTestResult lightning = RunDisposableGunslingerLightningReload();
+            assertions.Add(PaperComprehensiveSlice("lightning-reload", lightning));
+            RuntimeTestResult misfire = RunDisposablePaperCartridgeMisfire();
+            assertions.Add(PaperComprehensiveSlice("misfire-and-dead-shot", misfire));
+            RuntimeTestResult scatter = RunDisposableGunslingerScatterShot(
+                ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition);
+            assertions.Add(PaperComprehensiveSlice("scatter", scatter));
+            RuntimeTestResult crafting = RunDisposablePaperCartridgeCraftingVendors();
+            assertions.Add(PaperComprehensiveSlice("crafting-and-vendors", crafting));
+            bool passed = assertions.All(value => value != null && value.Status == "PASS");
+            return CreateResult(passed ? "PASS" : "FAIL", assertions,
+                passed ? string.Empty : "One or more Paper Cartridge comprehensive slices failed.");
+        }
+
+        private static RuntimeTestAssertion PaperComprehensiveSlice(
+            string name, RuntimeTestResult result)
+        {
+            int total = result == null || result.Assertions == null ? 0 : result.Assertions.Count;
+            int passed = result == null || result.Assertions == null ? 0 :
+                result.Assertions.Count(value => value != null && value.Status == "PASS");
+            bool exact = result != null && result.Status == "PASS" && total > 0 && passed == total;
+            return Assertion("paper-comprehensive-" + name,
+                "the complete request-local slice passes and restores external state",
+                "result=" + (result == null ? "null" : result.Status) +
+                    ";assertions=" + passed + "/" + total,
+                exact, "composed guarded slice with its own guaranteed cleanup");
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeCraftingVendors()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var player = Kingmaker.Game.Instance.Player;
+            BasicAmmunitionBlueprintSet ammo = BlueprintBootstrap.BasicAmmunition;
+            BlueprintItem tool = BlueprintBootstrap.GunsmithingSupplies.GunsmithKit;
+            GunsmithingCraftingBlueprintSet crafting =
+                BlueprintBootstrap.GunsmithingCrafting;
+            CraftPaperCartridgesAbilityLogic paperLogic = crafting.PaperAbility
+                .ComponentsArray.OfType<CraftPaperCartridgesAbilityLogic>().Single();
+            CraftBasicAmmunitionAbilityLogic basicLogic = crafting.BasicAbility
+                .ComponentsArray.OfType<CraftBasicAmmunitionAbilityLogic>().Single();
+            int paperBefore = player.Inventory.Count(ammo.PaperCartridge);
+            int powderBefore = player.Inventory.Count(ammo.BlackPowder);
+            int ballsBefore = player.Inventory.Count(ammo.LeadBall);
+            int toolsBefore = player.Inventory.Count(tool);
+            long moneyBefore = player.Money;
+            long seededMoney = moneyBefore < CraftPaperCartridgesAbilityLogic.GoldCost ?
+                CraftPaperCartridgesAbilityLogic.GoldCost : 0;
+            UnitEntityData unit = null;
+            bool crafted = false, sharedBlocked = false, vendors = false,
+                jhodPreserved = false, cleaned = false;
+            string vendorObserved = string.Empty;
+            try
+            {
+                if (toolsBefore == 0) player.Inventory.Add(tool, 1);
+                if (seededMoney > 0) player.GainMoney(seededMoney);
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.AddFact(crafting.BasicAbility);
+                unit.Descriptor.AddFact(crafting.PaperAbility);
+                var paperFact = unit.Descriptor.Abilities.GetAbility(crafting.PaperAbility);
+                var basicFact = unit.Descriptor.Abilities.GetAbility(crafting.BasicAbility);
+                if (paperFact == null || basicFact == null)
+                    throw new InvalidOperationException(
+                        "Both Gunsmithing recipes were not granted.");
+                var paperData = new AbilityData(paperFact);
+                var basicData = new AbilityData(basicFact);
+                var command = new UnitUseAbility(paperData, new TargetWrapper(unit));
+                if (!command.CanStart || !paperData.IsAvailable || !basicData.IsAvailable)
+                    throw new InvalidOperationException(
+                        "Native Paper crafting command was unavailable before use.");
+                paperLogic.Complete(unit.Descriptor);
+                crafted = player.Inventory.Count(ammo.PaperCartridge) ==
+                        paperBefore + CraftPaperCartridgesAbilityLogic.BatchSize &&
+                    player.Inventory.Count(ammo.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammo.LeadBall) == ballsBefore &&
+                    player.Money == moneyBefore + seededMoney -
+                        CraftPaperCartridgesAbilityLogic.GoldCost &&
+                    unit.Descriptor.HasFact(crafting.UsedMarker);
+                sharedBlocked = !paperData.IsAvailable && !basicData.IsAvailable;
+
+                BlueprintSharedVendorTable[] tables = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintSharedVendorTable>().ToArray();
+                BlueprintSharedVendorTable smith = tables.Single(value =>
+                    value.AssetGuid == CapitalVendorBlueprints.TableGuid &&
+                    value.name == CapitalVendorBlueprints.ExpectedTableName);
+                LootItemsPackFixed[] smithPaper = (smith.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Where(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
+                    .ToArray();
+                int installedBtsl = 0, validBtsl = 0;
+                foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
+                {
+                    BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
+                        value.AssetGuid == guid);
+                    if (table == null) continue;
+                    installedBtsl++;
+                    LootItemsPackFixed[] matches = (table.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                        .Where(value => ReferenceEquals(
+                            CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
+                        .ToArray();
+                    if (matches.Length == 1 &&
+                        CapitalVendorBlueprints.ReadCount(matches[0]) == 200)
+                        validBtsl++;
+                }
+                BlueprintSharedVendorTable jhod = tables.Single(value =>
+                    value.AssetGuid == "afa2c7f292b8e1c4d9c835f0e8047dd3");
+                int jhodPaper = (jhod.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge));
+                vendors = smithPaper.Length == 1 &&
+                    CapitalVendorBlueprints.ReadCount(smithPaper[0]) == 200 &&
+                    installedBtsl == validBtsl;
+                jhodPreserved = jhodPaper == 0;
+                vendorObserved = "smith=" + smithPaper.Length + ":" +
+                    (smithPaper.Length == 0 ? -1 :
+                        CapitalVendorBlueprints.ReadCount(smithPaper[0])) +
+                    ";btsl=" + validBtsl + "/" + installedBtsl +
+                    ";jhod=" + jhodPaper;
+            }
+            finally
+            {
+                if (unit != null && unit.Descriptor.HasFact(crafting.UsedMarker))
+                    unit.Descriptor.RemoveFact(crafting.UsedMarker);
+                int paperExtra = player.Inventory.Count(ammo.PaperCartridge) - paperBefore;
+                int toolsExtra = player.Inventory.Count(tool) - toolsBefore;
+                if (paperExtra > 0) player.Inventory.Remove(ammo.PaperCartridge, paperExtra);
+                if (toolsExtra > 0) player.Inventory.Remove(tool, toolsExtra);
+                long moneyDelta = player.Money - moneyBefore;
+                if (moneyDelta < 0) player.GainMoney(-moneyDelta);
+                else if (moneyDelta > 0) player.SpendMoney((int)moneyDelta);
+                if (unit != null) unit.Dispose();
+                cleaned = player.Inventory.Count(ammo.PaperCartridge) == paperBefore &&
+                    player.Inventory.Count(ammo.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammo.LeadBall) == ballsBefore &&
+                    player.Inventory.Count(tool) == toolsBefore &&
+                    player.Money == moneyBefore;
+            }
+            string observed = "crafted=" + crafted + ";sharedBlocked=" +
+                sharedBlocked + ";" + vendorObserved + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-crafting-transaction", "120 gp creates exactly 20 Paper Cartridges",
+                    observed, crafted && paperLogic != null && basicLogic.GoldCost == 22,
+                    "native ability command plus shared atomic transaction"),
+                Assertion("paper-crafting-shared-marker", "either recipe blocks both until rest",
+                    observed, sharedBlocked, "one exact persisted marker"),
+                Assertion("paper-vendor-publication", "Smith and every installed BTSL table contain one exact count-200 entry",
+                    observed, vendors, "bounded normalized live blueprint tables"),
+                Assertion("paper-jhod-exclusion", "rejected Jhod table contains no Paper Cartridge",
+                    observed, jhodPreserved, "exact rejected table identity"),
+                Assertion("request-local-cleanup", "money, inventory, tool, marker, and unit restored exactly",
+                    observed, cleaned, "finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private void AppendAcceptanceSlice(List<RuntimeTestAssertion> assertions,
@@ -9280,7 +10058,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
-        private RuntimeTestResult RunDisposableGunslingerScatterShot()
+        private RuntimeTestResult RunDisposableGunslingerScatterShot(
+            AmmunitionId ammunition = null)
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             BlueprintItemWeapon blunderbuss =
@@ -9336,7 +10115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
 
                 BlueprintAbility scatterAbility = BlueprintBootstrap.FirearmProficiency
@@ -9366,7 +10145,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    ammunition ?? FirearmStateTokenCatalog.DiagnosticLeadBall,
                     FirearmCondition.Normal));
                 int allIndex = 0;
                 int[] allRolls = { 1, 1 };
@@ -9942,12 +10721,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker = null;
             ItemEntityWeapon weapon = null;
-            KingmakerBasicAmmunitionInventory inventory = null;
-            BasicAmmunitionInventorySnapshot inventoryBefore = null;
+            KingmakerReloadAmmunitionInventory inventory = null;
+            ReloadAmmunitionInventorySnapshot inventoryBefore = null;
             int gritBefore = -1, gritAfter = -1, normalRounds = -1,
                 brokenRounds = -1;
             bool marked = false, sameRoundRejected = false,
-                roundReset = false, noGritRejected = false, cleaned = false;
+                roundReset = false, noGritRejected = false, cleaned = false,
+                paperFree = false, paperConsumed = false;
+            ActivatableAbility paperMode = null;
             FirearmCondition brokenCondition = FirearmCondition.Normal;
             string stage = "blueprint-contract";
             bool blueprintContract = gunslinger.Progression.LevelEntries[10]
@@ -9964,12 +10745,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
                 weapon = new ItemEntityWeapon(pistol);
                 attacker.Body.PrimaryHand.InsertItem(weapon);
-                inventory = new KingmakerBasicAmmunitionInventory(
+                inventory = new KingmakerReloadAmmunitionInventory(
                     Kingmaker.Game.Instance.Player.Inventory,
-                    ammunition.BlackPowder, ammunition.LeadBall);
-                inventoryBefore = BasicAmmunitionInventorySnapshot.Capture(inventory);
-                inventory.Add(BasicAmmunitionComponent.BlackPowderCharge, 2);
-                inventory.Add(BasicAmmunitionComponent.LeadBall, 2);
+                    ammunition.BlackPowder, ammunition.LeadBall,
+                    ammunition.PaperCartridge);
+                inventoryBefore = ReloadAmmunitionInventorySnapshot.Capture(inventory);
+                inventory.Add(ReloadInventoryComponent.BlackPowderCharge, 2);
+                inventory.Add(ReloadInventoryComponent.LeadBall, 2);
+                inventory.Add(ReloadInventoryComponent.PaperCartridge, 1);
                 var abilityData = new Kingmaker.UnitLogic.Abilities.AbilityData(
                     set.Ability, attacker.Descriptor);
                 var execution = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
@@ -10008,10 +10791,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 brokenRounds = broken.LoadedRounds;
                 brokenCondition = broken.Condition;
 
-                stage = "zero-grit-gate";
+                stage = "paper-free-reload";
                 Buff second = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Single(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
                 second.Get<LightningReloadRoundMarker>().OnNewRound();
+                attacker.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                paperMode = attacker.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+                paperMode.IsOn = true;
+                FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                int paperBefore = inventory.Count(ReloadInventoryComponent.PaperCartridge);
+                var paperData = new AbilityData(set.Ability, attacker.Descriptor);
+                LightningReloadAvailability paperAvailability = LightningReloadRuntime.Evaluate(
+                    attacker.Descriptor, ammunition.BlackPowder,
+                    ammunition.LeadBall, set.UsedMarker);
+                paperFree = paperAvailability.Decision.IsAvailable &&
+                    paperAvailability.Decision.Action == LightningReloadAction.Free &&
+                    paperData.ActionType == UnitCommand.CommandType.Free &&
+                    paperData.RuntimeActionType == UnitCommand.CommandType.Free;
+                var paperExecution = new AbilityExecutionContext(paperData,
+                    new AbilityParams(), new TargetWrapper(attacker), null);
+                LightningReloadRuntime.Execute(attacker.Descriptor, paperExecution,
+                    ammunition.BlackPowder, ammunition.LeadBall, set.UsedMarker);
+                paperConsumed = inventory.Count(ReloadInventoryComponent.PaperCartridge) ==
+                    paperBefore - 1 && FirearmRuntimeState.Service.GetOrCreate(weapon)
+                        .Repository.State.LoadedAmmunition ==
+                        ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                paperMode.IsOn = false;
+
+                stage = "zero-grit-gate";
+                Buff third = attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Single(value => ReferenceEquals(value.Blueprint, set.UsedMarker));
+                third.Get<LightningReloadRoundMarker>().OnNewRound();
                 attacker.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
                     gritAfter);
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
@@ -10028,8 +10840,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (paperMode != null && paperMode.IsOn) paperMode.IsOn = false;
                 if (inventory != null && inventoryBefore != null)
-                    new BasicAmmunitionTransactionService().RestoreExact(
+                    new ReloadAmmunitionTransactionService().RestoreExact(
                         inventory, inventoryBefore);
                 if (weapon != null)
                 {
@@ -10046,7 +10859,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";rounds=" + normalRounds + "," + brokenRounds +
                 ";broken=" + brokenCondition + ";marked=" + marked +
                 ";sameRoundRejected=" + sameRoundRejected +
-                ";roundReset=" + roundReset + ";noGrit=" + noGritRejected;
+                ";roundReset=" + roundReset + ";paperFree=" + paperFree +
+                ";paperConsumed=" + paperConsumed + ";noGrit=" + noGritRejected;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("lightning-reload-progression",
@@ -10064,6 +10878,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Broken preserved; zero grit rejected", observed,
                     brokenRounds == 1 && brokenCondition == FirearmCondition.Broken &&
                         noGritRejected, "second atomic reload and policy gate"),
+                Assertion("lightning-reload-paper-dynamic-action",
+                    "Paper mode is Free in decision, AbilityData and runtime action; consumes one cartridge",
+                    observed, paperFree && paperConsumed,
+                    "selected plan plus dynamic action patches and generic transaction"),
                 Assertion("external-isolation",
                     "unchanged inventory, party, and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
@@ -13524,6 +14342,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             MethodInfo setter = property == null ? null : property.GetSetMethod(true);
             if (setter == null)
                 throw new MissingMemberException(value.GetType().FullName, name);
+            setter.Invoke(value, new[] { propertyValue });
+        }
+
+        private static void SetDeclaredProperty(object value, Type declaringType,
+            string name, object propertyValue)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (declaringType == null || !declaringType.IsInstanceOfType(value))
+                throw new ArgumentException("The declared property owner is invalid.",
+                    "declaringType");
+            PropertyInfo property = declaringType.GetProperty(name,
+                BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null)
+                throw new MissingMemberException(declaringType.FullName, name);
             setter.Invoke(value, new[] { propertyValue });
         }
 
