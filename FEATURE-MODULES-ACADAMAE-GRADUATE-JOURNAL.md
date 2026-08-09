@@ -362,3 +362,13 @@
 - Rejected theory: disabling Gunslinger necessarily disables shared bootstrap or Acadamae. The live process retained all identities and published the independent Acadamae module while withholding the observed Gunslinger surfaces.
 - Current uncertainty: ON/OFF and OFF/OFF fresh-process publication remain unobserved; the focused observer currently covers class, Paper stock, Acadamae feat arrays, and Cord stock rather than every Gunslinger boundary surface.
 - Next concrete action: commit and publish this runtime checkpoint, then run ON/OFF followed by OFF/OFF with identical restoration verification.
+
+## 2026-08-09 — remaining module snapshot combinations PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `c286ea545614ebea8b67e36129490ef54da51cbe`; active version 0.0.74.
+- ON/OFF: directory `20260809T1533282624723Z-observe-feature-module-settings`, run ID `20260809T1533282816172Z-853b389a120e4c178f1d46510e580168`, PASS in 87,877 ms. Exact observation: active ON/OFF, 250 identities, class 1, Paper row 1, Acadamae `Features`/`AllFeatures` 0/0, Cord rows 0.
+- OFF/OFF: directory `20260809T1535448734052Z-observe-feature-module-settings`, run ID `20260809T1535449057437Z-a3c74dff46424325bdc974ba75dc9b4f`, PASS in 88,140 ms. Exact observation: active OFF/OFF, 250 identities, class 0, Paper rows 0, Acadamae `Features`/`AllFeatures` 0/0, Cord rows 0.
+- Both transactions rebuilt, validated, deployed, launched through Steam App ID 640820, exited, and restored the original feature settings. The final live settings SHA-256 remains `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Together with the earlier ON/ON and OFF/ON runs, all four immutable process snapshots now have focused live publication evidence for 250 identities, the native class catalog, basic-feat arrays, Smith-table Paper stock, and Smith-table Cord stock.
+- Current uncertainty: broader Gunslinger OFF publication boundaries (Fighter selections, native firearm parameters, BTSL stock, and fixed loot) still require explicit live or exact detached observation; these four focused runs used the machine's current optional-mod loadout and are not yet the required standalone profile matrix.
+- Next concrete action: commit and publish the completed focused snapshot matrix, then extend the observer to every inventoried Gunslinger publication boundary before profile-specific matrix qualification.
