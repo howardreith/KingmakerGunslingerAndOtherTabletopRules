@@ -6,6 +6,10 @@ Exact assembly findings (2026-08-09): `AbilityData` exposes `ActionType`, `Runti
 
 Exact CotW bytes: UMM ID/version `CallOfTheWild` 1.14.4c-2.1; DLL SHA-256 `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`. Its supplied blueprint catalog contains no Acadamae Graduate or Cord identity/name collision. CotW adds/changes Wizard school content, including subschools, Pact Wizard, Opposition Research, and exact Conjuration opposition-research identity `f5a49f7d5896469fab8b64edf3723598`; these do not yet prove prerequisite equivalence.
 
+Exact action/cast IL (2026-08-09): `AbilityData.ActionType` resolves item, Quicken, free-action, spontaneous-metamagic, then blueprint action state. `RuntimeActionType` starts from that result and applies the native combat cooldown conversion. `RequireFullRoundAction` is the independent full-round overlay on a Standard command and consults `BlueprintAbility.IsFullRoundAction`. The public two-argument `UnitUseAbility` constructor obtains `RuntimeActionType` and chains to `(CommandType, AbilityData, TargetWrapper)`. `UnitUseAbility.OnAction` performs all cancellation/availability/concentration checks before synchronously constructing and triggering the exact `RuleCastSpell`; only `RuleCastSpell.Success` proceeds to execution. `UnitUseAbility.OnEnded(bool)` is the authoritative bounded cleanup surface.
+
+CotW composition (same exact DLL hash): two default-priority postfixes mutate `AbilityData.RequireFullRoundAction` (`SpellManipulationMechanics.AbilityData__RequireFullRoundAction__Patch` and `TurnActionMechanics.AbilityData__RequireFullRoundAction__Patch`), and `TurnActionMechanics.AbilityData_ActionType__Patch` mutates `ActionType`. Acadamae therefore declares an exact after-owner relationship, reads the final pre-Acadamae full-round result under a narrow thread-local inspection bypass, alters only that Boolean, arms only the constructed `UnitUseAbility`, scopes the active marker to `OnAction`, consumes the exact `AbilityData` once only after successful `RuleCastSpell`, and clears on action exit/end. UI getter queries never arm fatigue/save state.
+
 Required eligibility contract: actual/pending Wizard level 1+, true specialist, not Universalist, and Conjuration not forbidden. Cast eligibility additionally requires the exact feat, real prepared arcane spellbook invocation, Conjuration school, native Summoning marker, and effective time longer than Standard.
 
 | Configuration | Expected | Exact evidence |
@@ -21,4 +25,4 @@ Required eligibility contract: actual/pending Wizard level 1+, true specialist, 
 
 Spell candidate table will record GUID, school, Summoning descriptor/component, lists, action type, full-round/multi-round representation, variants, metamagic, and prepared/spontaneous delivery for every installed base/CotW candidate. No English-name matching is permitted.
 
-Next concrete action: inspect installed blueprint GUIDs, spellbook/school prerequisites, AbilityData action surfaces, UnitUseAbility, and RuleCastSpell lifecycle.
+Next concrete action: attach the native Fortitude save and native Fatigued application to the successfully consumed invocation, then add the realistic guarded Acadamae scenario.

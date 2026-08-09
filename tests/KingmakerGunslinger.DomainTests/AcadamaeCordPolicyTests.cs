@@ -88,6 +88,30 @@ namespace KingmakerGunslinger.DomainTests
                 "The exact installed Conjuration specialization donor is a BlueprintProgression.");
         }
 
+        internal static void AcadamaeInvocationCorrelation()
+        {
+            var tracker = new AcadamaeInvocationTracker<object, object>();
+            object commandA = new object(), commandB = new object();
+            object spellA = new object(), sameLookingSpell = new object();
+            Assertions.True(tracker.Arm(commandA, spellA), "First command must arm.");
+            Assertions.False(tracker.Arm(commandA, spellA), "Repeated UI/constructor work must not double-arm.");
+            Assertions.True(tracker.Arm(commandB, sameLookingSpell), "Second command must remain isolated.");
+            Assertions.True(tracker.Begin(commandA), "Armed command must begin.");
+            Assertions.False(tracker.ConsumeSuccessful(sameLookingSpell),
+                "A distinct prepared invocation must not consume the active marker.");
+            Assertions.True(tracker.ConsumeSuccessful(spellA),
+                "The exact successful spell invocation must consume once.");
+            Assertions.False(tracker.ConsumeSuccessful(spellA),
+                "A successful invocation must not consume twice.");
+            Assertions.Equal(1, tracker.Count, "The other command marker must remain.");
+            Assertions.True(tracker.Begin(commandB), "Second command must begin independently.");
+            tracker.EndAction(commandB);
+            Assertions.False(tracker.ConsumeSuccessful(sameLookingSpell),
+                "A cast observed after action scope must not consume.");
+            Assertions.True(tracker.Cancel(commandB), "Cancellation must clear the pending marker.");
+            Assertions.Equal(0, tracker.Count, "No marker may leak after cancellation.");
+        }
+
         internal static void CordDamageBoundaries()
         {
             Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,

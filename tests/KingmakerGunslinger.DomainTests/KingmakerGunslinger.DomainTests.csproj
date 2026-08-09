@@ -43,6 +43,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastDecision.cs"><Link>Acadamae\AcadamaeCastDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingPolicy.cs"><Link>Acadamae\AcadamaeCastingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeInvocationTracker.cs"><Link>Acadamae\AcadamaeInvocationTracker.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisiteRequest.cs"><Link>Acadamae\AcadamaePrerequisiteRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisiteDecision.cs"><Link>Acadamae\AcadamaePrerequisiteDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisitePolicy.cs"><Link>Acadamae\AcadamaePrerequisitePolicy.cs</Link></Compile>
