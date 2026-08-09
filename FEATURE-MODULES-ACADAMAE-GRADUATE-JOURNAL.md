@@ -401,3 +401,15 @@
 - Candidate package SHA-256 `101a23e3351030630f00a13a1da91ebf6037052f44e7629644eb54d667bcaf4e`; DLL SHA-256 `f79636da90457b1ad2ed248a6e5d794c86af3feff9214c32b50657e69228c52e`.
 - Current uncertainty: the complete four-process loop must demonstrate that normal process teardown consistently fits within the new 30-second bound.
 - Next concrete action: commit/publish this orchestration checkpoint, then rerun the complete comprehensive matrix without force termination.
+
+## 2026-08-09 — uninterrupted comprehensive four-state matrix PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `bf30873ea70a5d1af341075da553abfa60ff758b`; active version 0.0.74.
+- `Invoke-FeatureModuleRuntimeMatrix.ps1 -Combination all` PASS in 500.3 seconds with four normal fresh Steam-backed processes and no force termination.
+- ON/ON: directory `20260809T1547568204962Z-observe-feature-module-settings`, run `20260809T1547568448741Z-899adc49cde644d9b3155543f22cdd79`, PASS in 87,533 ms: identities 250; class 1; project feats 2/2 in both basic/Fighter arrays; native parameters 25; capital 12; BTSL 48/4 tables; fixed loot 5; Acadamae 1/1; Cord 1.
+- ON/OFF: directory `20260809T1550021684155Z-observe-feature-module-settings`, run `20260809T1550021834334Z-04f24fba55f64f9c976baf0ad76aabd5`, PASS in 87,078 ms: all Gunslinger counts identical to ON/ON; Acadamae arrays and Cord 0; identities 250.
+- OFF/ON: directory `20260809T1552063281955Z-observe-feature-module-settings`, run `20260809T1552063281955Z-fa595218adc040138b85c9f8a22d54f8`, PASS in 87,570 ms: every measured Gunslinger publication 0; Acadamae 1/1 and Cord 1; identities 250.
+- OFF/OFF: directory `20260809T1554113199703Z-observe-feature-module-settings`, run `20260809T1554113199703Z-159072e0c2d248db9e66f28bbb2d5a57`, PASS in 87,619 ms: every measured public project surface 0; identities 250.
+- After every deployment/test transaction and at the end, original feature-settings bytes were restored. Final SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Current uncertainty: these runs used the current live optional-mod population. The required isolated standalone and exact Call of the Wild profile matrices need transactional Mods-directory staging and restoration.
+- Next concrete action: commit/publish the comprehensive matrix evidence, then adapt the compatibility-profile transaction to carry request-local module settings into isolated standalone and Call of the Wild runs.
