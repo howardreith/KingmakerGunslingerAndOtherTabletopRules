@@ -6918,7 +6918,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordObserved = false, cleaned = false;
             int spellLevel = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
-                observedDc = -1;
+                cordHpBefore = -1, observedDc = -1;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -7036,6 +7036,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
                 unit.Body.Belt.InsertItem(cord);
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                unit.Damage = 0;
+                cordHpBefore = unit.HPLeft;
                 int damageBefore = unit.Damage;
                 AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
@@ -7079,7 +7082,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";prepared=" + prepared + ";presentation=" + presentation +
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
                 ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
-                ";dc=" + observedDc + ";cordDamage=" + cordDamage +
+                ";dc=" + observedDc + ";cordHpBefore=" + cordHpBefore +
+                ";cordDamage=" + cordDamage +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {

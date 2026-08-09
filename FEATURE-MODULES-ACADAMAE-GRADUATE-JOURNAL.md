@@ -568,3 +568,20 @@
 - Candidate package SHA-256 `4090826332336fca44ce4aae2f469acbd5a8d2df0ae37731e422cdf183ea5119`; DLL SHA-256 `ee08e2d2046ff0699687cb1d469ecac3bf3ce4d5210417b449fd1138c569478e`.
 - Current uncertainty: guarded runtime must prove the class/caster-level invariant and all downstream assertions.
 - Next concrete action: commit/publish this fixture checkpoint and rerun `disposable-acadamae-graduate`.
+
+## 2026-08-09 — Acadamae mechanics pass; Cord fixture reaches one-HP floor
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `4bbd187d75194ec9c964bc670fe85e07a1d940fc`; active version 0.0.74.
+- Guarded directory `20260809T1652452403090Z-disposable-acadamae-graduate`, run `20260809T1652452714989Z-b47c17665c2745dd819083e1b5f5961d`, FAIL 6/7 in 104,575 ms. PASS: real prepared native `SummonMonsterISingle` level 1; Full-Round-to-Standard UI/runtime parity; native Fortitude success; native Fortitude failure with Fatigued; DC 16; cancellation without save; cleanup. Only Cord integration failed because capped damage was zero while fatigue was suppressed.
+- The class/caster-level distinction was confirmed: the exact native prepared slot now works after one bounded native caster-level advance.
+- The combined fixture had retained detached level-up HP bookkeeping at the Cord stage, allowing the authorized 1-HP floor to cap the roll to zero. Before the Cord cast the fixture now resets damage and establishes 30 base hit points after all level/equipment recalculation, recording `cordHpBefore` in structured evidence. The separately qualified Cord scenario already proves the 1-HP zero-damage boundary.
+- Current uncertainty: the repeated combined run must prove a 1..6 damage delta with adequate HP and no fatigue.
+- Next concrete action: fully qualify/publish the HP normalization and repeat the guarded integration scenario.
+
+## 2026-08-09 — combined-fixture HP normalization source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `4bbd187d75194ec9c964bc670fe85e07a1d940fc`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `87773be4cd60d1a5600608c37aad4aa7a88aceb3089c9d9c0157d2741ea026ba`; DLL SHA-256 `1e6c356ae17ca8e0accb1b361a28c5a7e602c3cd92e1e9de91df8a967f7c259d`.
+- Current uncertainty: a fresh guarded run must prove the integrated Cord damage delta and no-fatigue result.
+- Next concrete action: commit/publish the HP normalization and rerun the integrated Acadamae scenario.
