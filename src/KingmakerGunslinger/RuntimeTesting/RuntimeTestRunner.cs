@@ -6723,9 +6723,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool metadataExact = cord.AssetGuid ==
                     "c4b804d9ebf941b4842b0a461a2b6b6d" &&
                 cord.Cost == 15000 && Math.Abs(cord.Weight - 1f) < 0.001f;
-            const BindingFlags flags = BindingFlags.Instance |
-                BindingFlags.Public | BindingFlags.NonPublic;
-            FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", flags);
             BlueprintUnit[] owners = new[] {
                 BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
                     BlueprintBootstrap.Library,
@@ -6735,16 +6732,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library,
                     "478862ab88b8ef24385cb386c1644dc2",
                     "capital Verdel blacksmith") };
-            bool ownerExact = tableField != null && owners.All(owner =>
-                (owner.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                .OfType<AddSharedVendor>().Count(component => ReferenceEquals(
-                    tableField.GetValue(component), table)) == 1);
+            Dictionary<string, List<string>> ownerReferences =
+                BuildDirectBlueprintReferenceIndex(owners.Cast<BlueprintScriptableObject>()
+                    .ToArray(), new BlueprintScriptableObject[] { table });
+            List<string> tableReferences;
+            bool ownerExact = ownerReferences.TryGetValue(table.AssetGuid,
+                out tableReferences) && tableReferences.Count == 2 &&
+                owners.All(owner => tableReferences.Contains(
+                    typeof(BlueprintUnit).FullName + ":" + owner.name + ":" +
+                    owner.AssetGuid + "*1"));
             string observed = "active=" + enabled + ";rows=" + rows.Length +
                 ";count=" + (rows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(rows[0]) : -1) +
                 ";cost=" + cord.Cost + ";weight=" + cord.Weight +
                 ";owners=" + string.Join(",", owners.Select(value =>
-                    value.name + ":" + value.AssetGuid));
+                    value.name + ":" + value.AssetGuid)) + ";references=" +
+                string.Join(",", tableReferences ?? new List<string>());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("cord-vendor-module-gate",

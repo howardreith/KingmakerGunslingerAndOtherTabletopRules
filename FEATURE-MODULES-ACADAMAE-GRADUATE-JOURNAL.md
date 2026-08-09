@@ -239,3 +239,12 @@
 - Rejected theory: widening enumeration from units to all loaded blueprints is sufficient. Both runs prove the relevant owner blueprints are not in the enumerable loaded set even though exact GUID resolution remains available.
 - Current uncertainty: exact owner lookup and component linkage need a fresh guarded rerun.
 - Next concrete action: run all source gates, commit/publish the exact-GUID owner observer, then repeat the guarded vendor scenario.
+
+## 2026-08-09 — third vendor run isolates serialized-reference contract
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `57b59e3bc900402a35d0eede4431616eaca4558e`; active version 0.0.74.
+- Guarded scenario directory `20260809T1449563716411Z-observe-capital-cord-vendor`, run ID `20260809T1449563873342Z-bd3eb54934014ea29ffc5569f29b0d6a`, FAIL in 87,343 ms with 3/4 assertions PASS. Both exact owner GUIDs and names resolved, while the assumed `AddSharedVendor` component linkage did not.
+- Prior qualification explicitly proved “direct reference” by the repository's bounded field index, not specifically `AddSharedVendor`. Updated this focused observer to reuse `BuildDirectBlueprintReferenceIndex` and demand exactly one direct Smith-table reference from each exact owner, matching the authoritative evidence contract.
+- Rejected theory: the owner relationship is necessarily represented by `AddSharedVendor`. The exact serialized owner fields are authoritative; imposing a component type not established by evidence created the false failure.
+- Current uncertainty: the corrected exact two-owner/two-reference assertion needs a fresh guarded run.
+- Next concrete action: qualify, commit, and publish the direct-reference observer repair, then perform the final bounded vendor rerun before moving to equipped-Cord mechanics.
