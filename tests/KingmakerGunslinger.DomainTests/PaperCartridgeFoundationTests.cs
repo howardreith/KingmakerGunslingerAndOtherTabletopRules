@@ -119,7 +119,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ordinaryMisfire.Contains(
                     "bool forced = ForcedRolls.TryConsume(out forcedNaturalRoll)") &&
                 ordinaryMisfire.Contains(
-                    "if (!context.Forced && naturalRoll != context.FinalNaturalRoll)"),
+                    "if (!context.Forced && naturalRoll != context.FinalNaturalRoll)") &&
+                ordinaryMisfire.Contains(
+                    "Service.Evaluate(\n                    context.FinalNaturalRoll,"),
                 "ordinary direct-field fallback preserves the exact forced-roll hook");
         }
 

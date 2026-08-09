@@ -265,7 +265,7 @@ namespace KingmakerGunslinger.Misfires
                 bool firstEvaluation = context.TryBeginEvaluation();
                 bool nativeSuccess = nativeResult;
                 FirearmMisfireDecision decision = Service.Evaluate(
-                    naturalRoll,
+                    context.FinalNaturalRoll,
                     context.MisfireValue,
                     nativeResult);
                 bool fortuneIgnored = firstEvaluation && decision.IsMisfire &&
