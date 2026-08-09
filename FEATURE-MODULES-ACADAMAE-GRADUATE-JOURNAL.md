@@ -75,3 +75,12 @@
 - Rejected theory: a guessed belt GUID or localized name is sufficient donor proof. Selection instead uses exact installed type, price, stat, value, and descriptor and fails closed unless singular; runtime bootstrap must still prove the installed cardinality.
 - Current uncertainty: the clean-process runtime has not yet proved that the installed donor query is singular or that both identities register successfully.
 - Next concrete action: commit and publish the clean identity checkpoint, then run guarded `mod-load-smoke` and inspect structured bootstrap/count evidence.
+
+## 2026-08-09 — identity runtime attempt 1
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `51dbccb26d69662618ee8ce57114a91ea2611296`; active version 0.0.74.
+- Guarded Steam-backed run `20260809T1328313148001Z-mod-load-smoke` reached the exact local Call of the Wild load order and ended `TIMEOUT` after blueprint initialization failed closed.
+- Exact root cause: GUID `567801abe990faf4080df566fadcd038` resolves to `BlueprintProgression`, not the assumed `BlueprintFeature`. The registry rolled back its one preexisting diagnostic registration; neither new project identity was left partially registered.
+- Rejected theory: the timeout was an unexplained startup stall. UMM structured log proves the exact type mismatch and later runner timeout with `bootstrap=False`.
+- Current uncertainty: Cord donor cardinality remains unobserved because initialization stopped at the earlier Acadamae icon donor lookup.
+- Next concrete action: bind the icon donor to exact `BlueprintProgression`, rerun deterministic/build/package gates, commit/publish the repair, and repeat guarded `mod-load-smoke`.

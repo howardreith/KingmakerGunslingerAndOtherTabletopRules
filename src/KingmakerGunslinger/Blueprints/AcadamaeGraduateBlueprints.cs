@@ -16,13 +16,13 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
-            BlueprintFeature iconDonor = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+            BlueprintProgression iconDonor = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(
                 library, ConjurationSpecializationGuid,
                 "native Conjuration specialization icon donor");
             return registry.Register<BlueprintFeature>(Symbol, () => Create(iconDonor));
         }
 
-        private static BlueprintFeature Create(BlueprintFeature iconDonor)
+        private static BlueprintFeature Create(BlueprintProgression iconDonor)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_AcadamaeGraduate_Feature";
