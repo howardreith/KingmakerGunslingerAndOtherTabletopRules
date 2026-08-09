@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.74 Paper mode view-lifecycle repair
+
+- Initialized the persistent Use Paper Cartridges marker's no-FX resource links
+  so existing marker facts reconstruct safely during save load and area changes.
+- Preserved every Paper Cartridge blueprint identity and all ammunition behavior.
+- Added guarded attached-view lifecycle coverage, including Call of the Wild's
+  composed `Buff.SpawnParticleEffect` path.
+
 ## 0.0.74 - Paper Cartridges, auto-reload, and rare firearms
 
 - Adds stackable 12-gp Paper Cartridges for every canonical early Pistol,

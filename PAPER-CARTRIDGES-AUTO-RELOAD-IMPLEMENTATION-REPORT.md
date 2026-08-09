@@ -10,6 +10,21 @@ with fail-closed startup validation. Call of the Wild's prefix only checks
 `Fact.Active`; it is not the null cause. Deterministic/build qualification passes;
 live view-backed and human failing-save acceptance remain pending.
 
+### Repair completion
+
+- Production repair: non-null empty `FxOnStart`/`FxOnRemove` and empty marker/mode
+  resource-ID arrays; no Harmony fallback patch and no GUID migration.
+- Root-cause classification: Kingmaker native original body was causal; the
+  from-scratch project marker was malformed; Call of the Wild was contributory
+  only by composing the visible wrapper name and did not dereference the null.
+- The dedicated attached-view lifecycle passes standalone, exact CotW, qualified
+  Arms & Armor + Toggle, and the bounded all-three-mod profile. Two independent
+  comprehensive processes and canonical working-save smoke also pass.
+- Existing saves should recover because serialized facts still resolve marker
+  GUID `69a804ea1fd14a5da3ba893c373f481f` to the corrected blueprint definition.
+  Loading one of the user's already-failing saves remains the decisive human-only
+  recovery acceptance item.
+
 ## Baseline
 
 - Base: `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb`.

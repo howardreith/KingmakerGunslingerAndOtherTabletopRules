@@ -9,6 +9,31 @@ exact-reference build/package/SoundBank gate. It is not yet runtime acceptance:
 live party-view lifecycle, compatibility, comprehensive, and human failing-save
 recovery checks remain pending.
 
+## Persistent-mode repair qualification
+
+- Deterministic: 954 PASS, 0 failures; repository/static, exact-reference Release,
+  output, SoundBank, strict package, preflight, and compatibility restoration gates PASS.
+- Attached-view lifecycle PASS run IDs:
+  - standalone `20260809T0340349302370Z-7f894e1b28664af984306eef39612c6f`;
+  - Call of the Wild `20260809T0346128762528Z-8c837fa06a0f41999496fddc7ef265a8`;
+  - Arms & Armor + Toggle `20260809T0350165216971Z-649bd1f9aa7b4d09b8280f0de4b92501`;
+  - all-three bounded profile `20260809T0354295434718Z-67bfad7adc7c4550b581734a079262ed`.
+- Restored compatibility transactions: `compat-20260809T034315Z-dee461202246`,
+  `compat-20260809T034810Z-8ebd1f999603`, and
+  `compat-20260809T035130Z-fae78f2aaf1b`.
+- Paper reload PASS `20260809T0359265378728Z-8f08b6388e42428f8d5c1b335a8b3c4d`.
+- Independent comprehensive PASSes
+  `20260809T0401569084331Z-7b195c2e2e744efba4f9bd9303ee7ed6` and
+  `20260809T0404227443323Z-2901a80a736e4d009ba96743c244fda0`.
+- Canonical working-save smoke PASS
+  `20260809T0406443165230Z-06b59b103a254dab86098def126464e8`;
+  this is general save compatibility evidence, not misreported as active-marker proof.
+- Final DLL SHA-256 `54DFF704555E402905E56D41C2F7628939BD649913AB5083B33888AEC0D9BC3A`.
+  Distinct repair package SHA-256
+  `1DC1CB0E23C278253A9B5C0C77340A3527BED088C5B0EAFA4AE0DD9A1C4D3D60`.
+- Autonomous qualification is complete. Release acceptance remains pending only
+  the user's load/transition/reload sequence on a preserved previously failing save.
+
 ## Evidence policy
 
 Mechanical runtime claims require the repository's guarded Steam App ID 640820
@@ -56,15 +81,18 @@ baseline save is never selected or modified.
   Local-runtime package SHA-256:
   `19AE04841664CF5C54C02D70140D932ED30315DA5026184874F1E20D8B16CE94`.
 
-## Human-only visual/player checklist
+## Human-only recovery acceptance checklist
 
-One human may optionally use a disposable copy of `KMG_AUTOMATION_WORKING` to:
+Preserve copies of the currently failing quicksaves, install the distinctly named
+repair package without editing any save, then:
 
-1. Load a Paper Cartridge, save under a new disposable name, exit, and reload it.
-2. Confirm the chamber still reports Paper Cartridge, then fire it and confirm the
-   next loose reload no longer reports the Paper +1 modifier.
-3. Visually confirm the Paper item/mode icons, right-click Reload auto-use hint,
-   Lightning action label, Smith stock, and crafting text at normal UI scale.
+1. Load one previously failing quicksave and confirm the character and Paper mode
+   state reconstruct.
+2. Transition into the dungeon, then to its second level.
+3. Save to a new disposable slot and reload that new slot.
+4. Turn Paper mode off and transition; turn it on and transition again.
+5. Confirm ordinary reload, Paper reload, and one full attack still work.
 
-This is the only unperformed human-only item. It is not represented as mechanical
-runtime proof and must never overwrite `KMG_AUTOMATION_BASELINE`.
+The decisive result is step 1: a previously failing save loads with the unchanged
+marker GUID. Do not delete/edit saves, overwrite `KMG_AUTOMATION_BASELINE`, or
+remove Call of the Wild from a save that depends on it.

@@ -547,3 +547,31 @@
   strict package `E391F018FC662986F94E0B690BC2A095E3EFAFD93D533B46BB3C553777D06425`.
 - Next: publish this coherent repair, then add and run the real party-view marker
   lifecycle scenario and required compatibility matrix.
+
+### Final repair runtime and recovery candidate
+
+- First lifecycle run failed only its fixture's synchronous-deactivation
+  assumption while its attached-view spawn/no-FX/crash assertions passed. Exact
+  activatable IL showed ordinary `IsOn=false` may defer removal; the fixture now
+  uses public native `Stop(true)` to exercise `Buff.OnRemove` synchronously.
+- Final attached-view lifecycle passes standalone and all required compatibility
+  compositions. Transactions/restoration: CotW
+  `compat-20260809T034315Z-dee461202246`; Arms & Armor + Toggle
+  `compat-20260809T034810Z-8ebd1f999603`; bounded all-three
+  `compat-20260809T035130Z-fae78f2aaf1b`; all restoration verified true.
+- Runtime PASS IDs: standalone lifecycle
+  `20260809T0340349302370Z-7f894e1b28664af984306eef39612c6f`; CotW lifecycle
+  `20260809T0346128762528Z-8c837fa06a0f41999496fddc7ef265a8`; qualified-combined
+  lifecycle `20260809T0350165216971Z-649bd1f9aa7b4d09b8280f0de4b92501`;
+  all-three lifecycle `20260809T0354295434718Z-67bfad7adc7c4550b581734a079262ed`;
+  reload `20260809T0359265378728Z-8f08b6388e42428f8d5c1b335a8b3c4d`;
+  comprehensive `20260809T0401569084331Z-7b195c2e2e744efba4f9bd9303ee7ed6`
+  and `20260809T0404227443323Z-2901a80a736e4d009ba96743c244fda0`;
+  working-save smoke `20260809T0406443165230Z-06b59b103a254dab86098def126464e8`.
+- Final deterministic total remains 954 PASS. Final DLL hash is
+  `54DFF704555E402905E56D41C2F7628939BD649913AB5083B33888AEC0D9BC3A`;
+  distinctly named repair package hash is
+  `1DC1CB0E23C278253A9B5C0C77340A3527BED088C5B0EAFA4AE0DD9A1C4D3D60`.
+- One human-only acceptance remains: install the distinct repair package and load
+  a preserved previously failing quicksave, then perform the requested dungeon
+  transitions, disposable save/reload, mode off/on transitions, and reload/full attack.
