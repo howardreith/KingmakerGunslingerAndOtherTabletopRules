@@ -212,3 +212,12 @@
 - Candidate package SHA-256 `c0f4a09d7804b9c196427f3632cfc4f3224f2bf83b5792b38a879f659966db02`; DLL SHA-256 `d9b98c73b2e70d0437702dda9f0814b709075442f5cf56c75968bcaef5793a62`.
 - Current uncertainty: the shared table's exact four-combination rows and merchant-facing materialization remain guarded runtime work; no claim is made that an already-materialized inventory refreshes immediately.
 - Next concrete action: commit/publish the capital transaction, prove clean real-process bootstrap, then add the request-aware feature-publication and Cord runtime scenarios.
+
+## 2026-08-09 — guarded capital-Cord observer checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `e73363b9162af5ccb9df48aef3caadc9f2fe8490`; active version 0.0.74.
+- Registered `observe-capital-cord-vendor` through the runtime catalog, dispatcher, and exact harness metadata. The read-only scenario verifies the active Acadamae module gate, exact zero-or-one fixed row and count, Cord GUID/cost/weight, selected Smith table, and its exact established-capital blacksmith owner pair.
+- Tests/gates: complete deterministic suite PASS 967/967; repository validation, exact-reference clean Release build, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `d5439cef7cc9795e2c90356e0bce45c9769e164fe7fb83083a57cba19a92bc84`; DLL SHA-256 `9b286c020b3a42be110dbcd8cf3d946d23472d8da55aaf560f12e6e62244d974`.
+- Current uncertainty: the observer has not yet run in Kingmaker and does not claim already-materialized merchant-inventory refresh behavior.
+- Next concrete action: commit/publish the observer and run it from the clean ON/ON default process, then implement the disposable equipped-Cord mechanics scenario.

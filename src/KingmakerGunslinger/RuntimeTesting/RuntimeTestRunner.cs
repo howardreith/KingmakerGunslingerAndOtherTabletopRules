@@ -466,6 +466,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveCapitalCordVendor)
+                {
+                    Complete(RunCapitalCordVendorObservation());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveRareFirearmAcquisition)
                 {
                     Complete(RunVendorTableContractObservation());
@@ -6698,6 +6704,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "result=" + (result == null ? "null" : result.Status) +
                     ";assertions=" + passed + "/" + total,
                 exact, "composed guarded slice with its own guaranteed cleanup");
+        }
+
+        private RuntimeTestResult RunCapitalCordVendorObservation()
+        {
+            BlueprintSharedVendorTable table = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintSharedVendorTable>().Single(value =>
+                    value.AssetGuid == CapitalVendorBlueprints.TableGuid &&
+                    value.name == CapitalVendorBlueprints.ExpectedTableName);
+            BlueprintItem cord = BlueprintBootstrap.CordOfStubbornResolve;
+            LootItemsPackFixed[] rows = (table.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                .Where(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value), cord)).ToArray();
+            bool enabled = _context.FeatureModules.Active.AcadamaeGraduate;
+            bool rowsExact = enabled ? rows.Length == 1 &&
+                CapitalVendorBlueprints.ReadCount(rows[0]) == 1 : rows.Length == 0;
+            bool metadataExact = cord.AssetGuid ==
+                    "c4b804d9ebf941b4842b0a461a2b6b6d" &&
+                cord.Cost == 15000 && Math.Abs(cord.Weight - 1f) < 0.001f;
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", flags);
+            string[] owners = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintUnit>().Where(unit =>
+                    (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AddSharedVendor>().Any(component => ReferenceEquals(
+                        tableField == null ? null : tableField.GetValue(component), table)))
+                .Select(unit => unit.name).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+            bool ownerExact = owners.Contains("CapitalOwlbearAttack_Blacksmith") &&
+                owners.Contains("VerdelBlacksmith");
+            string observed = "active=" + enabled + ";rows=" + rows.Length +
+                ";count=" + (rows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(rows[0]) : -1) +
+                ";cost=" + cord.Cost + ";weight=" + cord.Weight +
+                ";owners=" + string.Join(",", owners);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("cord-vendor-module-gate",
+                    enabled ? "one fixed count-1 Cord row" : "no Cord row",
+                    observed, rowsExact, "live SmithVendorTable component array"),
+                Assertion("cord-vendor-item-metadata",
+                    "exact Cord GUID, 15000 gp, and 1 lb.", observed,
+                    metadataExact, "registered BlueprintItemEquipmentBelt"),
+                Assertion("cord-vendor-owner-graph",
+                    "established-capital blacksmith owner pair", observed,
+                    ownerExact, "exact AddSharedVendor owner graph"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
         }
 
         private RuntimeTestResult RunDisposablePaperCartridgeCraftingVendors()
