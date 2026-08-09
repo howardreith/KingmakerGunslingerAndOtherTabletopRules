@@ -288,3 +288,11 @@
 - Candidate package SHA-256 `1b20bf9a77a88f2e5378304f153a6f9cb8c3f86865baea03bde63af75f88daf8`; DLL SHA-256 `779679aa21096760106c7ec9d4ff8419cabf1a3a16eba1f6fdb19e8fb3d3393a`.
 - Current uncertainty: feature-module observer request parsing and ON/ON live assertions need the first guarded run; transactional settings changes for the other three combinations remain to be implemented.
 - Next concrete action: commit/publish the feature-module observer and run the default ON/ON request, then implement exact settings-byte transaction automation for the remaining combinations.
+
+## 2026-08-09 — module observer preflight mismatch
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `914b8613dd767a939477e259ad642568794d8fe5`; active version 0.0.74.
+- The first ON/ON launch stopped before deployment with `Scenario 'observe-feature-module-settings' does not accept parameters.` The game did not launch and no runtime state changed.
+- Root cause: runtime request parsing had the new strict Boolean contract, but repository preflight retained its general zero-parameter fallback. Added the identical two-key Boolean validation to preflight.
+- Current uncertainty: the synchronized preflight/parser contract needs full gates and a clean guarded ON/ON run.
+- Next concrete action: qualify, commit, and publish the preflight repair, then rerun ON/ON.

@@ -678,6 +678,15 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly one committed runtime-capable profileId."
         }
     }
+    elseif ($Scenario -ceq 'observe-feature-module-settings') {
+        if ($Parameters.Count -ne 2 -or
+            -not $Parameters.ContainsKey('gunslinger') -or
+            $Parameters.gunslinger -isnot [bool] -or
+            -not $Parameters.ContainsKey('acadamaeGraduate') -or
+            $Parameters.acadamaeGraduate -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger and acadamaeGraduate parameters."
+        }
+    }
     elseif ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
