@@ -1,0 +1,102 @@
+using System;
+using KingmakerGunslinger.Acadamae;
+using KingmakerGunslinger.Cord;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class AcadamaeCordPolicyTests
+    {
+        internal static void AcadamaeEligibilityMatrix()
+        {
+            AcadamaeCastRequest valid = Valid();
+            AssertEligible(valid, AcadamaeCastingTime.Standard, 0, 18);
+            Mutate(valid, r => r.HasFeat = false, "no-feat");
+            Mutate(valid, r => r.IsRealSpell = false, "not-spell");
+            Mutate(valid, r => r.HasSpellbook = false, "no-spellbook");
+            Mutate(valid, r => r.IsPreparedInvocation = false, "not-prepared");
+            Mutate(valid, r => r.IsArcane = false, "not-arcane");
+            Mutate(valid, r => r.IsConjuration = false, "not-conjuration");
+            Mutate(valid, r => r.IsSummoning = false, "not-summoning");
+            valid.EffectiveCastingTime = AcadamaeCastingTime.Standard;
+            Assertions.Equal("already-standard-or-faster",
+                AcadamaeCastingPolicy.Decide(valid).Status,
+                "Standard spells must be ineligible.");
+            valid.EffectiveCastingTime = AcadamaeCastingTime.Swift;
+            Assertions.False(AcadamaeCastingPolicy.Decide(valid).Eligible,
+                "Quickened spells must be ineligible.");
+        }
+
+        internal static void AcadamaeMultiRoundAndDc()
+        {
+            AcadamaeCastRequest request = Valid();
+            request.EffectiveCastingTime = AcadamaeCastingTime.MultipleRounds;
+            request.EffectiveRounds = 3;
+            request.SpellLevel = 9;
+            AssertEligible(request, AcadamaeCastingTime.MultipleRounds, 2, 24);
+            request.EffectiveRounds = 2;
+            AssertEligible(request, AcadamaeCastingTime.FullRound, 1, 24);
+            request.EffectiveRounds = 1;
+            Assertions.Throws<ArgumentException>(() =>
+                AcadamaeCastingPolicy.Decide(request),
+                "Invalid multi-round representation must fail closed.");
+        }
+
+        internal static void CordFatigueAndExhaustion()
+        {
+            CordSubstitutionDecision absent = CordSubstitutionPolicy.Decide(false,
+                CordConditionKind.Fatigue, 6, 20, false);
+            Assertions.False(absent.Substituted, "Inventory-only Cord must do nothing.");
+            CordSubstitutionDecision fatigue = CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 20, false);
+            Assertions.True(fatigue.Substituted && fatigue.Damage == 6 &&
+                !fatigue.ApplyFatigue, "Fatigue substitution contract failed.");
+            CordSubstitutionDecision exhaustion = CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Exhaustion, 1, 20, false);
+            Assertions.True(exhaustion.Substituted && exhaustion.Damage == 1 &&
+                exhaustion.ApplyFatigue, "Exhaustion downgrade contract failed.");
+        }
+
+        internal static void CordDamageBoundaries()
+        {
+            Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 1, false).Damage,
+                "Fallback damage must preserve 1 HP.");
+            Assertions.Equal(2, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 3, false).Damage,
+                "Fallback damage must cap at HP minus one.");
+            Assertions.Equal(6, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 1, true).Damage,
+                "Native nonlethal must retain the full roll.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
+                    0, 10, false), "A d6 roll below one must fail.");
+        }
+
+        private static AcadamaeCastRequest Valid()
+        {
+            return new AcadamaeCastRequest { HasFeat = true, IsRealSpell = true,
+                HasSpellbook = true, IsPreparedInvocation = true, IsArcane = true,
+                IsConjuration = true, IsSummoning = true,
+                EffectiveCastingTime = AcadamaeCastingTime.FullRound,
+                EffectiveRounds = 1, SpellLevel = 3 };
+        }
+
+        private static void Mutate(AcadamaeCastRequest original,
+            Action<AcadamaeCastRequest> mutation, string status)
+        {
+            AcadamaeCastRequest request = Valid(); mutation(request);
+            AcadamaeCastDecision decision = AcadamaeCastingPolicy.Decide(request);
+            Assertions.True(!decision.Eligible && decision.Status == status,
+                "Acadamae rejection status mismatch: " + status);
+        }
+
+        private static void AssertEligible(AcadamaeCastRequest request,
+            AcadamaeCastingTime time, int rounds, int dc)
+        {
+            AcadamaeCastDecision decision = AcadamaeCastingPolicy.Decide(request);
+            Assertions.True(decision.Eligible && decision.ResultingTime == time &&
+                decision.ResultingRounds == rounds && decision.FortitudeDc == dc,
+                "Acadamae eligible decision mismatch.");
+        }
+    }
+}

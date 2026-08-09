@@ -40,6 +40,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Acadamae\AcadamaeCastingTime.cs" />
+    <Compile Include="Acadamae\AcadamaeCastRequest.cs" />
+    <Compile Include="Acadamae\AcadamaeCastDecision.cs" />
+    <Compile Include="Acadamae\AcadamaeCastingPolicy.cs" />
+    <Compile Include="Cord\CordConditionKind.cs" />
+    <Compile Include="Cord\CordSubstitutionDecision.cs" />
+    <Compile Include="Cord\CordSubstitutionPolicy.cs" />
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />

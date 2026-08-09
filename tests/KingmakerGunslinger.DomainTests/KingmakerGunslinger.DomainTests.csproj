@@ -38,6 +38,14 @@
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
+    <Compile Include="AcadamaeCordPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastDecision.cs"><Link>Acadamae\AcadamaeCastDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingPolicy.cs"><Link>Acadamae\AcadamaeCastingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordConditionKind.cs"><Link>Cord\CordConditionKind.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordSubstitutionDecision.cs"><Link>Cord\CordSubstitutionDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordSubstitutionPolicy.cs"><Link>Cord\CordSubstitutionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleConfiguration.cs"><Link>FeatureModules\FeatureModuleConfiguration.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModulePublicationPlan.cs"><Link>FeatureModules\FeatureModulePublicationPlan.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsState.cs"><Link>FeatureModules\FeatureModuleSettingsState.cs</Link></Compile>

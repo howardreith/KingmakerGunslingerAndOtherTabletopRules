@@ -53,3 +53,14 @@
 - Candidate package SHA-256 `874a8be270acd4b3256c568858ccec6b8df5d1da83b27db715ba19f8b8f78cc7`; DLL SHA-256 `310d6b23ff8e1e6f78ba23b7a1f77610a873246f2ac8281b77ecebdaf42c62e6`.
 - Current uncertainty: OFF-state player-facing proof awaits the dedicated guarded settings/publication scenario and transactional live-settings fixture; Call of the Wild reconciliation is not yet implemented.
 - Next concrete action: commit this narrow publication-boundary checkpoint, then complete the exact Wizard/spell/nonlethal inventories and register Acadamae/Cord stable identities.
+
+## 2026-08-09 — deterministic mechanics-policy checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `dd66f9f31b600b0a39fee18be65483fb91e83edf`; active version 0.0.74.
+- Added a global-state-free Acadamae cast decision covering exact spell/slot/arcane/conjuration/summoning gates, Standard-or-faster rejection, Full-Round-to-Standard reduction, true multi-round one-round reduction, and Fortitude DC `15 + spell level`.
+- Added a global-state-free Cord substitution decision covering exact-equipped gating, Fatigue/Exhaustion classification, one d6 result, Exhaustion-to-Fatigue downgrade, native nonlethal preservation, and authorized fallback capping at one hit point.
+- Tests/gates: four focused policy tests PASS; complete suite PASS 963/963; repository validation PASS; exact-reference clean Release build, build-output validation, supply-icon audit, SoundBank validation, deterministic package creation, and strict package validation PASS.
+- First sandboxed complete-suite attempt produced the known environmental `UnauthorizedAccessException` in the SoundBank atomic replacement fixture; the exact rerun with repository staging permissions passed 963/963. The first exact-reference compile rejected request fields as never assigned; converting the data carrier to internal properties resolved the warning-as-error without changing policy behavior.
+- Candidate package SHA-256 `f5b296f1738db7016759b6e83614255225691a0ffe98a411ce5c3949b58c23c4`; DLL SHA-256 `ca3398571374a6e8640a88b04c02fc32190aa7d4d2a449330db6862fee518ab8`.
+- Current uncertainty: exact game-object adapters, invocation correlation, condition interception, and blueprint identities are intentionally not claimed by these pure-policy tests.
+- Next concrete action: commit and publish this policy checkpoint, then append stable Acadamae/Cord identities and implement their always-loaded blueprints.
