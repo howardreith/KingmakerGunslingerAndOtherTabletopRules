@@ -1,6 +1,13 @@
 # Paper Cartridges Qualification
 
-Status: autonomously qualified on `codex/paper-cartridges-auto-reload`; not merged.
+Status: qualification suspended. The recorded evidence below is historical for the
+rejected pre-repair 0.0.74 candidate pending persistent-mode crash repair and repeat
+view-backed/save-load qualification; branch remains unmerged.
+
+The minimal unchanged-GUID repair passes 954 deterministic tests and every clean
+exact-reference build/package/SoundBank gate. It is not yet runtime acceptance:
+live party-view lifecycle, compatibility, comprehensive, and human failing-save
+recovery checks remain pending.
 
 ## Evidence policy
 

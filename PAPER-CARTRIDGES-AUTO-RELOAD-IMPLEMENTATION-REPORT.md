@@ -1,7 +1,14 @@
 # Paper Cartridges Implementation Report
 
-Status: implementation and autonomous qualification complete on the dedicated
-feature branch; not merged.
+Status: prior 0.0.74 candidate rejected for a release-blocking persistent-mode
+view-reconstruction crash; repair investigation active on the same unmerged branch.
+
+Exact installed IL identifies the marker's null `FxOnStart` dereference in native
+view reconstruction; `FxOnRemove` is independently null-sensitive. The unchanged-
+GUID repair supplies empty no-FX links and empty marker/ability resource arrays,
+with fail-closed startup validation. Call of the Wild's prefix only checks
+`Fact.Active`; it is not the null cause. Deterministic/build qualification passes;
+live view-backed and human failing-save acceptance remain pending.
 
 ## Baseline
 

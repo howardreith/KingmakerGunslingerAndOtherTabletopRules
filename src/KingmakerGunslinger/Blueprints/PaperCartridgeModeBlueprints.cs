@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using UnityEngine;
@@ -52,6 +53,14 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Mode.PaperCartridge.Marker.Description", Description),
                 null);
             marker.ComponentsArray = Array.Empty<BlueprintComponent>();
+            // Buff.SpawnParticleEffect and Buff.OnRemove call Load(false) on these
+            // links without null guards when a persistent buff's unit view is rebuilt.
+            // Empty links are the engine-safe representation of an intentionally
+            // effect-free buff; they spawn nothing but remain safe across save/load
+            // and area-transition view reconstruction.
+            marker.FxOnStart = new PrefabLink();
+            marker.FxOnRemove = new PrefabLink();
+            marker.ResourceAssetIds = Array.Empty<string>();
             FieldInfo flags = typeof(BlueprintBuff).GetField("m_Flags",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (flags == null || !flags.FieldType.IsEnum)
@@ -82,6 +91,7 @@ namespace KingmakerGunslinger.Blueprints
             ability.OnlyInCombat = false;
             ability.ActionBarAutoFillIgnored = false;
             ability.ComponentsArray = Array.Empty<BlueprintComponent>();
+            ability.ResourceAssetIds = Array.Empty<string>();
             return ability;
         }
 
@@ -91,8 +101,11 @@ namespace KingmakerGunslinger.Blueprints
             if (marker == null || ability == null || !ReferenceEquals(ability.Buff, marker) ||
                 ability.IsOnByDefault || ability.OnlyInCombat ||
                 ability.ActivationType != AbilityActivationType.Immediately ||
+                ability.ResourceAssetIds == null || ability.ResourceAssetIds.Length != 0 ||
                 ability.ComponentsArray == null || ability.ComponentsArray.Length != 0 ||
-                marker.ComponentsArray == null || marker.ComponentsArray.Length != 0)
+                marker.ComponentsArray == null || marker.ComponentsArray.Length != 0 ||
+                marker.FxOnStart == null || marker.FxOnRemove == null ||
+                marker.ResourceAssetIds == null || marker.ResourceAssetIds.Length != 0)
                 throw new InvalidOperationException(
                     "Use Paper Cartridges must remain an off-by-default, free, unit-local native mode.");
         }

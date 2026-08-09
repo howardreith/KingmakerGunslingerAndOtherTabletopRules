@@ -1,5 +1,22 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Paper mode area-transition/save-load crash repair
+
+- Clean branch/local/remote intake SHA:
+  `82de97fdc3e5c00d063b24d06b3d387075430d40` on
+  `codex/paper-cartridges-auto-reload`; version remains 0.0.74.
+- Prior full qualification is suspended. User reproduced a modal null reference
+  in composed `Buff.SpawnParticleEffect_Patch1` across four quicksaves and dungeon
+  area/level transitions. Saves are potentially recoverable and must not be edited.
+- High-confidence hypothesis pending exact proof: the from-scratch persistent
+  Paper mode marker leaves `FxOnStart`/`FxOnRemove` null, so live view reconstruction
+  reaches an invalid no-FX lifecycle shape. CotW is visible in composition but is
+  not yet classified as causal.
+- Exact next action: bounded installed IL/signature/field inspection plus four-way
+  runtime blueprint comparison; record rejected theories, then make only the
+  minimal unchanged-GUID save-compatible repair and qualify it on a real view-backed
+  party unit in standalone, CotW, qualified combined, and reachable combined-CotW.
+
 ## Current resume — Paper Cartridges Phase 7 (2026-08-09)
 
 - Branch `codex/paper-cartridges-auto-reload`; baseline
@@ -1453,3 +1470,15 @@ Current checkpoint: Phase 1 foundation is source-qualified at 941/941 with 245
 active registrations and 246 ledger identities. Commit/publish Phase 1 and
 verify remote equality, then begin Phase 2's one reload plan, generic atomic
 source transaction, native Paper mode/grants, and manual reload runtime path.
+
+## Current resume point — Paper persistent-mode crash repair
+
+The published 0.0.74 candidate at `82de97fdc3e5c00d063b24d06b3d387075430d40`
+is rejected pending repair qualification. Exact installed IL proves the marker's
+null `FxOnStart` is dereferenced by original view-backed
+`Buff.SpawnParticleEffect`; `FxOnRemove` has the same unsafe removal contract.
+The installed Call of the Wild prefix only checks `Fact.Active`, so it exposes
+the composed stack name but is not the null cause. The unchanged-GUID repair
+initializes both empty FX links and both marker/mode empty resource-ID arrays,
+with startup validation. Next: deterministic/build gates, then an exact live
+party-view lifecycle observer under standalone and required compatibility profiles.

@@ -351,7 +351,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Blueprints", "PaperCartridgeModeBlueprints.cs"));
             foreach (string token in new[] { "BlueprintActivatableAbility", "IsOnByDefault = false",
                 "AbilityActivationType.Immediately", "There is no fallback",
-                "DeactivateIfCombatEnded = false", "HiddenInUi" })
+                "DeactivateIfCombatEnded = false", "HiddenInUi",
+                "marker.FxOnStart = new PrefabLink()",
+                "marker.FxOnRemove = new PrefabLink()",
+                "marker.ResourceAssetIds = Array.Empty<string>()",
+                "ability.ResourceAssetIds = Array.Empty<string>()",
+                "marker.FxOnStart == null", "marker.FxOnRemove == null" })
                 Assertions.True(mode.Contains(token), "mode contract: " + token);
             string full = File.ReadAllText(Path.Combine(root, "src", "KingmakerGunslinger",
                 "Blueprints", "FirearmProficiencyBlueprints.cs"));

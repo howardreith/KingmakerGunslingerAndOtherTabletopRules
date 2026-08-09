@@ -482,3 +482,68 @@
   a Paper-loaded token plus visual icon/text review. No autonomous save write was
   performed or claimed. Next exact action: finalize documentation commit, run the
   final clean-tree/audit gates, publish, and prove local/remote equality.
+
+## Release-blocking persistent-mode crash repair intake — 2026-08-08
+
+- Intake branch/local/remote are clean and equal at
+  `82de97fdc3e5c00d063b24d06b3d387075430d40`; required base
+  `759685077da0aed6d7ed1fda2cd43e5ad12d0bdb` remains an ancestor.
+- Prior final qualification and hashes are suspended. They describe the rejected
+  pre-repair 0.0.74 candidate and must not be used as release acceptance.
+- User-observed modal error: `Error: Object reference not set to an instance of an object`
+  at `(wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.Kingmaker.UnitLogic.Buffs.Buff.SpawnParticleEffect_Patch1(Kingmaker.UnitLogic.Buffs.Buff)`.
+- Reproduction: entering a dungeon from another area; loading several quicksaves
+  made with the same character; an older save already inside the dungeon may load,
+  but transitioning to the second dungeon level reproduces. Four saves reproduce
+  and are potentially recoverable, never disposable or corrupt-by-assumption.
+- Exact environment includes Call of the Wild. The composed `Patch1` name proves
+  Harmony composition only; Call of the Wild is not yet classified as causal.
+- Initial hypothesis (high confidence, pending exact installed IL/field/runtime
+  inspection): `PaperCartridgeModeBlueprints.CreateMarker()` creates a persistent
+  `BlueprintBuff` without initializing the engine's empty `FxOnStart` and
+  `FxOnRemove` links. View attachment during load/area transition reaches
+  `Buff.SpawnParticleEffect`, unlike prior detached/save-free fixtures.
+- Exact next action: inspect installed Kingmaker 2.1.7b `Buff.SpawnParticleEffect`
+  IL and `BlueprintBuff` contract, then inspect the exact installed Call of the
+  Wild patch/source and compare live blueprint field shapes for the Paper marker,
+  native no-FX persistent activatable, CotW persistent activatable, and a short-
+  lived project buff. Record every signature, null-sensitive access, and rejected
+  theory before production editing.
+
+### Exact installed forensics and minimal repair
+
+- Installed authority inspected: Kingmaker 2.1.7b `Assembly-CSharp.dll` and the
+  installed Call of the Wild DLL used by the compatibility harness.
+- `Buff.SpawnParticleEffect()` first exits safely for a missing owner view or
+  missing view data, then calls `IsParticleEffectValid()`. When no current
+  particle exists, the original body directly executes
+  `Blueprint.FxOnStart.Load(false)` with no null guard. The marker's null
+  `FxOnStart` is therefore the exact exception source on view reconstruction.
+- `Buff.OnRemove` also directly executes `Blueprint.FxOnRemove.Load(false)` when
+  a particle-effect owner view was recorded. Both links are required even for an
+  intentionally effect-free persistent buff.
+- Exact `BlueprintBuff` fields include `IsClassFeature`, private enum `m_Flags`,
+  `Stacking`, `Frequency`, `FxOnStart`, `FxOnRemove`, and `string[]
+  ResourceAssetIds`. `BlueprintActivatableAbility` also has `string[]
+  ResourceAssetIds`, returned directly by its resource enumeration contract.
+- Installed CotW patch IL is one `Prefix(Buff __instance) : bool`; it only reads
+  inherited `Fact.Active`. It has no FX, owner, view, context, event, postfix, or
+  transpiler access. Rejected theories: CotW's active check is not the null site,
+  and no broad Harmony suppression is warranted.
+- Proven no-FX precedent assigns empty non-null `PrefabLink`s and empty resource
+  arrays. The minimal unchanged-GUID repair does the same and strengthens startup
+  validation. No fallback Harmony patch is present. Live comparison of native,
+  CotW, and project blueprint values remains the next guarded observer task.
+
+### Source repair checkpoint
+
+- Version remains 0.0.74; all six Paper GUIDs and the 248-active / 249-ledger
+  identity contract are unchanged.
+- Complete deterministic suite: 954 PASS, 0 failures. Repository/static validation,
+  clean exact-reference Release, output, SoundBank, and strict/local package gates PASS.
+- Source-qualified candidate hashes (not final runtime acceptance): DLL
+  `E3E96AEBB1F7C7E3D7A1D8CC1596D70E166E83EA11E21AC17E8005821046F4CE`;
+  local-runtime package `71D0C3E4C28E17C848364C409008A4B05CED1D2A0585F8ABFEB53886448F94F3`;
+  strict package `E391F018FC662986F94E0B690BC2A095E3EFAFD93D533B46BB3C553777D06425`.
+- Next: publish this coherent repair, then add and run the real party-view marker
+  lifecycle scenario and required compatibility matrix.
