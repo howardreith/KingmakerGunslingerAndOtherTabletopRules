@@ -217,6 +217,8 @@ The absence of a state-token enchantment represents canonical Empty/Normal state
 | `KMG.Feats.AcadamaeGraduate` | `7939ff087cb843729448589ba2de19f1` | `BlueprintFeature` | Active | General Acadamae Graduate feat identity |
 | `KMG.Items.CordOfStubbornResolve` | `c4b804d9ebf941b4842b0a461a2b6b6d` | `BlueprintItemEquipmentBelt` | Active | Belt-slot Cord identity |
 
+Version 0.0.75 registers 250 active project identities in every module configuration. The two identities above are the only identities appended by this mission; disabled modules change publication only, never registry membership.
+
 ## Editing policy
 
 - Never change an existing GUID.

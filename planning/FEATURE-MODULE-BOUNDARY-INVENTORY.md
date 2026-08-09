@@ -1,6 +1,6 @@
 # Feature Module Boundary Inventory
 
-Status: IN PROGRESS
+Status: PASS
 
 UMM 0.32.4 exact public contract: `ModSettings.GetPath(ModEntry)`, `Load<T>(ModEntry)`, `Save(ModEntry)`, static `Save<T>(T, ModEntry)`, `ModEntry.OnGUI` and `OnSaveGUI`, both `Action<ModEntry>`. The native helper is XML-oriented and its malformed-input/byte-retention semantics do not meet the mission's diagnostic-preservation requirement. The authorized project-owned JSON serializer using the existing Newtonsoft.Json reference will use one explicit schema and atomic replacement; UMM remains the UI host.
 
@@ -20,4 +20,6 @@ UMM 0.32.4 exact public contract: `ModSettings.GetPath(ModEntry)`, `Load<T>(ModE
 
 The bootstrap publication plan now binds the class catalog; basic and Fighter feat arrays; all five native parametrized firearm menus; the module-aware capital table; all four optional BTSL table identities; and five exact fixed-loot targets. Gunsmithing crafting abilities and initial firearm/ammunition grants are owned by the always-registered Gunsmithing/class facts, so withholding the class and feat acquisition surfaces prevents new acquisition while preserving existing-save behavior. Runtime mechanics, assets, and audio remain exact-identity infrastructure.
 
-Next concrete action: qualify the expanded live observer for each ON/OFF boundary and reconcile any surface that does not match the publication plan.
+Runtime qualification proved every listed boundary in all four standalone combinations and exact Call of the Wild ON/ON and Gunslinger-OFF/Acadamae-ON configurations. The registered identity count remained 250, second reconciliation was a no-op, and native/foreign fixture entries were preserved.
+
+Next concrete action: retain this inventory as the guard list for final 0.0.75 validation and future player-facing additions.

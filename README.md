@@ -1,6 +1,28 @@
 # Kingmaker Gunslinger
 
-Version `0.0.31-s31-early-firearm-catalog` develops the first production early-firearm catalog for Pathfinder: Kingmaker 2.1.7b from the runtime-qualified Sprint 30 baseline.
+Version `0.0.75-feature-modules-acadamae-graduate` provides the complete qualified Gunslinger package plus two independent, persistent feature modules for Pathfinder: Kingmaker 2.1.7b.
+
+## Feature modules
+
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find two checkboxes at the top: **Gunslinger** and **Acadamae Graduate**. Both default to enabled, including installations with no settings file or a settings file created before 0.0.75.
+
+The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
+
+Disabling a module hides its content from new character choices and acquisition. It does not unregister stable blueprints or strip existing characters, facts, items, ammunition state, or equipment from a save. Gunslinger and Acadamae Graduate are independent. Keep the whole mod installed for any campaign that has used project content.
+
+## Acadamae Graduate
+
+Acadamae Graduate is a general feat for a level-one-or-higher specialist Wizard who is not a Universalist, has not given up school specialization, and does not have Conjuration as an opposition school. A prepared arcane Conjuration (Summoning) spell that would take a Full-Round action instead takes a Standard action. After a successful accelerated cast, the caster makes a Fortitude save at DC 15 + spell level; failure causes Fatigued. Scrolls, wands, spell-like abilities, spontaneous casts, divine casts, non-summoning Conjuration spells, and spells already Standard or faster do not qualify.
+
+Kingmaker represents the installed eligible one-round summons with its Full-Round overlay; it has no separate usable multi-round command representation for these candidates.
+
+## Cord of Stubborn Resolve
+
+The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. While equipped it grants a +2 enhancement bonus to Constitution. Incoming Fatigued becomes 1d6 nonlethal-equivalent damage; incoming Exhausted becomes the same damage plus Fatigued.
+
+Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
+
+The sections below retain historical subsystem detail; where version-specific wording conflicts, this 0.0.75 section and the qualification report are authoritative.
 
 ## Current vertical slice
 

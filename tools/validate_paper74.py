@@ -20,7 +20,7 @@ def validate(root: Path) -> None:
     validate_compatibility72.validate_playtest71.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     validate_compatibility72.validate(root)
     ui = (root / "src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
-    if "Kingmaker Gunslinger - 0.0.74 PAPER-CARTRIDGES-AUTO-RELOAD" not in ui:
+    if VERSION == "0.0.74" and "Kingmaker Gunslinger - 0.0.74 PAPER-CARTRIDGES-AUTO-RELOAD" not in ui:
         raise AssertionError("0.0.74 Paper Cartridge build label missing")
     for relative in (
         "PAPER-CARTRIDGES-AUTO-RELOAD-JOURNAL.md",

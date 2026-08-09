@@ -797,3 +797,12 @@
 - Every transaction observed a staged mutation and restored the original Mods manifest, module-settings bytes/absence, and managed SoundBank. Managed SoundBank SHA-256 before/after remained `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
 - Current uncertainty: the final 0.0.75 candidate must repeat its required consecutive primary and highest-risk gates; profile documentation/dispositions must be updated without overstating unrerun comprehensive coverage.
 - Next concrete action: commit/publish targeted compatibility evidence, then perform transactional version/documentation/profile updates for 0.0.75.
+
+## 2026-08-09 — 0.0.75 release transaction source-qualified
+
+- Branch/HEAD before commit: `codex/feature-modules-acadamae-graduate` / `08443098e73efc80a9a3e82db530c0b68513077c`; active version advanced transactionally to 0.0.75 / `0.0.75-feature-modules-acadamae-graduate`.
+- Updated assembly/UMM metadata, build/runtime/profile/schema pins, compatibility fixtures, the version-aware validator, static validation metadata, player installation/module documentation, architecture, manifest, coverage/matrix/inventories, qualification and implementation reports, changelog, resume, and resolved blocker record. Historical 0.0.74 run IDs/hashes and the historical validator remain intact.
+- Repository validation PASS; deterministic/domain/reflection suite PASS 967/967; clean exact-reference Release build, exact-reference/output/icon/manifest/SoundBank audits, deterministic package creation, and strict standalone package validation PASS.
+- Pre-commit 0.0.75 candidate package SHA-256 `a37dc173013c5b9e05fbda6b6593a6e2793c323e838f8767e5aaeb8034f5c83a`; DLL SHA-256 `2e405ef0d509148bdfbc3113c30d8b09e152f1f7a038efc14317df94c80514b7`. These are not final because the exact release commit is embedded at the next clean build.
+- Current uncertainty: exact release-commit build/hashes and final fresh-process runtime repetitions remain.
+- Next concrete action: commit/publish the coherent 0.0.75 release transaction, rebuild from that exact commit, then execute final runtime gates.

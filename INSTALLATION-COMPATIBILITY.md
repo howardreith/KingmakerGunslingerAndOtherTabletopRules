@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.65-local-runtime.zip` with Unity Mod
+2. Install the standalone `KingmakerGunslinger-0.0.75-local-runtime.zip` with Unity Mod
    Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.65 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.75 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -40,6 +40,12 @@ Stable published blueprint identities and historical compatibility adapter
 types are retained, but arbitrary downgrades are not qualified. Do not load a
 save written by a newer mod version after downgrading unless that exact path is
 explicitly documented as qualified.
+
+## Feature-module settings
+
+The UMM panel contains independent Gunslinger and Acadamae Graduate checkboxes. Both default ON. A change is saved for the next complete game restart; the panel reports the active process state separately from the saved state and shows when restart is required.
+
+Turning a module OFF removes its content only from new public choices and acquisition paths. It does not unregister identities, strip an existing Gunslinger, remove owned feats/items, or uninstall firearm state support. Do not remove the entire mod from a campaign that has used either module.
 
 ## Removal warning
 
@@ -81,10 +87,12 @@ Never test removal against the only copy of a valued save.
   0.0.72. This claim does not cover other builds.
 - Exact local Call of the Wild 1.14.4c-2.1 (DLL SHA-256
   `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`)
-  is `CONFLICT-CONFIRMED`: human testing reached character creation with Call
-  of the Wild classes present, but Gunslinger absent. Guarded automation also
-  observed separate 300/600-second bootstrap-boundary timeouts. It is not
-  compatible or runtime-qualified.
+  retains historical `CONFLICT-CONFIRMED` final-selector evidence: earlier human
+  testing reached character creation with Call of the Wild classes present but
+  Gunslinger absent. The 0.0.75 settings-aware reconciler subsequently passed
+  exact ON/ON and Gunslinger-OFF/Acadamae-ON catalog publication plus full
+  Acadamae/Cord mechanics. This is targeted exact compatibility evidence, not a
+  claim that every older comprehensive or human selector scenario was rerun.
 - Craft Magic Items is `STATIC-AUDITED-ONLY`; no compiled local root was
   supplied. Eddic Respec and Bag of Tricks are
   `UNAVAILABLE-LOCAL-REFERENCE`. No claim is made for them.

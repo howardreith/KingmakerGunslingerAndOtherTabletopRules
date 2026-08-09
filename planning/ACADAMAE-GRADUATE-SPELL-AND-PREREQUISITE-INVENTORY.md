@@ -1,6 +1,6 @@
 # Acadamae Graduate Spell and Prerequisite Inventory
 
-Status: IN PROGRESS
+Status: PASS
 
 Exact assembly findings (2026-08-09): `AbilityData` exposes `ActionType`, `RuntimeActionType`, `RequireFullRoundAction`, `Spellbook`, `SpellLevel`, `ParamSpellbook`, `ParamSpellSlot`, and `SpellSource`. `UnitUseAbility` owns the exact `AbilityData Spell`, `m_CastTime`, `OnAction`, and cast-command creation surface. Kingmaker represents Fatigued/Exhausted as both `UnitCondition` values and `SpellDescriptor.Fatigue`/`Exhausted`. Call of the Wild 1.14.4c-2.1 patches `AbilityData.ActionType` (`TurnActionMechanics.AbilityData_ActionType__Patch`) and `RuleCastSpell` (`MetamagicFeats+RuleCastSpell_OnTrigger_Patch`), so final implementation must compose with those exact owners.
 
@@ -25,4 +25,8 @@ Required eligibility contract: actual/pending Wizard level 1+, true specialist, 
 
 Spell candidate table will record GUID, school, Summoning descriptor/component, lists, action type, full-round/multi-round representation, variants, metamagic, and prepared/spontaneous delivery for every installed base/CotW candidate. No English-name matching is permitted.
 
-Next concrete action: build the realistic guarded Acadamae spellbook/cast scenario and validate the pending prerequisite adapter against real level-up state where safely constructible.
+Final qualification: the exact prerequisite adapter covers committed and pending Wizard levels, Universalist, exact specialist progressions, every opposition-selection state, and specialization-replacing archetypes. Deterministic fixtures cover the rejection matrix. Guarded runtime uses a real level-one Wizard, native spellbook, native memorized slot, and the lowest eligible installed candidate, `SummonMonsterISingle` (`8fd74eddd9b6c224693d9ab241f25e84`). Consecutive integration runs prove prepared delivery, Full-Round to Standard UI/command parity, native DC 16 Fortitude success/failure, cancellation, exact invocation consumption, Cord interaction, and cleanup. Exact Call of the Wild targeted mechanics also pass.
+
+Kingmaker exposes no general true multi-round cast command beyond its Full-Round overlay for the installed eligible candidates; the pure policy retains exact one-round-shorter behavior if such a representation is supplied, while the installed runtime case reduces Full-Round to Standard.
+
+Next concrete action: preserve this inventory as exact-contract evidence for final 0.0.75 qualification.

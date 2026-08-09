@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 $root = Get-KmgCompatibilityRepositoryRoot
 $expectedStateRoot = [IO.Path]::GetFullPath('C:\Dev\KingmakerGunslingerLab\compatibility-state').TrimEnd('\')
 if (-not [IO.Path]::GetFullPath($StateRoot).TrimEnd('\').Equals($expectedStateRoot, [StringComparison]::OrdinalIgnoreCase)) { throw "Public transaction state root must be exact: $expectedStateRoot" }
-$package = Join-Path $root 'artifacts\local-runtime\0.0.74\KingmakerGunslinger-0.0.74-local-runtime.zip'
+$package = Join-Path $root 'artifacts\local-runtime\0.0.75\KingmakerGunslinger-0.0.75-local-runtime.zip'
 $resolution = Resolve-KmgCompatibilityProfile -ProfileId $ProfileId -ReferenceRoot 'C:\Dev\KingmakerGunslingerLab\examples' -PackagePath $package -KingmakerInstallDir $KingmakerInstallDir -RepositoryRoot $root
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'), "enter isolated profile $($resolution.profileId), run $RunId")) { return }
 $state = Enter-KmgCompatibilityTransaction -Resolution $resolution -KingmakerInstallDir $KingmakerInstallDir -StateRoot $StateRoot -RunId $RunId

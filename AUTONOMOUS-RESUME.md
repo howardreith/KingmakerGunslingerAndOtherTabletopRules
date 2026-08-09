@@ -1,5 +1,12 @@
 # Autonomous Gunslinger resume handoff
 
+## Current resume — Feature Modules, Acadamae Graduate, and Cord (2026-08-09)
+
+- Branch `codex/feature-modules-acadamae-graduate`; base `7a99ce5ac6d6976212310f997bd39ddfe4a57935`; latest published pre-versioning checkpoint `08443098e73efc80a9a3e82db530c0b68513077c`.
+- Settings/identity/publication architecture, Acadamae, Cord, capital vendor, four standalone module configurations, consecutive standalone integration, and exact targeted optional profiles are implemented and runtime-proven. Deterministic total is 967; registered identities are 250.
+- Transactional 0.0.75 / `0.0.75-feature-modules-acadamae-graduate` pins and release documentation are in progress in the working tree.
+- Exact next action: finish 0.0.75 documentation/profile validation, run full clean build/package, commit/publish, then execute final consecutive standalone and high-risk runtime gates, eligible ON/ON working-save smoke, restoration audit, final hashes, clean tree, and remote equality. Do not merge.
+
 ## Current resume — Paper mode area-transition/save-load crash repair
 
 - Clean branch/local/remote intake SHA:

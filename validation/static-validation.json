@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.74-paper-cartridges-auto-reload",
-  "version": "0.0.74",
+  "milestone": "0.0.75-feature-modules-acadamae-graduate",
+  "version": "0.0.75",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -58,5 +58,14 @@
     "runtimeAcceptancePending": false,
     "runtimeAcceptancePassed": true,
     "sprint30EntryApproved": true
+  },
+  "featureModules75": {
+    "deterministicTestCount": 967,
+    "activeBlueprintCount": 250,
+    "ledgerEntryCount": 251,
+    "reservedBlueprintCount": 1,
+    "fourModuleConfigurationsQualified": true,
+    "acadamaeCordIntegrationQualified": true,
+    "exactOptionalProfilesTargeted": true
   }
 }

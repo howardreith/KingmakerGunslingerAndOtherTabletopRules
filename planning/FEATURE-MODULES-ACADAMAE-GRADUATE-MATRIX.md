@@ -7,17 +7,17 @@
 | Baseline complete domain suite | PASS | `scripts/test-domain.ps1 -Configuration Release`: 954/954 (required unsandboxed staging fixture) |
 | Durable mission records | PASS | This matrix and companion inventories |
 | UMM settings contract | PASS | Exact 0.32.4 signatures recorded; project JSON selected for malformed-byte quarantine/atomicity |
-| Four module combinations | TODO | Deterministic and fresh-process runtime matrix |
+| Four module combinations | PASS | Standalone fresh-process ON/ON, ON/OFF, OFF/ON, OFF/OFF; exact settings restoration |
 | Constant identity set | PASS | Guarded run `20260809T1349054900940Z-mod-load-smoke`: bootstrap complete with both appended GUIDs and expected 250-registration invariant |
-| Gunslinger publication boundary | IN PROGRESS | Boundary inventory underway |
-| Acadamae prerequisite/publication | TODO | Exact installed blueprint inventory required |
-| Acadamae casting/save mechanics | TODO | Exact action/cast lifecycle inventory required |
-| Cord item/Constitution | TODO | Native donor and equipment contracts required |
-| Cord fatigue/exhaustion | TODO | Native condition/nonlethal inventory required |
-| Capital vendor | IN PROGRESS | SmithVendorTable fallback proven; broader graph bounded inspection pending |
-| Call of the Wild reconciliation | TODO | Exact compiled build/hash/patch inventory required |
-| Guarded scenarios | TODO | Source, validators, package catalog, and runtime proof |
-| Optional-mod regression | TODO | Standalone, CotW, Arms & Armor, soundpacks, combined |
-| Release/package/docs | TODO | Target 0.0.75 after mechanics qualification |
+| Gunslinger publication boundary | PASS | Class, feat arrays, five parameter menus, capital/BTSL/fixed loot gated exactly; foreign entries preserved |
+| Acadamae prerequisite/publication | PASS | Exact committed/pending specialist and opposition policy; singular localized-order general feat publication |
+| Acadamae casting/save mechanics | PASS | Consecutive native prepared-cast integration 7/7; DC/action/cancellation/correlation proven |
+| Cord item/Constitution | PASS | Standalone equip/unequip and 10 to 12 Constitution runtime proof |
+| Cord fatigue/exhaustion | PASS | Native buff/condition boundaries, one-roll downgrade, HP floor, recursion and inert-buff lifecycle proven |
+| Capital vendor | PASS | Exact SmithVendorTable/owners; singular count-one row, preservation, idempotence and rollback |
+| Call of the Wild reconciliation | PASS | Exact ON/ON and OFF/ON publication; final ON/ON mechanics; exact foreign retention |
+| Guarded scenarios | PASS | Settings, Acadamae, Cord, integration and vendor scenarios registered/preflighted and runtime-proven |
+| Optional-mod regression | PASS | CotW, Arms & Armor, soundpacks, qualified combined and high-risk targeted transactions |
+| Release/package/docs | IN PROGRESS | 0.0.75 pins applied; final hashes/runtime repetitions/clean remote proof pending |
 
-Next concrete action: populate exact-contract inventories from installed assemblies and blueprints.
+Next concrete action: complete final 0.0.75 build, package, runtime, working-save, restoration, and remote-equality gates.

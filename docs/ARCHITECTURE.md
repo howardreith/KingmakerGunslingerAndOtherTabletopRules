@@ -351,6 +351,18 @@ Version 0.0.29 does not:
 - add production pistols, scatter weapons, custom firearm assets, vendors, crafting, the Gunslinger class, deeds, grit, or enemy firearm AI; or
 - claim 0.0.29 runtime acceptance before the complete maintenance-loop smoke test passes in Kingmaker.
 
+## 0.0.75 feature-module architecture
+
+The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to Gunslinger ON / Acadamae Graduate ON; malformed bytes are retained for diagnosis. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
+
+Blueprint bootstrap is split conceptually into an unconditional identity layer and a settings-controlled publication layer. All 250 project-owned identities register in every configuration. `FeatureModulePublicationCoordinator` owns exact transactions for class and feat catalogs, native firearm parameter menus, capital/BTSL/fixed-loot acquisition, Acadamae's general-feat entry, and the Cord's capital row. Transactions merge against current arrays, preserve unrelated order, detect exact reference/GUID duplicates, validate, reconcile idempotently after foreign publishers, and use guarded rollback rather than restoring stale snapshots.
+
+Acadamae action presentation and execution share one command-scoped `AcadamaeInvocationTracker`. The adapter evaluates the final pre-Acadamae Full-Round state after native/foreign modifiers, alters only qualifying prepared arcane Conjuration (Summoning) invocations, and consumes the marker once on successful `RuleCastSpell`. Native Fortitude resolution applies the exact canonical Fatigued buff on failure.
+
+Cord substitution has two exact convergence points: canonical/composite buff application at `BuffCollection.TriggerRuleApplyBuff`, and direct conditions at `UnitState.AddCondition`. Exact equipped-item identity is required. Thread-scoped condition/bypass tokens and source markers prevent recursion and duplicate d6 results. The canonical Fatigued buff is rejected completely after substitution so no inert fact can block later ordinary fatigue; composite buffs retain unrelated components while only their condition is suppressed.
+
+Settings fixtures and compatibility profiles transact and restore exact settings bytes/absence, Mods manifests, and the managed SoundBank. Runtime scenarios never persist their command correlation or guarded deterministic-roll controls into saves.
+
 ## Historical subsystem notes
 
 Earlier sprint-specific architecture and persistence experiments remain in dedicated documents and ADRs. Where they conflict with this file's Sprint 29 layer, the current token-backed runtime path and exact installed method contracts above are authoritative.

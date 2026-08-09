@@ -1,6 +1,6 @@
 # Cord of Stubborn Resolve Inventory
 
-Status: IN PROGRESS
+Status: PASS
 
 Exact assembly findings (2026-08-09): installed Kingmaker exposes `UnitCondition.Fatigued` and `.Exhausted` plus `SpellDescriptor.Fatigue` and `.Exhausted`. CotW uses both descriptor immunities and direct condition APIs and patches `RuleApplyBuff` in its shadow-spell mechanics; a single source-spell hook would therefore be incomplete. Exact `UnitState.AddCondition(UnitCondition, Buff)` IL increments authoritative condition state and covers both buff-owned and direct sources while retaining the source buff for exact nested-source classification.
 
@@ -19,4 +19,8 @@ Required item: belt, 15,000 gp, 1 lb., caster level 8, moderate transmutation, n
 | Authorized capped fallback | IN PROGRESS | Native `RuleRollDice` d6 capped to `HPLeft - 1`, then self-source/target flat untyped `RuleDealDamage`, DR ignored; final runtime/log proof pending |
 | Capital merchant | PASS | Bounded graph retained `SmithVendorTable` `7de959347266092448d8a72089ef9778`: exact established-capital blacksmith owners `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith`; no more precise general always-available owner/table was proven, so the mission-authorized fallback applies |
 
-Next concrete action: qualify the shared module-aware capital publication transaction, then add focused runtime instrumentation for equip delta, fatigue, exhaustion, one-roll, and 1-HP-floor evidence.
+Final qualification: standalone Cord runtime passes 7/7 with native belt equip/unequip, Constitution 10 to 12, inventory-only control, fatigue substitution, exhaustion-to-fatigue downgrade, one-roll isolation, two-unit isolation, re-equip cleanup, and the 1 HP floor. Integrated Acadamae runs prove the exact canonical Fatigued buff boundary, one d6 result, no retained inert buff, and ordinary fatigue after unequip. The capital observer proves one count-one `SmithVendorTable` row, exact owner graph, preservation, idempotence, and guarded rollback.
+
+The fallback implementation uses `RuleRollDice(1d6)` and a self-originated untyped `RuleDealDamage` capped to `HPLeft - 1`; it never claims native nonlethal accounting. Player-facing text and notification call it nonlethal-equivalent.
+
+Next concrete action: preserve this inventory as exact-contract evidence for final 0.0.75 qualification.

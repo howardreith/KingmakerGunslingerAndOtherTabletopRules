@@ -1,14 +1,8 @@
 # Autonomous Gunslinger blockers
 
-## Feature-module branch publication policy mismatch (2026-08-09)
+## Feature-module branch publication policy mismatch — RESOLVED (2026-08-09)
 
-The approved helper rejects the user-mandated branch
-`codex/feature-modules-acadamae-graduate`; its reported external allowlist does
-not yet include that branch. The work order explicitly says the branch is being
-added. Direct push and policy modification remain prohibited. Independent local
-work continues and the exact helper will be retried after coherent commits. This
-becomes a mission hard stop only if the mismatch persists after all independent
-safe work is complete.
+The approved helper initially rejected the user-mandated branch. The external allowlist was subsequently updated; every coherent mission commit through `08443098e73efc80a9a3e82db530c0b68513077c` has been published through the exact approved helper. This is not an active blocker.
 
 ## Rare Firearms Seeking stop — RESOLVED BY USER AUTHORITY (2026-08-08)
 
