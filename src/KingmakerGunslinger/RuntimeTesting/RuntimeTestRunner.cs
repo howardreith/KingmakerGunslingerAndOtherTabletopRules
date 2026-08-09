@@ -7062,13 +7062,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility spell, int spellLevel)
         {
             var data = new AbilityData(spell, spellbook);
-            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
-                .FirstOrDefault();
-            if (slot == null) throw new InvalidOperationException(
-                "Wizard fixture did not produce a memorization slot at level " +
-                spellLevel + ".");
-            slot.Spell = data;
-            slot.Available = true;
+            var slot = new SpellSlot(spellLevel, SpellSlotType.Common, 0) {
+                Spell = data, Available = true };
             data.ParamSpellSlot = slot;
             return data;
         }

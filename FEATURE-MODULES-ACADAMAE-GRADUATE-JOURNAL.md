@@ -466,3 +466,20 @@
 - Candidate package SHA-256 `773cb98c597ea4d83dcf5110d82879ef95e016fe580602cf929fd7ed101b3219`; DLL SHA-256 `d990a3f819f431e30946d09bd6fe403c7aca697eb24f2347ba33e9f7c0a3fcb9`.
 - Current uncertainty: the fixture needs its first guarded Kingmaker run; native slot creation, RuleCastSpell success, and fatigue-to-Cord flow may expose lifecycle details requiring a narrower adjustment.
 - Next concrete action: commit/publish the source-qualified scenario, then run `disposable-acadamae-graduate` through the guarded Steam-backed harness and inspect every structured assertion.
+
+## 2026-08-09 — first Acadamae run isolates absent generated slot
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `4c255fad0cdf509e5458727c1ab8635bddf5c53e`; active version 0.0.74.
+- Guarded directory `20260809T1625204701912Z-disposable-acadamae-graduate`, run `20260809T1625204923748Z-571ec5abb0e34e309c239e517a3bf167`, ERROR after 85,914 ms before assertions: `Wizard fixture did not produce a memorization slot at level 1.` Cleanup and automatic exit completed.
+- The semantic candidate resolved at Wizard spell level 1, but `AddCasterLevel` on a detached level-zero descriptor did not synthesize its daily slot list because class progression was not committed. The public `AbilityData` contract independently supports request-local `ParamSpellSlot`; the fixture now creates an exact native Common `SpellSlot`, binds the real prepared spell data, marks it available, and relies on production `Spellbook.CanSpend` to accept or reject it.
+- Rejected strategy: call the non-public `SureMemorizedSpells` mutator or reflect into the spellbook's serialized slot collections. The public invocation slot parameter is the narrower contract and production eligibility already validates it through `CanSpend`.
+- Current uncertainty: a detached request-local slot may or may not satisfy `CanSpend`; the next run will fail its prepared assertion rather than bypassing production eligibility if it does not.
+- Next concrete action: qualify, commit, and publish the public ParamSpellSlot fixture correction, then repeat the guarded Acadamae scenario.
+
+## 2026-08-09 — public invocation-slot fixture source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `4c255fad0cdf509e5458727c1ab8635bddf5c53e`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `92597f5425f902b5392ad18f31538e3928c2d4a7f41d29ffa240b598fd163d26`; DLL SHA-256 `4a6a77d61b25005e8a10c821f9885772dd99b43143ff8c384cba8b7f504aa042`.
+- Current uncertainty: production `Spellbook.CanSpend` must now decide whether the native request-local slot is a valid prepared invocation.
+- Next concrete action: commit/publish this narrow fixture repair, then rerun the guarded Acadamae scenario and inspect the prepared/action/save assertions.
