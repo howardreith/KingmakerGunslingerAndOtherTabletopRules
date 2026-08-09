@@ -25,17 +25,7 @@ namespace KingmakerGunslinger.Development
             "No development command has run. Load a disposable campaign before using these controls.";
         private static bool _removeTestMusketsConfirmationArmed;
 
-        internal static void Attach(UnityModManager.ModEntry modEntry)
-        {
-            if (modEntry == null)
-            {
-                throw new ArgumentNullException("modEntry");
-            }
-
-            modEntry.OnGUI = OnGui;
-        }
-
-        private static void OnGui(UnityModManager.ModEntry modEntry)
+        internal static void Draw(UnityModManager.ModEntry modEntry)
         {
             ImmediateModeGui.Label(
                 "Kingmaker Gunslinger - 0.0.74 PAPER-CARTRIDGES-AUTO-RELOAD / RARE-FIREARMS / PISTOLERO-MUSKET-MASTER / FIREARM-NATIVE-WEAPON-RIGS / DODGE-EXPIRATION-R3");

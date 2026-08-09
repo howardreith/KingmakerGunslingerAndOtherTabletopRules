@@ -33,3 +33,14 @@
 - One redundant manual validator invocation used a nonexistent `-Strict` switch and failed parameter binding after `Build-Local.ps1` had already completed strict validation. No product gate failed; the invalid duplicate command will not be reused.
 - Current uncertainty remains the prerequisite/casting/nonlethal exact-contract inventory; no production source was changed in this checkpoint.
 - Next concrete action: commit and publish the durable intake, then finish exact contract inventories and implement the settings snapshot.
+
+## 2026-08-09 — settings snapshot source checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `1138494`; active version 0.0.74.
+- Implemented stable IDs, schema-1 JSON persistence, missing/legacy ON/ON defaults, malformed quarantine/recovery, atomic save/backup, immutable active and mutable pending snapshots, restart-required state, and composed UMM `OnGUI`/`OnSaveGUI` with module controls before the retained development panel.
+- Tests/gates: four focused settings tests PASS; complete suite PASS 958/958; repository validation PASS; clean exact-reference Release build, supply-icon audit, build-output validation, SoundBank validation, deterministic local package, and strict package validation PASS.
+- Candidate package SHA-256 `8e505bf88759906a5b381452c6ff7204490145ce568364dadfd80833d290c554`; DLL SHA-256 `ec9b5178d266dfe5163ffd04f1ca8f2181124763a3d91b1824ae0569ac5e4df8`.
+- Runtime pre-attempt correctly failed closed because the guarded harness requires a clean Git state. This is sequencing evidence, not a runtime result; commit the source checkpoint and run the scenario on the clean commit.
+- Publication: the approved helper rejected the exact mandated branch because its external allowlist still omits `codex/feature-modules-acadamae-graduate`. No direct push or policy bypass attempted; retry after each coherent commit while independent work continues.
+- Current uncertainty: live UMM save-callback behavior and exact settings-path runtime evidence remain pending the clean-commit guarded run.
+- Next concrete action: commit the passing settings checkpoint, retry the approved push helper, then run guarded `mod-load-smoke` on the clean commit and inspect structured evidence.

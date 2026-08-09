@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Harmony12;
+using KingmakerGunslinger.FeatureModules;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.Bootstrap
@@ -37,6 +38,8 @@ namespace KingmakerGunslinger.Bootstrap
         internal ModLogger Logger { get; private set; }
 
         internal string ModId { get; private set; }
+
+        internal FeatureModuleSettingsState FeatureModules { get; private set; }
 
         internal HarmonyInstance Harmony
         {
@@ -107,7 +110,17 @@ namespace KingmakerGunslinger.Bootstrap
                 throw new ArgumentNullException("logger");
             }
 
-            return new ModContext(modEntry, assembly, logger);
+            ModContext context = new ModContext(modEntry, assembly, logger);
+            context.FeatureModules = FeatureModuleSettingsStore.Load(modEntry.Path,
+                message => logger.Warning("settings", "load.recovered", message));
+            logger.Info("settings", "load.complete", string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                "schema={0};path={1};source={2};active={3};recovered={4};restartPending={5}",
+                FeatureModuleSettingsStore.CurrentSchemaVersion,
+                context.FeatureModules.Path, context.FeatureModules.Source,
+                context.FeatureModules.Active, context.FeatureModules.Recovered,
+                context.FeatureModules.RestartRequired));
+            return context;
         }
 
         internal static void Publish(ModContext context)

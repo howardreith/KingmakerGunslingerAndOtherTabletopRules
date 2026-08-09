@@ -187,6 +187,10 @@
     <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Compatibility\ClassCatalogDiagnostics.cs" />
+    <Compile Include="FeatureModules\FeatureModuleConfiguration.cs" />
+    <Compile Include="FeatureModules\FeatureModuleSettingsState.cs" />
+    <Compile Include="FeatureModules\FeatureModuleSettingsStore.cs" />
+    <Compile Include="FeatureModules\FeatureModuleUi.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />

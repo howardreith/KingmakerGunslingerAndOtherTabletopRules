@@ -4,6 +4,7 @@ using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Compatibility;
+using KingmakerGunslinger.FeatureModules;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger
@@ -89,7 +90,7 @@ namespace KingmakerGunslinger
                     "state-carrier.configured",
                     "Sprint 19 runtime evidence proved the core item-owned BlueprintWeaponEnchantment state-token carrier across save, exit, restart, and reload. Extended merchant and compatibility qualification remains pending.");
 
-                DevelopmentUi.Attach(modEntry);
+                FeatureModuleUi.Attach(modEntry, context.FeatureModules);
                 logger.Info(
                     "development",
                     "ui.attached",
@@ -112,6 +113,7 @@ namespace KingmakerGunslinger
                     if (modEntry != null)
                     {
                         modEntry.OnGUI = null;
+                        modEntry.OnSaveGUI = null;
                     }
                 }
                 catch
