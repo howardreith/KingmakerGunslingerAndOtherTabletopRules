@@ -105,6 +105,8 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "Deeds", "DeadShotRuntime.cs"));
             string scatter = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Scatter", "ScatterShotRuntime.cs"));
+            string ordinaryMisfire = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Misfires", "FirearmMisfireRuntime.cs"));
             Assertions.True(ordinary.Contains("before.Repository.State.LoadedAmmunition"),
                 "ordinary captures fired ammunition before discharge");
             Assertions.True(deadShot.Contains("firearm.Weapon, before.LoadedAmmunition"),
@@ -114,6 +116,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(deadShot.Contains("MinimumEffectiveValue") &&
                 deadShot.Contains("MaximumEffectiveValue"),
                 "Dead Shot accepts centralized zero-to-twenty thresholds");
+            Assertions.True(ordinaryMisfire.Contains(
+                    "bool forced = ForcedRolls.TryConsume(out forcedNaturalRoll)") &&
+                ordinaryMisfire.Contains(
+                    "if (!context.Forced && naturalRoll != context.FinalNaturalRoll)"),
+                "ordinary direct-field fallback preserves the exact forced-roll hook");
         }
 
         internal static void CraftingSharedTransactionContract()
