@@ -120,3 +120,12 @@
 - Candidate package SHA-256 `e63c654beaae1c577aabff30850fc525b24d5bb6519b48253c088a2e22120a44`; DLL SHA-256 `c3b0c287ffe7cdb632bc4ad1b1c2639d4918eea38ab24d00c4418a36da79539b` from the source qualification preceding commit `b1a4c77`.
 - Current uncertainty: prerequisite, publication, action/cast correlation, Cord substitution, and vendor mechanics remain unimplemented; identity existence alone makes no claim about them.
 - Next concrete action: implement and test the exact specialist-Wizard/no-Conjuration-opposition prerequisite adapter and Acadamae general-feat publication transaction.
+
+## 2026-08-09 — prerequisite decision-policy checkpoint
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `d73bbe6253543c623284183d023c277bf61084ff`; active version 0.0.74.
+- Added deterministic prerequisite policy for committed plus pending Wizard levels, committed/pending specialist school, Universalist exclusion, Conjuration opposition exclusion, and archetypes that replace specialization. Rejection statuses are explicit for truthful UI adaptation.
+- Tests/gates: focused prerequisite matrix PASS; complete deterministic suite PASS 964/964; repository validation PASS; exact-reference clean Release build, build-output validation, supply-icon audit, SoundBank validation, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `58964913dfe5ca2838a39adb3c18a7b9dd50bee44a525914b611a1aa1af81495`; DLL SHA-256 `e0348a3d380b359fcaf3e9e256a39f5fbc82d0fcc2f6942b7fe7afc53709368e`.
+- Current uncertainty: the policy is not yet connected to exact `UnitDescriptor` and `LevelUpState` contracts, and exact local Call of the Wild school-replacement shapes remain adapter work.
+- Next concrete action: implement the native prerequisite component/adapter and attach it to Acadamae, then implement singular ordered basic-feat publication.

@@ -43,6 +43,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastDecision.cs"><Link>Acadamae\AcadamaeCastDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingPolicy.cs"><Link>Acadamae\AcadamaeCastingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisiteRequest.cs"><Link>Acadamae\AcadamaePrerequisiteRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisiteDecision.cs"><Link>Acadamae\AcadamaePrerequisiteDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaePrerequisitePolicy.cs"><Link>Acadamae\AcadamaePrerequisitePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordConditionKind.cs"><Link>Cord\CordConditionKind.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordSubstitutionDecision.cs"><Link>Cord\CordSubstitutionDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Cord\CordSubstitutionPolicy.cs"><Link>Cord\CordSubstitutionPolicy.cs</Link></Compile>

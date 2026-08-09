@@ -44,6 +44,9 @@
     <Compile Include="Acadamae\AcadamaeCastRequest.cs" />
     <Compile Include="Acadamae\AcadamaeCastDecision.cs" />
     <Compile Include="Acadamae\AcadamaeCastingPolicy.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisiteRequest.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisiteDecision.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisitePolicy.cs" />
     <Compile Include="Cord\CordConditionKind.cs" />
     <Compile Include="Cord\CordSubstitutionDecision.cs" />
     <Compile Include="Cord\CordSubstitutionPolicy.cs" />

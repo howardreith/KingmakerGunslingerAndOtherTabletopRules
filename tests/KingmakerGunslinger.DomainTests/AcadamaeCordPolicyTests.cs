@@ -56,6 +56,24 @@ namespace KingmakerGunslinger.DomainTests
                 exhaustion.ApplyFatigue, "Exhaustion downgrade contract failed.");
         }
 
+        internal static void AcadamaePrerequisiteMatrix()
+        {
+            var request = new AcadamaePrerequisiteRequest {
+                CommittedWizardLevel = 1, HasSpecialistSchool = true };
+            AssertPrerequisite(request, true, "eligible", 1);
+            request.CommittedWizardLevel = 0; request.PendingWizardLevels = 1;
+            request.HasSpecialistSchool = false; request.PendingSpecialistSchool = true;
+            AssertPrerequisite(request, true, "eligible", 1);
+            request.PendingWizardLevels = 0;
+            AssertPrerequisite(request, false, "wizard-level-required", 0);
+            request.PendingWizardLevels = 1; request.PendingUniversalist = true;
+            AssertPrerequisite(request, false, "universalist-ineligible", 1);
+            request.PendingUniversalist = false; request.PendingConjurationForbidden = true;
+            AssertPrerequisite(request, false, "conjuration-forbidden", 1);
+            request.PendingConjurationForbidden = false; request.GivesUpSpecialization = true;
+            AssertPrerequisite(request, false, "specialization-replaced", 1);
+        }
+
         internal static void CordDamageBoundaries()
         {
             Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
@@ -97,6 +115,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(decision.Eligible && decision.ResultingTime == time &&
                 decision.ResultingRounds == rounds && decision.FortitudeDc == dc,
                 "Acadamae eligible decision mismatch.");
+        }
+
+        private static void AssertPrerequisite(AcadamaePrerequisiteRequest request,
+            bool eligible, string status, int level)
+        {
+            AcadamaePrerequisiteDecision result = AcadamaePrerequisitePolicy.Decide(request);
+            Assertions.True(result.Eligible == eligible && result.Status == status &&
+                result.EffectiveWizardLevel == level,
+                "Acadamae prerequisite mismatch: " + status);
         }
     }
 }
