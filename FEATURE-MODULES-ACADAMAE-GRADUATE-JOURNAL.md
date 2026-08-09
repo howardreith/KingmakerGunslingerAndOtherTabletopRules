@@ -221,3 +221,12 @@
 - Candidate package SHA-256 `d5439cef7cc9795e2c90356e0bce45c9769e164fe7fb83083a57cba19a92bc84`; DLL SHA-256 `9b286c020b3a42be110dbcd8cf3d946d23472d8da55aaf560f12e6e62244d974`.
 - Current uncertainty: the observer has not yet run in Kingmaker and does not claim already-materialized merchant-inventory refresh behavior.
 - Next concrete action: commit/publish the observer and run it from the clean ON/ON default process, then implement the disposable equipped-Cord mechanics scenario.
+
+## 2026-08-09 — first capital-Cord observer run and narrowed repair
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `63c2a7dc53cd2d8233d60e3864725f3afa1d93a8`; active version 0.0.74.
+- Guarded Steam-backed scenario directory `20260809T1441429545451Z-observe-capital-cord-vendor`, run ID `20260809T1441429793354Z-1da258279c6b4b99b9805f78e6f5035b`, FAIL in 94,994 ms with 3/4 assertions PASS.
+- Product assertions passed: Acadamae active, exact Cord row count 1 and quantity 1, exact GUID, cost 15,000 gp, and weight 1 lb. The owner assertion alone failed with an empty observation because this new observer incorrectly narrowed owner enumeration to `BlueprintUnit`; the previously qualified graph contract places `AddSharedVendor` on general `BlueprintScriptableObject` owners.
+- Rejected theory: empty owners disprove the selected Smith table. The same live table row and identity passed; the observer used a stricter type filter than the exact established graph scanner in `RunVendorTableContractObservation`.
+- Current uncertainty: corrected general-blueprint owner enumeration needs a fresh guarded rerun.
+- Next concrete action: qualify, commit, and publish the one-line observer-scope repair, then rerun `observe-capital-cord-vendor` from the clean commit.

@@ -6727,11 +6727,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BindingFlags.Public | BindingFlags.NonPublic;
             FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", flags);
             string[] owners = BlueprintBootstrap.Library.GetAllBlueprints()
-                .OfType<BlueprintUnit>().Where(unit =>
-                    (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Where(owner => owner != null &&
+                    (owner.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<AddSharedVendor>().Any(component => ReferenceEquals(
                         tableField == null ? null : tableField.GetValue(component), table)))
-                .Select(unit => unit.name).OrderBy(value => value,
+                .Select(owner => owner.name).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
             bool ownerExact = owners.Contains("CapitalOwlbearAttack_Blacksmith") &&
                 owners.Contains("VerdelBlacksmith");
