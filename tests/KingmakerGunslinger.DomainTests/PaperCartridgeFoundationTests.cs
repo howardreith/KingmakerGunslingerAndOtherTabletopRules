@@ -169,6 +169,10 @@ namespace KingmakerGunslinger.DomainTests
                 "BeneathStolenLandsVendorBlueprints.cs"));
             Assertions.True(capital.Contains("7de959347266092448d8a72089ef9778") &&
                 capital.Contains("SmithVendorTable"), "exact capital authority");
+            Assertions.True(capital.Contains("cordOfStubbornResolve") &&
+                capital.Contains("publishGunslinger") && capital.Contains("publishCord") &&
+                capital.Contains("new[] { 1 }"),
+                "Capital publication must compose exact module gates and one Cord row.");
             Assertions.True(Count(capital, "ammunition.PaperCartridge") >= 2 &&
                 capital.Contains("AmmunitionCount = 200"),
                 "capital desired and owned Paper stock");

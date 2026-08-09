@@ -27,6 +27,9 @@ namespace KingmakerGunslinger.Blueprints
             BasicAmmunitionBlueprintSet ammunition,
             BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet gunsmithingSupplies,
+            bool publishGunslinger,
+            BlueprintItem cordOfStubbornResolve,
+            bool publishCord,
             ModLogger logger)
         {
             if (library == null) throw new ArgumentNullException("library");
@@ -35,6 +38,7 @@ namespace KingmakerGunslinger.Blueprints
             if (ammunition == null) throw new ArgumentNullException("ammunition");
             if (repairKit == null) throw new ArgumentNullException("repairKit");
             if (gunsmithingSupplies == null) throw new ArgumentNullException("gunsmithingSupplies");
+            if (cordOfStubbornResolve == null) throw new ArgumentNullException("cordOfStubbornResolve");
             if (logger == null) throw new ArgumentNullException("logger");
 
             BlueprintSharedVendorTable table =
@@ -43,7 +47,7 @@ namespace KingmakerGunslinger.Blueprints
             if (!string.Equals(table.name, ExpectedTableName, StringComparison.Ordinal))
                 throw new InvalidOperationException("Capital merchant GUID/name mismatch: " +
                     table.name + ":" + TableGuid);
-            BlueprintItem[] items =
+            BlueprintItem[] gunslingerItems =
             {
                 firearms.Pistol.Item,
                 firearms.Musket.Item,
@@ -58,20 +62,27 @@ namespace KingmakerGunslinger.Blueprints
                 gunsmithingSupplies.OverhaulKit,
                 gunsmithingSupplies.GunsmithKit
             };
-            int[] counts =
+            int[] gunslingerCounts =
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
                 WeaponCount,
                 AmmunitionCount, AmmunitionCount, AmmunitionCount,
                 10, 5, WeaponCount
             };
+            BlueprintItem[] items = (publishGunslinger ? gunslingerItems :
+                Array.Empty<BlueprintItem>()).Concat(publishCord ?
+                    new[] { cordOfStubbornResolve } : Array.Empty<BlueprintItem>()).ToArray();
+            int[] counts = (publishGunslinger ? gunslingerCounts :
+                Array.Empty<int>()).Concat(publishCord ? new[] { 1 } :
+                    Array.Empty<int>()).ToArray();
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
                         ammunition.BlackPowder, ammunition.LeadBall,
                         ammunition.PaperCartridge, repairKit,
                         gunsmithingSupplies.OverhaulKit,
-                        gunsmithingSupplies.GunsmithKit }).Distinct().ToArray();
+                        gunsmithingSupplies.GunsmithKit,
+                        cordOfStubbornResolve }).Distinct().ToArray();
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
             int[] matches = items.Select(item => existing.OfType<LootItemsPackFixed>()
@@ -101,8 +112,8 @@ namespace KingmakerGunslinger.Blueprints
             publication.Validate();
             logger.Info("acquisition", "capital-vendor.published",
                 string.Format(CultureInfo.InvariantCulture,
-                    "Normalized {0} bounded Gunslinger entries on {1} ({2}); weapons={3}, consumables={4}; modern and named firearms excluded.",
-                    items.Length, table.name, TableGuid, WeaponCount, ConsumableCount));
+                    "Normalized {0} module-aware project entries on {1} ({2}); gunslinger={3}, acadamae-graduate={4}; modern and named firearms excluded.",
+                    items.Length, table.name, TableGuid, publishGunslinger, publishCord));
             return publication;
         }
 

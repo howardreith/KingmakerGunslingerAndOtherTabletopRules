@@ -17,6 +17,6 @@ Required item: belt, 15,000 gp, 1 lb., caster level 8, moderate transmutation, n
 | Equipped exact-item detection | PASS | Exact `UnitBody.Belt.Item.Blueprint` reference; inventory-only instances cannot match |
 | Native nonlethal support | NOT APPLICABLE | Dormant stat only; no usable native application semantics found |
 | Authorized capped fallback | IN PROGRESS | Native d6 `RuleDealDamage`, self source/target, untyped, DR ignored, `MinHPAfterDamage=1`; runtime/log proof pending |
-| Capital merchant | IN PROGRESS | SmithVendorTable `7de959...` proven fallback; exact main-merchant graph pending |
+| Capital merchant | PASS | Bounded graph retained `SmithVendorTable` `7de959347266092448d8a72089ef9778`: exact established-capital blacksmith owners `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith`; no more precise general always-available owner/table was proven, so the mission-authorized fallback applies |
 
-Next concrete action: clean-commit bootstrap the exact `AddCondition` patch, then add focused runtime instrumentation for equip delta, fatigue, exhaustion, one-roll, and 1-HP-floor evidence.
+Next concrete action: qualify the shared module-aware capital publication transaction, then add focused runtime instrumentation for equip delta, fatigue, exhaustion, one-roll, and 1-HP-floor evidence.

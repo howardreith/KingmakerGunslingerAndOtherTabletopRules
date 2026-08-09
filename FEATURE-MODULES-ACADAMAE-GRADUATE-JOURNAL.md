@@ -193,3 +193,22 @@
 - Source qualification before this journal checkpoint: complete deterministic suite PASS 966/966; repository validation, exact-reference clean Release build, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS. Candidate package SHA-256 `2d37dc631cb5e31f3050f60fde177cb377db92d2e36b42b29308a35dc77d4ca2`; DLL SHA-256 `260b207ad736ad07289410c145961d57fd7153e271004b5079af513267adb454`.
 - Current uncertainty: real equip delta, native fatigue/exhaustion interception, exact one-roll behavior, combat-log wording, and the 1-HP floor still require focused guarded runtime evidence.
 - Next concrete action: rerun the focused and complete deterministic gates with the Cord source-contract guard, then commit/publish and prove real-process Harmony bootstrap before adding the focused Cord runtime scenario.
+
+## 2026-08-09 — Cord condition checkpoint published and real-process bootstrap PASS
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `ffd0475a67091a883f81cc91b5cf4e6b54742862`; active version 0.0.74; commit published through the approved helper.
+- Tests/gates: complete deterministic suite PASS 967/967, including the exact native condition-hook source contract; repository validation, exact-reference clean Release build, output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS. The first managed-sandbox run had the known `audio.staging-lifecycle` `File.Replace` ACL failure; an otherwise identical elevated run passed 967/967.
+- Package SHA-256 `2d37dc631cb5e31f3050f60fde177cb377db92d2e36b42b29308a35dc77d4ca2`; DLL SHA-256 `260b207ad736ad07289410c145961d57fd7153e271004b5079af513267adb454`.
+- Guarded Steam-backed scenario directory `20260809T1432421241030Z-mod-load-smoke`, run ID `20260809T1432421553985Z-15d0b25a6863476cb0056e0df65b4e6d`, PASS in 86,749 ms with 3/3 assertions and exact Git commit `ffd0475`. The outer tool deadline interrupted the wrapper after the game had flushed PASS and exited, leaving orchestration metadata at `waiting-for-final-result`; the structured game result is intact, but this run is classified only as patch-install bootstrap evidence rather than a fully collected final qualification run.
+- Began the single shared capital transaction: it now accepts both module gates, includes the Cord exactly once at count 1 when Acadamae is ON, removes only project-owned disabled rows, and preserves unrelated component order. The bounded graph did not prove a more precise general always-available merchant, so the authorized `SmithVendorTable` fallback remains selected.
+- Current uncertainty: the module-aware capital transaction needs compile/deterministic/runtime qualification; the Cord mechanics still need real equip/condition/damage evidence.
+- Next concrete action: run focused and full qualification for the module-aware capital transaction, commit/publish it, then extend the guarded runner with the Cord and capital-vendor scenarios.
+
+## 2026-08-09 — module-aware capital publication source qualification
+
+- Branch/HEAD at implementation start: `codex/feature-modules-acadamae-graduate` / `ffd0475a67091a883f81cc91b5cf4e6b54742862`; active version 0.0.74.
+- Reworked the existing single `SmithVendorTable` transaction to own the union of Gunslinger stock and the Cord. It merges against the current component array, strips only exact project-owned rows that are disabled or stale, publishes the Cord at fixed count 1 only for Acadamae ON, and composes independently with Gunslinger ON/OFF. No second writer races on the same table.
+- Tests/gates: complete deterministic suite PASS 967/967; repository validation, exact-reference clean Release build, build-output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `c0f4a09d7804b9c196427f3632cfc4f3224f2bf83b5792b38a879f659966db02`; DLL SHA-256 `d9b98c73b2e70d0437702dda9f0814b709075442f5cf56c75968bcaef5793a62`.
+- Current uncertainty: the shared table's exact four-combination rows and merchant-facing materialization remain guarded runtime work; no claim is made that an already-materialized inventory refreshes immediately.
+- Next concrete action: commit/publish the capital transaction, prove clean real-process bootstrap, then add the request-aware feature-publication and Cord runtime scenarios.

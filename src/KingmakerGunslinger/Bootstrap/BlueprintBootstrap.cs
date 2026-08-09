@@ -784,10 +784,12 @@ namespace KingmakerGunslinger.Bootstrap
                 ClassCatalogDiagnostics.Capture("after-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
 
-                if (publicationPlan.CapitalGunslingerStock)
-                    capitalVendorPublication = CapitalVendorBlueprints.Publish(
-                        library, productionFirearms, magicFirearms, basicAmmunition,
-                        firearmRepairKit, gunsmithingSupplies, context.Logger);
+                capitalVendorPublication = CapitalVendorBlueprints.Publish(
+                    library, productionFirearms, magicFirearms, basicAmmunition,
+                    firearmRepairKit, gunsmithingSupplies,
+                    publicationPlan.CapitalGunslingerStock,
+                    cordOfStubbornResolve, publicationPlan.CordCapitalStock,
+                    context.Logger);
                 if (publicationPlan.BeneathStolenLandsStock)
                     btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                         library, productionFirearms, magicFirearms, basicAmmunition,
