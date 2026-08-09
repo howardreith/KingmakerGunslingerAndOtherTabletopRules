@@ -314,3 +314,20 @@
 - Rejected theory: only 180 identities registered. Initialization cannot publish ready context unless `registry.RegisteredCount == 250`, and all new identities resolve in the same process.
 - Current uncertainty: repaired telemetry and the complete ON/ON observer need a clean rerun.
 - Next concrete action: qualify, commit, and publish the registry telemetry repair, then repeat ON/ON before building the settings transaction matrix.
+
+## 2026-08-09 — ON/ON module publication PASS and settings transaction tooling
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `4ec88c131747817cd60653b8cfd73212ed41336f`; active version 0.0.74.
+- Guarded scenario directory `20260809T1519095880665Z-observe-feature-module-settings` completed PASS. The fresh process matched active ON/ON, reported the validated 250 identities, and proved singular Gunslinger class/Paper stock plus singular Acadamae `Features`/`AllFeatures` and Cord stock.
+- Added `Invoke-FeatureModuleRuntimeMatrix.ps1`. It validates the exact live settings target, captures original bytes/hash or absence, writes only schema 1 and the two stable module IDs, launches fresh guarded observations, and restores then byte-verifies the original state in `finally`; it refuses to start while Kingmaker is running.
+- Current uncertainty: the wrapper needs full repository qualification and a first OFF-state transaction; settings restoration has not yet been exercised against the live file.
+- Next concrete action: syntax-check and run all repository gates, commit/publish the transaction wrapper, then execute one OFF/ON transaction before the remaining matrix.
+
+## 2026-08-09 — feature-module settings transaction wrapper qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `4ec88c131747817cd60653b8cfd73212ed41336f`; active version 0.0.74.
+- `Invoke-FeatureModuleRuntimeMatrix.ps1` passed PowerShell parse validation and the complete source qualification sequence: repository validation PASS; deterministic/domain/reflection suite PASS 967/967; clean exact-reference Release build PASS; output, icon, SoundBank, deterministic-package, and strict-package validation PASS.
+- Candidate local-runtime package SHA-256 `1a5b21f51a4271e25ca896faed373d0480369b2d23c748cd7b35eb2a2deb2177`; DLL SHA-256 `d414f616e2e32d30addc48388edf5e0cd346c89e03b499f0232c93c6ee2ae2dc`.
+- No deployment or settings mutation occurred during source qualification. The wrapper retains original settings bytes/hash or absence, launches each requested combination in a fresh guarded process, restores in `finally`, and refuses to operate while Kingmaker is already running.
+- Current uncertainty: the live OFF/ON transaction has not yet proved both settings restoration and settings-aware publication in a fresh process.
+- Next concrete action: commit and publish the qualified wrapper, then run the OFF/ON guarded transaction and inspect both structured scenario evidence and byte-restoration output.
