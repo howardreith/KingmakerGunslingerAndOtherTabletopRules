@@ -372,3 +372,13 @@
 - Together with the earlier ON/ON and OFF/ON runs, all four immutable process snapshots now have focused live publication evidence for 250 identities, the native class catalog, basic-feat arrays, Smith-table Paper stock, and Smith-table Cord stock.
 - Current uncertainty: broader Gunslinger OFF publication boundaries (Fighter selections, native firearm parameters, BTSL stock, and fixed loot) still require explicit live or exact detached observation; these four focused runs used the machine's current optional-mod loadout and are not yet the required standalone profile matrix.
 - Next concrete action: commit and publish the completed focused snapshot matrix, then extend the observer to every inventoried Gunslinger publication boundary before profile-specific matrix qualification.
+
+## 2026-08-09 — comprehensive Gunslinger publication observer source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `fd60ac66ef73130c178c30aad5141aef485ff973`; active version 0.0.74.
+- Expanded the module observer from class/Paper-only proof to exact references across basic and Fighter `Features`/`AllFeatures`, all five native parametrized feat menus (25 firearm parameter rows when ON), all 12 capital Gunslinger rows, 12 rows per installed BTSL table, and all five named fixed-loot targets. The bootstrap now retains the registered firearm-feat set for exact diagnostics without changing identities or publication behavior.
+- Updated the boundary inventory: crafting actions and starter grants are reached through always-registered facts owned by the gated class/feat acquisition surfaces, preserving existing users without a separate public catalog.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `88014ec81d3fba02d9ca7d6891a3fee1f9aab351e31311f1892593f0c5153412`; DLL SHA-256 `4fefb7fbdad72a84e2b6245411d74cd8d7e12dbf7f920135419b77e9e3ae658a`.
+- Current uncertainty: calling the real native parameter enumerators and resolving every optional table/loot target needs guarded runtime proof, especially with Gunslinger OFF.
+- Next concrete action: commit/publish the comprehensive observer, then run OFF/OFF first to detect any leaked publication before repeating ON/ON.

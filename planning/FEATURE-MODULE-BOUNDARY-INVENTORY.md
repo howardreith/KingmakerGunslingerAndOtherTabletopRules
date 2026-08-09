@@ -18,6 +18,6 @@ UMM 0.32.4 exact public contract: `ModSettings.GetPath(ModEntry)`, `Load<T>(ModE
 | Acadamae/Cord runtime patches | Existing-save support | Acadamae Graduate infrastructure | Installed always, exact-fact/item scoped |
 | Development diagnostics | UI infrastructure | Infrastructure | Preserve and compose after module controls |
 
-Unresolved inventory work: enumerate every bootstrap publisher, BTSL table, fixed-loot mutation, crafting/grant surface, and optional DLC publication and bind it to the coordinator.
+The bootstrap publication plan now binds the class catalog; basic and Fighter feat arrays; all five native parametrized firearm menus; the module-aware capital table; all four optional BTSL table identities; and five exact fixed-loot targets. Gunsmithing crafting abilities and initial firearm/ammunition grants are owned by the always-registered Gunsmithing/class facts, so withholding the class and feat acquisition surfaces prevents new acquisition while preserving existing-save behavior. Runtime mechanics, assets, and audio remain exact-identity infrastructure.
 
-Next concrete action: trace `BlueprintBootstrap` registration/publication order and every mutation handle.
+Next concrete action: qualify the expanded live observer for each ON/OFF boundary and reconcile any surface that does not match the publication plan.

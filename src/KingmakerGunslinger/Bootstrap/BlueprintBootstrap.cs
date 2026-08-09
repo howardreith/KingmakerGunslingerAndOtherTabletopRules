@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintFeature _firearmProficiency;
         private static FirearmScopedProficiencyBlueprintSet _scopedFirearmProficiencies;
         private static FirearmTrainingBlueprintSet _firearmTraining;
+        private static FirearmFeatBlueprintSet _firearmFeats;
         private static BlueprintAbility _reloadTestMusketAbility;
         private static BlueprintAbility _overhaulTestMusketAbility;
         private static BlueprintAbility _repairTestMusketAbility;
@@ -121,6 +122,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static FirearmTrainingBlueprintSet FirearmTraining
         {
             get { lock (Gate) { return _firearmTraining; } }
+        }
+
+        internal static FirearmFeatBlueprintSet FirearmFeats
+        {
+            get { lock (Gate) { return _firearmFeats; } }
         }
 
         internal static BlueprintAbility ReloadTestMusketAbility
@@ -486,6 +492,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _firearmProficiency = result.FirearmProficiency;
                     _scopedFirearmProficiencies = result.ScopedFirearmProficiencies;
                     _firearmTraining = result.FirearmTraining;
+                    _firearmFeats = result.FirearmFeats;
                     _reloadTestMusketAbility = result.ReloadTestMusketAbility;
                     _overhaulTestMusketAbility = result.OverhaulTestMusketAbility;
                     _repairTestMusketAbility = result.RepairTestMusketAbility;
@@ -832,6 +839,7 @@ namespace KingmakerGunslinger.Bootstrap
                     firearmProficiency,
                     scopedFirearmProficiencies,
                     firearmTraining,
+                    firearmFeats,
                     reloadTestMusketAbility,
                     overhaulTestMusketAbility,
                     repairTestMusketAbility,
@@ -994,6 +1002,7 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintFeature firearmProficiency,
                 FirearmScopedProficiencyBlueprintSet scopedFirearmProficiencies,
                 FirearmTrainingBlueprintSet firearmTraining,
+                FirearmFeatBlueprintSet firearmFeats,
                 BlueprintAbility reloadTestMusketAbility,
                 BlueprintAbility overhaulTestMusketAbility,
                 BlueprintAbility repairTestMusketAbility,
@@ -1017,6 +1026,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("scopedFirearmProficiencies");
                 FirearmTraining = firearmTraining ??
                     throw new ArgumentNullException("firearmTraining");
+                FirearmFeats = firearmFeats ??
+                    throw new ArgumentNullException("firearmFeats");
                 ReloadTestMusketAbility = reloadTestMusketAbility ?? throw new ArgumentNullException("reloadTestMusketAbility");
                 OverhaulTestMusketAbility = overhaulTestMusketAbility ?? throw new ArgumentNullException("overhaulTestMusketAbility");
                 RepairTestMusketAbility = repairTestMusketAbility ?? throw new ArgumentNullException("repairTestMusketAbility");
@@ -1047,6 +1058,8 @@ namespace KingmakerGunslinger.Bootstrap
 
             internal FirearmTrainingBlueprintSet FirearmTraining
             { get; private set; }
+
+            internal FirearmFeatBlueprintSet FirearmFeats { get; private set; }
 
             internal BlueprintAbility ReloadTestMusketAbility { get; private set; }
 

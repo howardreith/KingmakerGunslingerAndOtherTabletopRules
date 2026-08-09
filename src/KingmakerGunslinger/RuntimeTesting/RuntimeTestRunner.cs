@@ -40,6 +40,7 @@ using KingmakerGunslinger.Archetypes;
 using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Feats;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
@@ -6752,12 +6753,70 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
                     CapitalVendorBlueprints.ReadItem(value),
                     BlueprintBootstrap.BasicAmmunition.PaperCartridge));
+            FirearmFeatBlueprintSet firearmFeats = BlueprintBootstrap.FirearmFeats;
+            BlueprintFeatureSelection fighter = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
+                    "41c8486641f7d6d4283ca9dae4147a9f",
+                    "native Fighter combat feat selection");
+            BlueprintFeature[] publicFirearmFeats = { firearmFeats.RapidReload,
+                firearmFeats.ExoticWeaponProficiency };
+            int basicFirearmFeatures = CountExactFeatures(basic.Features,
+                publicFirearmFeats);
+            int basicFirearmAll = CountExactFeatures(basic.AllFeatures,
+                publicFirearmFeats);
+            int fighterFirearmFeatures = CountExactFeatures(fighter.Features,
+                publicFirearmFeats);
+            int fighterFirearmAll = CountExactFeatures(fighter.AllFeatures,
+                publicFirearmFeats);
+            string[] nativeParameterGuids = { "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+                "09c9e82965fb4334b984a1e9df3bd088",
+                "31470b17e8446ae4ea0dacd6c5817d86",
+                "7cf5edc65e785a24f9cf93af987d66b3",
+                "f4201c85a991369408740c6888362e20" };
+            int firearmParameterCount = nativeParameterGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, guid, "native firearm parameter menu")
+                .GetFullSelectionItems().Count(item => item != null &&
+                    IsFirearmParameter(item.Param)));
+            BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
+            int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
+            int installedBtslTables = 0, btslGunslingerRows = 0;
+            for (int index = 0; index < BeneathStolenLandsVendorBlueprints.TableGuids.Length;
+                index++)
+            {
+                BlueprintSharedVendorTable table = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
+                        string.Equals(value.AssetGuid,
+                            BeneathStolenLandsVendorBlueprints.TableGuids[index],
+                            StringComparison.Ordinal));
+                if (table == null) continue;
+                installedBtslTables++;
+                btslGunslingerRows += CountFixedRows(table, gunslingerStock);
+            }
+            int rareLootRows = 0;
+            foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
+                RareFirearmCampaignLootBlueprints.TargetSpecs)
+            {
+                BlueprintLoot loot = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                    BlueprintBootstrap.Library, spec.Guid,
+                    "fixed rare-firearm loot target");
+                BlueprintItem item = BlueprintBootstrap.MagicFirearms.Require(
+                    spec.ItemSymbol).Item;
+                rareLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(value =>
+                    value != null && ReferenceEquals(value.Item, item) && value.Count == 1);
+            }
             string observed = "expected=" + expectedGunslinger + "/" +
                 expectedAcadamae + ";active=" + activeGunslinger + "/" +
                 activeAcadamae + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
-                ";cordRows=" + cordRows + ";paperRows=" + paperRows;
+                ";cordRows=" + cordRows + ";paperRows=" + paperRows +
+                ";basicFirearm=" + basicFirearmFeatures + "/" + basicFirearmAll +
+                ";fighterFirearm=" + fighterFirearmFeatures + "/" + fighterFirearmAll +
+                ";nativeParameters=" + firearmParameterCount +
+                ";capitalGunslinger=" + capitalGunslingerRows +
+                ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
+                ";rareLoot=" + rareLootRows;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
@@ -6770,8 +6829,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedGunslinger ? "class and Paper stock singular" :
                         "class and Paper stock absent",
                     observed, classCount == (expectedGunslinger ? 1 : 0) &&
-                        paperRows == (expectedGunslinger ? 1 : 0),
-                    "native class catalog and Smith table"),
+                        paperRows == (expectedGunslinger ? 1 : 0) &&
+                        basicFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
+                        basicFirearmAll == (expectedGunslinger ? 2 : 0) &&
+                        fighterFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
+                        fighterFirearmAll == (expectedGunslinger ? 2 : 0) &&
+                        firearmParameterCount == (expectedGunslinger ? 25 : 0) &&
+                        capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
+                        btslGunslingerRows == (expectedGunslinger ?
+                            installedBtslTables * 12 : 0) &&
+                        rareLootRows == (expectedGunslinger ? 5 : 0),
+                    "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
                 Assertion("feature-module-acadamae-publication",
                     expectedAcadamae ? "feat arrays and Cord stock singular" :
                         "feat arrays and Cord stock absent",
@@ -6786,6 +6854,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+        }
+
+        private static int CountExactFeatures(BlueprintFeature[] source,
+            BlueprintFeature[] targets)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Count(value =>
+                value != null && targets.Any(target => ReferenceEquals(value, target) ||
+                    value.AssetGuid == target.AssetGuid));
+        }
+
+        private static bool IsFirearmParameter(FeatureParam parameter)
+        {
+            FirearmKind ignored;
+            return NativeFirearmFeatIntegration.TryKind(parameter, out ignored);
+        }
+
+        private static BlueprintItem[] ModuleGunslingerStockItems()
+        {
+            return new BlueprintItem[] {
+                BlueprintBootstrap.ProductionFirearms.Pistol.Item,
+                BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.PistolPlus1Symbol).Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.MusketPlus1Symbol).Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
+                BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                BlueprintBootstrap.BasicAmmunition.LeadBall,
+                BlueprintBootstrap.BasicAmmunition.PaperCartridge,
+                BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit,
+                BlueprintBootstrap.GunsmithingSupplies.GunsmithKit };
+        }
+
+        private static int CountFixedRows(BlueprintSharedVendorTable table,
+            BlueprintItem[] targets)
+        {
+            return (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => targets.Any(target =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value), target)));
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()
