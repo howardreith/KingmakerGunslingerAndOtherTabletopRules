@@ -139,3 +139,14 @@
 - Candidate package SHA-256 `d91bd07c3828311ae26284554c80332a39ecd5eaa7831254321de9ed37f8ed8d`; DLL SHA-256 `26fdadc4a557898c408f841b9aac28c20cd58da6c42b977af3a92964637a5f51`.
 - Current uncertainty: runtime prerequisite cases and visible predecessor/successor have not yet been observed; later read-time reconciliation remains pending.
 - Next concrete action: commit/publish this checkpoint and run guarded bootstrap proof before adding the dedicated Acadamae observer.
+
+## 2026-08-09 — Universalist exact-type runtime repair
+
+- Branch/HEAD at investigation start: `codex/feature-modules-acadamae-graduate` / `835f3f38584e527757ec9d8fc92adc5abb330d7e`; active version 0.0.74.
+- Guarded Steam-backed scenario directory `20260809T1401079581781Z-mod-load-smoke`, run ID `20260809T1401079793251Z-23ad57a114e24296ad0f2011ce9d93e1`, ended `TIMEOUT` after 180,017 ms at `request-accepted`. Exact `output_log.txt` evidence identified the earlier root cause: native Universalist GUID `0933849149cfc9244ac05d6a5b57fd80` is `BlueprintProgression`, not the demanded exact `BlueprintFeature`; the owned registry transaction rolled back.
+- Corrected only that installed type contract and added a source regression assertion for both Universalist and the Conjuration icon donor. The first two sandboxed full-suite attempts recorded the corrected Acadamae test PASS but the unrelated audio staging test FAIL on `File.Replace`; a bounded elevated rerun proved the failure was managed sandbox ACL behavior, not product behavior.
+- Tests/gates: complete deterministic suite PASS 965/965 outside the managed filesystem sandbox; repository validation PASS; exact-reference clean Release build, build-output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `98d31b85f275fe2c5464c4533419a788bc49ad3a5e15d427ef4e366004c553dc`; DLL SHA-256 `d3050b3e2d86736762465bbc00610143ba4b469cf73b9e2e5a29bc80f04dad40`.
+- Rejected theory: Universalist can be required as the exact base feature type merely because `BlueprintProgression` is assignable to `BlueprintFeature`; this repository's exact lookup deliberately requires concrete installed type equality.
+- Current uncertainty: the corrected clean commit still needs guarded runtime bootstrap proof and exact visible feat-order observation.
+- Next concrete action: commit and publish the exact-type repair, then rerun guarded `mod-load-smoke` from the clean commit.

@@ -31,15 +31,15 @@ namespace KingmakerGunslinger.Blueprints
                 library, SchoolSelectionGuid, "native Wizard school selection");
             BlueprintFeatureSelection opposition = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                 library, OppositionSelectionGuid, "native opposition-school selection");
-            BlueprintFeature universalist = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
-                library, UniversalistGuid, "native Universalist feature");
+            BlueprintProgression universalist = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(
+                library, UniversalistGuid, "native Universalist progression");
             return registry.Register<BlueprintFeature>(Symbol,
                 () => Create(iconDonor, wizard, schools, opposition, universalist));
         }
 
         private static BlueprintFeature Create(BlueprintProgression iconDonor,
             BlueprintCharacterClass wizard, BlueprintFeatureSelection schools,
-            BlueprintFeatureSelection opposition, BlueprintFeature universalist)
+            BlueprintFeatureSelection opposition, BlueprintProgression universalist)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_AcadamaeGraduate_Feature";

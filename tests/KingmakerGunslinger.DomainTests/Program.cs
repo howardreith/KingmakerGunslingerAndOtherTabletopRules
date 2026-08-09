@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("acadamae.eligibility-matrix", AcadamaeCordPolicyTests.AcadamaeEligibilityMatrix),
             Case("acadamae.multi-round-and-dc", AcadamaeCordPolicyTests.AcadamaeMultiRoundAndDc),
             Case("acadamae.prerequisite-matrix", AcadamaeCordPolicyTests.AcadamaePrerequisiteMatrix),
+            Case("acadamae.native-identity-contracts", AcadamaeCordPolicyTests.AcadamaeNativeIdentityContracts),
             Case("cord.fatigue-and-exhaustion", AcadamaeCordPolicyTests.CordFatigueAndExhaustion),
             Case("cord.damage-boundaries", AcadamaeCordPolicyTests.CordDamageBoundaries),
             Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),

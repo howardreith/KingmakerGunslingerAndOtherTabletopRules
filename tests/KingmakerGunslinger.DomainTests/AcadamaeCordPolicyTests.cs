@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Cord;
 
@@ -72,6 +73,19 @@ namespace KingmakerGunslinger.DomainTests
             AssertPrerequisite(request, false, "conjuration-forbidden", 1);
             request.PendingConjurationForbidden = false; request.GivesUpSpecialization = true;
             AssertPrerequisite(request, false, "specialization-replaced", 1);
+        }
+
+        internal static void AcadamaeNativeIdentityContracts()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "AcadamaeGraduateBlueprints.cs"));
+            Assertions.True(source.Contains(
+                "BlueprintProgression universalist = BlueprintLibraryLookup.RequireExact<BlueprintProgression>"),
+                "The exact installed Universalist identity is a BlueprintProgression.");
+            Assertions.True(source.Contains(
+                "BlueprintProgression iconDonor = BlueprintLibraryLookup.RequireExact<BlueprintProgression>"),
+                "The exact installed Conjuration specialization donor is a BlueprintProgression.");
         }
 
         internal static void CordDamageBoundaries()
