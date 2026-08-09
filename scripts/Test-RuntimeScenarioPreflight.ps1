@@ -42,6 +42,7 @@ $expected = @(
     'disposable-paper-cartridge-full-attack',
     'disposable-paper-cartridge-misfire',
     'disposable-paper-cartridge-scatter',
+    'disposable-paper-cartridge-crafting-vendors',
     'disposable-paper-cartridge-lightning-reload',
     'observe-native-weapon-feat-contracts',
     'observe-class-blueprint-contracts',

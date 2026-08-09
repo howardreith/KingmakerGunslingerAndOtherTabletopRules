@@ -49,6 +49,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-paper-cartridge-misfire";
         internal const string DisposablePaperCartridgeScatter =
             "disposable-paper-cartridge-scatter";
+        internal const string DisposablePaperCartridgeCraftingVendors =
+            "disposable-paper-cartridge-crafting-vendors";
         internal const string DisposableOverhaulMaintenance =
             "disposable-overhaul-maintenance";
         internal const string DisposableProductionFirearmSwitching =
@@ -208,6 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposablePaperCartridgeFullAttack,
                 DisposablePaperCartridgeMisfire,
                 DisposablePaperCartridgeScatter,
+                DisposablePaperCartridgeCraftingVendors,
                 DisposableOverhaulMaintenance,
                 DisposableProductionFirearmSwitching,
                 DisposableGunslingerComprehensiveAcceptance,

@@ -550,6 +550,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition));
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeCraftingVendors)
+                {
+                    Complete(RunDisposablePaperCartridgeCraftingVendors());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableOverhaulMaintenance)
                 {
@@ -6490,6 +6496,140 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeCraftingVendors()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var player = Kingmaker.Game.Instance.Player;
+            BasicAmmunitionBlueprintSet ammo = BlueprintBootstrap.BasicAmmunition;
+            BlueprintItem tool = BlueprintBootstrap.GunsmithingSupplies.GunsmithKit;
+            GunsmithingCraftingBlueprintSet crafting =
+                BlueprintBootstrap.GunsmithingCrafting;
+            CraftPaperCartridgesAbilityLogic paperLogic = crafting.PaperAbility
+                .ComponentsArray.OfType<CraftPaperCartridgesAbilityLogic>().Single();
+            CraftBasicAmmunitionAbilityLogic basicLogic = crafting.BasicAbility
+                .ComponentsArray.OfType<CraftBasicAmmunitionAbilityLogic>().Single();
+            int paperBefore = player.Inventory.Count(ammo.PaperCartridge);
+            int powderBefore = player.Inventory.Count(ammo.BlackPowder);
+            int ballsBefore = player.Inventory.Count(ammo.LeadBall);
+            int toolsBefore = player.Inventory.Count(tool);
+            long moneyBefore = player.Money;
+            long seededMoney = moneyBefore < CraftPaperCartridgesAbilityLogic.GoldCost ?
+                CraftPaperCartridgesAbilityLogic.GoldCost : 0;
+            UnitEntityData unit = null;
+            bool crafted = false, sharedBlocked = false, vendors = false,
+                jhodPreserved = false, cleaned = false;
+            string vendorObserved = string.Empty;
+            try
+            {
+                if (toolsBefore == 0) player.Inventory.Add(tool, 1);
+                if (seededMoney > 0) player.GainMoney(seededMoney);
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.AddFact(crafting.BasicAbility);
+                unit.Descriptor.AddFact(crafting.PaperAbility);
+                var paperFact = unit.Descriptor.Abilities.GetAbility(crafting.PaperAbility);
+                var basicFact = unit.Descriptor.Abilities.GetAbility(crafting.BasicAbility);
+                if (paperFact == null || basicFact == null)
+                    throw new InvalidOperationException(
+                        "Both Gunsmithing recipes were not granted.");
+                var paperData = new AbilityData(paperFact);
+                var basicData = new AbilityData(basicFact);
+                var command = new UnitUseAbility(paperData, new TargetWrapper(unit));
+                if (!command.CanStart || !paperData.IsAvailable || !basicData.IsAvailable)
+                    throw new InvalidOperationException(
+                        "Native Paper crafting command was unavailable before use.");
+                paperLogic.Complete(unit.Descriptor);
+                crafted = player.Inventory.Count(ammo.PaperCartridge) ==
+                        paperBefore + CraftPaperCartridgesAbilityLogic.BatchSize &&
+                    player.Inventory.Count(ammo.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammo.LeadBall) == ballsBefore &&
+                    player.Money == moneyBefore + seededMoney -
+                        CraftPaperCartridgesAbilityLogic.GoldCost &&
+                    unit.Descriptor.HasFact(crafting.UsedMarker);
+                sharedBlocked = !paperData.IsAvailable && !basicData.IsAvailable;
+
+                BlueprintSharedVendorTable[] tables = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintSharedVendorTable>().ToArray();
+                BlueprintSharedVendorTable smith = tables.Single(value =>
+                    value.AssetGuid == CapitalVendorBlueprints.TableGuid &&
+                    value.name == CapitalVendorBlueprints.ExpectedTableName);
+                LootItemsPackFixed[] smithPaper = (smith.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Where(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
+                    .ToArray();
+                int installedBtsl = 0, validBtsl = 0;
+                foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
+                {
+                    BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
+                        value.AssetGuid == guid);
+                    if (table == null) continue;
+                    installedBtsl++;
+                    LootItemsPackFixed[] matches = (table.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                        .Where(value => ReferenceEquals(
+                            CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
+                        .ToArray();
+                    if (matches.Length == 1 &&
+                        CapitalVendorBlueprints.ReadCount(matches[0]) == 200)
+                        validBtsl++;
+                }
+                BlueprintSharedVendorTable jhod = tables.Single(value =>
+                    value.AssetGuid == "afa2c7f292b8e1c4d9c835f0e8047dd3");
+                int jhodPaper = (jhod.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge));
+                vendors = smithPaper.Length == 1 &&
+                    CapitalVendorBlueprints.ReadCount(smithPaper[0]) == 200 &&
+                    installedBtsl == validBtsl;
+                jhodPreserved = jhodPaper == 0;
+                vendorObserved = "smith=" + smithPaper.Length + ":" +
+                    (smithPaper.Length == 0 ? -1 :
+                        CapitalVendorBlueprints.ReadCount(smithPaper[0])) +
+                    ";btsl=" + validBtsl + "/" + installedBtsl +
+                    ";jhod=" + jhodPaper;
+            }
+            finally
+            {
+                if (unit != null && unit.Descriptor.HasFact(crafting.UsedMarker))
+                    unit.Descriptor.RemoveFact(crafting.UsedMarker);
+                int paperExtra = player.Inventory.Count(ammo.PaperCartridge) - paperBefore;
+                int toolsExtra = player.Inventory.Count(tool) - toolsBefore;
+                if (paperExtra > 0) player.Inventory.Remove(ammo.PaperCartridge, paperExtra);
+                if (toolsExtra > 0) player.Inventory.Remove(tool, toolsExtra);
+                long moneyDelta = player.Money - moneyBefore;
+                if (moneyDelta < 0) player.GainMoney(-moneyDelta);
+                else if (moneyDelta > 0) player.SpendMoney((int)moneyDelta);
+                if (unit != null) unit.Dispose();
+                cleaned = player.Inventory.Count(ammo.PaperCartridge) == paperBefore &&
+                    player.Inventory.Count(ammo.BlackPowder) == powderBefore &&
+                    player.Inventory.Count(ammo.LeadBall) == ballsBefore &&
+                    player.Inventory.Count(tool) == toolsBefore &&
+                    player.Money == moneyBefore;
+            }
+            string observed = "crafted=" + crafted + ";sharedBlocked=" +
+                sharedBlocked + ";" + vendorObserved + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-crafting-transaction", "120 gp creates exactly 20 Paper Cartridges",
+                    observed, crafted && paperLogic != null && basicLogic.GoldCost == 22,
+                    "native ability command plus shared atomic transaction"),
+                Assertion("paper-crafting-shared-marker", "either recipe blocks both until rest",
+                    observed, sharedBlocked, "one exact persisted marker"),
+                Assertion("paper-vendor-publication", "Smith and every installed BTSL table contain one exact count-200 entry",
+                    observed, vendors, "bounded normalized live blueprint tables"),
+                Assertion("paper-jhod-exclusion", "rejected Jhod table contains no Paper Cartridge",
+                    observed, jhodPreserved, "exact rejected table identity"),
+                Assertion("request-local-cleanup", "money, inventory, tool, marker, and unit restored exactly",
+                    observed, cleaned, "finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
         private void AppendAcceptanceSlice(List<RuntimeTestAssertion> assertions,
