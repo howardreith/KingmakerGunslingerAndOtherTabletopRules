@@ -2,18 +2,24 @@ using System;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Equipment;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using KingmakerGunslinger.Cord;
 
 namespace KingmakerGunslinger.Blueprints
 {
     internal static class CordOfStubbornResolveBlueprints
     {
         internal const string Symbol = "KMG.Items.CordOfStubbornResolve";
+        private const string FatiguedBuffGuid = "e6f2fc5d73d88064583cb828801212f4";
 
         internal static BlueprintItemEquipmentBelt Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
+            BlueprintBuff fatigued = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, FatiguedBuffGuid, "native Fatigued buff for Cord interception");
+            CordConditionRuntime.Configure(fatigued);
             BlueprintItemEquipmentBelt[] allBelts = library.GetAllBlueprints()
                 .OfType<BlueprintItemEquipmentBelt>().ToArray();
             BlueprintItemEquipmentBelt[] donors = allBelts

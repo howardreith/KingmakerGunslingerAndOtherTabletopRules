@@ -29,16 +29,26 @@ namespace KingmakerGunslinger.Cord
         private static readonly object Marker = new object();
         private static int _lastRoll;
         private static int _lastAppliedDamage;
+        private static int _beginBuffCalls;
+        private static int _exactBuffMatches;
         private static long _publishedLogs;
+        private static BlueprintBuff _fatiguedBlueprint;
 
         internal static int LastRoll { get { return _lastRoll; } }
         internal static int LastAppliedDamage { get { return _lastAppliedDamage; } }
+        internal static int BeginBuffCalls { get { return _beginBuffCalls; } }
+        internal static int ExactBuffMatches { get { return _exactBuffMatches; } }
         internal static long PublishedLogs { get { return Interlocked.Read(ref _publishedLogs); } }
+
+        internal static void Configure(BlueprintBuff fatiguedBlueprint)
+        { _fatiguedBlueprint = fatiguedBlueprint; }
 
         internal static void ResetDiagnostics()
         {
             _lastRoll = 0;
             _lastAppliedDamage = 0;
+            _beginBuffCalls = 0;
+            _exactBuffMatches = 0;
         }
 
         internal static bool Prefix(UnitState state, UnitCondition condition, Buff source)
@@ -73,10 +83,16 @@ namespace KingmakerGunslinger.Cord
 
         internal static bool BeginBuff(BuffCollection buffs, BlueprintBuff blueprint)
         {
+            _beginBuffCalls++;
             if (buffs == null || buffs.Owner == null || blueprint == null ||
                 _buffSubstitutionState != null) return false;
             UnitCondition condition;
-            if (!TryClassifyCondition(blueprint, out condition)) return false;
+            if (ReferenceEquals(blueprint, _fatiguedBlueprint))
+            {
+                condition = UnitCondition.Fatigued;
+                _exactBuffMatches++;
+            }
+            else if (!TryClassifyCondition(blueprint, out condition)) return false;
             UnitState state = buffs.Owner.State;
             if (state == null || !HasExactEquippedCord(state)) return false;
 

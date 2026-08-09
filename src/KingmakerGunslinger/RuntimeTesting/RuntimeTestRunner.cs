@@ -6920,7 +6920,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int spellLevel = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
-                observedDc = -1;
+                cordBuffCalls = -1, cordExactMatches = -1, observedDc = -1;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -7043,9 +7043,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordDamage = unit.Damage - damageBefore;
                 cordRoll = Cord.CordConditionRuntime.LastRoll;
                 cordApplied = Cord.CordConditionRuntime.LastAppliedDamage;
+                cordBuffCalls = Cord.CordConditionRuntime.BeginBuffCalls;
+                cordExactMatches = Cord.CordConditionRuntime.ExactBuffMatches;
                 cordObserved = cordRule.Success && cordCount == 2 &&
                     cordDamage >= 1 && cordDamage <= 6 &&
                     cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
+                    cordBuffCalls >= 1 && cordExactMatches >= 1 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
                 unit.Body.Belt.RemoveItem(false);
 
@@ -7107,7 +7110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
                 ";dc=" + observedDc + ";cordHpBefore=" + cordHpBefore +
                 ";cordRoll=" + cordRoll + ";cordApplied=" + cordApplied +
-                ";cordDamage=" + cordDamage +
+                ";cordDamage=" + cordDamage + ";cordBuffCalls=" + cordBuffCalls +
+                ";cordExactMatches=" + cordExactMatches +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {

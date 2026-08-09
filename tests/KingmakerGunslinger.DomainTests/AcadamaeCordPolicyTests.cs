@@ -156,6 +156,7 @@ namespace KingmakerGunslinger.DomainTests
                 "component.Condition",
                 "CordConditionRuntime.BeginBuff(__instance, __0)",
                 "CordConditionRuntime.EndBuff(__state)",
+                "ReferenceEquals(blueprint, _fatiguedBlueprint)",
                 "[System.ThreadStatic] private static UnitState _fatigueBypass",
                 "[System.ThreadStatic] private static UnitState _buffSubstitutionState",
                 "ConditionalWeakTable<Buff, object> ExhaustionSources",

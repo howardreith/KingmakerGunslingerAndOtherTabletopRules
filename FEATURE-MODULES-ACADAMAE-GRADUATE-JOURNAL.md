@@ -690,3 +690,20 @@
 - Candidate package SHA-256 `6f965f87ecb15949cd25e238a9ebe0562813c674ef60f34f6bad777fceab13be`; DLL SHA-256 `4d98a5a188fac23d1b3021b1cc80129aa13c72a82d63a9d5e3162cc26d52ba40`.
 - Current uncertainty: native Harmony execution and exact optional-mod composition remain guarded runtime evidence.
 - Next concrete action: commit/publish the buff-boundary implementation, run standalone Cord/integration, then exact CotW mechanics.
+
+## 2026-08-09 — canonical Fatigued buff requires exact identity binding
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `51774c5aeadcbbc1a76bbd9a74c59e70291a0280`; active version 0.0.74.
+- Guarded directory `20260809T1735376088243Z-disposable-acadamae-graduate`, run `20260809T1735376420651Z-d9a4aba9ef5d43a195b8f61816276696`, FAIL 6/7 in 63,405 ms: clean-first Cord phase again recorded no roll while the unequipped native fatigue proof passed. This shows the canonical Fatigued blueprint is not represented by the direct `AddCondition` component shape used by the semantic classifier.
+- Cord identity registration now resolves the canonical native Fatigued blueprint GUID `e6f2fc5d73d88064583cb828801212f4` and configures the runtime independently of Acadamae publication. Buff-boundary classification first checks that exact reference, then falls back to semantic condition components for other sources.
+- Added bounded `BeginBuffCalls` and `ExactBuffMatches` diagnostics; the integration assertion now requires at least one exact buff match as well as one roll/damage delta. No localized-name inference is used.
+- Current uncertainty: guarded runtime must prove Harmony reaches the exact overload and the configured reference matches after optional-mod mutation.
+- Next concrete action: fully qualify/publish exact canonical binding, then rerun standalone integration and Cord scenarios.
+
+## 2026-08-09 — exact canonical Fatigued binding source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `51774c5aeadcbbc1a76bbd9a74c59e70291a0280`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `d1e5dcd88806950bac6c8e37d5d4973a5240f5decde12ba187f12f41fbc68a33`; DLL SHA-256 `eea082ab227a6186b6754464700d09ae42a46ae009c1d755e1755510273f6ac5`.
+- Current uncertainty: exact overload counters and the native damage/substitution result remain guarded runtime evidence.
+- Next concrete action: commit/publish canonical binding, then rerun standalone integration and Cord scenarios.
