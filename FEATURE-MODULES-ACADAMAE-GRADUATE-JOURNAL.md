@@ -230,3 +230,12 @@
 - Rejected theory: empty owners disprove the selected Smith table. The same live table row and identity passed; the observer used a stricter type filter than the exact established graph scanner in `RunVendorTableContractObservation`.
 - Current uncertainty: corrected general-blueprint owner enumeration needs a fresh guarded rerun.
 - Next concrete action: qualify, commit, and publish the one-line observer-scope repair, then rerun `observe-capital-cord-vendor` from the clean commit.
+
+## 2026-08-09 — second capital owner-observer failure classified
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `5831a398f65f9655f0b0632b5013ee6dd4daa721`; active version 0.0.74.
+- Guarded scenario directory `20260809T1445546634861Z-observe-capital-cord-vendor`, run ID `20260809T1445547002306Z-4d52d02d6d88455aab0e9c91e1dd4280`, FAIL in 87,034 ms with the same 3/4 split: live Cord gate/row and metadata PASS, general owner enumeration empty.
+- Exact prior graph evidence identifies the two owners by stable GUID, while `GetAllBlueprints()` is not a complete enumeration of those lazily addressable owners at this lifecycle point. Replaced the catalog-wide owner search with exact lookups for `CapitalOwlbearAttack_Blacksmith` `ba7a7a2842d072046be55b3f9034d04e` and `VerdelBlacksmith` `478862ab88b8ef24385cb386c1644dc2`, then validates one exact `AddSharedVendor` reference on each.
+- Rejected theory: widening enumeration from units to all loaded blueprints is sufficient. Both runs prove the relevant owner blueprints are not in the enumerable loaded set even though exact GUID resolution remains available.
+- Current uncertainty: exact owner lookup and component linkage need a fresh guarded rerun.
+- Next concrete action: run all source gates, commit/publish the exact-GUID owner observer, then repeat the guarded vendor scenario.

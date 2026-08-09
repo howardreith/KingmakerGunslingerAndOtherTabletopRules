@@ -6726,20 +6726,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             const BindingFlags flags = BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic;
             FieldInfo tableField = typeof(AddSharedVendor).GetField("m_Table", flags);
-            string[] owners = BlueprintBootstrap.Library.GetAllBlueprints()
-                .Where(owner => owner != null &&
-                    (owner.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                    .OfType<AddSharedVendor>().Any(component => ReferenceEquals(
-                        tableField == null ? null : tableField.GetValue(component), table)))
-                .Select(owner => owner.name).OrderBy(value => value,
-                    StringComparer.Ordinal).ToArray();
-            bool ownerExact = owners.Contains("CapitalOwlbearAttack_Blacksmith") &&
-                owners.Contains("VerdelBlacksmith");
+            BlueprintUnit[] owners = new[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    "ba7a7a2842d072046be55b3f9034d04e",
+                    "capital owlbear-attack blacksmith"),
+                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    "478862ab88b8ef24385cb386c1644dc2",
+                    "capital Verdel blacksmith") };
+            bool ownerExact = tableField != null && owners.All(owner =>
+                (owner.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AddSharedVendor>().Count(component => ReferenceEquals(
+                    tableField.GetValue(component), table)) == 1);
             string observed = "active=" + enabled + ";rows=" + rows.Length +
                 ";count=" + (rows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(rows[0]) : -1) +
                 ";cost=" + cord.Cost + ";weight=" + cord.Weight +
-                ";owners=" + string.Join(",", owners);
+                ";owners=" + string.Join(",", owners.Select(value =>
+                    value.name + ":" + value.AssetGuid));
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("cord-vendor-module-gate",
