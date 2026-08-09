@@ -445,3 +445,13 @@
 - This supersedes the inherited startup-readiness limitation for these focused module scenarios but does not yet erase historical class-selector or broader comprehensive-profile evidence.
 - Current uncertainty: the observer proves project publication after CotW but does not count a before/after fingerprint of every foreign class and feat entry. Exact additive retention needs an explicit foreign-catalog baseline/reconciliation assertion.
 - Next concrete action: commit/publish the focused CotW proof, then add deterministic and runtime foreign-catalog preservation fingerprints around idempotent reconciliation without modifying CotW.
+
+## 2026-08-09 — pending opposition prerequisite defect corrected
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `d1723299062db6ab15299a4841cc72e9bcc9177b`; active version 0.0.74.
+- Prerequisite audit found that pending level-up/respec logic inspected only the last `OppositionSelection` state. Wizard can select multiple opposition schools, so choosing Conjuration in an earlier state could incorrectly admit Acadamae Graduate.
+- The adapter now enumerates every matching selected opposition feature and rejects when any exact `AddOppositionSchool` component names Conjuration. Specialist-school selection retains its singular last-selected contract. Added a focused source regression.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `2d3aa51cfc38b9d67ff0b61003cdbf93aacf59e5f556c4112862da11fbe2869b`; DLL SHA-256 `c31d7eeb1c03aaf544f0473ba7ae4101a72bf829bb9129f1f9ac7ae6445733d2`.
+- Current uncertainty: a realistic level-up fixture and real prepared spell invocation are still required for runtime proof.
+- Next concrete action: commit/publish the prerequisite correction, then construct the guarded Acadamae runtime fixture from exact native Wizard/spellbook contracts.

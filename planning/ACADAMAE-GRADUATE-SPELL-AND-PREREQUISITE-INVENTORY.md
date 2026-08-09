@@ -21,8 +21,8 @@ Required eligibility contract: actual/pending Wizard level 1+, true specialist, 
 | Other specialist, Conjuration allowed | Eligible | Exact opposition facts pending |
 | Specialist, Conjuration forbidden | Ineligible | Exact Conjuration opposition identity pending |
 | Archetype giving up specialization | Ineligible | Base/CotW archetype inventory pending |
-| Respec pending selections | Rule-dependent | Exact level-up state inspection pending |
+| Respec/pending multiple opposition selections | Conjuration in any selected opposition state is ineligible | Adapter enumerates every matching `FeatureSelectionState`; prior last-only approach rejected because Wizard opposition selection can occur more than once |
 
 Spell candidate table will record GUID, school, Summoning descriptor/component, lists, action type, full-round/multi-round representation, variants, metamagic, and prepared/spontaneous delivery for every installed base/CotW candidate. No English-name matching is permitted.
 
-Next concrete action: attach the native Fortitude save and native Fatigued application to the successfully consumed invocation, then add the realistic guarded Acadamae scenario.
+Next concrete action: build the realistic guarded Acadamae spellbook/cast scenario and validate the pending prerequisite adapter against real level-up state where safely constructible.

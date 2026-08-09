@@ -27,7 +27,6 @@ namespace KingmakerGunslinger.Acadamae
                 book != null && book.Blueprint != null &&
                 ReferenceEquals(book.Blueprint.CharacterClass, WizardClass));
             BlueprintFeature pendingSchool = SelectedFeature(state, SchoolSelection);
-            BlueprintFeature pendingOpposition = SelectedFeature(state, OppositionSelection);
             bool committedSpecialist = wizardBook != null &&
                 Enum.GetValues(typeof(SpellSchool)).Cast<SpellSchool>()
                     .Any(wizardBook.IsSpecialistSchool);
@@ -42,7 +41,8 @@ namespace KingmakerGunslinger.Acadamae
                 PendingUniversalist = ReferenceEquals(pendingSchool, Universalist),
                 ConjurationForbidden = wizardBook != null &&
                     wizardBook.OppositionSchools.Contains(SpellSchool.Conjuration),
-                PendingConjurationForbidden = IsConjurationOpposition(pendingOpposition)
+                PendingConjurationForbidden = SelectedFeatures(state,
+                    OppositionSelection).Any(IsConjurationOpposition)
             };
             return AcadamaePrerequisitePolicy.Decide(request).Eligible;
         }
@@ -55,11 +55,18 @@ namespace KingmakerGunslinger.Acadamae
         private static BlueprintFeature SelectedFeature(LevelUpState state,
             BlueprintFeatureSelection selection)
         {
-            if (state == null || state.Selections == null) return null;
-            FeatureSelectionState selected = state.Selections.LastOrDefault(value =>
+            return SelectedFeatures(state, selection).LastOrDefault();
+        }
+
+        private static BlueprintFeature[] SelectedFeatures(LevelUpState state,
+            BlueprintFeatureSelection selection)
+        {
+            if (state == null || state.Selections == null)
+                return new BlueprintFeature[0];
+            return state.Selections.Where(value =>
                 value != null && ReferenceEquals(value.Selection, selection) &&
-                value.SelectedItem != null);
-            return selected == null ? null : selected.SelectedItem.Feature;
+                value.SelectedItem != null).Select(value =>
+                    value.SelectedItem.Feature).Where(value => value != null).ToArray();
         }
 
         private static bool IsConjurationOpposition(BlueprintFeature feature)

@@ -89,6 +89,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(source.Contains(
                 "BlueprintLibraryLookup.RequireExact<BlueprintBuff>"),
                 "Acadamae fatigue must use the exact native BlueprintBuff contract.");
+            string prerequisite = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Acadamae", "PrerequisiteAcadamaeGraduate.cs"));
+            Assertions.True(prerequisite.Contains("SelectedFeatures(state,") &&
+                prerequisite.Contains(
+                    "OppositionSelection).Any(IsConjurationOpposition)"),
+                "Pending prerequisites must inspect every selected opposition school.");
         }
 
         internal static void AcadamaeInvocationCorrelation()
