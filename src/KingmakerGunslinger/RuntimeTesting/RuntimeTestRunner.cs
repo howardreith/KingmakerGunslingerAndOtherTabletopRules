@@ -6910,6 +6910,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             UnitEntityData unit = null;
             ItemEntity cord = null;
+            object wizardController = null;
             BlueprintSpellbook wizardBookBlueprint = null;
             string spellIdentity = "<none>";
             bool prepared = false, presentation = false, successObserved = false,
@@ -6926,6 +6927,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<
                     BlueprintCharacterClass>(BlueprintBootstrap.Library,
                         "ba34257984f4c41408ce1dc2004e342e", "native Wizard class");
+                Type controllerType = typeof(
+                    Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                wizardController = start.Invoke(null,
+                    new object[] { unit.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(wizardController,
+                    new object[] { wizard, false }))
+                    throw new InvalidOperationException(
+                        "Disposable Wizard level-one selection was rejected.");
+                mechanics.Invoke(wizardController, null);
+                applyLevelup.Invoke(wizardController,
+                    new object[] { unit.Descriptor });
+                cancel.Invoke(wizardController, null);
+                wizardController = null;
                 wizardBookBlueprint = wizard.Spellbook;
                 BlueprintAbility spell = Enumerable.Range(0,
                         wizardBookBlueprint.SpellList.MaxLevel + 1)
@@ -6939,10 +6968,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparer.Ordinal).Select(value => value.Spell).First();
                 spellLevel = wizardBookBlueprint.SpellList.GetLevel(spell);
                 spellIdentity = spell.name + ":" + spell.AssetGuid;
-                Spellbook spellbook = unit.Descriptor.DemandSpellbook(
-                    wizardBookBlueprint);
-                for (int level = 0; level <= spellLevel; level++)
-                    spellbook.AddCasterLevel();
+                Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
+                if (spellbook == null) throw new InvalidOperationException(
+                    "Native Wizard level did not create its spellbook.");
                 spellbook.AddKnown(spellLevel, spell, true);
                 unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
 
@@ -7015,6 +7043,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (unit != null)
                 {
+                    if (wizardController != null)
+                    {
+                        MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.
+                            LevelUpController).GetMethod("Cancel",
+                                BindingFlags.Public | BindingFlags.Instance);
+                        if (cancel != null) cancel.Invoke(wizardController, null);
+                    }
                     if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
                         unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
                     if (unit.Body.Belt.MaybeItem != null)
@@ -7062,8 +7097,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility spell, int spellLevel)
         {
             var data = new AbilityData(spell, spellbook);
-            var slot = new SpellSlot(spellLevel, SpellSlotType.Common, 0) {
-                Spell = data, Available = true };
+            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                .FirstOrDefault(value => value != null && value.Spell == null);
+            if (slot == null) throw new InvalidOperationException(
+                "Committed Wizard fixture has no empty native memorization slot at level " +
+                spellLevel + ".");
+            slot.Spell = data;
+            slot.Available = true;
             data.ParamSpellSlot = slot;
             return data;
         }

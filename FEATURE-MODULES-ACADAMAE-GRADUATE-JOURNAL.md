@@ -483,3 +483,20 @@
 - Candidate package SHA-256 `92597f5425f902b5392ad18f31538e3928c2d4a7f41d29ffa240b598fd163d26`; DLL SHA-256 `4a6a77d61b25005e8a10c821f9885772dd99b43143ff8c384cba8b7f504aa042`.
 - Current uncertainty: production `Spellbook.CanSpend` must now decide whether the native request-local slot is a valid prepared invocation.
 - Next concrete action: commit/publish this narrow fixture repair, then rerun the guarded Acadamae scenario and inspect the prepared/action/save assertions.
+
+## 2026-08-09 — detached slot rejected; native Wizard level fixture selected
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `077c80cb85c8d75aa838417d4633ed79c55ad332`; active version 0.0.74.
+- Guarded directory `20260809T1628574744165Z-disposable-acadamae-graduate`, run `20260809T1628575149589Z-ceebf618359944c3b98f763d88eed4a8`, FAIL in 85,210 ms with cleanup 1/7 PASS. Candidate was exact native `SummonMonsterISingle` GUID `8fd74eddd9b6c224693d9ab241f25e84`, Wizard level 1, but `Spellbook.CanSpend` rejected the detached invocation slot, so production eligibility correctly remained false and no markers/saves fired.
+- Rejected strategy: treat a detached `ParamSpellSlot` as realistic prepared delivery. The engine correctly requires spellbook-owned state.
+- Narrow fixture change: use the repository's qualified native `LevelUpController` CharGen/`SelectClass`/`ApplyClassMechanics`/`ApplyLevelup` path to commit Wizard level 1 on the disposable unit, then take an empty slot from the resulting real spellbook. The controller is canceled and the unit/spellbook disposed in `finally`.
+- Current uncertainty: unresolved school selections may prevent Wizard level commit or native slot generation; the next run will expose that exact boundary.
+- Next concrete action: qualify, commit, and publish the native Wizard level fixture, then repeat the guarded Acadamae scenario.
+
+## 2026-08-09 — native Wizard level fixture source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `077c80cb85c8d75aa838417d4633ed79c55ad332`; active version 0.0.74.
+- Complete elevated qualification PASS after two sandboxed runs reproducibly failed only `audio.staging-lifecycle` at `File.Replace` with an access-denied error outside the workspace. Repository validation passed; deterministic/domain/reflection suite passed 967/967; clean exact-reference Release build, output/icon/SoundBank audits, deterministic packaging, and strict package validation passed.
+- Candidate package SHA-256 `4cc81415feddc58d62f52b9cbf897c84b46b29a8da7aace1c5c582b71554e317`; DLL SHA-256 `5ea1aea0db6964ac0911a8698397e7b9eed2bdc0659690d5c9830edeaa43a9e1`.
+- Current uncertainty: the guarded process must prove that the committed Wizard level creates a real owned memorization slot and that the production action/save/Cord chain accepts it.
+- Next concrete action: commit and publish the native Wizard level fixture, then repeat `disposable-acadamae-graduate` and inspect every structured assertion.
