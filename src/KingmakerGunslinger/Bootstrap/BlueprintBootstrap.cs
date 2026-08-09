@@ -57,6 +57,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
+        private static int _registeredBlueprintCount;
 
         internal static LibraryScriptableObject Library
         {
@@ -307,6 +308,8 @@ namespace KingmakerGunslinger.Bootstrap
             {
                 lock (Gate)
                 {
+                    if (_registeredBlueprintCount != 0)
+                        return _registeredBlueprintCount;
                     int count = 0;
                     if (_diagnosticFeature != null)
                     {
@@ -502,6 +505,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
                     _acadamaeGraduate = result.AcadamaeGraduate;
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
+                    _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
                 }

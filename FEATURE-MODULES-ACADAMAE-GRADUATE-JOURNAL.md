@@ -304,3 +304,13 @@
 - Root cause: `New-KmgRuntimeRequest` serialized parameters only for save and compatibility-profile scenarios. Added an exact module-observer branch that writes only the two typed Boolean fields.
 - Current uncertainty: synchronized preflight, serializer, and in-game parser require a clean full run.
 - Next concrete action: qualify, commit, and publish the serializer repair, then rerun ON/ON.
+
+## 2026-08-09 — ON/ON publication PASS isolates stale registry telemetry
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `f7d11357d1c6d45cf36a01dc7e3828c96ca9113e`; active version 0.0.74.
+- Guarded scenario directory `20260809T1514574381140Z-observe-feature-module-settings`, run ID `20260809T1514574689235Z-161779b868244d31b3c921598bb4f9d4`, FAIL in 87,178 ms with 4/5 assertions PASS.
+- Active ON/ON matched the request; Gunslinger class and Paper stock were singular; Acadamae was singular in `Features` and `AllFeatures`; Cord stock was singular. The sole failure reported `registered=180` even though bootstrap had already enforced its actual transaction invariant of 250.
+- Root cause: `RegisteredBlueprintCount` was a legacy manual sum that omitted newer catalog members. Successful initialization now records the already-validated registry count atomically and the probe returns that value; incomplete initialization retains the legacy partial diagnostic count.
+- Rejected theory: only 180 identities registered. Initialization cannot publish ready context unless `registry.RegisteredCount == 250`, and all new identities resolve in the same process.
+- Current uncertainty: repaired telemetry and the complete ON/ON observer need a clean rerun.
+- Next concrete action: qualify, commit, and publish the registry telemetry repair, then repeat ON/ON before building the settings transaction matrix.
