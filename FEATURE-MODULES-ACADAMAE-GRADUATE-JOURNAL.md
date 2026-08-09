@@ -423,3 +423,14 @@
 - Candidate package SHA-256 `4581934b91a104dd4f1b1e36a26d3dd8fd8c93fbd10c873dda6d8b689fde2bfb`; DLL SHA-256 `60428bbec6eabe69bd212b187a0815caec07bbfb9b99d84b5f44342ecff3960d`.
 - Current uncertainty: the first standalone isolated transaction must prove both the settings fixture and exact external-state restoration in practice.
 - Next concrete action: commit/publish the wrapper support, then run standalone ON/ON followed by the remaining standalone combinations through separate exact profile transactions.
+
+## 2026-08-09 — isolated standalone four-state matrix PASS
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `e39d1ed896118c94e969dede6fcf2e299ce79ab5`; active version 0.0.74.
+- ON/ON transaction `compat-20260809T160029Z-7089bbb34335`, runtime directory `20260809T1601044215867Z-observe-feature-module-settings`, run `20260809T1601044405834Z-07e5cbfa1e994c9583c758dd08b3aa03`: PASS with the complete expected ON/ON counts.
+- ON/OFF transaction `compat-20260809T160217Z-12f0aff8c75e`, directory `20260809T1602480867238Z-observe-feature-module-settings`, run `20260809T1602481033327Z-f02bf8c901e54098a389f0c06e519fd7`: PASS; Gunslinger surfaces present and Acadamae/Cord absent.
+- OFF/ON transaction `compat-20260809T160403Z-6f65e383f2ed`, directory `20260809T1604346469768Z-observe-feature-module-settings`, run `20260809T1604346792947Z-147f095f8d584acea30cff541fa1f27f`: PASS; all Gunslinger surfaces absent, Acadamae/Cord present, identities 250.
+- OFF/OFF transaction `compat-20260809T160546Z-015897643a5d`, directory `20260809T1606168307402Z-observe-feature-module-settings`, run `20260809T1606168576239Z-63fc8c0871454afe93c5ca7cb8bcfbd4`: PASS; all public project surfaces absent, identities 250.
+- Every transaction reports `status=Restored`, `restorationVerified=true`, and `stagedMutationObserved=true`, proving isolated standalone Mods staging and exact restoration. Four BTSL table identities were installed in the base game and correctly contained 48/0 project rows according to Gunslinger state.
+- Current uncertainty: exact Call of the Wild ON/ON and OFF/ON retention remain to be run; the observer proves project singularity but does not yet explicitly count every CotW-added class/feat before and after reconciliation.
+- Next concrete action: commit/publish standalone proof, then run exact local Call of the Wild ON/ON and OFF/ON profile transactions and inspect readiness/retention evidence.
