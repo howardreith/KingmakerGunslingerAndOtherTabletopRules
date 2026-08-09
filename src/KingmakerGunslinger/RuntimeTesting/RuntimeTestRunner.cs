@@ -412,6 +412,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveFeatureModuleSettings)
+                {
+                    Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
                 {
@@ -6710,6 +6716,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "result=" + (result == null ? "null" : result.Status) +
                     ";assertions=" + passed + "/" + total,
                 exact, "composed guarded slice with its own guaranteed cleanup");
+        }
+
+        private RuntimeTestResult RunFeatureModuleSettingsObservation()
+        {
+            bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
+            bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
+            bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
+            bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
+                .CharacterClass;
+            int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
+                Array.Empty<BlueprintCharacterClass>()).Count(value =>
+                    ReferenceEquals(value, gunslinger) || value != null &&
+                    value.AssetGuid == gunslinger.AssetGuid);
+            BlueprintFeatureSelection basic = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
+                    "247a4068296e8be42890143f451b4b45",
+                    "native basic feat selection");
+            BlueprintFeature acadamae = BlueprintBootstrap.AcadamaeGraduate;
+            int acadFeatures = (basic.Features ?? Array.Empty<BlueprintFeature>())
+                .Count(value => ReferenceEquals(value, acadamae) || value != null &&
+                    value.AssetGuid == acadamae.AssetGuid);
+            int acadAll = (basic.AllFeatures ?? Array.Empty<BlueprintFeature>())
+                .Count(value => ReferenceEquals(value, acadamae) || value != null &&
+                    value.AssetGuid == acadamae.AssetGuid);
+            BlueprintSharedVendorTable smith = BlueprintLibraryLookup.RequireExact<
+                BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
+                    CapitalVendorBlueprints.TableGuid, "native capital Smith table");
+            int cordRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value),
+                    BlueprintBootstrap.CordOfStubbornResolve));
+            int paperRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value),
+                    BlueprintBootstrap.BasicAmmunition.PaperCartridge));
+            string observed = "expected=" + expectedGunslinger + "/" +
+                expectedAcadamae + ";active=" + activeGunslinger + "/" +
+                activeAcadamae + ";registered=" +
+                BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
+                ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
+                ";cordRows=" + cordRows + ";paperRows=" + paperRows;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("feature-module-active-snapshot", "request-local expected states",
+                    observed, activeGunslinger == expectedGunslinger &&
+                    activeAcadamae == expectedAcadamae, "immutable process snapshot"),
+                Assertion("feature-module-identity-count", "250 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 250,
+                    "always-loaded identity registry"),
+                Assertion("feature-module-gunslinger-publication",
+                    expectedGunslinger ? "class and Paper stock singular" :
+                        "class and Paper stock absent",
+                    observed, classCount == (expectedGunslinger ? 1 : 0) &&
+                        paperRows == (expectedGunslinger ? 1 : 0),
+                    "native class catalog and Smith table"),
+                Assertion("feature-module-acadamae-publication",
+                    expectedAcadamae ? "feat arrays and Cord stock singular" :
+                        "feat arrays and Cord stock absent",
+                    observed, acadFeatures == (expectedAcadamae ? 1 : 0) &&
+                        acadAll == (expectedAcadamae ? 1 : 0) &&
+                        cordRows == (expectedAcadamae ? 1 : 0),
+                    "basic feat selection and Smith table"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

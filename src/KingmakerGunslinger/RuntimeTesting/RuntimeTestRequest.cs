@@ -285,6 +285,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (string)request.Parameters["profileId"]))
                     return "compatibility-profile-not-allowed";
             }
+            else if (request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveFeatureModuleSettings)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 2 ||
+                    request.Parameters.Property("gunslinger") == null ||
+                    request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
+                    request.Parameters.Property("acadamaeGraduate") == null ||
+                    request.Parameters["acadamaeGraduate"].Type != JTokenType.Boolean)
+                    return "module-states-required";
+            }
             else
             {
                 if (request.MainMenuTimeoutSeconds != 0 ||

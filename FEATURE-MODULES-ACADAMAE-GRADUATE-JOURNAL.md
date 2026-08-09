@@ -278,3 +278,13 @@
 - Rejected theory: setting `MinHPAfterDamage = 1` is sufficient merely because the property exists. Direct runtime evidence disproves it.
 - Current uncertainty: the explicit cap needs full source and guarded runtime qualification; combat-log wording remains a separate narrow boundary.
 - Next concrete action: run all gates, commit/publish the explicit-floor repair, then rerun the full disposable Cord scenario.
+
+## 2026-08-09 — equipped Cord mechanics PASS and module observer checkpoint
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `d498dade3165bdd65f6f05503fbf505afd9663b8`; active version 0.0.74.
+- Guarded scenario directory `20260809T1506078729768Z-disposable-cord-of-stubborn-resolve`, run ID `20260809T1506079062417Z-28af4755734d4151ad122c17f3f779f7`, PASS in 87,397 ms with 7/7 assertions. Constitution 10 -> 12; fatigue dealt 2 with no condition; exhaustion dealt 1 and left Fatigued only; staged 1 HP took zero; inventory/unequipped scope and cleanup passed.
+- Added request-aware `observe-feature-module-settings`. Its strict Boolean request parameters must match the immutable active snapshot; it checks constant 250 identity registrations, Gunslinger class and Paper-stock publication, Acadamae singularity in both basic-feat arrays, and Cord stock for the requested combination.
+- Tests/gates: complete deterministic suite PASS 967/967; repository validation, exact-reference clean Release build, build-output/icon/SoundBank audits, deterministic package creation, and strict package validation PASS.
+- Candidate package SHA-256 `1b20bf9a77a88f2e5378304f153a6f9cb8c3f86865baea03bde63af75f88daf8`; DLL SHA-256 `779679aa21096760106c7ec9d4ff8419cabf1a3a16eba1f6fdb19e8fb3d3393a`.
+- Current uncertainty: feature-module observer request parsing and ON/ON live assertions need the first guarded run; transactional settings changes for the other three combinations remain to be implemented.
+- Next concrete action: commit/publish the feature-module observer and run the default ON/ON request, then implement exact settings-byte transaction automation for the remaining combinations.

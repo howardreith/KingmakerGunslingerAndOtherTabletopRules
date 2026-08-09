@@ -6,6 +6,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveFeatureModuleSettings =
+            "observe-feature-module-settings";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
         internal const string DisposableFirearmWwiseAudio = "disposable-firearm-wwise-audio";
@@ -197,6 +199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
+                ObserveFeatureModuleSettings,
                 ObserveOptionalModCompatibility,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
