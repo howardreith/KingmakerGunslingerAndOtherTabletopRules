@@ -531,6 +531,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposablePaperCartridgeReload());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposablePaperCartridgeModeViewLifecycle)
+                {
+                    Complete(RunDisposablePaperCartridgeModeViewLifecycle());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposablePaperCartridgeFullAttack)
                 {
@@ -3828,6 +3834,120 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "definition-driven profile compatibility"),
                 Assertion("request-local-cleanup", "temporary cartridges, unit, facts, and items restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposablePaperCartridgeModeViewLifecycle()
+        {
+            Player player = Game.Instance == null ? null : Game.Instance.Player;
+            if (player == null || player.Inventory == null)
+                throw new InvalidOperationException("The save-free player is unavailable.");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(ReadExactMember(Game.Instance, "State"),
+                "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            int paperBefore = player.Inventory.Count(
+                BlueprintBootstrap.BasicAmmunition.PaperCartridge);
+            UnitEntityData unit = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            ActivatableAbility mode = null;
+            Buff firstMarker = null, secondMarker = null;
+            bool attachedView = false, exactOne = false, firstNoFx = false,
+                deactivated = false, reactivated = false, secondNoFx = false,
+                stateUnchanged = false, inventoryUnchanged = false, cleaned = false;
+            string stage = "spawn-view-backed-unit";
+            try
+            {
+                scene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Paper_Mode_View_Lifecycle");
+                unit = Game.Instance.EntityCreator.SpawnUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter, Vector3.zero,
+                    Quaternion.identity, scene);
+                attachedView = unit != null && unit.View != null && unit.View.Data != null;
+                if (!attachedView)
+                    throw new InvalidOperationException("Native spawn did not attach a live unit view.");
+                unit.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
+                mode = unit.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Ability));
+
+                stage = "activate-and-spawn";
+                mode.IsOn = true;
+                firstMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                exactOne = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker)) == 1;
+                firstMarker.SpawnParticleEffect();
+                firstMarker.SpawnParticleEffect();
+                FieldInfo particle = typeof(Buff).GetField("m_ParticleEffect",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (particle == null) throw new MissingFieldException(
+                    typeof(Buff).FullName, "m_ParticleEffect");
+                firstNoFx = particle.GetValue(firstMarker) == null;
+
+                stage = "deactivate-reactivate";
+                mode.IsOn = false;
+                deactivated = !unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                mode.IsOn = true;
+                secondMarker = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(value =>
+                    ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker));
+                secondMarker.SpawnParticleEffect();
+                reactivated = mode.IsOn && !ReferenceEquals(firstMarker, secondMarker);
+                secondNoFx = particle.GetValue(secondMarker) == null;
+                stateUnchanged = unit.Body.PrimaryHand.MaybeItem == null &&
+                    unit.Body.SecondaryHand.MaybeItem == null;
+                inventoryUnchanged = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.PaperCartridge) == paperBefore;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Paper mode view lifecycle failed at stage " + stage + ".", exception);
+            }
+            finally
+            {
+                if (mode != null && mode.IsOn) mode.IsOn = false;
+                if (unit != null) unit.Dispose();
+                if (scene != null) scene.Dispose();
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    (unit == null || !ContainsReference(allUnits, unit)) &&
+                    player.Inventory.Count(BlueprintBootstrap.BasicAmmunition.PaperCartridge) ==
+                        paperBefore;
+            }
+            string observed = "view=" + attachedView + ";one=" + exactOne +
+                ";firstNoFx=" + firstNoFx + ";off=" + deactivated +
+                ";reactivated=" + reactivated + ";secondNoFx=" + secondNoFx +
+                ";state=" + stateUnchanged + ";inventory=" + inventoryUnchanged +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("paper-mode-attached-view", "live native UnitEntityView with Data",
+                    observed, attachedView, "EntityCreator.SpawnUnit in disposable scene"),
+                Assertion("paper-mode-native-particle-lifecycle",
+                    "exact marker invokes SpawnParticleEffect twice without exception or FX",
+                    observed, exactOne && firstNoFx,
+                    "native Buff.SpawnParticleEffect on an attached view"),
+                Assertion("paper-mode-reactivation-lifecycle",
+                    "deactivation/removal and reactivation remain no-FX and selected",
+                    observed, deactivated && reactivated && secondNoFx,
+                    "native activatable ownership and Buff removal/spawn paths"),
+                Assertion("paper-mode-lifecycle-isolation",
+                    "inventory and firearm state unchanged; fixture restored",
+                    observed, stateUnchanged && inventoryUnchanged && cleaned,
+                    "no save API; disposable scene cleanup"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

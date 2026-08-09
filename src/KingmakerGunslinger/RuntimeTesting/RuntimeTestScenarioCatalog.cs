@@ -43,6 +43,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-reload-autocast";
         internal const string DisposablePaperCartridgeReload =
             "disposable-paper-cartridge-reload";
+        internal const string DisposablePaperCartridgeModeViewLifecycle =
+            "disposable-paper-cartridge-mode-view-lifecycle";
         internal const string DisposablePaperCartridgeFullAttack =
             "disposable-paper-cartridge-full-attack";
         internal const string DisposablePaperCartridgeMisfire =
@@ -209,6 +211,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,
                 DisposablePaperCartridgeReload,
+                DisposablePaperCartridgeModeViewLifecycle,
                 DisposablePaperCartridgeFullAttack,
                 DisposablePaperCartridgeMisfire,
                 DisposablePaperCartridgeScatter,
