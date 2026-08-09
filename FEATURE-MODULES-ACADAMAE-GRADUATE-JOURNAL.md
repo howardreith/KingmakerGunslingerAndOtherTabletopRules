@@ -551,3 +551,20 @@
 - Candidate package SHA-256 `9818b7236c7cc7ca476fdc3a35263c1737d069800431bfcf940ad0437669d3c5`; DLL SHA-256 `b9866bdb8c55e0d5daa00a02d49c93896ba5c9bb4bb79ddb92f9da83860e0ec6`.
 - Current uncertainty: the exact spellbook's `Memorize` result and all mechanics assertions remain runtime evidence.
 - Next concrete action: commit/publish the native memorization fixture, then repeat the guarded Acadamae scenario.
+
+## 2026-08-09 — native memorization proves zero daily capacity
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `2e1c74f73d80650bc64306a64c88ca411d491a52`; active version 0.0.74.
+- Guarded directory `20260809T1648203536316Z-disposable-acadamae-graduate`, run `20260809T1648203692549Z-51e968a4ebae4d96bc80575b58c33dc6`, ERROR after 87,839 ms: exact native `Spellbook.Memorize` rejected the level-one spell and reported `spellsPerDay=0`. Automatic cleanup/exit completed.
+- The fixture now validates committed Wizard class level 1 and exact spellbook caster level 1. A detached CharGen commit can create the spellbook without advancing its caster level; only when the observed caster level is zero does the fixture call the native public `AddCasterLevel()` once, then perform the already-inspected public slot refresh/rest. Any other class/caster level fails closed.
+- This is request-local fixture completion through the same native spellbook API, not a production blueprint or character mutation path.
+- Current uncertainty: whether the class/caster-level distinction explains zero capacity and advances the fixture into real action/save assertions.
+- Next concrete action: fully qualify and publish the exact caster-level invariant, then rerun the guarded Acadamae scenario.
+
+## 2026-08-09 — exact caster-level fixture source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `2e1c74f73d80650bc64306a64c88ca411d491a52`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `4090826332336fca44ce4aae2f469acbd5a8d2df0ae37731e422cdf183ea5119`; DLL SHA-256 `ee08e2d2046ff0699687cb1d469ecac3bf3ce4d5210417b449fd1138c569478e`.
+- Current uncertainty: guarded runtime must prove the class/caster-level invariant and all downstream assertions.
+- Next concrete action: commit/publish this fixture checkpoint and rerun `disposable-acadamae-graduate`.

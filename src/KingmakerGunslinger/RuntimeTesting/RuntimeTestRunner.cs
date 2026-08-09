@@ -6972,6 +6972,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
                 if (spellbook == null) throw new InvalidOperationException(
                     "Native Wizard level did not create its spellbook.");
+                int wizardLevel = unit.Descriptor.Progression.GetClassLevel(wizard);
+                if (wizardLevel != 1) throw new InvalidOperationException(
+                    "Native Wizard fixture committed class level " + wizardLevel +
+                    " instead of 1.");
+                if (spellbook.CasterLevel == 0)
+                    spellbook.AddCasterLevel();
+                if (spellbook.CasterLevel != 1) throw new InvalidOperationException(
+                    "Native Wizard fixture produced spellbook caster level " +
+                    spellbook.CasterLevel + " instead of 1.");
                 spellbook.UpdateAllSlotsSize(false);
                 spellbook.Rest();
                 spellbook.AddKnown(spellLevel, spell, true);
