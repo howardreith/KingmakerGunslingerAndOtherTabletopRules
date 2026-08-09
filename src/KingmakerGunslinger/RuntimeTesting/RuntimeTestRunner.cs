@@ -7026,10 +7026,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
                 failureObserved = failedRule.Success && failureCount == 2 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
-                    failedFatigue != null &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
                 if (failedFatigue != null)
                     unit.Descriptor.Buffs.RemoveFact(failedFatigue);
+                else if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                    unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                    throw new InvalidOperationException(
+                        "Native Fatigued state remained after request-local cleanup.");
 
                 AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,

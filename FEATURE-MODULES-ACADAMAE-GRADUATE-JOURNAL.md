@@ -629,3 +629,20 @@
 - Settings/live deployment transaction preserved the guarded request boundary; orchestration recorded automatic exit and no save interaction.
 - Current uncertainty: the new player-facing Cord substitution notification needs a standalone Cord regression run, followed by a second fresh integrated PASS for the required primary pair.
 - Next concrete action: publish this runtime checkpoint, rerun `disposable-cord-of-stubborn-resolve`, then obtain a second fresh integrated Acadamae PASS.
+
+## 2026-08-09 — standalone Cord regression PASS; integrated assertion normalized
+
+- Branch/runtime HEAD: `codex/feature-modules-acadamae-graduate` / `f5038f6969a9a55a183bf0d520a668124503d17d`; active version 0.0.74.
+- Standalone Cord guarded directory `20260809T1710388196597Z-disposable-cord-of-stubborn-resolve`, run `20260809T1710388527173Z-7ef88cd7ee634d77a13d1995cc2875fe`, PASS 7/7 in 98,720 ms. Constitution 10->12; fatigue roll/damage 4 with no fatigue; exhaustion roll/damage 3 with Fatigued and no Exhausted; 1-HP floor damage 0; inventory inert; unequipped behavior native; cleanup PASS.
+- Second integrated directory `20260809T1713155602746Z-disposable-acadamae-graduate`, run `20260809T1713155894981Z-5f431327f1c04a14a46efb86f41eae45`, FAIL 6/7 in 90,225 ms. Prepared/action/save/cancellation/Cord/cleanup assertions otherwise passed; Cord roll/applied/delta were exactly 4/4/4. The ordinary failed-save assertion failed only because `Buffs.GetBuff(exactFatiguedBlueprint)` returned null even though the native Fatigued condition was present.
+- Fixture correction treats the native `UnitCondition.Fatigued` state as the mechanical assertion, then removes the exact buff fact when materialized or the condition otherwise, and fails closed if state remains. Production still applies the exact configured native Fatigued blueprint.
+- Current uncertainty: two consecutive fresh integrated PASS runs remain required after this assertion normalization.
+- Next concrete action: fully qualify/publish the normalized native-fatigue assertion, then run two consecutive integrated Acadamae scenarios.
+
+## 2026-08-09 — normalized native-fatigue assertion source-qualified
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `f5038f6969a9a55a183bf0d520a668124503d17d`; active version 0.0.74.
+- Complete qualification PASS: repository validation; deterministic/domain/reflection suite 967/967; clean exact-reference Release build; output/icon/SoundBank/package audits and strict package validation.
+- Candidate package SHA-256 `a53445d03f3608c2a07176a55df0846672d7f88e4443fe0aa8c3f1e449ffb155`; DLL SHA-256 `b3d5488696101ee4d36e28c7ff238da570a877f436aea38a404343950f5dcf42`.
+- Current uncertainty: two consecutive fresh integrated PASS runs remain runtime evidence.
+- Next concrete action: commit/publish the assertion correction and run the integrated Acadamae scenario twice consecutively.
