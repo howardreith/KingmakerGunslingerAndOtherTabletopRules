@@ -220,6 +220,24 @@ namespace KingmakerGunslinger.DomainTests
                     "Guarded transfer runtime contract is missing: " + token);
         }
 
+        internal static void RuntimeModuleRequestSourceContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            foreach (string token in new[] { "request.Parameters.Count != 3",
+                "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean" })
+                Assertions.True(request.Contains(token),
+                    "Runtime module request contract is missing: " + token);
+            foreach (string token in new[] { "Active.ShieldOther",
+                "RegisteredBlueprintCount == 254",
+                "feature-module-shield-other-publication" })
+                Assertions.True(runner.Contains(token),
+                    "Runtime module observer contract is missing: " + token);
+        }
+
         private sealed class FakeSpell
         {
             internal FakeSpell(string guid) { Guid = guid; }

@@ -409,3 +409,17 @@ under isolated standalone transactions.
   and carry `shieldOther` alongside Gunslinger and Acadamae Graduate.
 
 Next: qualify/publish this final matrix plumbing repair, then retry all eight.
+
+## 2026-08-10 - runtime-side module request repair
+
+- All-enabled run `20260810T1403193768024Z-observe-feature-module-settings`
+  reached the exact mod but was rejected at request acceptance with sanitized
+  reason `module-states-required`; no observer or save action ran.
+- The remaining runtime-side `RuntimeTestRequest` validator still required two
+  properties. It now requires exactly the same three Boolean fields as the
+  PowerShell preflight and serializer, with a focused source contract test.
+- The wrapper could not restore while the rejected process remained open; after
+  bounded termination, explicit transaction recovery for
+  `compat-20260810T140244Z-f0f80ecf5cc6` verified exact restoration `True`.
+
+Next: validate/publish this final acceptance repair and retry all-enabled.

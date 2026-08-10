@@ -1809,3 +1809,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   authoritative validator/serializer repair and evidence docs are uncommitted.
 - Exact next action: validate/commit/publish, rebuild clean SHA, retry the eight
   isolated standalone combinations. Remaining gates unchanged; blocker none.
+
+## Shield Other current resume - runtime-side module request repair
+
+- Current phase: final acceptance plumbing before eight-combination runtime.
+- Last run `20260810T1403193768024Z-observe-feature-module-settings` was rejected
+  with `module-states-required`; no observer/save action. Explicit recovery of
+  transaction `compat-20260810T140244Z-f0f80ecf5cc6` verified `True`.
+- Exact current commit: `77273bf7eead256bcdc24460dbe91d2e3ac9b709`;
+  runtime validator and focused source test plus evidence docs are uncommitted.
+- Exact next action: validate/commit/publish/rebuild and retry all-enabled.
+- Remaining gates unchanged. Active blocker: none.

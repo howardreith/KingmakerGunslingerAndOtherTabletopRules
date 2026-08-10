@@ -295,11 +295,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 2 ||
+                if (request.Parameters == null || request.Parameters.Count != 3 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
-                    request.Parameters["acadamaeGraduate"].Type != JTokenType.Boolean)
+                    request.Parameters["acadamaeGraduate"].Type != JTokenType.Boolean ||
+                    request.Parameters.Property("shieldOther") == null ||
+                    request.Parameters["shieldOther"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else
