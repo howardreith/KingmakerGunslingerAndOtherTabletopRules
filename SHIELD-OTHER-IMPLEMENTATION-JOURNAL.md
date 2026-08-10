@@ -289,3 +289,19 @@ scenario in `gunslinger-only` with transactional restoration.
 
 Next: complete source/build/package qualification, publish, then rerun the
 transactional standalone scenario on the changed clean SHA.
+
+## 2026-08-10 - first standalone mechanics PASS
+
+- Transactional `gunslinger-only` run
+  `20260810T1330351072971Z-disposable-shield-other` passed on exact published
+  source `5e81423e9002234b1cf0a77de7b8357aef67d77e`.
+- Live results: one target link; AC/Fortitude/Reflex/Will deltas all +1; finalized
+  damage 3 produced subject/caster HP loss 1/2; finalized damage 4 produced 2/2;
+  exactly two transfer combat-log events; disposable cleanup true.
+- Runtime transaction `compat-20260810T132959Z-c342ce67b0f1` restored the prior
+  Mods directory exactly (`restorationVerified=True`). No save was named, loaded,
+  or mutated.
+
+Next: expand the disposable scenario across replacement/multi-subject links,
+range/death/dispel lifecycle, defenses/temp HP, lethal and recursion/exclusion
+cases before the required profile repetitions.

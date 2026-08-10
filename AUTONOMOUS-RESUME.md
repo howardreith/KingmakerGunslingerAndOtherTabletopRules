@@ -1687,3 +1687,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: run complete validation, commit/publish, rebuild clean SHA,
   and rerun transactional `gunslinger-only` `disposable-shield-other`.
 - Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - first standalone mechanics PASS
+
+- Current phase: Phase 9 expanded disposable behavior/damage matrix.
+- Last completed runtime check: transactional standalone PASS
+  `20260810T1330351072971Z-disposable-shield-other` on exact published source
+  `5e81423e9002234b1cf0a77de7b8357aef67d77e`; bonuses 1/1/1/1, odd split 1/2,
+  even split 2/2, two logs, cleanup true. Transaction
+  `compat-20260810T132959Z-c342ce67b0f1` restoration verified `True`.
+- Exact current commit: `5e81423e9002234b1cf0a77de7b8357aef67d77e`;
+  curated PASS documentation is uncommitted.
+- Exact next action: commit/publish evidence, then expand the scenario for link
+  replacement/multiple subjects, range/death/dispel, defenses/temp HP/lethal,
+  exclusions, and reciprocal recursion before profile repetitions.
+- Remaining gates: expanded matrix; module/profile repetitions; 0.0.77 release,
+  final hashes/audits/report. Active blocker: none.
