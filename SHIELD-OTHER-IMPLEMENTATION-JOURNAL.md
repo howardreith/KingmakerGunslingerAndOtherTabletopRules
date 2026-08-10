@@ -240,3 +240,17 @@ signature-validated finalized-damage transpiler and exception-safe transfer guar
 
 Next: commit/publish this damage-runtime checkpoint, then add the disposable
 Shield Other behavior and damage runtime scenario needed to prove the exact seam.
+
+## 2026-08-10 - first disposable damage scenario
+
+- Added allowlisted, save-free `disposable-shield-other`. It registers only two
+  disposable chargen units in the live unit registry, applies the real persisted
+  target buff at caster level 5, and verifies all four +1 bonuses.
+- The scenario triggers native `RuleDealDamage` events for finalized values 3 and
+  4 and requires exact HP deltas 1/2 and 2/2 plus two player combat-log events.
+- Cleanup removes and disposes both units and proves neither remains registered.
+- Source qualification PASS: runtime preflight 86 checks, 980/980 deterministic
+  tests, exact-reference Release build, and strict package validation.
+
+Next: commit/publish, rebuild the clean SHA, then execute the guarded scenario
+through Steam and inspect structured HP/log evidence before expanding its matrix.

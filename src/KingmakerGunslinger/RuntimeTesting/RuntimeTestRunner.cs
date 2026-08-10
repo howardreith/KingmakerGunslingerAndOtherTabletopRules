@@ -430,6 +430,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableShieldOther)
+                {
+                    Complete(RunDisposableShieldOther());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableAcadamaeGraduate)
                 {
                     Complete(RunDisposableAcadamaeGraduate());
@@ -6897,6 +6903,128 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string record in observation.Records)
                 result.Diagnostics.Add(record);
             return result;
+        }
+
+        private RuntimeTestResult RunDisposableShieldOther()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData caster = null, subject = null;
+            bool casterRegistered = false, subjectRegistered = false, cleaned = false;
+            int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
+                casterEven = -1, acDelta = -1, fortDelta = -1,
+                reflexDelta = -1, willDelta = -1, linkCount = -1;
+            long logsBefore = ShieldOtherCombatLog.Published;
+            string stage = "construct";
+            try
+            {
+                caster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                subject = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 100;
+                subject.Descriptor.Stats.HitPoints.BaseValue = 100;
+                caster.Descriptor.State.Immortality.Retain();
+                subject.Descriptor.State.Immortality.Retain();
+                SetExactProperty(caster, "Position", Vector3.zero);
+                SetExactProperty(subject, "Position", Vector3.zero);
+                casterRegistered = Kingmaker.Game.Instance.State.Units.All.Add(caster);
+                subjectRegistered = Kingmaker.Game.Instance.State.Units.All.Add(subject);
+                if (!casterRegistered || !subjectRegistered)
+                    throw new InvalidOperationException("Disposable units were not registered.");
+
+                int acBefore = subject.Stats.AC.ModifiedValue;
+                int fortBefore = subject.Stats.SaveFortitude.ModifiedValue;
+                int reflexBefore = subject.Stats.SaveReflex.ModifiedValue;
+                int willBefore = subject.Stats.SaveWill.ModifiedValue;
+                var context = new MechanicsContext(caster, caster.Descriptor,
+                    BlueprintBootstrap.ShieldOther.Ability, null,
+                    new TargetWrapper(subject));
+                context.Params.CasterLevel = 5;
+                stage = "apply-link";
+                Buff link = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, context,
+                    TimeSpan.FromHours(5d));
+                if (link == null) throw new InvalidOperationException(
+                    "Shield Other target buff was rejected.");
+                linkCount = subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(
+                    value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff));
+                acDelta = subject.Stats.AC.ModifiedValue - acBefore;
+                fortDelta = subject.Stats.SaveFortitude.ModifiedValue - fortBefore;
+                reflexDelta = subject.Stats.SaveReflex.ModifiedValue - reflexBefore;
+                willDelta = subject.Stats.SaveWill.ModifiedValue - willBefore;
+
+                stage = "odd-damage";
+                int subjectBefore = subject.HPLeft;
+                int casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subjectOdd = subjectBefore - subject.HPLeft;
+                casterOdd = casterBefore - caster.HPLeft;
+
+                stage = "even-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 4))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subjectEven = subjectBefore - subject.HPLeft;
+                casterEven = casterBefore - caster.HPLeft;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Shield Other failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (subjectRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(subject);
+                if (casterRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(caster);
+                if (subject != null) subject.Dispose();
+                if (caster != null) caster.Dispose();
+                cleaned = (subject == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(subject)) &&
+                    (caster == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(caster));
+            }
+            string observed = "linkCount=" + linkCount + ";bonuses=" + acDelta +
+                "/" + fortDelta + "/" + reflexDelta + "/" + willDelta +
+                ";odd=" + subjectOdd + "/" + casterOdd + ";even=" +
+                subjectEven + "/" + casterEven + ";logs=" +
+                (ShieldOtherCombatLog.Published - logsBefore) + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("shield-other-link-and-bonuses",
+                    "one link; AC/Fort/Reflex/Will +1", observed,
+                    linkCount == 1 && acDelta == 1 && fortDelta == 1 &&
+                    reflexDelta == 1 && willDelta == 1,
+                    "native target buff modifiers"),
+                Assertion("shield-other-odd-split", "subject 1; caster 2",
+                    observed, subjectOdd == 1 && casterOdd == 2,
+                    "finalized damage transpiler and guarded transfer"),
+                Assertion("shield-other-even-split", "subject 2; caster 2",
+                    observed, subjectEven == 2 && casterEven == 2,
+                    "finalized damage transpiler and guarded transfer"),
+                Assertion("shield-other-transfer-log", "2 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 2,
+                    "native IWarningNotificationUIHandler combat-log event"),
+                Assertion("external-isolation", "disposable units removed", observed,
+                    cleaned, "live unit registry cleanup"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
         }
 
         private static int CountExactFeatures(BlueprintFeature[] source,
