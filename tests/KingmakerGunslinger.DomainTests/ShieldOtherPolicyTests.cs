@@ -255,6 +255,8 @@ namespace KingmakerGunslinger.DomainTests
                 "DefaultJsonSettings.DefaultSettings",
                 "UnitSerialization",
                 "ToObject<UnitDescriptor>",
+                "native-save-unit-postload",
+                "restoredSubjectEntity.PostLoad()",
                 "shield-other-native-save-context-roundtrip" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);

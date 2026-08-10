@@ -550,6 +550,20 @@ Next: source-qualify and rerun this exact unit-save graph.
 
 Next: source-qualify/publish the narrower instrumentation and rerun.
 
+## 2026-08-10 - JSON construction requires native unit PostLoad
+
+- `20260810T1458316956358Z-disposable-shield-other` on exact source
+  `45549c369d8d115c28dcb07fbe63cddfcf997700` proved descriptor reconstruction
+  succeeded, while `RawFacts` had not yet materialized the buff. All gameplay
+  assertions passed and transaction `compat-20260810T145757Z-c6e59e37421c`
+  restored exactly.
+- The fixture now follows the next exact engine lifecycle step: attach the
+  restored descriptor to a detached `UnitEntityData`, invoke native `PostLoad`,
+  then inspect the materialized Shield Other buff/context. The detached restored
+  entity is disposed in `finally`.
+
+Next: source-qualify/publish and rerun the post-load graph.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

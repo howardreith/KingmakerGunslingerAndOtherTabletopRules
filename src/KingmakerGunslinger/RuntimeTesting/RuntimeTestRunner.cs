@@ -6926,7 +6926,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             UnitEntityData caster = null, subject = null, secondCaster = null,
-                secondSubject = null;
+                secondSubject = null, restoredSubjectEntity = null;
             UnitDescriptor restoredSubjectDescriptor = null;
             bool casterRegistered = false, subjectRegistered = false,
                 secondCasterRegistered = false, secondSubjectRegistered = false,
@@ -7024,6 +7024,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DefaultSettings);
                 restoredSubjectDescriptor = subjectToken.ToObject<UnitDescriptor>(
                     serializer);
+                stage = "native-save-unit-postload";
+                if (restoredSubjectDescriptor != null)
+                {
+                    restoredSubjectEntity = new UnitEntityData(null,
+                        restoredSubjectDescriptor);
+                    restoredSubjectEntity.PostLoad();
+                }
                 Buff restoredLink = restoredSubjectDescriptor == null ? null :
                     restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().SingleOrDefault(
                         value => ReferenceEquals(value.Blueprint,
@@ -7422,7 +7429,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (restoredSubjectDescriptor != null)
+                if (restoredSubjectEntity != null)
+                    restoredSubjectEntity.Dispose();
+                else if (restoredSubjectDescriptor != null)
                     restoredSubjectDescriptor.Dispose();
                 if (secondSubjectRegistered)
                     Kingmaker.Game.Instance.State.Units.All.Remove(secondSubject);

@@ -1603,6 +1603,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - native unit PostLoad persistence fixture
+
+- Current phase: Phase 9 save-context post-load qualification.
+- Last runtime proved descriptor reconstruction but no materialized `RawFacts`
+  before unit post-load; all gameplay checks passed and restoration was exact.
+- Exact current commit: `45549c369d8d115c28dcb07fbe63cddfcf997700`;
+  detached `UnitEntityData.PostLoad` fixture is uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - save graph field instrumentation
 
 - Current phase: Phase 9 save-context reconstruction diagnosis.
