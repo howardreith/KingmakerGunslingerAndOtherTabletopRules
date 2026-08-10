@@ -1658,3 +1658,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Remaining gates: expand behavior/damage/exclusion lifecycle matrix; disabled
   module and profile repetitions; 0.0.77 release/docs/package; hashes/audits.
 - Active blocker: none.
+
+## Shield Other current resume - switch to isolated standalone profile
+
+- Current phase: Phase 9 guarded standalone mechanics qualification.
+- Last completed runtime attempt: installed-profile run
+  `20260810T1305018393571Z-disposable-shield-other` reached exact build/request
+  ownership but no consumption before the established 600-second CotW bound;
+  no save was named or touched. The unattended process was then terminated.
+- Exact current commit: `0a2698a9fcd902526101acd98473b739b47cf9b9`;
+  compatibility-runner allowlist change and timeout journal are uncommitted.
+- Exact next action: qualify/commit/publish this strategy change, then invoke
+  `gunslinger-only` transactionally for `disposable-shield-other` and verify
+  exact Mods restoration plus structured mechanics evidence.
+- Remaining gates: expanded mechanics matrix; CotW and combined repetitions;
+  disabled module; 0.0.77 docs/package/hashes/audits/final report.
+- Active blocker: none; installed broad-profile startup strategy is retired.

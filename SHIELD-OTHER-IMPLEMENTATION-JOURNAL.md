@@ -254,3 +254,22 @@ Shield Other behavior and damage runtime scenario needed to prove the exact seam
 
 Next: commit/publish, rebuild the clean SHA, then execute the guarded scenario
 through Steam and inspect structured HP/log evidence before expanding its matrix.
+
+## 2026-08-10 - installed-profile timeout and strategy change
+
+- The first guarded `disposable-shield-other` attempt used the currently installed
+  broad CotW Mods set. Evidence directory:
+  `20260810T1305018393571Z-disposable-shield-other`.
+- The request argument, normalized request path, and exact loaded build identity
+  were recorded, but the process never reached request consumption. The game log
+  stopped during the known CotW startup path at `[Manager] Spawning`; no Shield
+  Other callback, mechanics exception, save selection, or save mutation occurred.
+- After the established 600-second extended CotW bound, the unchanged strategy
+  was retired. The responsive unattended process was force-terminated; it exited
+  after bounded verification. This is launch-environment evidence, not a mechanics
+  failure and not a PASS.
+- Added the scenario to the existing transactional compatibility-profile runner
+  so the next attempt isolates `gunslinger-only` and proves exact Mods restoration.
+
+Next: source-qualify/publish the profile allowlist, then run the disposable
+scenario in `gunslinger-only` with transactional restoration.

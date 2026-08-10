@@ -34,6 +34,7 @@ param(
         'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
         'observe-feature-module-settings',
+        'disposable-shield-other',
         'disposable-acadamae-graduate',
         'disposable-gunslinger-comprehensive-acceptance')]
     [string[]]$Scenario,
