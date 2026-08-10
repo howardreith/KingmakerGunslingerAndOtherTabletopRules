@@ -9,10 +9,13 @@
   `SaveStashedArea`, focused persistence contracts 13/13, runtime
   preflight 86/86, complete deterministic suite 981/981, exact-reference
   Release compile, and strict 0.0.76 checkpoint package validation all pass.
-- Exact current commit before this final native-clone repair checkpoint is
-  `944d0bfbcff9a56c0b3873481e2a275c6bbc8b7a`; the exact-file identity repair
+- Exact current commit before this diagnostic checkpoint is
+  `3678a73f4bd6a8888a71f4864599a7890924b0fe`; the safe native-clone diagnostic
   are intentionally uncommitted until this evidence update is committed.
-- Exact next action: commit and publish the native cloned-`SaveInfo` repair, then
+- Exact next action: commit and publish the safe clone diagnostic, then run
+  `working-save-shield-other-verify-cleanup` to prove the freshly loaded link,
+  odd split, HP restoration, link removal, cleanup save, and retained clone
+  identity fields. Then make only the final evidence-supported sentinel repair.
   run `working-save-shield-other-prepare` followed by a fresh-launch
   `working-save-shield-other-verify-cleanup`, both naming only
   `KMG_AUTOMATION_WORKING` and exiting after the exact save callback.

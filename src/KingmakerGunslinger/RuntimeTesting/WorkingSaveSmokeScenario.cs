@@ -1410,7 +1410,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     _writeObserved = true;
                     Add("unexpected-save-write", method, args,
-                        "unarmed or non-working stashed-area write observed");
+                        "unarmed or non-working stashed-area write observed;" +
+                        "reference=" + ReferenceEquals(stashedDescriptor,
+                            _workingDescriptor) +
+                        ";name=" + Read(stashedDescriptor, "Name") +
+                        ";folderLeaf=" + Leaf(Read(stashedDescriptor, "FolderName")) +
+                        ";fileLeaf=" + Leaf(Read(stashedDescriptor, "FileName")));
                 }
                 return;
             }

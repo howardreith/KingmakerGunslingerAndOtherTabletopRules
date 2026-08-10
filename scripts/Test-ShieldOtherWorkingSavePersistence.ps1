@@ -30,6 +30,10 @@ $checks = [ordered]@{
         $smoke.Contains('Read(value, "Name") == ExpectedName') -and
         $smoke.Contains('!IsBaseline(stashedDescriptor)') -and
         $runner.Contains('evidence.ExpectedWorkingStashedAreaCount >= 1')
+    'safe-native-clone-diagnostic' =
+        $smoke.Contains(';folderLeaf=') -and
+        $smoke.Contains(';fileLeaf=') -and
+        $smoke.Contains('ReferenceEquals(stashedDescriptor,')
     'unexpected-write-still-fails' =
         $smoke.Contains('_writeObserved = true;') -and
         $runner.Contains('if (_workingSaveSmoke.WriteObserved)')

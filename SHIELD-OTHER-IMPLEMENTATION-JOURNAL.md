@@ -754,3 +754,11 @@ Next: commit/publish and run guarded standalone runtime qualification.
   object-reference-authorized top-level save is in progress, with explicit
   baseline exclusion. This is the strongest identity the native clone retains.
   Focused 13/13, deterministic 981/981, and exact Release compile pass.
+- Fourth request `20260810T1559185859922Z-working-save-shield-other-prepare`
+  proved the serialization clone also omits at least one of name/folder/file.
+  All spell/context/link assertions and the top-level exact-reference save still
+  passed. Added safe request-local diagnostics for only reference correlation,
+  name, folder leaf, and filename leaf; no personal or unrelated save data is
+  read. The next verify-cleanup launch will both prove fresh-load mechanics and
+  remove/save the link while capturing the retained native clone shape. Focused
+  contracts 14/14, deterministic 981/981, and exact Release compile pass.
