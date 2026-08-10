@@ -383,3 +383,18 @@ Next: publish/rebuild and run the temporary-HP matrix transactionally.
 - Transaction `compat-20260810T134851Z-f1299dd53841` restored exactly.
 
 Next: qualify/publish the observation repair and rerun once on the changed SHA.
+
+## 2026-08-10 - temporary HP PASS and eight-way module repair
+
+- Run `20260810T1354174801203Z-disposable-shield-other` passed on exact source
+  `5c2c5445fc64ab06149d630d6f16b8bcea83048a`; both subject and caster consumed
+  exactly 3 of 5 native temporary HP with HP outcomes `0/3` and `3/0`.
+- Transaction `compat-20260810T135338Z-4a835b96b91a` restored exactly.
+- Repaired the guarded module observer and both profile/matrix writers from the
+  inherited two-module schema to schema 2 with Shield Other. Runtime now requires
+  three immutable active settings, constant 254 identities, and publication in
+  all live spell lists iff Shield Other is enabled. The direct matrix now defines
+  all eight Boolean combinations.
+
+Next: source-qualify/publish the module-matrix repair, then run all eight settings
+under isolated standalone transactions.

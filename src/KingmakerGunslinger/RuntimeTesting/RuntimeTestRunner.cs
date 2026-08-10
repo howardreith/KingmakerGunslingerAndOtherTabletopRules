@@ -6746,8 +6746,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
             bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
+            bool expectedShieldOther = (bool)_request.Parameters["shieldOther"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
+            bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -6828,9 +6830,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rareLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(value =>
                     value != null && ReferenceEquals(value.Item, item) && value.Count == 1);
             }
+            ShieldOtherInventoryObservation shieldObservation =
+                ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
-                expectedAcadamae + ";active=" + activeGunslinger + "/" +
-                activeAcadamae + ";registered=" +
+                expectedAcadamae + "/" + expectedShieldOther + ";active=" +
+                activeGunslinger + "/" + activeAcadamae + "/" +
+                activeShieldOther + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -6839,14 +6844,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
-                ";rareLoot=" + rareLootRows;
+                ";rareLoot=" + rareLootRows + ";shieldLists=" +
+                shieldObservation.PublishedLists + "/" +
+                shieldObservation.ExpectedPublishedLists;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
                     observed, activeGunslinger == expectedGunslinger &&
-                    activeAcadamae == expectedAcadamae, "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "252 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 252,
+                    activeAcadamae == expectedAcadamae &&
+                    activeShieldOther == expectedShieldOther,
+                    "immutable process snapshot"),
+                Assertion("feature-module-identity-count", "254 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 254,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -6870,6 +6879,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         acadAll == (expectedAcadamae ? 1 : 0) &&
                         cordRows == (expectedAcadamae ? 1 : 0),
                     "basic feat selection and Smith table"),
+                Assertion("feature-module-shield-other-publication",
+                    expectedShieldOther ? "all discovered lists singular" :
+                        "all discovered lists absent",
+                    observed, shieldObservation.DuplicateCount == 0 &&
+                        shieldObservation.PublishedLists == (expectedShieldOther ?
+                            shieldObservation.ExpectedPublishedLists : 0),
+                    "required base and optional final-live spell lists"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
