@@ -549,3 +549,18 @@ Next: source-qualify, commit/publish, and rerun the same guarded scenario.
 
 Next: inspect and use the exact Kingmaker save serializer for a request-local
 buff/context persistence round trip before profile repetitions.
+
+## 2026-08-10 - native save-context fixture source-qualified
+
+- Added an exact `DefaultJsonSettings` round trip for the live Shield Other
+  `MechanicsContext`, requiring reconstructed object-reference resolution to the
+  same registered caster and subject plus caster level 5.
+- This follows the repository's established disposable grit persistence pattern
+  and writes no save file or protected slot.
+- `Build-Local.ps1`: repository validation, 981/981 tests, exact Release, and
+  strict package validation PASS. Package SHA-256
+  `25e153a66e36f9936f44ad400b564d9ec86b8ffd6524ad9ff211cbc4d6f48ade`;
+  DLL SHA-256
+  `205120277bae36d5b1502ce40a02792b432e5d1b5675b321b1fd640c60341c0d`.
+
+Next: commit/publish and run guarded standalone runtime qualification.

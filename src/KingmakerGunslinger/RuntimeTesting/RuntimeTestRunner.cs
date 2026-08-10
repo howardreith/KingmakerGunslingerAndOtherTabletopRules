@@ -6937,7 +6937,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 casterLethal = false, abilityDamageExcluded = false,
                 constitutionDamageExcluded = false;
             bool subjectTemporaryHpNormal = false,
-                casterTemporaryHpNormal = false;
+                casterTemporaryHpNormal = false,
+                contextRoundTrip = false;
+            int contextJsonLength = -1;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, physicalSubject = -1, physicalCaster = -1,
                 energySubject = -1, energyCaster = -1,
@@ -7008,6 +7010,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fortDelta = subject.Stats.SaveFortitude.ModifiedValue - fortBefore;
                 reflexDelta = subject.Stats.SaveReflex.ModifiedValue - reflexBefore;
                 willDelta = subject.Stats.SaveWill.ModifiedValue - willBefore;
+
+                stage = "native-save-context-roundtrip";
+                string contextJson = JsonConvert.SerializeObject(context,
+                    Formatting.None,
+                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
+                        .DefaultSettings);
+                contextJsonLength = contextJson.Length;
+                MechanicsContext restoredContext = JsonConvert.DeserializeObject<
+                    MechanicsContext>(contextJson,
+                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
+                        .DefaultSettings);
+                contextRoundTrip = restoredContext != null &&
+                    ReferenceEquals(restoredContext.MaybeCaster, caster) &&
+                    restoredContext.Params != null &&
+                    restoredContext.Params.CasterLevel == 5 &&
+                    restoredContext.MainTarget.Unit == subject;
 
                 stage = "odd-damage";
                 int subjectBefore = subject.HPLeft;
@@ -7431,6 +7449,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subjectTempCasterLoss + ";tempCaster=" + casterTemporaryHpNormal +
                 "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
                 casterTempHpLoss;
+            observed += ";contextRoundTrip=" + contextRoundTrip + "/" +
+                contextJsonLength;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
@@ -7438,6 +7458,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     linkCount == 1 && acDelta == 1 && fortDelta == 1 &&
                     reflexDelta == 1 && willDelta == 1,
                     "native target buff modifiers"),
+                Assertion("shield-other-native-save-context-roundtrip",
+                    "same caster and subject; caster level 5", observed,
+                    contextRoundTrip && contextJsonLength > 0,
+                    "DefaultJsonSettings MechanicsContext JsonConstructor"),
                 Assertion("shield-other-odd-split", "subject 1; caster 2",
                     observed, subjectOdd == 1 && casterOdd == 2,
                     "finalized damage transpiler and guarded transfer"),
