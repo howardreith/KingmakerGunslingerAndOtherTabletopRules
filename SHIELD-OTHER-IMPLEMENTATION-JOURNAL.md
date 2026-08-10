@@ -590,6 +590,21 @@ Next: source-qualify/publish and rerun the exact loader sequence.
 
 Next: source-qualify/publish and rerun the corrected cross-load identity lookup.
 
+## 2026-08-10 - descriptor utility confirmed to strip live buffs
+
+- `20260810T1510107775960Z-disposable-shield-other` on exact source
+  `e7d2e6dc7bb41536d463ed23468f6b77b4dadf5b` reported `rawFacts=0` after the
+  complete descriptor-loader lifecycle. Stable-GUID lookup was therefore not the
+  issue: `UnitSerialization.Serialize(UnitDescriptor)` is a stripped descriptor
+  utility and does not represent the live save unit graph.
+- Transaction `compat-20260810T150917Z-4456c06824ee` restored exactly.
+- The fixture now serializes caster and subject `UnitEntityData` together through
+  native `DefaultJsonSettings`, reconstructs both by stable entity ID, invokes
+  `PostLoad` on both, and requires the restored buff to link the restored pair.
+  It fails if deserialization reuses either live fixture object.
+
+Next: source-qualify/publish and run the two-unit native save graph.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

@@ -1603,6 +1603,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - two-unit native save graph
+
+- Current phase: Phase 9 save-context full graph qualification.
+- Last runtime proved the descriptor utility strips live buffs (`rawFacts=0`);
+  all gameplay assertions and restoration passed.
+- Exact current commit: `e7d2e6dc7bb41536d463ed23468f6b77b4dadf5b`;
+  paired caster/subject `UnitEntityData` native JSON graph is uncommitted.
+- Exact next action: build, commit/publish, and run guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - stable-GUID post-load lookup
 
 - Current phase: Phase 9 save-context cross-load identity qualification.
