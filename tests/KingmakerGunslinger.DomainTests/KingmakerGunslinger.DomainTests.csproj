@@ -60,6 +60,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs"><Link>ShieldOther\ShieldOtherLinkValidityRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityDecision.cs"><Link>ShieldOther\ShieldOtherLinkValidityDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityPolicy.cs"><Link>ShieldOther\ShieldOtherLinkValidityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherSpellListMergePolicy.cs"><Link>ShieldOther\ShieldOtherSpellListMergePolicy.cs</Link></Compile>
     <Compile Include="PaperCartridgeFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionSourceKind.cs"><Link>Ammunition\ReloadAmmunitionSourceKind.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfile.cs"><Link>Ammunition\ReloadAmmunitionProfile.cs</Link></Compile>

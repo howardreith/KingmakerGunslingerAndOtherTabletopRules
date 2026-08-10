@@ -1534,3 +1534,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   transpiler/transfer; runtime scenarios; 0.0.77 version/docs/package; required
   consecutive standalone/CotW/combined profile passes; final hashes and audit.
 - Active blocker: none.
+
+## Shield Other current resume - base publication checkpoint
+
+- Current phase: Phase 7 optional final-live CotW reconciliation.
+- Last completed command/check: `Build-Local.ps1` PASS with 977/977 tests,
+  exact-reference Release build, and strict package validation.
+- Exact current commit: `c4091a8cca908fd0997eb9813d62e3dc7230388f` with the
+  base-publication checkpoint ready to commit.
+- Exact next action: commit/publish base publication, verify remote equality,
+  then add first-idle structural CotW discovery/reconciliation and second pass.
+- Remaining gates: CotW publication; lifecycle component; exact damage
+  transpiler/transfer; runtime scenarios; 0.0.77 release; consecutive runtime
+  profile gates; final package hashes, restoration/protected-save audit.
+- Active blocker: none.

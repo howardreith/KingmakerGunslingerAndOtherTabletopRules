@@ -608,6 +608,7 @@ namespace KingmakerGunslinger.Bootstrap
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
+            ShieldOtherSpellListPublication shieldOtherPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -615,6 +616,20 @@ namespace KingmakerGunslinger.Bootstrap
 
                 ShieldOtherBlueprintSet shieldOther =
                     ShieldOtherBlueprints.Register(library, registry);
+                if (publicationPlan.ShieldOtherSpellLists)
+                {
+                    try
+                    {
+                        shieldOtherPublication = ShieldOtherSpellListPublication
+                            .PublishRequiredBaseLists(library, shieldOther.Ability);
+                    }
+                    catch (Exception shieldOtherPublicationException)
+                    {
+                        context.Logger.Failure("shield-other", "publication.failed",
+                            "Required base spell-list publication failed and was rolled back; Shield Other identities remain registered and other modules will continue.",
+                            shieldOtherPublicationException);
+                    }
+                }
 
                 BlueprintFeature acadamaeGraduate =
                     AcadamaeGraduateBlueprints.Register(library, registry);
@@ -956,6 +971,17 @@ namespace KingmakerGunslinger.Bootstrap
                         context.Logger.Failure("blueprints", "acadamae-feat.rollback-failed",
                             "Blueprint initialization failed and Acadamae feat rollback was refused.",
                             featRollbackException);
+                    }
+                }
+                if (shieldOtherPublication != null)
+                {
+                    try { shieldOtherPublication.Rollback(); }
+                    catch (Exception spellRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "shield-other.rollback-failed",
+                            "Blueprint initialization failed and Shield Other list rollback was refused.",
+                            spellRollbackException);
                     }
                 }
                 if (classPublication != null)

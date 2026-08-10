@@ -9,7 +9,7 @@
 | Stable blueprints | SOURCE-QUALIFIED | Stable ability/buff GUIDs; 254 active identities; contract test |
 | Link lifecycle | SOURCE-IMPLEMENTED | Pure validity/range policy PASS; runtime lifecycle pending |
 | Exact HP split | SOURCE-IMPLEMENTED | Pure conservation/guard policy PASS; native runtime evidence pending |
-| Base spell-list publication | NOT-STARTED | Five transactional level-2 publications |
+| Base spell-list publication | SOURCE-QUALIFIED | Five transactional level-2 lists; aliases/idempotence/rollback |
 | Optional CotW publication | NOT-STARTED | Oracle, Warpriest, Psychic reconciliation |
 | Deterministic qualification | NOT-STARTED | Complete suite, build, package |
 | Runtime qualification | NOT-STARTED | Standalone, CotW, combined; two PASS each |

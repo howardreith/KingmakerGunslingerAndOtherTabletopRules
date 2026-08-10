@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using KingmakerGunslinger.Spells.ShieldOther;
 
 namespace KingmakerGunslinger.DomainTests
@@ -88,6 +89,64 @@ namespace KingmakerGunslinger.DomainTests
                 "result.MaterialComponent = null" })
                 Assertions.True(source.Contains(token),
                     "Shield Other blueprint contract token is missing: " + token);
+        }
+
+        internal static void SpellListMergeAndRollbackPolicy()
+        {
+            var foreign = new FakeSpell("foreign");
+            var shield = new FakeSpell("shield");
+            var duplicateGuid = new FakeSpell("shield");
+            var current = new List<FakeSpell> { foreign, shield, duplicateGuid };
+            List<FakeSpell> published = ShieldOtherSpellListMergePolicy.Merge(
+                current, shield, value => value.Guid);
+            Assertions.True(published.Count == 2 &&
+                ReferenceEquals(published[0], foreign) &&
+                ReferenceEquals(published[1], shield),
+                "Publication must preserve foreign order and singularize by reference/GUID.");
+            List<FakeSpell> second = ShieldOtherSpellListMergePolicy.Merge(
+                published, shield, value => value.Guid);
+            Assertions.True(second.Count == 2 && ReferenceEquals(second[0], foreign) &&
+                ReferenceEquals(second[1], shield),
+                "Repeated reconciliation must be idempotent.");
+            Assertions.True(ShieldOtherSpellListMergePolicy.CanRollback(
+                published, published), "Unchanged published list must permit rollback.");
+            Assertions.False(ShieldOtherSpellListMergePolicy.CanRollback(
+                second, published), "Later foreign list replacement must refuse rollback.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                ShieldOtherSpellListMergePolicy.Merge(
+                    new List<FakeSpell> { null }, shield, value => value.Guid),
+                "Null native/foreign entries must fail closed.");
+        }
+
+        internal static void BasePublicationSourceContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string publication = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ShieldOtherSpellListPublication.cs"));
+            foreach (string guid in new[] {
+                "8443ce803d2d31347897a3d85cc32f53",
+                "9f5be2f7ea64fe04eb40878347b147bc",
+                "57c894665b7895c499b3dce058c284b3",
+                "75576ed8cab010644a11f9ecd512a7f9",
+                "93228f4df23d2d448a0db59141af8aed" })
+                Assertions.True(publication.Contains(guid),
+                    "Required level-2 base-list GUID is missing: " + guid);
+            Assertions.True(publication.Contains("ReferenceEquals(value.Before, level.Spells)") &&
+                publication.Contains("rollback refused") &&
+                publication.Contains("m_SpellsFiltered"),
+                "Publication must preserve physical aliases, clear caches, and refuse unsafe rollback.");
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains("publication.failed") &&
+                bootstrap.Contains("other modules will continue"),
+                "Shield Other publication failure must remain isolated from other modules.");
+        }
+
+        private sealed class FakeSpell
+        {
+            internal FakeSpell(string guid) { Guid = guid; }
+            internal string Guid { get; private set; }
         }
 
         private static ShieldOtherLinkValidityRequest Request()
