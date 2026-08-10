@@ -3,7 +3,7 @@
 | Area | Status | Required evidence |
 |---|---|---|
 | Frozen baseline and branch | PASS | Exact SHA; clean feature branch |
-| Duplicate-content scan | INVESTIGATING | Initial and first-idle final live scans |
+| Duplicate-content scan | PASS | Initial and first-idle final live scans; 104,644 assets, zero candidates |
 | Damage seam | SOURCE-PROVEN | Exact 2.1.7b IL contract; runtime qualification pending |
 | Feature settings schema 2 | SOURCE-QUALIFIED | Migration, atomicity, eight combinations PASS |
 | Stable blueprints | NOT-STARTED | Manifest, contracts, constant count |

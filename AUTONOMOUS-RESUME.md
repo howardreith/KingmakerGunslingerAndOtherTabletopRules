@@ -1507,14 +1507,14 @@ and human area-transition result jointly qualify the repaired 0.0.74 candidate.
 The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order is complete on `codex/feature-modules-acadamae-graduate`. Exact release source `8fea913d7baba880496012576878ac95eaadc74d` passed 967/967 deterministic tests, clean Release/package qualification, all four standalone module settings, consecutive standalone and maximum-risk combined integration runs, and two guarded working-save smokes. Final evidence is in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`. Next retain the branch unmerged for user review.
 # Shield Other active mission (2026-08-09)
 
-- Current phase: Phase 1 final-live donor/list/duplicate runtime inventory.
-- Last completed command/check: inventory-observer `Build-Local.ps1` PASS,
-  including preflight 86/86, 974/974 domain tests, clean exact-reference Release
-  build, package construction, and strict validation.
-- Exact current commit: `716195fc51c02021d5668670d3ca04c7145786d7`
-  (inventory-observer and documentation changes are uncommitted).
-- Exact next action: commit/publish/rebuild the guarded inventory observer, run
-  `observe-shield-other-inventory`, and curate its exact live evidence.
+- Current phase: Phase 4 stable blueprint construction and base publication.
+- Last completed command/check: guarded final-live inventory PASS at
+  `20260810T0408000666226Z-observe-shield-other-inventory`; 104,644 assets and
+  zero Shield Other candidates.
+- Exact current commit: `ef8b80fd43b0e52e1e804c0399a3a0a3d94e9ef9`
+  (curated runtime evidence changes are uncommitted).
+- Exact next action: commit/publish curated inventory evidence, then register
+  stable ability/target-buff identities and transactional level-2 base lists.
 - Remaining gates: final duplicate scan; module/settings; identities;
   lifecycle; exact split; base/CotW publication; complete deterministic suite;
   Release build/package; guarded runtime profiles twice each; documentation,

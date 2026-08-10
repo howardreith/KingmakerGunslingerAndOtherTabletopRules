@@ -75,3 +75,20 @@ donor/spell-list/final-live duplicate observer before blueprint construction.
 
 Next: commit/publish this observer, rebuild from the clean SHA, then run it
 through the guarded Steam App ID 640820 launcher and curate its exact evidence.
+
+## 2026-08-10 - final live duplicate/donor/list inventory PASS
+
+- Rebuilt clean published `ef8b80f`; package SHA-256
+  `0bc0f4f5eb67041886aada03bc55810e340181123fe58e9acbd5fc68b9903f09`,
+  DLL SHA-256
+  `58dc8a211cde4c0d4fb0467ceb6b44aacad24b07041b750cc6f84803af5be68d`.
+- Guarded final-live inventory PASS:
+  `20260810T0408000666226Z-observe-shield-other-inventory`.
+- Zero duplicate candidates among 104,644 loaded blueprints. Required five
+  base lists and unambiguous CotW Oracle/Warpriest/Psychic live chains are now
+  recorded in `planning/SHIELD-OTHER-INVENTORY.md`.
+- No save name, save load, input, or save mutation was used.
+
+Next: assign the two necessary stable identities, construct presentation-only
+donor clones with exact mechanics, and implement transactional level-2 base
+publication plus pure publication tests.
