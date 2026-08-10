@@ -11,28 +11,40 @@ namespace KingmakerGunslinger.DomainTests
             WithDirectory(path =>
             {
                 FeatureModuleSettingsState missing = FeatureModuleSettingsStore.Load(path);
-                Assertions.True(missing.Active.Gunslinger && missing.Active.AcadamaeGraduate,
-                    "Missing settings must default ON/ON.");
+                Assertions.True(missing.Active.Gunslinger && missing.Active.AcadamaeGraduate &&
+                    missing.Active.ShieldOther, "Missing settings must default ON/ON/ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName), "{}");
                 FeatureModuleSettingsState legacy = FeatureModuleSettingsStore.Load(path);
-                Assertions.True(legacy.Active.Gunslinger && legacy.Active.AcadamaeGraduate,
-                    "Legacy settings must default ON/ON.");
+                Assertions.True(legacy.Active.Gunslinger && legacy.Active.AcadamaeGraduate &&
+                    legacy.Active.ShieldOther, "Legacy settings must default ON/ON/ON.");
+                File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
+                    "{\"schemaVersion\":1,\"gunslinger\":false,\"acadamae-graduate\":true}");
+                FeatureModuleSettingsState migrated = FeatureModuleSettingsStore.Load(path);
+                string migratedJson = File.ReadAllText(Path.Combine(path,
+                    FeatureModuleSettingsStore.FileName));
+                Assertions.True(!migrated.Active.Gunslinger &&
+                    migrated.Active.AcadamaeGraduate && migrated.Active.ShieldOther &&
+                    migratedJson.Contains("\"schemaVersion\": 2") &&
+                    migratedJson.Contains("\"shield-other\": true"),
+                    "Schema 1 must migrate atomically to schema 2 with Shield Other ON.");
             });
         }
 
-        internal static void FourCombinationsRoundTrip()
+        internal static void EightCombinationsRoundTrip()
         {
             WithDirectory(path =>
             {
                 foreach (bool gunslinger in new[] { false, true })
                 foreach (bool acadamae in new[] { false, true })
+                foreach (bool shieldOther in new[] { false, true })
                 {
                     FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(path);
-                    state.SetPending(gunslinger, acadamae);
+                    state.SetPending(gunslinger, acadamae, shieldOther);
                     FeatureModuleSettingsStore.Save(state);
                     FeatureModuleSettingsState loaded = FeatureModuleSettingsStore.Load(path);
                     Assertions.True(loaded.Active.Gunslinger == gunslinger &&
-                        loaded.Active.AcadamaeGraduate == acadamae,
+                        loaded.Active.AcadamaeGraduate == acadamae &&
+                        loaded.Active.ShieldOther == shieldOther,
                         "Module combination did not round-trip.");
                 }
             });
@@ -49,7 +61,8 @@ namespace KingmakerGunslinger.DomainTests
                 FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(
                     path, value => warning = value, () => instant);
                 Assertions.True(state.Recovered && state.Active.Gunslinger &&
-                    state.Active.AcadamaeGraduate, "Malformed settings did not recover ON/ON.");
+                    state.Active.AcadamaeGraduate && state.Active.ShieldOther,
+                    "Malformed settings did not recover ON/ON/ON.");
                 Assertions.True(warning != null && Directory.GetFiles(path,
                     "FeatureModules.json.malformed.*").Length == 1,
                     "Malformed bytes were not quarantined with a diagnostic.");
@@ -62,7 +75,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var state = new FeatureModuleSettingsState(
                 FeatureModuleConfiguration.Defaults, "fixture", "fixture", false);
-            state.SetPending(false, true);
+            state.SetPending(false, true, false);
             Assertions.True(state.Active.Gunslinger && !state.Pending.Gunslinger &&
                 state.RestartRequired, "UI edits must not mutate the active snapshot.");
             Assertions.Equal("gunslinger", FeatureModuleConfiguration.GunslingerId,
@@ -70,15 +83,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("acadamae-graduate",
                 FeatureModuleConfiguration.AcadamaeGraduateId,
                 "Acadamae module ID changed.");
+            Assertions.Equal("shield-other", FeatureModuleConfiguration.ShieldOtherId,
+                "Shield Other module ID changed.");
+            Assertions.True(state.Active.ShieldOther && !state.Pending.ShieldOther,
+                "Shield Other pending edits mutated the active snapshot.");
         }
 
         internal static void PublicationPlansAreIndependent()
         {
             foreach (bool gunslinger in new[] { false, true })
             foreach (bool acadamae in new[] { false, true })
+            foreach (bool shieldOther in new[] { false, true })
             {
                 var plan = new FeatureModulePublicationPlan(
-                    new FeatureModuleConfiguration(gunslinger, acadamae));
+                    new FeatureModuleConfiguration(gunslinger, acadamae, shieldOther));
                 Assertions.True(plan.GunslingerClass == gunslinger &&
                     plan.GunslingerFeats == gunslinger &&
                     plan.FirearmParameters == gunslinger &&
@@ -89,6 +107,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(plan.AcadamaeFeat == acadamae &&
                     plan.CordCapitalStock == acadamae,
                     "Acadamae and Cord publication gates are not independent.");
+                Assertions.True(plan.ShieldOtherSpellLists == shieldOther,
+                    "Shield Other spell-list publication escaped its independent gate.");
             }
         }
 

@@ -392,3 +392,8 @@ table, and lifecycle tuple could be proven, so Bokken alone is evidence-deferred
 in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`. Mandatory Smith, BTSL, and
 renewable crafting acquisition paths passed. No Paper Cartridges mission hard
 stop remains. The inherited Dodge and Targeting Torso blockers are unchanged.
+# Shield Other active blockers (2026-08-09)
+
+None. Static installed-content scanning has not found a duplicate. Exact 2.1.7b
+IL proves a viable finalized-damage/pre-HP interception boundary. Final live
+duplicate scanning and runtime seam qualification remain mandatory gates.

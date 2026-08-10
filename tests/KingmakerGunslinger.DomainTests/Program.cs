@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.DomainTests
         private static readonly TestCase[] Cases =
         {
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
-            Case("feature-settings.four-combinations", FeatureModuleSettingsTests.FourCombinationsRoundTrip),
+            Case("feature-settings.eight-combinations", FeatureModuleSettingsTests.EightCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
             Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
             Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
