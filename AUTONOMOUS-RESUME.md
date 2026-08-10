@@ -1614,6 +1614,20 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: run `Build-Local.ps1`, commit/publish, and rerun standalone.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - area/death lifecycle runtime PASS
+
+- Current phase: Phase 9 save/load persistence qualification.
+- Last completed check: `20260810T1446127542431Z-disposable-shield-other`
+  passed on exact commit `79552bd9974907bf001ca645d0974cb05e72dfd8`;
+  area unload and full lethal-state link removal passed, restoration `True`.
+- Exact current commit: `79552bd9974907bf001ca645d0974cb05e72dfd8`;
+  this evidence curation is uncommitted.
+- Exact next action: inspect Kingmaker's exact save serializer and add a
+  request-local buff/context serialization round trip or, if only a real save
+  can prove it, use the authorized working-save guarded mechanism.
+- Remaining gates: save/load; repeated standalone/CotW/high-risk profiles;
+  0.0.77 release/docs/package/hashes. Active blocker: none.
+
 ## Shield Other current resume - mitigation/immunity runtime PASS
 
 - Current phase: Phase 9 remaining lifecycle and save/load qualification.

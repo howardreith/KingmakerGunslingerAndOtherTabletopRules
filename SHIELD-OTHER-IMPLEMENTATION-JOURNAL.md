@@ -535,3 +535,17 @@ Next: commit/publish and run guarded standalone runtime qualification.
   deferred death-state publication.
 
 Next: source-qualify, commit/publish, and rerun the same guarded scenario.
+
+## 2026-08-10 - area/death lifecycle runtime PASS
+
+- Guarded evidence: `20260810T1446127542431Z-disposable-shield-other` on exact
+  source `79552bd9974907bf001ca645d0974cb05e72dfd8`.
+- Caster `IsInGame=false` removed the link on the native round tick and later
+  damage remained subject/caster `2/0`.
+- After transferred damage reached the lethal caster boundary, the next native
+  round tick removed the link using the repaired full lethal-state contract.
+- All prior assertions passed; transaction
+  `compat-20260810T144535Z-f33a748e4b66` restored exactly.
+
+Next: inspect and use the exact Kingmaker save serializer for a request-local
+buff/context persistence round trip before profile repetitions.

@@ -53,3 +53,12 @@ release 0.0.77. No source/build result will be represented as in-game proof.
   transferred share. Target fire immunity produced no subject or caster HP loss.
 - All regression assertions and request-local cleanup passed; compatibility
   restoration verified `True`.
+
+## Area and caster-death lifecycle checkpoint
+
+- `20260810T1446127542431Z-disposable-shield-other` passed on exact source
+  `79552bd9974907bf001ca645d0974cb05e72dfd8`.
+- Unloading the caster from the active area removed the link before later damage;
+  a caster reaching the lethal boundary through transferred damage also caused
+  link removal on the next native round tick.
+- All regression assertions passed and compatibility restoration verified `True`.
