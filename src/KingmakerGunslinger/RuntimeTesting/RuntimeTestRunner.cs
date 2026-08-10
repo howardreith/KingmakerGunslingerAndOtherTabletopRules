@@ -6925,6 +6925,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fatigueSurvivedContextCleanup = false, restRemoved = false,
                 modeViewLifecycle = false, cordObserved = false,
                 cordBuffRetained = false, cleaned = false;
+            bool fatigueEndFieldFound = false, fatigueEndIsNull = false,
+                fatigueContextPresent = false, fatigueParentAbsent = false,
+                fatigueContextDistinct = false, fatigueRemoveOnRest = false;
             int spellLevel = -1, offCount = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
@@ -7133,12 +7136,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
                 FieldInfo endTime = typeof(Buff).GetField("m_EndTime",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                fatigueIndependent = failedFatigue != null && endTime != null &&
-                    endTime.GetValue(failedFatigue) == null &&
-                    failedFatigue.Context != null &&
-                    failedFatigue.Context.ParentContext == null &&
-                    !ReferenceEquals(failedFatigue.Context, failedRule.Context) &&
-                    fatiguedBlueprint.RemoveOnRest;
+                fatigueEndFieldFound = endTime != null;
+                fatigueEndIsNull = failedFatigue != null && endTime != null &&
+                    endTime.GetValue(failedFatigue) == null;
+                fatigueContextPresent = failedFatigue != null && failedFatigue.Context != null;
+                fatigueParentAbsent = fatigueContextPresent &&
+                    failedFatigue.Context.ParentContext == null;
+                fatigueContextDistinct = fatigueContextPresent &&
+                    !ReferenceEquals(failedFatigue.Context, failedRule.Context);
+                fatigueRemoveOnRest = fatiguedBlueprint.RemoveOnRest;
+                fatigueIndependent = fatigueEndIsNull && fatigueContextPresent &&
+                    fatigueParentAbsent && fatigueContextDistinct && fatigueRemoveOnRest;
                 // The rejected build coupled Fatigued to failedRule.Context. The
                 // native caster overload creates a root context instead; dropping
                 // every request-local reference to the completed spell context is
@@ -7226,6 +7234,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cordBuffRetained=" + cordBuffRetained +
                 ";snapshot=" + snapshotObserved +
                 ";fatigueIndependent=" + fatigueIndependent +
+                ";fatigueEndField=" + fatigueEndFieldFound +
+                ";fatigueEndNull=" + fatigueEndIsNull +
+                ";fatigueContext=" + fatigueContextPresent +
+                ";fatigueParentAbsent=" + fatigueParentAbsent +
+                ";fatigueContextDistinct=" + fatigueContextDistinct +
+                ";fatigueRemoveOnRest=" + fatigueRemoveOnRest +
                 ";survivedContextCleanup=" + fatigueSurvivedContextCleanup +
                 ";restRemoved=" + restRemoved +
                 ";modeViewLifecycle=" + modeViewLifecycle +

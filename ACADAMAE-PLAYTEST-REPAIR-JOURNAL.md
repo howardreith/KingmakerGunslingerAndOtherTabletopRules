@@ -22,3 +22,12 @@
 - Rejected theory: carrying the spell `MechanicsContext` with an arbitrary duration. Chosen path is the exact native independent caster overload and native rest contract.
 - Current uncertainty: real runtime must prove grant/toggle behavior, command timing, context expiration survival, rest cleanup, Cord interception, and attached-view no-FX lifecycle.
 - Next concrete action: commit/publish this coherent source-qualified repair and execute the standalone guarded Acadamae scenario.
+
+## 2026-08-09 - first guarded Acadamae repair run
+
+- Branch/HEAD: `codex/feature-modules-acadamae-graduate` / `e5319f63ab32c6ef13efa095e8ab06dbc78660bf`; version 0.0.76; commit published through the approved helper.
+- Guarded run `20260810T0008229348262Z-disposable-acadamae-graduate` / runtime ID `20260810T0008229686745Z-e325f6296bfe4732a4460db145df8e36`: FAIL 12/13 behavioral assertions.
+- PASS: native mode grant/default OFF, mode-OFF native Full-Round and zero save, mode-ON Standard action, successful and failed saves, cancellation, command snapshot semantics, fatigue surviving forced spell-context cleanup, native rest removal, attached-view no-FX lifecycle, and one-roll Cord interception.
+- FAIL: the composite structural `fatigueIndependent` observation. The decisive lifecycle observations independently passed, so the next strategy is narrower instrumentation of each duration/context/rest predicate rather than changing mechanics without knowing which diagnostic assumption was false.
+- State: guarded runner exited Kingmaker and retained structured evidence; deployment backup `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260810T0008211856274Z` exists.
+- Next concrete action: publish predicate-level fatigue-context instrumentation and rerun the exact standalone scenario.
