@@ -256,6 +256,8 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitSerialization",
                 "ToObject<UnitDescriptor>",
                 "native-save-unit-postload",
+                "JsonConstructorMark",
+                "GetMethod(\"Initialize\"",
                 "restoredSubjectEntity.PostLoad()",
                 "shield-other-native-save-context-roundtrip" })
                 Assertions.True(runner.Contains(token),

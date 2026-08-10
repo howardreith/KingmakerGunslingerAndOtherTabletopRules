@@ -7027,8 +7027,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "native-save-unit-postload";
                 if (restoredSubjectDescriptor != null)
                 {
-                    restoredSubjectEntity = new UnitEntityData(null,
-                        restoredSubjectDescriptor);
+                    ConstructorInfo jsonConstructor = typeof(UnitEntityData)
+                        .GetConstructor(BindingFlags.Instance |
+                            BindingFlags.NonPublic, null,
+                            new[] { typeof(Kingmaker.EntitySystem.Persistence
+                                .JsonUtility.JsonConstructorMark) }, null);
+                    MethodInfo initializeRestoredUnit = typeof(UnitEntityData)
+                        .GetMethod("Initialize", BindingFlags.Instance |
+                            BindingFlags.NonPublic, null,
+                            new[] { typeof(UnitDescriptor), typeof(bool) }, null);
+                    if (jsonConstructor == null || initializeRestoredUnit == null)
+                        throw new MissingMethodException(
+                            "Native UnitEntityData JSON load boundary is unavailable.");
+                    restoredSubjectEntity = (UnitEntityData)jsonConstructor.Invoke(
+                        new object[] { new Kingmaker.EntitySystem.Persistence
+                            .JsonUtility.JsonConstructorMark() });
+                    initializeRestoredUnit.Invoke(restoredSubjectEntity,
+                        new object[] { restoredSubjectDescriptor, false });
                     restoredSubjectEntity.PostLoad();
                 }
                 Buff restoredLink = restoredSubjectDescriptor == null ? null :

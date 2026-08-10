@@ -1603,6 +1603,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - exact JSON unit loader fixture
+
+- Current phase: Phase 9 save-context loader qualification.
+- Last runtime failed because the view constructor was not the save path;
+  transaction restoration was exact.
+- Exact current commit: `83e31a7585a834dcd8728f06ed6b4c7ce7793fbd`;
+  reflected `JsonConstructorMark` + private `Initialize` loader sequence is
+  uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - native unit PostLoad persistence fixture
 
 - Current phase: Phase 9 save-context post-load qualification.

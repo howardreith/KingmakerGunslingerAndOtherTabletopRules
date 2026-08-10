@@ -564,6 +564,19 @@ Next: source-qualify/publish the narrower instrumentation and rerun.
 
 Next: source-qualify/publish and rerun the post-load graph.
 
+## 2026-08-10 - exact JSON unit constructor identified
+
+- `20260810T1502144921909Z-disposable-shield-other` on exact source
+  `83e31a7585a834dcd8728f06ed6b4c7ce7793fbd` failed before post-load because
+  the public view-based `UnitEntityData` constructor rejects a null view.
+- Transaction `compat-20260810T150136Z-98d1ebc87297` restored exactly.
+- Exact 2.1.7b reflection shows the save loader boundary is the nonpublic
+  `UnitEntityData(JsonConstructorMark)` constructor followed by private
+  `Initialize(UnitDescriptor, bool)`. The fixture now invokes those exact methods
+  before native `PostLoad`, failing closed if either signature changes.
+
+Next: source-qualify/publish and rerun the exact loader sequence.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source
