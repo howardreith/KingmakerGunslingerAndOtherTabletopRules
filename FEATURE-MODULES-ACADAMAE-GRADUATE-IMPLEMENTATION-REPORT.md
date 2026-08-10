@@ -29,6 +29,15 @@ The Cord is published once, count one, to `SmithVendorTable` (`7de95934726609244
 
 Repository/source/build/package gates pass with 967/967 deterministic tests. All four standalone module combinations pass with a constant 250-identity set. The exact release commit passed consecutive standalone integration, consecutive highest-risk combined-profile integration, and two guarded `KMG_AUTOMATION_WORKING` smoke runs. Exact Call of the Wild, Arms & Armor, Toggle Custom Soundpacks, qualified combined, and high-risk combined transactions pass and restore exact state; transaction and run IDs are in the journal and qualification document.
 
+## 0.0.76 playtest repair addendum
+
+The accepted 0.0.75 architecture remains intact. Version 0.0.76 appends two
+always-loaded mode identities (252 active total), makes Acadamae acceleration a
+default-OFF per-character native activatable, makes failed-save canonical
+Fatigued root-context and permanent until native rest, and replaces the Cord's
+donor sprite with original project art. Exact evidence is retained in
+`docs/ACADAMAE-PLAYTEST-REPAIR-QUALIFICATION.md`.
+
 The qualified package built from exact release source `8fea913d7baba880496012576878ac95eaadc74d` has SHA-256 `f05edc2d2176969b33132b367c5734e60248ba06aaf8a44ecd0c2cc3fb51e7f7`; its DLL SHA-256 is `ee6b4d1d255871d6037574ba421c1e55c5cf7aa1730ebe96b71ee1bf16178df2`.
 
 Next concrete action: retain the clean published branch unmerged for user review.

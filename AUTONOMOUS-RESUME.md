@@ -1,5 +1,12 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-10 Acadamae playtest repair
+
+- Branch `codex/feature-modules-acadamae-graduate`; 0.0.76 mode, permanent-fatigue, and project Cord icon repairs are implemented and targeted runtime-qualified.
+- Deterministic total is 970; active identities are 252 (ledger 253).
+- Standalone, four module combinations, exact CotW/Arms & Armor/Toggle, qualified combined, consecutive high-risk combined, and two working-save smokes pass with transaction restoration.
+- Exact next action: commit/publish final docs, rebuild and run final-commit repetition gates, deploy through `Deploy-Local.ps1`, verify installed hashes/settings preservation, finalize clean remote proof. Do not merge.
+
 ## Current resume — Feature Modules, Acadamae Graduate, and Cord (2026-08-09)
 
 - Branch `codex/feature-modules-acadamae-graduate`; base `7a99ce5ac6d6976212310f997bd39ddfe4a57935`; latest published pre-versioning checkpoint `08443098e73efc80a9a3e82db530c0b68513077c`.

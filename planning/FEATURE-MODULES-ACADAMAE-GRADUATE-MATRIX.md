@@ -20,4 +20,8 @@
 | Optional-mod regression | PASS | CotW, Arms & Armor, soundpacks, qualified combined and high-risk targeted transactions |
 | Release/package/docs | PASS | 0.0.75 exact-commit package, final runtime repetitions, restoration, documentation, and publication proof |
 
+0.0.76 repair addendum: PASS - the identity invariant is now 252 active in all
+four configurations; the existing publication results remain unchanged. See
+`planning/ACADAMAE-PLAYTEST-REPAIR-MATRIX.md` for focused evidence.
+
 Next concrete action: retain the clean published branch unmerged for user review.

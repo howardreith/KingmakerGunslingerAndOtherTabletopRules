@@ -1,5 +1,15 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-10 Acadamae playtest repair
+
+No repair-specific blocker. Early runtime attempts correctly rejected a
+spell-independent but non-permanent native buff; exact installed IL identified
+`Buff.MakePermanent()` and the corrected lifecycle now passes. One later
+standalone integrated fixture observed an isolated forced-save variance; the
+same exact bytes passed before and after, all mechanical lifetime assertions
+passed, and separate Cord plus high-risk repetitions passed. Historical
+unrelated compatibility dispositions below are preserved.
+
 ## Feature-module branch publication policy mismatch — RESOLVED (2026-08-09)
 
 The approved helper initially rejected the user-mandated branch. The external allowlist was subsequently updated; every coherent mission commit through `08443098e73efc80a9a3e82db530c0b68513077c` has been published through the exact approved helper. This is not an active blocker.

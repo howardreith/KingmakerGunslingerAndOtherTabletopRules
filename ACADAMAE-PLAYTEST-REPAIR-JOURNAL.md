@@ -53,3 +53,14 @@
 - Read-only installed IL inspection proved public `Buff.MakePermanent()` clears `m_EndTime` and asks the owning `BuffCollection` to update its next event. This is the exact native indefinite transition; no arbitrary duration, clone, reflection, or manual rest handler is used.
 - Production now applies canonical Fatigued through the independent caster overload, then calls `MakePermanent()` only when the Cord has not intercepted and suppressed the buff. Deterministic guards require both operations and reject the old spell-context route.
 - Next concrete action: run the complete build/package gate, commit/publish, and rerun the real standalone lifecycle.
+
+## 2026-08-10 - runtime and compatibility qualification checkpoint
+
+- Source commit `097b2fcc28b28f1f62051bdf0a700c7b1ec02dec`; version 0.0.76.
+- Standalone Acadamae PASS 13/13 at `20260810T0025495339458Z-disposable-acadamae-graduate` and `20260810T0057193245457Z-disposable-acadamae-graduate`; exact permanent/root/distinct fatigue, context-cleanup survival, real rest removal, native default-OFF toggle, command snapshots, view lifecycle, and integrated Cord path passed. Cord scenario `20260810T0028061943603Z-disposable-cord-of-stubborn-resolve` PASS 8/8 including distinct project sprite.
+- Four module configurations PASS with registered=252: runtime IDs `20260810T0030378293295Z-92d7638006ad407591e69653ac1de6ed`, `20260810T0032442695172Z-b3aba843a05c4110a1ee80124c931edf`, `20260810T0034494700421Z-e5234d444a854e3d9382d24a97f87755`, and `20260810T0036544950657Z-453c089bf845435facf86f18be3bbcb0`. Settings restored to SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Exact restored compatibility transactions PASS: CotW `compat-20260810T003846Z-8ef116748a84`; Arms & Armor `compat-20260810T004325Z-48b05aca6317`; Toggle `compat-20260810T004510Z-57bdf436e6d3`; qualified combined `compat-20260810T004700Z-01cf993fd775`; consecutive high-risk `compat-20260810T004845Z-b479c645228a` and `compat-20260810T005115Z-8d43f465f597`.
+- Two guarded `KMG_AUTOMATION_WORKING` smokes PASS 11/11: `20260810T0059425523070Z-8d4ce89f4e124fd8a5528427ff6b6075` and `20260810T0102171809010Z-518fa9cbfd2d4b49ab8c4b4903ec40ae`. No protected baseline save was selected or modified.
+- One exact-byte standalone run `20260810T0054114452133Z-8e432ad927b048769b772723b9616986` observed a forced-save fixture variance only in the Cord subcase (no fatigue attempt); permanent-fatigue mechanics passed and the same bytes passed in the immediately following fresh run. Evidence is retained, not rewritten.
+- Current uncertainty: final documentation commit changes the release source SHA and package bytes; repeat exact-final-commit gates before deployment.
+- Next concrete action: validate/commit/publish docs, build exact final package, repeat primary and maximum-risk gates, deploy, verify installed state.

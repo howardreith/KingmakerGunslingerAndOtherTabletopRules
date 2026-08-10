@@ -34,6 +34,14 @@ Exact Call of the Wild DLL SHA-256 is `4ebf8e1ed3e66ffed72ea33ea325595629423dacd
 - Final maximum-risk Call of the Wild + Arms & Armor + Toggle transaction `compat-20260809T185022Z-8c3b1f71592d` PASS 7/7 twice: `20260809T1850531512993Z-a7e8a8bd3c5a471fbc8c0564ac9f3f46` and `20260809T1852513094584Z-1007aca1a53244eead770f7c312ae5ca`. Staged mutation and exact restoration were both verified.
 - Guarded default-ON/ON `KMG_AUTOMATION_WORKING` smoke PASS 11/11 twice without selecting or modifying `KMG_AUTOMATION_BASELINE`: `20260809T1855052943753Z-b458c2e848e94ba7a792f7e1883e3452` and `20260809T1857286797079Z-33d09ced9bce4aee828216b6b7a33ff3`.
 - Active package/profile pins are 0.0.75. Every settings and optional-profile transaction restored its original settings bytes/absence, Mods manifest, and managed SoundBank; the final module matrix restored settings SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+
+## 0.0.76 playtest repair addendum
+
+The original 0.0.75 evidence above remains historical. The focused 0.0.76
+repair reran all four module combinations with a constant 252 active identity
+set and exact settings restoration. Mode, permanent-fatigue, Cord-icon, and
+updated optional-profile evidence is recorded in
+`ACADAMAE-PLAYTEST-REPAIR-QUALIFICATION.md`.
 - Historical Call of the Wild selector and comprehensive high-risk limitations remain documented and are not rewritten as though they never occurred. No new feature-specific human-only acceptance item remains.
 
 Next concrete action: retain the clean published branch unmerged for user review.
