@@ -1746,3 +1746,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   standalone `disposable-shield-other`, and inspect exact structured outcomes.
 - Remaining gates: typed mitigation/temp HP/immunity/area/death/save-load;
   module/profile repetitions; 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - exclusions/recursion/lethal runtime PASS
+
+- Current phase: Phase 9 native temporary-HP and mitigation runtime coverage.
+- Last completed runtime check: standalone PASS
+  `20260810T1343395800417Z-disposable-shield-other` on exact
+  `30098c73a7aa1820f5f889c140a55d4d376e7859`; stat exclusions, reciprocal guard,
+  lethal caster, six logs, and cleanup passed. Transaction
+  `compat-20260810T134303Z-8c43ad78f3c0` restoration verified `True`.
+- Exact current commit: `30098c73a7aa1820f5f889c140a55d4d376e7859`;
+  curated evidence docs are uncommitted.
+- Exact next action: commit/publish evidence, then add native temporary-HP
+  modifiers for both subject and caster and qualify their consumption semantics.
+- Remaining gates: typed DR/resistance/immunity, area/death/save-load; profiles,
+  modules, and 0.0.77 release. Active blocker: none.

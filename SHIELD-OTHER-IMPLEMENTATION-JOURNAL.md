@@ -345,3 +345,16 @@ Next: implement the defense/temp-HP/lethal/exclusion/recursion runtime matrix.
   strict package validation.
 
 Next: publish/rebuild and run this expanded standalone scenario transactionally.
+
+## 2026-08-10 - exclusions, recursion, and lethal standalone PASS
+
+- Run `20260810T1343395800417Z-disposable-shield-other` passed on exact source
+  `30098c73a7aa1820f5f889c140a55d4d376e7859`.
+- Strength damage 2 and Constitution damage 1 produced no caster HP transfer.
+  Reciprocal links conserved one event as subject 1/caster 2, and the final
+  transfer reduced a 1-HP caster through the lethal threshold while retaining
+  subject share 1. Exactly six legitimate transfer log entries were observed.
+- Transaction `compat-20260810T134303Z-8c43ad78f3c0` restored exactly; no save
+  was named, loaded, or mutated.
+
+Next: add native target/caster temporary-HP coverage and typed mitigation donors.
