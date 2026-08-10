@@ -105,7 +105,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _callbackRegistered;
         private bool _writeObserved;
         private bool _expectedWorkingWriteArmed;
+        private bool _expectedWorkingSaveInProgress;
         private int _expectedWorkingSaveRoutineCount;
+        private int _expectedWorkingStashedAreaCount;
         private bool _wrongThread;
         private bool _removed;
         private bool _sealed;
@@ -563,6 +565,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 StableFingerprint = _stableSamples >= 2 ? _lastFingerprint : "",
                 SaveWritingApiObserved = _writeObserved,
                 ExpectedWorkingSaveRoutineCount = _expectedWorkingSaveRoutineCount,
+                ExpectedWorkingStashedAreaCount = _expectedWorkingStashedAreaCount,
                 AllCallbacksOnGameThread = !_wrongThread,
                 HooksRemoved = _removed,
                 HooksInstalled = hooksInstalled,
@@ -1382,6 +1385,26 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void ObserveEnter(MethodBase method, object receiver, object[] args)
         {
+            if (method.Name == "SaveStashedArea")
+            {
+                object stashedDescriptor = args == null || args.Length == 0
+                    ? null : args[0];
+                if (_expectedWorkingSaveInProgress &&
+                    ReferenceEquals(stashedDescriptor, _workingDescriptor))
+                {
+                    _expectedWorkingStashedAreaCount++;
+                    Add("exact-working-stashed-area-write", method, args,
+                        "authorized subordinate worker write;count=" +
+                        _expectedWorkingStashedAreaCount);
+                }
+                else
+                {
+                    _writeObserved = true;
+                    Add("unexpected-save-write", method, args,
+                        "unarmed or non-working stashed-area write observed");
+                }
+                return;
+            }
             RequireGameThread();
             if ((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
                 method == _slotAction)
@@ -1518,6 +1541,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (exactAuthorizedRoutine)
                 {
                     _expectedWorkingWriteArmed = false;
+                    _expectedWorkingSaveInProgress = true;
                     _expectedWorkingSaveRoutineCount++;
                     Add("exact-working-save-write", method, args,
                         "authorized exact captured SaveInfo reference;count=" +

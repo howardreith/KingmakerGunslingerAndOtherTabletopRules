@@ -92,3 +92,6 @@ caster, subject, and caster-level context, exercises the odd damage split, then
 removes the link and restores the party HP state before saving the working save
 clean. The request-scoped sentinel accepts exactly one native `SaveRoutine` on
 the same captured `SaveInfo` object and rejects every other save boundary.
+Kingmaker 2.1.7b performs subordinate stashed-area serialization on a worker
+thread; that exact method is accepted only after the authorized save routine has
+started and only for the identical captured working descriptor.

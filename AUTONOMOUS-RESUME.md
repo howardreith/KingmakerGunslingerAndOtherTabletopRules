@@ -5,13 +5,14 @@
 - Current phase: Phase 9, guarded two-stage `KMG_AUTOMATION_WORKING`
   save/load persistence qualification. Branch is `codex/shield-other-spell`;
   frozen base is `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
-- Last completed command/check: focused persistence contracts 12/12, runtime
+- Last completed command/check: after observing native worker-thread
+  `SaveStashedArea`, focused persistence contracts 13/13, runtime
   preflight 86/86, complete deterministic suite 981/981, exact-reference
   Release compile, and strict 0.0.76 checkpoint package validation all pass.
-- Exact current commit before this checkpoint is
-  `0cac63374034d399a0cc953ca44bb3d676d368b6`; the persistence harness changes
+- Exact current commit before this repair checkpoint is
+  `544dbbda6f33a2e2b2fc271427e24a6f98d1d2d0`; the narrow sentinel repair
   are intentionally uncommitted until this evidence update is committed.
-- Exact next action: commit and publish the guarded persistence harness, then
+- Exact next action: commit and publish the native `SaveStashedArea` repair, then
   run `working-save-shield-other-prepare` followed by a fresh-launch
   `working-save-shield-other-verify-cleanup`, both naming only
   `KMG_AUTOMATION_WORKING` and exiting after the exact save callback.

@@ -156,6 +156,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("fingerprintSequence", Order = 62)] public int FingerprintSequence { get; set; }
         [JsonProperty("expectedWorkingSaveRoutineCount", Order = 63)]
         public int ExpectedWorkingSaveRoutineCount { get; set; }
+        [JsonProperty("expectedWorkingStashedAreaCount", Order = 64)]
+        public int ExpectedWorkingStashedAreaCount { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence

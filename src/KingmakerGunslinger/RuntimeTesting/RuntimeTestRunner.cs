@@ -1398,8 +1398,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     verify ? "fresh-launch RuleDealDamage observation" : "prepare phase"),
                 Assertion("exact-working-save-write", "one SaveRoutine on exact captured SaveInfo",
                     "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" + evidence.ExpectedWorkingStashedAreaCount +
                         ";unexpected=" + evidence.SaveWritingApiObserved,
                     evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
                         !evidence.SaveWritingApiObserved,
                     "request-scoped exact native save sentinel"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

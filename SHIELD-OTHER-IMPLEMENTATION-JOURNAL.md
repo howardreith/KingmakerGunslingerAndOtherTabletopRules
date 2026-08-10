@@ -711,3 +711,24 @@ Next: commit/publish and run guarded standalone runtime qualification.
 - Qualification before runtime mutation: focused source contracts 12/12,
   runtime preflight 86/86, repository validation PASS, deterministic suite
   981/981, exact-reference Release compile PASS, strict checkpoint package PASS.
+
+## First native save observation and narrow repair
+
+- Prepare request directory
+  `20260810T1543093680076Z-working-save-shield-other-prepare` reached the exact
+  working descriptor, loaded the expected three-member Jamandi's Mansion party,
+  created the fixed link, and entered one authorized `SaveRoutine` on game
+  thread 1. Kingmaker then entered exact
+  `SaveStashedArea(SaveInfo, AreaPersistentState)` on worker thread 45. The old
+  all-hooks-on-game-thread invariant classified that native subordinate write as
+  ERROR while preserving original execution.
+- The working save was written at `2026-08-10T15:45:16Z`, SHA-256
+  `7b0fc890c5624a86916d3e96107eb4b7cce661a9fb502809a6b7fe63495f0914`.
+  Protected baseline remained timestamped `2026-07-28T19:26:46Z`, SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+- Repair admits only `SaveStashedArea` after the one authorized `SaveRoutine`
+  has begun and only when its first argument is the same captured working
+  `SaveInfo` reference. It records each area write separately. Every other
+  worker/write boundary remains fail-closed. Focused contracts are now 13/13;
+  preflight 86/86, repository validation, 981/981 deterministic tests, and the
+  exact-reference Release compile pass after the repair.
