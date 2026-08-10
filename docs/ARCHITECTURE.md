@@ -469,7 +469,9 @@ activatable ability through `AddFacts`. Its hidden no-FX marker is the exact
 runtime gate for acceleration and defaults off. Command construction snapshots
 an eligible accelerated invocation, so later toggle changes do not rewrite a
 command already in flight. The two new always-loaded identities bring the
-ledger to 253 stable IDs: 252 active and one reserved.
+ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
+register in every module configuration so saved spell and buff references remain
+resolvable when publication is disabled.
 
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`

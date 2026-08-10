@@ -6,7 +6,7 @@
 | Duplicate-content scan | PASS | Initial and first-idle final live scans; 104,644 assets, zero candidates |
 | Damage seam | SOURCE-PROVEN | Exact 2.1.7b IL contract; runtime qualification pending |
 | Feature settings schema 2 | SOURCE-QUALIFIED | Migration, atomicity, eight combinations PASS |
-| Stable blueprints | NOT-STARTED | Manifest, contracts, constant count |
+| Stable blueprints | SOURCE-QUALIFIED | Stable ability/buff GUIDs; 254 active identities; contract test |
 | Link lifecycle | SOURCE-IMPLEMENTED | Pure validity/range policy PASS; runtime lifecycle pending |
 | Exact HP split | SOURCE-IMPLEMENTED | Pure conservation/guard policy PASS; native runtime evidence pending |
 | Base spell-list publication | NOT-STARTED | Five transactional level-2 publications |

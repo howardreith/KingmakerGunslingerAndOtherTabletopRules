@@ -168,6 +168,7 @@
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
+    <Compile Include="Blueprints\ShieldOtherBlueprints.cs" />
     <Compile Include="Blueprints\CordOfStubbornResolveBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintId.cs" />
     <Compile Include="Blueprints\BlueprintLibraryLookup.cs" />

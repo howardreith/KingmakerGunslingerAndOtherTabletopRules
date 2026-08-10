@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using KingmakerGunslinger.Spells.ShieldOther;
 
 namespace KingmakerGunslinger.DomainTests
@@ -61,6 +62,32 @@ namespace KingmakerGunslinger.DomainTests
             boundary.CasterLevel = 5; boundary.DistanceFeet = 35f;
             Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(boundary).Valid,
                 "Exact close-range boundary must remain valid.");
+        }
+
+        internal static void BlueprintIdentityAndContractSource()
+        {
+            string root = Environment.CurrentDirectory;
+            string manifest = File.ReadAllText(Path.Combine(root, "blueprints",
+                "blueprints.json"));
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "ShieldOtherBlueprints.cs"));
+            foreach (string token in new[] {
+                "KMG.Spells.ShieldOther.Ability",
+                "6a8c4c1d2fbe4d6a9a724988c1348401",
+                "KMG.Spells.ShieldOther.TargetBuff",
+                "7bd92e3c44ad42e7b523ee8ed7afc602" })
+                Assertions.True(manifest.Contains(token),
+                    "Shield Other manifest token is missing: " + token);
+            foreach (string token in new[] {
+                "result.ComponentsArray = fx == null",
+                "SpellSchool.Abjuration", "AbilityRange.Close",
+                "result.CanTargetSelf = false", "DurationRate.Hours",
+                "ContextRankBaseValueType.CasterLevel",
+                "ModifierDescriptor.Deflection",
+                "ModifierDescriptor.Resistance", "StackingType.Replace",
+                "result.MaterialComponent = null" })
+                Assertions.True(source.Contains(token),
+                    "Shield Other blueprint contract token is missing: " + token);
         }
 
         private static ShieldOtherLinkValidityRequest Request()

@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 252;
+        internal const int ExpectedRegisteredBlueprintCount = 254;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -56,6 +56,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintFeature _acadamaeGraduate;
         private static AcadamaeGraduateModeBlueprintSet _acadamaeGraduateMode;
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
+        private static ShieldOtherBlueprintSet _shieldOther;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -118,6 +119,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static BlueprintItemEquipmentBelt CordOfStubbornResolve
         {
             get { lock (Gate) { return _cordOfStubbornResolve; } }
+        }
+
+        internal static ShieldOtherBlueprintSet ShieldOther
+        {
+            get { lock (Gate) { return _shieldOther; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -519,6 +525,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _acadamaeGraduate = result.AcadamaeGraduate;
                     _acadamaeGraduateMode = result.AcadamaeGraduateMode;
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
+                    _shieldOther = result.ShieldOther;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -605,6 +612,9 @@ namespace KingmakerGunslinger.Bootstrap
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                ShieldOtherBlueprintSet shieldOther =
+                    ShieldOtherBlueprints.Register(library, registry);
 
                 BlueprintFeature acadamaeGraduate =
                     AcadamaeGraduateBlueprints.Register(library, registry);
@@ -869,7 +879,8 @@ namespace KingmakerGunslinger.Bootstrap
                     gunslingerClassBlueprints,
                     acadamaeGraduate,
                     acadamaeGraduateMode,
-                    cordOfStubbornResolve);
+                    cordOfStubbornResolve,
+                    shieldOther);
             }
             catch (Exception initializationException)
             {
@@ -1033,7 +1044,8 @@ namespace KingmakerGunslinger.Bootstrap
                 GunslingerClassBlueprintSet gunslingerClassBlueprints,
                 BlueprintFeature acadamaeGraduate,
                 AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
-                BlueprintItemEquipmentBelt cordOfStubbornResolve)
+                BlueprintItemEquipmentBelt cordOfStubbornResolve,
+                ShieldOtherBlueprintSet shieldOther)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1064,6 +1076,7 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("acadamaeGraduateMode");
                 CordOfStubbornResolve = cordOfStubbornResolve ??
                     throw new ArgumentNullException("cordOfStubbornResolve");
+                ShieldOther = shieldOther ?? throw new ArgumentNullException("shieldOther");
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1106,6 +1119,7 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintFeature AcadamaeGraduate { get; private set; }
             internal AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode { get; private set; }
             internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
+            internal ShieldOtherBlueprintSet ShieldOther { get; private set; }
         }
     }
 }

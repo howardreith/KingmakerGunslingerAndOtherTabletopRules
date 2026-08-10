@@ -92,3 +92,21 @@ through the guarded Steam App ID 640820 launcher and curate its exact evidence.
 Next: assign the two necessary stable identities, construct presentation-only
 donor clones with exact mechanics, and implement transactional level-2 base
 publication plus pure publication tests.
+
+## 2026-08-10 - stable ability and target-buff identities
+
+- Assigned append-only symbols/GUIDs: ability
+  `6a8c4c1d2fbe4d6a9a724988c1348401` and target buff
+  `7bd92e3c44ad42e7b523ee8ed7afc602`.
+- Registration is unconditional across module settings; active registry count
+  is 254 and ledger count is 255 including the historical reservation.
+- The factory clones native Shield of Faith presentation, then replaces its
+  mechanics with an explicit Abjuration spell, harmless ally-only close-range
+  targeting, caster-level hours, Extend-enabled native duration, and exact +1
+  deflection AC/+1 resistance all-saves components. Material focus is documented
+  and abstracted; no inventory component is created.
+- Complete validation, 975 deterministic tests, exact-reference Release build,
+  strict package validation, and local-runtime packaging PASS.
+
+Next: commit/publish this identity checkpoint, then implement pure-tested
+transactional level-2 base-list publication and rollback.
