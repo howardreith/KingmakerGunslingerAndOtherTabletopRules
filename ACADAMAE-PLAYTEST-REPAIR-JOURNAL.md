@@ -83,3 +83,9 @@
 - Run `20260810T0124155352746Z-799b32734c694579827369109880642d` proved exact-event correlation for both forced failures and all permanent-fatigue/Cord mechanics, but the fixture's requested success roll 10 did not guarantee success against the installed computed save value.
 - Repair: forced-success cases now use the native automatic-success boundary 20; forced failures continue to use native automatic-failure boundary 1. This tests native saving behavior without assuming a derived modifier.
 - Next concrete action: rebuild/publish and run final release gates.
+
+## 2026-08-10 - explicit guarded success result
+
+- Run `20260810T0128274766671Z-94a730025d8346dc86fffb8548040548` showed Kingmaker's installed `RuleSavingThrow.IsPassed` does not treat D20=20 as an unconditional success in this synthetic fixture; exact failure and all production mechanics remained PASS.
+- The exact request-local postfix now also sets public native `AutoPass=true` for the guarded success case only. Failure cases retain `AutoPass=false` and D20=1. This affects no production save because the thread-static target exists only inside guarded runtime requests.
+- Next concrete action: build, publish, obtain final PASS, then deploy.
