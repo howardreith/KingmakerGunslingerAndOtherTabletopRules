@@ -125,6 +125,8 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
+    'working-save-shield-other-prepare',
+    'working-save-shield-other-verify-cleanup',
     'generic-firearm-actions',
     'production-firearm-catalog',
     'advanced-capacity',

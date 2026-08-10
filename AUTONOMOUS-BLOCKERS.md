@@ -1,5 +1,13 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-10 Shield Other persistence
+
+No active blocker. Synthetic Kingmaker serialization experiments were rejected
+as non-authoritative. The replacement is a guarded two-fresh-launch test that
+may write only the explicitly authorized `KMG_AUTOMATION_WORKING` descriptor;
+all baseline, other-descriptor, delete/migration, unarmed, and extra native save
+boundaries fail closed.
+
 ## 2026-08-10 Acadamae playtest repair
 
 No repair-specific blocker. Early runtime attempts correctly rejected a

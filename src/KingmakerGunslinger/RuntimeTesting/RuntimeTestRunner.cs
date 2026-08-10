@@ -94,6 +94,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _updateCallbackCount;
         private bool _workingReadyWritten;
         private string _workingStartupStage = "request-accepted";
+        private bool _shieldOtherPersistenceSaveStarted;
+        private bool _shieldOtherPersistenceSaveCompleted;
+        private Stopwatch _shieldOtherPersistenceSaveElapsed;
+        private bool _shieldOtherPersistenceContextValid;
+        private bool _shieldOtherPersistenceLinkStateValid;
+        private bool _shieldOtherPersistenceDamageValid;
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
 
@@ -948,6 +954,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
@@ -968,6 +975,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
@@ -1028,6 +1036,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_shieldOtherPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_shieldOtherPersistenceSaveCompleted)
+                {
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_shieldOtherPersistenceSaveElapsed != null &&
+                    _shieldOtherPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_workingSaveSmoke.Stage == "load-game-action-resolution" &&
                 _workingStartupStage != "main-menu-ready")
             {
@@ -1178,7 +1206,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (_request.Scenario ==
+                if (IsShieldOtherPersistenceScenario())
+                {
+                    StartShieldOtherPersistenceSave();
+                }
+                else if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.GenericFirearmActions)
                 {
                     RunSprint30GenericActions();
@@ -1233,6 +1265,152 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompleteWorkingSaveSmoke(status, _workingSaveSmoke.Stage,
                     "Stage-specific timeout expired.");
             }
+        }
+
+        private bool IsShieldOtherPersistenceScenario()
+        {
+            return _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+        }
+
+        private void StartShieldOtherPersistenceSave()
+        {
+            UnitEntityData[] party = Kingmaker.Game.Instance.Player.Party
+                .Where(value => value != null && value.Descriptor != null)
+                .ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before persistence qualification.");
+            UnitEntityData caster = party[0];
+            UnitEntityData subject = party[1];
+            Buff[] links = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint,
+                    BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare)
+            {
+                foreach (Buff existing in links) existing.Remove();
+                var context = new MechanicsContext(caster, caster.Descriptor,
+                    BlueprintBootstrap.ShieldOther.Ability, null,
+                    new TargetWrapper(subject));
+                context.Params.CasterLevel = 5;
+                Buff link = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, context,
+                    TimeSpan.FromHours(5d));
+                _shieldOtherPersistenceContextValid = link != null &&
+                    link.MaybeContext != null &&
+                    link.MaybeContext.MaybeCaster == caster &&
+                    link.MaybeContext.Params.CasterLevel == 5 &&
+                    link.MaybeContext.MainTarget.Unit == subject;
+                _shieldOtherPersistenceLinkStateValid =
+                    subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                        ReferenceEquals(value.Blueprint,
+                            BlueprintBootstrap.ShieldOther.TargetBuff)) == 1;
+            }
+            else
+            {
+                _shieldOtherPersistenceLinkStateValid = links.Length == 1;
+                Buff link = links.Length == 1 ? links[0] : null;
+                _shieldOtherPersistenceContextValid = link != null &&
+                    link.MaybeContext != null &&
+                    link.MaybeContext.MaybeCaster == caster &&
+                    link.MaybeContext.Params.CasterLevel == 5 &&
+                    link.MaybeContext.MainTarget.Unit == subject;
+                int casterDamage = caster.Descriptor.Damage;
+                int subjectDamage = subject.Descriptor.Damage;
+                int casterBefore = caster.HPLeft;
+                int subjectBefore = subject.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3)))
+                    {
+                        DisablePrecisionDamage = true,
+                        IgnoreDamageReduction = true
+                    });
+                _shieldOtherPersistenceDamageValid =
+                    subjectBefore - subject.HPLeft == 1 &&
+                    casterBefore - caster.HPLeft == 2;
+                caster.Descriptor.Damage = casterDamage;
+                subject.Descriptor.Damage = subjectDamage;
+                if (link != null) link.Remove();
+                _shieldOtherPersistenceLinkStateValid =
+                    _shieldOtherPersistenceLinkStateValid &&
+                    !subject.Descriptor.HasFact(
+                        BlueprintBootstrap.ShieldOther.TargetBuff);
+            }
+            if (!_shieldOtherPersistenceContextValid ||
+                !_shieldOtherPersistenceLinkStateValid ||
+                (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup &&
+                 !_shieldOtherPersistenceDamageValid))
+                throw new InvalidOperationException(
+                    "Shield Other persistence phase assertions failed before the guarded save.");
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Kingmaker.Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _shieldOtherPersistenceSaveStarted = true;
+            _shieldOtherPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Kingmaker.Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() => _shieldOtherPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteShieldOtherPersistence(string status, string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool verify = _request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load", "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("shield-other-context", "caster=party[0];target=party[1];CL=5",
+                    _shieldOtherPersistenceContextValid.ToString(),
+                    _shieldOtherPersistenceContextValid,
+                    verify ? "freshly deserialized buff MechanicsContext" :
+                        "pre-save buff MechanicsContext"),
+                Assertion(verify ? "cleaned-link" : "prepared-link",
+                    verify ? "absent before cleanup save" : "exactly one before prepare save",
+                    _shieldOtherPersistenceLinkStateValid.ToString(),
+                    _shieldOtherPersistenceLinkStateValid,
+                    "live target buff collection"),
+                Assertion("odd-damage-after-load", verify ? "subject=1;caster=2" : "not-applicable",
+                    verify ? _shieldOtherPersistenceDamageValid.ToString() : "not-applicable",
+                    !verify || _shieldOtherPersistenceDamageValid,
+                    verify ? "fresh-launch RuleDealDamage observation" : "prepare phase"),
+                Assertion("exact-working-save-write", "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private int WorkingSaveStageTimeout(string stage)

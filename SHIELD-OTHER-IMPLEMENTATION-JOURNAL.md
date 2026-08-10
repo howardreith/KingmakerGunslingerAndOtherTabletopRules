@@ -692,3 +692,22 @@ buff/context persistence round trip before profile repetitions.
   `205120277bae36d5b1502ce40a02792b432e5d1b5675b321b1fd640c60341c0d`.
 
 Next: commit/publish and run guarded standalone runtime qualification.
+# 2026-08-10 — authoritative working-save persistence harness
+
+- Added allowlisted `working-save-shield-other-prepare` and
+  `working-save-shield-other-verify-cleanup` scenarios. Both reuse the already
+  qualified exact catalog, receiver-bound UI action, descriptor-reference,
+  load-callback, and stable-fingerprint path and require the literal
+  `KMG_AUTOMATION_WORKING` request parameter.
+- Extended the existing exact `SaveManager.SaveRoutine(SaveInfo, bool)` sentinel
+  with an explicit one-shot arm. Authorization requires the first argument to
+  be the exact captured working `SaveInfo` object. Delete, remove, migration,
+  baseline, other-save, unarmed, and second-write entries remain failures.
+- Prepare applies one CL 5, five-hour Shield Other link from party member 0 to
+  party member 1 and saves only after validating the full live context.
+  Verify-cleanup requires the freshly deserialized caster, main target, and CL,
+  proves 3 finalized HP damage splits 1/2, restores both damage totals, removes
+  the buff, and saves the clean working state.
+- Qualification before runtime mutation: focused source contracts 12/12,
+  runtime preflight 86/86, repository validation PASS, deterministic suite
+  981/981, exact-reference Release compile PASS, strict checkpoint package PASS.

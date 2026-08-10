@@ -83,3 +83,12 @@ release 0.0.77. No source/build result will be represented as in-game proof.
 - Highest-risk evidence: `20260810T1526369993443Z-disposable-shield-other` and
   `20260810T1529104271088Z-disposable-shield-other`.
 - All four isolated transactions restored the prior Mods directory exactly.
+# Guarded save/load persistence
+
+The authoritative persistence qualification is two fresh guarded launches. The
+prepare scenario writes one fixed link only to `KMG_AUTOMATION_WORKING`. The
+verify-cleanup scenario proves that Kingmaker reconstructed its originating
+caster, subject, and caster-level context, exercises the odd damage split, then
+removes the link and restores the party HP state before saving the working save
+clean. The request-scoped sentinel accepts exactly one native `SaveRoutine` on
+the same captured `SaveInfo` object and rejects every other save boundary.

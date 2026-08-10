@@ -1,5 +1,28 @@
 # Autonomous Gunslinger resume handoff
 
+## Active Shield Other mission — real save/load persistence (2026-08-10)
+
+- Current phase: Phase 9, guarded two-stage `KMG_AUTOMATION_WORKING`
+  save/load persistence qualification. Branch is `codex/shield-other-spell`;
+  frozen base is `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: focused persistence contracts 12/12, runtime
+  preflight 86/86, complete deterministic suite 981/981, exact-reference
+  Release compile, and strict 0.0.76 checkpoint package validation all pass.
+- Exact current commit before this checkpoint is
+  `0cac63374034d399a0cc953ca44bb3d676d368b6`; the persistence harness changes
+  are intentionally uncommitted until this evidence update is committed.
+- Exact next action: commit and publish the guarded persistence harness, then
+  run `working-save-shield-other-prepare` followed by a fresh-launch
+  `working-save-shield-other-verify-cleanup`, both naming only
+  `KMG_AUTOMATION_WORKING` and exiting after the exact save callback.
+- Remaining gates: prove fresh-load caster/subject/CL context and 3 HP -> 1/2
+  damage, prove cleanup save, audit baseline/working-save evidence, advance all
+  release pins to 0.0.77, final docs/hashes/package, final repeated runtime
+  profiles, clean tree, and local/remote SHA equality.
+- Active blocker: none. `KMG_AUTOMATION_BASELINE` remains protected and the new
+  save sentinel authorizes exactly one `SaveRoutine` call only when its
+  `SaveInfo` argument is the captured working descriptor by object reference.
+
 ## 2026-08-10 Acadamae playtest repair
 
 - Branch `codex/feature-modules-acadamae-graduate`; 0.0.76 mode, permanent-fatigue, and project Cord icon repairs are implemented and targeted runtime-qualified.

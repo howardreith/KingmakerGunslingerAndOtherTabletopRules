@@ -154,6 +154,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("loadEntrySequence", Order = 60)] public int LoadEntrySequence { get; set; }
         [JsonProperty("completionSequence", Order = 61)] public int CompletionSequence { get; set; }
         [JsonProperty("fingerprintSequence", Order = 62)] public int FingerprintSequence { get; set; }
+        [JsonProperty("expectedWorkingSaveRoutineCount", Order = 63)]
+        public int ExpectedWorkingSaveRoutineCount { get; set; }
     }
 
     internal sealed class LoadGameButtonActionEvidence
