@@ -778,3 +778,26 @@ Next: commit/publish and run guarded standalone runtime qualification.
   `Manual_<digits>_KMG_AUTOMATION_WORKING.zks` shape, and an already active
   object-reference-authorized top-level save. Deterministic 981/981 and exact
   Release compile pass.
+
+## 2026-08-10 — final persistence PASS and 0.0.77 source gates
+
+- Final guarded prepare PASS:
+  `20260810T1610288094375Z-working-save-shield-other-prepare`.
+- Final fresh verify-cleanup PASS:
+  `20260810T1613120391758Z-working-save-shield-other-verify-cleanup`. It proved
+  deserialized caster, subject, and CL 5 context, one link, finalized 3 HP ->
+  1 subject / 2 caster, HP restoration, link removal, and clean persistence.
+- Protected baseline remained SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  Final cleaned working-save SHA-256 is
+  `0349c94c48ad92e1b82d3df0b32209c5988711985ffa53d93f681ef30a467e64`.
+- Active release/tooling/profile pins are 0.0.77 with version-aware
+  `validate_shield77.py`. Validation and all 981 deterministic tests pass.
+- Clean exact-reference Release, SoundBank, and strict package validation pass.
+  Package SHA-256 is
+  `0d4a8b42849c90452bbd299d8f17b22c27d4a131db09f683e242a42b896fd199`;
+  DLL SHA-256 is
+  `b74bff26c346746828458b3ed3dc7f6a1dfeb03bea3790ba7900b8b79f6d1275`.
+
+Next: commit/publish the release source, verify remote equality, then execute
+the final exact-commit matrix and consecutive runtime profiles.

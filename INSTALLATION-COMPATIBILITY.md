@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.76-local-runtime.zip` with Unity Mod
+2. Install the standalone `KingmakerGunslinger-0.0.77-local-runtime.zip` with Unity Mod
    Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.76 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.77 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -43,7 +43,9 @@ explicitly documented as qualified.
 
 ## Feature-module settings
 
-The UMM panel contains independent Gunslinger and Acadamae Graduate checkboxes. Both default ON. A change is saved for the next complete game restart; the panel reports the active process state separately from the saved state and shows when restart is required.
+The UMM panel contains independent Gunslinger, Acadamae Graduate, and Shield
+Other checkboxes. All default ON. A change is saved for the next complete game
+restart; the panel reports active and pending state separately.
 
 Turning a module OFF removes its content only from new public choices and acquisition paths. It does not unregister identities, strip an existing Gunslinger, remove owned feats/items, or uninstall firearm state support. Do not remove the entire mod from a campaign that has used either module.
 

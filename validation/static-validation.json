@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.76-acadamae-mode-fatigue-icon-repair",
-  "version": "0.0.76",
+  "milestone": "0.0.77-shield-other",
+  "version": "0.0.77",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 190,
-    "activeEntryCount": 189,
+    "entryCount": 255,
+    "activeEntryCount": 254,
     "reservedEntryCount": 1,
-    "registrationCount": 189
+    "registrationCount": 254
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -60,11 +60,13 @@
     "sprint30EntryApproved": true
   },
   "featureModules75": {
-    "deterministicTestCount": 970,
-    "activeBlueprintCount": 252,
-    "ledgerEntryCount": 253,
+    "deterministicTestCount": 981,
+    "activeBlueprintCount": 254,
+    "ledgerEntryCount": 255,
     "reservedBlueprintCount": 1,
     "fourModuleConfigurationsQualified": true,
+    "eightModuleConfigurationsQualified": true,
+    "shieldOtherQualified": true,
     "acadamaeCordIntegrationQualified": true,
     "exactOptionalProfilesTargeted": true
   }

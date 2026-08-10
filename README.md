@@ -1,6 +1,20 @@
 # Kingmaker Gunslinger
 
-Version `0.0.76-acadamae-mode-fatigue-icon-repair` provides the complete Gunslinger package plus two independent, persistent feature modules for Pathfinder: Kingmaker 2.1.7b.
+Version `0.0.77-shield-other` adds Shield Other as a third independent,
+default-enabled feature module for Pathfinder: Kingmaker 2.1.7b while retaining
+the complete Gunslinger and Acadamae Graduate packages.
+
+Shield Other is a level-2 Abjuration spell on the Cleric, Paladin, Inquisitor,
+Community domain, and Protection domain lists. With an unambiguous installed
+Call of the Wild profile it is also published to Oracle, Warpriest, and Psychic
+at level 2. The target gains +1 deflection AC and +1 resistance to all saves;
+finalized HP damage is conserved and split evenly, with an odd point assigned
+to the caster. The link ends on expiry, dispel, dismissal, caster death,
+different area, or exceeding caster-level-scaled close range.
+
+Kingmaker has no paired-ring equipment/focus workflow suitable for this spell,
+so the tabletop paired 50-gp platinum-ring focus is abstracted. The spell has no
+consumed material component.
 
 Acadamae Graduate now grants a per-character **Use Acadamae Graduate** mode,
 which defaults off. Leave it off to use a summon spell's native casting time
@@ -16,7 +30,9 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find two checkboxes at the top: **Gunslinger** and **Acadamae Graduate**. Both default to enabled, including installations with no settings file or a settings file created before 0.0.75.
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find three checkboxes:
+**Gunslinger**, **Acadamae Graduate**, and **Shield Other**. All default enabled.
+Schema-1 settings migrate to schema 2 with Shield Other enabled.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
@@ -34,7 +50,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
-The sections below retain historical subsystem detail; where version-specific wording conflicts, the 0.0.76 text above and its qualification report are authoritative.
+The sections below retain historical subsystem detail; where version-specific wording conflicts, the 0.0.77 text above and its qualification report are authoritative.
 
 ## Current vertical slice
 

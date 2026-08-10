@@ -1,6 +1,6 @@
 # Shield Other Qualification
 
-Status: IN PROGRESS
+Status: FINAL 0.0.77 RUNTIME REPETITION IN PROGRESS
 
 This document will contain exact deterministic, build, package, runtime,
 compatibility-profile, restoration, protected-save, and hash evidence for
@@ -106,3 +106,29 @@ filename for the subordinate serialization clone before committing back to the
 working slot. The accepted shape is therefore exactly
 `Manual_<digits>_KMG_AUTOMATION_WORKING.zks`, with identical folder/file leaves
 and exact working display name, and only within the authorized save lifecycle.
+
+## Guarded save/load persistence result
+
+- Prepare PASS: `20260810T1610288094375Z-working-save-shield-other-prepare`.
+- Fresh verify/cleanup PASS:
+  `20260810T1613120391758Z-working-save-shield-other-verify-cleanup`.
+- Fresh load reconstructed party member 0 as caster, party member 1 as subject,
+  caster level 5, and exactly one link. Finalized damage 3 split 1 subject / 2
+  caster. It restored both HP totals, removed the link, and saved clean.
+- Protected baseline retained timestamp `2026-07-28T19:26:46Z` and SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+- Final working-save SHA-256 after cleanup:
+  `0349c94c48ad92e1b82d3df0b32209c5988711985ffa53d93f681ef30a467e64`.
+
+## 0.0.77 release-source gates
+
+- Complete deterministic suite: 981/981 PASS.
+- Version-aware validation: PASS via `validate_shield77.py`.
+- Clean exact-reference Release build and strict UMM package: PASS.
+- Package SHA-256:
+  `0d4a8b42849c90452bbd299d8f17b22c27d4a131db09f683e242a42b896fd199`.
+- Release DLL SHA-256:
+  `b74bff26c346746828458b3ed3dc7f6a1dfeb03bea3790ba7900b8b79f6d1275`.
+
+Final exact-commit repetitions and restoration evidence remain pending and are
+not inferred from these source/build gates.

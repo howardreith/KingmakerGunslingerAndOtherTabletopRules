@@ -1,5 +1,28 @@
 # Autonomous Gunslinger resume handoff
 
+## Active Shield Other mission — 0.0.77 release qualification (2026-08-10)
+
+- Current phase: Phases 10–11, final release commit and exact-commit runtime
+  repetition. Branch is `codex/shield-other-spell`; frozen base is
+  `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: version-aware validation, 981/981 deterministic
+  tests, clean exact-reference Release build, SoundBank validation, and strict
+  standalone package validation PASS for 0.0.77.
+- Exact current commit is `46509db2d1e685eb4cdbc5b4e4a4338701e1ddf3`;
+  intentional release/evidence changes are uncommitted until the release-source
+  checkpoint.
+- Exact next action: finish the evidence diff, commit and publish it through the
+  approved helper, verify origin equality, then run the all-eight feature matrix
+  and consecutive standalone, CotW, and highest-risk combined gates on the exact
+  clean commit.
+- Remaining gates: release-source commit/push; final matrix; standalone x2;
+  CotW x2; highest-risk combined x2; restoration audit; final evidence
+  commit/push; clean tree and remote equality.
+- Active blocker: none. Persistence PASS directories are
+  `20260810T1610288094375Z-working-save-shield-other-prepare` and
+  `20260810T1613120391758Z-working-save-shield-other-verify-cleanup`; protected
+  baseline SHA-256 remains `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+
 ## Active Shield Other mission — real save/load persistence (2026-08-10)
 
 - Current phase: Phase 9, guarded two-stage `KMG_AUTOMATION_WORKING`
