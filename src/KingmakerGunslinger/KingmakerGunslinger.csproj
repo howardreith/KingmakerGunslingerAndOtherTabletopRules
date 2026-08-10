@@ -45,6 +45,7 @@
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityDecision.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityPolicy.cs" />
+    <Compile Include="Spells\ShieldOther\ShieldOtherInventoryObserver.cs" />
     <Compile Include="Acadamae\AcadamaeCastingTime.cs" />
     <Compile Include="Acadamae\AcadamaeCastRequest.cs" />
     <Compile Include="Acadamae\AcadamaeCastDecision.cs" />

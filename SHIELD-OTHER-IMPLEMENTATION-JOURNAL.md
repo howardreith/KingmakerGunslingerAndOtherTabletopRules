@@ -54,3 +54,24 @@ and link policies with focused tests.
 
 Next: publish this policy checkpoint, then add and run the guarded native
 donor/spell-list/final-live duplicate observer before blueprint construction.
+
+## 2026-08-10 - guarded inventory observer source-qualified
+
+- Added save-free `observe-shield-other-inventory`, allowlisted consistently in
+  C# and PowerShell, with a dedicated observer outside the runtime orchestrator.
+- The observer scans the final live blueprint library for foreign Shield Other
+  candidates, records GUID/name/display/type/assembly, inventories close-range
+  allied spell donors and relevant buff components, lists candidate domain
+  lists, and resolves Cleric/Paladin/Inquisitor/Oracle/Warpriest/Psychic class,
+  spellbook, and live spell-list identities.
+- Isolated runtime preflight PASS 86/86. A preceding combined command hit only
+  the preflight artifact-fingerprint race while prior build outputs settled;
+  the unchanged isolated rerun passed.
+- Complete deterministic suite PASS 974/974 and exact-reference Release/package
+  qualification PASS. Candidate package SHA-256
+  `8861e924071ca2c7c9d42b5d259ba8d7ebcfd5f4dcb6e3e5838a84366a6cffdb`;
+  DLL SHA-256
+  `de5724f39ac198b441f628178885bd21435c28a1f6f791a5aafc83d26116d192`.
+
+Next: commit/publish this observer, rebuild from the clean SHA, then run it
+through the guarded Steam App ID 640820 launcher and curate its exact evidence.

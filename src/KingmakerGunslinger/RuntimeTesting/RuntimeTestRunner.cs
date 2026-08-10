@@ -43,6 +43,7 @@ using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
+using KingmakerGunslinger.Spells.ShieldOther;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
@@ -420,6 +421,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveFeatureModuleSettings)
                 {
                     Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveShieldOtherInventory)
+                {
+                    Complete(RunShieldOtherInventoryObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -6863,6 +6870,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+        }
+
+        private RuntimeTestResult RunShieldOtherInventoryObservation()
+        {
+            ShieldOtherInventoryObservation observation =
+                ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("shield-other-foreign-duplicate", "0",
+                    observation.DuplicateCount.ToString(),
+                    observation.DuplicateCount == 0,
+                    "final live BlueprintAbility name/display scan"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            foreach (string record in observation.Records)
+                result.Diagnostics.Add(record);
+            return result;
         }
 
         private static int CountExactFeatures(BlueprintFeature[] source,
