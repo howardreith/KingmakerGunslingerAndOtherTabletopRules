@@ -71,3 +71,15 @@ release 0.0.77. No source/build result will be represented as in-game proof.
 - The complete damage and lifecycle matrix remained green; exact compatibility
   restoration verified `True`. Genuine persistence remains assigned only to the
   guarded `KMG_AUTOMATION_WORKING` save path.
+
+## Compatibility profile repetition checkpoint
+
+- Exact source `76e5ce35a807388053ed4f911ea4f1c892611870` passed two consecutive
+  `gunslinger-call-of-the-wild` runs and two consecutive
+  `gunslinger-high-risk-combined` runs of the complete expanded disposable
+  scenario.
+- CotW evidence: `20260810T1520404782090Z-disposable-shield-other` and
+  `20260810T1523377379140Z-disposable-shield-other`.
+- Highest-risk evidence: `20260810T1526369993443Z-disposable-shield-other` and
+  `20260810T1529104271088Z-disposable-shield-other`.
+- All four isolated transactions restored the prior Mods directory exactly.

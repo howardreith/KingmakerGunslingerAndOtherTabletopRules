@@ -12,5 +12,5 @@
 | Base spell-list publication | RUNTIME-PASS | Five level-2 lists exactly once in guarded final-live scan |
 | Optional CotW publication | RUNTIME-PASS | Oracle/Warpriest/Psychic level 2 exactly once; casting models proven |
 | Deterministic qualification | INTERIM-PASS | 981/981 plus exact Release and strict package PASS; repeat at release |
-| Runtime qualification | IN-PROGRESS | Split/bonus/temp-HP/module-matrix PASS with exact restoration; typed mitigation, lifecycle, and repetitions pending |
+| Runtime qualification | IN-PROGRESS | Expanded mechanics, module matrix, CotW x2, and high-risk x2 PASS; real save/load and final-release repeats pending |
 | Release 0.0.77 | NOT-STARTED | Docs, package hashes, remote SHA |

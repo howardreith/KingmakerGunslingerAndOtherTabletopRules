@@ -632,6 +632,24 @@ working-save Shield Other persistence stages.
 Next: implement genuine persistence qualification through the guarded
 `KMG_AUTOMATION_WORKING` save path.
 
+## 2026-08-10 - CotW and highest-risk consecutive runtime PASS
+
+Exact source `76e5ce35a807388053ed4f911ea4f1c892611870` completed the expanded
+`disposable-shield-other` scenario twice in each required compatibility profile:
+
+| Profile | Evidence | Transaction | Restored |
+|---|---|---|---|
+| `gunslinger-call-of-the-wild` | `20260810T1520404782090Z-disposable-shield-other` | `compat-20260810T151958Z-590855347fb1` | True |
+| `gunslinger-call-of-the-wild` | `20260810T1523377379140Z-disposable-shield-other` | `compat-20260810T152250Z-67c8fd2820b7` | True |
+| `gunslinger-high-risk-combined` | `20260810T1526369993443Z-disposable-shield-other` | `compat-20260810T152550Z-fa0338a3226d` | True |
+| `gunslinger-high-risk-combined` | `20260810T1529104271088Z-disposable-shield-other` | `compat-20260810T152834Z-2f541389dd9b` | True |
+
+The high-risk profile contained exact local Call of the Wild, Arms and Armor,
+and Toggle Custom Soundpacks. All gameplay assertions and request-local cleanup
+passed in every fresh launch.
+
+Next: guarded real-save persistence, then final 0.0.77 release-source repeats.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source
