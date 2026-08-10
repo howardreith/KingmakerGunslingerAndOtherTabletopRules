@@ -62,3 +62,12 @@ release 0.0.77. No source/build result will be represented as in-game proof.
   a caster reaching the lethal boundary through transferred damage also caused
   link removal on the next native round tick.
 - All regression assertions passed and compatibility restoration verified `True`.
+
+## Expanded disposable recovery checkpoint
+
+- `20260810T1517266807175Z-disposable-shield-other` passed on exact source
+  `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8` after invalid partial JSON save
+  approximations were retired.
+- The complete damage and lifecycle matrix remained green; exact compatibility
+  restoration verified `True`. Genuine persistence remains assigned only to the
+  guarded `KMG_AUTOMATION_WORKING` save path.

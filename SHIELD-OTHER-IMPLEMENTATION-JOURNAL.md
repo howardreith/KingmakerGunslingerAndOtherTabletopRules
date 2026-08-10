@@ -620,6 +620,18 @@ Next: source-qualify/publish and run the two-unit native save graph.
 Next: restore the disposable scenario to PASS, then implement the guarded
 working-save Shield Other persistence stages.
 
+## 2026-08-10 - expanded disposable scenario restored PASS
+
+- `20260810T1517266807175Z-disposable-shield-other` passed on exact source
+  `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8` after retiring the invalid
+  synthetic save graph.
+- All expanded direct/typed/mitigated/immune/temp-HP/reciprocal/lethal and
+  range/area/dispel/death lifecycle assertions passed.
+- Transaction `compat-20260810T151653Z-12335a066239` restored exactly.
+
+Next: implement genuine persistence qualification through the guarded
+`KMG_AUTOMATION_WORKING` save path.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

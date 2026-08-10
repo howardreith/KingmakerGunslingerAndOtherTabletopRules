@@ -1603,6 +1603,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - disposable restored / real-save next
+
+- Current phase: Phase 9 guarded real-save persistence implementation.
+- Last completed check: `20260810T1517266807175Z-disposable-shield-other`
+  passed on exact commit `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8`;
+  transaction restoration was exact.
+- Exact current commit: `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8`;
+  evidence curation is uncommitted.
+- Exact next action: inspect and extend the guarded working-save state machine for
+  a two-launch Shield Other persistence check using only `KMG_AUTOMATION_WORKING`.
+- Remaining gates: real save/load; repeated standalone/CotW/high-risk profiles;
+  0.0.77 release/docs/package/hashes. Active blocker: none.
+
 ## Shield Other current resume - real-save persistence strategy
 
 - Current phase: Phase 9 guarded real-save persistence implementation.
