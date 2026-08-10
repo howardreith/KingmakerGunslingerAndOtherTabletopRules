@@ -188,3 +188,14 @@ save-free observer once with the changed strategy.
 
 Next: qualify/publish the observer-only self-filter, then rerun once to capture a
 fully PASS structured result without changing publication mechanics.
+
+## 2026-08-10 - final-live publication PASS
+
+- Guarded run `20260810T1243101482251Z-observe-shield-other-inventory`
+  passed on exact published source `823195c683d633fabbe4916119e847e65bb61013`.
+- Foreign duplicate count was zero. All five base and three discovered CotW
+  lists contained Shield Other exactly once at level 2.
+- No save was named, selected, loaded, or mutated.
+
+Next: commit/publish curated evidence, then implement the save-persistent link
+component and lifecycle revalidation before the damage transpiler.

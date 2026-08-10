@@ -1602,3 +1602,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: build, commit/publish, rerun guarded observer once, curate
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - publication runtime qualified
+
+- Current phase: Phase 5 link lifecycle runtime implementation.
+- Last completed check: guarded PASS
+  `20260810T1243101482251Z-observe-shield-other-inventory` on exact
+  `823195c683d633fabbe4916119e847e65bb61013`; all eight lists exactly once.
+- Exact current commit: `823195c683d633fabbe4916119e847e65bb61013` with curated
+  publication evidence ready to commit.
+- Exact next action: commit/publish evidence, then implement the save-persistent
+  caster-linked target-buff component, lifecycle/range revalidation, and tests.
+- Remaining gates: lifecycle; exact damage transfer; disposable behavior;
+  version 0.0.77; required profile repetitions; final artifacts/audits/report.
+- Active blocker: none.

@@ -106,3 +106,12 @@ Native donor evidence:
   AC.
 - Exact `RuleDealDamage` IL and the selected pre-HP seam remain as recorded
   above; no Wrath redirection fields exist.
+
+## Published final-live verification
+
+Guarded run `20260810T1243101482251Z-observe-shield-other-inventory` on
+published source `823195c683d633fabbe4916119e847e65bb61013` passed with
+zero foreign candidates and exactly one level-2 membership in all five base and
+three CotW lists. Live casting models were Oracle spontaneous/non-arcane/
+Charisma, Warpriest prepared/non-arcane/Wisdom, and Psychic spontaneous/
+non-arcane/Intelligence. No save was named, loaded, or mutated.
