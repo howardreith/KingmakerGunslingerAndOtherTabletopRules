@@ -423,3 +423,25 @@ Next: qualify/publish this final matrix plumbing repair, then retry all eight.
   `compat-20260810T140244Z-f0f80ecf5cc6` verified exact restoration `True`.
 
 Next: validate/publish this final acceptance repair and retry all-enabled.
+
+## 2026-08-10 - eight-way standalone module matrix PASS
+
+All eight guarded `gunslinger-only` profile combinations passed on exact source
+`c90c0e43710e4801694b770de5e63121e00d2fd3`. Every run observed 254 registered
+identities; each enabled module published only its own surfaces; each disabled
+module published none; and every compatibility transaction restored exactly.
+
+| Gunslinger | Acadamae | Shield Other | Evidence |
+|---|---|---|---|
+| on | on | on | `20260810T1409406936012Z-observe-feature-module-settings` |
+| on | on | off | `20260810T1411348446923Z-observe-feature-module-settings` |
+| on | off | on | `20260810T1414302754267Z-observe-feature-module-settings` |
+| on | off | off | `20260810T1416314266005Z-observe-feature-module-settings` |
+| off | on | on | `20260810T1418248328119Z-observe-feature-module-settings` |
+| off | on | off | `20260810T1420225795438Z-observe-feature-module-settings` |
+| off | off | on | `20260810T1422191614520Z-observe-feature-module-settings` |
+| off | off | off | `20260810T1424139686495Z-observe-feature-module-settings` |
+
+The profile-internal deterministic suite remained 981/981 PASS and strict
+package validation passed throughout. Next: typed mitigation/immunity and the
+remaining lifecycle/save-load runtime assertions.

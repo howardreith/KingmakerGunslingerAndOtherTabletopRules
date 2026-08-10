@@ -11,4 +11,7 @@ Identity registration is unconditional. The independent, default-enabled
 `shield-other` module gates only publication. Runtime launches use only the
 guarded Steam App ID 640820 harness and disposable authorized state.
 
-Current phase: exact installed-content and damage-engine inventory.
+Current phase: Phase 9 expanded runtime qualification. Blueprint inventory,
+exact damage seam, deterministic qualification, base/optional publication,
+temporary-HP behavior, and all eight standalone module combinations have passed;
+typed mitigation/immunity and remaining lifecycle/profile repetitions remain.

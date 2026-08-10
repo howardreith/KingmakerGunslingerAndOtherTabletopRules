@@ -17,3 +17,19 @@ release 0.0.77. No source/build result will be represented as in-game proof.
   Cleric, Paladin, Inquisitor, Community, Protection, CotW Oracle, CotW
   Warpriest, and CotW Psychic.
 - No save name, load, input, or save mutation was used.
+
+## Standalone feature-module matrix checkpoint
+
+- Exact source: `c90c0e43710e4801694b770de5e63121e00d2fd3`.
+- All eight Gunslinger / Acadamae Graduate / Shield Other Boolean combinations
+  passed guarded `observe-feature-module-settings` runs.
+- Every combination retained exactly 254 registered identities. Each enabled
+  module published only its own surfaces and each disabled module published none;
+  Shield Other was exactly once in all five discovered base lists when enabled
+  and absent from all five when disabled.
+- Evidence spans `20260810T1409406936012Z-observe-feature-module-settings`
+  through `20260810T1424139686495Z-observe-feature-module-settings`; the exact
+  per-combination mapping is recorded in `SHIELD-OTHER-IMPLEMENTATION-JOURNAL.md`.
+- Each isolated compatibility transaction reported exact restoration `True`.
+- The profile-internal deterministic suite remained 981/981 PASS and strict
+  package validation passed throughout.
