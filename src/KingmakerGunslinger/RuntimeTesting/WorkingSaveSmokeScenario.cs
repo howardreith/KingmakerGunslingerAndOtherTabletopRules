@@ -1310,6 +1310,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Leaf(Read(value, "FileName")) == BaselineFile;
         }
 
+        private static bool IsExactWorkingFileIdentity(object value)
+        {
+            return value != null && value.GetType().FullName == DescriptorType &&
+                Read(value, "Name") == ExpectedName &&
+                Leaf(Read(value, "FolderName")) == ExpectedFile &&
+                Leaf(Read(value, "FileName")) == ExpectedFile;
+        }
+
         private void RegisterCompletionCallback()
         {
             object manager = ReadMember(Kingmaker.Game.Instance, "SaveManager");
@@ -1390,7 +1398,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 object stashedDescriptor = args == null || args.Length == 0
                     ? null : args[0];
                 if (_expectedWorkingSaveInProgress &&
-                    IsWorking(stashedDescriptor) &&
+                    IsExactWorkingFileIdentity(stashedDescriptor) &&
                     !IsBaseline(stashedDescriptor))
                 {
                     _expectedWorkingStashedAreaCount++;

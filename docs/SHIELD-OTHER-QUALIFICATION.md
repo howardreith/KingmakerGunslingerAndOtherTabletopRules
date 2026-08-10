@@ -95,7 +95,9 @@ the same captured `SaveInfo` object and rejects every other save boundary.
 Kingmaker 2.1.7b performs subordinate stashed-area serialization on a worker
 thread; that exact method is accepted only after the authorized save routine has
 started and only for the exact immutable working-save identity.
-The subordinate method receives Kingmaker's cloned descriptor, so its guard uses
-the full immutable working identity (name, file/folder, game name/id, and area)
-plus explicit baseline exclusion; catalog load and top-level save authorization
-continue to require the captured object reference.
+The subordinate method receives Kingmaker's serialization clone and omits
+catalog-only presentation fields. Its guard therefore requires the exact
+descriptor type, working name, folder leaf, and filename leaf plus explicit
+baseline exclusion, and is reachable only after the top-level captured-reference
+save is authorized. Catalog load and top-level save continue to require the
+captured object reference.

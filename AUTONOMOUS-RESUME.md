@@ -9,8 +9,8 @@
   `SaveStashedArea`, focused persistence contracts 13/13, runtime
   preflight 86/86, complete deterministic suite 981/981, exact-reference
   Release compile, and strict 0.0.76 checkpoint package validation all pass.
-- Exact current commit before this native-clone repair checkpoint is
-  `18bcb1cfbad87c69a201fa0c49b3ff4cd49bc557`; the narrow identity repair
+- Exact current commit before this final native-clone repair checkpoint is
+  `944d0bfbcff9a56c0b3873481e2a275c6bbc8b7a`; the exact-file identity repair
   are intentionally uncommitted until this evidence update is committed.
 - Exact next action: commit and publish the native cloned-`SaveInfo` repair, then
   run `working-save-shield-other-prepare` followed by a fresh-launch

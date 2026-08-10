@@ -746,3 +746,11 @@ Next: commit/publish and run guarded standalone runtime qualification.
   game name/id, and area, while separately excluding the baseline identity.
   Focused 13/13, deterministic 981/981, repository validation, and exact Release
   compile pass after this change.
+- Third request `20260810T1554071044841Z-working-save-shield-other-prepare`
+  again passed the full spell/context/link contract and exact top-level save,
+  but proved the native area clone omits at least one catalog-only presentation
+  field used by the full predicate. The accepted subordinate identity is now
+  the exact type, working name, folder leaf, and filename leaf, only after the
+  object-reference-authorized top-level save is in progress, with explicit
+  baseline exclusion. This is the strongest identity the native clone retains.
+  Focused 13/13, deterministic 981/981, and exact Release compile pass.
