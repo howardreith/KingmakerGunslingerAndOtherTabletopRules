@@ -40,7 +40,10 @@ namespace KingmakerGunslinger.Spells.ShieldOther
                 buff.MaybeContext.Params == null ? 0 :
                 buff.MaybeContext.Params.CasterLevel;
             bool casterAlive = caster != null && caster.Descriptor != null &&
-                caster.Descriptor.State != null && !caster.Descriptor.State.IsDead;
+                caster.Descriptor.State != null && caster.HPLeft > 0 &&
+                !caster.Descriptor.State.IsDead &&
+                !caster.Descriptor.State.MarkedForDeath &&
+                !caster.Descriptor.State.ForceKill;
             bool sameArea = subject != null && caster != null &&
                 subject.IsInGame && caster.IsInGame;
             float distanceFeet = subject == null || caster == null ? 0f :

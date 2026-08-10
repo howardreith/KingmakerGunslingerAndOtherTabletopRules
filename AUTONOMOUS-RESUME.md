@@ -1603,6 +1603,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - lethal-state lifecycle repair
+
+- Current phase: Phase 9 lifecycle repair qualification.
+- Last runtime: `20260810T1442147693813Z-disposable-shield-other` failed only
+  immediate post-lethal removal; area unload and all other assertions passed.
+  Transaction `compat-20260810T144135Z-dcad894ec3af` restored exactly.
+- Exact current commit: `454652a71fdb048638cb11428037332aacfd3f31`;
+  full lethal-state validity repair and focused source test are uncommitted.
+- Exact next action: run `Build-Local.ps1`, commit/publish, and rerun standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - mitigation/immunity runtime PASS
 
 - Current phase: Phase 9 remaining lifecycle and save/load qualification.

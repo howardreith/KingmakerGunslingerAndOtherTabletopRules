@@ -521,3 +521,17 @@ profile repetitions.
   `014c4c41f2426825eb82aa8b192ce71db01cf865c477bd88efe82ad1f5eb84d8`.
 
 Next: commit/publish and run guarded standalone runtime qualification.
+
+## 2026-08-10 - lifecycle run exposed lethal-state gap
+
+- `20260810T1442147693813Z-disposable-shield-other` on exact source
+  `454652a71fdb048638cb11428037332aacfd3f31` failed only
+  `shield-other-caster-death-termination`. Area unload passed with damage `2/0`;
+  all damage, mitigation, cleanup, and other lifecycle assertions passed.
+- Transaction `compat-20260810T144135Z-dcad894ec3af` restored exactly.
+- Transferred damage reached the lethal boundary before Kingmaker advanced
+  `State.IsDead`. Link validity now requires positive HP and absence of
+  `IsDead`, `MarkedForDeath`, and `ForceKill`, preventing a stale link during
+  deferred death-state publication.
+
+Next: source-qualify, commit/publish, and rerun the same guarded scenario.
