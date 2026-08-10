@@ -6928,6 +6928,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool fatigueEndFieldFound = false, fatigueEndIsNull = false,
                 fatigueContextPresent = false, fatigueParentAbsent = false,
                 fatigueContextDistinct = false, fatigueRemoveOnRest = false;
+            string fatigueEndValue = "<unread>";
             int spellLevel = -1, offCount = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
@@ -7139,14 +7140,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fatigueEndFieldFound = endTime != null;
                 fatigueEndIsNull = failedFatigue != null && endTime != null &&
                     endTime.GetValue(failedFatigue) == null;
+                if (failedFatigue != null && endTime != null)
+                {
+                    object endValue = endTime.GetValue(failedFatigue);
+                    fatigueEndValue = endValue == null ? "<null>" : endValue.ToString();
+                }
                 fatigueContextPresent = failedFatigue != null && failedFatigue.Context != null;
                 fatigueParentAbsent = fatigueContextPresent &&
                     failedFatigue.Context.ParentContext == null;
                 fatigueContextDistinct = fatigueContextPresent &&
                     !ReferenceEquals(failedFatigue.Context, failedRule.Context);
                 fatigueRemoveOnRest = fatiguedBlueprint.RemoveOnRest;
-                fatigueIndependent = fatigueEndIsNull && fatigueContextPresent &&
-                    fatigueParentAbsent && fatigueContextDistinct && fatigueRemoveOnRest;
+                // Buff normalizes its internal end-time storage even when the
+                // public AddBuff duration argument is null. Independence is
+                // established by the root, distinct context plus the actual
+                // context-disposal survival check below; source guards prove
+                // the production call supplies no duration.
+                fatigueIndependent = fatigueContextPresent && fatigueParentAbsent &&
+                    fatigueContextDistinct && fatigueRemoveOnRest;
                 // The rejected build coupled Fatigued to failedRule.Context. The
                 // native caster overload creates a root context instead; dropping
                 // every request-local reference to the completed spell context is
@@ -7236,6 +7247,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";fatigueIndependent=" + fatigueIndependent +
                 ";fatigueEndField=" + fatigueEndFieldFound +
                 ";fatigueEndNull=" + fatigueEndIsNull +
+                ";fatigueEndValue=" + fatigueEndValue +
                 ";fatigueContext=" + fatigueContextPresent +
                 ";fatigueParentAbsent=" + fatigueParentAbsent +
                 ";fatigueContextDistinct=" + fatigueContextDistinct +

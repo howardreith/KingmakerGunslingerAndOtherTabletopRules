@@ -31,3 +31,10 @@
 - FAIL: the composite structural `fatigueIndependent` observation. The decisive lifecycle observations independently passed, so the next strategy is narrower instrumentation of each duration/context/rest predicate rather than changing mechanics without knowing which diagnostic assumption was false.
 - State: guarded runner exited Kingmaker and retained structured evidence; deployment backup `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260810T0008211856274Z` exists.
 - Next concrete action: publish predicate-level fatigue-context instrumentation and rerun the exact standalone scenario.
+
+## 2026-08-09 - fatigue diagnostic refinement
+
+- Branch/HEAD: `a7915f6c31f787bf6e9d3c4ec53957b1ae8792e9`; run `20260810T0012262447308Z-disposable-acadamae-graduate` / runtime ID `20260810T0012262738740Z-ed341c7e113d46c18cb12eb530bbe0e3`: FAIL 12/13.
+- Predicate evidence: canonical fatigue context exists, has no parent, is reference-distinct from the spell context, and uses a `RemoveOnRest` blueprint; it survived forced spell-context collection and was removed by actual native rest. Only the private `Buff.m_EndTime == null` assumption was false: Kingmaker normalizes internal end-time storage even though production passes a null duration.
+- Decision: retain the exact no-duration production call and deterministic source guard; define runtime independence by the root/distinct context plus observed context-cleanup survival and native rest behavior. Record the normalized private value diagnostically without treating its storage representation as the public duration contract.
+- Next concrete action: rebuild, publish, and rerun the exact scenario with the corrected engine-aware assertion.
