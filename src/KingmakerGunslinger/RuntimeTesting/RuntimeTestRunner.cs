@@ -6908,26 +6908,48 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunDisposableShieldOther()
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
-            UnitEntityData caster = null, subject = null;
-            bool casterRegistered = false, subjectRegistered = false, cleaned = false;
+            UnitEntityData caster = null, subject = null, secondCaster = null,
+                secondSubject = null;
+            bool casterRegistered = false, subjectRegistered = false,
+                secondCasterRegistered = false, secondSubjectRegistered = false,
+                cleaned = false, replacementOwned = false,
+                multiSubjectOwned = false, rangeRemoved = false,
+                dispelRemoved = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, acDelta = -1, fortDelta = -1,
-                reflexDelta = -1, willDelta = -1, linkCount = -1;
+                reflexDelta = -1, willDelta = -1, linkCount = -1,
+                replacementSubject = -1, replacementFirstCaster = -1,
+                replacementSecondCaster = -1, multipleSubject = -1,
+                multipleCaster = -1, rangedSubject = -1, rangedCaster = -1,
+                dispelledSubject = -1, dispelledCaster = -1;
             long logsBefore = ShieldOtherCombatLog.Published;
             string stage = "construct";
             try
             {
                 caster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 subject = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                secondCaster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                secondSubject = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 caster.Descriptor.Stats.HitPoints.BaseValue = 100;
                 subject.Descriptor.Stats.HitPoints.BaseValue = 100;
+                secondCaster.Descriptor.Stats.HitPoints.BaseValue = 100;
+                secondSubject.Descriptor.Stats.HitPoints.BaseValue = 100;
                 caster.Descriptor.State.Immortality.Retain();
                 subject.Descriptor.State.Immortality.Retain();
+                secondCaster.Descriptor.State.Immortality.Retain();
+                secondSubject.Descriptor.State.Immortality.Retain();
                 SetExactProperty(caster, "Position", Vector3.zero);
                 SetExactProperty(subject, "Position", Vector3.zero);
+                SetExactProperty(secondCaster, "Position", Vector3.zero);
+                SetExactProperty(secondSubject, "Position", Vector3.zero);
                 casterRegistered = Kingmaker.Game.Instance.State.Units.All.Add(caster);
                 subjectRegistered = Kingmaker.Game.Instance.State.Units.All.Add(subject);
-                if (!casterRegistered || !subjectRegistered)
+                secondCasterRegistered = Kingmaker.Game.Instance.State.Units.All.Add(
+                    secondCaster);
+                secondSubjectRegistered = Kingmaker.Game.Instance.State.Units.All.Add(
+                    secondSubject);
+                if (!casterRegistered || !subjectRegistered ||
+                    !secondCasterRegistered || !secondSubjectRegistered)
                     throw new InvalidOperationException("Disposable units were not registered.");
 
                 int acBefore = subject.Stats.AC.ModifiedValue;
@@ -6975,6 +6997,92 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
                 subjectEven = subjectBefore - subject.HPLeft;
                 casterEven = casterBefore - caster.HPLeft;
+
+                stage = "replace-link";
+                var replacementContext = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(subject));
+                replacementContext.Params.CasterLevel = 5;
+                Buff replacement = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, replacementContext,
+                    TimeSpan.FromHours(5d));
+                Buff[] subjectLinks = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+                replacementOwned = replacement != null && subjectLinks.Length == 1 &&
+                    subjectLinks[0].MaybeContext.MaybeCaster == secondCaster;
+                subjectBefore = subject.HPLeft;
+                int firstCasterBefore = caster.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                replacementSubject = subjectBefore - subject.HPLeft;
+                replacementFirstCaster = firstCasterBefore - caster.HPLeft;
+                replacementSecondCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "multiple-subjects";
+                var multipleContext = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(secondSubject));
+                multipleContext.Params.CasterLevel = 5;
+                Buff multiple = secondSubject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
+                    TimeSpan.FromHours(5d));
+                multiSubjectOwned = multiple != null &&
+                    subject.Descriptor.HasFact(BlueprintBootstrap.ShieldOther.TargetBuff) &&
+                    secondSubject.Descriptor.HasFact(
+                        BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                multipleSubject = subjectBefore - secondSubject.HPLeft;
+                multipleCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "range-termination";
+                SetExactProperty(secondSubject, "Position", new Vector3(20f, 0f, 0f));
+                multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                rangeRemoved = !secondSubject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                rangedSubject = subjectBefore - secondSubject.HPLeft;
+                rangedCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "dispel-removal";
+                subjectLinks = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+                if (subjectLinks.Length != 1)
+                    throw new InvalidOperationException("Replacement link was lost.");
+                subjectLinks[0].Remove();
+                dispelRemoved = !subject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                dispelledSubject = subjectBefore - subject.HPLeft;
+                dispelledCaster = casterBefore - secondCaster.HPLeft;
             }
             catch (Exception exception)
             {
@@ -6984,22 +7092,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (secondSubjectRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(secondSubject);
+                if (secondCasterRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(secondCaster);
                 if (subjectRegistered)
                     Kingmaker.Game.Instance.State.Units.All.Remove(subject);
                 if (casterRegistered)
                     Kingmaker.Game.Instance.State.Units.All.Remove(caster);
+                if (secondSubject != null) secondSubject.Dispose();
+                if (secondCaster != null) secondCaster.Dispose();
                 if (subject != null) subject.Dispose();
                 if (caster != null) caster.Dispose();
                 cleaned = (subject == null ||
                     !Kingmaker.Game.Instance.State.Units.All.Contains(subject)) &&
                     (caster == null ||
-                    !Kingmaker.Game.Instance.State.Units.All.Contains(caster));
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(caster)) &&
+                    (secondSubject == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(secondSubject)) &&
+                    (secondCaster == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(secondCaster));
             }
             string observed = "linkCount=" + linkCount + ";bonuses=" + acDelta +
                 "/" + fortDelta + "/" + reflexDelta + "/" + willDelta +
                 ";odd=" + subjectOdd + "/" + casterOdd + ";even=" +
                 subjectEven + "/" + casterEven + ";logs=" +
-                (ShieldOtherCombatLog.Published - logsBefore) + ";cleaned=" + cleaned;
+                (ShieldOtherCombatLog.Published - logsBefore) +
+                ";replacement=" + replacementOwned + "/" + replacementSubject +
+                "/" + replacementFirstCaster + "/" + replacementSecondCaster +
+                ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
+                multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
+                "/" + rangedCaster + ";dispel=" + dispelRemoved + "/" +
+                dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
@@ -7013,8 +7137,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-even-split", "subject 2; caster 2",
                     observed, subjectEven == 2 && casterEven == 2,
                     "finalized damage transpiler and guarded transfer"),
-                Assertion("shield-other-transfer-log", "2 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 2,
+                Assertion("shield-other-link-replacement",
+                    "latest caster owns one link; damage 1/0/1", observed,
+                    replacementOwned && replacementSubject == 1 &&
+                    replacementFirstCaster == 0 && replacementSecondCaster == 1,
+                    "Stacking.Replace and persisted MaybeCaster"),
+                Assertion("shield-other-multiple-subjects",
+                    "one caster owns both; damage 1/1", observed,
+                    multiSubjectOwned && multipleSubject == 1 && multipleCaster == 1,
+                    "independent target buff facts"),
+                Assertion("shield-other-range-termination",
+                    "link removed; damage 2/0", observed,
+                    rangeRemoved && rangedSubject == 2 && rangedCaster == 0,
+                    "caster-level close range round revalidation"),
+                Assertion("shield-other-dispel-removal",
+                    "link removed; damage 2/0", observed,
+                    dispelRemoved && dispelledSubject == 2 && dispelledCaster == 0,
+                    "native buff removal"),
+                Assertion("shield-other-transfer-log", "4 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 4,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),

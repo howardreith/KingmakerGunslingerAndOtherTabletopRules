@@ -305,3 +305,15 @@ transactional standalone scenario on the changed clean SHA.
 Next: expand the disposable scenario across replacement/multi-subject links,
 range/death/dispel lifecycle, defenses/temp HP, lethal and recursion/exclusion
 cases before the required profile repetitions.
+
+## 2026-08-10 - expanded link lifecycle scenario ready
+
+- Extended `disposable-shield-other` with a second caster and subject.
+- It now requires latest-caster replacement on one subject, simultaneous links
+  from one caster to two subjects, removal beyond caster-level-5 close range,
+  and native buff removal equivalent to dispel. Post-removal damage must remain
+  wholly on the subject and create no transfer log.
+- Complete source qualification PASS: 980/980 tests, exact-reference Release
+  build, output/SoundBank validation, and strict package validation.
+
+Next: publish/rebuild and run the expanded standalone scenario transactionally.

@@ -1703,3 +1703,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   exclusions, and reciprocal recursion before profile repetitions.
 - Remaining gates: expanded matrix; module/profile repetitions; 0.0.77 release,
   final hashes/audits/report. Active blocker: none.
+
+## Shield Other current resume - expanded lifecycle scenario ready
+
+- Current phase: Phase 9 expanded link lifecycle runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package validation after adding replacement, multiple-subject,
+  out-of-range, and dispel-equivalent coverage.
+- Exact current commit: `a72765b800d26d686955e6a883a1d1bfc1e7aa9a`;
+  scenario and durable progress changes are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, and run transactional
+  standalone `disposable-shield-other` to inspect expanded structured evidence.
+- Remaining gates: death/area/save-load; defenses/temp HP/lethal/exclusions/
+  recursion; module/profile repetitions; 0.0.77 final release. Blocker: none.
