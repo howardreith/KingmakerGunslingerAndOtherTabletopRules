@@ -6928,6 +6928,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool fatigueEndFieldFound = false, fatigueEndIsNull = false,
                 fatigueContextPresent = false, fatigueParentAbsent = false,
                 fatigueContextDistinct = false, fatigueRemoveOnRest = false;
+            bool fatiguePermanent = false;
             string fatigueEndValue = "<unread>";
             int spellLevel = -1, offCount = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
@@ -7076,7 +7077,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AcadamaeCastingRuntime.End(snapOffCommand);
                 snapshotObserved = snapOnRule.Success && snapOffRule.Success &&
                     snapshotRiskCount == 2 &&
-                    AcadamaeCastingRuntime.CompletedCount == snapshotRiskCount;
+                    AcadamaeCastingRuntime.CompletedCount == snapshotRiskCount &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                // Keep the following cancellation and Cord fixtures isolated
+                // even if a preceding forced-save test exposes engine-level
+                // variance. Their assertions still fail the preceding fixture.
+                unit.Descriptor.RemoveFact(fatiguedBlueprint);
 
                 AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
@@ -7086,8 +7093,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(unit));
                 Rulebook.Trigger(cancelledRule);
                 cancellationCount = AcadamaeCastingRuntime.CompletedCount;
-                cancellationObserved = cancelledRule.Success && cancellationCount == 2 &&
+                cancellationObserved = cancellationCount == 2 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                unit.Descriptor.RemoveFact(fatiguedBlueprint);
 
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
                 unit.Body.Belt.InsertItem(cord);
@@ -7151,13 +7160,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fatigueContextDistinct = fatigueContextPresent &&
                     !ReferenceEquals(failedFatigue.Context, failedRule.Context);
                 fatigueRemoveOnRest = fatiguedBlueprint.RemoveOnRest;
+                fatiguePermanent = failedFatigue != null && failedFatigue.IsPermanent;
                 // Buff normalizes its internal end-time storage even when the
                 // public AddBuff duration argument is null. Independence is
                 // established by the root, distinct context plus the actual
                 // context-disposal survival check below; source guards prove
                 // the production call supplies no duration.
-                fatigueIndependent = fatigueContextPresent && fatigueParentAbsent &&
-                    fatigueContextDistinct && fatigueRemoveOnRest;
+                fatigueIndependent = fatiguePermanent && fatigueContextPresent &&
+                    fatigueParentAbsent && fatigueContextDistinct && fatigueRemoveOnRest;
                 // The rejected build coupled Fatigued to failedRule.Context. The
                 // native caster overload creates a root context instead; dropping
                 // every request-local reference to the completed spell context is
@@ -7252,6 +7262,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";fatigueParentAbsent=" + fatigueParentAbsent +
                 ";fatigueContextDistinct=" + fatigueContextDistinct +
                 ";fatigueRemoveOnRest=" + fatigueRemoveOnRest +
+                ";fatiguePermanent=" + fatiguePermanent +
                 ";survivedContextCleanup=" + fatigueSurvivedContextCleanup +
                 ";restRemoved=" + restRemoved +
                 ";modeViewLifecycle=" + modeViewLifecycle +

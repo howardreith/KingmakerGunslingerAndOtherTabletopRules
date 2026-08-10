@@ -38,3 +38,11 @@
 - Predicate evidence: canonical fatigue context exists, has no parent, is reference-distinct from the spell context, and uses a `RemoveOnRest` blueprint; it survived forced spell-context collection and was removed by actual native rest. Only the private `Buff.m_EndTime == null` assumption was false: Kingmaker normalizes internal end-time storage even though production passes a null duration.
 - Decision: retain the exact no-duration production call and deterministic source guard; define runtime independence by the root/distinct context plus observed context-cleanup survival and native rest behavior. Record the normalized private value diagnostically without treating its storage representation as the public duration contract.
 - Next concrete action: rebuild, publish, and rerun the exact scenario with the corrected engine-aware assertion.
+
+## 2026-08-09 - native permanent flag and isolated fixtures
+
+- Run `20260810T0016185839512Z-disposable-acadamae-graduate` / runtime ID `20260810T0016185995756Z-5bbdba6de6654a928bc24bc88c0728ad` proved the corrected independent-context assertion and reported private end-time storage `00:00:18`; its cancellation and Cord assertions were contaminated by a pre-existing fatigue fact in the shared multi-case unit.
+- Exact runtime `Buff.IsPermanent` is now the authoritative no-duration observation. The fatigue assertion requires permanent, root/distinct context, `RemoveOnRest`, actual spell-context-cleanup survival, and actual rest removal. The private end-time value remains diagnostic only.
+- Cancellation and Cord subfixtures now remove any preceding canonical fatigue first; the preceding snapshot assertion independently requires that it created none, so isolation does not conceal a snapshot failure. Cancellation correlation no longer depends on synthetic post-cancel `RuleCastSpell.Success`, only on zero new completion/save/fatigue.
+- Full repository/build/package gate PASS: 970/970; strict package SHA-256 `f477354fcac8c741c62496a62d6d3b307e66ec3676c8b1ffeb06f2ebfce55744`; DLL `ec5a6088f55147de7716cb54aaea71a0ef4d008016fa94a91ab5f1220dda0738`.
+- Next concrete action: commit/publish the strengthened runtime fixture and rerun standalone Acadamae qualification.
