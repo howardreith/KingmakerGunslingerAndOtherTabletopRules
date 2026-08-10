@@ -762,3 +762,19 @@ Next: commit/publish and run guarded standalone runtime qualification.
   read. The next verify-cleanup launch will both prove fresh-load mechanics and
   remove/save the link while capturing the retained native clone shape. Focused
   contracts 14/14, deterministic 981/981, and exact Release compile pass.
+- Fresh-launch verify-cleanup request
+  `20260810T1604171151554Z-working-save-shield-other-verify-cleanup` proved the
+  complete persistence contract before save: one link, originating caster party
+  member 0, target party member 1, caster level 5, and 3 finalized HP damage
+  split 1 subject / 2 caster. It restored exact prior damage totals, removed the
+  link, and wrote the clean working save. Working SHA-256 is
+  `9b3cf9de54e27b8e89c100258b1a22cefab77ba01166ee9c15c7fd2cb4b85663`;
+  baseline remains
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+- Safe diagnostic proved the subordinate clone is
+  `Manual_300_KMG_AUTOMATION_WORKING.zks` while the final protected working slot
+  remains `Manual_299_KMG_AUTOMATION_WORKING.zks`. The final subordinate guard
+  requires exact working name, equal folder/file leaf, exact
+  `Manual_<digits>_KMG_AUTOMATION_WORKING.zks` shape, and an already active
+  object-reference-authorized top-level save. Deterministic 981/981 and exact
+  Release compile pass.

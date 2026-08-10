@@ -1312,10 +1312,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static bool IsExactWorkingFileIdentity(object value)
         {
-            return value != null && value.GetType().FullName == DescriptorType &&
-                Read(value, "Name") == ExpectedName &&
-                Leaf(Read(value, "FolderName")) == ExpectedFile &&
-                Leaf(Read(value, "FileName")) == ExpectedFile;
+            if (value == null || value.GetType().FullName != DescriptorType ||
+                Read(value, "Name") != ExpectedName) return false;
+            string folder = Leaf(Read(value, "FolderName"));
+            string file = Leaf(Read(value, "FileName"));
+            const string prefix = "Manual_";
+            string suffix = "_" + ExpectedName + ".zks";
+            if (folder != file || !file.StartsWith(prefix,
+                StringComparison.Ordinal) || !file.EndsWith(suffix,
+                StringComparison.Ordinal)) return false;
+            string sequence = file.Substring(prefix.Length,
+                file.Length - prefix.Length - suffix.Length);
+            return sequence.Length != 0 && sequence.All(char.IsDigit);
         }
 
         private void RegisterCompletionCallback()

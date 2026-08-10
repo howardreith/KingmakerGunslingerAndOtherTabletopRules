@@ -28,6 +28,8 @@ $checks = [ordered]@{
         $smoke.Contains('method.Name == "SaveStashedArea"') -and
         $smoke.Contains('IsExactWorkingFileIdentity(stashedDescriptor)') -and
         $smoke.Contains('Read(value, "Name") == ExpectedName') -and
+        $smoke.Contains('string suffix = "_" + ExpectedName + ".zks";') -and
+        $smoke.Contains('sequence.All(char.IsDigit)') -and
         $smoke.Contains('!IsBaseline(stashedDescriptor)') -and
         $runner.Contains('evidence.ExpectedWorkingStashedAreaCount >= 1')
     'safe-native-clone-diagnostic' =

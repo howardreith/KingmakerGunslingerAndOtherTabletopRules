@@ -101,3 +101,8 @@ descriptor type, working name, folder leaf, and filename leaf plus explicit
 baseline exclusion, and is reachable only after the top-level captured-reference
 save is authorized. Catalog load and top-level save continue to require the
 captured object reference.
+Runtime evidence established that Kingmaker uses the next numbered manual-save
+filename for the subordinate serialization clone before committing back to the
+working slot. The accepted shape is therefore exactly
+`Manual_<digits>_KMG_AUTOMATION_WORKING.zks`, with identical folder/file leaves
+and exact working display name, and only within the authorized save lifecycle.
