@@ -6927,6 +6927,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             UnitEntityData caster = null, subject = null, secondCaster = null,
                 secondSubject = null;
+            UnitDescriptor restoredSubjectDescriptor = null;
             bool casterRegistered = false, subjectRegistered = false,
                 secondCasterRegistered = false, secondSubjectRegistered = false,
                 cleaned = false, replacementOwned = false,
@@ -7012,15 +7013,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 willDelta = subject.Stats.SaveWill.ModifiedValue - willBefore;
 
                 stage = "native-save-context-roundtrip";
-                string contextJson = JsonConvert.SerializeObject(context,
-                    Formatting.None,
-                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
-                        .DefaultSettings);
+                Newtonsoft.Json.Linq.JToken subjectToken =
+                    Kingmaker.EntitySystem.Persistence.JsonUtility.UnitSerialization
+                        .Serialize(subject.Descriptor);
+                string contextJson = subjectToken.ToString(Formatting.None);
                 contextJsonLength = contextJson.Length;
-                MechanicsContext restoredContext = JsonConvert.DeserializeObject<
-                    MechanicsContext>(contextJson,
+                JsonSerializer serializer = JsonSerializer.Create(
                     Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
                         .DefaultSettings);
+                restoredSubjectDescriptor = subjectToken.ToObject<UnitDescriptor>(
+                    serializer);
+                Buff restoredLink = restoredSubjectDescriptor == null ? null :
+                    restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().SingleOrDefault(
+                        value => ReferenceEquals(value.Blueprint,
+                            BlueprintBootstrap.ShieldOther.TargetBuff));
+                MechanicsContext restoredContext = restoredLink == null ? null :
+                    restoredLink.MaybeContext;
                 contextRoundTrip = restoredContext != null &&
                     ReferenceEquals(restoredContext.MaybeCaster, caster) &&
                     restoredContext.Params != null &&
@@ -7399,6 +7407,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (restoredSubjectDescriptor != null)
+                    restoredSubjectDescriptor.Dispose();
                 if (secondSubjectRegistered)
                     Kingmaker.Game.Instance.State.Units.All.Remove(secondSubject);
                 if (secondCasterRegistered)

@@ -522,6 +522,21 @@ profile repetitions.
 
 Next: commit/publish and run guarded standalone runtime qualification.
 
+## 2026-08-10 - top-level context serialization rejected
+
+- `20260810T1450578085280Z-disposable-shield-other` on exact source
+  `85f94fbcd24f88471dd037aa34ddbffbbfc01f60` failed closed at
+  `native-save-context-roundtrip`: Kingmaker's `DictionaryConverter` rejected a
+  top-level `MechanicsContext` because that type is serialized only within its
+  surrounding unit graph. No fixture mutation followed the error.
+- Transaction `compat-20260810T145017Z-507e7c5d18d3` restored exactly.
+- Replaced the invalid boundary with the engine's exact
+  `UnitSerialization.Serialize(UnitDescriptor)` graph and native
+  `DefaultJsonSettings` reconstruction. The assertion now locates the restored
+  Shield Other buff and validates its live caster, subject, and caster level.
+
+Next: source-qualify and rerun this exact unit-save graph.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

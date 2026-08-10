@@ -253,7 +253,8 @@ namespace KingmakerGunslinger.DomainTests
                 "shield-other-caster-death-termination",
                 "native-save-context-roundtrip",
                 "DefaultJsonSettings.DefaultSettings",
-                "DeserializeObject<",
+                "UnitSerialization",
+                "ToObject<UnitDescriptor>",
                 "shield-other-native-save-context-roundtrip" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);

@@ -1603,6 +1603,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - exact unit-save graph repair
+
+- Current phase: Phase 9 save-context runtime repair.
+- Last runtime `20260810T1450578085280Z-disposable-shield-other` failed because
+  top-level `MechanicsContext` serialization is not a supported save boundary;
+  transaction `compat-20260810T145017Z-507e7c5d18d3` restored exactly.
+- Exact current commit: `85f94fbcd24f88471dd037aa34ddbffbbfc01f60`;
+  replacement with `UnitSerialization.Serialize(UnitDescriptor)` is uncommitted.
+- Exact next action: run `Build-Local.ps1`, commit/publish, and rerun standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - native save-context fixture source-qualified
 
 - Current phase: Phase 9 save-context runtime qualification.
