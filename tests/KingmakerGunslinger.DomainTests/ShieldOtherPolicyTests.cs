@@ -201,6 +201,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ApplyDifficultyModifiers",
                 "GetProperty(\"Damage\")",
                 "GetProperty(\"LastHandledDamage\")",
+                "typeof(UnitEntityData)",
                 "new CodeInstruction(OpCodes.Ldarg_0, null)",
                 "ShieldOtherRuntime" })
                 Assertions.True(patch.Contains(token),

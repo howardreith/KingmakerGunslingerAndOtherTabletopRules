@@ -1674,3 +1674,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Remaining gates: expanded mechanics matrix; CotW and combined repetitions;
   disabled module; 0.0.77 docs/package/hashes/audits/final report.
 - Active blocker: none; installed broad-profile startup strategy is retired.
+
+## Shield Other current resume - exact transpiler type repair
+
+- Current phase: repair qualification before standalone mechanics retry.
+- Last completed check: failed isolated evidence
+  `20260810T1320348526120Z-disposable-shield-other` identified the exact
+  `LastHandledDamage` declaring-type mismatch; compatibility transaction
+  `compat-20260810T131953Z-8ac491185118` restoration verified `True`.
+- Exact current commit: `d7978be23729303cd22510ad1cfc9bddabee741d`;
+  one-line production type repair plus focused test/docs are uncommitted.
+- Exact next action: run complete validation, commit/publish, rebuild clean SHA,
+  and rerun transactional `gunslinger-only` `disposable-shield-other`.
+- Remaining gates unchanged. Active blocker: none.

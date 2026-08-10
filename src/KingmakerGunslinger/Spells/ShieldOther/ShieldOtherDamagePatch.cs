@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Harmony12;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules.Damage;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
@@ -36,7 +37,7 @@ namespace KingmakerGunslinger.Spells.ShieldOther
                 null, new[] { typeof(int) }, null);
             MethodInfo damageSetter = typeof(RuleDealDamage).GetProperty("Damage")
                 .GetSetMethod(true);
-            MethodInfo lastHandledSetter = typeof(RuleDealDamage)
+            MethodInfo lastHandledSetter = typeof(UnitEntityData)
                 .GetProperty("LastHandledDamage").GetSetMethod(true);
             MethodInfo callback = typeof(ShieldOtherRuntime).GetMethod(
                 "AfterFinalDamage", BindingFlags.Static | BindingFlags.NonPublic);

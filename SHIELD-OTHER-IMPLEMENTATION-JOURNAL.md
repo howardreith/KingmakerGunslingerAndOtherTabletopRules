@@ -273,3 +273,19 @@ through Steam and inspect structured HP/log evidence before expanding its matrix
 
 Next: source-qualify/publish the profile allowlist, then run the disposable
 scenario in `gunslinger-only` with transactional restoration.
+
+## 2026-08-10 - transpiler declaring-type repair
+
+- Isolated run `20260810T1320348526120Z-disposable-shield-other` proved an exact
+  pre-bootstrap Harmony failure. The transpiler correctly targeted the native IL
+  sequence but attempted to reflect `LastHandledDamage` from `RuleDealDamage`.
+- Exact IL shows the call is `UnitEntityData.set_LastHandledDamage(rule)`. The
+  null property lookup caused the `TargetInvocationException`; no gameplay or
+  Shield Other mechanics ran.
+- Transaction `compat-20260810T131953Z-8ac491185118` was explicitly recovered
+  after the outer monitor bound, and exact restoration verified `True`.
+- The narrow repair resolves the setter from `UnitEntityData`; the insertion
+  location and runtime policy are unchanged.
+
+Next: complete source/build/package qualification, publish, then rerun the
+transactional standalone scenario on the changed clean SHA.
