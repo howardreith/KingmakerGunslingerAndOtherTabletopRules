@@ -178,8 +178,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ShieldOtherBuffComponent.cs"));
             foreach (string token in new[] {
                 "OwnedGameLogicComponent<UnitDescriptor>, ITickEachRound",
-                "Fact.MaybeContext.MaybeCaster",
-                "Fact.MaybeContext.Params.CasterLevel",
+                "buff.MaybeContext.MaybeCaster",
+                "buff.MaybeContext.Params.CasterLevel",
                 "!caster.Descriptor.State.IsDead",
                 "subject.IsInGame && caster.IsInGame",
                 "subject.DistanceTo(caster) * FeetPerMeter",
@@ -187,6 +187,36 @@ namespace KingmakerGunslinger.DomainTests
                 "buff.Remove()" })
                 Assertions.True(source.Contains(token),
                     "Link lifecycle source contract is missing: " + token);
+        }
+
+        internal static void DamageRuntimeSourceContract()
+        {
+            string root = Path.Combine(Environment.CurrentDirectory, "src",
+                "KingmakerGunslinger", "Spells", "ShieldOther");
+            string patch = File.ReadAllText(Path.Combine(root,
+                "ShieldOtherDamagePatch.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root,
+                "ShieldOtherRuntime.cs"));
+            foreach (string token in new[] {
+                "ApplyDifficultyModifiers",
+                "GetProperty(\"Damage\")",
+                "GetProperty(\"LastHandledDamage\")",
+                "new CodeInstruction(OpCodes.Ldarg_0, null)",
+                "ShieldOtherRuntime" })
+                Assertions.True(patch.Contains(token),
+                    "Finalized-damage patch contract is missing: " + token);
+            foreach (string token in new[] {
+                "[ThreadStatic] private static int _transferDepth",
+                "ShieldOtherBuffComponent.TryEvaluate",
+                "ShieldOtherDamageSplitPolicy.Split",
+                "SetDamage(damage, split.SubjectShare)",
+                "IgnoreDamageReduction = true",
+                "_forcedTransferredDamage = split.CasterShare",
+                "finally",
+                "SetDamage(damage, finalized)",
+                "ShieldOtherCombatLog.Publish" })
+                Assertions.True(runtime.Contains(token),
+                    "Guarded transfer runtime contract is missing: " + token);
         }
 
         private sealed class FakeSpell

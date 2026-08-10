@@ -25,13 +25,20 @@ namespace KingmakerGunslinger.Spells.ShieldOther
 
         internal bool TryEvaluate(out ShieldOtherLinkValidityDecision decision)
         {
+            return TryEvaluate(Fact as Buff, out decision);
+        }
+
+        internal static bool TryEvaluate(Buff buff,
+            out ShieldOtherLinkValidityDecision decision)
+        {
             decision = null;
-            UnitEntityData subject = Owner == null ? null : Owner.Unit;
-            UnitEntityData caster = Fact == null || Fact.MaybeContext == null
-                ? null : Fact.MaybeContext.MaybeCaster;
-            int casterLevel = Fact == null || Fact.MaybeContext == null ||
-                Fact.MaybeContext.Params == null ? 0 :
-                Fact.MaybeContext.Params.CasterLevel;
+            UnitEntityData subject = buff == null || buff.Owner == null
+                ? null : buff.Owner.Unit;
+            UnitEntityData caster = buff == null || buff.MaybeContext == null
+                ? null : buff.MaybeContext.MaybeCaster;
+            int casterLevel = buff == null || buff.MaybeContext == null ||
+                buff.MaybeContext.Params == null ? 0 :
+                buff.MaybeContext.Params.CasterLevel;
             bool casterAlive = caster != null && caster.Descriptor != null &&
                 caster.Descriptor.State != null && !caster.Descriptor.State.IsDead;
             bool sameArea = subject != null && caster != null &&

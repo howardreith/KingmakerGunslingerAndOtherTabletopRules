@@ -215,3 +215,28 @@ component and lifecycle revalidation before the damage transpiler.
 
 Next: commit/publish the lifecycle checkpoint, then implement the exact
 signature-validated finalized-damage transpiler and exception-safe transfer guard.
+
+## 2026-08-10 - finalized HP split runtime
+
+- Added a Harmony transpiler which requires the exact installed
+  `ApplyDifficultyModifiers -> Damage setter -> LastHandledDamage setter` IL
+  sequence and inserts one callback immediately after finalized damage is stored.
+- The callback revalidates the persisted caster link immediately, applies the
+  pure odd-remainder-to-caster split, and triggers one native direct-damage event
+  for the caster. A thread-static, `finally`-cleared guard prevents reciprocal,
+  nested, and transferred-event recursion.
+- The transferred callback overwrites its finalized amount after caster
+  difficulty/defense processing, while leaving native temporary-hit-point and HP
+  application intact. It creates no attack, save, critical, precision, or source
+  rider event. A native warning/combat-log event identifies the transfer.
+- If the guarded transfer throws, the original event is restored to its complete
+  finalized subject damage before native HP application; no heal-after-damage
+  approximation exists.
+- Complete validation PASS: 980/980 deterministic tests, exact-reference Release
+  build, output validation, SoundBank validation, and strict package validation.
+  The first two sandboxed attempts encountered only the existing audio staging
+  fixture's denied Windows temp-directory `File.Replace`; the approved
+  unrestricted rerun passed without a source change.
+
+Next: commit/publish this damage-runtime checkpoint, then add the disposable
+Shield Other behavior and damage runtime scenario needed to prove the exact seam.

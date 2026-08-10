@@ -39,6 +39,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("shield-other.base-publication", ShieldOtherPolicyTests.BasePublicationSourceContract),
             Case("shield-other.optional-publication", ShieldOtherPolicyTests.OptionalPublicationSourceContract),
             Case("shield-other.link-component", ShieldOtherPolicyTests.LinkComponentSourceContract),
+            Case("shield-other.damage-runtime", ShieldOtherPolicyTests.DamageRuntimeSourceContract),
             Case("acadamae.eligibility-matrix", AcadamaeCordPolicyTests.AcadamaeEligibilityMatrix),
             Case("acadamae.multi-round-and-dc", AcadamaeCordPolicyTests.AcadamaeMultiRoundAndDc),
             Case("acadamae.prerequisite-matrix", AcadamaeCordPolicyTests.AcadamaePrerequisiteMatrix),

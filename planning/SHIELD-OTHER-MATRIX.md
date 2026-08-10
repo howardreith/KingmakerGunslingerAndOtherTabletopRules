@@ -8,9 +8,9 @@
 | Feature settings schema 2 | SOURCE-QUALIFIED | Migration, atomicity, eight combinations PASS |
 | Stable blueprints | SOURCE-QUALIFIED | Stable ability/buff GUIDs; 254 active identities; contract test |
 | Link lifecycle | SOURCE-QUALIFIED | Persisted context + round fallback + pre-split revalidation; runtime pending |
-| Exact HP split | SOURCE-IMPLEMENTED | Pure conservation/guard policy PASS; native runtime evidence pending |
+| Exact HP split | SOURCE-QUALIFIED | Exact transpiler/guard implementation; 980-test/build/package PASS; native runtime pending |
 | Base spell-list publication | RUNTIME-PASS | Five level-2 lists exactly once in guarded final-live scan |
 | Optional CotW publication | RUNTIME-PASS | Oracle/Warpriest/Psychic level 2 exactly once; casting models proven |
-| Deterministic qualification | NOT-STARTED | Complete suite, build, package |
+| Deterministic qualification | INTERIM-PASS | 980/980 plus exact Release and strict package PASS; repeat at release |
 | Runtime qualification | NOT-STARTED | Standalone, CotW, combined; two PASS each |
 | Release 0.0.77 | NOT-STARTED | Docs, package hashes, remote SHA |
