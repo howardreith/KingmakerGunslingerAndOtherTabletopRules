@@ -13,9 +13,12 @@ namespace KingmakerGunslinger.Spells.ShieldOther
     internal sealed class ShieldOtherInventoryObservation
     {
         internal ShieldOtherInventoryObservation(int duplicateCount,
-            IList<string> records)
-        { DuplicateCount = duplicateCount; Records = records; }
+            int expectedPublishedLists, int publishedLists, IList<string> records)
+        { DuplicateCount = duplicateCount; ExpectedPublishedLists = expectedPublishedLists;
+            PublishedLists = publishedLists; Records = records; }
         internal int DuplicateCount { get; private set; }
+        internal int ExpectedPublishedLists { get; private set; }
+        internal int PublishedLists { get; private set; }
         internal IList<string> Records { get; private set; }
     }
 
@@ -28,6 +31,7 @@ namespace KingmakerGunslinger.Spells.ShieldOther
             BlueprintScriptableObject[] all = library.GetAllBlueprints()
                 .Where(value => value != null).ToArray();
             var records = new List<string>();
+            const string ShieldOtherGuid = "6a8c4c1d2fbe4d6a9a724988c1348401";
             BlueprintAbility[] duplicates = all.OfType<BlueprintAbility>()
                 .Where(IsShieldOtherCandidate).ToArray();
             foreach (BlueprintAbility value in duplicates)
@@ -53,6 +57,41 @@ namespace KingmakerGunslinger.Spells.ShieldOther
                 records.Add("spellList=" + Describe(value) + ";maxLevel=" +
                     value.MaxLevel);
 
+            string[] requiredLists = {
+                "8443ce803d2d31347897a3d85cc32f53",
+                "9f5be2f7ea64fe04eb40878347b147bc",
+                "57c894665b7895c499b3dce058c284b3",
+                "75576ed8cab010644a11f9ecd512a7f9",
+                "93228f4df23d2d448a0db59141af8aed" };
+            string[] optionalLists = {
+                "f305174b73f64783a8379238a14c3283",
+                "9ef48172d50446aca4c80f321402f743",
+                "d8eda7e863824c42b3329279cac4d92a" };
+            var liveLists = all.OfType<BlueprintSpellList>().ToDictionary(
+                value => value.AssetGuid, StringComparer.Ordinal);
+            int expectedPublishedLists = requiredLists.Length;
+            int publishedLists = 0;
+            foreach (string guid in requiredLists.Concat(optionalLists))
+            {
+                BlueprintSpellList list;
+                bool required = requiredLists.Contains(guid);
+                if (!liveLists.TryGetValue(guid, out list))
+                {
+                    if (required) records.Add("publication=" + guid + ";missing=true");
+                    continue;
+                }
+                if (!required) expectedPublishedLists++;
+                SpellLevelList level = (list.SpellsByLevel ??
+                    Array.Empty<SpellLevelList>()).SingleOrDefault(value =>
+                        value != null && value.SpellLevel == 2);
+                int membership = level == null || level.Spells == null ? 0 :
+                    level.Spells.Count(value => value != null && string.Equals(
+                        value.AssetGuid, ShieldOtherGuid, StringComparison.Ordinal));
+                if (membership == 1) publishedLists++;
+                records.Add("publication=" + guid + ";required=" + required +
+                    ";level2Membership=" + membership);
+            }
+
             foreach (BlueprintCharacterClass value in all
                 .OfType<BlueprintCharacterClass>().Where(IsRelevantClass)
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal))
@@ -61,14 +100,19 @@ namespace KingmakerGunslinger.Spells.ShieldOther
                 records.Add("class=" + Describe(value) + ";spellbook=" +
                     (book == null ? "<null>" : Describe(book)) + ";spellList=" +
                     (book == null || book.SpellList == null ? "<null>" :
-                        Describe(book.SpellList)));
+                        Describe(book.SpellList)) + ";spontaneous=" +
+                    (book == null ? "<null>" : book.Spontaneous.ToString()) +
+                    ";arcane=" + (book == null ? "<null>" : book.IsArcane.ToString()) +
+                    ";castingAttribute=" + (book == null ? "<null>" :
+                        book.CastingAttribute.ToString()));
             }
             records.Add("inventoryTotal=" + all.Length + ";abilityDonors=" +
                 records.Count(value => value.StartsWith("abilityDonor=",
                     StringComparison.Ordinal)) + ";buffDonors=" +
                 records.Count(value => value.StartsWith("buffDonor=",
                     StringComparison.Ordinal)));
-            return new ShieldOtherInventoryObservation(duplicates.Length, records);
+            return new ShieldOtherInventoryObservation(duplicates.Length,
+                expectedPublishedLists, publishedLists, records);
         }
 
         private static bool IsShieldOtherCandidate(BlueprintAbility value)

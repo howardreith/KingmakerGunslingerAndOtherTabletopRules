@@ -1563,3 +1563,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   disposable behavior scenarios; 0.0.77 release; consecutive standalone/CotW/
   combined gates; hashes, restoration, protected-save audit, final report.
 - Active blocker: none.
+
+## Shield Other current resume - publication observer ready
+
+- Current phase: Phase 9 guarded blueprint/publication runtime observation.
+- Last completed command/check: `Build-Local.ps1` PASS with 978/978 tests and
+  exact-reference Release/package qualification.
+- Exact current commit: `a5769addf2709d9ea72268b767ef45c0a38f3769` with
+  strengthened observer changes ready to commit.
+- Exact next action: commit/publish, rebuild the clean SHA, then run
+  `observe-shield-other-inventory` through the guarded Steam launcher and
+  inspect exact eight-list and casting-model diagnostics.
+- Remaining gates: runtime publication proof; lifecycle; exact split;
+  disposable scenarios; version 0.0.77; compatibility repetitions; final audit.
+- Active blocker: none.

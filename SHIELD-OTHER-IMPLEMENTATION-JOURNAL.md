@@ -144,3 +144,16 @@ and idempotent Oracle/Warpriest/Psychic reconciliation.
 
 Next: commit/publish this checkpoint, add a guarded live blueprint/publication
 observer, and verify the exact CotW casting-model and all eight list memberships.
+
+## 2026-08-10 - publication observer strengthened
+
+- Extended the existing guarded, save-free inventory observer to assert exactly
+  one level-2 Shield Other membership in all five required lists and every live
+  optional CotW list.
+- Diagnostics now record Oracle/Warpriest/Psychic spontaneous, arcane, and
+  casting-attribute fields for exact live validation of the structural resolver.
+- Complete validation, 978 deterministic tests, exact-reference Release build,
+  and strict package validation PASS.
+
+Next: publish the observer checkpoint, rebuild its clean SHA, then run the
+guarded inventory scenario and curate exact membership/model evidence.
