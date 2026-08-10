@@ -460,3 +460,18 @@ remaining lifecycle/save-load runtime assertions.
 
 Next: commit/publish this source-qualified fixture and run it in the isolated
 standalone profile.
+
+## 2026-08-10 - typed physical and energy runtime PASS
+
+- Guarded standalone evidence:
+  `20260810T1430187656299Z-disposable-shield-other`.
+- Exact source: `ee0b4fa5f4d30b94dcb10c141eabac139fe6594b`.
+- Native piercing 4 finalized to subject/caster `2/2`; native fire 4 finalized
+  to `2/2`. All earlier link, bonus, replacement, multiple-subject, range,
+  dispel, exclusion, reciprocal, temporary-HP, lethal, logging, and cleanup
+  assertions also passed.
+- Exactly 10 transfer log entries were observed. Transaction
+  `compat-20260810T142942Z-34d10d67c9bb` restored exactly (`True`).
+
+Next: add native target mitigation/immunity fixtures and prove the caster share
+is derived from the once-mitigated finalized value without a second defense pass.

@@ -33,3 +33,13 @@ release 0.0.77. No source/build result will be represented as in-game proof.
 - Each isolated compatibility transaction reported exact restoration `True`.
 - The profile-internal deterministic suite remained 981/981 PASS and strict
   package validation passed throughout.
+
+## Typed damage checkpoint
+
+- `20260810T1430187656299Z-disposable-shield-other` passed on exact source
+  `ee0b4fa5f4d30b94dcb10c141eabac139fe6594b`.
+- A native piercing packet with finalized damage 4 split `2/2`; a native fire
+  packet with finalized damage 4 split `2/2`.
+- All prior disposable assertions remained PASS, including temporary HP,
+  reciprocal recursion prevention, lethal caster transfer, and request-local
+  cleanup. Compatibility restoration verified `True`.
