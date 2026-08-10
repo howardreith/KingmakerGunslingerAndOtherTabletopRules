@@ -1603,6 +1603,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - save graph field instrumentation
+
+- Current phase: Phase 9 save-context reconstruction diagnosis.
+- Last runtime `20260810T1455123546800Z-disposable-shield-other` serialized a
+  20,465-byte unit graph and passed every gameplay assertion, but the combined
+  reconstructed-context check was false; restoration was exact.
+- Exact current commit: `57181a87a426e3be67f66eb312289cf26c112d9c`;
+  field-by-field reconstruction instrumentation is uncommitted.
+- Exact next action: build, commit/publish, rerun, and repair only the exact
+  unresolved native reference boundary.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - exact unit-save graph repair
 
 - Current phase: Phase 9 save-context runtime repair.

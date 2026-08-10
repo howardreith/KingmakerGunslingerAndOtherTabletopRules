@@ -537,6 +537,19 @@ Next: commit/publish and run guarded standalone runtime qualification.
 
 Next: source-qualify and rerun this exact unit-save graph.
 
+## 2026-08-10 - unit graph serialized; reconstruction narrowed
+
+- `20260810T1455123546800Z-disposable-shield-other` on exact source
+  `57181a87a426e3be67f66eb312289cf26c112d9c` serialized the unit graph to
+  20,465 bytes and ran every gameplay assertion successfully, but the combined
+  reconstructed-context assertion was false.
+- Transaction `compat-20260810T145438Z-9a776e678fcc` restored exactly.
+- Added field-by-field observation for reconstructed descriptor, buff, context,
+  caster, params/caster level, and target. No persistence criterion is weakened;
+  the next run identifies the exact unresolved native reference.
+
+Next: source-qualify/publish the narrower instrumentation and rerun.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

@@ -6941,6 +6941,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 casterTemporaryHpNormal = false,
                 contextRoundTrip = false;
             int contextJsonLength = -1;
+            string contextRoundTripDetails = "not-run";
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, physicalSubject = -1, physicalCaster = -1,
                 energySubject = -1, energyCaster = -1,
@@ -7029,6 +7030,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             BlueprintBootstrap.ShieldOther.TargetBuff));
                 MechanicsContext restoredContext = restoredLink == null ? null :
                     restoredLink.MaybeContext;
+                contextRoundTripDetails = "descriptor=" +
+                    (restoredSubjectDescriptor != null) + ";buff=" +
+                    (restoredLink != null) + ";context=" +
+                    (restoredContext != null) + ";caster=" +
+                    (restoredContext != null && restoredContext.MaybeCaster != null) +
+                    ";sameCaster=" + (restoredContext != null &&
+                    ReferenceEquals(restoredContext.MaybeCaster, caster)) +
+                    ";params=" + (restoredContext != null &&
+                    restoredContext.Params != null) + ";cl=" +
+                    (restoredContext == null || restoredContext.Params == null ? -1 :
+                    restoredContext.Params.CasterLevel) + ";target=" +
+                    (restoredContext != null && restoredContext.MainTarget.Unit != null) +
+                    ";sameTarget=" + (restoredContext != null &&
+                    restoredContext.MainTarget.Unit == subject);
                 contextRoundTrip = restoredContext != null &&
                     ReferenceEquals(restoredContext.MaybeCaster, caster) &&
                     restoredContext.Params != null &&
@@ -7460,7 +7475,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
                 casterTempHpLoss;
             observed += ";contextRoundTrip=" + contextRoundTrip + "/" +
-                contextJsonLength;
+                contextJsonLength + "/" + contextRoundTripDetails;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
