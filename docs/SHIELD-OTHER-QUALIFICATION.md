@@ -43,3 +43,13 @@ release 0.0.77. No source/build result will be represented as in-game proof.
 - All prior disposable assertions remained PASS, including temporary HP,
   reciprocal recursion prevention, lethal caster transfer, and request-local
   cleanup. Compatibility restoration verified `True`.
+
+## Mitigation and immunity checkpoint
+
+- `20260810T1436273826468Z-disposable-shield-other` passed on exact source
+  `1c152496abb5af17f016d2e1a6c7d03532d64666`.
+- Target DR and energy resistance were each evaluated once before splitting the
+  finalized value. Caster DR 100 and fire immunity did not reduce the direct
+  transferred share. Target fire immunity produced no subject or caster HP loss.
+- All regression assertions and request-local cleanup passed; compatibility
+  restoration verified `True`.

@@ -492,3 +492,18 @@ is derived from the once-mitigated finalized value without a second defense pass
   `be417b5d685381128aaa7cdd92fbbc424b1437939aca9a77e04c77572d2e7e68`.
 
 Next: commit/publish and run the guarded standalone disposable scenario.
+
+## 2026-08-10 - mitigation/immunity runtime PASS
+
+- Guarded evidence: `20260810T1436273826468Z-disposable-shield-other` on exact
+  source `1c152496abb5af17f016d2e1a6c7d03532d64666`.
+- Piercing 6 minus subject DR 2 finalized to 4 and split `2/2`; caster DR 100
+  did not reduce the transferred share.
+- Fire 6 minus subject resistance 2 finalized to 4 and split `2/2`; caster fire
+  immunity did not reduce the transferred share.
+- Subject fire immunity finalized to zero and produced subject/caster `0/0`.
+- All prior assertions, exactly 12 transfer logs, request-local cleanup, and
+  transaction `compat-20260810T143552Z-584d80887866` restoration passed.
+
+Next: qualify area transition and save/load persistence, then begin required
+profile repetitions.

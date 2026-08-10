@@ -8,7 +8,7 @@
 | Feature settings schema 2 | RUNTIME-PASS | Migration/atomicity deterministic PASS; all eight live combinations PASS with 254 identities |
 | Stable blueprints | SOURCE-QUALIFIED | Stable ability/buff GUIDs; 254 active identities; contract test |
 | Link lifecycle | SOURCE-QUALIFIED | Persisted context + round fallback + pre-split revalidation; runtime pending |
-| Exact HP split | RUNTIME-PARTIAL-PASS | Direct 3 => 1/2; direct, piercing, and fire 4 => 2/2; mitigation/immunity pending |
+| Exact HP split | RUNTIME-PASS | Direct/typed split, target DR/resistance/immunity once, caster defenses bypassed, temp HP and recursion PASS |
 | Base spell-list publication | RUNTIME-PASS | Five level-2 lists exactly once in guarded final-live scan |
 | Optional CotW publication | RUNTIME-PASS | Oracle/Warpriest/Psychic level 2 exactly once; casting models proven |
 | Deterministic qualification | INTERIM-PASS | 981/981 plus exact Release and strict package PASS; repeat at release |

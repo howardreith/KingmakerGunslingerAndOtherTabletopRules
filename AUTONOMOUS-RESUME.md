@@ -1603,6 +1603,20 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - mitigation/immunity runtime PASS
+
+- Current phase: Phase 9 remaining lifecycle and save/load qualification.
+- Last completed check: `20260810T1436273826468Z-disposable-shield-other`
+  passed on exact commit `1c152496abb5af17f016d2e1a6c7d03532d64666`;
+  target DR/resistance applied once, caster defenses did not reapply, target
+  immunity produced `0/0`, all regressions passed, restoration `True`.
+- Exact current commit: `1c152496abb5af17f016d2e1a6c7d03532d64666`;
+  this evidence curation is uncommitted.
+- Exact next action: inventory and implement request-local area-transition and
+  serialization round-trip observations without protected-save mutation.
+- Remaining gates: area/save-load; two-pass standalone, CotW, highest-risk
+  combined; 0.0.77 release/docs/package/hashes. Active blocker: none.
+
 ## Shield Other current resume - eight-way standalone module matrix PASS
 
 - Current phase: Phase 9 typed-damage and remaining lifecycle runtime qualification.
