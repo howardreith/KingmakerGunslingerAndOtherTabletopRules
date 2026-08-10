@@ -34,3 +34,23 @@ slice with focused tests.
 
 Next: complete native donor/list inventory, then add pure Shield Other damage
 and link policies with focused tests.
+
+## 2026-08-10 - pure damage and link policy source-qualified
+
+- Added dedicated pure policies under `Spells/ShieldOther`.
+- Finalized HP damage uses `subject=floor(D/2)` and
+  `caster=D-subject`; 0/1/2/3 and 1,000,001 conserve exactly and assign every
+  odd remainder to the caster.
+- Invalid links and guarded transferred events preserve the original target
+  damage and transfer zero, preventing reciprocal/nested recursion.
+- Link validity fails closed for missing subject/caster, dead caster,
+  different area, and distance beyond native close-range scaling
+  `25 + 5 * floor(casterLevel/2)` feet; the exact boundary remains valid.
+- Complete deterministic suite PASS 974/974. Full exact-reference
+  `Build-Local.ps1` qualification PASS; package SHA-256
+  `b8168b7365a96bd01e976d84484fce4855df6a4ca9f8ef8cd52480985de05172`;
+  DLL SHA-256
+  `1d792ccccb013bda15556d592c2a3fbc12a691c5fc9dc2a3f0b33bd0cfe777d9`.
+
+Next: publish this policy checkpoint, then add and run the guarded native
+donor/spell-list/final-live duplicate observer before blueprint construction.

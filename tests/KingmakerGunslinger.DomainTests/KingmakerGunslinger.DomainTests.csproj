@@ -38,6 +38,7 @@
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
+    <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
@@ -54,6 +55,11 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModulePublicationPlan.cs"><Link>FeatureModules\FeatureModulePublicationPlan.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsState.cs"><Link>FeatureModules\FeatureModuleSettingsState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsStore.cs"><Link>FeatureModules\FeatureModuleSettingsStore.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherDamageSplit.cs"><Link>ShieldOther\ShieldOtherDamageSplit.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs"><Link>ShieldOther\ShieldOtherDamageSplitPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs"><Link>ShieldOther\ShieldOtherLinkValidityRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityDecision.cs"><Link>ShieldOther\ShieldOtherLinkValidityDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityPolicy.cs"><Link>ShieldOther\ShieldOtherLinkValidityPolicy.cs</Link></Compile>
     <Compile Include="PaperCartridgeFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionSourceKind.cs"><Link>Ammunition\ReloadAmmunitionSourceKind.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Ammunition\ReloadAmmunitionProfile.cs"><Link>Ammunition\ReloadAmmunitionProfile.cs</Link></Compile>

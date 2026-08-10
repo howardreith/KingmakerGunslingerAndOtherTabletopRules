@@ -7,8 +7,8 @@
 | Damage seam | SOURCE-PROVEN | Exact 2.1.7b IL contract; runtime qualification pending |
 | Feature settings schema 2 | SOURCE-QUALIFIED | Migration, atomicity, eight combinations PASS |
 | Stable blueprints | NOT-STARTED | Manifest, contracts, constant count |
-| Link lifecycle | NOT-STARTED | Policy, save/load, range and area evidence |
-| Exact HP split | NOT-STARTED | Policy and native runtime evidence |
+| Link lifecycle | SOURCE-IMPLEMENTED | Pure validity/range policy PASS; runtime lifecycle pending |
+| Exact HP split | SOURCE-IMPLEMENTED | Pure conservation/guard policy PASS; native runtime evidence pending |
 | Base spell-list publication | NOT-STARTED | Five transactional level-2 publications |
 | Optional CotW publication | NOT-STARTED | Oracle, Warpriest, Psychic reconciliation |
 | Deterministic qualification | NOT-STARTED | Complete suite, build, package |

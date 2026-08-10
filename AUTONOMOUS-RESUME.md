@@ -1507,15 +1507,14 @@ and human area-transition result jointly qualify the repaired 0.0.74 candidate.
 The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order is complete on `codex/feature-modules-acadamae-graduate`. Exact release source `8fea913d7baba880496012576878ac95eaadc74d` passed 967/967 deterministic tests, clean Release/package qualification, all four standalone module settings, consecutive standalone and maximum-risk combined integration runs, and two guarded working-save smokes. Final evidence is in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`. Next retain the branch unmerged for user review.
 # Shield Other active mission (2026-08-09)
 
-- Current phase: Phase 1/2 donor inventory after schema-2 module qualification.
+- Current phase: Phase 1 donor/list final-live observer after pure-policy qualification.
 - Last completed command/check: `scripts/Build-Local.ps1` PASS, including
-  repository validation, 970/970 domain tests, clean exact-reference Release
+  repository validation, 974/974 domain tests, clean exact-reference Release
   build, package construction, and strict validation.
-- Exact current commit: `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`
-  (working documentation changes are uncommitted).
-- Exact next action: commit/publish the schema-2 checkpoint, inventory native
-  donor blueprints and exact base spell-list structures, then implement pure
-  damage/link policies with focused tests.
+- Exact current commit: `dfe0009fc37fefc0f0de911ebc88956f4d6e9e4c`
+  (pure-policy and documentation changes are uncommitted).
+- Exact next action: commit/publish the pure-policy checkpoint, then implement
+  and run a guarded native donor/spell-list/final-live duplicate observer.
 - Remaining gates: final duplicate scan; module/settings; identities;
   lifecycle; exact split; base/CotW publication; complete deterministic suite;
   Release build/package; guarded runtime profiles twice each; documentation,
