@@ -6940,6 +6940,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, physicalSubject = -1, physicalCaster = -1,
                 energySubject = -1, energyCaster = -1,
+                mitigatedPhysicalSubject = -1, mitigatedPhysicalCaster = -1,
+                mitigatedEnergySubject = -1, mitigatedEnergyCaster = -1,
+                immuneEnergySubject = -1, immuneEnergyCaster = -1,
                 acDelta = -1, fortDelta = -1,
                 reflexDelta = -1, willDelta = -1, linkCount = -1,
                 replacementSubject = -1, replacementFirstCaster = -1,
@@ -7055,6 +7058,92 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
                 energySubject = subjectBefore - subject.HPLeft;
                 energyCaster = casterBefore - caster.HPLeft;
+
+                stage = "physical-mitigation";
+                BlueprintFeature subjectDr = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_SubjectDR",
+                    ScriptableObject.CreateInstance<AddDamageResistancePhysical>());
+                var subjectDrComponent = subjectDr.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single();
+                subjectDrComponent.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 2 };
+                BlueprintFeature casterDr = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_CasterDR",
+                    ScriptableObject.CreateInstance<AddDamageResistancePhysical>());
+                var casterDrComponent = casterDr.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single();
+                casterDrComponent.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 100 };
+                subject.Descriptor.AddFact(subjectDr);
+                caster.Descriptor.AddFact(casterDr);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new PhysicalDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.PhysicalDamageForm.Piercing) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                mitigatedPhysicalSubject = subjectBefore - subject.HPLeft;
+                mitigatedPhysicalCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(subjectDr);
+                caster.Descriptor.RemoveFact(casterDr);
+                UnityEngine.Object.Destroy(subjectDr);
+                UnityEngine.Object.Destroy(casterDr);
+
+                stage = "energy-mitigation";
+                var subjectFireResistance = ScriptableObject.CreateInstance<
+                    AddDamageResistanceEnergy>();
+                subjectFireResistance.Type =
+                    Kingmaker.Enums.Damage.DamageEnergyType.Fire;
+                subjectFireResistance.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 2 };
+                BlueprintFeature subjectResistance = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_SubjectFireResistance",
+                    subjectFireResistance);
+                var casterFireImmunity = ScriptableObject.CreateInstance<
+                    AddEnergyImmunity>();
+                casterFireImmunity.Type =
+                    Kingmaker.Enums.Damage.DamageEnergyType.Fire;
+                BlueprintFeature casterImmunity = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_CasterFireImmunity",
+                    casterFireImmunity);
+                subject.Descriptor.AddFact(subjectResistance);
+                caster.Descriptor.AddFact(casterImmunity);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                mitigatedEnergySubject = subjectBefore - subject.HPLeft;
+                mitigatedEnergyCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(subjectResistance);
+
+                stage = "energy-immunity";
+                subject.Descriptor.AddFact(casterImmunity);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                immuneEnergySubject = subjectBefore - subject.HPLeft;
+                immuneEnergyCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(casterImmunity);
+                caster.Descriptor.RemoveFact(casterImmunity);
+                UnityEngine.Object.Destroy(subjectResistance);
+                UnityEngine.Object.Destroy(casterImmunity);
 
                 stage = "replace-link";
                 var replacementContext = new MechanicsContext(secondCaster,
@@ -7288,7 +7377,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";odd=" + subjectOdd + "/" + casterOdd + ";even=" +
                 subjectEven + "/" + casterEven + ";physical=" +
                 physicalSubject + "/" + physicalCaster + ";energy=" +
-                energySubject + "/" + energyCaster + ";logs=" +
+                energySubject + "/" + energyCaster + ";mitigatedPhysical=" +
+                mitigatedPhysicalSubject + "/" + mitigatedPhysicalCaster +
+                ";mitigatedEnergy=" + mitigatedEnergySubject + "/" +
+                mitigatedEnergyCaster + ";immuneEnergy=" + immuneEnergySubject +
+                "/" + immuneEnergyCaster + ";logs=" +
                 (ShieldOtherCombatLog.Published - logsBefore) +
                 ";replacement=" + replacementOwned + "/" + replacementSubject +
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
@@ -7328,6 +7421,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "finalized fire 4 becomes subject 2; caster 2",
                     observed, energySubject == 2 && energyCaster == 2,
                     "native EnergyDamage mitigation then finalized split"),
+                Assertion("shield-other-physical-mitigation-once",
+                    "piercing 6 minus target DR 2 finalizes 4, then 2/2; caster DR ignored",
+                    observed, mitigatedPhysicalSubject == 2 &&
+                    mitigatedPhysicalCaster == 2,
+                    "native target DR before split; guarded direct caster share"),
+                Assertion("shield-other-energy-mitigation-once",
+                    "fire 6 minus target resistance 2 finalizes 4, then 2/2; caster immunity ignored",
+                    observed, mitigatedEnergySubject == 2 &&
+                    mitigatedEnergyCaster == 2,
+                    "native target resistance before split; guarded direct caster share"),
+                Assertion("shield-other-target-energy-immunity",
+                    "immune target finalizes zero; subject 0 and caster 0",
+                    observed, immuneEnergySubject == 0 && immuneEnergyCaster == 0,
+                    "native target energy immunity before split"),
                 Assertion("shield-other-link-replacement",
                     "latest caster owns one link; damage 1/0/1", observed,
                     replacementOwned && replacementSubject == 1 &&
@@ -7364,8 +7471,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-caster-lethal",
                     "subject 1; caster reaches lethal threshold", observed,
                     casterLethal, "native caster HP and death-threshold application"),
-                Assertion("shield-other-transfer-log", "10 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 10,
+                Assertion("shield-other-transfer-log", "12 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 12,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
@@ -7376,6 +7483,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+        }
+
+        private static BlueprintFeature CreateDisposableDefenseFeature(
+            string name, params BlueprintComponent[] components)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = name;
+            feature.Ranks = 1;
+            feature.ComponentsArray = components;
+            return feature;
         }
 
         private static int CountExactFeatures(BlueprintFeature[] source,

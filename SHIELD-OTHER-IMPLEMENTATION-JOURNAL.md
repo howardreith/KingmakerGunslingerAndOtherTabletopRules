@@ -475,3 +475,20 @@ standalone profile.
 
 Next: add native target mitigation/immunity fixtures and prove the caster share
 is derived from the once-mitigated finalized value without a second defense pass.
+
+## 2026-08-10 - mitigation/immunity fixture source-qualified
+
+- Added request-local native `AddDamageResistancePhysical`,
+  `AddDamageResistanceEnergy`, and `AddEnergyImmunity` facts without registering
+  any blueprint identity or mutating the live library.
+- The cases assert target DR/resistance before the split, caster DR/immunity not
+  reapplying to the direct transferred share, and target immunity producing no
+  HP loss or transfer.
+- `Build-Local.ps1`: repository validation PASS, 981/981 tests PASS,
+  exact-reference Release build PASS, strict package validation PASS.
+- Local package SHA-256:
+  `4a23ba78b16d1f9755036b386ecfce62f89fd983ab5fc559b2c5c583c6a750e0`;
+  DLL SHA-256:
+  `be417b5d685381128aaa7cdd92fbbc424b1437939aca9a77e04c77572d2e7e68`.
+
+Next: commit/publish and run the guarded standalone disposable scenario.

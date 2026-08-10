@@ -237,7 +237,13 @@ namespace KingmakerGunslinger.DomainTests
                 "typed-physical-damage", "new PhysicalDamage(",
                 "typed-energy-damage", "new EnergyDamage(",
                 "shield-other-typed-physical-split",
-                "shield-other-typed-energy-split" })
+                "shield-other-typed-energy-split",
+                "shield-other-physical-mitigation-once",
+                "AddDamageResistancePhysical",
+                "shield-other-energy-mitigation-once",
+                "AddDamageResistanceEnergy",
+                "shield-other-target-energy-immunity",
+                "AddEnergyImmunity" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
         }
