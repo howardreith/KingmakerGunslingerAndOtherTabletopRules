@@ -40,6 +40,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Acadamae\AcadamaeCastingTime.cs" />
+    <Compile Include="Acadamae\AcadamaeCastRequest.cs" />
+    <Compile Include="Acadamae\AcadamaeCastDecision.cs" />
+    <Compile Include="Acadamae\AcadamaeCastingPolicy.cs" />
+    <Compile Include="Acadamae\AcadamaeInvocationTracker.cs" />
+    <Compile Include="Acadamae\AcadamaeCastingPatches.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisiteRequest.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisiteDecision.cs" />
+    <Compile Include="Acadamae\AcadamaePrerequisitePolicy.cs" />
+    <Compile Include="Acadamae\PrerequisiteAcadamaeGraduate.cs" />
+    <Compile Include="Cord\CordConditionKind.cs" />
+    <Compile Include="Cord\CordSubstitutionDecision.cs" />
+    <Compile Include="Cord\CordSubstitutionPolicy.cs" />
+    <Compile Include="Cord\CordConditionPatches.cs" />
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />
@@ -145,6 +159,10 @@
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
+    <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
+    <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
+    <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
+    <Compile Include="Blueprints\CordOfStubbornResolveBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintId.cs" />
     <Compile Include="Blueprints\BlueprintLibraryLookup.cs" />
     <Compile Include="Blueprints\BlueprintManifest.cs" />
@@ -187,6 +205,11 @@
     <Compile Include="Classes\GunTrainingProgression.cs" />
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Compatibility\ClassCatalogDiagnostics.cs" />
+    <Compile Include="FeatureModules\FeatureModuleConfiguration.cs" />
+    <Compile Include="FeatureModules\FeatureModulePublicationPlan.cs" />
+    <Compile Include="FeatureModules\FeatureModuleSettingsState.cs" />
+    <Compile Include="FeatureModules\FeatureModuleSettingsStore.cs" />
+    <Compile Include="FeatureModules\FeatureModuleUi.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />

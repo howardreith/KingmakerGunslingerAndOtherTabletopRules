@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.Blueprints
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
-                "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim" };
+                "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim",
+                "cord-of-stubborn-resolve" };
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -72,6 +73,8 @@ namespace KingmakerGunslinger.Blueprints
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet supplies,
             PaperCartridgeModeBlueprintSet paperCartridgeMode,
+            AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
+            BlueprintItem cordOfStubbornResolve,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -114,6 +117,18 @@ namespace KingmakerGunslinger.Blueprints
             items.SetIcon(ammunition.PaperCartridge, Require("paper-cartridge"));
             BlueprintUnitFactAccess.Resolve().SetIcon(
                 paperCartridgeMode.Ability, Require("paper-cartridge"));
+            if (acadamaeGraduateMode == null || acadamaeGraduateMode.Ability.Icon == null)
+                throw new InvalidOperationException("Acadamae Graduate mode icon is missing.");
+            Sprite cordDonorIcon = cordOfStubbornResolve == null ? null :
+                cordOfStubbornResolve.Icon;
+            Sprite cordIcon = Require("cord-of-stubborn-resolve");
+            items.SetIcon(cordOfStubbornResolve, cordIcon);
+            if (cordDonorIcon == null || ReferenceEquals(cordDonorIcon, cordIcon) ||
+                !ReferenceEquals(cordOfStubbornResolve.Icon, cordIcon) ||
+                !string.Equals(cordIcon.name, "KMG_Icon_cord-of-stubborn-resolve",
+                    StringComparison.Ordinal))
+                throw new InvalidOperationException(
+                    "Cord of Stubborn Resolve must use its distinct project-owned icon.");
             items.SetIcon(repairKit, Require("repair-kit"));
             items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"));
             items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"));

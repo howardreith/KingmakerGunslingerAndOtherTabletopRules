@@ -25,6 +25,22 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
+            Case("feature-settings.four-combinations", FeatureModuleSettingsTests.FourCombinationsRoundTrip),
+            Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
+            Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
+            Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
+            Case("acadamae.eligibility-matrix", AcadamaeCordPolicyTests.AcadamaeEligibilityMatrix),
+            Case("acadamae.multi-round-and-dc", AcadamaeCordPolicyTests.AcadamaeMultiRoundAndDc),
+            Case("acadamae.prerequisite-matrix", AcadamaeCordPolicyTests.AcadamaePrerequisiteMatrix),
+            Case("acadamae.native-identity-contracts", AcadamaeCordPolicyTests.AcadamaeNativeIdentityContracts),
+            Case("acadamae.invocation-correlation", AcadamaeCordPolicyTests.AcadamaeInvocationCorrelation),
+            Case("acadamae.mode-fatigue-source-contracts", AcadamaeCordPolicyTests.AcadamaeModeAndFatigueSourceContracts),
+            Case("acadamae.mode-identity-contracts", AcadamaeCordPolicyTests.AcadamaeModeIdentityContracts),
+            Case("cord.project-icon-contract", AcadamaeCordPolicyTests.CordProjectIconContract),
+            Case("cord.fatigue-and-exhaustion", AcadamaeCordPolicyTests.CordFatigueAndExhaustion),
+            Case("cord.damage-boundaries", AcadamaeCordPolicyTests.CordDamageBoundaries),
+            Case("cord.native-condition-source-contract", AcadamaeCordPolicyTests.CordNativeConditionSourceContract),
             Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),
             Case("paper-foundation.compatibility-definition-driven", PaperCartridgeFoundationTests.CompatibilityIsDefinitionDriven),
             Case("paper-foundation.unknown-fails-closed", PaperCartridgeFoundationTests.UnknownIdentityFailsClosed),

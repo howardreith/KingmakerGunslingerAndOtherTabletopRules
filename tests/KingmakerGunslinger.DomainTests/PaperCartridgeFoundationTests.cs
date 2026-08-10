@@ -169,6 +169,10 @@ namespace KingmakerGunslinger.DomainTests
                 "BeneathStolenLandsVendorBlueprints.cs"));
             Assertions.True(capital.Contains("7de959347266092448d8a72089ef9778") &&
                 capital.Contains("SmithVendorTable"), "exact capital authority");
+            Assertions.True(capital.Contains("cordOfStubbornResolve") &&
+                capital.Contains("publishGunslinger") && capital.Contains("publishCord") &&
+                capital.Contains("new[] { 1 }"),
+                "Capital publication must compose exact module gates and one Cord row.");
             Assertions.True(Count(capital, "ammunition.PaperCartridge") >= 2 &&
                 capital.Contains("AmmunitionCount = 200"),
                 "capital desired and owned Paper stock");
@@ -375,9 +379,9 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("{ 43 } else { 41 }") &&
-                packager.Contains("choices=(41, 43)"),
-                "deterministic package counts include the project-owned Paper Cartridge icon");
+            Assertions.True(localBuild.Contains("{ 44 } else { 42 }") &&
+                packager.Contains("choices=(41, 42, 43, 44)"),
+                "deterministic package counts include all project-owned runtime icons");
         }
 
         internal static void LightningReloadDynamicActions()

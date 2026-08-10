@@ -351,6 +351,18 @@ Version 0.0.29 does not:
 - add production pistols, scatter weapons, custom firearm assets, vendors, crafting, the Gunslinger class, deeds, grit, or enemy firearm AI; or
 - claim 0.0.29 runtime acceptance before the complete maintenance-loop smoke test passes in Kingmaker.
 
+## 0.0.75 feature-module architecture
+
+The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to Gunslinger ON / Acadamae Graduate ON; malformed bytes are retained for diagnosis. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
+
+Blueprint bootstrap is split conceptually into an unconditional identity layer and a settings-controlled publication layer. All 250 project-owned identities register in every configuration. `FeatureModulePublicationCoordinator` owns exact transactions for class and feat catalogs, native firearm parameter menus, capital/BTSL/fixed-loot acquisition, Acadamae's general-feat entry, and the Cord's capital row. Transactions merge against current arrays, preserve unrelated order, detect exact reference/GUID duplicates, validate, reconcile idempotently after foreign publishers, and use guarded rollback rather than restoring stale snapshots.
+
+Acadamae action presentation and execution share one command-scoped `AcadamaeInvocationTracker`. The adapter evaluates the final pre-Acadamae Full-Round state after native/foreign modifiers, alters only qualifying prepared arcane Conjuration (Summoning) invocations, and consumes the marker once on successful `RuleCastSpell`. Native Fortitude resolution applies the exact canonical Fatigued buff on failure.
+
+Cord substitution has two exact convergence points: canonical/composite buff application at `BuffCollection.TriggerRuleApplyBuff`, and direct conditions at `UnitState.AddCondition`. Exact equipped-item identity is required. Thread-scoped condition/bypass tokens and source markers prevent recursion and duplicate d6 results. The canonical Fatigued buff is rejected completely after substitution so no inert fact can block later ordinary fatigue; composite buffs retain unrelated components while only their condition is suppressed.
+
+Settings fixtures and compatibility profiles transact and restore exact settings bytes/absence, Mods manifests, and the managed SoundBank. Runtime scenarios never persist their command correlation or guarded deterministic-roll controls into saves.
+
 ## Historical subsystem notes
 
 Earlier sprint-specific architecture and persistence experiments remain in dedicated documents and ADRs. Where they conflict with this file's Sprint 29 layer, the current token-backed runtime path and exact installed method contracts above are authoritative.
@@ -448,7 +460,26 @@ The blueprint ledger contains 233 stable IDs: 232 active and one reserved. Sixth
 The Rare Firearms amendment added ten append-only identities and activated
 Seeking, Reliable, and eight magic items. Paper Cartridges Phase 1 appends three
 more identities: the stackable cartridge item and Normal/Broken paper-loaded
-state tokens, the unit-local Paper Cartridge reload-source mode, and its shared-entitlement crafting recipe. The ledger now contains 249 stable IDs: 248 active and one reserved.
+state tokens, the unit-local Paper Cartridge reload-source mode, and its shared-entitlement crafting recipe. Acadamae Graduate and the Cord of Stubborn Resolve add two independent, always-loaded identities whose publication is module-gated. The ledger now contains 251 stable IDs: 250 active and one reserved.
+
+## 0.0.76 Acadamae playtest repair
+
+The Acadamae feat now restores a native, per-unit `Use Acadamae Graduate`
+activatable ability through `AddFacts`. Its hidden no-FX marker is the exact
+runtime gate for acceleration and defaults off. Command construction snapshots
+an eligible accelerated invocation, so later toggle changes do not rewrite a
+command already in flight. The two new always-loaded identities bring the
+ledger to 253 stable IDs: 252 active and one reserved.
+
+Failed Acadamae saves add the canonical Fatigued blueprint through the native
+caster overload. That overload creates an independent `MechanicsContext`
+instead of parenting fatigue to the summoning spell context; the buff has no
+duration and native `RemoveOnRest` cleanup. It still crosses the existing Cord
+`RuleApplyBuff` interception boundary.
+
+The Cord continues to clone the native Constitution belt only for equipment
+structure and mechanics. `ProjectAssetIcons` replaces the donor sprite with
+the project-owned `cord-of-stubborn-resolve` icon after asset loading.
 The runtime completes the current two-hundred-forty-five active blueprints
 transaction without changing prior identities. The immutable
 `ReloadAmmunitionProfileCatalog` owns loose and paper loaded IDs, inventory

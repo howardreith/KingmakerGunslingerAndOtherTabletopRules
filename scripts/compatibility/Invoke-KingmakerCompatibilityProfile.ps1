@@ -33,8 +33,11 @@ param(
         'reliable-firearm-misfire-matrix',
         'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
+        'observe-feature-module-settings',
+        'disposable-acadamae-graduate',
         'disposable-gunslinger-comprehensive-acceptance')]
     [string[]]$Scenario,
+    [hashtable]$Parameters = @{},
     [ValidateRange(120, 900)]
     [int]$RuntimeTimeoutSeconds = 300,
     [string]$KingmakerInstallDir =
@@ -50,6 +53,20 @@ $entered = $false
 $primaryError = $null
 $results = [Collections.Generic.List[object]]::new()
 
+$moduleScenario = @($Scenario | Where-Object { $_ -ceq
+    'observe-feature-module-settings' }).Count -gt 0
+if ($moduleScenario) {
+    $keys = @($Parameters.Keys | Sort-Object)
+    if ($keys.Count -ne 2 -or $keys[0] -cne 'acadamaeGraduate' -or
+        $keys[1] -cne 'gunslinger' -or
+        $Parameters.gunslinger -isnot [bool] -or
+        $Parameters.acadamaeGraduate -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly two Boolean parameters: gunslinger and acadamaeGraduate.'
+    }
+} elseif ($Parameters.Count -ne 0) {
+    throw 'Compatibility profile parameters are supported only for observe-feature-module-settings.'
+}
+
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 try {
@@ -57,11 +74,23 @@ try {
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -Confirm:$false | Out-Host
     $entered = $true
+    if ($moduleScenario) {
+        $settingsPath = Join-Path $KingmakerInstallDir `
+            'Mods\KingmakerGunslinger\FeatureModules.json'
+        $settings = [ordered]@{ schemaVersion = 1
+            gunslinger = [bool]$Parameters.gunslinger
+            'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate }
+        $temporary = $settingsPath + '.kmg-profile.tmp'
+        [IO.File]::WriteAllText($temporary,
+            ($settings | ConvertTo-Json -Depth 4),
+            (New-Object Text.UTF8Encoding($false)))
+        Move-Item -LiteralPath $temporary -Destination $settingsPath -Force
+    }
     foreach ($name in $Scenario) {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.74'
+            ExpectedVersion = '0.0.76'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
@@ -69,6 +98,9 @@ try {
         }
         if ($name -ceq 'observe-optional-mod-compatibility') {
             $arguments.CompatibilityProfileId = $ProfileId
+        }
+        if ($name -ceq 'observe-feature-module-settings') {
+            $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'musket-master-mechanics-and-starter') {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'

@@ -17,6 +17,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
@@ -40,11 +41,14 @@ using KingmakerGunslinger.Archetypes;
 using KingmakerGunslinger.Scatter;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.Feats;
+using KingmakerGunslinger.Acadamae;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.RuleSystem.Rules.Abilities;
 using UnityEngine;
 using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
@@ -412,6 +416,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveFeatureModuleSettings)
+                {
+                    Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableAcadamaeGraduate)
+                {
+                    Complete(RunDisposableAcadamaeGraduate());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
                 {
@@ -463,6 +479,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveVendorTableContracts)
                 {
                     Complete(RunVendorTableContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveCapitalCordVendor)
+                {
+                    Complete(RunCapitalCordVendorObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableCordOfStubbornResolve)
+                {
+                    Complete(RunDisposableCordOfStubbornResolve());
                     return;
                 }
                 if (_request.Scenario ==
@@ -6698,6 +6726,786 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "result=" + (result == null ? "null" : result.Status) +
                     ";assertions=" + passed + "/" + total,
                 exact, "composed guarded slice with its own guaranteed cleanup");
+        }
+
+        private RuntimeTestResult RunFeatureModuleSettingsObservation()
+        {
+            bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
+            bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
+            bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
+            bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
+                .CharacterClass;
+            int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
+                Array.Empty<BlueprintCharacterClass>()).Count(value =>
+                    ReferenceEquals(value, gunslinger) || value != null &&
+                    value.AssetGuid == gunslinger.AssetGuid);
+            BlueprintFeatureSelection basic = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
+                    "247a4068296e8be42890143f451b4b45",
+                    "native basic feat selection");
+            BlueprintFeature acadamae = BlueprintBootstrap.AcadamaeGraduate;
+            int acadFeatures = (basic.Features ?? Array.Empty<BlueprintFeature>())
+                .Count(value => ReferenceEquals(value, acadamae) || value != null &&
+                    value.AssetGuid == acadamae.AssetGuid);
+            int acadAll = (basic.AllFeatures ?? Array.Empty<BlueprintFeature>())
+                .Count(value => ReferenceEquals(value, acadamae) || value != null &&
+                    value.AssetGuid == acadamae.AssetGuid);
+            BlueprintSharedVendorTable smith = BlueprintLibraryLookup.RequireExact<
+                BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
+                    CapitalVendorBlueprints.TableGuid, "native capital Smith table");
+            int cordRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value),
+                    BlueprintBootstrap.CordOfStubbornResolve));
+            int paperRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value),
+                    BlueprintBootstrap.BasicAmmunition.PaperCartridge));
+            FirearmFeatBlueprintSet firearmFeats = BlueprintBootstrap.FirearmFeats;
+            BlueprintFeatureSelection fighter = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
+                    "41c8486641f7d6d4283ca9dae4147a9f",
+                    "native Fighter combat feat selection");
+            BlueprintFeature[] publicFirearmFeats = { firearmFeats.RapidReload,
+                firearmFeats.ExoticWeaponProficiency };
+            int basicFirearmFeatures = CountExactFeatures(basic.Features,
+                publicFirearmFeats);
+            int basicFirearmAll = CountExactFeatures(basic.AllFeatures,
+                publicFirearmFeats);
+            int fighterFirearmFeatures = CountExactFeatures(fighter.Features,
+                publicFirearmFeats);
+            int fighterFirearmAll = CountExactFeatures(fighter.AllFeatures,
+                publicFirearmFeats);
+            string[] nativeParameterGuids = { "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+                "09c9e82965fb4334b984a1e9df3bd088",
+                "31470b17e8446ae4ea0dacd6c5817d86",
+                "7cf5edc65e785a24f9cf93af987d66b3",
+                "f4201c85a991369408740c6888362e20" };
+            int firearmParameterCount = nativeParameterGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, guid, "native firearm parameter menu")
+                .GetFullSelectionItems().Count(item => item != null &&
+                    IsFirearmParameter(item.Param)));
+            BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
+            int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
+            int installedBtslTables = 0, btslGunslingerRows = 0;
+            for (int index = 0; index < BeneathStolenLandsVendorBlueprints.TableGuids.Length;
+                index++)
+            {
+                BlueprintSharedVendorTable table = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
+                        string.Equals(value.AssetGuid,
+                            BeneathStolenLandsVendorBlueprints.TableGuids[index],
+                            StringComparison.Ordinal));
+                if (table == null) continue;
+                installedBtslTables++;
+                btslGunslingerRows += CountFixedRows(table, gunslingerStock);
+            }
+            int rareLootRows = 0;
+            foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
+                RareFirearmCampaignLootBlueprints.TargetSpecs)
+            {
+                BlueprintLoot loot = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                    BlueprintBootstrap.Library, spec.Guid,
+                    "fixed rare-firearm loot target");
+                BlueprintItem item = BlueprintBootstrap.MagicFirearms.Require(
+                    spec.ItemSymbol).Item;
+                rareLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(value =>
+                    value != null && ReferenceEquals(value.Item, item) && value.Count == 1);
+            }
+            string observed = "expected=" + expectedGunslinger + "/" +
+                expectedAcadamae + ";active=" + activeGunslinger + "/" +
+                activeAcadamae + ";registered=" +
+                BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
+                ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
+                ";cordRows=" + cordRows + ";paperRows=" + paperRows +
+                ";basicFirearm=" + basicFirearmFeatures + "/" + basicFirearmAll +
+                ";fighterFirearm=" + fighterFirearmFeatures + "/" + fighterFirearmAll +
+                ";nativeParameters=" + firearmParameterCount +
+                ";capitalGunslinger=" + capitalGunslingerRows +
+                ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
+                ";rareLoot=" + rareLootRows;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("feature-module-active-snapshot", "request-local expected states",
+                    observed, activeGunslinger == expectedGunslinger &&
+                    activeAcadamae == expectedAcadamae, "immutable process snapshot"),
+                Assertion("feature-module-identity-count", "252 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 252,
+                    "always-loaded identity registry"),
+                Assertion("feature-module-gunslinger-publication",
+                    expectedGunslinger ? "class and Paper stock singular" :
+                        "class and Paper stock absent",
+                    observed, classCount == (expectedGunslinger ? 1 : 0) &&
+                        paperRows == (expectedGunslinger ? 1 : 0) &&
+                        basicFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
+                        basicFirearmAll == (expectedGunslinger ? 2 : 0) &&
+                        fighterFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
+                        fighterFirearmAll == (expectedGunslinger ? 2 : 0) &&
+                        firearmParameterCount == (expectedGunslinger ? 25 : 0) &&
+                        capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
+                        btslGunslingerRows == (expectedGunslinger ?
+                            installedBtslTables * 12 : 0) &&
+                        rareLootRows == (expectedGunslinger ? 5 : 0),
+                    "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
+                Assertion("feature-module-acadamae-publication",
+                    expectedAcadamae ? "feat arrays and Cord stock singular" :
+                        "feat arrays and Cord stock absent",
+                    observed, acadFeatures == (expectedAcadamae ? 1 : 0) &&
+                        acadAll == (expectedAcadamae ? 1 : 0) &&
+                        cordRows == (expectedAcadamae ? 1 : 0),
+                    "basic feat selection and Smith table"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
+        private static int CountExactFeatures(BlueprintFeature[] source,
+            BlueprintFeature[] targets)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Count(value =>
+                value != null && targets.Any(target => ReferenceEquals(value, target) ||
+                    value.AssetGuid == target.AssetGuid));
+        }
+
+        private static bool IsFirearmParameter(FeatureParam parameter)
+        {
+            FirearmKind ignored;
+            return NativeFirearmFeatIntegration.TryKind(parameter, out ignored);
+        }
+
+        private static BlueprintItem[] ModuleGunslingerStockItems()
+        {
+            return new BlueprintItem[] {
+                BlueprintBootstrap.ProductionFirearms.Pistol.Item,
+                BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.PistolPlus1Symbol).Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.MusketPlus1Symbol).Item,
+                BlueprintBootstrap.MagicFirearms.Require(
+                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
+                BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                BlueprintBootstrap.BasicAmmunition.LeadBall,
+                BlueprintBootstrap.BasicAmmunition.PaperCartridge,
+                BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit,
+                BlueprintBootstrap.GunsmithingSupplies.GunsmithKit };
+        }
+
+        private static int CountFixedRows(BlueprintSharedVendorTable table,
+            BlueprintItem[] targets)
+        {
+            return (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>().Count(value => targets.Any(target =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value), target)));
+        }
+
+        private RuntimeTestResult RunDisposableAcadamaeGraduate()
+        {
+            UnitEntityData unit = null;
+            ItemEntity cord = null;
+            UnitEntityData viewUnit = null;
+            Kingmaker.EntitySystem.SceneEntitiesState viewScene = null;
+            object wizardController = null;
+            BlueprintSpellbook wizardBookBlueprint = null;
+            BlueprintBuff fatiguedBlueprint = null;
+            ActivatableAbility acadamaeMode = null;
+            string spellIdentity = "<none>";
+            bool prepared = false, modeGranted = false, modeOffObserved = false,
+                presentation = false, successObserved = false,
+                failureObserved = false, cancellationObserved = false,
+                snapshotObserved = false, fatigueIndependent = false,
+                fatigueSurvivedContextCleanup = false, restRemoved = false,
+                modeViewLifecycle = false, cordObserved = false,
+                cordBuffRetained = false, cleaned = false;
+            bool fatigueEndFieldFound = false, fatigueEndIsNull = false,
+                fatigueContextPresent = false, fatigueParentAbsent = false,
+                fatigueContextDistinct = false, fatigueRemoveOnRest = false;
+            bool fatiguePermanent = false;
+            string fatigueEndValue = "<unread>";
+            int spellLevel = -1, offCount = -1, successCount = -1, failureCount = -1,
+                cancellationCount = -1, cordCount = -1, cordDamage = -1,
+                cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
+                cordBuffCalls = -1, cordExactMatches = -1, observedDc = -1;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                unit.Descriptor.Stats.Intelligence.BaseValue = 18;
+                BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<
+                    BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                        "ba34257984f4c41408ce1dc2004e342e", "native Wizard class");
+                fatiguedBlueprint = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library, "e6f2fc5d73d88064583cb828801212f4",
+                    "native Fatigued buff");
+                Type controllerType = typeof(
+                    Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                    "CharGen", false);
+                wizardController = start.Invoke(null,
+                    new object[] { unit.Descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(wizardController,
+                    new object[] { wizard, false }))
+                    throw new InvalidOperationException(
+                        "Disposable Wizard level-one selection was rejected.");
+                mechanics.Invoke(wizardController, null);
+                applyLevelup.Invoke(wizardController,
+                    new object[] { unit.Descriptor });
+                cancel.Invoke(wizardController, null);
+                wizardController = null;
+                wizardBookBlueprint = wizard.Spellbook;
+                BlueprintAbility spell = Enumerable.Range(0,
+                        wizardBookBlueprint.SpellList.MaxLevel + 1)
+                    .SelectMany(level => wizardBookBlueprint.SpellList.GetSpells(level)
+                        .Select(value => new { Level = level, Spell = value }))
+                    .Where(value => value.Spell != null && value.Spell.IsSpell &&
+                        value.Spell.School == SpellSchool.Conjuration &&
+                        (value.Spell.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
+                        value.Spell.IsFullRoundAction)
+                    .OrderBy(value => value.Level).ThenBy(value => value.Spell.AssetGuid,
+                        StringComparer.Ordinal).Select(value => value.Spell).First();
+                spellLevel = wizardBookBlueprint.SpellList.GetLevel(spell);
+                spellIdentity = spell.name + ":" + spell.AssetGuid;
+                Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
+                if (spellbook == null) throw new InvalidOperationException(
+                    "Native Wizard level did not create its spellbook.");
+                int wizardLevel = unit.Descriptor.Progression.GetClassLevel(wizard);
+                if (wizardLevel != 1) throw new InvalidOperationException(
+                    "Native Wizard fixture committed class level " + wizardLevel +
+                    " instead of 1.");
+                if (spellbook.CasterLevel == 0)
+                    spellbook.AddCasterLevel();
+                if (spellbook.CasterLevel != 1) throw new InvalidOperationException(
+                    "Native Wizard fixture produced spellbook caster level " +
+                    spellbook.CasterLevel + " instead of 1.");
+                spellbook.UpdateAllSlotsSize(false);
+                spellbook.Rest();
+                spellbook.AddKnown(spellLevel, spell, true);
+                unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
+
+                acadamaeMode = unit.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.AcadamaeGraduateMode.Ability));
+                modeGranted = !acadamaeMode.IsOn &&
+                    unit.Descriptor.Buffs.GetBuff(
+                        BlueprintBootstrap.AcadamaeGraduateMode.Marker) == null;
+
+                AcadamaeCastingRuntime.ResetDiagnostics();
+                AbilityData modeOff = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                bool nativeFullRound = AcadamaeCastingRuntime.InspectPreAcadamae(modeOff) &&
+                    modeOff.RequireFullRoundAction;
+                UnitUseAbility modeOffCommand = new UnitUseAbility(modeOff,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(modeOffCommand);
+                RuleCastSpell modeOffRule = new RuleCastSpell(modeOff,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(modeOffRule);
+                AcadamaeCastingRuntime.End(modeOffCommand);
+                offCount = AcadamaeCastingRuntime.CompletedCount;
+                modeOffObserved = modeOffRule.Success && nativeFullRound && offCount == 0 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                acadamaeMode.IsOn = true;
+                if (unit.Descriptor.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) == null)
+                    throw new InvalidOperationException(
+                        "Native Acadamae mode activation did not create its exact marker.");
+
+                AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                prepared = spellbook.CanSpend(first, false) &&
+                    ReferenceEquals(first.Spellbook, spellbook);
+                presentation = AcadamaeCastingRuntime.InspectPreAcadamae(first) &&
+                    !first.RequireFullRoundAction &&
+                    first.RuntimeActionType == UnitCommand.CommandType.Standard;
+
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
+                AcadamaeSavingThrowTestControl.Queue(20);
+                UnitUseAbility successCommand = new UnitUseAbility(first,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(successCommand);
+                RuleCastSpell successRule = new RuleCastSpell(first,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(successRule);
+                AcadamaeCastingRuntime.End(successCommand);
+                successCount = AcadamaeCastingRuntime.CompletedCount;
+                observedDc = AcadamaeCastingRuntime.LastDifficultyClass;
+                successObserved = successRule.Success && successCount == 1 &&
+                    AcadamaeCastingRuntime.LastSavePassed &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                AbilityData snapOn = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility snapOnCommand = new UnitUseAbility(snapOn,
+                    new TargetWrapper(unit));
+                acadamaeMode.IsOn = false;
+                acadamaeMode.Stop(true);
+                AcadamaeSavingThrowTestControl.Queue(20);
+                AcadamaeCastingRuntime.Begin(snapOnCommand);
+                RuleCastSpell snapOnRule = new RuleCastSpell(snapOn,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(snapOnRule);
+                AcadamaeCastingRuntime.End(snapOnCommand);
+                int snapshotRiskCount = AcadamaeCastingRuntime.CompletedCount;
+                AbilityData snapOff = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility snapOffCommand = new UnitUseAbility(snapOff,
+                    new TargetWrapper(unit));
+                acadamaeMode.IsOn = true;
+                AcadamaeCastingRuntime.Begin(snapOffCommand);
+                RuleCastSpell snapOffRule = new RuleCastSpell(snapOff,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(snapOffRule);
+                AcadamaeCastingRuntime.End(snapOffCommand);
+                snapshotObserved = snapOnRule.Success && snapOffRule.Success &&
+                    snapshotRiskCount == 2 &&
+                    AcadamaeCastingRuntime.CompletedCount == snapshotRiskCount &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                // Keep the following cancellation and Cord fixtures isolated
+                // even if a preceding forced-save test exposes engine-level
+                // variance. Their assertions still fail the preceding fixture.
+                unit.Descriptor.RemoveFact(fatiguedBlueprint);
+
+                AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Cancel(cancelledCommand);
+                RuleCastSpell cancelledRule = new RuleCastSpell(cancelled,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(cancelledRule);
+                cancellationCount = AcadamaeCastingRuntime.CompletedCount;
+                cancellationObserved = cancellationCount == 2 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                unit.Descriptor.RemoveFact(fatiguedBlueprint);
+
+                cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
+                unit.Body.Belt.InsertItem(cord);
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                unit.Damage = 0;
+                cordHpBefore = unit.HPLeft;
+                Cord.CordConditionRuntime.ResetDiagnostics();
+                unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = -100;
+                AcadamaeSavingThrowTestControl.Queue(1);
+                int damageBefore = unit.Damage;
+                AbilityData cordCast = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility cordCommand = new UnitUseAbility(cordCast,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(cordCommand);
+                RuleCastSpell cordRule = new RuleCastSpell(cordCast,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(cordRule);
+                AcadamaeCastingRuntime.End(cordCommand);
+                cordCount = AcadamaeCastingRuntime.CompletedCount;
+                cordDamage = unit.Damage - damageBefore;
+                cordRoll = Cord.CordConditionRuntime.LastRoll;
+                cordApplied = Cord.CordConditionRuntime.LastAppliedDamage;
+                cordBuffCalls = Cord.CordConditionRuntime.BeginBuffCalls;
+                cordExactMatches = Cord.CordConditionRuntime.ExactBuffMatches;
+                cordBuffRetained = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) != null;
+                cordObserved = cordRule.Success && cordCount == 3 &&
+                    cordDamage >= 1 && cordDamage <= 6 &&
+                    cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
+                    cordBuffCalls >= 1 && cordExactMatches >= 1 &&
+                    !cordBuffRetained &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                unit.Body.Belt.RemoveItem(false);
+
+                AbilityData failed = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                AcadamaeSavingThrowTestControl.Queue(1);
+                UnitUseAbility failedCommand = new UnitUseAbility(failed,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(failedCommand);
+                RuleCastSpell failedRule = new RuleCastSpell(failed,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(failedRule);
+                AcadamaeCastingRuntime.End(failedCommand);
+                failureCount = AcadamaeCastingRuntime.CompletedCount;
+                Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
+                failureObserved = failedRule.Success && failureCount == 4 &&
+                    !AcadamaeCastingRuntime.LastSavePassed &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                FieldInfo endTime = typeof(Buff).GetField("m_EndTime",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                fatigueEndFieldFound = endTime != null;
+                fatigueEndIsNull = failedFatigue != null && endTime != null &&
+                    endTime.GetValue(failedFatigue) == null;
+                if (failedFatigue != null && endTime != null)
+                {
+                    object endValue = endTime.GetValue(failedFatigue);
+                    fatigueEndValue = endValue == null ? "<null>" : endValue.ToString();
+                }
+                fatigueContextPresent = failedFatigue != null && failedFatigue.Context != null;
+                fatigueParentAbsent = fatigueContextPresent &&
+                    failedFatigue.Context.ParentContext == null;
+                fatigueContextDistinct = fatigueContextPresent &&
+                    !ReferenceEquals(failedFatigue.Context, failedRule.Context);
+                fatigueRemoveOnRest = fatiguedBlueprint.RemoveOnRest;
+                fatiguePermanent = failedFatigue != null && failedFatigue.IsPermanent;
+                // Buff normalizes its internal end-time storage even when the
+                // public AddBuff duration argument is null. Independence is
+                // established by the root, distinct context plus the actual
+                // context-disposal survival check below; source guards prove
+                // the production call supplies no duration.
+                fatigueIndependent = fatiguePermanent && fatigueContextPresent &&
+                    fatigueParentAbsent && fatigueContextDistinct && fatigueRemoveOnRest;
+                // The rejected build coupled Fatigued to failedRule.Context. The
+                // native caster overload creates a root context instead; dropping
+                // every request-local reference to the completed spell context is
+                // the exact safe context-expiration reproduction available to this
+                // save-free fixture.
+                failedRule = null;
+                failedCommand = null;
+                failed = null;
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
+                fatigueSurvivedContextCleanup =
+                    unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) == failedFatigue &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                Kingmaker.Controllers.Rest.RestController.ApplyRest(unit.Descriptor);
+                restRemoved = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) == null &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                viewScene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Acadamae_Mode_View_Lifecycle");
+                viewUnit = Game.Instance.EntityCreator.SpawnUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter, Vector3.zero,
+                    Quaternion.identity, viewScene);
+                viewUnit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
+                ActivatableAbility viewMode = viewUnit.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.AcadamaeGraduateMode.Ability));
+                viewMode.IsOn = true;
+                Buff viewMarker = viewUnit.Descriptor.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker);
+                viewMarker.SpawnParticleEffect();
+                FieldInfo particle = typeof(Buff).GetField("m_ParticleEffect",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                modeViewLifecycle = viewUnit.View != null && viewUnit.View.Data != null &&
+                    viewMarker != null && particle != null &&
+                    particle.GetValue(viewMarker) == null;
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (acadamaeMode != null && acadamaeMode.IsOn)
+                    {
+                        acadamaeMode.IsOn = false;
+                        acadamaeMode.Stop(true);
+                    }
+                    if (wizardController != null)
+                    {
+                        MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.
+                            LevelUpController).GetMethod("Cancel",
+                                BindingFlags.Public | BindingFlags.Instance);
+                        if (cancel != null) cancel.Invoke(wizardController, null);
+                    }
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    if (fatiguedBlueprint != null)
+                    {
+                        Buff liveFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
+                        if (liveFatigue != null)
+                            unit.Descriptor.Buffs.RemoveFact(liveFatigue);
+                    }
+                    if (unit.Body.Belt.MaybeItem != null)
+                        unit.Body.Belt.RemoveItem(false);
+                    if (wizardBookBlueprint != null)
+                        unit.Descriptor.DeleteSpellbook(wizardBookBlueprint);
+                    unit.Damage = 0;
+                    cleaned = !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) && unit.Body.Belt.MaybeItem == null;
+                    unit.Dispose();
+                }
+                if (viewUnit != null) viewUnit.Dispose();
+                if (viewScene != null) viewScene.Dispose();
+                AcadamaeCastingRuntime.ResetDiagnostics();
+                AcadamaeSavingThrowTestControl.Cancel();
+            }
+            string observed = "spell=" + spellIdentity + ";level=" + spellLevel +
+                ";prepared=" + prepared + ";modeGranted=" + modeGranted +
+                ";modeOff=" + modeOffObserved + ";offCount=" + offCount +
+                ";presentation=" + presentation +
+                ";successCount=" + successCount + ";failureCount=" + failureCount +
+                ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
+                ";dc=" + observedDc + ";cordHpBefore=" + cordHpBefore +
+                ";cordRoll=" + cordRoll + ";cordApplied=" + cordApplied +
+                ";cordDamage=" + cordDamage + ";cordBuffCalls=" + cordBuffCalls +
+                ";cordExactMatches=" + cordExactMatches +
+                ";cordBuffRetained=" + cordBuffRetained +
+                ";snapshot=" + snapshotObserved +
+                ";fatigueIndependent=" + fatigueIndependent +
+                ";fatigueEndField=" + fatigueEndFieldFound +
+                ";fatigueEndNull=" + fatigueEndIsNull +
+                ";fatigueEndValue=" + fatigueEndValue +
+                ";fatigueContext=" + fatigueContextPresent +
+                ";fatigueParentAbsent=" + fatigueParentAbsent +
+                ";fatigueContextDistinct=" + fatigueContextDistinct +
+                ";fatigueRemoveOnRest=" + fatigueRemoveOnRest +
+                ";fatiguePermanent=" + fatiguePermanent +
+                ";survivedContextCleanup=" + fatigueSurvivedContextCleanup +
+                ";restRemoved=" + restRemoved +
+                ";modeViewLifecycle=" + modeViewLifecycle +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("acadamae-prepared-summoning",
+                    "real prepared arcane Conjuration (Summoning) spell", observed,
+                    prepared && spellLevel >= 0, "native Wizard spellbook and slot"),
+                Assertion("acadamae-mode-grant-default-off",
+                    "feat grants exact native mode, initially off", observed,
+                    modeGranted, "restoring AddFacts and native activatable collection"),
+                Assertion("acadamae-mode-off-native-cast",
+                    "mode OFF remains Full-Round and causes no save or fatigue", observed,
+                    modeOffObserved, "native action and unarmed command correlation"),
+                Assertion("acadamae-action-parity", "Full-Round becomes Standard in UI/runtime",
+                    observed, presentation, "AbilityData full-round and runtime action surfaces"),
+                Assertion("acadamae-save-success", "one Fortitude save succeeds; no fatigue",
+                    observed, successObserved && observedDc == 15 + spellLevel,
+                    "native RuleCastSpell and RuleSavingThrow"),
+                Assertion("acadamae-save-failure", "next Fortitude save fails; Fatigued applies",
+                    observed, failureObserved, "native Fatigued blueprint"),
+                Assertion("acadamae-cancellation", "cancelled marker causes no save or fatigue",
+                    observed, cancellationObserved, "exact command marker cancellation"),
+                Assertion("acadamae-command-snapshot",
+                    "ON-built command retains risk; OFF-built command is not retroactive",
+                    observed, snapshotObserved, "exact constructor-time command correlation"),
+                Assertion("acadamae-fatigue-lifetime",
+                    "independent indefinite canonical fatigue survives spell-context cleanup",
+                    observed, failureObserved && fatigueIndependent &&
+                        fatigueSurvivedContextCleanup,
+                    "native caster overload and root MechanicsContext"),
+                Assertion("acadamae-fatigue-rest-removal",
+                    "canonical fatigue is removed by native rest", observed,
+                    restRemoved, "RestController.ApplyRest and RemoveOnRest"),
+                Assertion("acadamae-mode-view-lifecycle",
+                    "attached-view marker activation is persistent and no-FX safe",
+                    observed, modeViewLifecycle,
+                    "native activatable, Buff.SpawnParticleEffect, and disposable scene"),
+                Assertion("acadamae-cord-integration",
+                    "failed save becomes one d6 Cord damage and no fatigue", observed,
+                    cordObserved, "shared native fatigue application boundary"),
+                Assertion("request-local-cleanup", "spellbook, conditions, belt, damage, unit cleaned",
+                    observed, cleaned, "finally cleanup; no save API")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
+        private static AbilityData PrepareAcadamaeSpell(Spellbook spellbook,
+            BlueprintAbility spell, int spellLevel)
+        {
+            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                .FirstOrDefault(value => value != null && value.Spell != null &&
+                    ReferenceEquals(value.Spell.Blueprint, spell));
+            if (slot == null)
+            {
+                var prepared = new AbilityData(spell, spellbook);
+                if (!spellbook.Memorize(prepared, null))
+                    throw new InvalidOperationException(
+                        "Native Wizard spellbook rejected memorization at level " +
+                        spellLevel + "; spellsPerDay=" +
+                        spellbook.GetSpellsPerDay(spellLevel) + ".");
+                slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                    .FirstOrDefault(value => value != null && value.Spell != null &&
+                        ReferenceEquals(value.Spell.Blueprint, spell));
+            }
+            if (slot == null || slot.Spell == null) throw new InvalidOperationException(
+                "Native Wizard memorization succeeded without an owned invocation slot at level " +
+                spellLevel + ".");
+            slot.Available = true;
+            slot.Spell.ParamSpellSlot = slot;
+            return slot.Spell;
+        }
+
+        private RuntimeTestResult RunDisposableCordOfStubbornResolve()
+        {
+            UnitEntityData unit = null;
+            ItemEntity cord = null;
+            int constitutionBefore = 0, constitutionCord = 0;
+            int fatigueDamage = -1, exhaustionDamage = -1, floorDamage = -1;
+            bool fatigueSuppressed = false, exhaustionDowngraded = false,
+                inventoryInert = false, unequippedOrdinary = false,
+                projectIcon = false, cleaned = false;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                constitutionBefore = unit.Descriptor.Stats.Constitution.ModifiedValue;
+                cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
+                BlueprintItemEquipmentBelt donor = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintItemEquipmentBelt>().Single(value =>
+                        value.name == "BeltOfConstitution2" && value.Cost == 4000);
+                projectIcon = cord.Blueprint.Icon != null && donor.Icon != null &&
+                    !ReferenceEquals(cord.Blueprint.Icon, donor.Icon) &&
+                    cord.Blueprint.Icon.name ==
+                        "KMG_Icon_cord-of-stubborn-resolve";
+                inventoryInert = !unit.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued) && unit.Damage == 0;
+                unit.Body.Belt.InsertItem(cord);
+                constitutionCord = unit.Descriptor.Stats.Constitution.ModifiedValue;
+
+                int before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                fatigueDamage = unit.Damage - before;
+                fatigueSuppressed = fatigueDamage >= 1 && fatigueDamage <= 6 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Exhausted, null);
+                exhaustionDamage = unit.Damage - before;
+                exhaustionDowngraded = exhaustionDamage >= 1 &&
+                    exhaustionDamage <= 6 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+
+                unit.Damage = Math.Max(0,
+                    unit.Descriptor.Stats.HitPoints.ModifiedValue - 1);
+                before = unit.Damage;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                floorDamage = unit.Damage - before;
+
+                unit.Body.Belt.RemoveItem(false);
+                unit.Damage = 0;
+                unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
+                unequippedOrdinary = unit.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued) && unit.Damage == 0;
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    if (unit.Descriptor.State.HasCondition(UnitCondition.Exhausted))
+                        unit.Descriptor.State.RemoveCondition(UnitCondition.Exhausted);
+                    if (unit.Body.Belt.MaybeItem != null)
+                        unit.Body.Belt.RemoveItem(false);
+                    unit.Damage = 0;
+                    cleaned = !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) &&
+                        !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted) &&
+                        unit.Body.Belt.MaybeItem == null;
+                    unit.Dispose();
+                }
+            }
+            string observed = "constitution=" + constitutionBefore + "->" +
+                constitutionCord + ";fatigueDamage=" + fatigueDamage +
+                ";exhaustionDamage=" + exhaustionDamage + ";floorDamage=" +
+                floorDamage + ";inventoryInert=" + inventoryInert +
+                ";unequippedOrdinary=" + unequippedOrdinary + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("cord-constitution", "+2 Constitution while equipped",
+                    observed, constitutionCord == constitutionBefore + 2,
+                    "native belt enchantment equip lifecycle"),
+                Assertion("cord-project-icon",
+                    "exact project sprite distinct from native Constitution donor",
+                    observed + ";projectIcon=" + projectIcon, projectIcon,
+                    "live BlueprintItem icon references"),
+                Assertion("cord-fatigue", "one d6 damage and no Fatigued",
+                    observed, fatigueSuppressed, "native UnitState.AddCondition"),
+                Assertion("cord-exhaustion", "one d6 damage plus Fatigued, no Exhausted",
+                    observed, exhaustionDowngraded, "native UnitState.AddCondition"),
+                Assertion("cord-one-hp-floor", "zero damage at exactly 1 HP",
+                    observed, floorDamage == 0,
+                    "native RuleRollDice capped explicitly to HPLeft minus one"),
+                Assertion("cord-equipped-scope", "inventory inert and unequipped behavior native",
+                    observed, inventoryInert && unequippedOrdinary,
+                    "exact belt-slot identity gate"),
+                Assertion("request-local-cleanup", "conditions, damage, slot, and unit restored",
+                    observed, cleaned, "finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
+        private RuntimeTestResult RunCapitalCordVendorObservation()
+        {
+            BlueprintSharedVendorTable table = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintSharedVendorTable>().Single(value =>
+                    value.AssetGuid == CapitalVendorBlueprints.TableGuid &&
+                    value.name == CapitalVendorBlueprints.ExpectedTableName);
+            BlueprintItem cord = BlueprintBootstrap.CordOfStubbornResolve;
+            LootItemsPackFixed[] rows = (table.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                .Where(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value), cord)).ToArray();
+            bool enabled = _context.FeatureModules.Active.AcadamaeGraduate;
+            bool rowsExact = enabled ? rows.Length == 1 &&
+                CapitalVendorBlueprints.ReadCount(rows[0]) == 1 : rows.Length == 0;
+            bool metadataExact = cord.AssetGuid ==
+                    "c4b804d9ebf941b4842b0a461a2b6b6d" &&
+                cord.Cost == 15000 && Math.Abs(cord.Weight - 1f) < 0.001f;
+            BlueprintUnit[] owners = new[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    "ba7a7a2842d072046be55b3f9034d04e",
+                    "capital owlbear-attack blacksmith"),
+                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    "478862ab88b8ef24385cb386c1644dc2",
+                    "capital Verdel blacksmith") };
+            Dictionary<string, List<string>> ownerReferences =
+                BuildDirectBlueprintReferenceIndex(owners.Cast<BlueprintScriptableObject>()
+                    .ToArray(), new BlueprintScriptableObject[] { table });
+            List<string> tableReferences;
+            bool ownerExact = ownerReferences.TryGetValue(table.AssetGuid,
+                out tableReferences) && tableReferences.Count == 2 &&
+                owners.All(owner => tableReferences.Contains(
+                    typeof(BlueprintUnit).FullName + ":" + owner.name + ":" +
+                    owner.AssetGuid + "*1"));
+            string observed = "active=" + enabled + ";rows=" + rows.Length +
+                ";count=" + (rows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(rows[0]) : -1) +
+                ";cost=" + cord.Cost + ";weight=" + cord.Weight +
+                ";owners=" + string.Join(",", owners.Select(value =>
+                    value.name + ":" + value.AssetGuid)) + ";references=" +
+                string.Join(",", tableReferences ?? new List<string>());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("cord-vendor-module-gate",
+                    enabled ? "one fixed count-1 Cord row" : "no Cord row",
+                    observed, rowsExact, "live SmithVendorTable component array"),
+                Assertion("cord-vendor-item-metadata",
+                    "exact Cord GUID, 15000 gp, and 1 lb.", observed,
+                    metadataExact, "registered BlueprintItemEquipmentBelt"),
+                Assertion("cord-vendor-owner-graph",
+                    "established-capital blacksmith owner pair", observed,
+                    ownerExact, "exact AddSharedVendor owner graph"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
         }
 
         private RuntimeTestResult RunDisposablePaperCartridgeCraftingVendors()

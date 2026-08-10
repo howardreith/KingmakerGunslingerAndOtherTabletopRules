@@ -6,6 +6,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveFeatureModuleSettings =
+            "observe-feature-module-settings";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
         internal const string DisposableFirearmWwiseAudio = "disposable-firearm-wwise-audio";
@@ -21,6 +23,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-empty-firearm-command";
         internal const string ObserveVendorTableContracts =
             "observe-vendor-table-contracts";
+        internal const string ObserveCapitalCordVendor =
+            "observe-capital-cord-vendor";
+        internal const string DisposableCordOfStubbornResolve =
+            "disposable-cord-of-stubborn-resolve";
+        internal const string DisposableAcadamaeGraduate =
+            "disposable-acadamae-graduate";
         internal const string ObserveRareFirearmAcquisition =
             "observe-rare-firearm-acquisition";
         internal const string ObserveRareFirearmBlueprintContracts =
@@ -193,6 +201,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
+                ObserveFeatureModuleSettings,
                 ObserveOptionalModCompatibility,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
@@ -200,6 +209,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableEmptyFirearmCommand,
                 ObserveVendorTableContracts,
+                ObserveCapitalCordVendor,
+                DisposableCordOfStubbornResolve,
+                DisposableAcadamaeGraduate,
                 ObserveRareFirearmAcquisition,
                 ObserveRareFirearmBlueprintContracts,
                 MagicFirearmNativeProperties,

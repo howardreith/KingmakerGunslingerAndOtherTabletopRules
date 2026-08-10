@@ -1,0 +1,47 @@
+# Feature Modules, Acadamae Graduate, and Cord Qualification
+
+Status: PASS
+
+Baseline: `7a99ce5ac6d6976212310f997bd39ddfe4a57935`, 0.0.74, 954 deterministic tests. Current deterministic total: 967.
+
+## Proven runtime behavior
+
+- Four standalone fresh-process settings combinations PASS: ON/ON, ON/OFF, OFF/ON, OFF/OFF. Each reports exactly 250 registered identities and the expected class, feat, firearm-menu, capital/BTSL/fixed-loot, Acadamae, and Cord publication state. The settings transaction restored the original SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+- Cord standalone PASS 7/7: `20260809T1710388527173Z-7ef88cd7ee634d77a13d1995cc2875fe`. Constitution 10 to 12; fatigue and exhaustion substitutions; inventory-only and unequipped controls; 1 HP floor; cleanup.
+- Capital Cord vendor observer PASS with exactly one fixed count-one row on `SmithVendorTable`, exact owner graph, 15,000 gp item, preservation, idempotence, and rollback.
+- Consecutive deterministic integrated Acadamae/Cord PASS 7/7: `20260809T1800412559535Z-5388e10cbfb04d1980bcfd98c5cc9115` and `20260809T1802420337279Z-aca388acadfa448a80f2e44ce76771b1`. Both use native Wizard level/spellbook/memorized slot, `SummonMonsterISingle` (`8fd74eddd9b6c224693d9ab241f25e84`), Full-Round to Standard parity, native DC 16 Fortitude rules, cancellation, exact Cord match, one d6 result, no inert retained fatigue buff, later ordinary fatigue after unequip, and cleanup.
+
+## Exact optional profiles
+
+All listed transactions staged exact local bytes and verified restoration:
+
+| Profile | Transaction | Targeted result |
+|---|---|---|
+| Call of the Wild 1.14.4c-2.1 | `compat-20260809T180508Z-605e9298769e` | ON/ON publication and Acadamae/Cord PASS |
+| Arms & Armor 1.0.10 | `compat-20260809T180912Z-5659b0e869da` | publication, mechanics, visuals PASS |
+| Toggle Custom Soundpacks 1.0.1 | `compat-20260809T181332Z-976be191b230` | publication, mechanics, Wwise PASS |
+| Qualified combined | `compat-20260809T181800Z-27b037d8f332` | publication, mechanics, visuals, Wwise PASS |
+| High-risk combined | `compat-20260809T182354Z-275df7b55c5d` | readiness, publication, mechanics PASS |
+
+Exact Call of the Wild DLL SHA-256 is `4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915`. Managed SoundBank SHA-256 before/after is `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`. Historical Call of the Wild final-selector and high-risk timeout evidence remains recorded; the targeted feature-module results do not claim every older comprehensive scenario was rerun.
+
+## Final 0.0.75 gates
+
+- Exact release source: `8fea913d7baba880496012576878ac95eaadc74d`. Repository validation, 967/967 deterministic tests, clean exact-reference Release build, manifest/provenance/SoundBank audits, deterministic package creation, and strict package validation all PASS.
+- Package SHA-256: `f05edc2d2176969b33132b367c5734e60248ba06aaf8a44ecd0c2cc3fb51e7f7`.
+- DLL SHA-256: `ee6b4d1d255871d6037574ba421c1e55c5cf7aa1730ebe96b71ee1bf16178df2`.
+- Final standalone ON/ON integration PASS 7/7 twice: `20260809T1846323677611Z-74ab07c5ebd44802822a6ba8f84051d9` and `20260809T1848327947827Z-bfb68bd37e3c46659b954b21d590caed`.
+- Final maximum-risk Call of the Wild + Arms & Armor + Toggle transaction `compat-20260809T185022Z-8c3b1f71592d` PASS 7/7 twice: `20260809T1850531512993Z-a7e8a8bd3c5a471fbc8c0564ac9f3f46` and `20260809T1852513094584Z-1007aca1a53244eead770f7c312ae5ca`. Staged mutation and exact restoration were both verified.
+- Guarded default-ON/ON `KMG_AUTOMATION_WORKING` smoke PASS 11/11 twice without selecting or modifying `KMG_AUTOMATION_BASELINE`: `20260809T1855052943753Z-b458c2e848e94ba7a792f7e1883e3452` and `20260809T1857286797079Z-33d09ced9bce4aee828216b6b7a33ff3`.
+- Active package/profile pins are 0.0.75. Every settings and optional-profile transaction restored its original settings bytes/absence, Mods manifest, and managed SoundBank; the final module matrix restored settings SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`.
+
+## 0.0.76 playtest repair addendum
+
+The original 0.0.75 evidence above remains historical. The focused 0.0.76
+repair reran all four module combinations with a constant 252 active identity
+set and exact settings restoration. Mode, permanent-fatigue, Cord-icon, and
+updated optional-profile evidence is recorded in
+`ACADAMAE-PLAYTEST-REPAIR-QUALIFICATION.md`.
+- Historical Call of the Wild selector and comprehensive high-risk limitations remain documented and are not rewritten as though they never occurred. No new feature-specific human-only acceptance item remains.
+
+Next concrete action: retain the clean published branch unmerged for user review.

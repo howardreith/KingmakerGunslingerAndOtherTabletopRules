@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.76 - Acadamae mode, persistent fatigue, and Cord icon repair
+
+- Adds the default-off, per-character `Use Acadamae Graduate` native toggle;
+  mode-off casts retain native timing and no risk, while mode-on commands
+  snapshot acceleration and their Fortitude-save obligation.
+- Applies failed-save fatigue through Kingmaker's independent caster-context
+  overload, producing indefinite canonical Fatigued that survives summoning
+  context disposal and follows native remove-on-rest behavior.
+- Replaces the Cord's donor icon with original project-owned transparent art.
+- Preserves the accepted UMM modules, prerequisites, Cord mechanics, merchant
+  placement, Paper Cartridge lifecycle behavior, and every existing GUID.
+
+## 0.0.75 - Feature modules, Acadamae Graduate, and Cord of Stubborn Resolve
+
+- Adds independent, persistent, default-enabled Gunslinger and Acadamae Graduate feature modules to the composed UMM panel. Changes apply after a complete restart; disabled content is hidden from new selection/acquisition while existing save identities and mechanics remain available.
+- Adds Acadamae Graduate with exact specialist-Wizard and Conjuration-opposition prerequisites, prepared arcane Conjuration (Summoning) Full-Round-to-Standard casting, and one native Fortitude save at DC 15 + spell level with Fatigued on failure.
+- Adds the belt-slot Cord of Stubborn Resolve: +2 enhancement Constitution; fatigue/exhaustion substitution; one capped 1d6 nonlethal-equivalent result; and one fixed 15,000-gp capital-blacksmith copy.
+- Adds settings-aware, idempotent catalog reconciliation that retains native and exact local Call of the Wild classes/feats while publishing or withholding only project entries.
+- Adds guarded settings, publication, Acadamae, Cord, integration, and vendor scenarios plus four-combination and exact optional-profile qualification.
+
 ## 0.0.74 Paper mode view-lifecycle repair
 
 - Initialized the persistent Use Paper Cartridges marker's no-FX resource links

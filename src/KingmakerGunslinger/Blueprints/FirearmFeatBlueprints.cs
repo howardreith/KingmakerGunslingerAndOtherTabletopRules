@@ -77,7 +77,8 @@ namespace KingmakerGunslinger.Blueprints
         internal static FirearmFeatBlueprintSet Register(LibraryScriptableObject library,
             BlueprintRegistry registry,
             BlueprintFeature firearmProficiency,
-            FirearmScopedProficiencyBlueprintSet scopedProficiencies)
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies,
+            bool publishParameters = true)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
@@ -146,7 +147,8 @@ namespace KingmakerGunslinger.Blueprints
                     BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
                         library, guid, "native " + DependentNames[index])).ToArray(),
                 focus, dependentChoices, firearmProficiency,
-                scopedProficiencies.OneHanded, scopedProficiencies.TwoHanded);
+                scopedProficiencies.OneHanded, scopedProficiencies.TwoHanded,
+                publishParameters);
             RapidReloadRuntime.Configure(Kinds, rapid);
             BlueprintFeature exoticWeaponProficiency =
                 registry.Register<BlueprintFeature>(

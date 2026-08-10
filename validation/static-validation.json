@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.74-paper-cartridges-auto-reload",
-  "version": "0.0.74",
+  "milestone": "0.0.76-acadamae-mode-fatigue-icon-repair",
+  "version": "0.0.76",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -58,5 +58,14 @@
     "runtimeAcceptancePending": false,
     "runtimeAcceptancePassed": true,
     "sprint30EntryApproved": true
+  },
+  "featureModules75": {
+    "deterministicTestCount": 970,
+    "activeBlueprintCount": 252,
+    "ledgerEntryCount": 253,
+    "reservedBlueprintCount": 1,
+    "fourModuleConfigurationsQualified": true,
+    "acadamaeCordIntegrationQualified": true,
+    "exactOptionalProfilesTargeted": true
   }
 }

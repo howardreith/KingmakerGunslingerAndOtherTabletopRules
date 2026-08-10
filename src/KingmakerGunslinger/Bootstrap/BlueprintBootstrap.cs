@@ -4,6 +4,7 @@ using System.IO;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -14,6 +15,7 @@ using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.FeatureModules;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -25,7 +27,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 248;
+        internal const int ExpectedRegisteredBlueprintCount = 252;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -34,6 +36,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintFeature _firearmProficiency;
         private static FirearmScopedProficiencyBlueprintSet _scopedFirearmProficiencies;
         private static FirearmTrainingBlueprintSet _firearmTraining;
+        private static FirearmFeatBlueprintSet _firearmFeats;
         private static BlueprintAbility _reloadTestMusketAbility;
         private static BlueprintAbility _overhaulTestMusketAbility;
         private static BlueprintAbility _repairTestMusketAbility;
@@ -50,9 +53,13 @@ namespace KingmakerGunslinger.Bootstrap
         private static ProductionFirearmBlueprintCatalog _productionFirearms;
         private static MagicFirearmBlueprintCatalog _magicFirearms;
         private static GunslingerClassBlueprintSet _gunslingerClassBlueprints;
+        private static BlueprintFeature _acadamaeGraduate;
+        private static AcadamaeGraduateModeBlueprintSet _acadamaeGraduateMode;
+        private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
+        private static int _registeredBlueprintCount;
 
         internal static LibraryScriptableObject Library
         {
@@ -98,6 +105,21 @@ namespace KingmakerGunslinger.Bootstrap
             }
         }
 
+        internal static BlueprintFeature AcadamaeGraduate
+        {
+            get { lock (Gate) { return _acadamaeGraduate; } }
+        }
+
+        internal static AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode
+        {
+            get { lock (Gate) { return _acadamaeGraduateMode; } }
+        }
+
+        internal static BlueprintItemEquipmentBelt CordOfStubbornResolve
+        {
+            get { lock (Gate) { return _cordOfStubbornResolve; } }
+        }
+
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
         {
             get { lock (Gate) { return _scopedFirearmProficiencies; } }
@@ -106,6 +128,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static FirearmTrainingBlueprintSet FirearmTraining
         {
             get { lock (Gate) { return _firearmTraining; } }
+        }
+
+        internal static FirearmFeatBlueprintSet FirearmFeats
+        {
+            get { lock (Gate) { return _firearmFeats; } }
         }
 
         internal static BlueprintAbility ReloadTestMusketAbility
@@ -293,6 +320,8 @@ namespace KingmakerGunslinger.Bootstrap
             {
                 lock (Gate)
                 {
+                    if (_registeredBlueprintCount != 0)
+                        return _registeredBlueprintCount;
                     int count = 0;
                     if (_diagnosticFeature != null)
                     {
@@ -469,6 +498,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _firearmProficiency = result.FirearmProficiency;
                     _scopedFirearmProficiencies = result.ScopedFirearmProficiencies;
                     _firearmTraining = result.FirearmTraining;
+                    _firearmFeats = result.FirearmFeats;
                     _reloadTestMusketAbility = result.ReloadTestMusketAbility;
                     _overhaulTestMusketAbility = result.OverhaulTestMusketAbility;
                     _repairTestMusketAbility = result.RepairTestMusketAbility;
@@ -486,6 +516,10 @@ namespace KingmakerGunslinger.Bootstrap
                     _productionFirearms = result.ProductionFirearms;
                     _magicFirearms = result.MagicFirearms;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
+                    _acadamaeGraduate = result.AcadamaeGraduate;
+                    _acadamaeGraduateMode = result.AcadamaeGraduateMode;
+                    _cordOfStubbornResolve = result.CordOfStubbornResolve;
+                    _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
                 }
@@ -559,15 +593,31 @@ namespace KingmakerGunslinger.Bootstrap
                     probeDefinition));
 
             BlueprintRegistry registry = new BlueprintRegistry(library, manifest, context.Logger);
+            FeatureModulePublicationPlan publicationPlan =
+                new FeatureModulePublicationPlan(context.FeatureModules.Active);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
+            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                BlueprintFeature acadamaeGraduate =
+                    AcadamaeGraduateBlueprints.Register(library, registry);
+                AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode =
+                    AcadamaeGraduateModeBlueprints.Register(registry,
+                        acadamaeGraduate.Icon);
+                AcadamaeGraduateBlueprints.AttachMode(acadamaeGraduate,
+                    acadamaeGraduateMode.Ability);
+                BlueprintItemEquipmentBelt cordOfStubbornResolve =
+                    CordOfStubbornResolveBlueprints.Register(library, registry);
+                if (publicationPlan.AcadamaeFeat)
+                    acadamaeFeatPublication = AcadamaeFeatCatalogPublication.Publish(
+                        library, acadamaeGraduate);
 
                 BlueprintFeature firearmProficiency =
                     FirearmProficiencyBlueprints.Register(registry);
@@ -579,8 +629,10 @@ namespace KingmakerGunslinger.Bootstrap
 
                 FirearmFeatBlueprintSet firearmFeats =
                     FirearmFeatBlueprints.Register(library, registry,
-                        firearmProficiency, scopedFirearmProficiencies);
-                featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
+                        firearmProficiency, scopedFirearmProficiencies,
+                        publicationPlan.FirearmParameters);
+                if (publicationPlan.GunslingerFeats)
+                    featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
 
                 TestMusketBlueprintSet testMusket = TestMusketBlueprints.Register(
                     library,
@@ -741,7 +793,8 @@ namespace KingmakerGunslinger.Bootstrap
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
                     productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit,
                     gunsmithingSupplies,
-                    paperCartridgeMode,
+                    paperCartridgeMode, acadamaeGraduateMode,
+                    cordOfStubbornResolve,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
                 PlayerFacingPresentation.ApplyArchetypes(
@@ -749,23 +802,31 @@ namespace KingmakerGunslinger.Bootstrap
                     gunslingerClassBlueprints.CharacterClass.Icon);
                 ClassCatalogDiagnostics.Capture("before-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
-                classPublication = GunslingerClassBlueprints.Publish(
-                    gunslingerClassBlueprints.CharacterClass);
+                if (publicationPlan.GunslingerClass)
+                    classPublication = GunslingerClassBlueprints.Publish(
+                        gunslingerClassBlueprints.CharacterClass);
                 ClassCatalogDiagnostics.Capture("after-publish", library,
                     gunslingerClassBlueprints.CharacterClass);
 
                 capitalVendorPublication = CapitalVendorBlueprints.Publish(
                     library, productionFirearms, magicFirearms, basicAmmunition,
-                    firearmRepairKit, gunsmithingSupplies, context.Logger);
-                btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
-                    library, productionFirearms, magicFirearms, basicAmmunition,
-                    firearmRepairKit, gunsmithingSupplies, context.Logger);
-                rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
-                    library, magicFirearms, context.Logger);
-                ProjectAssetIcons.ValidateSupplyPublication(registry,
-                    basicAmmunition, firearmRepairKit, gunsmithingSupplies,
-                    gunsmithingCrafting, capitalVendorPublication,
-                    btslVendorPublication, context.Logger);
+                    firearmRepairKit, gunsmithingSupplies,
+                    publicationPlan.CapitalGunslingerStock,
+                    cordOfStubbornResolve, publicationPlan.CordCapitalStock,
+                    context.Logger);
+                if (publicationPlan.BeneathStolenLandsStock)
+                    btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
+                        library, productionFirearms, magicFirearms, basicAmmunition,
+                        firearmRepairKit, gunsmithingSupplies, context.Logger);
+                if (publicationPlan.RareFirearmLoot)
+                    rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
+                        library, magicFirearms, context.Logger);
+                if (publicationPlan.CapitalGunslingerStock &&
+                    publicationPlan.BeneathStolenLandsStock)
+                    ProjectAssetIcons.ValidateSupplyPublication(registry,
+                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,
+                        gunsmithingCrafting, capitalVendorPublication,
+                        btslVendorPublication, context.Logger);
 
                 if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
                 {
@@ -791,6 +852,7 @@ namespace KingmakerGunslinger.Bootstrap
                     firearmProficiency,
                     scopedFirearmProficiencies,
                     firearmTraining,
+                    firearmFeats,
                     reloadTestMusketAbility,
                     overhaulTestMusketAbility,
                     repairTestMusketAbility,
@@ -804,7 +866,10 @@ namespace KingmakerGunslinger.Bootstrap
                     batteredOrigin,
                     basicAmmunition,
                     paperCartridgeMode,
-                    gunslingerClassBlueprints);
+                    gunslingerClassBlueprints,
+                    acadamaeGraduate,
+                    acadamaeGraduateMode,
+                    cordOfStubbornResolve);
             }
             catch (Exception initializationException)
             {
@@ -869,6 +934,16 @@ namespace KingmakerGunslinger.Bootstrap
                     {
                         context.Logger.Failure("blueprints", "firearm-feats.rollback-failed",
                             "Blueprint initialization failed and firearm feat catalog rollback was refused.",
+                            featRollbackException);
+                    }
+                }
+                if (acadamaeFeatPublication != null)
+                {
+                    try { acadamaeFeatPublication.Rollback(); }
+                    catch (Exception featRollbackException)
+                    {
+                        context.Logger.Failure("blueprints", "acadamae-feat.rollback-failed",
+                            "Blueprint initialization failed and Acadamae feat rollback was refused.",
                             featRollbackException);
                     }
                 }
@@ -941,6 +1016,7 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintFeature firearmProficiency,
                 FirearmScopedProficiencyBlueprintSet scopedFirearmProficiencies,
                 FirearmTrainingBlueprintSet firearmTraining,
+                FirearmFeatBlueprintSet firearmFeats,
                 BlueprintAbility reloadTestMusketAbility,
                 BlueprintAbility overhaulTestMusketAbility,
                 BlueprintAbility repairTestMusketAbility,
@@ -954,7 +1030,10 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintWeaponEnchantment batteredOrigin,
                 BasicAmmunitionBlueprintSet basicAmmunition,
                 PaperCartridgeModeBlueprintSet paperCartridgeMode,
-                GunslingerClassBlueprintSet gunslingerClassBlueprints)
+                GunslingerClassBlueprintSet gunslingerClassBlueprints,
+                BlueprintFeature acadamaeGraduate,
+                AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
+                BlueprintItemEquipmentBelt cordOfStubbornResolve)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -962,6 +1041,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("scopedFirearmProficiencies");
                 FirearmTraining = firearmTraining ??
                     throw new ArgumentNullException("firearmTraining");
+                FirearmFeats = firearmFeats ??
+                    throw new ArgumentNullException("firearmFeats");
                 ReloadTestMusketAbility = reloadTestMusketAbility ?? throw new ArgumentNullException("reloadTestMusketAbility");
                 OverhaulTestMusketAbility = overhaulTestMusketAbility ?? throw new ArgumentNullException("overhaulTestMusketAbility");
                 RepairTestMusketAbility = repairTestMusketAbility ?? throw new ArgumentNullException("repairTestMusketAbility");
@@ -977,6 +1058,12 @@ namespace KingmakerGunslinger.Bootstrap
                 PaperCartridgeMode = paperCartridgeMode ?? throw new ArgumentNullException("paperCartridgeMode");
                 GunslingerClassBlueprints = gunslingerClassBlueprints ??
                     throw new ArgumentNullException("gunslingerClassBlueprints");
+                AcadamaeGraduate = acadamaeGraduate ??
+                    throw new ArgumentNullException("acadamaeGraduate");
+                AcadamaeGraduateMode = acadamaeGraduateMode ??
+                    throw new ArgumentNullException("acadamaeGraduateMode");
+                CordOfStubbornResolve = cordOfStubbornResolve ??
+                    throw new ArgumentNullException("cordOfStubbornResolve");
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -988,6 +1075,8 @@ namespace KingmakerGunslinger.Bootstrap
 
             internal FirearmTrainingBlueprintSet FirearmTraining
             { get; private set; }
+
+            internal FirearmFeatBlueprintSet FirearmFeats { get; private set; }
 
             internal BlueprintAbility ReloadTestMusketAbility { get; private set; }
 
@@ -1014,6 +1103,9 @@ namespace KingmakerGunslinger.Bootstrap
             internal PaperCartridgeModeBlueprintSet PaperCartridgeMode { get; private set; }
 
             internal GunslingerClassBlueprintSet GunslingerClassBlueprints { get; private set; }
+            internal BlueprintFeature AcadamaeGraduate { get; private set; }
+            internal AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode { get; private set; }
+            internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
         }
     }
 }

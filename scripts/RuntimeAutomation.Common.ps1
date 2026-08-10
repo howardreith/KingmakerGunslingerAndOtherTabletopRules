@@ -80,6 +80,30 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-feature-module-settings' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-capital-cord-vendor' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-cord-of-stubborn-resolve' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-acadamae-graduate' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-rare-firearm-acquisition' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -618,8 +642,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.74') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.74.'
+    if ($ExpectedVersion -cne '0.0.76') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.76.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -658,6 +682,15 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.profileId -isnot [string] -or
             $Parameters.profileId -cnotin $allowedProfiles) {
             throw "$Scenario requires exactly one committed runtime-capable profileId."
+        }
+    }
+    elseif ($Scenario -ceq 'observe-feature-module-settings') {
+        if ($Parameters.Count -ne 2 -or
+            -not $Parameters.ContainsKey('gunslinger') -or
+            $Parameters.gunslinger -isnot [bool] -or
+            -not $Parameters.ContainsKey('acadamaeGraduate') -or
+            $Parameters.acadamaeGraduate -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger and acadamaeGraduate parameters."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -756,6 +789,11 @@ function New-KmgRuntimeRequest {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
             [ordered]@{ profileId = [string]$Parameters.profileId }
+        } elseif ($Scenario -ceq 'observe-feature-module-settings') {
+            [ordered]@{
+                gunslinger = [bool]$Parameters.gunslinger
+                acadamaeGraduate = [bool]$Parameters.acadamaeGraduate
+            }
         } else { [ordered]@{} }
     }
 }

@@ -1,5 +1,19 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-10 Acadamae playtest repair
+
+- Branch `codex/feature-modules-acadamae-graduate`; 0.0.76 mode, permanent-fatigue, and project Cord icon repairs are implemented and targeted runtime-qualified.
+- Deterministic total is 970; active identities are 252 (ledger 253).
+- Standalone, four module combinations, exact CotW/Arms & Armor/Toggle, qualified combined, consecutive high-risk combined, and two working-save smokes pass with transaction restoration.
+- Exact next action: commit/publish final docs, rebuild and run final-commit repetition gates, deploy through `Deploy-Local.ps1`, verify installed hashes/settings preservation, finalize clean remote proof. Do not merge.
+
+## Current resume — Feature Modules, Acadamae Graduate, and Cord (2026-08-09)
+
+- Branch `codex/feature-modules-acadamae-graduate`; base `7a99ce5ac6d6976212310f997bd39ddfe4a57935`; latest published pre-versioning checkpoint `08443098e73efc80a9a3e82db530c0b68513077c`.
+- Settings/identity/publication architecture, Acadamae, Cord, capital vendor, four standalone module configurations, consecutive standalone integration, and exact targeted optional profiles are implemented and runtime-proven. Deterministic total is 967; registered identities are 250.
+- Transactional 0.0.75 / `0.0.75-feature-modules-acadamae-graduate` pins and release documentation are in progress in the working tree.
+- Exact next action: finish 0.0.75 documentation/profile validation, run full clean build/package, commit/publish, then execute final consecutive standalone and high-risk runtime gates, eligible ON/ON working-save smoke, restoration audit, final hashes, clean tree, and remote equality. Do not merge.
+
 ## Current resume — Paper mode area-transition/save-load crash repair
 
 - Clean branch/local/remote intake SHA:
@@ -1487,3 +1501,7 @@ Repair qualification is complete. On 2026-08-09 the user successfully loaded an
 affected game and traveled between dungeon floors, closing the final human recovery
 gate. The unchanged marker identity, autonomous lifecycle/compatibility evidence,
 and human area-transition result jointly qualify the repaired 0.0.74 candidate.
+
+## Current resume point — feature modules release complete
+
+The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order is complete on `codex/feature-modules-acadamae-graduate`. Exact release source `8fea913d7baba880496012576878ac95eaadc74d` passed 967/967 deterministic tests, clean Release/package qualification, all four standalone module settings, consecutive standalone and maximum-risk combined integration runs, and two guarded working-save smokes. Final evidence is in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`. Next retain the branch unmerged for user review.

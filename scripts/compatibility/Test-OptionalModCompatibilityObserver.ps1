@@ -12,7 +12,7 @@ $runtimeProfiles = @(
 )
 foreach ($profile in $runtimeProfiles) {
     [void](Assert-KmgRuntimeScenarioPreflight `
-        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.74' `
+        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.76' `
         -TimeoutSeconds 120 -Parameters @{ profileId = $profile })
 }
 
@@ -26,7 +26,7 @@ foreach ($parameters in $rejected) {
     $failedClosed = $false
     try {
         [void](Assert-KmgRuntimeScenarioPreflight `
-            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.74' `
+            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.76' `
             -TimeoutSeconds 120 -Parameters $parameters)
     }
     catch { $failedClosed = $true }
@@ -69,7 +69,10 @@ $wrapper = Get-Content -LiteralPath (Join-Path $root `
 foreach ($contract in @('[ValidateRange(120, 900)]',
     '[int]$RuntimeTimeoutSeconds = 300',
     'TimeoutSeconds = $RuntimeTimeoutSeconds',
-    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds')) {
+    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds',
+    "'observe-feature-module-settings'", '[hashtable]$Parameters = @{}',
+    "'Mods\KingmakerGunslinger\FeatureModules.json'",
+    '$arguments.Parameters = $Parameters')) {
     if (-not $wrapper.Contains($contract)) {
         throw "Compatibility wrapper timeout contract missing: $contract"
     }
