@@ -331,3 +331,17 @@ Next: publish/rebuild and run the expanded standalone scenario transactionally.
   was named, loaded, or mutated.
 
 Next: implement the defense/temp-HP/lethal/exclusion/recursion runtime matrix.
+
+## 2026-08-10 - exclusion, recursion, and lethal scenario ready
+
+- Added native Strength and Constitution `RuleDealStatDamage` checks requiring
+  exact stat damage with no caster HP transfer.
+- Added reciprocal persisted links and requires one 3-point event to remain
+  exactly subject 1/caster 2, proving the transferred event cannot recurse.
+- Added a native lethal-threshold caster fixture: the caster begins at 1 HP and
+  the 2-point transferred share must reach zero/death state while the subject
+  retains only 1 damage.
+- Complete validation PASS: 980/980 tests, exact Release, output/SoundBank, and
+  strict package validation.
+
+Next: publish/rebuild and run this expanded standalone scenario transactionally.

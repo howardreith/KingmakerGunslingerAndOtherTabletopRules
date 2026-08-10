@@ -1733,3 +1733,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   non-HP exclusions, and reciprocal recursion guard.
 - Remaining gates: area/death/save-load and full damage matrix; module/profile
   repetitions; 0.0.77 release/audits/report. Active blocker: none.
+
+## Shield Other current resume - exclusions/recursion/lethal scenario ready
+
+- Current phase: Phase 9 expanded damage runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package validation after adding stat-damage exclusions, reciprocal
+  recursion suppression, and lethal caster transfer.
+- Exact current commit: `9b12bfbcb39b0e68bf97db8118de3919a3e45ae9`;
+  expanded scenario and progress docs are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, run transactional
+  standalone `disposable-shield-other`, and inspect exact structured outcomes.
+- Remaining gates: typed mitigation/temp HP/immunity/area/death/save-load;
+  module/profile repetitions; 0.0.77 release. Active blocker: none.

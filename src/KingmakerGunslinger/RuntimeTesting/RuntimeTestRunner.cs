@@ -6915,6 +6915,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cleaned = false, replacementOwned = false,
                 multiSubjectOwned = false, rangeRemoved = false,
                 dispelRemoved = false;
+            bool reciprocalOwned = false, reciprocalNoRecursion = false,
+                casterLethal = false, abilityDamageExcluded = false,
+                constitutionDamageExcluded = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, acDelta = -1, fortDelta = -1,
                 reflexDelta = -1, willDelta = -1, linkCount = -1,
@@ -6922,6 +6925,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 replacementSecondCaster = -1, multipleSubject = -1,
                 multipleCaster = -1, rangedSubject = -1, rangedCaster = -1,
                 dispelledSubject = -1, dispelledCaster = -1;
+            int reciprocalSubject = -1, reciprocalCaster = -1,
+                lethalSubject = -1, lethalCaster = -1,
+                strengthDamage = -1, constitutionDamage = -1;
             long logsBefore = ShieldOtherCombatLog.Published;
             string stage = "construct";
             try
@@ -7083,6 +7089,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
                 dispelledSubject = subjectBefore - subject.HPLeft;
                 dispelledCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "non-hp-exclusions";
+                int casterHpBeforeExclusions = secondCaster.HPLeft;
+                int strengthBefore = subject.Stats.Strength.Damage;
+                Rulebook.Trigger(new RuleDealStatDamage(caster, subject,
+                    StatType.Strength, new DiceFormula(0, DiceType.D6), 2));
+                strengthDamage = subject.Stats.Strength.Damage - strengthBefore;
+                abilityDamageExcluded = strengthDamage == 2 &&
+                    secondCaster.HPLeft == casterHpBeforeExclusions;
+                int constitutionBefore = subject.Stats.Constitution.Damage;
+                Rulebook.Trigger(new RuleDealStatDamage(caster, subject,
+                    StatType.Constitution, new DiceFormula(0, DiceType.D6), 1));
+                constitutionDamage = subject.Stats.Constitution.Damage -
+                    constitutionBefore;
+                constitutionDamageExcluded = constitutionDamage == 1 &&
+                    secondCaster.HPLeft == casterHpBeforeExclusions;
+
+                stage = "reciprocal-links";
+                var subjectToCaster = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(subject));
+                subjectToCaster.Params.CasterLevel = 5;
+                var casterToSubject = new MechanicsContext(subject,
+                    subject.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(secondCaster));
+                casterToSubject.Params.CasterLevel = 5;
+                Buff forward = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, subjectToCaster,
+                    TimeSpan.FromHours(5d));
+                Buff reverse = secondCaster.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, casterToSubject,
+                    TimeSpan.FromHours(5d));
+                reciprocalOwned = forward != null && reverse != null;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                reciprocalSubject = subjectBefore - subject.HPLeft;
+                reciprocalCaster = casterBefore - secondCaster.HPLeft;
+                reciprocalNoRecursion = reciprocalSubject == 1 &&
+                    reciprocalCaster == 2;
+
+                stage = "lethal-caster-transfer";
+                reverse.Remove();
+                secondCaster.Descriptor.State.Immortality.ReleaseAll();
+                secondCaster.Descriptor.Damage = secondCaster.MaxHP - 1;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                lethalSubject = subjectBefore - subject.HPLeft;
+                lethalCaster = casterBefore - secondCaster.HPLeft;
+                casterLethal = lethalSubject == 1 && lethalCaster >= 1 &&
+                    (secondCaster.HPLeft <= 0 ||
+                     secondCaster.Descriptor.State.IsDead ||
+                     secondCaster.Descriptor.State.MarkedForDeath ||
+                     secondCaster.Descriptor.State.ForceKill);
             }
             catch (Exception exception)
             {
@@ -7124,6 +7195,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
                 "/" + rangedCaster + ";dispel=" + dispelRemoved + "/" +
                 dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
+            observed += ";exclusions=" + abilityDamageExcluded + "/" +
+                strengthDamage + "/" + constitutionDamageExcluded + "/" +
+                constitutionDamage + ";reciprocal=" + reciprocalOwned + "/" +
+                reciprocalNoRecursion + "/" + reciprocalSubject + "/" +
+                reciprocalCaster + ";lethal=" + casterLethal + "/" +
+                lethalSubject + "/" + lethalCaster;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
@@ -7154,8 +7231,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "link removed; damage 2/0", observed,
                     dispelRemoved && dispelledSubject == 2 && dispelledCaster == 0,
                     "native buff removal"),
-                Assertion("shield-other-transfer-log", "4 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 4,
+                Assertion("shield-other-non-hp-exclusions",
+                    "Strength 2 and Constitution 1; caster HP unchanged", observed,
+                    abilityDamageExcluded && constitutionDamageExcluded,
+                    "native RuleDealStatDamage path never enters RuleDealDamage"),
+                Assertion("shield-other-reciprocal-guard",
+                    "reciprocal links; original 1 and caster 2 only", observed,
+                    reciprocalOwned && reciprocalNoRecursion,
+                    "thread-static transferred-event recursion guard"),
+                Assertion("shield-other-caster-lethal",
+                    "subject 1; caster reaches lethal threshold", observed,
+                    casterLethal, "native caster HP and death-threshold application"),
+                Assertion("shield-other-transfer-log", "6 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 6,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
