@@ -107,6 +107,7 @@ namespace KingmakerGunslinger.Acadamae
     {
         [System.ThreadStatic] private static int? _queued;
         [System.ThreadStatic] private static int? _active;
+        [System.ThreadStatic] private static int? _postRoll;
 
         internal static void Queue(int naturalRoll)
         {
@@ -118,6 +119,7 @@ namespace KingmakerGunslinger.Acadamae
         internal static void Begin()
         {
             _active = _queued;
+            _postRoll = _queued;
             _queued = null;
         }
 
@@ -133,8 +135,33 @@ namespace KingmakerGunslinger.Acadamae
             return true;
         }
 
-        internal static void End() { _active = null; }
-        internal static void Cancel() { _queued = null; _active = null; }
+        internal static bool TryComplete(out int naturalRoll)
+        {
+            if (!_postRoll.HasValue)
+            {
+                naturalRoll = 0;
+                return false;
+            }
+            naturalRoll = _postRoll.Value;
+            _postRoll = null;
+            return true;
+        }
+
+        internal static void End() { _active = null; _postRoll = null; }
+        internal static void Cancel()
+        { _queued = null; _active = null; _postRoll = null; }
+    }
+
+    [HarmonyPatch(typeof(RuleSavingThrow), "OnTrigger")]
+    [HarmonyAfter("CallOfTheWild")]
+    internal static class AcadamaeSavingThrowTestCompletionPatch
+    {
+        private static void Postfix(RuleSavingThrow __instance)
+        {
+            int naturalRoll;
+            if (AcadamaeSavingThrowTestControl.TryComplete(out naturalRoll))
+                __instance.BaseRollResult = naturalRoll;
+        }
     }
 
     [HarmonyPatch(typeof(RuleRollD20), "PreRollDice")]

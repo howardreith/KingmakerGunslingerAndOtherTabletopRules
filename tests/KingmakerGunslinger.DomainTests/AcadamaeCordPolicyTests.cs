@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("AcadamaeGraduateMode.Marker") &&
                 casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
                 casting.Contains("fatigue.MakePermanent()") &&
+                casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
+                casting.Contains("__instance.BaseRollResult = naturalRoll") &&
                 !casting.Contains("AddBuff(_fatigued, rule.Context"),
                 "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
         }

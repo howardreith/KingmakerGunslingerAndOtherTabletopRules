@@ -64,3 +64,10 @@
 - One exact-byte standalone run `20260810T0054114452133Z-8e432ad927b048769b772723b9616986` observed a forced-save fixture variance only in the Cord subcase (no fatigue attempt); permanent-fatigue mechanics passed and the same bytes passed in the immediately following fresh run. Evidence is retained, not rewritten.
 - Current uncertainty: final documentation commit changes the release source SHA and package bytes; repeat exact-final-commit gates before deployment.
 - Next concrete action: validate/commit/publish docs, build exact final package, repeat primary and maximum-risk gates, deploy, verify installed state.
+
+## 2026-08-10 - forced-save fixture composition repair
+
+- Final-documentation source `3442d8ac17c4ed62f575ed4ef7f4642010e84f44` passed two consecutive fresh standalone integrated runs. Highest-risk run `compat-20260810T011257Z-34483c1fa1d4` passed and restored; the next run `compat-20260810T011528Z-37f8e1162d08` restored but its final forced-failure subcase unexpectedly passed the save, while every mode/action/Cord and preceding lifecycle assertion remained correct.
+- Root cause: the guarded fixture forced the next global `RuleRollD20`; foreign handlers can consume that thread-local roll during `RuleSavingThrow.OnTrigger`. Exact installed `RuleSavingThrow` exposes public `BaseRollResult` get/set.
+- Repair: retain pre-roll forcing, and additionally apply the same request-local roll in an exact `RuleSavingThrow.OnTrigger` postfix ordered after Call of the Wild. The control is thread-static, active only around Acadamae's guarded native saving throw, and is cleared in `finally`; production play is inert.
+- Next concrete action: full build/package, commit/publish the deterministic fixture repair, then rerun final consecutive standalone and high-risk gates before deployment.
