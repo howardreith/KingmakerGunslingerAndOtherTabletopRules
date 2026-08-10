@@ -398,3 +398,14 @@ Next: qualify/publish the observation repair and rerun once on the changed SHA.
 
 Next: source-qualify/publish the module-matrix repair, then run all eight settings
 under isolated standalone transactions.
+
+## 2026-08-10 - request serializer three-setting repair
+
+- The first all-enabled profile attempt failed pure preflight before deployment:
+  the authoritative runtime request validator/serializer still required only the
+  inherited two Boolean parameters. Transaction
+  `compat-20260810T135922Z-4b9aa824e344` restored exactly.
+- Updated the authoritative validator and serialized request payload to require
+  and carry `shieldOther` alongside Gunslinger and Acadamae Graduate.
+
+Next: qualify/publish this final matrix plumbing repair, then retry all eight.

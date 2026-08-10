@@ -1798,3 +1798,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   in isolated standalone profiles and capture constant identity/publication proof.
 - Remaining gates: typed mitigation/immunity, area/death/save-load; profile
   repetitions and 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - module request serializer repair
+
+- Current phase: source qualification before eight-combination runtime matrix.
+- Last attempt stopped in pure preflight because `RuntimeAutomation.Common.ps1`
+  still accepted only two module parameters; transaction
+  `compat-20260810T135922Z-4b9aa824e344` restored exactly and no game launched.
+- Exact current commit: `486a38502b12529e53bf54ac83ca882749de5ae8`;
+  authoritative validator/serializer repair and evidence docs are uncommitted.
+- Exact next action: validate/commit/publish, rebuild clean SHA, retry the eight
+  isolated standalone combinations. Remaining gates unchanged; blocker none.
