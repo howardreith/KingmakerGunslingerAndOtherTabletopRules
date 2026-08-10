@@ -57,6 +57,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static AcadamaeGraduateModeBlueprintSet _acadamaeGraduateMode;
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static ShieldOtherBlueprintSet _shieldOther;
+        private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -124,6 +125,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static ShieldOtherBlueprintSet ShieldOther
         {
             get { lock (Gate) { return _shieldOther; } }
+        }
+
+        internal static ShieldOtherSpellListPublication ShieldOtherPublication
+        {
+            get { lock (Gate) { return _shieldOtherPublication; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -526,6 +532,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _acadamaeGraduateMode = result.AcadamaeGraduateMode;
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
                     _shieldOther = result.ShieldOther;
+                    _shieldOtherPublication = result.ShieldOtherPublication;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -895,7 +902,8 @@ namespace KingmakerGunslinger.Bootstrap
                     acadamaeGraduate,
                     acadamaeGraduateMode,
                     cordOfStubbornResolve,
-                    shieldOther);
+                    shieldOther,
+                    shieldOtherPublication);
             }
             catch (Exception initializationException)
             {
@@ -1071,7 +1079,8 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintFeature acadamaeGraduate,
                 AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
                 BlueprintItemEquipmentBelt cordOfStubbornResolve,
-                ShieldOtherBlueprintSet shieldOther)
+                ShieldOtherBlueprintSet shieldOther,
+                ShieldOtherSpellListPublication shieldOtherPublication)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1103,6 +1112,7 @@ namespace KingmakerGunslinger.Bootstrap
                 CordOfStubbornResolve = cordOfStubbornResolve ??
                     throw new ArgumentNullException("cordOfStubbornResolve");
                 ShieldOther = shieldOther ?? throw new ArgumentNullException("shieldOther");
+                ShieldOtherPublication = shieldOtherPublication;
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1146,6 +1156,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode { get; private set; }
             internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
             internal ShieldOtherBlueprintSet ShieldOther { get; private set; }
+            internal ShieldOtherSpellListPublication ShieldOtherPublication
+            { get; private set; }
         }
     }
 }

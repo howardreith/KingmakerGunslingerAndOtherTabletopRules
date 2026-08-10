@@ -127,3 +127,20 @@ transactional level-2 base-list publication and rollback.
 
 Next: publish this checkpoint, then implement first-idle optional CotW discovery
 and idempotent Oracle/Warpriest/Psychic reconciliation.
+
+## 2026-08-10 - first-idle optional CotW reconciliation
+
+- Added a dedicated first-idle final-live scan after all LoadDictionary postfixes.
+- CotW absence is normal. Present Oracle, Warpriest, and Psychic classes must be
+  unambiguous by internal/display identity, class-owned spellbook/list structure,
+  maximum spell level, spontaneous/prepared model, divine/arcane flag, and
+  casting attribute; known GUIDs are supporting signals rather than sole signals.
+- Optional level-2 publication is transactional, preserves foreign entries,
+  clears native caches, and immediately performs a second idempotent pass.
+- A final-live foreign Shield Other candidate prevents optional publication and
+  rolls back the retained base transaction; unsafe rollback fails closed.
+- Complete validation, 978 deterministic tests, exact-reference Release build,
+  and strict package validation PASS.
+
+Next: commit/publish this checkpoint, add a guarded live blueprint/publication
+observer, and verify the exact CotW casting-model and all eight list memberships.

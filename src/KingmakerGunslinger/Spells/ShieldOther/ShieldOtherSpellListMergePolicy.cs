@@ -13,6 +13,22 @@ namespace KingmakerGunslinger.Spells.ShieldOther
             string spellGuid = guid(spell);
             if (string.IsNullOrWhiteSpace(spellGuid))
                 throw new InvalidOperationException("Shield Other has no stable GUID.");
+            if (current != null)
+            {
+                int references = 0;
+                int guids = 0;
+                foreach (T value in current)
+                {
+                    if (value == null)
+                        throw new InvalidOperationException("Spell list contains a null entry.");
+                    if (ReferenceEquals(value, spell)) references++;
+                    if (string.Equals(guid(value), spellGuid,
+                        StringComparison.Ordinal)) guids++;
+                }
+                List<T> unchanged = current as List<T>;
+                if (references == 1 && guids == 1 && unchanged != null)
+                    return unchanged;
+            }
             var result = new List<T>();
             if (current != null)
                 foreach (T value in current)

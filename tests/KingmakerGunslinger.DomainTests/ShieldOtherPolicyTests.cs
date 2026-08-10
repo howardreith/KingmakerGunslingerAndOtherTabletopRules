@@ -105,13 +105,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Publication must preserve foreign order and singularize by reference/GUID.");
             List<FakeSpell> second = ShieldOtherSpellListMergePolicy.Merge(
                 published, shield, value => value.Guid);
-            Assertions.True(second.Count == 2 && ReferenceEquals(second[0], foreign) &&
+            Assertions.True(ReferenceEquals(second, published) && second.Count == 2 &&
+                ReferenceEquals(second[0], foreign) &&
                 ReferenceEquals(second[1], shield),
                 "Repeated reconciliation must be idempotent.");
             Assertions.True(ShieldOtherSpellListMergePolicy.CanRollback(
                 published, published), "Unchanged published list must permit rollback.");
+            var foreignReplacement = new List<FakeSpell>(published);
             Assertions.False(ShieldOtherSpellListMergePolicy.CanRollback(
-                second, published), "Later foreign list replacement must refuse rollback.");
+                foreignReplacement, published),
+                "Later foreign list replacement must refuse rollback.");
             Assertions.Throws<InvalidOperationException>(() =>
                 ShieldOtherSpellListMergePolicy.Merge(
                     new List<FakeSpell> { null }, shield, value => value.Guid),
@@ -141,6 +144,30 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(bootstrap.Contains("publication.failed") &&
                 bootstrap.Contains("other modules will continue"),
                 "Shield Other publication failure must remain isolated from other modules.");
+        }
+
+        internal static void OptionalPublicationSourceContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Spells", "ShieldOther",
+                "ShieldOtherFinalLiveReconciler.cs"));
+            foreach (string token in new[] {
+                "32c02466b2364c8a906e6e4761175099",
+                "e119d84528144a7797ad34fd718b1f87",
+                "359bbaacabc445499049b59d295194cb",
+                "ReferenceEquals(book.CharacterClass, value)",
+                "book.SpellList.MaxLevel >= 6",
+                "book.Spontaneous == spontaneous",
+                "book.IsArcane == arcane",
+                "book.CastingAttribute == attribute",
+                "if (named.Length == 0) return null",
+                "duplicate.final-live" })
+                Assertions.True(source.Contains(token),
+                    "Optional final-live contract is missing: " + token);
+            Assertions.True(source.Split(new[] { "ReconcileOptional(library, shieldOther);" },
+                StringSplitOptions.None).Length == 3,
+                "Final-live optional publication must run an idempotent second pass.");
         }
 
         private sealed class FakeSpell

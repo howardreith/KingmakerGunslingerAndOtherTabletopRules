@@ -10,7 +10,7 @@
 | Link lifecycle | SOURCE-IMPLEMENTED | Pure validity/range policy PASS; runtime lifecycle pending |
 | Exact HP split | SOURCE-IMPLEMENTED | Pure conservation/guard policy PASS; native runtime evidence pending |
 | Base spell-list publication | SOURCE-QUALIFIED | Five transactional level-2 lists; aliases/idempotence/rollback |
-| Optional CotW publication | NOT-STARTED | Oracle, Warpriest, Psychic reconciliation |
+| Optional CotW publication | SOURCE-QUALIFIED | First-idle structural Oracle/Warpriest/Psychic; runtime pending |
 | Deterministic qualification | NOT-STARTED | Complete suite, build, package |
 | Runtime qualification | NOT-STARTED | Standalone, CotW, combined; two PASS each |
 | Release 0.0.77 | NOT-STARTED | Docs, package hashes, remote SHA |
