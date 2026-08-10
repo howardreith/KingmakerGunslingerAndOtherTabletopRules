@@ -19,6 +19,7 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
@@ -6918,6 +6919,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool reciprocalOwned = false, reciprocalNoRecursion = false,
                 casterLethal = false, abilityDamageExcluded = false,
                 constitutionDamageExcluded = false;
+            bool subjectTemporaryHpNormal = false,
+                casterTemporaryHpNormal = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, acDelta = -1, fortDelta = -1,
                 reflexDelta = -1, willDelta = -1, linkCount = -1,
@@ -6928,6 +6931,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int reciprocalSubject = -1, reciprocalCaster = -1,
                 lethalSubject = -1, lethalCaster = -1,
                 strengthDamage = -1, constitutionDamage = -1;
+            int subjectTempConsumed = -1, subjectTempHpLoss = -1,
+                subjectTempCasterLoss = -1, casterTempConsumed = -1,
+                casterTempSubjectLoss = -1, casterTempHpLoss = -1;
             long logsBefore = ShieldOtherCombatLog.Published;
             string stage = "construct";
             try
@@ -7118,6 +7124,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Buff forward = subject.Descriptor.Buffs.AddBuff(
                     BlueprintBootstrap.ShieldOther.TargetBuff, subjectToCaster,
                     TimeSpan.FromHours(5d));
+
+                stage = "subject-temporary-hp";
+                ModifiableValue.Modifier subjectTemporary =
+                    subject.Stats.TemporaryHitPoints
+                    .AddModifier(5, forward, "Shield Other runtime fixture",
+                        ModifierDescriptor.UntypedStackable);
+                int subjectTempBefore = subject.TemporaryHP;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 6))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subjectTempConsumed = subjectTempBefore - subject.TemporaryHP;
+                subjectTempHpLoss = subjectBefore - subject.HPLeft;
+                subjectTempCasterLoss = casterBefore - secondCaster.HPLeft;
+                subjectTemporaryHpNormal = subjectTempBefore == 5 &&
+                    subjectTempConsumed == 3 && subjectTempHpLoss == 0 &&
+                    subjectTempCasterLoss == 3;
+                subject.Stats.TemporaryHitPoints.RemoveModifier(subjectTemporary);
+
+                stage = "caster-temporary-hp";
+                ModifiableValue.Modifier casterTemporary =
+                    secondCaster.Stats.TemporaryHitPoints
+                    .AddModifier(5, forward, "Shield Other runtime fixture",
+                        ModifierDescriptor.UntypedStackable);
+                int casterTempBefore = secondCaster.TemporaryHP;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 6))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                casterTempConsumed = casterTempBefore - secondCaster.TemporaryHP;
+                casterTempSubjectLoss = subjectBefore - subject.HPLeft;
+                casterTempHpLoss = casterBefore - secondCaster.HPLeft;
+                casterTemporaryHpNormal = casterTempBefore == 5 &&
+                    casterTempConsumed == 3 && casterTempSubjectLoss == 3 &&
+                    casterTempHpLoss == 0;
+                secondCaster.Stats.TemporaryHitPoints.RemoveModifier(casterTemporary);
+
                 Buff reverse = secondCaster.Descriptor.Buffs.AddBuff(
                     BlueprintBootstrap.ShieldOther.TargetBuff, casterToSubject,
                     TimeSpan.FromHours(5d));
@@ -7201,6 +7252,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 reciprocalNoRecursion + "/" + reciprocalSubject + "/" +
                 reciprocalCaster + ";lethal=" + casterLethal + "/" +
                 lethalSubject + "/" + lethalCaster;
+            observed += ";tempSubject=" + subjectTemporaryHpNormal + "/" +
+                subjectTempConsumed + "/" + subjectTempHpLoss + "/" +
+                subjectTempCasterLoss + ";tempCaster=" + casterTemporaryHpNormal +
+                "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
+                casterTempHpLoss;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
@@ -7239,11 +7295,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "reciprocal links; original 1 and caster 2 only", observed,
                     reciprocalOwned && reciprocalNoRecursion,
                     "thread-static transferred-event recursion guard"),
+                Assertion("shield-other-subject-temporary-hp",
+                    "temp 5 consumes 3; subject HP 0; caster HP 3", observed,
+                    subjectTemporaryHpNormal,
+                    "native subject ModifiableValueTemporaryHitPoints.HandleDamage"),
+                Assertion("shield-other-caster-temporary-hp",
+                    "temp 5 consumes 3; subject HP 3; caster HP 0", observed,
+                    casterTemporaryHpNormal,
+                    "native transferred RuleDealDamage temporary-HP application"),
                 Assertion("shield-other-caster-lethal",
                     "subject 1; caster reaches lethal threshold", observed,
                     casterLethal, "native caster HP and death-threshold application"),
-                Assertion("shield-other-transfer-log", "6 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 6,
+                Assertion("shield-other-transfer-log", "8 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 8,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),

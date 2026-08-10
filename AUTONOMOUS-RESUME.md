@@ -1761,3 +1761,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   modifiers for both subject and caster and qualify their consumption semantics.
 - Remaining gates: typed DR/resistance/immunity, area/death/save-load; profiles,
   modules, and 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - native temporary-HP scenario ready
+
+- Current phase: Phase 9 temporary-HP runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package after adding separate subject/caster native temporary-HP
+  consumption cases.
+- Exact current commit: `bbb87c2a2ef6eb1208589be6f601899f575e398e`;
+  temporary-HP scenario and progress docs are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, and run transactional
+  standalone `disposable-shield-other` to prove native temporary-HP semantics.
+- Remaining gates: typed mitigation/immunity, area/death/save-load; profile and
+  module repetitions; 0.0.77 release. Active blocker: none.

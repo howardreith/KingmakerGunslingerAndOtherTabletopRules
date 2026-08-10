@@ -358,3 +358,15 @@ Next: publish/rebuild and run this expanded standalone scenario transactionally.
   was named, loaded, or mutated.
 
 Next: add native target/caster temporary-HP coverage and typed mitigation donors.
+
+## 2026-08-10 - native temporary-HP scenario ready
+
+- Added native `ModifiableValueTemporaryHitPoints` modifiers to the linked
+  subject and caster in separate 6-point damage events.
+- Subject case requires its 3-point share to consume temporary HP only while the
+  caster loses 3 HP. Caster case requires subject HP loss 3 while the transferred
+  share consumes caster temporary HP only. Modifiers are explicitly removed.
+- Complete validation PASS: 980/980 tests, exact Release, output/SoundBank, and
+  strict package validation.
+
+Next: publish/rebuild and run the temporary-HP matrix transactionally.
