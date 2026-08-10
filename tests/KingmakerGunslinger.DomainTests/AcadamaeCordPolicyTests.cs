@@ -66,7 +66,8 @@ namespace KingmakerGunslinger.DomainTests
                 "AcadamaeCastingPatches.cs"));
             Assertions.True(casting.Contains("AccelerationModeActive =") &&
                 casting.Contains("AcadamaeGraduateMode.Marker") &&
-                casting.Contains("Buffs.AddBuff(_fatigued,\n                    rule.Initiator, null)") &&
+                casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
+                casting.Contains("fatigue.MakePermanent()") &&
                 !casting.Contains("AddBuff(_fatigued, rule.Context"),
                 "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
         }

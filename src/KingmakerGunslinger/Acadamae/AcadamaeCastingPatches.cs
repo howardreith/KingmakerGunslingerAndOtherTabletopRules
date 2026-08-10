@@ -88,8 +88,15 @@ namespace KingmakerGunslinger.Acadamae
             _lastDifficultyClass = saving.DifficultyClass;
             _lastSavePassed = saving.IsPassed;
             if (!saving.IsPassed)
-                rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued,
-                    rule.Initiator, null);
+            {
+                var fatigue = rule.Initiator.Descriptor.Buffs.AddBuff(
+                    _fatigued, rule.Initiator, null);
+                // AddBuff's null duration initially normalizes to the current
+                // game time. The native permanent transition clears that end
+                // time while retaining the independent caster context and the
+                // ordinary RemoveOnRest blueprint lifecycle.
+                if (fatigue != null) fatigue.MakePermanent();
+            }
             return true;
         }
     }

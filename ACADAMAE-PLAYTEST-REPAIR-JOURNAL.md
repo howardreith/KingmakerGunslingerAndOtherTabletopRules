@@ -46,3 +46,10 @@
 - Cancellation and Cord subfixtures now remove any preceding canonical fatigue first; the preceding snapshot assertion independently requires that it created none, so isolation does not conceal a snapshot failure. Cancellation correlation no longer depends on synthetic post-cancel `RuleCastSpell.Success`, only on zero new completion/save/fatigue.
 - Full repository/build/package gate PASS: 970/970; strict package SHA-256 `f477354fcac8c741c62496a62d6d3b307e66ec3676c8b1ffeb06f2ebfce55744`; DLL `ec5a6088f55147de7716cb54aaea71a0ef4d008016fa94a91ab5f1220dda0738`.
 - Next concrete action: commit/publish the strengthened runtime fixture and rerun standalone Acadamae qualification.
+
+## 2026-08-09 - exact permanent-fatigue repair
+
+- Run `20260810T0020189878001Z-disposable-acadamae-graduate` / runtime ID `20260810T0020190170558Z-4d6f52d2693c424e84b7b8483747e73f` isolated the real remaining defect: root/distinct fatigue survived immediate context collection and native rest removed it, but `Buff.IsPermanent` was false and the nullable end time held current game time `00:00:18`.
+- Read-only installed IL inspection proved public `Buff.MakePermanent()` clears `m_EndTime` and asks the owning `BuffCollection` to update its next event. This is the exact native indefinite transition; no arbitrary duration, clone, reflection, or manual rest handler is used.
+- Production now applies canonical Fatigued through the independent caster overload, then calls `MakePermanent()` only when the Cord has not intercepted and suppressed the buff. Deterministic guards require both operations and reject the old spell-context route.
+- Next concrete action: run the complete build/package gate, commit/publish, and rerun the real standalone lifecycle.
