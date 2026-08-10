@@ -317,3 +317,17 @@ cases before the required profile repetitions.
   build, output/SoundBank validation, and strict package validation.
 
 Next: publish/rebuild and run the expanded standalone scenario transactionally.
+
+## 2026-08-10 - expanded standalone lifecycle PASS
+
+- Run `20260810T1337175179075Z-disposable-shield-other` passed on exact source
+  `9afdc95caa124523f6778f1fd9bb75b60d949cad`.
+- Replacement was singular and moved transfer to caster two (`1/0/1` subject/
+  first/second caster). One caster maintained two subjects (`1/1`). Moving the
+  second subject to 20 meters removed the caster-level-5 link and yielded `2/0`;
+  explicit native buff removal also yielded `2/0`. Transfer logs remained exactly
+  four, so invalid/removed links emitted none.
+- Transaction `compat-20260810T133642Z-7b898f99d298` restored exactly. No save
+  was named, loaded, or mutated.
+
+Next: implement the defense/temp-HP/lethal/exclusion/recursion runtime matrix.

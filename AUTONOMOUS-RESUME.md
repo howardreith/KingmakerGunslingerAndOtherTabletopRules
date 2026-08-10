@@ -1716,3 +1716,20 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   standalone `disposable-shield-other` to inspect expanded structured evidence.
 - Remaining gates: death/area/save-load; defenses/temp HP/lethal/exclusions/
   recursion; module/profile repetitions; 0.0.77 final release. Blocker: none.
+
+## Shield Other current resume - expanded lifecycle runtime PASS
+
+- Current phase: Phase 9 damage defenses, temporary HP, lethal, exclusions, and
+  recursion runtime matrix.
+- Last completed runtime check: standalone PASS
+  `20260810T1337175179075Z-disposable-shield-other` on exact
+  `9afdc95caa124523f6778f1fd9bb75b60d949cad`; replacement, two subjects,
+  range termination, and dispel-equivalent removal all passed. Transaction
+  `compat-20260810T133642Z-7b898f99d298` restoration verified `True`.
+- Exact current commit: `9afdc95caa124523f6778f1fd9bb75b60d949cad`;
+  curated PASS documentation is uncommitted.
+- Exact next action: commit/publish evidence, then expand live damage coverage
+  for target mitigation, both units' temporary HP, caster lethal damage,
+  non-HP exclusions, and reciprocal recursion guard.
+- Remaining gates: area/death/save-load and full damage matrix; module/profile
+  repetitions; 0.0.77 release/audits/report. Active blocker: none.
