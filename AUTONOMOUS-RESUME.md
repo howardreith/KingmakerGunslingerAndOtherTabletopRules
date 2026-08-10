@@ -1603,6 +1603,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - real-save persistence strategy
+
+- Current phase: Phase 9 guarded real-save persistence implementation.
+- Last runtime proved paired partial JSON is also not the save boundary;
+  transaction `compat-20260810T151320Z-66eaf4e97106` restored exactly.
+- Exact current commit: `de1be27fceaf80ef19b4647ab28c7d7283764e35`;
+  synthetic persistence fixture removal and evidence records are uncommitted.
+- Exact next action: build/commit/publish, confirm disposable scenario PASS, then
+  extend guarded working-save stages for Shield Other using only
+  `KMG_AUTOMATION_WORKING`.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - two-unit native save graph
 
 - Current phase: Phase 9 save-context full graph qualification.

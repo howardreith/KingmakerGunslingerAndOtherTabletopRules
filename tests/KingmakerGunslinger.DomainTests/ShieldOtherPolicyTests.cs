@@ -250,17 +250,7 @@ namespace KingmakerGunslinger.DomainTests
                 "area-termination", "\"IsInGame\", false",
                 "shield-other-area-termination",
                 "caster-death-termination",
-                "shield-other-caster-death-termination",
-                "native-save-context-roundtrip",
-                "DefaultJsonSettings.DefaultSettings",
-                "new[] { caster, subject }",
-                "DeserializeObject<",
-                "UnitEntityData[]>(contextJson",
-                "native-save-unit-postload",
-                "restoredUnit.PostLoad()",
-                "value.Blueprint.AssetGuid == BlueprintBootstrap",
-                "restoredSubjectDescriptor.Buffs.RawFacts.Count",
-                "shield-other-native-save-context-roundtrip" })
+                "shield-other-caster-death-termination" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
         }

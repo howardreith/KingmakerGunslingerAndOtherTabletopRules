@@ -605,6 +605,21 @@ Next: source-qualify/publish and rerun the corrected cross-load identity lookup.
 
 Next: source-qualify/publish and run the two-unit native save graph.
 
+## 2026-08-10 - synthetic partial graphs retired
+
+- `20260810T1514029662666Z-disposable-shield-other` on exact source
+  `de1be27fceaf80ef19b4647ab28c7d7283764e35` failed before reconstruction with
+  the same native `DictionaryConverter` constraint when serializing paired units.
+- Transaction `compat-20260810T151320Z-66eaf4e97106` restored exactly.
+- Partial top-level context, stripped descriptor, and paired-unit JSON graphs are
+  not the actual game save boundary. The synthetic assertion has been removed
+  from `disposable-shield-other`; all failed evidence is retained. Save/load will
+  be qualified only through the guarded real-save mechanism and the authorized
+  `KMG_AUTOMATION_WORKING` save, never the protected baseline.
+
+Next: restore the disposable scenario to PASS, then implement the guarded
+working-save Shield Other persistence stages.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

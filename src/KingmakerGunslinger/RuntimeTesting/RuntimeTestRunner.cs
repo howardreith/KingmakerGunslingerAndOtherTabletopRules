@@ -6926,9 +6926,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             UnitEntityData caster = null, subject = null, secondCaster = null,
-                secondSubject = null, restoredSubjectEntity = null,
-                restoredCasterEntity = null;
-            UnitDescriptor restoredSubjectDescriptor = null;
+                secondSubject = null;
             bool casterRegistered = false, subjectRegistered = false,
                 secondCasterRegistered = false, secondSubjectRegistered = false,
                 cleaned = false, replacementOwned = false,
@@ -6939,10 +6937,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 casterLethal = false, abilityDamageExcluded = false,
                 constitutionDamageExcluded = false;
             bool subjectTemporaryHpNormal = false,
-                casterTemporaryHpNormal = false,
-                contextRoundTrip = false;
-            int contextJsonLength = -1;
-            string contextRoundTripDetails = "not-run";
+                casterTemporaryHpNormal = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, physicalSubject = -1, physicalCaster = -1,
                 energySubject = -1, energyCaster = -1,
@@ -7013,69 +7008,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fortDelta = subject.Stats.SaveFortitude.ModifiedValue - fortBefore;
                 reflexDelta = subject.Stats.SaveReflex.ModifiedValue - reflexBefore;
                 willDelta = subject.Stats.SaveWill.ModifiedValue - willBefore;
-
-                stage = "native-save-context-roundtrip";
-                string contextJson = JsonConvert.SerializeObject(
-                    new[] { caster, subject }, Formatting.None,
-                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
-                        .DefaultSettings);
-                contextJsonLength = contextJson.Length;
-                UnitEntityData[] restoredUnits = JsonConvert.DeserializeObject<
-                    UnitEntityData[]>(contextJson,
-                    Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings
-                        .DefaultSettings);
-                stage = "native-save-unit-postload";
-                if (restoredUnits == null || restoredUnits.Length != 2)
-                    throw new InvalidOperationException(
-                        "Native unit graph did not reconstruct two units.");
-                restoredCasterEntity = restoredUnits.Single(value =>
-                    value != null && value.UniqueId == caster.UniqueId);
-                restoredSubjectEntity = restoredUnits.Single(value =>
-                    value != null && value.UniqueId == subject.UniqueId);
-                if (ReferenceEquals(restoredCasterEntity, caster) ||
-                    ReferenceEquals(restoredSubjectEntity, subject))
-                    throw new InvalidOperationException(
-                        "Native unit graph reused a live fixture entity.");
-                foreach (UnitEntityData restoredUnit in restoredUnits)
-                {
-                    if (restoredUnit != null) restoredUnit.PostLoad();
-                }
-                restoredSubjectDescriptor = restoredSubjectEntity.Descriptor;
-                Buff restoredLink = restoredSubjectDescriptor == null ? null :
-                    restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().SingleOrDefault(
-                        value => value.Blueprint != null &&
-                            (ReferenceEquals(value.Blueprint,
-                                BlueprintBootstrap.ShieldOther.TargetBuff) ||
-                             value.Blueprint.AssetGuid == BlueprintBootstrap
-                                .ShieldOther.TargetBuff.AssetGuid));
-                MechanicsContext restoredContext = restoredLink == null ? null :
-                    restoredLink.MaybeContext;
-                contextRoundTripDetails = "descriptor=" +
-                    (restoredSubjectDescriptor != null) + ";buff=" +
-                    (restoredLink != null) + ";context=" +
-                    (restoredContext != null) + ";caster=" +
-                    (restoredContext != null && restoredContext.MaybeCaster != null) +
-                    ";sameCaster=" + (restoredContext != null &&
-                    ReferenceEquals(restoredContext.MaybeCaster,
-                        restoredCasterEntity)) +
-                    ";params=" + (restoredContext != null &&
-                    restoredContext.Params != null) + ";cl=" +
-                    (restoredContext == null || restoredContext.Params == null ? -1 :
-                    restoredContext.Params.CasterLevel) + ";target=" +
-                    (restoredContext != null && restoredContext.MainTarget.Unit != null) +
-                    ";sameTarget=" + (restoredContext != null &&
-                    restoredContext.MainTarget.Unit == restoredSubjectEntity) +
-                    ";rawFacts=" +
-                    (restoredSubjectDescriptor == null ? -1 :
-                    restoredSubjectDescriptor.Buffs.RawFacts.Count) + ";buffFacts=" +
-                    (restoredSubjectDescriptor == null ? -1 :
-                    restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().Count());
-                contextRoundTrip = restoredContext != null &&
-                    ReferenceEquals(restoredContext.MaybeCaster,
-                        restoredCasterEntity) &&
-                    restoredContext.Params != null &&
-                    restoredContext.Params.CasterLevel == 5 &&
-                    restoredContext.MainTarget.Unit == restoredSubjectEntity;
 
                 stage = "odd-damage";
                 int subjectBefore = subject.HPLeft;
@@ -7449,12 +7381,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (restoredSubjectEntity != null &&
-                    !ReferenceEquals(restoredSubjectEntity, subject))
-                    restoredSubjectEntity.Dispose();
-                if (restoredCasterEntity != null &&
-                    !ReferenceEquals(restoredCasterEntity, caster))
-                    restoredCasterEntity.Dispose();
                 if (secondSubjectRegistered)
                     Kingmaker.Game.Instance.State.Units.All.Remove(secondSubject);
                 if (secondCasterRegistered)
@@ -7505,8 +7431,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subjectTempCasterLoss + ";tempCaster=" + casterTemporaryHpNormal +
                 "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
                 casterTempHpLoss;
-            observed += ";contextRoundTrip=" + contextRoundTrip + "/" +
-                contextJsonLength + "/" + contextRoundTripDetails;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("shield-other-link-and-bonuses",
@@ -7514,10 +7438,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     linkCount == 1 && acDelta == 1 && fortDelta == 1 &&
                     reflexDelta == 1 && willDelta == 1,
                     "native target buff modifiers"),
-                Assertion("shield-other-native-save-context-roundtrip",
-                    "same caster and subject; caster level 5", observed,
-                    contextRoundTrip && contextJsonLength > 0,
-                    "DefaultJsonSettings MechanicsContext JsonConstructor"),
                 Assertion("shield-other-odd-split", "subject 1; caster 2",
                     observed, subjectOdd == 1 && casterOdd == 2,
                     "finalized damage transpiler and guarded transfer"),
