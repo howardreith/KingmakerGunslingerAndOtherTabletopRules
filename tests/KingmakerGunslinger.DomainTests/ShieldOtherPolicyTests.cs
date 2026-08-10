@@ -233,9 +233,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Runtime module request contract is missing: " + token);
             foreach (string token in new[] { "Active.ShieldOther",
                 "RegisteredBlueprintCount == 254",
-                "feature-module-shield-other-publication" })
+                "feature-module-shield-other-publication",
+                "typed-physical-damage", "new PhysicalDamage(",
+                "typed-energy-damage", "new EnergyDamage(",
+                "shield-other-typed-physical-split",
+                "shield-other-typed-energy-split" })
                 Assertions.True(runner.Contains(token),
-                    "Runtime module observer contract is missing: " + token);
+                    "Runtime Shield Other observer contract is missing: " + token);
         }
 
         private sealed class FakeSpell

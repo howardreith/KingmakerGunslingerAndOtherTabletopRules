@@ -445,3 +445,18 @@ module published none; and every compatibility transaction restored exactly.
 The profile-internal deterministic suite remained 981/981 PASS and strict
 package validation passed throughout. Next: typed mitigation/immunity and the
 remaining lifecycle/save-load runtime assertions.
+
+## 2026-08-10 - typed physical and energy runtime fixture
+
+- Added deterministic native piercing and fire packets with fixed pre-rolled
+  values to the disposable scenario. Each assertion observes the finalized
+  target and caster HP deltas independently.
+- `Build-Local.ps1`: repository validation PASS, 981/981 deterministic tests
+  PASS, exact-reference Release build PASS, strict package validation PASS.
+- Local runtime package SHA-256:
+  `fa77b367906c0388a5a764fced46094246d939dcb8f38af826839216498fbc2a`;
+  DLL SHA-256:
+  `3007e03a427ce0eb8bdabe16f8c29368721fab7d181ba380e12d458446169147`.
+
+Next: commit/publish this source-qualified fixture and run it in the isolated
+standalone profile.

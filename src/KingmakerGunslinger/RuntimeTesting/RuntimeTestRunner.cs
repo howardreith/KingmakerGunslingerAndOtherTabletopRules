@@ -6938,7 +6938,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool subjectTemporaryHpNormal = false,
                 casterTemporaryHpNormal = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
-                casterEven = -1, acDelta = -1, fortDelta = -1,
+                casterEven = -1, physicalSubject = -1, physicalCaster = -1,
+                energySubject = -1, energyCaster = -1,
+                acDelta = -1, fortDelta = -1,
                 reflexDelta = -1, willDelta = -1, linkCount = -1,
                 replacementSubject = -1, replacementFirstCaster = -1,
                 replacementSecondCaster = -1, multipleSubject = -1,
@@ -7025,6 +7027,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
                 subjectEven = subjectBefore - subject.HPLeft;
                 casterEven = casterBefore - caster.HPLeft;
+
+                stage = "typed-physical-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new PhysicalDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.PhysicalDamageForm.Piercing) {
+                            PreRolledValue = 4
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                physicalSubject = subjectBefore - subject.HPLeft;
+                physicalCaster = casterBefore - caster.HPLeft;
+
+                stage = "typed-energy-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 4
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                energySubject = subjectBefore - subject.HPLeft;
+                energyCaster = casterBefore - caster.HPLeft;
 
                 stage = "replace-link";
                 var replacementContext = new MechanicsContext(secondCaster,
@@ -7256,7 +7286,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "linkCount=" + linkCount + ";bonuses=" + acDelta +
                 "/" + fortDelta + "/" + reflexDelta + "/" + willDelta +
                 ";odd=" + subjectOdd + "/" + casterOdd + ";even=" +
-                subjectEven + "/" + casterEven + ";logs=" +
+                subjectEven + "/" + casterEven + ";physical=" +
+                physicalSubject + "/" + physicalCaster + ";energy=" +
+                energySubject + "/" + energyCaster + ";logs=" +
                 (ShieldOtherCombatLog.Published - logsBefore) +
                 ";replacement=" + replacementOwned + "/" + replacementSubject +
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
@@ -7288,6 +7320,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-even-split", "subject 2; caster 2",
                     observed, subjectEven == 2 && casterEven == 2,
                     "finalized damage transpiler and guarded transfer"),
+                Assertion("shield-other-typed-physical-split",
+                    "finalized piercing 4 becomes subject 2; caster 2",
+                    observed, physicalSubject == 2 && physicalCaster == 2,
+                    "native PhysicalDamage mitigation then finalized split"),
+                Assertion("shield-other-typed-energy-split",
+                    "finalized fire 4 becomes subject 2; caster 2",
+                    observed, energySubject == 2 && energyCaster == 2,
+                    "native EnergyDamage mitigation then finalized split"),
                 Assertion("shield-other-link-replacement",
                     "latest caster owns one link; damage 1/0/1", observed,
                     replacementOwned && replacementSubject == 1 &&
@@ -7324,8 +7364,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-caster-lethal",
                     "subject 1; caster reaches lethal threshold", observed,
                     casterLethal, "native caster HP and death-threshold application"),
-                Assertion("shield-other-transfer-log", "8 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 8,
+                Assertion("shield-other-transfer-log", "10 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 10,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
