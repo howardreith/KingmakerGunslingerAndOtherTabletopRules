@@ -1590,3 +1590,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   `observe-shield-other-inventory`, then inspect structured membership/model data.
 - Remaining gates: live publication; lifecycle/split; behavior/profile runtime;
   0.0.77 release and final audit. Active blocker: none.
+
+## Shield Other current resume - observer self-filter
+
+- Current phase: final publication observer PASS capture.
+- Last completed runtime result:
+  `20260810T1239058867514Z-observe-shield-other-inventory`; eight-list
+  publication PASS, duplicate assertion false-positive on the project GUID.
+- Exact current commit: `d2a76d896fb9d00507a1c7a306c67303997f35ca`; observer
+  self-filter change is uncommitted.
+- Exact next action: build, commit/publish, rerun guarded observer once, curate
+  PASS evidence, then begin link lifecycle/runtime component implementation.
+- Remaining gates unchanged. Active blocker: none.

@@ -173,3 +173,18 @@ guarded inventory scenario and curate exact membership/model evidence.
 
 Next: publish this timing repair, rebuild the clean SHA, and rerun the guarded
 save-free observer once with the changed strategy.
+
+## 2026-08-10 - publication mechanics pass, observer self-filter repair
+
+- Repaired run `20260810T1239058867514Z-observe-shield-other-inventory`
+  reached a structured result. All eight required/discovered level-2 list
+  memberships passed exactly once, and first-idle reconciliation completed twice.
+- Exact CotW models match the resolver: Oracle spontaneous divine Charisma;
+  Warpriest prepared divine Wisdom; Psychic spontaneous non-arcane Intelligence.
+- The sole FAIL was observer-only: its foreign-duplicate scan counted the newly
+  registered project ability itself. Production final-live scanning already
+  excluded the ability by reference. The observer now excludes the stable project
+  GUID before candidate classification.
+
+Next: qualify/publish the observer-only self-filter, then rerun once to capture a
+fully PASS structured result without changing publication mechanics.

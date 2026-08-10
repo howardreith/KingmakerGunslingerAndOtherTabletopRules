@@ -33,7 +33,8 @@ namespace KingmakerGunslinger.Spells.ShieldOther
             var records = new List<string>();
             const string ShieldOtherGuid = "6a8c4c1d2fbe4d6a9a724988c1348401";
             BlueprintAbility[] duplicates = all.OfType<BlueprintAbility>()
-                .Where(IsShieldOtherCandidate).ToArray();
+                .Where(value => !string.Equals(value.AssetGuid, ShieldOtherGuid,
+                    StringComparison.Ordinal) && IsShieldOtherCandidate(value)).ToArray();
             foreach (BlueprintAbility value in duplicates)
                 records.Add("duplicate=" + Describe(value));
 
