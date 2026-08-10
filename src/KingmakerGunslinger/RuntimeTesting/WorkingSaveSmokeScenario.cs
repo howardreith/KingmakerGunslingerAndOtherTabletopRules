@@ -1390,11 +1390,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 object stashedDescriptor = args == null || args.Length == 0
                     ? null : args[0];
                 if (_expectedWorkingSaveInProgress &&
-                    ReferenceEquals(stashedDescriptor, _workingDescriptor))
+                    IsWorking(stashedDescriptor) &&
+                    !IsBaseline(stashedDescriptor))
                 {
                     _expectedWorkingStashedAreaCount++;
                     Add("exact-working-stashed-area-write", method, args,
-                        "authorized subordinate worker write;count=" +
+                        "authorized exact immutable working identity on native clone;count=" +
                         _expectedWorkingStashedAreaCount);
                 }
                 else

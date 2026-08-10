@@ -94,4 +94,8 @@ clean. The request-scoped sentinel accepts exactly one native `SaveRoutine` on
 the same captured `SaveInfo` object and rejects every other save boundary.
 Kingmaker 2.1.7b performs subordinate stashed-area serialization on a worker
 thread; that exact method is accepted only after the authorized save routine has
-started and only for the identical captured working descriptor.
+started and only for the exact immutable working-save identity.
+The subordinate method receives Kingmaker's cloned descriptor, so its guard uses
+the full immutable working identity (name, file/folder, game name/id, and area)
+plus explicit baseline exclusion; catalog load and top-level save authorization
+continue to require the captured object reference.

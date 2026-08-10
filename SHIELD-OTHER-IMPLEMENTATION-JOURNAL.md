@@ -732,3 +732,17 @@ Next: commit/publish and run guarded standalone runtime qualification.
   worker/write boundary remains fail-closed. Focused contracts are now 13/13;
   preflight 86/86, repository validation, 981/981 deterministic tests, and the
   exact-reference Release compile pass after the repair.
+- Repaired request `20260810T1549246407346Z-working-save-shield-other-prepare`
+  proved the subordinate method receives a native cloned `SaveInfo` rather than
+  the catalog reference. All pre-save mechanics assertions passed; the sentinel
+  alone failed (`SaveRoutine=1`, stashed areas classified unexpected). Working
+  save SHA-256 became
+  `9441b9aa47298065c03998e27a6f30d4213f954d0ec08f14fc708d3b776aa268`;
+  protected baseline remained
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+- Final narrow strategy: retain object-reference identity for the catalog load
+  and top-level `SaveRoutine`; accept the subordinate clone only when the
+  existing complete immutable working predicate matches name, folder/file,
+  game name/id, and area, while separately excluding the baseline identity.
+  Focused 13/13, deterministic 981/981, repository validation, and exact Release
+  compile pass after this change.

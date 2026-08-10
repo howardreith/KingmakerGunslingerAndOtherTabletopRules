@@ -26,7 +26,8 @@ $checks = [ordered]@{
         $smoke.Contains('_expectedWorkingSaveRoutineCount == 1')
     'exact-worker-area-write-only' =
         $smoke.Contains('method.Name == "SaveStashedArea"') -and
-        $smoke.Contains('ReferenceEquals(stashedDescriptor, _workingDescriptor)') -and
+        $smoke.Contains('IsWorking(stashedDescriptor)') -and
+        $smoke.Contains('!IsBaseline(stashedDescriptor)') -and
         $runner.Contains('evidence.ExpectedWorkingStashedAreaCount >= 1')
     'unexpected-write-still-fails' =
         $smoke.Contains('_writeObserved = true;') -and

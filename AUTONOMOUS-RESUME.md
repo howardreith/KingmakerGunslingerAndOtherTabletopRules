@@ -9,10 +9,10 @@
   `SaveStashedArea`, focused persistence contracts 13/13, runtime
   preflight 86/86, complete deterministic suite 981/981, exact-reference
   Release compile, and strict 0.0.76 checkpoint package validation all pass.
-- Exact current commit before this repair checkpoint is
-  `544dbbda6f33a2e2b2fc271427e24a6f98d1d2d0`; the narrow sentinel repair
+- Exact current commit before this native-clone repair checkpoint is
+  `18bcb1cfbad87c69a201fa0c49b3ff4cd49bc557`; the narrow identity repair
   are intentionally uncommitted until this evidence update is committed.
-- Exact next action: commit and publish the native `SaveStashedArea` repair, then
+- Exact next action: commit and publish the native cloned-`SaveInfo` repair, then
   run `working-save-shield-other-prepare` followed by a fresh-launch
   `working-save-shield-other-verify-cleanup`, both naming only
   `KMG_AUTOMATION_WORKING` and exiting after the exact save callback.
