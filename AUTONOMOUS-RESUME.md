@@ -1577,3 +1577,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Remaining gates: runtime publication proof; lifecycle; exact split;
   disposable scenarios; version 0.0.77; compatibility repetitions; final audit.
 - Active blocker: none.
+
+## Shield Other current resume - first-idle timing repair
+
+- Current phase: guarded publication observer retry after evidence-backed repair.
+- Last completed check: repaired `Build-Local.ps1` PASS, 978/978 tests and exact
+  Release/package. Failed run evidence is
+  `20260810T1235457719557Z-observe-shield-other-inventory`.
+- Exact current commit: `2e2f6d042bc5470bb19c8fa62812cdb6fad48dfe` with the
+  first-idle timing repair ready to commit.
+- Exact next action: commit/publish repair, rebuild clean SHA, rerun guarded
+  `observe-shield-other-inventory`, then inspect structured membership/model data.
+- Remaining gates: live publication; lifecycle/split; behavior/profile runtime;
+  0.0.77 release and final audit. Active blocker: none.

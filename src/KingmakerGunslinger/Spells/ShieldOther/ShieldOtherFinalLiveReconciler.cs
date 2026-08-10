@@ -19,22 +19,14 @@ namespace KingmakerGunslinger.Spells.ShieldOther
         private static readonly FieldInfo FilteredCache = typeof(SpellLevelList)
             .GetField("m_SpellsFiltered", BindingFlags.Instance | BindingFlags.NonPublic);
         private static ModContext _context;
-        private static LibraryScriptableObject _library;
-        private static BlueprintAbility _shieldOther;
-        private static bool _enabled;
-        private static ShieldOtherSpellListPublication _basePublication;
         private static bool _attached;
 
-        internal static void AttachFirstUpdate(ModContext context,
-            LibraryScriptableObject library, BlueprintAbility shieldOther, bool enabled,
-            ShieldOtherSpellListPublication basePublication)
+        internal static void AttachFirstUpdate(ModContext context)
         {
-            if (context == null || library == null || shieldOther == null) return;
+            if (context == null) return;
             lock (Gate)
             {
-                _context = context; _library = library; _shieldOther = shieldOther;
-                _enabled = enabled;
-                _basePublication = basePublication;
+                _context = context;
                 if (_attached) return;
                 _attached = true;
             }
@@ -44,19 +36,22 @@ namespace KingmakerGunslinger.Spells.ShieldOther
         private static void FirstUpdate(UnityModManager.ModEntry entry, float delta)
         {
             ModContext context;
-            LibraryScriptableObject library;
-            BlueprintAbility shieldOther;
-            bool enabled;
-            ShieldOtherSpellListPublication basePublication;
             lock (Gate)
             {
-                context = _context; library = _library; shieldOther = _shieldOther;
-                enabled = _enabled; _attached = false;
-                basePublication = _basePublication;
+                context = _context; _attached = false;
             }
             context.ModEntry.OnUpdate -= FirstUpdate;
             try
             {
+                LibraryScriptableObject library = BlueprintBootstrap.Library;
+                ShieldOtherBlueprintSet set = BlueprintBootstrap.ShieldOther;
+                if (library == null || set == null || set.Ability == null)
+                    throw new InvalidOperationException(
+                        "Shield Other bootstrap identities were unavailable at first idle update.");
+                BlueprintAbility shieldOther = set.Ability;
+                bool enabled = context.FeatureModules.Active.ShieldOther;
+                ShieldOtherSpellListPublication basePublication =
+                    BlueprintBootstrap.ShieldOtherPublication;
                 BlueprintAbility[] duplicates = FinalAbilities(library).Where(value =>
                     !ReferenceEquals(value, shieldOther) && IsShieldOther(value)).ToArray();
                 if (duplicates.Length != 0)

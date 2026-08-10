@@ -157,3 +157,19 @@ observer, and verify the exact CotW casting-model and all eight list memberships
 
 Next: publish the observer checkpoint, rebuild its clean SHA, then run the
 guarded inventory scenario and curate exact membership/model evidence.
+
+## 2026-08-10 - first guarded publication run and timing repair
+
+- Guarded run `20260810T1235457719557Z-observe-shield-other-inventory` failed
+  before a structured result. Exact `output_log.txt` showed a bootstrap
+  `NullReferenceException` after UI attachment.
+- Root cause: `Main.Load` dereferenced `BlueprintBootstrap.ShieldOther.Ability`
+  while LoadDictionary had not yet supplied a pending library in that process.
+- The repair attaches the dedicated callback with context only and resolves the
+  library, identities, immutable setting, and retained base transaction at the
+  actual first idle update. No gameplay or publication policy changed.
+- Complete validation, 978 deterministic tests, exact-reference Release build,
+  and strict package validation PASS.
+
+Next: publish this timing repair, rebuild the clean SHA, and rerun the guarded
+save-free observer once with the changed strategy.
