@@ -379,9 +379,9 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("{ 43 } else { 41 }") &&
-                packager.Contains("choices=(41, 43)"),
-                "deterministic package counts include the project-owned Paper Cartridge icon");
+            Assertions.True(localBuild.Contains("{ 44 } else { 42 }") &&
+                packager.Contains("choices=(41, 42, 43, 44)"),
+                "deterministic package counts include all project-owned runtime icons");
         }
 
         internal static void LightningReloadDynamicActions()

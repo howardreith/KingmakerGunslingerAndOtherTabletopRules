@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.75-feature-modules-acadamae-graduate",
-  "version": "0.0.75",
+  "milestone": "0.0.76-acadamae-mode-fatigue-icon-repair",
+  "version": "0.0.76",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -60,9 +60,9 @@
     "sprint30EntryApproved": true
   },
   "featureModules75": {
-    "deterministicTestCount": 967,
-    "activeBlueprintCount": 250,
-    "ledgerEntryCount": 251,
+    "deterministicTestCount": 970,
+    "activeBlueprintCount": 252,
+    "ledgerEntryCount": 253,
     "reservedBlueprintCount": 1,
     "fourModuleConfigurationsQualified": true,
     "acadamaeCordIntegrationQualified": true,

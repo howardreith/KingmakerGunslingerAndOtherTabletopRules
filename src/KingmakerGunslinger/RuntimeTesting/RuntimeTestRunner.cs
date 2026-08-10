@@ -17,6 +17,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
@@ -6830,8 +6831,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("feature-module-active-snapshot", "request-local expected states",
                     observed, activeGunslinger == expectedGunslinger &&
                     activeAcadamae == expectedAcadamae, "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "250 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 250,
+                Assertion("feature-module-identity-count", "252 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 252,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -6910,14 +6911,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             UnitEntityData unit = null;
             ItemEntity cord = null;
+            UnitEntityData viewUnit = null;
+            Kingmaker.EntitySystem.SceneEntitiesState viewScene = null;
             object wizardController = null;
             BlueprintSpellbook wizardBookBlueprint = null;
             BlueprintBuff fatiguedBlueprint = null;
+            ActivatableAbility acadamaeMode = null;
             string spellIdentity = "<none>";
-            bool prepared = false, presentation = false, successObserved = false,
+            bool prepared = false, modeGranted = false, modeOffObserved = false,
+                presentation = false, successObserved = false,
                 failureObserved = false, cancellationObserved = false,
-                cordObserved = false, cordBuffRetained = false, cleaned = false;
-            int spellLevel = -1, successCount = -1, failureCount = -1,
+                snapshotObserved = false, fatigueIndependent = false,
+                fatigueSurvivedContextCleanup = false, restRemoved = false,
+                modeViewLifecycle = false, cordObserved = false,
+                cordBuffRetained = false, cleaned = false;
+            int spellLevel = -1, offCount = -1, successCount = -1, failureCount = -1,
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
                 cordBuffCalls = -1, cordExactMatches = -1, observedDc = -1;
@@ -6991,6 +6999,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spellbook.AddKnown(spellLevel, spell, true);
                 unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
 
+                acadamaeMode = unit.Descriptor.ActivatableAbilities.Enumerable
+                    .Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.AcadamaeGraduateMode.Ability));
+                modeGranted = !acadamaeMode.IsOn &&
+                    unit.Descriptor.Buffs.GetBuff(
+                        BlueprintBootstrap.AcadamaeGraduateMode.Marker) == null;
+
+                AcadamaeCastingRuntime.ResetDiagnostics();
+                AbilityData modeOff = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                bool nativeFullRound = AcadamaeCastingRuntime.InspectPreAcadamae(modeOff) &&
+                    modeOff.RequireFullRoundAction;
+                UnitUseAbility modeOffCommand = new UnitUseAbility(modeOff,
+                    new TargetWrapper(unit));
+                AcadamaeCastingRuntime.Begin(modeOffCommand);
+                RuleCastSpell modeOffRule = new RuleCastSpell(modeOff,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(modeOffRule);
+                AcadamaeCastingRuntime.End(modeOffCommand);
+                offCount = AcadamaeCastingRuntime.CompletedCount;
+                modeOffObserved = modeOffRule.Success && nativeFullRound && offCount == 0 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                acadamaeMode.IsOn = true;
+                if (unit.Descriptor.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) == null)
+                    throw new InvalidOperationException(
+                        "Native Acadamae mode activation did not create its exact marker.");
+
                 AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 prepared = spellbook.CanSpend(first, false) &&
                     ReferenceEquals(first.Spellbook, spellbook);
@@ -6998,7 +7034,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !first.RequireFullRoundAction &&
                     first.RuntimeActionType == UnitCommand.CommandType.Standard;
 
-                AcadamaeCastingRuntime.ResetDiagnostics();
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
                 AcadamaeSavingThrowTestControl.Queue(10);
                 UnitUseAbility successCommand = new UnitUseAbility(first,
@@ -7014,6 +7049,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AcadamaeCastingRuntime.LastSavePassed &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
 
+                AbilityData snapOn = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility snapOnCommand = new UnitUseAbility(snapOn,
+                    new TargetWrapper(unit));
+                acadamaeMode.IsOn = false;
+                acadamaeMode.Stop(true);
+                AcadamaeSavingThrowTestControl.Queue(10);
+                AcadamaeCastingRuntime.Begin(snapOnCommand);
+                RuleCastSpell snapOnRule = new RuleCastSpell(snapOn,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(snapOnRule);
+                AcadamaeCastingRuntime.End(snapOnCommand);
+                int snapshotRiskCount = AcadamaeCastingRuntime.CompletedCount;
+                AbilityData snapOff = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                UnitUseAbility snapOffCommand = new UnitUseAbility(snapOff,
+                    new TargetWrapper(unit));
+                acadamaeMode.IsOn = true;
+                AcadamaeCastingRuntime.Begin(snapOffCommand);
+                RuleCastSpell snapOffRule = new RuleCastSpell(snapOff,
+                    new TargetWrapper(unit));
+                Rulebook.Trigger(snapOffRule);
+                AcadamaeCastingRuntime.End(snapOffCommand);
+                snapshotObserved = snapOnRule.Success && snapOffRule.Success &&
+                    snapshotRiskCount == 2 &&
+                    AcadamaeCastingRuntime.CompletedCount == snapshotRiskCount;
+
                 AbilityData cancelled = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 UnitUseAbility cancelledCommand = new UnitUseAbility(cancelled,
                     new TargetWrapper(unit));
@@ -7022,7 +7082,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(unit));
                 Rulebook.Trigger(cancelledRule);
                 cancellationCount = AcadamaeCastingRuntime.CompletedCount;
-                cancellationObserved = cancelledRule.Success && cancellationCount == 1 &&
+                cancellationObserved = cancelledRule.Success && cancellationCount == 2 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
 
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
@@ -7049,7 +7109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cordBuffCalls = Cord.CordConditionRuntime.BeginBuffCalls;
                 cordExactMatches = Cord.CordConditionRuntime.ExactBuffMatches;
                 cordBuffRetained = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) != null;
-                cordObserved = cordRule.Success && cordCount == 2 &&
+                cordObserved = cordRule.Success && cordCount == 3 &&
                     cordDamage >= 1 && cordDamage <= 6 &&
                     cordApplied == cordDamage && cordRoll >= 1 && cordRoll <= 6 &&
                     cordBuffCalls >= 1 && cordExactMatches >= 1 &&
@@ -7068,21 +7128,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AcadamaeCastingRuntime.End(failedCommand);
                 failureCount = AcadamaeCastingRuntime.CompletedCount;
                 Buff failedFatigue = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint);
-                failureObserved = failedRule.Success && failureCount == 3 &&
+                failureObserved = failedRule.Success && failureCount == 4 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
-                if (failedFatigue != null)
-                    unit.Descriptor.Buffs.RemoveFact(failedFatigue);
-                else if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
-                    unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
-                if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
-                    throw new InvalidOperationException(
-                        "Native Fatigued state remained after request-local cleanup.");
+                FieldInfo endTime = typeof(Buff).GetField("m_EndTime",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                fatigueIndependent = failedFatigue != null && endTime != null &&
+                    endTime.GetValue(failedFatigue) == null &&
+                    failedFatigue.Context != null &&
+                    failedFatigue.Context.ParentContext == null &&
+                    !ReferenceEquals(failedFatigue.Context, failedRule.Context) &&
+                    fatiguedBlueprint.RemoveOnRest;
+                // The rejected build coupled Fatigued to failedRule.Context. The
+                // native caster overload creates a root context instead; dropping
+                // every request-local reference to the completed spell context is
+                // the exact safe context-expiration reproduction available to this
+                // save-free fixture.
+                failedRule = null;
+                failedCommand = null;
+                failed = null;
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
+                fatigueSurvivedContextCleanup =
+                    unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) == failedFatigue &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                Kingmaker.Controllers.Rest.RestController.ApplyRest(unit.Descriptor);
+                restRemoved = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) == null &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                viewScene = new Kingmaker.EntitySystem.SceneEntitiesState(
+                    "KMG_Acadamae_Mode_View_Lifecycle");
+                viewUnit = Game.Instance.EntityCreator.SpawnUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter, Vector3.zero,
+                    Quaternion.identity, viewScene);
+                viewUnit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
+                ActivatableAbility viewMode = viewUnit.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.AcadamaeGraduateMode.Ability));
+                viewMode.IsOn = true;
+                Buff viewMarker = viewUnit.Descriptor.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker);
+                viewMarker.SpawnParticleEffect();
+                FieldInfo particle = typeof(Buff).GetField("m_ParticleEffect",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                modeViewLifecycle = viewUnit.View != null && viewUnit.View.Data != null &&
+                    viewMarker != null && particle != null &&
+                    particle.GetValue(viewMarker) == null;
             }
             finally
             {
                 if (unit != null)
                 {
+                    if (acadamaeMode != null && acadamaeMode.IsOn)
+                    {
+                        acadamaeMode.IsOn = false;
+                        acadamaeMode.Stop(true);
+                    }
                     if (wizardController != null)
                     {
                         MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.
@@ -7107,11 +7208,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             UnitCondition.Fatigued) && unit.Body.Belt.MaybeItem == null;
                     unit.Dispose();
                 }
+                if (viewUnit != null) viewUnit.Dispose();
+                if (viewScene != null) viewScene.Dispose();
                 AcadamaeCastingRuntime.ResetDiagnostics();
                 AcadamaeSavingThrowTestControl.Cancel();
             }
             string observed = "spell=" + spellIdentity + ";level=" + spellLevel +
-                ";prepared=" + prepared + ";presentation=" + presentation +
+                ";prepared=" + prepared + ";modeGranted=" + modeGranted +
+                ";modeOff=" + modeOffObserved + ";offCount=" + offCount +
+                ";presentation=" + presentation +
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
                 ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +
                 ";dc=" + observedDc + ";cordHpBefore=" + cordHpBefore +
@@ -7119,12 +7224,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cordDamage=" + cordDamage + ";cordBuffCalls=" + cordBuffCalls +
                 ";cordExactMatches=" + cordExactMatches +
                 ";cordBuffRetained=" + cordBuffRetained +
+                ";snapshot=" + snapshotObserved +
+                ";fatigueIndependent=" + fatigueIndependent +
+                ";survivedContextCleanup=" + fatigueSurvivedContextCleanup +
+                ";restRemoved=" + restRemoved +
+                ";modeViewLifecycle=" + modeViewLifecycle +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("acadamae-prepared-summoning",
                     "real prepared arcane Conjuration (Summoning) spell", observed,
                     prepared && spellLevel >= 0, "native Wizard spellbook and slot"),
+                Assertion("acadamae-mode-grant-default-off",
+                    "feat grants exact native mode, initially off", observed,
+                    modeGranted, "restoring AddFacts and native activatable collection"),
+                Assertion("acadamae-mode-off-native-cast",
+                    "mode OFF remains Full-Round and causes no save or fatigue", observed,
+                    modeOffObserved, "native action and unarmed command correlation"),
                 Assertion("acadamae-action-parity", "Full-Round becomes Standard in UI/runtime",
                     observed, presentation, "AbilityData full-round and runtime action surfaces"),
                 Assertion("acadamae-save-success", "one Fortitude save succeeds; no fatigue",
@@ -7134,6 +7250,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, failureObserved, "native Fatigued blueprint"),
                 Assertion("acadamae-cancellation", "cancelled marker causes no save or fatigue",
                     observed, cancellationObserved, "exact command marker cancellation"),
+                Assertion("acadamae-command-snapshot",
+                    "ON-built command retains risk; OFF-built command is not retroactive",
+                    observed, snapshotObserved, "exact constructor-time command correlation"),
+                Assertion("acadamae-fatigue-lifetime",
+                    "independent indefinite canonical fatigue survives spell-context cleanup",
+                    observed, failureObserved && fatigueIndependent &&
+                        fatigueSurvivedContextCleanup,
+                    "native caster overload and root MechanicsContext"),
+                Assertion("acadamae-fatigue-rest-removal",
+                    "canonical fatigue is removed by native rest", observed,
+                    restRemoved, "RestController.ApplyRest and RemoveOnRest"),
+                Assertion("acadamae-mode-view-lifecycle",
+                    "attached-view marker activation is persistent and no-FX safe",
+                    observed, modeViewLifecycle,
+                    "native activatable, Buff.SpawnParticleEffect, and disposable scene"),
                 Assertion("acadamae-cord-integration",
                     "failed save becomes one d6 Cord damage and no fatigue", observed,
                     cordObserved, "shared native fatigue application boundary"),
@@ -7177,7 +7308,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int constitutionBefore = 0, constitutionCord = 0;
             int fatigueDamage = -1, exhaustionDamage = -1, floorDamage = -1;
             bool fatigueSuppressed = false, exhaustionDowngraded = false,
-                inventoryInert = false, unequippedOrdinary = false, cleaned = false;
+                inventoryInert = false, unequippedOrdinary = false,
+                projectIcon = false, cleaned = false;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -7185,6 +7317,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Stats.HitPoints.BaseValue = 30;
                 constitutionBefore = unit.Descriptor.Stats.Constitution.ModifiedValue;
                 cord = BlueprintBootstrap.CordOfStubbornResolve.CreateEntity();
+                BlueprintItemEquipmentBelt donor = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintItemEquipmentBelt>().Single(value =>
+                        value.name == "BeltOfConstitution2" && value.Cost == 4000);
+                projectIcon = cord.Blueprint.Icon != null && donor.Icon != null &&
+                    !ReferenceEquals(cord.Blueprint.Icon, donor.Icon) &&
+                    cord.Blueprint.Icon.name ==
+                        "KMG_Icon_cord-of-stubborn-resolve";
                 inventoryInert = !unit.Descriptor.State.HasCondition(
                     UnitCondition.Fatigued) && unit.Damage == 0;
                 unit.Body.Belt.InsertItem(cord);
@@ -7245,6 +7384,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("cord-constitution", "+2 Constitution while equipped",
                     observed, constitutionCord == constitutionBefore + 2,
                     "native belt enchantment equip lifecycle"),
+                Assertion("cord-project-icon",
+                    "exact project sprite distinct from native Constitution donor",
+                    observed + ";projectIcon=" + projectIcon, projectIcon,
+                    "live BlueprintItem icon references"),
                 Assertion("cord-fatigue", "one d6 damage and no Fatigued",
                     observed, fatigueSuppressed, "native UnitState.AddCondition"),
                 Assertion("cord-exhaustion", "one d6 damage plus Fatigued, no Exhausted",

@@ -2,7 +2,10 @@ using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Acadamae;
 using UnityEngine;
 
@@ -18,6 +21,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string OppositionSelectionGuid = "6c29030e9fea36949877c43a6f94ff31";
         private const string UniversalistGuid = "0933849149cfc9244ac05d6a5b57fd80";
         private const string FatiguedBuffGuid = "e6f2fc5d73d88064583cb828801212f4";
+        internal const string ModeGrantComponentName = "$KMG_GrantUseAcadamaeGraduate";
 
         internal static BlueprintFeature Register(LibraryScriptableObject library,
             BlueprintRegistry registry)
@@ -42,6 +46,23 @@ namespace KingmakerGunslinger.Blueprints
                 () => Create(iconDonor, wizard, schools, opposition, universalist));
         }
 
+        internal static void AttachMode(BlueprintFeature feature,
+            BlueprintActivatableAbility ability)
+        {
+            if (feature == null) throw new ArgumentNullException("feature");
+            if (ability == null) throw new ArgumentNullException("ability");
+            if (feature.ComponentsArray == null || feature.ComponentsArray.Length != 1 ||
+                !(feature.ComponentsArray[0] is PrerequisiteAcadamaeGraduate))
+                throw new InvalidOperationException(
+                    "Acadamae Graduate must contain only its prerequisite before the mode grant is attached.");
+            var grant = ScriptableObject.CreateInstance<AddFacts>();
+            grant.name = ModeGrantComponentName;
+            grant.Facts = new BlueprintUnitFact[] { ability };
+            grant.DoNotRestoreMissingFacts = false;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                feature.ComponentsArray[0], grant };
+        }
+
         private static BlueprintFeature Create(BlueprintProgression iconDonor,
             BlueprintCharacterClass wizard, BlueprintFeatureSelection schools,
             BlueprintFeatureSelection opposition, BlueprintProgression universalist)
@@ -62,7 +83,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Name",
                     "Acadamae Graduate"),
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Description",
-                    "Prerequisite: specialist wizard 1st level; Conjuration cannot be a forbidden school. When you cast a prepared arcane Conjuration (Summoning) spell that takes longer than a standard action, reduce its casting time by one round, to a minimum of one standard action. After the accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes fatigue."),
+                    "Prerequisite: specialist wizard 1st level; Conjuration cannot be a forbidden school. Activate Use Acadamae Graduate to reduce an eligible prepared arcane Conjuration (Summoning) spell's casting time by one round, to a minimum of one standard action. After an accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes fatigue. Leave the mode off to cast normally without this save or fatigue risk."),
                 iconDonor.Icon);
             return feature;
         }

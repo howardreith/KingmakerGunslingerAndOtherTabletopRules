@@ -45,6 +45,9 @@ namespace KingmakerGunslinger.Acadamae
                     HasFeat = BlueprintBootstrap.AcadamaeGraduate != null &&
                         ability.Caster.Progression.Features.GetRank(
                             BlueprintBootstrap.AcadamaeGraduate) > 0,
+                    AccelerationModeActive = BlueprintBootstrap.AcadamaeGraduateMode != null &&
+                        ability.Caster.Buffs.GetBuff(
+                            BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null,
                     IsRealSpell = ability.Blueprint.IsSpell,
                     HasSpellbook = spellbook != null,
                     IsPreparedInvocation = preparedInvocation,
@@ -85,7 +88,8 @@ namespace KingmakerGunslinger.Acadamae
             _lastDifficultyClass = saving.DifficultyClass;
             _lastSavePassed = saving.IsPassed;
             if (!saving.IsPassed)
-                rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued, rule.Context, null);
+                rule.Initiator.Descriptor.Buffs.AddBuff(_fatigued,
+                    rule.Initiator, null);
             return true;
         }
     }

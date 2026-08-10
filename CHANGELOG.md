@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.76 - Acadamae mode, persistent fatigue, and Cord icon repair
+
+- Adds the default-off, per-character `Use Acadamae Graduate` native toggle;
+  mode-off casts retain native timing and no risk, while mode-on commands
+  snapshot acceleration and their Fortitude-save obligation.
+- Applies failed-save fatigue through Kingmaker's independent caster-context
+  overload, producing indefinite canonical Fatigued that survives summoning
+  context disposal and follows native remove-on-rest behavior.
+- Replaces the Cord's donor icon with original project-owned transparent art.
+- Preserves the accepted UMM modules, prerequisites, Cord mechanics, merchant
+  placement, Paper Cartridge lifecycle behavior, and every existing GUID.
+
 ## 0.0.75 - Feature modules, Acadamae Graduate, and Cord of Stubborn Resolve
 
 - Adds independent, persistent, default-enabled Gunslinger and Acadamae Graduate feature modules to the composed UMM panel. Changes apply after a complete restart; disabled content is hidden from new selection/acquisition while existing save identities and mechanics remain available.

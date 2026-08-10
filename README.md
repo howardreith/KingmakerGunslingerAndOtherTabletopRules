@@ -1,6 +1,18 @@
 # Kingmaker Gunslinger
 
-Version `0.0.75-feature-modules-acadamae-graduate` provides the complete qualified Gunslinger package plus two independent, persistent feature modules for Pathfinder: Kingmaker 2.1.7b.
+Version `0.0.76-acadamae-mode-fatigue-icon-repair` provides the complete Gunslinger package plus two independent, persistent feature modules for Pathfinder: Kingmaker 2.1.7b.
+
+Acadamae Graduate now grants a per-character **Use Acadamae Graduate** mode,
+which defaults off. Leave it off to use a summon spell's native casting time
+with no Acadamae save or fatigue risk. Turn it on to accelerate eligible casts
+to a Standard action and accept the Fortitude save after each successful cast.
+The mode persists until turned off; a command already accelerated while it was
+on retains its save obligation.
+
+Fatigue caused by a failed Acadamae save is now ordinary native Fatigued,
+independent of the summoning spell and persistent until normal removal such as
+rest. The Cord still substitutes that fatigue, and now uses distinct
+project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
@@ -22,7 +34,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
-The sections below retain historical subsystem detail; where version-specific wording conflicts, this 0.0.75 section and the qualification report are authoritative.
+The sections below retain historical subsystem detail; where version-specific wording conflicts, the 0.0.76 text above and its qualification report are authoritative.
 
 ## Current vertical slice
 

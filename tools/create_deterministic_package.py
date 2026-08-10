@@ -13,7 +13,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--expected-file-count", required=True, type=int, choices=(41, 43))
+    parser.add_argument("--expected-file-count", required=True, type=int, choices=(41, 42, 43, 44))
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_dir() or source.name != "KingmakerGunslinger":

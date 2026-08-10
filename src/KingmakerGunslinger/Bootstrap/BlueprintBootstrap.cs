@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 250;
+        internal const int ExpectedRegisteredBlueprintCount = 252;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -54,6 +54,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static MagicFirearmBlueprintCatalog _magicFirearms;
         private static GunslingerClassBlueprintSet _gunslingerClassBlueprints;
         private static BlueprintFeature _acadamaeGraduate;
+        private static AcadamaeGraduateModeBlueprintSet _acadamaeGraduateMode;
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
@@ -107,6 +108,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static BlueprintFeature AcadamaeGraduate
         {
             get { lock (Gate) { return _acadamaeGraduate; } }
+        }
+
+        internal static AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode
+        {
+            get { lock (Gate) { return _acadamaeGraduateMode; } }
         }
 
         internal static BlueprintItemEquipmentBelt CordOfStubbornResolve
@@ -511,6 +517,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _magicFirearms = result.MagicFirearms;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
                     _acadamaeGraduate = result.AcadamaeGraduate;
+                    _acadamaeGraduateMode = result.AcadamaeGraduateMode;
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
@@ -601,6 +608,11 @@ namespace KingmakerGunslinger.Bootstrap
 
                 BlueprintFeature acadamaeGraduate =
                     AcadamaeGraduateBlueprints.Register(library, registry);
+                AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode =
+                    AcadamaeGraduateModeBlueprints.Register(registry,
+                        acadamaeGraduate.Icon);
+                AcadamaeGraduateBlueprints.AttachMode(acadamaeGraduate,
+                    acadamaeGraduateMode.Ability);
                 BlueprintItemEquipmentBelt cordOfStubbornResolve =
                     CordOfStubbornResolveBlueprints.Register(library, registry);
                 if (publicationPlan.AcadamaeFeat)
@@ -781,7 +793,8 @@ namespace KingmakerGunslinger.Bootstrap
                 ProjectAssetIcons.Apply(gunslingerClassBlueprints, firearmFeats,
                     productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit,
                     gunsmithingSupplies,
-                    paperCartridgeMode,
+                    paperCartridgeMode, acadamaeGraduateMode,
+                    cordOfStubbornResolve,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
                 PlayerFacingPresentation.ApplyArchetypes(
@@ -855,6 +868,7 @@ namespace KingmakerGunslinger.Bootstrap
                     paperCartridgeMode,
                     gunslingerClassBlueprints,
                     acadamaeGraduate,
+                    acadamaeGraduateMode,
                     cordOfStubbornResolve);
             }
             catch (Exception initializationException)
@@ -1018,6 +1032,7 @@ namespace KingmakerGunslinger.Bootstrap
                 PaperCartridgeModeBlueprintSet paperCartridgeMode,
                 GunslingerClassBlueprintSet gunslingerClassBlueprints,
                 BlueprintFeature acadamaeGraduate,
+                AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
                 BlueprintItemEquipmentBelt cordOfStubbornResolve)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
@@ -1045,6 +1060,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("gunslingerClassBlueprints");
                 AcadamaeGraduate = acadamaeGraduate ??
                     throw new ArgumentNullException("acadamaeGraduate");
+                AcadamaeGraduateMode = acadamaeGraduateMode ??
+                    throw new ArgumentNullException("acadamaeGraduateMode");
                 CordOfStubbornResolve = cordOfStubbornResolve ??
                     throw new ArgumentNullException("cordOfStubbornResolve");
             }
@@ -1087,6 +1104,7 @@ namespace KingmakerGunslinger.Bootstrap
 
             internal GunslingerClassBlueprintSet GunslingerClassBlueprints { get; private set; }
             internal BlueprintFeature AcadamaeGraduate { get; private set; }
+            internal AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode { get; private set; }
             internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
         }
     }

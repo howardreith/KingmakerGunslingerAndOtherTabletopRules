@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Cord;
 
@@ -12,6 +14,7 @@ namespace KingmakerGunslinger.DomainTests
             AcadamaeCastRequest valid = Valid();
             AssertEligible(valid, AcadamaeCastingTime.Standard, 0, 18);
             Mutate(valid, r => r.HasFeat = false, "no-feat");
+            Mutate(valid, r => r.AccelerationModeActive = false, "mode-disabled");
             Mutate(valid, r => r.IsRealSpell = false, "not-spell");
             Mutate(valid, r => r.HasSpellbook = false, "no-spellbook");
             Mutate(valid, r => r.IsPreparedInvocation = false, "not-prepared");
@@ -25,6 +28,107 @@ namespace KingmakerGunslinger.DomainTests
             valid.EffectiveCastingTime = AcadamaeCastingTime.Swift;
             Assertions.False(AcadamaeCastingPolicy.Decide(valid).Eligible,
                 "Quickened spells must be ineligible.");
+        }
+
+        internal static void AcadamaeModeAndFatigueSourceContracts()
+        {
+            string mode = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "AcadamaeGraduateModeBlueprints.cs"));
+            foreach (string token in new[] {
+                "KMG.Feats.AcadamaeGraduateModeMarker",
+                "KMG.Feats.UseAcadamaeGraduate",
+                "IsOnByDefault = false",
+                "AbilityActivationType.Immediately",
+                "DeactivateIfCombatEnded = false",
+                "DeactivateAfterFirstRound = false",
+                "DeactivateImmediately = false",
+                "DeactivateIfOwnerDisabled = false",
+                "DeactivateIfOwnerUnconscious = false",
+                "OnlyInCombat = false",
+                "ActionBarAutoFillIgnored = false",
+                "marker.FxOnStart = new PrefabLink()",
+                "marker.FxOnRemove = new PrefabLink()",
+                "marker.ResourceAssetIds = Array.Empty<string>()" })
+                Assertions.True(mode.Contains(token),
+                    "Acadamae mode blueprint contract lacks exact token: " + token);
+
+            string feature = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "AcadamaeGraduateBlueprints.cs"));
+            Assertions.True(feature.Contains("grant.DoNotRestoreMissingFacts = false") &&
+                feature.Contains("grant.Facts = new BlueprintUnitFact[] { ability }") &&
+                feature.Contains("Activate Use Acadamae Graduate"),
+                "Acadamae feat must restore and describe its native mode grant.");
+
+            string casting = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Acadamae",
+                "AcadamaeCastingPatches.cs"));
+            Assertions.True(casting.Contains("AccelerationModeActive =") &&
+                casting.Contains("AcadamaeGraduateMode.Marker") &&
+                casting.Contains("Buffs.AddBuff(_fatigued,\n                    rule.Initiator, null)") &&
+                !casting.Contains("AddBuff(_fatigued, rule.Context"),
+                "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
+        }
+
+        internal static void AcadamaeModeIdentityContracts()
+        {
+            string manifest = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "blueprints", "blueprints.json"));
+            Assertions.True(manifest.Split(new[] {
+                "KMG.Feats.AcadamaeGraduateModeMarker" }, StringSplitOptions.None).Length == 2 &&
+                manifest.Split(new[] { "KMG.Feats.UseAcadamaeGraduate" },
+                    StringSplitOptions.None).Length == 2,
+                "The repair must append exactly two mode identities.");
+            foreach (string identity in new[] {
+                "7939ff087cb843729448589ba2de19f1",
+                "c4b804d9ebf941b4842b0a461a2b6b6d",
+                "b5fc52ec666640318f8921d5fa60ec39",
+                "a780ab99b76849ed825729808e2bbf29" })
+                Assertions.True(manifest.Contains(identity),
+                    "Required stable repair identity is missing: " + identity);
+            string bootstrap = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains(
+                "internal const int ExpectedRegisteredBlueprintCount = 252;") &&
+                bootstrap.Contains("AcadamaeGraduateBlueprints.AttachMode") &&
+                bootstrap.Contains("AcadamaeGraduateModeBlueprints.Register"),
+                "Bootstrap must register exactly 252 identities and attach the mode grant.");
+        }
+
+        internal static void CordProjectIconContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = Path.Combine(root, "assets-source", "original-icons",
+                "cord-of-stubborn-resolve", "cord-of-stubborn-resolve-chroma-source.png");
+            string production = Path.Combine(root, "assets", "game", "icons",
+                "cord-of-stubborn-resolve.png");
+            Assertions.True(File.Exists(source) && File.Exists(production),
+                "Cord source and production icons must exist.");
+            byte[] png = File.ReadAllBytes(production);
+            Assertions.True(png.Length > 24 && png[12] == 0x49 && png[13] == 0x48 &&
+                png[14] == 0x44 && png[15] == 0x52 &&
+                ReadBigEndian(png, 16) == 128 && ReadBigEndian(png, 20) == 128 &&
+                (png[25] == 4 || png[25] == 6),
+                "Cord production art must be a 128x128 PNG with alpha.");
+            string hash;
+            using (SHA256 sha = SHA256.Create())
+                hash = string.Concat(sha.ComputeHash(png).Select(value =>
+                    value.ToString("x2")).ToArray());
+            Assertions.Equal("cf3f040eb22691b1e526eb32cc31d1151eafef7113cb0ebe55d0c2637d5d9928",
+                hash, "Cord production hash must match its provenance record.");
+            string[] duplicates = Directory.GetFiles(Path.Combine(root, "assets", "game", "icons"),
+                "*.png").Where(path => !string.Equals(path, production,
+                    StringComparison.OrdinalIgnoreCase) &&
+                    File.ReadAllBytes(path).SequenceEqual(png)).ToArray();
+            Assertions.Equal(0, duplicates.Length,
+                "Cord production art must not duplicate another project icon.");
+            string iconSource = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "ProjectAssetIcons.cs"));
+            Assertions.True(iconSource.Contains("\"cord-of-stubborn-resolve\"") &&
+                iconSource.Contains("items.SetIcon(cordOfStubbornResolve, cordIcon)") &&
+                iconSource.Contains("ReferenceEquals(cordDonorIcon, cordIcon)"),
+                "Cord must receive and validate its project sprite after donor cloning.");
         }
 
         internal static void AcadamaeMultiRoundAndDc()
@@ -194,11 +298,18 @@ namespace KingmakerGunslinger.DomainTests
 
         private static AcadamaeCastRequest Valid()
         {
-            return new AcadamaeCastRequest { HasFeat = true, IsRealSpell = true,
+            return new AcadamaeCastRequest { HasFeat = true,
+                AccelerationModeActive = true, IsRealSpell = true,
                 HasSpellbook = true, IsPreparedInvocation = true, IsArcane = true,
                 IsConjuration = true, IsSummoning = true,
                 EffectiveCastingTime = AcadamaeCastingTime.FullRound,
                 EffectiveRounds = 1, SpellLevel = 3 };
+        }
+
+        private static int ReadBigEndian(byte[] bytes, int offset)
+        {
+            return (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
+                (bytes[offset + 2] << 8) | bytes[offset + 3];
         }
 
         private static void Mutate(AcadamaeCastRequest original,

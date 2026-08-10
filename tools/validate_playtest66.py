@@ -2,6 +2,7 @@
 """Portable validator for the 0.0.66 sixth-playtest repair."""
 from __future__ import annotations
 import argparse
+import json
 import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
@@ -19,8 +20,10 @@ def require(path: Path, *tokens: str) -> None:
 
 
 def validate(root: Path, test_count: int = 865) -> None:
+    current_version = json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"]
+    active_count, ledger_count = ((252, 253) if current_version == "0.0.76" else (250, 251))
     validate_playtest64.validate_playtest63.validate_sprint60.validate(
-        root, VERSION, INFORMATIONAL_VERSION, test_count, 250, 251)
+        root, VERSION, INFORMATIONAL_VERSION, test_count, active_count, ledger_count)
     require(root / "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
             "ExtractSelectionItems", "IEnumerable<IFeatureSelectionItem>",
             "NativeFirearmFeatLevelUpMenuPatch")

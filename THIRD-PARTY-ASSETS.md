@@ -1,5 +1,9 @@
 # Asset provenance
 
+## Cord of Stubborn Resolve icon
+
+The Cord icon is original AI-assisted project artwork generated specifically for this repository with OpenAI's built-in image-generation tool. Its exact prompt, preserved 1254-by-1254 chroma source, deterministic alpha/resize exporter, production hash, and no-third-party-pixels statement are in `assets-source/original-icons/cord-of-stubborn-resolve/SOURCE.md`. No native belt pixels were used.
+
 ## Mysterious Stranger icon
 
 The Focused Aim icon under `assets-source/original-icons/mysterious-stranger/`

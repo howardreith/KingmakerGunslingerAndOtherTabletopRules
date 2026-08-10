@@ -160,6 +160,7 @@
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
+    <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\CordOfStubbornResolveBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintId.cs" />

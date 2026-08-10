@@ -10,6 +10,7 @@ namespace KingmakerGunslinger.Acadamae
             if (request.SpellLevel < 0 || request.SpellLevel > 10)
                 throw new ArgumentOutOfRangeException("request.SpellLevel");
             string status = !request.HasFeat ? "no-feat" :
+                !request.AccelerationModeActive ? "mode-disabled" :
                 !request.IsRealSpell ? "not-spell" :
                 !request.HasSpellbook ? "no-spellbook" :
                 !request.IsPreparedInvocation ? "not-prepared" :

@@ -7,7 +7,7 @@ The append-only contract contains 233 stable identifiers: 232 active and one res
 The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
-manifest contains 251 stable identifiers: 250 active and one reserved.
+manifest contains 253 stable identifiers: 252 active and one reserved.
 Bootstrap therefore uses the complete two-hundred-forty-seven-blueprint transaction.
 
 Paper Cartridges Phase 1 identities are append-only:
@@ -218,6 +218,13 @@ The absence of a state-token enchantment represents canonical Empty/Normal state
 | `KMG.Items.CordOfStubbornResolve` | `c4b804d9ebf941b4842b0a461a2b6b6d` | `BlueprintItemEquipmentBelt` | Active | Belt-slot Cord identity |
 
 Version 0.0.75 registers 250 active project identities in every module configuration. The two identities above are the only identities appended by this mission; disabled modules change publication only, never registry membership.
+
+Version 0.0.76 appends `KMG.Feats.AcadamaeGraduateModeMarker`
+(`b5fc52ec666640318f8921d5fa60ec39`) and
+`KMG.Feats.UseAcadamaeGraduate`
+(`a780ab99b76849ed825729808e2bbf29`). It registers 252 active identities in
+every module configuration; the ledger contains those identities plus one
+historical reserved entry. The Acadamae Graduate and Cord GUIDs are unchanged.
 
 ## Editing policy
 

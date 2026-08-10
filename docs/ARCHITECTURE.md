@@ -461,6 +461,25 @@ The Rare Firearms amendment added ten append-only identities and activated
 Seeking, Reliable, and eight magic items. Paper Cartridges Phase 1 appends three
 more identities: the stackable cartridge item and Normal/Broken paper-loaded
 state tokens, the unit-local Paper Cartridge reload-source mode, and its shared-entitlement crafting recipe. Acadamae Graduate and the Cord of Stubborn Resolve add two independent, always-loaded identities whose publication is module-gated. The ledger now contains 251 stable IDs: 250 active and one reserved.
+
+## 0.0.76 Acadamae playtest repair
+
+The Acadamae feat now restores a native, per-unit `Use Acadamae Graduate`
+activatable ability through `AddFacts`. Its hidden no-FX marker is the exact
+runtime gate for acceleration and defaults off. Command construction snapshots
+an eligible accelerated invocation, so later toggle changes do not rewrite a
+command already in flight. The two new always-loaded identities bring the
+ledger to 253 stable IDs: 252 active and one reserved.
+
+Failed Acadamae saves add the canonical Fatigued blueprint through the native
+caster overload. That overload creates an independent `MechanicsContext`
+instead of parenting fatigue to the summoning spell context; the buff has no
+duration and native `RemoveOnRest` cleanup. It still crosses the existing Cord
+`RuleApplyBuff` interception boundary.
+
+The Cord continues to clone the native Constitution belt only for equipment
+structure and mechanics. `ProjectAssetIcons` replaces the donor sprite with
+the project-owned `cord-of-stubborn-resolve` icon after asset loading.
 The runtime completes the current two-hundred-forty-five active blueprints
 transaction without changing prior identities. The immutable
 `ReloadAmmunitionProfileCatalog` owns loose and paper loaded IDs, inventory
