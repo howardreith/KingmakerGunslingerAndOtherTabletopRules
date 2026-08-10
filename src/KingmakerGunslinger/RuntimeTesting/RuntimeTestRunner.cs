@@ -6931,7 +6931,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 secondCasterRegistered = false, secondSubjectRegistered = false,
                 cleaned = false, replacementOwned = false,
                 multiSubjectOwned = false, rangeRemoved = false,
-                dispelRemoved = false;
+                areaRemoved = false, dispelRemoved = false,
+                deathRemoved = false;
             bool reciprocalOwned = false, reciprocalNoRecursion = false,
                 casterLethal = false, abilityDamageExcluded = false,
                 constitutionDamageExcluded = false;
@@ -6947,7 +6948,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 reflexDelta = -1, willDelta = -1, linkCount = -1,
                 replacementSubject = -1, replacementFirstCaster = -1,
                 replacementSecondCaster = -1, multipleSubject = -1,
-                multipleCaster = -1, rangedSubject = -1, rangedCaster = -1,
+                multipleCaster = -1, areaSubject = -1, areaCaster = -1,
+                rangedSubject = -1, rangedCaster = -1,
                 dispelledSubject = -1, dispelledCaster = -1;
             int reciprocalSubject = -1, reciprocalCaster = -1,
                 lethalSubject = -1, lethalCaster = -1,
@@ -7194,7 +7196,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 multipleSubject = subjectBefore - secondSubject.HPLeft;
                 multipleCaster = casterBefore - secondCaster.HPLeft;
 
+                stage = "area-termination";
+                SetExactProperty(secondCaster, "IsInGame", false);
+                multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                areaRemoved = !secondSubject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                areaSubject = subjectBefore - secondSubject.HPLeft;
+                areaCaster = casterBefore - secondCaster.HPLeft;
+                SetExactProperty(secondCaster, "IsInGame", true);
+
                 stage = "range-termination";
+                multiple = secondSubject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
+                    TimeSpan.FromHours(5d));
+                if (multiple == null) throw new InvalidOperationException(
+                    "Shield Other range fixture link was rejected.");
                 SetExactProperty(secondSubject, "Position", new Vector3(20f, 0f, 0f));
                 multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
                     handler => handler.OnNewRound());
@@ -7342,6 +7367,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                      secondCaster.Descriptor.State.IsDead ||
                      secondCaster.Descriptor.State.MarkedForDeath ||
                      secondCaster.Descriptor.State.ForceKill);
+                stage = "caster-death-termination";
+                forward.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                deathRemoved = !subject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
             }
             catch (Exception exception)
             {
@@ -7387,7 +7417,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
                 ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
                 multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
-                "/" + rangedCaster + ";dispel=" + dispelRemoved + "/" +
+                "/" + rangedCaster + ";area=" + areaRemoved + "/" + areaSubject +
+                "/" + areaCaster + ";dispel=" + dispelRemoved + "/" +
                 dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
             observed += ";exclusions=" + abilityDamageExcluded + "/" +
                 strengthDamage + "/" + constitutionDamageExcluded + "/" +
@@ -7448,6 +7479,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "link removed; damage 2/0", observed,
                     rangeRemoved && rangedSubject == 2 && rangedCaster == 0,
                     "caster-level close range round revalidation"),
+                Assertion("shield-other-area-termination",
+                    "caster unload removes link; damage 2/0", observed,
+                    areaRemoved && areaSubject == 2 && areaCaster == 0,
+                    "native UnitEntityData.IsInGame area-load boundary"),
                 Assertion("shield-other-dispel-removal",
                     "link removed; damage 2/0", observed,
                     dispelRemoved && dispelledSubject == 2 && dispelledCaster == 0,
@@ -7471,6 +7506,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-caster-lethal",
                     "subject 1; caster reaches lethal threshold", observed,
                     casterLethal, "native caster HP and death-threshold application"),
+                Assertion("shield-other-caster-death-termination",
+                    "dead caster removes link on native round tick", observed,
+                    deathRemoved, "ITickEachRound lifecycle revalidation"),
                 Assertion("shield-other-transfer-log", "12 entries", observed,
                     ShieldOtherCombatLog.Published == logsBefore + 12,
                     "native IWarningNotificationUIHandler combat-log event"),

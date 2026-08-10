@@ -243,7 +243,11 @@ namespace KingmakerGunslinger.DomainTests
                 "shield-other-energy-mitigation-once",
                 "AddDamageResistanceEnergy",
                 "shield-other-target-energy-immunity",
-                "AddEnergyImmunity" })
+                "AddEnergyImmunity",
+                "area-termination", "\"IsInGame\", false",
+                "shield-other-area-termination",
+                "caster-death-termination",
+                "shield-other-caster-death-termination" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
         }

@@ -507,3 +507,17 @@ Next: commit/publish and run the guarded standalone disposable scenario.
 
 Next: qualify area transition and save/load persistence, then begin required
 profile repetitions.
+
+## 2026-08-10 - area/death lifecycle fixture source-qualified
+
+- Added request-local live assertions for the exact `UnitEntityData.IsInGame`
+  loaded-area boundary and for round-tick removal after transferred damage kills
+  the caster. Later damage must remain wholly on the subject after removal.
+- `Build-Local.ps1`: repository validation, 981/981 tests, exact-reference
+  Release build, and strict package validation all PASS.
+- Package SHA-256:
+  `36f0cd791f3b836ccd27c9bba0989503a11a39589023b8536a33d47d4097885b`;
+  DLL SHA-256:
+  `014c4c41f2426825eb82aa8b192ce71db01cf865c477bd88efe82ad1f5eb84d8`.
+
+Next: commit/publish and run guarded standalone runtime qualification.
