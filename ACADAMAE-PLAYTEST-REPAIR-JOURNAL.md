@@ -71,3 +71,9 @@
 - Root cause: the guarded fixture forced the next global `RuleRollD20`; foreign handlers can consume that thread-local roll during `RuleSavingThrow.OnTrigger`. Exact installed `RuleSavingThrow` exposes public `BaseRollResult` get/set.
 - Repair: retain pre-roll forcing, and additionally apply the same request-local roll in an exact `RuleSavingThrow.OnTrigger` postfix ordered after Call of the Wild. The control is thread-static, active only around Acadamae's guarded native saving throw, and is cleared in `finally`; production play is inert.
 - Next concrete action: full build/package, commit/publish the deterministic fixture repair, then rerun final consecutive standalone and high-risk gates before deployment.
+
+## 2026-08-10 - exact saving-event correlation
+
+- First run on `26ea15a9d3febb4ec824d9c6946d062639f59183`, `20260810T0120099779554Z-6b91b1119f9b45169c6afd95d84538bb`, showed a nested/foreign saving event could consume the new post-roll token: failure/Cord/permanent lifetime passed, while the forced-success and snapshot-success assertions failed.
+- Repair: `Begin` now binds the exact `RuleSavingThrow` instance constructed by Acadamae, and the postfix consumes only for reference equality with that instance. Nested or foreign saving events cannot steal the request-local result.
+- Next concrete action: rebuild, publish, and repeat final-release gates.

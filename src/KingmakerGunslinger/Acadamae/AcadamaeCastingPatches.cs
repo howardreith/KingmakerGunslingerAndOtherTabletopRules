@@ -81,7 +81,7 @@ namespace KingmakerGunslinger.Acadamae
                 !Invocations.ConsumeSuccessful(rule.Spell)) return false;
             var saving = new RuleSavingThrow(rule.Initiator,
                 SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
-            AcadamaeSavingThrowTestControl.Begin();
+            AcadamaeSavingThrowTestControl.Begin(saving);
             try { Rulebook.Trigger(saving); }
             finally { AcadamaeSavingThrowTestControl.End(); }
             _completedCount++;
@@ -108,6 +108,7 @@ namespace KingmakerGunslinger.Acadamae
         [System.ThreadStatic] private static int? _queued;
         [System.ThreadStatic] private static int? _active;
         [System.ThreadStatic] private static int? _postRoll;
+        [System.ThreadStatic] private static RuleSavingThrow _target;
 
         internal static void Queue(int naturalRoll)
         {
@@ -116,10 +117,11 @@ namespace KingmakerGunslinger.Acadamae
             _queued = naturalRoll;
         }
 
-        internal static void Begin()
+        internal static void Begin(RuleSavingThrow target)
         {
             _active = _queued;
             _postRoll = _queued;
+            _target = target;
             _queued = null;
         }
 
@@ -135,21 +137,23 @@ namespace KingmakerGunslinger.Acadamae
             return true;
         }
 
-        internal static bool TryComplete(out int naturalRoll)
+        internal static bool TryComplete(RuleSavingThrow target, out int naturalRoll)
         {
-            if (!_postRoll.HasValue)
+            if (!_postRoll.HasValue || !ReferenceEquals(_target, target))
             {
                 naturalRoll = 0;
                 return false;
             }
             naturalRoll = _postRoll.Value;
             _postRoll = null;
+            _target = null;
             return true;
         }
 
-        internal static void End() { _active = null; _postRoll = null; }
+        internal static void End()
+        { _active = null; _postRoll = null; _target = null; }
         internal static void Cancel()
-        { _queued = null; _active = null; _postRoll = null; }
+        { _queued = null; _active = null; _postRoll = null; _target = null; }
     }
 
     [HarmonyPatch(typeof(RuleSavingThrow), "OnTrigger")]
@@ -159,7 +163,7 @@ namespace KingmakerGunslinger.Acadamae
         private static void Postfix(RuleSavingThrow __instance)
         {
             int naturalRoll;
-            if (AcadamaeSavingThrowTestControl.TryComplete(out naturalRoll))
+            if (AcadamaeSavingThrowTestControl.TryComplete(__instance, out naturalRoll))
                 __instance.BaseRollResult = naturalRoll;
         }
     }

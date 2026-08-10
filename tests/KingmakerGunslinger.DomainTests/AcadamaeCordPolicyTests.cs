@@ -207,7 +207,7 @@ namespace KingmakerGunslinger.DomainTests
                 "src", "KingmakerGunslinger", "Acadamae",
                 "AcadamaeCastingPatches.cs"));
             foreach (string token in new[] {
-                "AcadamaeSavingThrowTestControl.Begin()",
+                "AcadamaeSavingThrowTestControl.Begin(saving)",
                 "finally { AcadamaeSavingThrowTestControl.End(); }",
                 "[HarmonyPatch(typeof(RuleRollD20), \"PreRollDice\")]",
                 "AcadamaeSavingThrowTestControl.TryConsume(out naturalRoll)",
