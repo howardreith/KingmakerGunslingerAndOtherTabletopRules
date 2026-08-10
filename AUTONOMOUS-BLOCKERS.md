@@ -402,6 +402,8 @@ renewable crafting acquisition paths passed. No Paper Cartridges mission hard
 stop remains. The inherited Dodge and Targeting Torso blockers are unchanged.
 # Shield Other active blockers (2026-08-09)
 
-None. Static installed-content scanning has not found a duplicate. Exact 2.1.7b
-IL proves a viable finalized-damage/pre-HP interception boundary. Final live
-duplicate scanning and runtime seam qualification remain mandatory gates.
+None. Initial and first-idle final-live scans found no foreign Shield Other.
+Exact 2.1.7b finalized-damage/pre-HP interception, expanded damage behavior,
+save/load persistence, all eight module combinations, standalone x2, CotW x2,
+and highest-risk combined x2 are runtime-qualified for release 0.0.77. Every
+profile restored the prior Mods directory exactly and protected saves are intact.

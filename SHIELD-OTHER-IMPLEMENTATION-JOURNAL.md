@@ -801,3 +801,30 @@ Next: commit/publish and run guarded standalone runtime qualification.
 
 Next: commit/publish the release source, verify remote equality, then execute
 the final exact-commit matrix and consecutive runtime profiles.
+
+## 2026-08-10 — final exact-commit qualification
+
+- Published release-source SHA
+  `80d468ee22835d6c258041cd63f2cd288ef0401e`; origin equality verified first.
+- All eight module combinations passed. Ordered evidence IDs are
+  `20260810T1627445514271Z`, `20260810T1630083823184Z`,
+  `20260810T1632305619801Z`, `20260810T1634384073420Z`,
+  `20260810T1636470659096Z`, `20260810T1638554577488Z`,
+  `20260810T1641029948281Z`, and `20260810T1643115666580Z`. Settings restored
+  exactly to SHA-256
+  `a08c80d5e877d4f6b5deea1247a9764bb48c08031b90da91a6e24d953e465ba6`.
+- Consecutive standalone PASS IDs: `20260810T1645354769017Z` and
+  `20260810T1647523323239Z`.
+- Exact CotW PASS/restored transactions:
+  `compat-20260810T164943Z-046b85f47e64` and
+  `compat-20260810T165221Z-e48789eb06ec`.
+- Highest-risk PASS/restored transactions:
+  `compat-20260810T165454Z-9ceec19dd586` and
+  `compat-20260810T165726Z-dbba50e40dcd`.
+- Final strict package SHA-256 is
+  `b1b79a8c57b44e13fc2ed7343c2ad75bf32df575a7ede1a89dfca0bd76b6e646`;
+  runtime-qualified DLL SHA-256 is
+  `602a4f689b7fa41684dbc402bc4f223ce16e8e50691f0a1369e162cb5f3d8b06`.
+
+Next: validate the package without rebuilding, commit/push curated evidence,
+then prove a clean tree and local/origin equality.

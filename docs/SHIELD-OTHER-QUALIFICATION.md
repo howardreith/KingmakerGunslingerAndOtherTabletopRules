@@ -1,6 +1,6 @@
 # Shield Other Qualification
 
-Status: FINAL 0.0.77 RUNTIME REPETITION IN PROGRESS
+Status: COMPLETE
 
 This document will contain exact deterministic, build, package, runtime,
 compatibility-profile, restoration, protected-save, and hash evidence for
@@ -125,10 +125,27 @@ and exact working display name, and only within the authorized save lifecycle.
 - Complete deterministic suite: 981/981 PASS.
 - Version-aware validation: PASS via `validate_shield77.py`.
 - Clean exact-reference Release build and strict UMM package: PASS.
-- Package SHA-256:
-  `0d4a8b42849c90452bbd299d8f17b22c27d4a131db09f683e242a42b896fd199`.
-- Release DLL SHA-256:
-  `b74bff26c346746828458b3ed3dc7f6a1dfeb03bea3790ba7900b8b79f6d1275`.
+- Final package SHA-256:
+  `b1b79a8c57b44e13fc2ed7343c2ad75bf32df575a7ede1a89dfca0bd76b6e646`.
+- Final Release DLL SHA-256:
+  `602a4f689b7fa41684dbc402bc4f223ce16e8e50691f0a1369e162cb5f3d8b06`.
 
-Final exact-commit repetitions and restoration evidence remain pending and are
-not inferred from these source/build gates.
+## Final exact-commit runtime qualification
+
+Release-source SHA `80d468ee22835d6c258041cd63f2cd288ef0401e`:
+
+- All eight module combinations PASS from
+  `20260810T1627445514271Z-observe-feature-module-settings` through
+  `20260810T1643115666580Z-observe-feature-module-settings`; settings restored
+  exactly to SHA-256
+  `a08c80d5e877d4f6b5deea1247a9764bb48c08031b90da91a6e24d953e465ba6`.
+- Standalone x2 PASS: `20260810T1645354769017Z-disposable-shield-other` and
+  `20260810T1647523323239Z-disposable-shield-other`.
+- CotW x2 PASS/restored: `compat-20260810T164943Z-046b85f47e64` and
+  `compat-20260810T165221Z-e48789eb06ec`.
+- Highest-risk combined x2 PASS/restored:
+  `compat-20260810T165454Z-9ceec19dd586` and
+  `compat-20260810T165726Z-dbba50e40dcd`.
+- Every launch used the guarded Steam App 640820 path. No protected save was
+  written, no Kingmaker process remained, and every profile reported
+  `restorationVerified: true`.

@@ -1,6 +1,6 @@
 # Shield Other Implementation Report
 
-Status: RELEASE-SOURCE QUALIFIED; FINAL RUNTIME REPETITION IN PROGRESS
+Status: COMPLETE
 
 Release: 0.0.77
 
@@ -61,8 +61,8 @@ Constitution-derived maximum-HP changes are excluded.
   isolated publication surfaces.
 - Expanded disposable scenario: PASS for damage types, mitigation, immunity,
   temporary HP, lethal transfer, recursion, lifecycle, and cleanup.
-- CotW x2 and highest-risk combined x2 passed on pre-release source with exact
-  Mods restoration after every transaction.
+- CotW x2 and highest-risk combined x2 passed on exact release source with
+  exact Mods restoration after every transaction.
 - Guarded two-launch `KMG_AUTOMATION_WORKING` persistence: PASS. Fresh load
   reconstructed caster, subject, and CL 5, proved 3 HP -> 1/2, restored HP,
   removed the link, and saved clean. The protected baseline remained unchanged.
@@ -70,12 +70,40 @@ Constitution-derived maximum-HP changes are excluded.
 ## Current release artifacts
 
 - Package: `artifacts/packages/KingmakerGunslinger-0.0.77-complete-maintenance-loop-smoke-test.zip`
-- Package SHA-256: `0d4a8b42849c90452bbd299d8f17b22c27d4a131db09f683e242a42b896fd199`
-- Release DLL SHA-256: `b74bff26c346746828458b3ed3dc7f6a1dfeb03bea3790ba7900b8b79f6d1275`
+- Package SHA-256: `b1b79a8c57b44e13fc2ed7343c2ad75bf32df575a7ede1a89dfca0bd76b6e646`
+- Release DLL SHA-256: `602a4f689b7fa41684dbc402bc4f223ce16e8e50691f0a1369e162cb5f3d8b06`
+- Runtime package SHA-256: `36bc4ea0d92685a1d81b366fa218c1ad22d30d47e94bf68269358ff337bc05c7`
 
-## Remaining release gates
+## Final release evidence
 
-Publish the 0.0.77 release-source commit, then repeat the eight-module matrix
-and consecutive standalone, CotW, and highest-risk combined runtime gates on
-that exact commit. Append final evidence, remote equality, and clean-tree proof
-before marking this report complete.
+- Release-source SHA: `80d468ee22835d6c258041cd63f2cd288ef0401e`.
+- Eight-module matrix PASS IDs: `20260810T1627445514271Z`,
+  `20260810T1630083823184Z`, `20260810T1632305619801Z`,
+  `20260810T1634384073420Z`, `20260810T1636470659096Z`,
+  `20260810T1638554577488Z`, `20260810T1641029948281Z`, and
+  `20260810T1643115666580Z`, all with suffix
+  `-observe-feature-module-settings`. Settings restored exactly to SHA-256
+  `a08c80d5e877d4f6b5deea1247a9764bb48c08031b90da91a6e24d953e465ba6`.
+- Standalone x2 PASS: `20260810T1645354769017Z-disposable-shield-other` and
+  `20260810T1647523323239Z-disposable-shield-other`.
+- CotW 1.14.4c-2.1 x2 PASS/restored:
+  `compat-20260810T164943Z-046b85f47e64` and
+  `compat-20260810T165221Z-e48789eb06ec`.
+- Highest-risk x2 PASS/restored: `compat-20260810T165454Z-9ceec19dd586`
+  and `compat-20260810T165726Z-dbba50e40dcd`.
+- Exact combined DLL hashes: CotW
+  `4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915`;
+  Arms and Armor 1.0.10
+  `cec7c177819f8f68adac4cb24df5834c862d0930d77305655ac3195097e33733`;
+  Toggle Custom Soundpacks 1.0.1
+  `a2582533dfdff82d1ece3ec51d931d72d7c8aac9a1302c219fcd8fca070c9434`.
+
+## Adaptations and limitations
+
+- The paired 50-gp platinum-ring focus is abstracted; no material is consumed.
+- Native buff dismissal/removal is used; no bespoke multi-target dismissal UI.
+- No unambiguous Friendship or Martyr final-live structure was found, so
+  neither was guessed or mutated.
+- Optional CotW publication requires one unambiguous structural match and
+  otherwise fails closed without affecting other modules.
+- No merge or pull request was created.

@@ -1,5 +1,26 @@
 # Autonomous Gunslinger resume handoff
 
+## Shield Other mission — final evidence publication (2026-08-10)
+
+- Current phase: Phase 11 final evidence commit/publication and completion audit.
+  Branch `codex/shield-other-spell`; frozen base
+  `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: second consecutive highest-risk combined
+  `disposable-shield-other` PASS in transaction
+  `compat-20260810T165726Z-dbba50e40dcd`, with `restorationVerified: true`.
+- Exact current commit: release-source
+  `80d468ee22835d6c258041cd63f2cd288ef0401e`; final curated evidence is
+  intentionally uncommitted.
+- Exact next action: run strict validation on the final package without a
+  rebuild, commit/push evidence through the approved helper, verify clean tree
+  and exact local/origin equality, then close the mission.
+- Remaining gates: final package no-rebuild validator, final evidence commit,
+  approved push, remote equality, clean tree, no-process audit, and
+  requirement-by-requirement completion audit.
+- Active blocker: none. Matrix, standalone x2, CotW x2, highest-risk x2,
+  persistence, deterministic, Release, package, restoration, and protected-save
+  gates all pass.
+
 ## Active Shield Other mission — 0.0.77 release qualification (2026-08-10)
 
 - Current phase: Phases 10–11, final release commit and exact-commit runtime
