@@ -199,3 +199,19 @@ fully PASS structured result without changing publication mechanics.
 
 Next: commit/publish curated evidence, then implement the save-persistent link
 component and lifecycle revalidation before the damage transpiler.
+
+## 2026-08-10 - persisted link lifecycle component
+
+- Target buff now owns a dedicated `ShieldOtherBuffComponent`; the native buff
+  context persists originating caster and cast-time caster level across saves.
+- Exact inspection found no safe public movement/area subscriber contract, so
+  the component uses native `ITickEachRound` as its low-cost fallback. It removes
+  missing-caster, missing-level, dead-caster, non-live/different-area, and
+  out-of-close-range links. The damage seam will revalidate immediately.
+- No caster marker identity is required; one caster can maintain multiple target
+  buffs, while `StackingType.Replace` gives each subject one nonstacking link.
+- Complete validation, 979 deterministic tests, exact-reference Release build,
+  and strict package validation PASS.
+
+Next: commit/publish the lifecycle checkpoint, then implement the exact
+signature-validated finalized-damage transpiler and exception-safe transfer guard.

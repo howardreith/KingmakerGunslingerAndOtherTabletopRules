@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Complete in-range link must be valid.");
             AssertInvalid("subject-missing", value => value.SubjectPresent = false);
             AssertInvalid("caster-missing", value => value.CasterPresent = false);
+            AssertInvalid("caster-level-missing", value => value.CasterLevel = 0);
             AssertInvalid("caster-dead", value => value.CasterAlive = false);
             AssertInvalid("different-area", value => value.SameArea = false);
             AssertInvalid("out-of-range", value => value.DistanceFeet = 30.001f);
@@ -168,6 +169,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(source.Split(new[] { "ReconcileOptional(library, shieldOther);" },
                 StringSplitOptions.None).Length == 3,
                 "Final-live optional publication must run an idempotent second pass.");
+        }
+
+        internal static void LinkComponentSourceContract()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Spells", "ShieldOther",
+                "ShieldOtherBuffComponent.cs"));
+            foreach (string token in new[] {
+                "OwnedGameLogicComponent<UnitDescriptor>, ITickEachRound",
+                "Fact.MaybeContext.MaybeCaster",
+                "Fact.MaybeContext.Params.CasterLevel",
+                "!caster.Descriptor.State.IsDead",
+                "subject.IsInGame && caster.IsInGame",
+                "subject.DistanceTo(caster) * FeetPerMeter",
+                "ShieldOtherLinkValidityPolicy.Evaluate",
+                "buff.Remove()" })
+                Assertions.True(source.Contains(token),
+                    "Link lifecycle source contract is missing: " + token);
         }
 
         private sealed class FakeSpell

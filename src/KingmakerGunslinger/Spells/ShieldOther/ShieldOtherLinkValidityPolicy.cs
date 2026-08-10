@@ -16,6 +16,7 @@ namespace KingmakerGunslinger.Spells.ShieldOther
             int range = CloseRangeFeet(request.CasterLevel);
             if (!request.SubjectPresent) return Invalid("subject-missing", range);
             if (!request.CasterPresent) return Invalid("caster-missing", range);
+            if (request.CasterLevel == 0) return Invalid("caster-level-missing", range);
             if (!request.CasterAlive) return Invalid("caster-dead", range);
             if (!request.SameArea) return Invalid("different-area", range);
             if (request.DistanceFeet > range) return Invalid("out-of-range", range);

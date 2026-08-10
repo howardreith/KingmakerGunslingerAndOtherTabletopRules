@@ -115,3 +115,10 @@ zero foreign candidates and exactly one level-2 membership in all five base and
 three CotW lists. Live casting models were Oracle spontaneous/non-arcane/
 Charisma, Warpriest prepared/non-arcane/Wisdom, and Psychic spontaneous/
 non-arcane/Intelligence. No save was named, loaded, or mutated.
+
+Exact installed event-interface inspection found no stable public unit-position
+or area-transition subscriber contract suitable for a persisted buff component.
+The selected lifecycle strategy therefore uses the native `ITickEachRound`
+low-cost fallback and mandatory immediate revalidation at the damage seam.
+Native `MechanicsContext.MaybeCaster` and `Params.CasterLevel` are the persisted
+caster identity and cast-time scaling authority; missing context fails closed.

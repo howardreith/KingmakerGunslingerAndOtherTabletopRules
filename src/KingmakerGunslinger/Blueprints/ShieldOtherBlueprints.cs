@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using UnityEngine;
+using KingmakerGunslinger.Spells.ShieldOther;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -75,7 +76,9 @@ namespace KingmakerGunslinger.Blueprints
             saves.name = "$KMG_ShieldOther_Resistance";
             saves.Value = 1;
             saves.Descriptor = ModifierDescriptor.Resistance;
-            result.ComponentsArray = new BlueprintComponent[] { ac, saves };
+            var link = ScriptableObject.CreateInstance<ShieldOtherBuffComponent>();
+            link.name = "$KMG_ShieldOther_Link";
+            result.ComponentsArray = new BlueprintComponent[] { ac, saves, link };
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.ShieldOther.TargetBuff.Name",
                     "Shield Other"),
@@ -185,6 +188,8 @@ namespace KingmakerGunslinger.Blueprints
             AddStatBonus ac = buff.ComponentsArray.OfType<AddStatBonus>().Single();
             BuffAllSavesBonus saves = buff.ComponentsArray
                 .OfType<BuffAllSavesBonus>().Single();
+            ShieldOtherBuffComponent link = buff.ComponentsArray
+                .OfType<ShieldOtherBuffComponent>().Single();
             if (spell.School != SpellSchool.Abjuration ||
                 ability.Type != AbilityType.Spell ||
                 ability.ActionType != UnitCommand.CommandType.Standard ||
@@ -195,6 +200,7 @@ namespace KingmakerGunslinger.Blueprints
                 !apply.DurationValue.IsExtendable || ac.Stat != StatType.AC ||
                 ac.Value != 1 || ac.Descriptor != ModifierDescriptor.Deflection ||
                 saves.Value != 1 || saves.Descriptor != ModifierDescriptor.Resistance ||
+                link == null ||
                 buff.Stacking != StackingType.Replace)
                 throw new InvalidOperationException(
                     "Shield Other blueprint contract is incomplete.");
