@@ -577,6 +577,19 @@ Next: source-qualify/publish and rerun the post-load graph.
 
 Next: source-qualify/publish and rerun the exact loader sequence.
 
+## 2026-08-10 - restored buff lookup corrected to stable GUID
+
+- `20260810T1505518476389Z-disposable-shield-other` on exact source
+  `16e78d32400c37e44fc0e418fd94ea3860942781` completed native JSON construction,
+  private initialization, and `PostLoad` without exception, while the lookup
+  still required pre-load blueprint object-reference identity.
+- Transaction `compat-20260810T150511Z-13543178b558` restored exactly.
+- Cross-load blueprint identity is the stable asset GUID, not CLR reference
+  identity. The lookup now accepts the exact target-buff GUID and reports raw
+  fact/buff counts; caster, target, and caster-level checks remain strict.
+
+Next: source-qualify/publish and rerun the corrected cross-load identity lookup.
+
 ## 2026-08-10 - lifecycle run exposed lethal-state gap
 
 - `20260810T1442147693813Z-disposable-shield-other` on exact source

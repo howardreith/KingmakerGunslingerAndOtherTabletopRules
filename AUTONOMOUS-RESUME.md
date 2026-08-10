@@ -1603,6 +1603,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   PASS evidence, then begin link lifecycle/runtime component implementation.
 - Remaining gates unchanged. Active blocker: none.
 
+## Shield Other current resume - stable-GUID post-load lookup
+
+- Current phase: Phase 9 save-context cross-load identity qualification.
+- Last runtime completed the exact loader lifecycle but the fixture incorrectly
+  required blueprint CLR-reference identity across load; restoration was exact.
+- Exact current commit: `16e78d32400c37e44fc0e418fd94ea3860942781`;
+  stable-GUID lookup and raw-fact instrumentation are uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
 ## Shield Other current resume - exact JSON unit loader fixture
 
 - Current phase: Phase 9 save-context loader qualification.

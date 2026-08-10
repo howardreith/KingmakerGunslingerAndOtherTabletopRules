@@ -7048,8 +7048,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 Buff restoredLink = restoredSubjectDescriptor == null ? null :
                     restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().SingleOrDefault(
-                        value => ReferenceEquals(value.Blueprint,
-                            BlueprintBootstrap.ShieldOther.TargetBuff));
+                        value => value.Blueprint != null &&
+                            (ReferenceEquals(value.Blueprint,
+                                BlueprintBootstrap.ShieldOther.TargetBuff) ||
+                             value.Blueprint.AssetGuid == BlueprintBootstrap
+                                .ShieldOther.TargetBuff.AssetGuid));
                 MechanicsContext restoredContext = restoredLink == null ? null :
                     restoredLink.MaybeContext;
                 contextRoundTripDetails = "descriptor=" +
@@ -7065,7 +7068,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     restoredContext.Params.CasterLevel) + ";target=" +
                     (restoredContext != null && restoredContext.MainTarget.Unit != null) +
                     ";sameTarget=" + (restoredContext != null &&
-                    restoredContext.MainTarget.Unit == subject);
+                    restoredContext.MainTarget.Unit == subject) + ";rawFacts=" +
+                    (restoredSubjectDescriptor == null ? -1 :
+                    restoredSubjectDescriptor.Buffs.RawFacts.Count) + ";buffFacts=" +
+                    (restoredSubjectDescriptor == null ? -1 :
+                    restoredSubjectDescriptor.Buffs.RawFacts.OfType<Buff>().Count());
                 contextRoundTrip = restoredContext != null &&
                     ReferenceEquals(restoredContext.MaybeCaster, caster) &&
                     restoredContext.Params != null &&

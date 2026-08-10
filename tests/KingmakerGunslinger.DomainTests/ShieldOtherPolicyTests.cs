@@ -259,6 +259,8 @@ namespace KingmakerGunslinger.DomainTests
                 "JsonConstructorMark",
                 "GetMethod(\"Initialize\"",
                 "restoredSubjectEntity.PostLoad()",
+                "value.Blueprint.AssetGuid == BlueprintBootstrap",
+                "restoredSubjectDescriptor.Buffs.RawFacts.Count",
                 "shield-other-native-save-context-roundtrip" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
