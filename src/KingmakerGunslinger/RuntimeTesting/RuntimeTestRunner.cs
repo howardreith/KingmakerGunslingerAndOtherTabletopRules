@@ -7040,7 +7040,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     first.RuntimeActionType == UnitCommand.CommandType.Standard;
 
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
-                AcadamaeSavingThrowTestControl.Queue(10);
+                AcadamaeSavingThrowTestControl.Queue(20);
                 UnitUseAbility successCommand = new UnitUseAbility(first,
                     new TargetWrapper(unit));
                 AcadamaeCastingRuntime.Begin(successCommand);
@@ -7059,7 +7059,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(unit));
                 acadamaeMode.IsOn = false;
                 acadamaeMode.Stop(true);
-                AcadamaeSavingThrowTestControl.Queue(10);
+                AcadamaeSavingThrowTestControl.Queue(20);
                 AcadamaeCastingRuntime.Begin(snapOnCommand);
                 RuleCastSpell snapOnRule = new RuleCastSpell(snapOn,
                     new TargetWrapper(unit));

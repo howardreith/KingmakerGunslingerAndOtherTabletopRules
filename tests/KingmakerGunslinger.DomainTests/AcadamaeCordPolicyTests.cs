@@ -224,10 +224,11 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(forcedFailure >= 0 && cordCast > forcedFailure,
                 "The clean-first Cord integration phase must force a failed Fortitude save before casting.");
-            Assertions.True(runtime.Contains("AcadamaeSavingThrowTestControl.Queue(10)") &&
+            Assertions.True(runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(20)" },
+                    StringSplitOptions.None).Length == 3 &&
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
                     StringSplitOptions.None).Length == 3,
-                "The guarded scenario must force one native success and two native failures.");
+                "The guarded scenario must force native automatic success and failure boundaries.");
         }
 
         internal static void AcadamaeInvocationCorrelation()

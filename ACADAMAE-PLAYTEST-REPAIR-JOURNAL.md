@@ -77,3 +77,9 @@
 - First run on `26ea15a9d3febb4ec824d9c6946d062639f59183`, `20260810T0120099779554Z-6b91b1119f9b45169c6afd95d84538bb`, showed a nested/foreign saving event could consume the new post-roll token: failure/Cord/permanent lifetime passed, while the forced-success and snapshot-success assertions failed.
 - Repair: `Begin` now binds the exact `RuleSavingThrow` instance constructed by Acadamae, and the postfix consumes only for reference equality with that instance. Nested or foreign saving events cannot steal the request-local result.
 - Next concrete action: rebuild, publish, and repeat final-release gates.
+
+## 2026-08-10 - deterministic natural-roll boundary
+
+- Run `20260810T0124155352746Z-799b32734c694579827369109880642d` proved exact-event correlation for both forced failures and all permanent-fatigue/Cord mechanics, but the fixture's requested success roll 10 did not guarantee success against the installed computed save value.
+- Repair: forced-success cases now use the native automatic-success boundary 20; forced failures continue to use native automatic-failure boundary 1. This tests native saving behavior without assuming a derived modifier.
+- Next concrete action: rebuild/publish and run final release gates.
