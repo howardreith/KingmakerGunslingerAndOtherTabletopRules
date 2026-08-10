@@ -14,7 +14,7 @@
 | Four module combinations | PASS | Fresh ON/ON, ON/OFF, OFF/ON, OFF/OFF processes; constant 252 identities; settings restored |
 | Optional compatibility | PASS | CotW, Arms & Armor, Toggle, qualified combined, and consecutive high-risk targeted runs restored |
 | Version/build/package | PASS | 0.0.76; package `d3305048...`; DLL `2cec07fe...`; strict 44-file package PASS |
-| Deployment | TODO | Backup, settings preservation, installed metadata/hash/icon verification |
-| Clean remote proof | TODO | Published branch, clean tree, local equals remote, unmerged |
+| Deployment | PASS | Backup `20260810T0141375127164Z`; manifest `20260810T0141392337217Z`; installed v0.0.76/DLL/icon/settings verified; game closed |
+| Clean remote proof | IN PROGRESS | Final evidence-only commit/push and equality check remain; branch unmerged |
 
-Next concrete action: publish final documentation, qualify that exact commit, deploy it, and prove installed/local/remote hashes.
+Next concrete action: publish this final evidence-only checkpoint and prove clean local/remote equality.

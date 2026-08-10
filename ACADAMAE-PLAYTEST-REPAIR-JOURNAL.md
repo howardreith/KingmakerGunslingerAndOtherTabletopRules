@@ -89,3 +89,12 @@
 - Run `20260810T0128274766671Z-94a730025d8346dc86fffb8548040548` showed Kingmaker's installed `RuleSavingThrow.IsPassed` does not treat D20=20 as an unconditional success in this synthetic fixture; exact failure and all production mechanics remained PASS.
 - The exact request-local postfix now also sets public native `AutoPass=true` for the guarded success case only. Failure cases retain `AutoPass=false` and D20=1. This affects no production save because the thread-static target exists only inside guarded runtime requests.
 - Next concrete action: build, publish, obtain final PASS, then deploy.
+
+## 2026-08-10 - final release-code qualification and deployment
+
+- Release-code commit `eab12bdbef962398fa7ab9d6fb6b7eace67bea76`; version 0.0.76.
+- Final consecutive standalone PASS: runtime IDs `20260810T0132091376104Z-40e05d48a6824f789c845f33b71d37b5` and `20260810T0134251364252Z-7b4eaacad5934c56936705b5e51653d8`.
+- Final consecutive high-risk combined PASS with exact restoration: transactions `compat-20260810T013613Z-4e3cfaddf7a0` and `compat-20260810T013843Z-b93fe0ebb174`; runtime IDs `20260810T0136505786359Z-e1eedfb8ac8340728f6efa8cd3381556` and `20260810T0139202505538Z-2735a4a634ee4abbaa29c878c637e1fa`.
+- Deployed exact qualified 0.0.76 package through direct `Deploy-Local.ps1` switch binding. Automatic backup: `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260810T0141375127164Z`; deployment manifest: `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260810T0141392337217Z\deployment.json`.
+- Deployed version 0.0.76; package SHA-256 `86bcd1dc738223b2eb4e10c99f57731d2006ffe54f2445b9c6b1ad06df3ec92f`; built/installed DLL SHA-256 `3c9b20738d848e70e08e92f66a7a7a009a44fbb208c9208facf951d4d3b4ef7e`; installed Cord icon SHA-256 `cf3f040eb22691b1e526eb32cc31d1151eafef7113cb0ebe55d0c2637d5d9928`; preserved settings SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`; Kingmaker closed.
+- Next concrete action: commit/publish final evidence documents and prove clean local/remote equality; do not merge.

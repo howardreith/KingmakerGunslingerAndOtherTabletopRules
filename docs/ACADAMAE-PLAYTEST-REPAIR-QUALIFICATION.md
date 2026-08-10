@@ -1,6 +1,6 @@
 # Acadamae Playtest Repair Qualification
 
-Status: PASS THROUGH PRE-DEPLOYMENT QUALIFICATION
+Status: PASS AND LOCALLY DEPLOYED
 
 Baseline: `c80615e917d1994daad679e8a78af11ae2c7e115`, version 0.0.75, 967 deterministic tests, 250 active blueprints.
 
@@ -37,5 +37,10 @@ Historical broad Call of the Wild selector limitations remain historical; this
 qualification proves the targeted mode/action/fatigue/publication composition
 and does not inflate that claim.
 
-Next concrete action: qualify the final documentation commit, deploy the exact
-result, and record final package/DLL and installed hashes.
+## Final release-source and deployment proof
+
+- Release-code commit `eab12bdbef962398fa7ab9d6fb6b7eace67bea76` standalone PASS twice: `20260810T0132091376104Z-40e05d48a6824f789c845f33b71d37b5` and `20260810T0134251364252Z-7b4eaacad5934c56936705b5e51653d8`.
+- Same commit high-risk combined PASS twice with exact restoration: `compat-20260810T013613Z-4e3cfaddf7a0` / runtime `20260810T0136505786359Z-e1eedfb8ac8340728f6efa8cd3381556`, and `compat-20260810T013843Z-b93fe0ebb174` / runtime `20260810T0139202505538Z-2735a4a634ee4abbaa29c878c637e1fa`.
+- Installed package SHA-256 `86bcd1dc738223b2eb4e10c99f57731d2006ffe54f2445b9c6b1ad06df3ec92f`; installed/built DLL `3c9b20738d848e70e08e92f66a7a7a009a44fbb208c9208facf951d4d3b4ef7e`.
+- Backup `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260810T0141375127164Z`; deployment manifest `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260810T0141392337217Z\deployment.json`.
+- Installed Cord icon hash matches production: `cf3f040eb22691b1e526eb32cc31d1151eafef7113cb0ebe55d0c2637d5d9928`. Feature settings remained byte-exact at SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`. Kingmaker process count after deployment: zero.
