@@ -1774,3 +1774,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   standalone `disposable-shield-other` to prove native temporary-HP semantics.
 - Remaining gates: typed mitigation/immunity, area/death/save-load; profile and
   module repetitions; 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - temporary-HP observation repair
+
+- Current phase: qualify cached-value refresh before temporary-HP retry.
+- Last runtime result: `20260810T1349330912897Z-disposable-shield-other` failed
+  only stale consumption reads; HP outcomes were correct (`0/3` and `3/0`).
+  Transaction `compat-20260810T134851Z-f1299dd53841` restored exactly.
+- Exact current commit: `881d0c2660b549a032b5b9a62b751c80a360808c`;
+  native `UpdateValue()` observation repair and evidence docs are uncommitted.
+- Exact next action: validate, commit/publish, rebuild, and rerun standalone once.
+- Remaining gates unchanged. Active blocker: none.

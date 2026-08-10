@@ -7139,6 +7139,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisablePrecisionDamage = true,
                     IgnoreDamageReduction = true
                 });
+                subject.Stats.TemporaryHitPoints.UpdateValue();
                 subjectTempConsumed = subjectTempBefore - subject.TemporaryHP;
                 subjectTempHpLoss = subjectBefore - subject.HPLeft;
                 subjectTempCasterLoss = casterBefore - secondCaster.HPLeft;
@@ -7161,6 +7162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisablePrecisionDamage = true,
                     IgnoreDamageReduction = true
                 });
+                secondCaster.Stats.TemporaryHitPoints.UpdateValue();
                 casterTempConsumed = casterTempBefore - secondCaster.TemporaryHP;
                 casterTempSubjectLoss = subjectBefore - subject.HPLeft;
                 casterTempHpLoss = casterBefore - secondCaster.HPLeft;

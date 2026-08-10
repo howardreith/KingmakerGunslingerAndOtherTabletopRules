@@ -370,3 +370,16 @@ Next: add native target/caster temporary-HP coverage and typed mitigation donors
   strict package validation.
 
 Next: publish/rebuild and run the temporary-HP matrix transactionally.
+
+## 2026-08-10 - temporary-HP observation refresh
+
+- Run `20260810T1349330912897Z-disposable-shield-other` failed only its two
+  temporary-HP consumption counters. Mechanical HP outcomes were already exact:
+  subject temporary HP yielded subject HP 0/caster HP 3, and caster temporary HP
+  yielded subject HP 3/caster HP 0.
+- `ModifiableValueTemporaryHitPoints` had not refreshed its cached displayed
+  value before the immediate observation. The scenario now calls native
+  `UpdateValue()` after each rule completes and before reading remaining temp HP.
+- Transaction `compat-20260810T134851Z-f1299dd53841` restored exactly.
+
+Next: qualify/publish the observation repair and rerun once on the changed SHA.
