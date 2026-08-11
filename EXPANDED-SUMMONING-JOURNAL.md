@@ -800,3 +800,33 @@
   `8a109ca92f13f3ce69b867cc0da08c182be84ce927a36f4d47a8c12d9f10dfca`;
   package SHA-256:
   `87c793d7be7040c3df4a0fc7c6a710ab24860420b9327015f439c37cefa2f7e6`.
+
+## 2026-08-11 - Bebelith and Pixie structural PASS
+
+- Reconstructed Bebelith as a 12-HD Huge chaotic-evil outsider with two 2d4
+  claws, a 2d6 bite, DR 10/good, and a unit-local +2 attack/damage bonus
+  against chaotic-evil outsiders. Its second same-target claw hit each round
+  makes the target's equipped armor eligible for a DC 25 Reflex save; failure
+  applies a bounded one-round -2 AC state without mutating the item. The
+  Doomspider donor supplies the view only; poison and web behavior are absent.
+- Reconstructed Pixie as a 4-HD Small neutral-good fey with a Nixie view,
+  airborne movement, attack-safe natural invisibility, DR 10/cold iron, SR 15,
+  sixteen no-damage sleep arrows with Will DC 15 and bounded five-minute sleep,
+  and one CL 8 Irresistible Dance use using the native touch/dance state.
+- Bebelith rot and climb are conservative omissions. Armor destruction is
+  adapted to a short AC penalty to avoid permanent item mutation; demon hunting
+  uses the exact chaotic-evil outsider surface available in Kingmaker. Pixie
+  arrows are body-mounted blueprint weapons and never enter inventory.
+- Guarded save-free run
+  `20260811T2310424930290Z-observe-expanded-summoning-inventory` passed on
+  committed source `f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7`.
+  All 25 assertions passed: 67 units, 1,048 abilities, registry 1,396, all 681
+  placements, exact Bebelith/Pixie structures, and zero donor aliases,
+  prohibited references, inherited class spells, starting inventory, or
+  native-action contamination. The live Call of the Wild summon surfaces were
+  preserved. No save was accessed.
+- Repository validation, `1006/1006` domain tests, clean Release, and strict
+  package validation passed. DLL SHA-256:
+  `bac9447730454c6b46da2bdef17b7634e154e49c308c1423b00c8b38a63cdd56`;
+  package SHA-256:
+  `0a295fa0f05a38da920dbd07c019e96e563830d3bec1b17887efda727f94e631`.

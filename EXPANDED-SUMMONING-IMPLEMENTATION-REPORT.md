@@ -127,3 +127,25 @@ zero donor aliases, prohibited references, inherited class spells, or starting
 inventory. Actual casts, visual contracts, persistence, feature-state launches,
 and complete compatibility-profile qualification remain open and are not
 claimed.
+
+Bebelith and Pixie are now structurally qualified on committed source
+`f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7`. Guarded save-free run
+`20260811T2310424930290Z-observe-expanded-summoning-inventory` passed all 25
+assertions: 67 units, 1,048 abilities, registry 1,396, all 681 placements,
+exact bounded special structures, exact alignment/template execution counts,
+and zero donor aliases, prohibited references, inherited class spells,
+starting inventory, or native-action contamination. Call of the Wild was
+loaded and its final-live summon surfaces were preserved.
+
+Bebelith's unsafe permanent armor destruction is conservatively represented by
+a DC 25 Reflex-gated, one-round -2 AC effect after two same-target claw hits in
+one round; no equipped item is mutated. Its demon-hunting benefit is a +2
+attack/damage bonus against chaotic-evil outsiders. Rot and climb are omitted.
+Pixie uses an actual native arrow rig with zero weapon damage, sixteen
+resource-backed sleep arrows (Will DC 15, 50 rounds), and one resource-backed
+CL 8 Irresistible Dance using the native touch delivery and dance state.
+Neither implementation introduces inventory, transferable ammunition,
+teleportation, summoning, planar travel, poison, web, or persistent external
+state. Actual casts, special-action execution, visuals, cleanup, persistence,
+feature-state launches, and complete compatibility-profile qualification
+remain open and are not claimed.

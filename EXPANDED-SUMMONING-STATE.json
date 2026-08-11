@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "b0deb04ff9b387b375202c5304a6741c9549ef0a",
+  "currentSha": "f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "salamander-and-succubus-runtime-structure-qualified",
-  "nextConcreteAction": "Inventory and implement the bounded Bebelith and Pixie reconstructions, including exact armor-rending, demon-hunting, dance, sleep-arrow, view, projectile, and cleanup contracts.",
+  "completedPhase": "bebelith-and-pixie-runtime-structure-qualified",
+  "nextConcreteAction": "Inventory, reconstruct, and qualify the remaining natural/proxy creature mechanics and fidelity contracts before actual-cast, visual, persistence, matrix, and compatibility qualification.",
   "domainTestResult": "1006/1006 PASS",
-  "releaseBuildResult": "PASS for runtime-qualified Salamander and Succubus; DLL SHA-256 8a109ca92f13f3ce69b867cc0da08c182be84ce927a36f4d47a8c12d9f10dfca",
-  "packageResult": "strict PASS for runtime-qualified Salamander and Succubus; SHA-256 87c793d7be7040c3df4a0fc7c6a710ab24860420b9327015f439c37cefa2f7e6",
-  "blueprintLedger": "1132 Expanded Summoning identities; 1386 active, 1 reserved, 1387 total; derived constant registry count 1386",
+  "releaseBuildResult": "PASS for runtime-qualified Bebelith and Pixie; DLL SHA-256 bac9447730454c6b46da2bdef17b7634e154e49c308c1423b00c8b38a63cdd56",
+  "packageResult": "strict PASS for runtime-qualified Bebelith and Pixie; SHA-256 0a295fa0f05a38da920dbd07c019e96e563830d3bec1b17887efda727f94e631",
+  "blueprintLedger": "1142 Expanded Summoning identities; 1396 active, 1 reserved, 1397 total; derived constant registry count 1396",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -256,6 +256,13 @@
       "sourceSha": "b0deb04ff9b387b375202c5304a6741c9549ef0a",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2238575798728Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "All exact Salamander and Succubus assertions passed with 67 units, 1047 abilities, registry 1386, all 681 placements, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, or inherited-spell failures. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2310424930290Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All 25 assertions passed: 67 units, 1048 abilities, registry 1396, all 681 placements, exact Bebelith and Pixie structures, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were observed and preserved. No save was accessed."
     }
   ],
   "compatibilityProfilesCompleted": [],
