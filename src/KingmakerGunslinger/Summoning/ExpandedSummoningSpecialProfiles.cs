@@ -32,6 +32,28 @@ namespace KingmakerGunslinger.Summoning
         internal const int LanternPoisonSaveBonus = 4;
         internal const int LanternEvilSaveAndAcBonus = 2;
 
+        internal const int InvisibleStalkerHitDice = 7;
+        internal const int InvisibleStalkerStrength = 18;
+        internal const int InvisibleStalkerDexterity = 19;
+        internal const int InvisibleStalkerConstitution = 22;
+        internal const int InvisibleStalkerIntelligence = 14;
+        internal const int InvisibleStalkerWisdom = 15;
+        internal const int InvisibleStalkerCharisma = 11;
+        internal const int InvisibleStalkerSpeedFeet = 30;
+
+        internal const int ShadowDemonHitDice = 7;
+        internal const int ShadowDemonStrength = 17;
+        internal const int ShadowDemonDexterity = 20;
+        internal const int ShadowDemonConstitution = 14;
+        internal const int ShadowDemonIntelligence = 14;
+        internal const int ShadowDemonWisdom = 13;
+        internal const int ShadowDemonCharisma = 17;
+        internal const int ShadowDemonSpeedFeet = 40;
+        internal const int ShadowDemonDamageReduction = 10;
+        internal const int ShadowDemonEnergyResistance = 10;
+        internal const int ShadowDemonSpellResistance = 17;
+        internal const int ShadowDemonColdDamageDice = 1;
+
         internal static void Validate()
         {
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)

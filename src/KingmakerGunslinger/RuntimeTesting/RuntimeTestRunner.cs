@@ -20,6 +20,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.Enums.Damage;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
@@ -71,6 +72,7 @@ using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Classes;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
 
@@ -7307,6 +7309,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lanternDamage[0].Value.DiceCountValue.ValueType ==
                     ContextValueType.Simple &&
                 lanternDamage[0].Value.DiceCountValue.Value == 1;
+            BlueprintUnit invisibleStalker = all.OfType<BlueprintUnit>().Single(
+                value => value.name == "KMG_Summoning_Unit_InvisibleStalker");
+            AddClassLevels invisibleStalkerLevels = invisibleStalker.ComponentsArray
+                .OfType<AddClassLevels>().Single();
+            bool invisibleStalkerExact = invisibleStalkerLevels.Levels == 7 &&
+                invisibleStalker.Size == Size.Medium &&
+                invisibleStalker.Alignment == Alignment.TrueNeutral &&
+                invisibleStalker.Strength == 18 &&
+                invisibleStalker.Dexterity == 19 &&
+                invisibleStalker.Constitution == 22 &&
+                invisibleStalker.Intelligence == 14 &&
+                invisibleStalker.Wisdom == 15 && invisibleStalker.Charisma == 11 &&
+                invisibleStalker.Body.PrimaryHand != null &&
+                invisibleStalker.Body.PrimaryHand.AssetGuid ==
+                    "72aa06bd4e7a8fa4db8a20d1b5f1a103" &&
+                invisibleStalker.Body.AdditionalLimbs.Length == 1 &&
+                invisibleStalker.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "94b2838e8a492c44ebf89e7fe7a75a62") == 1;
+            BlueprintUnit shadowDemon = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_ShadowDemon");
+            BlueprintBuff shadowTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name ==
+                    "KMG_Summoning_Special_ShadowDemon_CombatTraits");
+            AddDamageResistancePhysical shadowDr = shadowTraits.ComponentsArray
+                .OfType<AddDamageResistancePhysical>().Single();
+            AddInitiatorAttackWithWeaponTrigger shadowCold = shadowTraits
+                .ComponentsArray.OfType<AddInitiatorAttackWithWeaponTrigger>()
+                .Single();
+            ContextActionDealDamage[] shadowColdDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    shadowCold).ToArray();
+            bool shadowDemonExact = shadowDemon.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 7 &&
+                shadowDemon.Size == Size.Medium &&
+                shadowDemon.Alignment == Alignment.ChaoticEvil &&
+                shadowDemon.Strength == 17 && shadowDemon.Dexterity == 20 &&
+                shadowDemon.Constitution == 14 && shadowDemon.Intelligence == 14 &&
+                shadowDemon.Wisdom == 13 && shadowDemon.Charisma == 17 &&
+                shadowDemon.Body.PrimaryHand != null &&
+                shadowDemon.Body.PrimaryHand.AssetGuid ==
+                    "c76f72a862d168d44838206524366e1c" &&
+                shadowDemon.Body.AdditionalLimbs.Length == 1 &&
+                shadowDemon.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                shadowDemon.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "c4a7f98d743bc784c9d4cf2105852c39") == 1 &&
+                shadowDr.Or && shadowDr.BypassedByMaterial &&
+                shadowDr.Material == PhysicalDamageMaterial.ColdIron &&
+                shadowDr.BypassedByAlignment &&
+                shadowDr.Alignment == DamageAlignment.Good &&
+                shadowTraits.ComponentsArray.OfType<
+                    AddDamageResistanceEnergy>().Count() == 2 &&
+                shadowTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 17 &&
+                shadowCold.OnlyHit && shadowCold.AllNaturalAndUnarmed &&
+                shadowColdDamage.Length == 1 &&
+                shadowColdDamage[0].DamageType.Type == DamageType.Energy &&
+                shadowColdDamage[0].DamageType.Energy == DamageEnergyType.Cold &&
+                shadowColdDamage[0].Value.DiceType == DiceType.D6 &&
+                shadowColdDamage[0].Value.DiceCountValue.Value == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7335,6 +7396,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-lantern-archon", "exact",
                     lanternExact ? "exact" : "mismatch", lanternExact,
                     "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
+                Assertion("expanded-summoning-invisible-stalker", "exact",
+                    invisibleStalkerExact ? "exact" : "mismatch",
+                    invisibleStalkerExact,
+                    "7-HD Medium air outsider with two 2d6 slams and attack-safe natural invisibility"),
+                Assertion("expanded-summoning-shadow-demon", "exact",
+                    shadowDemonExact ? "exact" : "mismatch", shadowDemonExact,
+                    "7-HD incorporeal demon with claw/bite routine, bounded defenses, and cold rider"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7393,7 +7461,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==
-                    "KMG_Summoning_Special_LanternArchon_Defenses")
+                    "KMG_Summoning_Special_LanternArchon_Defenses" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_ShadowDemon_CombatTraits")
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);

@@ -48,8 +48,9 @@ def planned():
         ("KMG.Summoning.Special.LanternArchon.LightRayAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShadowDemon.CombatTraits", "BlueprintBuff"),
     ))
-    if len(rows) != 1124 or len({symbol for symbol, _ in rows}) != 1124:
+    if len(rows) != 1125 or len({symbol for symbol, _ in rows}) != 1125:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

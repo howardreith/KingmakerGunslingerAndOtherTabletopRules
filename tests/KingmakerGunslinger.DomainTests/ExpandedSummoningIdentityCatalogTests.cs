@@ -11,10 +11,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1124, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1125, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1046, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(10, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
@@ -177,6 +177,12 @@ namespace KingmakerGunslinger.DomainTests
                 .LanternRayProjectiles, "Lantern light-ray count changed.");
             Assertions.Equal(6, ExpandedSummoningSpecialProfiles
                 .LanternRayDieSides, "Lantern light-ray die changed.");
+            Assertions.Equal(7, ExpandedSummoningSpecialProfiles
+                .InvisibleStalkerHitDice, "Invisible Stalker HD changed.");
+            Assertions.Equal(7, ExpandedSummoningSpecialProfiles
+                .ShadowDemonHitDice, "Shadow Demon HD changed.");
+            Assertions.Equal(17, ExpandedSummoningSpecialProfiles
+                .ShadowDemonSpellResistance, "Shadow Demon SR changed.");
             Assertions.Equal("24719a49b84c5cd43b894268d22d9c89",
                 ExpandedSummoningDonorCatalog.For("lantern-archon").Guid,
                 "Lantern visual donor changed.");
@@ -196,7 +202,11 @@ namespace KingmakerGunslinger.DomainTests
                 "brain.Actions = new BlueprintAiAction[] { ai }",
                 "RequireExact<BlueprintFeature>",
                 "RequireExact<BlueprintUnitFact>(library",
-                "RequireExact<BlueprintBuff>(library" })
+                "RequireExact<BlueprintBuff>(library",
+                "ConfigureInvisibleStalker", "NaturalInvisibilityGuid",
+                "ConfigureShadowDemon", "IncorporealGuid",
+                "DamageEnergyType.Cold", "PhysicalDamageMaterial.ColdIron",
+                "ShadowDemonCombatTraitsSymbol" })
                 Assertions.True(source.Contains(token),
                     "Lantern reconstruction contract is missing: " + token);
             foreach (string forbidden in new[] { "GreaterTeleport", "Gestalt",
@@ -299,6 +309,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-native-action-isolation",
                 "expanded-summoning-exact-donor-inventory",
                 "expanded-summoning-special-mechanic-candidates",
+                "expanded-summoning-invisible-stalker",
+                "expanded-summoning-shadow-demon",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
