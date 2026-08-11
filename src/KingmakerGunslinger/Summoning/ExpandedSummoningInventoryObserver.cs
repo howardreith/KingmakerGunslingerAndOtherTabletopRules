@@ -13,10 +13,12 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class ExpandedSummoningInventoryObservation
     {
         internal ExpandedSummoningInventoryObservation(int parents, int units,
-            int facts, int exactDonors, int missingDonors, IList<string> records)
+            int facts, int exactDonors, int missingDonors, int specialCandidates,
+            IList<string> records)
         {
             ParentCount = parents; UnitCount = units; FactCount = facts;
             ExactDonorCount = exactDonors; MissingDonorCount = missingDonors;
+            SpecialCandidateCount = specialCandidates;
             Records = records;
         }
         internal int ParentCount { get; private set; }
@@ -24,6 +26,7 @@ namespace KingmakerGunslinger.Summoning
         internal int FactCount { get; private set; }
         internal int ExactDonorCount { get; private set; }
         internal int MissingDonorCount { get; private set; }
+        internal int SpecialCandidateCount { get; private set; }
         internal IList<string> Records { get; private set; }
     }
 
@@ -58,6 +61,11 @@ namespace KingmakerGunslinger.Summoning
                 StringSplitOptions.RemoveEmptyEntries))
             .Where(value => value.Length >= 4)
             .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        private static readonly string[] SpecialMechanicTerms = {
+            "willowisp", "will-o-wisp", "will o wisp", "willo",
+            "lanternarchon", "lantern archon", "lightray", "light ray",
+            "auraofmenace", "aura of menace"
+        };
 
         internal static ExpandedSummoningInventoryObservation Observe(
             LibraryScriptableObject library)
@@ -96,6 +104,21 @@ namespace KingmakerGunslinger.Summoning
                 !donors.Any(value => value.AssetGuid == guid)).ToArray();
             records.Add("donor-summary=expected:" + ExactDonorGuids.Length +
                 ";found:" + donors.Length + ";missing:" + string.Join(",", missingDonors));
+
+            BlueprintScriptableObject[] specialCandidates = all.Where(value =>
+                ContainsAny(SearchText(value), SpecialMechanicTerms))
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            foreach (BlueprintScriptableObject value in specialCandidates)
+            {
+                BlueprintUnit unit = value as BlueprintUnit;
+                records.Add("special-candidate=" + Describe(value) + ";fields=" +
+                    Members(value, 160) + ";components=" + Components(value) +
+                    ";graph=" + ObjectGraph(value.ComponentsArray, 12) +
+                    (unit == null ? string.Empty : ";body-graph=" +
+                        ObjectGraph(FieldValue(unit, "Body"), 8) + ";view-graph=" +
+                        ObjectGraph(FieldValue(unit, "Prefab"), 8)));
+            }
+            records.Add("special-candidate-summary=found:" + specialCandidates.Length);
 
             var canonical = new HashSet<string>(CanonicalParentGuids, StringComparer.Ordinal);
             BlueprintAbility[] canonicalParents = all.OfType<BlueprintAbility>()
@@ -145,7 +168,7 @@ namespace KingmakerGunslinger.Summoning
                 ";units:" + units.Length + ";facts:" + facts.Length);
             return new ExpandedSummoningInventoryObservation(parents.Length,
                 units.Length, facts.Length, donors.Length, missingDonors.Length,
-                records);
+                specialCandidates.Length, records);
         }
 
         private static object FieldValue(object value, string name)

@@ -651,3 +651,18 @@
 - The host wrapper timed out at 120 seconds only after the game wrote the PASS
   result and exited; structured scenario duration was 103,225 ms. This is PASS
   evidence, not a runtime failure. No save was accessed.
+
+## 2026-08-11 - Lantern Archon native-candidate observer
+
+- The official Pathfinder 1e stat block establishes the reconstruction target:
+  CR 2, 2 outsider HD, Small lawful good, two 30-foot ranged-touch light rays,
+  aura of menace, and archon defenses. Greater teleport and gestalt are outside
+  the safe summon contract and will not be retained.
+- The current Ghaele donor is 13 HD, Medium, chaotic good, armed, spellcasting,
+  and visually unsuitable. Added a bounded final-live candidate scan for exact
+  Will-o'-Wisp, archon, light-ray, and aura identities; no gameplay changes.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `1d462421aabfb59f29825b9d69724526e44f8bd859a10bdb9b7b66c4decabdbd`;
+  package SHA-256:
+  `9f40a951c380446dccf77c829aa0b4f4ce309f077f9f258b4539cc44bb309960`.

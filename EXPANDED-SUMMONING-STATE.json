@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "9e1d851e75cf413f5d0a576484a9f5a8538b2a2b",
+  "currentSha": "bc1aa84c3b431d53d2b550c3ca6bf61ac531cdfc",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "complete-frozen-donor-observer-native-pass",
-  "nextConcreteAction": "Partition exact native reuse from reconstruction and implement the first bounded special-mechanic group: dedicated elementals/mephits plus Lantern Archon.",
+  "completedPhase": "lantern-native-candidate-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the focused special-mechanic candidate observer, rebuild the immutable SHA, and run the guarded save-free observation.",
   "domainTestResult": "1005/1005 PASS",
-  "releaseBuildResult": "PASS on 9e1d851e75cf413f5d0a576484a9f5a8538b2a2b; DLL SHA-256 73b57960c90c1838f640359f66ad0794975485023219b0a74296bda0a637b9c1",
-  "packageResult": "strict PASS on 9e1d851e75cf413f5d0a576484a9f5a8538b2a2b; SHA-256 043f279437749279c6c5a69355637a753ba6b28bf45bd82c6f31fb80940eaa00",
+  "releaseBuildResult": "PASS for focused special-candidate observer source; DLL SHA-256 1d462421aabfb59f29825b9d69724526e44f8bd859a10bdb9b7b66c4decabdbd",
+  "packageResult": "strict PASS for focused special-candidate observer source; SHA-256 9f40a951c380446dccf77c829aa0b4f4ce309f077f9f258b4539cc44bb309960",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {

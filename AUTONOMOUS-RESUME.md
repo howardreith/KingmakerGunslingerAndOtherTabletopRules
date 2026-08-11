@@ -2460,3 +2460,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   ms. No save was selected, loaded, or written.
 - Exact next action: classify native reuse and implement the first bounded
   special-mechanic group: elementals, mephits, and Lantern Archon.
+
+## Expanded Summoning current resume - Lantern candidate observer
+
+- The primary Lantern Archon stat block requires a CR 2 Small lawful-good
+  outsider with two light rays and archon defenses. The selected Ghaele summon
+  donor is not an acceptable mechanical or visual implementation.
+- Added a bounded final-live probe for Will-o'-Wisp, archon, light-ray, and aura
+  candidates. It changes no gameplay and will freeze exact native identities
+  before the Lantern unit is reconstructed.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and run the guarded save-free
+  candidate observation.

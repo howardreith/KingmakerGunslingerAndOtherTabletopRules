@@ -222,6 +222,7 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-runtime-alignments",
                 "expanded-summoning-native-action-isolation",
                 "expanded-summoning-exact-donor-inventory",
+                "expanded-summoning-special-mechanic-candidates",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
@@ -230,7 +231,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningInventoryObserver.cs"));
             foreach (string token in new[] { "ExpandedSummoningDonorCatalog.All",
                 "Distinct(StringComparer.Ordinal)", "component-graph=",
-                "body-graph=", "view-graph=" })
+                "body-graph=", "view-graph=", "SpecialMechanicTerms",
+                "special-candidate=", "special-candidate-summary=" })
                 Assertions.True(inventory.Contains(token),
                     "Exact donor graph inventory is missing: " + token);
             foreach (string token in new[] { "ExactTemplateMechanicGuids",
