@@ -62,3 +62,18 @@
 - Exact-name narrowing identified nineteen dedicated summon-unit donor candidates
   and six fallback visual donors. Broad substring false positives (notably Roc)
   are rejected; the next phase audits exact component/fact/view structures.
+
+## 2026-08-11 - summon-unit sanitizer contract
+
+- Added a pure, explicit sanitizer policy covering XP, loot, inventory,
+  interaction/dialogue, story, companion/pet, persistence, teleport/planar
+  travel, nested summoning/conjuration, expensive material components, and
+  persistent corpses.
+- Unsafe donor members are removed. If such a member represented a required
+  combat mechanic, the plan records an explicit safe-replacement obligation
+  rather than silently dropping or retaining it.
+- The policy preserves safe donor-member references and rejects null or
+  duplicate inventory identities. Complete suite: 992/992 PASS.
+- Repository validation, clean Release build, and strict package validation
+  pass. DLL SHA-256: `d871074d841ebf918a864518c1b4f7b6419936d9b3dbca4b03a7a75d391b7dc1`;
+  package SHA-256: `52339044928028e2c049154303145c915f324db668623c9b7e8fefbc83e3b5d6`.

@@ -6,11 +6,11 @@
   "workingBranch": "codex/expanded-summoning",
   "currentSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "canonical-parent-inventory-and-pure-publication-policies",
-  "nextConcreteAction": "Audit exact components, facts, body, prefab, faction, loot, XP, interaction, persistence, and combat profiles for the dedicated summon donors; define and test the sanitizer allow/deny policy before cloning.",
-  "domainTestResult": "989/989 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 6cc7d0186f7b5d57b58644bffb2fc23c71feb898816bdea0da2acf63954f29b0",
-  "packageResult": "strict PASS; SHA-256 6d097f33e70cfce3364a015d9e59c541d14444cbaf55f082314d47e026f0d431",
+  "completedPhase": "canonical-parent-inventory-publication-and-sanitizer-policies",
+  "nextConcreteAction": "Use a guarded exact-GUID donor observer to map final-live components and facts into the sanitizer contract, then freeze the unit and ability identity ledger.",
+  "domainTestResult": "992/992 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 d871074d841ebf918a864518c1b4f7b6419936d9b3dbca4b03a7a75d391b7dc1",
+  "packageResult": "strict PASS; SHA-256 52339044928028e2c049154303145c915f324db668623c9b7e8fefbc83e3b5d6",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",

@@ -7,13 +7,15 @@
   `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`; release baseline 0.0.77.
 - Durable contract/state: `planning/EXPANDED-SUMMONING-MISSION.md` and
   `EXPANDED-SUMMONING-STATE.json`.
-- Completed: repository/remote/fetch/branch preflight and mandatory Shield Other
-  policy inspection.
-- Exact next action: remove established-link distance invalidation while retaining
-  close range on the casting blueprint and every other lifecycle termination;
-  add focused tests, run all required gates, commit, and push before summoning.
-- Active blocker: none. GitHub CLI token is invalid, but SSH push has not yet been
-  tested and PR credentials are not evaluated until local qualification is done.
+- Completed: Shield Other range repair; frozen 67-creature/681-placement logical
+  catalog; guarded final-live parent/donor inventory; additive merge and rollback
+  policies; explicit summon-unit sanitizer contract. The latest complete domain
+  suite is 992/992 PASS.
+- Exact next action: add a guarded exact-GUID donor-structure observer, map its
+  output into the sanitizer contract, and freeze manifest identities only after
+  planned runtime types and ability reuse boundaries are proven.
+- Active blocker: none. SSH publication is working. GitHub CLI authentication is
+  invalid and will be rechecked after local qualification for draft-PR creation.
 
 
 ## Shield Other casting/UI regression repair (2026-08-11)
