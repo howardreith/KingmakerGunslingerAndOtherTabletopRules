@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 182;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 22;
+        internal const int SpecialIdentityCount = 24;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount;
 
@@ -75,6 +75,8 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"));
             Validate(result);
             return result.AsReadOnly();
         }

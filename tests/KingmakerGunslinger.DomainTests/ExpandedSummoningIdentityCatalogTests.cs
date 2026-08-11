@@ -11,16 +11,78 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1142, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1144, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(5, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
+        }
+
+        internal static void LowTierNaturalProfilesAreExact()
+        {
+            ExpandedSummoningNaturalProfiles.Validate();
+            Assertions.Equal(7, ExpandedSummoningNaturalProfiles.All.Count,
+                "Low-tier natural reconstruction count changed.");
+            NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
+            Assertions.Equal("Small", dog.Size, "Dog size changed.");
+            Assertions.Equal(1, dog.HitDice, "Dog HD changed.");
+            Assertions.Equal("Bite1d4", dog.PrimaryWeapon,
+                "Dog bite profile changed.");
+            NaturalSummonProfile eagle = ExpandedSummoningNaturalProfiles.For("eagle");
+            Assertions.Equal(80, eagle.SpeedFeet, "Eagle flight speed changed.");
+            Assertions.Equal(2, eagle.AdditionalWeapons.Count,
+                "Eagle talon count changed.");
+            NaturalSummonProfile frog = ExpandedSummoningNaturalProfiles.For(
+                "poisonous-frog");
+            Assertions.Equal(2, frog.Strength, "Poisonous Frog Strength changed.");
+            Assertions.True(frog.Facts.Contains("PoisonFrog"),
+                "Poisonous Frog lost its exact native poison graph.");
+            NaturalSummonProfile centipede = ExpandedSummoningNaturalProfiles.For(
+                "giant-centipede");
+            Assertions.Equal("Vermin", centipede.HitDieClass,
+                "Giant Centipede type class changed.");
+            Assertions.True(centipede.Deviations.Any(value =>
+                value.Contains("racial DC bonus")),
+                "The conservative Centipede poison DC deviation is not explicit.");
+            NaturalSummonProfile spider = ExpandedSummoningNaturalProfiles.For(
+                "giant-spider");
+            Assertions.Equal(3, spider.HitDice, "Giant Spider HD changed.");
+            Assertions.Equal(1, spider.NaturalArmor,
+                "Giant Spider natural armor changed.");
+            Assertions.True(spider.Facts.Contains("GiantSpiderPoison"),
+                "Giant Spider lost its exact native poison graph.");
+            Assertions.True(ExpandedSummoningNaturalProfiles.For("goblin-dog")
+                .Deviations.Any(value => value.Contains("allergic reaction")),
+                "Goblin Dog allergic-reaction omission is not explicit.");
+            Assertions.True(ExpandedSummoningNaturalProfiles.For("hyena")
+                .Facts.Contains("TrippingBite"),
+                "Hyena lost its tripping bite.");
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
+            foreach (string token in new[] { "ExpandedSummoningNaturalProfiles.All",
+                "unit.ComponentsArray = new BlueprintComponent[] { levels }",
+                "unit.Body = new BlueprintUnit.UnitBody",
+                "unit.StartingInventory = Array.Empty<BlueprintItem>()",
+                "new DiceFormula(1, dice)",
+                "1a3f2f384bbef804d8f52db1f9aa62d3",
+                "6fed981bf0ef27a499969f369f35b5e8",
+                "094714bb08f4e1943a8e9d2384ebe573" })
+                Assertions.True(builder.Contains(token),
+                    "Low-tier natural builder contract is missing: " + token);
+            Assertions.False(builder.Contains("CR2_WorgStandart"),
+                "The Worg donor must not supply Goblin Dog mechanics.");
+            string registration = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningBlueprints.cs"));
+            Assertions.True(registration.Contains(
+                "ExpandedSummoningNaturalBuilder.Configure(library, registered)"),
+                "The natural reconstruction builder is not registered.");
         }
 
         internal static void TemplateExecutionsAreFamilyScoped()

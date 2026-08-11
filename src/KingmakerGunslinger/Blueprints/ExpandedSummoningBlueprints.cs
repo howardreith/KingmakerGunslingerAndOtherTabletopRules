@@ -85,6 +85,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Expanded Summoning registration count mismatch.");
             ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
+            ExpandedSummoningNaturalBuilder.Configure(library, registered);
             ExpandedSummoningSpecialBuilder.Configure(library, registered);
             return result;
         }

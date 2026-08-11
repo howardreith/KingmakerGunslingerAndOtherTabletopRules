@@ -48,6 +48,7 @@
     <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningInventoryObserver.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialProfiles.cs" />
+    <Compile Include="Summoning\ExpandedSummoningNaturalProfiles.cs" />
     <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
     <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />

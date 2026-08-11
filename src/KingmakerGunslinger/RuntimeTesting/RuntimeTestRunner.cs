@@ -7545,6 +7545,88 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "4d283e0b70fb489ba79e69387818c3f3") &&
                 pixieTraits.ComponentsArray.OfType<AddSpellResistance>()
                     .Single().Value.Value == 15;
+            BlueprintItemWeapon naturalBite1d4 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1d4");
+            BlueprintItemWeapon naturalBite1d3 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1d3");
+            BlueprintUnit dog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Dog");
+            BlueprintUnit eagle = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Eagle");
+            BlueprintUnit poisonFrog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_PoisonousFrog");
+            BlueprintUnit centipede = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GiantCentipede");
+            BlueprintUnit giantSpider = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GiantSpider");
+            BlueprintUnit goblinDog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GoblinDog");
+            BlueprintUnit hyena = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Hyena");
+            bool lowTierNaturalsExact =
+                naturalBite1d4.Damage.Rolls == 1 &&
+                naturalBite1d4.Damage.Dice == DiceType.D4 &&
+                naturalBite1d3.Damage.Rolls == 1 &&
+                naturalBite1d3.Damage.Dice == DiceType.D3 &&
+                dog.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 1 &&
+                dog.Size == Size.Small && dog.Strength == 13 &&
+                dog.Dexterity == 13 && dog.Constitution == 15 &&
+                dog.Intelligence == 2 && dog.Wisdom == 12 && dog.Charisma == 6 &&
+                ReferenceEquals(dog.Body.PrimaryHand, naturalBite1d4) &&
+                dog.Body.AdditionalLimbs.Length == 0 &&
+                eagle.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 1 &&
+                eagle.Size == Size.Small && eagle.Strength == 10 &&
+                eagle.Dexterity == 15 && eagle.Constitution == 12 &&
+                eagle.Intelligence == 2 && eagle.Wisdom == 15 &&
+                eagle.Charisma == 7 &&
+                ReferenceEquals(eagle.Body.PrimaryHand, naturalBite1d4) &&
+                eagle.Body.AdditionalLimbs.Length == 2 &&
+                eagle.Body.AdditionalLimbs.All(value => value.AssetGuid ==
+                    "118fdd03e569a66459ab01a20af6811a") &&
+                eagle.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "70cffb448c132fa409e49156d013b175") == 1 &&
+                poisonFrog.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && poisonFrog.Size == Size.Tiny &&
+                poisonFrog.Strength == 2 && poisonFrog.Dexterity == 12 &&
+                poisonFrog.Constitution == 11 && poisonFrog.Intelligence == 1 &&
+                poisonFrog.Wisdom == 9 && poisonFrog.Charisma == 10 &&
+                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1d3) &&
+                poisonFrog.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "1a3f2f384bbef804d8f52db1f9aa62d3") == 1 &&
+                centipede.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && centipede.Size == Size.Medium &&
+                centipede.Strength == 9 && centipede.Dexterity == 15 &&
+                centipede.Constitution == 12 && centipede.Intelligence == 1 &&
+                centipede.Wisdom == 10 && centipede.Charisma == 2 &&
+                centipede.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "6fed981bf0ef27a499969f369f35b5e8") == 1 &&
+                giantSpider.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 3 && giantSpider.Size == Size.Medium &&
+                giantSpider.Strength == 11 && giantSpider.Dexterity == 17 &&
+                giantSpider.Constitution == 12 && giantSpider.Intelligence == 1 &&
+                giantSpider.Wisdom == 10 && giantSpider.Charisma == 2 &&
+                giantSpider.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "094714bb08f4e1943a8e9d2384ebe573") == 1 &&
+                giantSpider.AddFacts.All(value => value == null ||
+                    value.AssetGuid != "ef60cd888b834a549898824e6b684918") &&
+                goblinDog.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && goblinDog.Size == Size.Medium &&
+                goblinDog.Alignment == Alignment.TrueNeutral &&
+                goblinDog.Strength == 15 && goblinDog.Dexterity == 14 &&
+                goblinDog.Constitution == 15 && goblinDog.Intelligence == 2 &&
+                goblinDog.Wisdom == 12 && goblinDog.Charisma == 8 &&
+                goblinDog.AddFacts.All(value => value == null ||
+                    (value.AssetGuid != "797f25d709f559546b29e7bcb181cc74" &&
+                     value.AssetGuid != "f957b4444b6fb404e84ae2a5765797bb")) &&
+                hyena.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 2 &&
+                hyena.Size == Size.Medium && hyena.Strength == 14 &&
+                hyena.Dexterity == 15 && hyena.Constitution == 15 &&
+                hyena.Intelligence == 2 && hyena.Wisdom == 13 &&
+                hyena.Charisma == 6 &&
+                hyena.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "f957b4444b6fb404e84ae2a5765797bb") == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7593,6 +7675,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-pixie", "exact",
                     pixieExact ? "exact" : "mismatch", pixieExact,
                     "4-HD Small fey with native arrow rig, sixteen sleep arrows, one dance use, native invisibility, DR, and SR"),
+                Assertion("expanded-summoning-low-tier-naturals", "exact",
+                    lowTierNaturalsExact ? "exact" : "mismatch",
+                    lowTierNaturalsExact,
+                    "tabletop dog, eagle, poisonous frog, centipede, giant spider, goblin dog, and hyena chassis with visual-only proxy donors"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),

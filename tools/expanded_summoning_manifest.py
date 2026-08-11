@@ -66,8 +66,10 @@ def planned():
         ("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
     ))
-    if len(rows) != 1142 or len({symbol for symbol, _ in rows}) != 1142:
+    if len(rows) != 1144 or len({symbol for symbol, _ in rows}) != 1144:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
