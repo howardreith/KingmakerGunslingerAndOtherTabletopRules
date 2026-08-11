@@ -4,10 +4,10 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "344c9590dc02c086da9e4d9dcd03917e6ebb741a",
+  "currentSha": "7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "transactional-parent-publication-source-qualified",
-  "nextConcreteAction": "Commit and publish additive parent publication, then run the guarded structural observer to prove exactly 681 live placements across 18 canonical parents.",
+  "completedPhase": "transactional-parent-publication-runtime-qualified",
+  "nextConcreteAction": "Implement and test native-compatible celestial/fiendish execution routing and template buffs for the 182 templated Summon Monster placements.",
   "domainTestResult": "999/999 PASS",
   "releaseBuildResult": "PASS; DLL SHA-256 ea5e5c6cd7eee93c727ea655617a279128cc33bad4ab89914b0ce882babe91e0",
   "packageResult": "strict PASS; SHA-256 7d1a8860253fb28c9dd0f470c0e40a7b3a4146eec66c75c3697dbfd1d9b55310",
@@ -82,6 +82,12 @@
       "result": "PASS",
       "sourceSha": "344c9590dc02c086da9e4d9dcd03917e6ebb741a",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1905591662821Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1912513494823Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

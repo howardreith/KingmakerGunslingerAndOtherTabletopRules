@@ -2202,3 +2202,13 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Remaining work includes alignment/template mechanics, fact-level unit
   normalization, special adaptations, optional-parent reconciliation, guarded
   mechanical/visual/persistence scenarios, profiles, release metadata, and PR.
+
+## Expanded Summoning current resume - live publication PASS
+
+- Pushed source `7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0` passed guarded run
+  `20260811T1912513494823Z-observe-expanded-summoning-inventory`.
+- Exact live assertions: 67 units, 1,045 abilities, 1,370 registry identities,
+  and 681 placements on 18 canonical parents; no save access.
+- Exact next action: implement KMG-owned celestial/fiendish template mechanics
+  and deterministic good/neutral/evil execution routing without optional-mod
+  compile-time references.

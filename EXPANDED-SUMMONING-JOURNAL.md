@@ -271,3 +271,15 @@
   `ea5e5c6cd7eee93c727ea655617a279128cc33bad4ab89914b0ce882babe91e0`;
   package SHA-256:
   `7d1a8860253fb28c9dd0f470c0e40a7b3a4146eec66c75c3697dbfd1d9b55310`.
+
+## 2026-08-11 - live parent publication PASS
+
+- Guarded fresh-process run
+  `20260811T1912513494823Z-observe-expanded-summoning-inventory` passed on
+  committed source `7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0`.
+- Exact assertions passed: 67 KMG units, 1,045 KMG abilities, 1,370 total
+  registered identities, and 681 KMG logical placements across the 18
+  canonical final-live parent surfaces. No save was accessed.
+- The loaded library contained 523 summon-family ability candidates, including
+  optional-mod clones. Those remain inventory evidence only; KMG mutated only
+  the 18 exact base parents at this checkpoint.
