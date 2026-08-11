@@ -216,7 +216,10 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningInventoryObserver.cs"));
             foreach (string token in new[] { "ExactSpecialMechanicGuids",
-                "specialDetails", "special-detail=", "missing-details:" })
+                "specialIndex", "special-index=", "Take(300)",
+                "specialDetails", "special-detail=", "missing-details:",
+                "invisiblestalker", "shadowdemon", "succubus",
+                "salamander", "energydrain" })
                 Assertions.True(observer.Contains(token),
                     "Bounded special-mechanic observer is missing: " + token);
             Assertions.False(observer.Contains(

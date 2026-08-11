@@ -64,7 +64,11 @@ namespace KingmakerGunslinger.Summoning
         private static readonly string[] SpecialMechanicTerms = {
             "willowisp", "will-o-wisp", "will o wisp", "willo",
             "lanternarchon", "lantern archon", "lightray", "light ray",
-            "auraofmenace", "aura of menace"
+            "auraofmenace", "aura of menace", "salamander",
+            "invisiblestalker", "invisible stalker", "naturalinvisibility",
+            "natural invisibility", "shadowdemon", "shadow demon",
+            "incorporeal", "succubus", "energydrain", "energy drain",
+            "profanegift", "profane gift"
         };
         private static readonly string[] ExactSpecialMechanicGuids = {
             "24719a49b84c5cd43b894268d22d9c89",
@@ -114,6 +118,14 @@ namespace KingmakerGunslinger.Summoning
             BlueprintScriptableObject[] specialCandidates = all.Where(value =>
                 ContainsAny(SearchText(value), SpecialMechanicTerms))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            BlueprintScriptableObject[] specialIndex = specialCandidates.Take(300)
+                .ToArray();
+            foreach (BlueprintScriptableObject value in specialIndex)
+                records.Add("special-index=" + Describe(value) + ";components=" +
+                    string.Join(",", (value.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Where(component =>
+                            component != null).Select(component =>
+                                component.GetType().FullName)));
             var exactSpecial = new HashSet<string>(ExactSpecialMechanicGuids,
                 StringComparer.Ordinal);
             BlueprintScriptableObject[] specialDetails = specialCandidates.Where(value =>
@@ -129,7 +141,8 @@ namespace KingmakerGunslinger.Summoning
                         ObjectGraph(FieldValue(unit, "Prefab"), 8)));
             }
             records.Add("special-candidate-summary=found:" + specialCandidates.Length +
-                ";details:" + specialDetails.Length + ";missing-details:" +
+                ";indexed:" + specialIndex.Length + ";details:" +
+                specialDetails.Length + ";missing-details:" +
                 string.Join(",", ExactSpecialMechanicGuids.Where(guid =>
                     !specialDetails.Any(value => value.AssetGuid == guid))));
 
