@@ -395,3 +395,23 @@
   `d45d94e9cfab1e032b597b7b42de7ca49990702ef8e8d165fcbbdd04acd7aa84`;
   package SHA-256:
   `f356e94fca20e335fbba8ef70d5241903527aecc2ef2593b93f631564f798dd0`.
+
+## 2026-08-11 - exact 5-10 HD template spell resistance
+
+- Allocated and activated two append-only buff identities:
+  `KMG.Summoning.Template.Celestial.Mid`
+  (`c3c53de0ca9440e5af263dfb16922188`) and
+  `KMG.Summoning.Template.Fiendish.Mid`
+  (`031bc1b958324023bf3f4c33b976185d`). Collision and format validation
+  passed against the complete manifest.
+- Extracted a pure HD-band policy with exact boundaries: low 0-4, mid 5-10,
+  high 11+. Low and mid use resistance/DR 5; high uses 10. Mid and high grant
+  native CR+5 spell resistance while low omits it below the tabletop threshold.
+- Expanded Summoning now contributes 1,118 registered identities. The complete
+  append-only ledger is 1,373 IDs: 1,372 active and one reserved. Bootstrap
+  derives its aggregate registration expectation from the feature-local count.
+- Repository validation, manifest validation, 1,003/1,003 domain/reflection
+  tests, clean Release, and strict package validation PASS. DLL SHA-256:
+  `48175b82c756f080424dcf577ac994798bfbb23daa96999d60708cd88210808b`;
+  package SHA-256:
+  `d6c8ac7ae2fb742e7027f956d01c26ec0c9372679b443cec72e1ee66d08a8898`.

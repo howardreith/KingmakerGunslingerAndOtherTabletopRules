@@ -16,19 +16,23 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Celestial.Low"),
-                true, false);
+                true, SummonTemplateBand.Low);
+            ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Celestial.Mid"),
+                true, SummonTemplateBand.Mid);
             ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Celestial.High"),
-                true, true);
+                true, SummonTemplateBand.High);
             ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Fiendish.Low"),
-                false, false);
+                false, SummonTemplateBand.Low);
+            ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Fiendish.Mid"),
+                false, SummonTemplateBand.Mid);
             ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Fiendish.High"),
-                false, true);
+                false, SummonTemplateBand.High);
         }
 
         private static void ConfigureOne(BlueprintBuff buff, bool celestial,
-            bool high)
+            SummonTemplateBand band)
         {
-            int value = high ? 10 : 5;
+            int value = SummonTemplateBandPolicy.ResistanceValue(band);
             var components = new List<BlueprintComponent>();
             if (celestial)
             {
@@ -46,7 +50,7 @@ namespace KingmakerGunslinger.Blueprints
             dr.BypassedByAlignment = true;
             dr.Alignment = celestial ? DamageAlignment.Evil : DamageAlignment.Good;
             components.Add(dr);
-            if (high)
+            if (SummonTemplateBandPolicy.GrantsSpellResistance(band))
             {
                 var resistance = ScriptableObject.CreateInstance<AddSpellResistance>();
                 resistance.AddCR = true;
@@ -59,9 +63,9 @@ namespace KingmakerGunslinger.Blueprints
             string kind = celestial ? "Celestial" : "Fiendish";
             BlueprintUnitFactAccess.Resolve().Configure(buff,
                 LocalizationService.Create("KMG.ExpandedSummoning.Template." + kind +
-                    (high ? ".High" : ".Low") + ".Name", kind + " Template"),
+                    "." + band + ".Name", kind + " Template"),
                 LocalizationService.Create("KMG.ExpandedSummoning.Template." + kind +
-                    (high ? ".High" : ".Low") + ".Description",
+                    "." + band + ".Description",
                     kind + " resistances and alignment-bypassed damage reduction."),
                 null);
         }

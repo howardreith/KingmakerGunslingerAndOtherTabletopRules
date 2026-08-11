@@ -16,6 +16,7 @@ using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -27,7 +28,8 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 1370;
+        internal const int ExpectedRegisteredBlueprintCount = 254 +
+            ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;

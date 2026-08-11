@@ -12,3 +12,12 @@ The mandatory Shield Other prerequisite is source-qualified: established links
 no longer depend on distance, while close initial targeting and all other
 lifecycle rules remain intact. Repository validation, 981/981 domain tests,
 clean Release build, and strict 0.0.77 package validation pass.
+
+Current implementation checkpoint: the complete frozen 681-placement catalog,
+67 summon-unit identities, 1,045 abilities, and six HD-banded celestial or
+fiendish template buffs are registered deterministically. The exact template
+SR threshold is implemented as low (0-4 HD, no SR), mid (5-10 HD, CR+5 SR),
+and high (11+ HD, CR+5 SR), with resistance/DR values 5/5/10. The ledger is
+1,373 stable IDs: 1,372 active and one reserved. Source qualification passes
+1,003 tests, clean Release, and strict package validation; the six-buff graph
+still requires its committed-source guarded runtime observation.

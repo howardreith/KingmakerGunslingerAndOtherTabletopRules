@@ -54,15 +54,14 @@ namespace KingmakerGunslinger.Blueprints
                         symbol + ".Celestial");
                     BlueprintAbility fiendish = Require<BlueprintAbility>(bySymbol,
                         symbol + ".Fiendish");
-                    bool high = HitDice(unit) > 10;
+                    SummonTemplateBand band = SummonTemplateBandPolicy.Select(
+                        HitDice(unit));
                     ConfigureOne(celestial, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
-                            "KMG.Summoning.Template.Celestial." +
-                            (high ? "High" : "Low")), true);
+                            "KMG.Summoning.Template.Celestial." + band), true);
                     ConfigureOne(fiendish, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
-                            "KMG.Summoning.Template.Fiendish." +
-                            (high ? "High" : "Low")), false);
+                            "KMG.Summoning.Template.Fiendish." + band), false);
                     ConfigureTemplateChoice(ability, native, variant,
                         celestial, fiendish);
                 }

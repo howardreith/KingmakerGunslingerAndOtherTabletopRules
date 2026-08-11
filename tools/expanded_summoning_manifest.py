@@ -39,9 +39,9 @@ def planned():
                     rows.append((symbol + ".Celestial", "BlueprintAbility"))
                     rows.append((symbol + ".Fiendish", "BlueprintAbility"))
     for alignment in ("Celestial", "Fiendish"):
-        for band in ("Low", "High"):
+        for band in ("Low", "Mid", "High"):
             rows.append((f"KMG.Summoning.Template.{alignment}.{band}", "BlueprintBuff"))
-    if len(rows) != 1116 or len({symbol for symbol, _ in rows}) != 1116:
+    if len(rows) != 1118 or len({symbol for symbol, _ in rows}) != 1118:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

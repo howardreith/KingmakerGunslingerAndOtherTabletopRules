@@ -49,6 +49,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdentityCatalog.cs"><Link>Summoning\ExpandedSummoningIdentityCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateBandPolicy.cs"><Link>Summoning\SummonTemplateBandPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />

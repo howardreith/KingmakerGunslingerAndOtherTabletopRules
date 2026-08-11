@@ -39,6 +39,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sanitizer-runtime-members", SummonUnitSanitizationPolicyTests.RuntimeMemberNamesFailClosedOnProhibitedPowers),
             Case("expanded-summoning.identities-exact", ExpandedSummoningIdentityCatalogTests.FoundationLedgerIsExactAndDeterministic),
             Case("expanded-summoning.identities-template-scope", ExpandedSummoningIdentityCatalogTests.TemplateExecutionsAreFamilyScoped),
+            Case("expanded-summoning.template-hd-bands", ExpandedSummoningIdentityCatalogTests.TemplateHitDiceBandsAreExact),
             Case("expanded-summoning.identities-logical-coverage", ExpandedSummoningIdentityCatalogTests.SymbolsEncodeEveryLogicalPlacement),
             Case("expanded-summoning.donors-exact", ExpandedSummoningIdentityCatalogTests.DonorsCoverEveryFrozenCreature),
             Case("expanded-summoning.ability-builder", ExpandedSummoningIdentityCatalogTests.AbilityBuilderPreservesNativeGraphContracts),

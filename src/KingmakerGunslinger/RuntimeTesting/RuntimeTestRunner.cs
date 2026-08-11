@@ -7049,8 +7049,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeShieldOther == expectedShieldOther &&
                     activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "1370 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 1370,
+                Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -7210,15 +7210,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
                 value.name.StartsWith("KMG_Summoning_Template_",
                     StringComparison.Ordinal)).ToArray();
-            bool templateBuffsExact = templateBuffs.Length == 4 &&
+            bool templateBuffsExact = templateBuffs.Length == 6 &&
                 templateBuffs.All(value => value.ComponentsArray
                     .OfType<AddDamageResistancePhysical>().Count() == 1) &&
                 templateBuffs.Count(value => value.ComponentsArray
-                    .OfType<AddDamageResistanceEnergy>().Count() == 3) == 2 &&
+                    .OfType<AddDamageResistanceEnergy>().Count() == 3) == 3 &&
                 templateBuffs.Count(value => value.ComponentsArray
-                    .OfType<AddDamageResistanceEnergy>().Count() == 2) == 2 &&
+                    .OfType<AddDamageResistanceEnergy>().Count() == 2) == 3 &&
                 templateBuffs.Count(value => value.ComponentsArray
-                    .OfType<AddSpellResistance>().Count() == 1) == 2;
+                    .OfType<AddSpellResistance>().Count() == 1) == 4 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_Low", 5, false)) == 2 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_Mid", 5, true)) == 2 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_High", 10, true)) == 2;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7228,11 +7234,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.UnitCount.ToString(), observation.UnitCount >= 40,
                     "final-live BlueprintUnit roster-term inventory"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=67;abilities=1045;registry=1370",
+                    "units=67;abilities=1045;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
                     kmgUnits == 67 && kmgAbilities == 1045 &&
-                        BlueprintBootstrap.RegisteredBlueprintCount == 1370,
+                        BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
@@ -7258,7 +7264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-fiendish-executions", "182",
                     fiendishExecutions.Length.ToString(), fiendishExact,
                     "non-good mask, Evil descriptor, and child template application"),
-                Assertion("expanded-summoning-template-buffs", "4",
+                Assertion("expanded-summoning-template-buffs", "6",
                     templateBuffs.Length.ToString(), templateBuffsExact,
                     "native resistance, alignment DR, and high-tier SR components"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -7297,6 +7303,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Array.Empty<BlueprintComponent>())
                 ExpandedSummoningTemplateApplyCount(component, seen, ref count);
             return count;
+        }
+
+        private static bool ExpandedSummoningTemplateBandExact(BlueprintBuff buff,
+            string suffix, int resistanceValue, bool spellResistance)
+        {
+            AddDamageResistanceEnergy[] energy = buff.ComponentsArray
+                .OfType<AddDamageResistanceEnergy>().ToArray();
+            AddDamageResistancePhysical physical = buff.ComponentsArray
+                .OfType<AddDamageResistancePhysical>().Single();
+            AddSpellResistance[] sr = buff.ComponentsArray
+                .OfType<AddSpellResistance>().ToArray();
+            return buff.name.EndsWith(suffix, StringComparison.Ordinal) &&
+                energy.All(value => value.Value.Value == resistanceValue) &&
+                physical.Value.Value == resistanceValue &&
+                sr.Length == (spellResistance ? 1 : 0) &&
+                (!spellResistance || sr[0].AddCR && sr[0].Value.Value == 5);
         }
 
         private static void ExpandedSummoningTemplateApplyCount(object value,

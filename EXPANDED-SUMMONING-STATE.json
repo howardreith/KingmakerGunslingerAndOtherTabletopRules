@@ -4,13 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "d76f5c6010ca3612ba2b1c24e076b7601fed9227",
+  "currentSha": "2f5d3b3a6a5bc5937dd5e7a143bc28ef76bed49c",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "template-graph-native-runtime-pass",
-  "nextConcreteAction": "Implement exact 5-10 HD celestial/fiendish spell resistance using frozen mid-tier buff identities, then qualify the expanded template tiers.",
-  "domainTestResult": "1002/1002 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 d45d94e9cfab1e032b597b7b42de7ca49990702ef8e8d165fcbbdd04acd7aa84",
-  "packageResult": "strict PASS; SHA-256 f356e94fca20e335fbba8ef70d5241903527aecc2ef2593b93f631564f798dd0",
+  "completedPhase": "exact-template-spell-resistance-source-qualified",
+  "nextConcreteAction": "Commit and push the six-buff HD-banded template repair, then run the guarded structural observer against the committed source SHA.",
+  "domainTestResult": "1003/1003 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 48175b82c756f080424dcf577ac994798bfbb23daa96999d60708cd88210808b",
+  "packageResult": "strict PASS; SHA-256 d6c8ac7ae2fb742e7027f956d01c26ec0c9372679b443cec72e1ee66d08a8898",
+  "blueprintLedger": "1118 Expanded Summoning identities; 1372 active, 1 reserved, 1373 total; derived constant registry count 1372",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -119,7 +120,6 @@
   ],
   "compatibilityProfilesCompleted": [],
   "unresolvedDeviations": [
-    "Celestial/fiendish spell resistance is currently present only on the high (>10 donor HD) buff; exact 5-10 HD SR remains to implement.",
     "Celestial/fiendish once-per-day smite remains to implement.",
     "Runtime unit alignment mutation for the selected template remains to implement or document as a conservative engine deviation."
   ],

@@ -2273,3 +2273,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: add frozen mid-tier celestial/fiendish buffs so creatures
   with 5-10 HD receive CR+5 SR without over-granting SR below 5 HD; then qualify
   the resulting six-buff template graph.
+
+## Expanded Summoning current resume - exact template SR source-qualified
+
+- Added frozen `Celestial.Mid` (`c3c53de0ca9440e5af263dfb16922188`)
+  and `Fiendish.Mid` (`031bc1b958324023bf3f4c33b976185d`) buff
+  identities. The append-only ledger is now 1,373 IDs: 1,372 active and one
+  reserved; Expanded Summoning contributes 1,118 identities.
+- The pure HD policy assigns low below 5 HD, mid from 5 through 10 HD, and high
+  above 10 HD. Mid grants resistance/DR 5 plus CR+5 SR; high grants value 10
+  plus CR+5 SR; low conservatively omits SR exactly below the tabletop gate.
+- The aggregate bootstrap count is derived from the feature-local foundation
+  count. Repository validation, 1,003/1,003 tests, clean Release, and strict
+  package validation pass. Exact next action: commit/push and run the guarded
+  observer against the immutable SHA.

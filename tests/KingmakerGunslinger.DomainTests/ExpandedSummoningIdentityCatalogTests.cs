@@ -11,10 +11,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1116, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1118, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1045, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(4, first.Count(value => value.PlannedType == "BlueprintBuff"), "Template buff identity count changed.");
+            Assertions.Equal(6, first.Count(value => value.PlannedType == "BlueprintBuff"), "Template buff identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -30,6 +30,30 @@ namespace KingmakerGunslinger.DomainTests
                 (value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal) ||
                  value.Symbol.EndsWith(".Fiendish", StringComparison.Ordinal))),
                 "SNA must not receive celestial or fiendish execution identities.");
+        }
+
+        internal static void TemplateHitDiceBandsAreExact()
+        {
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                SummonTemplateBandPolicy.Select(-1), "Negative HD must fail closed.");
+            Assertions.Equal(SummonTemplateBand.Low,
+                SummonTemplateBandPolicy.Select(0), "Zero HD band changed.");
+            Assertions.Equal(SummonTemplateBand.Low,
+                SummonTemplateBandPolicy.Select(4), "Four HD band changed.");
+            Assertions.Equal(SummonTemplateBand.Mid,
+                SummonTemplateBandPolicy.Select(5), "Five HD band changed.");
+            Assertions.Equal(SummonTemplateBand.Mid,
+                SummonTemplateBandPolicy.Select(10), "Ten HD band changed.");
+            Assertions.Equal(SummonTemplateBand.High,
+                SummonTemplateBandPolicy.Select(11), "Eleven HD band changed.");
+            Assertions.Equal(5, SummonTemplateBandPolicy.ResistanceValue(
+                SummonTemplateBand.Mid), "Mid resistance changed.");
+            Assertions.Equal(10, SummonTemplateBandPolicy.ResistanceValue(
+                SummonTemplateBand.High), "High resistance changed.");
+            Assertions.False(SummonTemplateBandPolicy.GrantsSpellResistance(
+                SummonTemplateBand.Low), "Low template must omit SR below 5 HD.");
+            Assertions.True(SummonTemplateBandPolicy.GrantsSpellResistance(
+                SummonTemplateBand.Mid), "Mid template must grant SR at 5 HD.");
         }
 
         internal static void SymbolsEncodeEveryLogicalPlacement()
@@ -124,7 +148,7 @@ namespace KingmakerGunslinger.DomainTests
                 "DamageEnergyType.Cold", "DamageEnergyType.Electricity",
                 "DamageEnergyType.Fire", "BypassedByAlignment = true",
                 "DamageAlignment.Evil", "DamageAlignment.Good",
-                "AddSpellResistance", "resistance.AddCR = true" })
+                "AddSpellResistance", "resistance.AddCR = true", "Mid" })
                 Assertions.True(templates.Contains(token),
                     "Template buff contract is missing: " + token);
             string abilities = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
@@ -137,6 +161,11 @@ namespace KingmakerGunslinger.DomainTests
                 "SpellDescriptor.Good", "SpellDescriptor.Evil" })
                 Assertions.True(abilities.Contains(token),
                     "Template execution contract is missing: " + token);
+            foreach (string token in new[] { "SummonTemplateBandPolicy.Select",
+                "KMG.Summoning.Template.Celestial.\" + band",
+                "KMG.Summoning.Template.Fiendish.\" + band" })
+                Assertions.True(abilities.Contains(token),
+                    "Template HD-band contract is missing: " + token);
         }
     }
 }
