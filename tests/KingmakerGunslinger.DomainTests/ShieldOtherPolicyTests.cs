@@ -43,13 +43,23 @@ namespace KingmakerGunslinger.DomainTests
         {
             var valid = Request();
             Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(valid).Valid,
-                "Complete in-range link must be valid.");
+                "Complete established link must be valid.");
             AssertInvalid("subject-missing", value => value.SubjectPresent = false);
             AssertInvalid("caster-missing", value => value.CasterPresent = false);
             AssertInvalid("caster-level-missing", value => value.CasterLevel = 0);
             AssertInvalid("caster-dead", value => value.CasterAlive = false);
             AssertInvalid("different-area", value => value.SameArea = false);
-            AssertInvalid("out-of-range", value => value.DistanceFeet = 30.001f);
+
+            ShieldOtherLinkValidityRequest distant = Request();
+            distant.DistanceFeet = 10000f;
+            Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(distant).Valid,
+                "Close range limits initial targeting, not an established bond.");
+
+            ShieldOtherLinkValidityRequest unavailableDistance = Request();
+            unavailableDistance.DistanceFeet = float.NaN;
+            Assertions.True(
+                ShieldOtherLinkValidityPolicy.Evaluate(unavailableDistance).Valid,
+                "Established-link validity must not depend on distance telemetry.");
         }
 
         internal static void CloseRangeScaling()
@@ -63,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
             ShieldOtherLinkValidityRequest boundary = Request();
             boundary.CasterLevel = 5; boundary.DistanceFeet = 35f;
             Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(boundary).Valid,
-                "Exact close-range boundary must remain valid.");
+                "Established link must remain valid at the casting-range boundary.");
         }
 
         internal static void BlueprintIdentityAndContractSource()
@@ -204,6 +214,12 @@ namespace KingmakerGunslinger.DomainTests
                 "buff.Remove()" })
                 Assertions.True(source.Contains(token),
                     "Link lifecycle source contract is missing: " + token);
+            string policy = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Spells", "ShieldOther",
+                "ShieldOtherLinkValidityPolicy.cs"));
+            Assertions.False(policy.Contains("out-of-range") ||
+                policy.Contains("request.DistanceFeet"),
+                "Established Shield Other link validity must not depend on distance.");
         }
 
         internal static void DamageRuntimeSourceContract()

@@ -1,5 +1,21 @@
 # Autonomous Gunslinger resume handoff
 
+## Active Expanded Summoning mission (2026-08-11)
+
+- Branch: `codex/expanded-summoning`; selected baseline `origin/master` at
+  `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor
+  `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`; release baseline 0.0.77.
+- Durable contract/state: `planning/EXPANDED-SUMMONING-MISSION.md` and
+  `EXPANDED-SUMMONING-STATE.json`.
+- Completed: repository/remote/fetch/branch preflight and mandatory Shield Other
+  policy inspection.
+- Exact next action: remove established-link distance invalidation while retaining
+  close range on the casting blueprint and every other lifecycle termination;
+  add focused tests, run all required gates, commit, and push before summoning.
+- Active blocker: none. GitHub CLI token is invalid, but SSH push has not yet been
+  tested and PR credentials are not evaluated until local qualification is done.
+
+
 ## Shield Other casting/UI regression repair (2026-08-11)
 
 - Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
