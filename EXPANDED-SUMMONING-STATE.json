@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "219dfbe44c7abdfb8d534755f2ea65f06459da04",
+  "currentSha": "787a970d019efdc731c667a50ce7816776e46e1d",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "faction-field-runtime-repair",
-  "nextConcreteAction": "Publish and rerun exact-donor qualification after resolving the 2.1.7b Faction field, then continue fact sanitization and native spawn actions.",
-  "domainTestResult": "997/997 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 259c904aec1492b9b83fa36be0bf1573e17572703db5f8e242f4c571390abae0",
-  "packageResult": "strict PASS; SHA-256 1ae6af5c30617807422d188fb53e53fb5c8e0829ad4443034122f9b8dda247df",
+  "completedPhase": "native-variant-action-construction",
+  "nextConcreteAction": "Qualify all 1045 independently cloned native action graphs on a fresh process, then implement template branching, fact sanitization, special adaptations, and additive parent publication.",
+  "domainTestResult": "998/998 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 b5c5f5ee16394c2c5149c739cc32f01fd7d5463612c06f44cac4812688de7cec",
+  "packageResult": "strict PASS; SHA-256 ffce07d9c936a0fd421b140757a96f99533df9651b72aa27cc3e7d985d4ce89f",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -58,6 +58,12 @@
       "result": "TIMEOUT",
       "sourceSha": "219dfbe44c7abdfb8d534755f2ea65f06459da04",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1838286338373Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "787a970d019efdc731c667a50ce7816776e46e1d",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1843447348611Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

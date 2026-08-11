@@ -215,3 +215,19 @@
 - Repository validation, 997/997 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `259c904aec1492b9b83fa36be0bf1573e17572703db5f8e242f4c571390abae0`;
   package SHA-256: `1ae6af5c30617807422d188fb53e53fb5c8e0829ad4443034122f9b8dda247df`.
+
+## 2026-08-11 - native variant action construction
+
+- Exact-donor structural registration passed guarded fresh-process run
+  `20260811T1843447348611Z-observe-expanded-summoning-inventory` on published
+  source `787a970d019efdc731c667a50ce7816776e46e1d`; status PASS, no save access.
+- Configured all 681 logical abilities and 364 aligned execution abilities from
+  the exact native family/tier/multiplicity child contract. Component/action
+  graphs are independently cloned without copying Unity cached pointers; each
+  graph must contain exactly one spawn action, retargeted to its KMG unit.
+- Native range, casting time, duration rank, summon pool, tier cleanup buff,
+  descriptors, metamagic, and quantity/Superior Summoning rank semantics are
+  inherited from the exact canonical child. Parent arrays remain untouched.
+- Repository validation, 998/998 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `b5c5f5ee16394c2c5149c739cc32f01fd7d5463612c06f44cac4812688de7cec`;
+  package SHA-256: `ffce07d9c936a0fd421b140757a96f99533df9651b72aa27cc3e7d985d4ce89f`.

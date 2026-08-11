@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.IO;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -54,6 +55,19 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningDonorCatalog.All.Any(value =>
                 !value.DedicatedSummon),
                 "Proxy donors must remain explicit sanitizer obligations.");
+        }
+
+        internal static void AbilityBuilderPreservesNativeGraphContracts()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningAbilityBuilder.cs"));
+            foreach (string token in new[] { "MonsterParents", "AllyParents",
+                "NativeTemplate", "DeepCloneComponent", "ReplaceSpawnUnits",
+                "Expected exactly one native spawn action", "MaterialComponentData",
+                "variant.Multiplicity == SummonMultiplicity.OneD3" })
+                Assertions.True(source.Contains(token),
+                    "Ability builder contract is missing: " + token);
         }
     }
 }
