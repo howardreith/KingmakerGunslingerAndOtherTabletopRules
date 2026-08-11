@@ -40,6 +40,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Summoning\SummonFamily.cs" />
+    <Compile Include="Summoning\SummonMultiplicity.cs" />
+    <Compile Include="Summoning\SummonTemplatePolicy.cs" />
+    <Compile Include="Summoning\SummonCreatureSpec.cs" />
+    <Compile Include="Summoning\SummonVariantSpec.cs" />
+    <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />

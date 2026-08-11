@@ -13,7 +13,12 @@ opening mission. This document will be expanded by the checked-in catalog
 generator into the per-entry identity and qualification ledger after the
 final-live forensic inventory.
 
+The executable frozen source is
+`src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs`. It is the
+authoritative roster input for generation and validation; it contains no donor
+GUID or runtime identity guesses. Domain tests currently prove every frozen
+count and quantity rule.
+
 Explicit exclusions: no aquatic-only entries, horses/ponies, unapproved ants,
 apes, rhinoceroses, giants, extra dinosaurs, campaign spawns, companions, pets,
 vendors, loot, or external assets.
-

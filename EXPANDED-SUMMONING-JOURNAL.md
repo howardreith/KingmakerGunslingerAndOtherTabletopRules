@@ -22,3 +22,15 @@
 - Clean Release build and strict standalone package: PASS.
 - DLL SHA-256: `6cc7d0186f7b5d57b58644bffb2fc23c71feb898816bdea0da2acf63954f29b0`.
 - Package SHA-256: `6d097f33e70cfce3364a015d9e59c541d14444cbaf55f082314d47e026f0d431`.
+
+## 2026-08-11 - frozen logical catalog
+
+- Added immutable family, multiplicity, template-policy, creature, and variant
+  specifications without allocating or guessing runtime blueprint identities.
+- Catalog self-validation proves 67 unique creature keys, 66 SM entries, 57 SNA
+  entries, 361 SM placements, 320 SNA placements, and 681 total placements.
+- Variant generation maps current tier to one, immediately prior tier to 1d3,
+  and all lower eligible tiers to 1d4+1 while retaining one creature key.
+- SNA always uses caster-alignment policy; SM template policy is explicit per row.
+- Complete suite: 985/985 PASS. Repository validation, clean Release build, and
+  strict standalone package validation PASS.
