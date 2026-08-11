@@ -293,7 +293,10 @@ namespace KingmakerGunslinger.DomainTests
                 "0c852a2405dd9f14a8bbcfaf245ff823",
                 "1a3f2f384bbef804d8f52db1f9aa62d3",
                 "6fed981bf0ef27a499969f369f35b5e8",
-                "094714bb08f4e1943a8e9d2384ebe573", "longspear",
+                "094714bb08f4e1943a8e9d2384ebe573",
+                "d12770f0432d6c94380b056b1e238e33",
+                "625363a810f4d884dad551b26b3454d3",
+                "56ec8788092b6314e8f3c1c502e8433", "longspear",
                 "giantfrogpoisonous", "centipedepoison",
                 "giantspiderpoison" })
                 Assertions.True(observer.Contains(token),
