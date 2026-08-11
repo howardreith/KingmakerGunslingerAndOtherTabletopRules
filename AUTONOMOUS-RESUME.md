@@ -15,16 +15,20 @@
   placements; HD-banded celestial/fiendish templates, spawn-local alignment,
   and bounded smite; all 55 selected donor graphs.
 - Current immutable mechanical source is
-  `fa91900ea6e64206986a9db2deeccbe866f75190`. The complete domain suite is
+  `37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556`. The complete domain suite is
   1,006/1,006 PASS; clean Release and strict package validation PASS.
 - Native elementals and mephits plus the reconstructed Lantern Archon are
   structurally qualified by fresh Steam run
   `20260811T2138366091237Z-observe-expanded-summoning-inventory`: all 19
   assertions PASS, including exact Lantern mechanics, zero sanitizer failures,
   and zero native action contamination. No save was accessed.
-- Exact next action: inventory and implement the next bounded special-creature
-  group (Salamander, Invisible Stalker, Shadow Demon, and Succubus), then
-  source-qualify, commit/push, and extend the exact guarded observer.
+- Exact native invisibility, incorporeal, energy-drain, tail, grab, domination,
+  and vampiric-touch graphs are captured by guarded PASS run
+  `20260811T2156134219365Z-observe-expanded-summoning-inventory`. Stock energy
+  drain was rejected because it can become permanent.
+- Exact next action: implement the bounded Salamander, Invisible Stalker,
+  Shadow Demon, and Succubus unit reconstructions, then source-qualify,
+  commit/push, and extend the exact guarded assertions.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

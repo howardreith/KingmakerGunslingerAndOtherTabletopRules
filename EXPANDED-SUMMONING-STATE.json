@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "fa91900ea6e64206986a9db2deeccbe866f75190",
+  "currentSha": "37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "native-elemental-mephit-profile-and-lantern-reconstruction-runtime-qualified",
-  "nextConcreteAction": "Inventory and implement the next bounded special-creature group: Salamander, Invisible Stalker, Shadow Demon, and Succubus, with exact donor mechanics and conservative cleanup contracts.",
+  "completedPhase": "special-creature-native-mechanic-inventory-runtime-qualified",
+  "nextConcreteAction": "Implement the bounded Salamander, Invisible Stalker, Shadow Demon, and Succubus unit reconstructions using the qualified exact native graphs, then extend exact structural assertions.",
   "domainTestResult": "1006/1006 PASS",
-  "releaseBuildResult": "PASS for runtime-qualified Lantern/native-reuse group; DLL SHA-256 6231443bf123bfaeee7d67df5ea5a20a487307f310132fed4e3a1ad00b43189e",
-  "packageResult": "strict PASS for runtime-qualified Lantern/native-reuse group; SHA-256 0e0d09dcad78e33d074ebc5355a8eef90c12e0a257555530f412628b389d8c2a",
+  "releaseBuildResult": "PASS for runtime-qualified bounded special-mechanic inventory; DLL SHA-256 773f57f084555af269ee0b4462e95024e2ca9791042f29a6cbdc60df3ed4ca99",
+  "packageResult": "strict PASS for runtime-qualified bounded special-mechanic inventory; SHA-256 d0950ac29aa163fc1d2f595515b0e5958b7856359def5f3891d54a93d0f6e5f5",
   "blueprintLedger": "1124 Expanded Summoning identities; 1378 active, 1 reserved, 1379 total; derived constant registry count 1378",
   "runtimeScenarios": [
     {
@@ -228,6 +228,20 @@
       "sourceSha": "fa91900ea6e64206986a9db2deeccbe866f75190",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2138366091237Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "All 19 structural assertions passed: 67 units, 1046 abilities, registry 1378, 681 placements, 55 exact donors, exact Lantern reconstruction, zero forbidden references or donor aliases, and exact celestial/fiendish/SNA execution structure. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "a5a40796803b503895e955d12149c3457d556c46",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2150184037199Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All structural assertions passed while exact Natural Invisibility, Incorporeal, Spectre energy-drain, and Devourer energy-drain graphs were captured. Stock drain is one-day and can become permanent; no save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2156134219365Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All structural assertions passed while exact tail, grapple/constrict, Dominate Person, and Vampiric Touch graphs were captured. No save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

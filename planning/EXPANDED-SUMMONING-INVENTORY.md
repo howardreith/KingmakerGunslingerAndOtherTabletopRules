@@ -223,3 +223,37 @@ Selecting the distinct Will-o'-Wisp visual increases the current frozen donor
 set from the historical 54-GUID audit to 55 GUIDs; Ghaele remains independently
 selected for the actual Ghaele Azata roster entry. The next structural run must
 therefore observe `55;missing=0`.
+
+## Salamander, Invisible Stalker, Shadow Demon, and Succubus dependencies
+
+Guarded runs `20260811T2150184037199Z-observe-expanded-summoning-inventory`
+and `20260811T2156134219365Z-observe-expanded-summoning-inventory` passed on
+committed source and inspected 12 exact candidates in the final-live library.
+
+- `94b2838e8a492c44ebf89e7fe7a75a62` (`NaturalInvisibilityBuff`) has
+  `NotDispellAfterOffensiveAction=True`; it is the exact native primitive for
+  Invisible Stalker's attack-safe natural invisibility.
+- `c4a7f98d743bc784c9d4cf2105852c39` (`Incorporeal`) supplies native
+  incorporeal damage handling, critical/precision immunity, airborne, and trip
+  immunity for Shadow Demon.
+- `84f41b83ef6b8c242a15381045822f94` and
+  `ab966bf06859119419989ccb0061ba39` prove that stock energy drain is a
+  one-day `SaveOrBecamePermanent` effect. It cannot be granted to a temporary
+  summon unchanged; a derived temporary round-bounded action is required.
+- `04dcf5776f9d4315b27d1c0c7c2f3c46` (`TailSlapDrakeFeature`) adds exact
+  `b21cd5b03fbb0f542815580e66f85915` (`Tail1d6`).
+- `efc1e80fb41e06544be46604983806d6` (`ShamblingMoundGrabFeature`) is a
+  hit-confirmed grapple graph with explicit caster and target grapple buffs and
+  a separate constrict damage action. It is a reconstruction reference, not a
+  fact to reuse unchanged.
+- `d7cbd2004ce66a042aeab2e95a3c5c61` (`DominatePerson`) is a Will-save,
+  round-ranked native domination graph referring to
+  `c0f4e1c24c9cd334ca988ed1bd9d201f`; all spell-list and optional-mod additions
+  are excluded from the KMG derivative.
+- `cce5bb72adc78f944b480e01efd3eaef` (`SoulsCloakVampiricTouch`) proves a
+  native touch-delivery damage plus caster-only temporary-hit-point pattern.
+
+Both runs preserved registry 1,378, 67 KMG units, 1,046 KMG abilities, all 681
+placements, 55 exact donors, and zero forbidden references, donor aliases,
+inherited spells, inventory, or native action contamination. No save was read
+or written.

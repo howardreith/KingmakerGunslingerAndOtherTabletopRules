@@ -715,3 +715,31 @@
   `6231443bf123bfaeee7d67df5ea5a20a487307f310132fed4e3a1ad00b43189e`;
   package SHA-256:
   `0e0d09dcad78e33d074ebc5355a8eef90c12e0a257555530f412628b389d8c2a`.
+
+## 2026-08-11 - bounded special-creature mechanic inventory
+
+- Two save-free guarded fresh-process runs captured the exact final-live graphs
+  needed for Salamander, Invisible Stalker, Shadow Demon, and Succubus:
+  `20260811T2150184037199Z-observe-expanded-summoning-inventory` on
+  `a5a40796803b503895e955d12149c3457d556c46` and
+  `20260811T2156134219365Z-observe-expanded-summoning-inventory` on
+  `37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556`. Both passed all structural
+  assertions; neither accessed a save.
+- Native Natural Invisibility `94b2838e8a492c44ebf89e7fe7a75a62`
+  explicitly keeps invisibility after offensive actions. Native Incorporeal
+  `c4a7f98d743bc784c9d4cf2105852c39` supplies the damage divisor,
+  critical/precision immunity, airborne, and trip-immunity bundle.
+- Native Spectre/Devourer energy-drain facts are unsafe for direct reuse: they
+  apply a one-day negative level that can become permanent. A KMG derivative
+  must use `EnergyDrainType.Temporary` and a summon-bounded duration.
+- The base-game Drake tail fact adds exact `Tail1d6`; the Shambling Mound grab
+  graph is bounded to a hit-confirmed grapple and exposes its target/caster
+  cleanup buffs and constrict damage for safe reconstruction. Native Dominate
+  Person applies `DominatePersonBuff` for a round-based rank duration, while
+  the inspected Vampiric Touch graph applies only temporary hit points to the
+  caster. Donor spell-list and optional-mod components will not be copied.
+- Repository validation, 1,006/1,006 tests, clean Release, and strict package
+  validation passed. DLL SHA-256:
+  `773f57f084555af269ee0b4462e95024e2ca9791042f29a6cbdc60df3ed4ca99`;
+  package SHA-256:
+  `d0950ac29aa163fc1d2f595515b0e5958b7856359def5f3891d54a93d0f6e5f5`.
