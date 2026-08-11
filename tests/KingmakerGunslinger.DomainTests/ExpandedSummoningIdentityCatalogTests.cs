@@ -215,7 +215,7 @@ namespace KingmakerGunslinger.DomainTests
                 "DamageEnergyType.Cold", "PhysicalDamageMaterial.ColdIron",
                 "ShadowDemonCombatTraitsSymbol", "ConfigureSalamander",
                 "SalamanderConstrictDice", "Feature(library, DrMagic10Guid",
-                "ConfigureSuccubus",
+                "ConfigureSuccubus", "Feature(library, AberrationTypeGuid",
                 "RemoveBuffIfCasterIsMissing", "EnergyDrainType.Temporary",
                 "SuccubusDominateRounds", "OnlyOnFirstHit = true" })
                 Assertions.True(source.Contains(token),

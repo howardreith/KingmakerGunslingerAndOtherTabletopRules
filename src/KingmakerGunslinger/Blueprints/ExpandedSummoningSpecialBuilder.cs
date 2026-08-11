@@ -535,18 +535,18 @@ namespace KingmakerGunslinger.Blueprints
             var targets = ScriptableObject.CreateInstance<AbilityTargetHasFact>();
             targets.Inverted = true;
             targets.CheckedFacts = new BlueprintUnitFact[] {
-                UnitFact(library, AberrationTypeGuid, "aberration type"),
-                UnitFact(library, ConstructTypeGuid, "construct type"),
-                UnitFact(library, DragonTypeGuid, "dragon type"),
-                UnitFact(library, FeyTypeGuid, "fey type"),
-                UnitFact(library, OutsiderTypeGuid, "outsider type"),
-                UnitFact(library, PlantTypeGuid, "plant type"),
-                UnitFact(library, AnimalTypeGuid, "animal type"),
-                UnitFact(library, MonstrousHumanoidTypeGuid,
+                Feature(library, AberrationTypeGuid, "aberration type"),
+                Feature(library, ConstructTypeGuid, "construct type"),
+                Feature(library, DragonTypeGuid, "dragon type"),
+                Feature(library, FeyTypeGuid, "fey type"),
+                Feature(library, OutsiderTypeGuid, "outsider type"),
+                Feature(library, PlantTypeGuid, "plant type"),
+                Feature(library, AnimalTypeGuid, "animal type"),
+                Feature(library, MonstrousHumanoidTypeGuid,
                     "monstrous humanoid type"),
-                UnitFact(library, MagicalBeastTypeGuid, "magical beast type"),
-                UnitFact(library, VerminTypeGuid, "vermin type"),
-                UnitFact(library, UndeadTypeGuid, "undead type")
+                Feature(library, MagicalBeastTypeGuid, "magical beast type"),
+                Feature(library, VerminTypeGuid, "vermin type"),
+                Feature(library, UndeadTypeGuid, "undead type")
             };
             var apply = new ContextActionApplyBuff {
                 Buff = domination,
@@ -843,11 +843,6 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintFeature Feature(LibraryScriptableObject library,
             string guid, string purpose)
         { return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
-            guid, purpose); }
-
-        private static BlueprintUnitFact UnitFact(
-            LibraryScriptableObject library, string guid, string purpose)
-        { return BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
             guid, purpose); }
 
         private static ContextActionDealDamage FindDamage(
