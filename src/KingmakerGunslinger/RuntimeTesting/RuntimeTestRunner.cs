@@ -7131,7 +7131,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int kmgUnits = all.OfType<BlueprintUnit>().Count(value =>
                 value.name.StartsWith("KMG_Summoning_Unit_", StringComparison.Ordinal));
             int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
-                value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal));
+                value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal) ||
+                value.name == "KMG_Summoning_Special_LanternArchon_LightRay");
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0;
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
@@ -7274,6 +7275,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningSmiteComponent>().Count() == 1) &&
                 smiteMarkers.Count(value => value.ComponentsArray.OfType<
                     ExpandedSummoningSmiteComponent>().Single().SmitesEvil) == 1;
+            BlueprintUnit lantern = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_LanternArchon");
+            BlueprintAbility lanternRay = all.OfType<BlueprintAbility>().Single(value =>
+                value.name == "KMG_Summoning_Special_LanternArchon_LightRay");
+            AddClassLevels lanternLevels = lantern.ComponentsArray
+                .OfType<AddClassLevels>().Single();
+            AbilityDeliverProjectile lanternDelivery = lanternRay.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            ContextActionDealDamage[] lanternDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    lanternRay.ComponentsArray).ToArray();
+            bool lanternExact = lanternLevels.Levels == 2 &&
+                lantern.Size == Size.Small && lantern.Alignment == Alignment.LawfulGood &&
+                lantern.Strength == 1 && lantern.Dexterity == 11 &&
+                lantern.Constitution == 12 && lantern.Intelligence == 6 &&
+                lantern.Wisdom == 11 && lantern.Charisma == 10 &&
+                lantern.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { lanternRay }) &&
+                lantern.Body.AdditionalLimbs.Length == 0 &&
+                lantern.Body.AdditionalSecondaryLimbs.Length == 0 &&
+                lantern.StartingInventory.Length == 0 &&
+                lantern.AddFacts.Count(value => value != null && value.name ==
+                    "KMG_Summoning_Special_LanternArchon_Defenses") == 1 &&
+                lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "1ce4878b5e714f659d0854a12f4b3cf2") == 1 &&
+                lanternRay.Range == AbilityRange.Custom &&
+                lanternDelivery.NeedAttackRoll &&
+                lanternDelivery.Projectiles.Length == 2 &&
+                lanternDamage.Length == 1 &&
+                lanternDamage[0].DamageType.Type == DamageType.Direct &&
+                lanternDamage[0].Value.DiceType == DiceType.D6 &&
+                lanternDamage[0].Value.DiceCountValue.ValueType ==
+                    ContextValueType.Simple &&
+                lanternDamage[0].Value.DiceCountValue.Value == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7282,10 +7317,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("summon-unit-donor-candidates", ">=40",
                     observation.UnitCount.ToString(), observation.UnitCount >= 40,
                     "final-live BlueprintUnit roster-term inventory"),
-                Assertion("expanded-summoning-exact-donor-inventory", "54;missing=0",
+                Assertion("expanded-summoning-exact-donor-inventory", "55;missing=0",
                     observation.ExactDonorCount + ";missing=" +
                         observation.MissingDonorCount,
-                    observation.ExactDonorCount == 54 &&
+                    observation.ExactDonorCount == 55 &&
                         observation.MissingDonorCount == 0,
                     "all distinct frozen chosen donor GUIDs with component/body/view graphs"),
                 Assertion("expanded-summoning-special-mechanic-candidates", ">=1",
@@ -7293,12 +7328,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.SpecialCandidateCount >= 1,
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=67;abilities=1045;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                    "units=67;abilities=1046;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
-                    kmgUnits == 67 && kmgAbilities == 1045 &&
+                    kmgUnits == 67 && kmgAbilities == 1046 &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "exact final-live KMG blueprint identity scan"),
+                Assertion("expanded-summoning-lantern-archon", "exact",
+                    lanternExact ? "exact" : "mismatch", lanternExact,
+                    "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7370,6 +7408,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility ability)
         { return ExpandedSummoningBuffApplyCount(ability,
             "KMG_Summoning_Template_"); }
+
+        private static IEnumerable<T> ExpandedSummoningObjects<T>(object root)
+            where T : class
+        {
+            var result = new List<T>();
+            ExpandedSummoningObjects(root, result, new HashSet<object>());
+            return result;
+        }
+
+        private static void ExpandedSummoningObjects<T>(object value,
+            IList<T> result, ISet<object> seen) where T : class
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value)) return;
+            T match = value as T;
+            if (match != null) result.Add(match);
+            IEnumerable rootSequence = value as IEnumerable;
+            if (rootSequence != null)
+            {
+                foreach (object item in rootSequence)
+                    ExpandedSummoningObjects(item, result, seen);
+                return;
+            }
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningObjects(item, result, seen);
+                else ExpandedSummoningObjects(child, result, seen);
+            }
+        }
 
         private static int ExpandedSummoningSmiteApplyCount(
             BlueprintAbility ability)

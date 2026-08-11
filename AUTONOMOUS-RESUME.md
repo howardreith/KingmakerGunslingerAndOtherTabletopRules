@@ -2472,3 +2472,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Repository validation, 1,005/1,005 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push and run the guarded save-free
   candidate observation.
+
+## Expanded Summoning current resume - first special mechanics source-qualified
+
+- Candidate run `20260811T2102583998517Z-observe-expanded-summoning-inventory`
+  passed on `8c576bc2ff741f726493ce347de16f02c7ee02de` and selected the
+  exact Will-o'-Wisp view, two-projectile native ray, and Aura of Menace carrier.
+- Added immutable native-reuse profiles for all 24 elementals and four mephits.
+  Reconstructed Lantern Archon as 2-HD Small lawful-good outsider with the
+  official ability scores, bounded dual 1d6/30-foot touch rays, single-ray AI,
+  archon defenses, and native aura. Teleport and gestalt are absent.
+- Four new active identities are frozen. Ledger: 1,124 feature identities;
+  1,378 active plus one reserved; constant registry count 1,378.
+- Repository validation, 1,006/1,006 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rebuild the immutable SHA,
+  and run the exact guarded Lantern structural observer.

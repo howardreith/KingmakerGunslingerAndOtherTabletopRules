@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.Controllers.Brain.Blueprints;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -60,6 +61,12 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintBuff")
                     blueprint = registry.Register<BlueprintBuff>(identity.Symbol,
                         () => CreateBuffShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintAiCastSpell")
+                    blueprint = registry.Register<BlueprintAiCastSpell>(identity.Symbol,
+                        () => ScriptableObject.CreateInstance<BlueprintAiCastSpell>());
+                else if (identity.PlannedType == "BlueprintBrain")
+                    blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
+                        () => ScriptableObject.CreateInstance<BlueprintBrain>());
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -71,6 +78,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Expanded Summoning registration count mismatch.");
             ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
+            ExpandedSummoningSpecialBuilder.Configure(library, registered);
             return result;
         }
 

@@ -43,7 +43,13 @@ def planned():
             rows.append((f"KMG.Summoning.Template.{alignment}.{band}", "BlueprintBuff"))
     for alignment in ("Celestial", "Fiendish"):
         rows.append((f"KMG.Summoning.Smite.{alignment}.Available", "BlueprintBuff"))
-    if len(rows) != 1120 or len({symbol for symbol, _ in rows}) != 1120:
+    rows.extend((
+        ("KMG.Summoning.Special.LanternArchon.LightRay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.LanternArchon.LightRayAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),
+    ))
+    if len(rows) != 1124 or len({symbol for symbol, _ in rows}) != 1124:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

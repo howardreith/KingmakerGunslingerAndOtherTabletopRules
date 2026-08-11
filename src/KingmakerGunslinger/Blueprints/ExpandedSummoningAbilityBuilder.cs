@@ -277,7 +277,7 @@ namespace KingmakerGunslinger.Blueprints
         { return value == SummonMultiplicity.One ? "" : value ==
             SummonMultiplicity.OneD3 ? " (1d3)" : " (1d4+1)"; }
 
-        private static BlueprintComponent DeepCloneComponent(BlueprintComponent source)
+        internal static BlueprintComponent DeepCloneComponent(BlueprintComponent source)
         { return (BlueprintComponent)DeepClone(source,
             new Dictionary<object, object>(ReferenceComparer.Instance)); }
 
@@ -355,7 +355,7 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
-        private static void CopyFields(BlueprintAbility source,
+        internal static void CopyFields(BlueprintAbility source,
             BlueprintAbility target)
         {
             foreach (FieldInfo field in Fields(typeof(BlueprintAbility)))

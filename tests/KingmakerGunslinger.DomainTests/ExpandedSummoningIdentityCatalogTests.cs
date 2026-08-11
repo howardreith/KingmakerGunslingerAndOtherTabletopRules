@@ -11,10 +11,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1120, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1124, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1045, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(8, first.Count(value => value.PlannedType == "BlueprintBuff"), "Template buff identity count changed.");
+            Assertions.Equal(1046, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -158,6 +160,46 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningDonorCatalog.All.Any(value =>
                 !value.DedicatedSummon),
                 "Proxy donors must remain explicit sanitizer obligations.");
+        }
+
+        internal static void NativeReuseAndLanternProfilesAreExact()
+        {
+            ExpandedSummoningSpecialProfiles.Validate();
+            Assertions.Equal(24, ExpandedSummoningSpecialProfiles
+                .NativeElementalKeys.Count, "Elemental native-reuse count changed.");
+            Assertions.Equal(4, ExpandedSummoningSpecialProfiles
+                .NativeMephitKeys.Count, "Mephit native-reuse count changed.");
+            Assertions.Equal(2, ExpandedSummoningSpecialProfiles.LanternHitDice,
+                "Lantern Archon HD changed.");
+            Assertions.Equal(30, ExpandedSummoningSpecialProfiles
+                .LanternRayRangeFeet, "Lantern light-ray range changed.");
+            Assertions.Equal(2, ExpandedSummoningSpecialProfiles
+                .LanternRayProjectiles, "Lantern light-ray count changed.");
+            Assertions.Equal(6, ExpandedSummoningSpecialProfiles
+                .LanternRayDieSides, "Lantern light-ray die changed.");
+            Assertions.Equal("24719a49b84c5cd43b894268d22d9c89",
+                ExpandedSummoningDonorCatalog.For("lantern-archon").Guid,
+                "Lantern visual donor changed.");
+            Assertions.False(ExpandedSummoningDonorCatalog.For(
+                "lantern-archon").DedicatedSummon,
+                "Will-o'-Wisp must remain a visual-only donor.");
+
+            string source = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
+            foreach (string token in new[] { "LanternRayProjectiles",
+                "DamageType.Direct", "DiceType.D6", "AbilityRange.Custom",
+                "AuraOfMenaceBuffGuid", "DamageAlignment.Evil",
+                "SavingThrowBonusAgainstDescriptor",
+                "ArmorClassBonusAgainstAlignment", "unit.Body = new",
+                "unit.Alignment = Alignment.LawfulGood",
+                "brain.Actions = new BlueprintAiAction[] { ai }" })
+                Assertions.True(source.Contains(token),
+                    "Lantern reconstruction contract is missing: " + token);
+            foreach (string forbidden in new[] { "GreaterTeleport", "Gestalt",
+                "WillOWispTouchGuid", "SummonMonster" })
+                Assertions.False(source.Contains(forbidden),
+                    "Lantern reconstruction retained a forbidden surface: " + forbidden);
         }
 
         internal static void AbilityBuilderPreservesNativeGraphContracts()

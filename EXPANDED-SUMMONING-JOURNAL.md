@@ -666,3 +666,29 @@
   `1d462421aabfb59f29825b9d69724526e44f8bd859a10bdb9b7b66c4decabdbd`;
   package SHA-256:
   `9f40a951c380446dccf77c829aa0b4f4ce309f077f9f258b4539cc44bb309960`.
+
+## 2026-08-11 - elementals, mephits, and Lantern Archon source qualification
+
+- The focused candidate run passed and established exact final-live donors:
+  Will-o'-Wisp prefab for the Lantern view, Ghaele's two-projectile ray graph,
+  its ray AI targeting considerations, and the native Archon-subdomain Aura of
+  Menace carrier. No donor blueprint is mutated.
+- Added an immutable exact-reuse profile for 24 dedicated elemental summon
+  units and four dedicated mephits. Their cloned KMG units retain native combat
+  mechanics while the existing sanitizer removes XP/loot/campaign surfaces.
+- Reconstructed Lantern as 2 outsider HD, Small lawful good, official ability
+  scores, 60-foot airborne movement, dual 1d6 direct ranged-touch rays limited
+  to 30 feet, a ray-only brain, DR 10/evil, electricity immunity, natural armor
+  +4, poison and evil defenses, lawful/good/extraplanar facts, and native Aura
+  of Menace. Wisp attacks/invisibility/immunity and all Ghaele spells/weapons
+  are absent. Teleport and gestalt are intentionally omitted.
+- Frozen special identities: ray `d4c2ce6c90094fdfb0fd908312372d72`,
+  AI `3579bfa7c4b040c4812286f4ade47146`, brain
+  `427b496a05db48aa94997415f1a74c39`, defenses
+  `4c55af41c90443c18267a806c740ce16`. Ledger is 1,379 total:
+  1,378 active and one reserved; feature foundation 1,124.
+- Repository validation, 1,006/1,006 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `646f2b131aa23d63c0531526d481a5a9bffb8d94b4d01fe4bdff1b6239cc6236`;
+  package SHA-256:
+  `c792287814bd894a95f980cbe6bbcad475db22b9c3c0cf4e338e8616bee7a155`.

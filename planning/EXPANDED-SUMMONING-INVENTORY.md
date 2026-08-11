@@ -192,3 +192,34 @@ The same run re-proved the immutable construction contract: registry 1,374;
 template, smite, clone-isolation, prohibited-reference, inherited-spell, and
 starting-inventory assertions PASS. The 8 MB raw graph remains machine-local;
 this compact interpretation and the exact run ID are the checked-in evidence.
+
+## Lantern Archon exact dependency inventory
+
+Guarded run
+`20260811T2102583998517Z-observe-expanded-summoning-inventory` passed on
+`8c576bc2ff741f726493ce347de16f02c7ee02de` and found 75 focused
+Will-o'-Wisp, archon, light-ray, and aura candidates.
+
+- visual donor: `24719a49b84c5cd43b894268d22d9c89`
+  (`CR6_WillOWispStandart`), Small, prefab asset
+  `8a8d7c448ff2c8749adc08eeb223333b`; mechanics are discarded;
+- ray graph donor: `33e8997912cf76b4c99dca0445082804`
+  (`AzataGhaelLightRay`), the only inspected native two-projectile
+  ranged-touch ray; its long range and 2d12 damage are replaced;
+- ray AI donor: `dcfc5e9aec5bea540b36caf754989164`
+  (`AzataGhaelLightRayAiAction`); only safe targeting considerations are
+  copied, with the ability reference replaced by the KMG ray;
+- aura carrier: `1ce4878b5e714f659d0854a12f4b3cf2`
+  (`ArchonSubdomainAreaArchonsAuraEffectBuff`); adding the buff as a unit fact
+  activates the native area-effect lifecycle without a toggle resource;
+- outsider class: `92ab5f2fe00631b44810deffcc1a97fd`.
+
+The Will-o'-Wisp donor's 9 aberration HD, touch attack, invisibility, spell
+immunity, tags, ambush behavior, alignment, and brain are not retained. The
+Ghaele donor's 13 HD, weapons, spellcasting, chain lightning, gaze, holy aura,
+inventory, and azata facts are not retained.
+
+Selecting the distinct Will-o'-Wisp visual increases the current frozen donor
+set from the historical 54-GUID audit to 55 GUIDs; Ghaele remains independently
+selected for the actual Ghaele Azata roster entry. The next structural run must
+therefore observe `55;missing=0`.

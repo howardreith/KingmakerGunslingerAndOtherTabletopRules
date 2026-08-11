@@ -25,8 +25,9 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 182;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
+        internal const int SpecialIdentityCount = 4;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
-            TemplateExecutionAbilityCount + TemplateBuffCount;
+            TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount;
 
         internal static IReadOnlyList<SummoningIdentitySpec> Build()
         {
@@ -52,6 +53,10 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Fiendish.High", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Smite.Celestial.Available", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Smite.Fiendish.Available", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.LanternArchon.LightRay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.LanternArchon.LightRayAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

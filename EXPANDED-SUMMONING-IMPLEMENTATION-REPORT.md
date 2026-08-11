@@ -103,3 +103,14 @@ alignment invariant. The wrapper reached its host timeout only after the game
 had flushed the PASS result and exited. This inventory now drives the native
 reuse versus reconstruction decisions; it does not itself claim creature
 mechanical fidelity.
+
+The first creature-mechanics group is source-qualified. All 24 elemental and
+four mephit entries now have an explicit immutable native-dedicated-reuse
+classification; KMG clones their proven summon units and applies the existing
+XP/loot/inventory/campaign sanitizer. Lantern Archon is reconstructed from a
+Will-o'-Wisp view with 2 outsider HD, official ability scores and alignment,
+dual bounded 1d6 ranged-touch rays, ray-only AI, archon defenses, and the
+native Aura of Menace carrier. Wisp and Ghaele combat/campaign mechanics are
+not retained. Greater teleport and gestalt are conservative summon-safety
+omissions. Source qualification is 1,006 tests plus clean Release and strict
+package PASS; exact final-live structure and actual runtime use remain open.
