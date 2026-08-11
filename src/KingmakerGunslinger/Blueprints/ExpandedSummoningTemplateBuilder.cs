@@ -27,6 +27,10 @@ namespace KingmakerGunslinger.Blueprints
                 false, SummonTemplateBand.Mid);
             ConfigureOne(Require(bySymbol, "KMG.Summoning.Template.Fiendish.High"),
                 false, SummonTemplateBand.High);
+            ConfigureSmite(Require(bySymbol,
+                "KMG.Summoning.Smite.Celestial.Available"), true);
+            ConfigureSmite(Require(bySymbol,
+                "KMG.Summoning.Smite.Fiendish.Available"), false);
         }
 
         private static void ConfigureOne(BlueprintBuff buff, bool celestial,
@@ -77,6 +81,23 @@ namespace KingmakerGunslinger.Blueprints
             result.Type = type;
             result.Value = Simple(value);
             return result;
+        }
+
+        private static void ConfigureSmite(BlueprintBuff buff, bool celestial)
+        {
+            var smite = ScriptableObject.CreateInstance<
+                ExpandedSummoningSmiteComponent>();
+            smite.SmitesEvil = celestial;
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] { smite };
+            string kind = celestial ? "Celestial" : "Fiendish";
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create("KMG.ExpandedSummoning.Smite." + kind +
+                    ".Name", kind + " Smite Available"),
+                LocalizationService.Create("KMG.ExpandedSummoning.Smite." + kind +
+                    ".Description", "Consumed after the first successful attack " +
+                    "against an opposed-alignment creature."), null);
         }
 
         private static ContextValue Simple(int value)

@@ -52,6 +52,8 @@
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningIdentityCatalog.cs" />
     <Compile Include="Summoning\SummonTemplateBandPolicy.cs" />
+    <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />

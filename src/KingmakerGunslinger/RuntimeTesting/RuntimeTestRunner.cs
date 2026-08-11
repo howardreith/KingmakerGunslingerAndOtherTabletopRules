@@ -7199,14 +7199,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (AlignmentMaskType)63 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Good) &&
-                    ExpandedSummoningTemplateApplyCount(value) >= 1);
+                    ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningSmiteApplyCount(value) >= 1);
             bool fiendishExact = fiendishExecutions.Length == 182 &&
                 fiendishExecutions.All(value => value.ComponentsArray
                     .OfType<AbilityCasterAlignment>().Single().Alignment ==
                         (AlignmentMaskType)504 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Evil) &&
-                    ExpandedSummoningTemplateApplyCount(value) >= 1);
+                    ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningSmiteApplyCount(value) >= 1);
             BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
                 value.name.StartsWith("KMG_Summoning_Template_",
                     StringComparison.Ordinal)).ToArray();
@@ -7225,6 +7227,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value, "_Mid", 5, true)) == 2 &&
                 templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
                     value, "_High", 10, true)) == 2;
+            BlueprintBuff[] smiteMarkers = all.OfType<BlueprintBuff>().Where(value =>
+                value.name.StartsWith("KMG_Summoning_Smite_",
+                    StringComparison.Ordinal)).ToArray();
+            bool smiteMarkersExact = smiteMarkers.Length == 2 &&
+                smiteMarkers.All(value => value.ComponentsArray.OfType<
+                    ExpandedSummoningSmiteComponent>().Count() == 1) &&
+                smiteMarkers.Count(value => value.ComponentsArray.OfType<
+                    ExpandedSummoningSmiteComponent>().Single().SmitesEvil) == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7267,6 +7277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-template-buffs", "6",
                     templateBuffs.Length.ToString(), templateBuffsExact,
                     "native resistance, alignment DR, and high-tier SR components"),
+                Assertion("expanded-summoning-smite-markers", "2",
+                    smiteMarkers.Length.ToString(), smiteMarkersExact,
+                    "unit-local opposed-alignment once-per-summon attack handlers"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -7296,12 +7309,22 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static int ExpandedSummoningTemplateApplyCount(
             BlueprintAbility ability)
+        { return ExpandedSummoningBuffApplyCount(ability,
+            "KMG_Summoning_Template_"); }
+
+        private static int ExpandedSummoningSmiteApplyCount(
+            BlueprintAbility ability)
+        { return ExpandedSummoningBuffApplyCount(ability,
+            "KMG_Summoning_Smite_"); }
+
+        private static int ExpandedSummoningBuffApplyCount(
+            BlueprintAbility ability, string prefix)
         {
             int count = 0;
             var seen = new HashSet<object>();
             foreach (BlueprintComponent component in ability.ComponentsArray ??
                 Array.Empty<BlueprintComponent>())
-                ExpandedSummoningTemplateApplyCount(component, seen, ref count);
+                ExpandedSummoningBuffApplyCount(component, prefix, seen, ref count);
             return count;
         }
 
@@ -7321,14 +7344,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (!spellResistance || sr[0].AddCR && sr[0].Value.Value == 5);
         }
 
-        private static void ExpandedSummoningTemplateApplyCount(object value,
-            ISet<object> seen, ref int count)
+        private static void ExpandedSummoningBuffApplyCount(object value,
+            string prefix, ISet<object> seen, ref int count)
         {
             if (value == null || value is string || value.GetType().IsValueType ||
                 !seen.Add(value)) return;
             ContextActionApplyBuff apply = value as ContextActionApplyBuff;
             if (apply != null && apply.Buff != null &&
-                apply.Buff.name.StartsWith("KMG_Summoning_Template_",
+                apply.Buff.name.StartsWith(prefix,
                     StringComparison.Ordinal) && apply.Permanent &&
                 apply.IsNotDispelable && apply.AsChild) count++;
             if (value is BlueprintScriptableObject) return;
@@ -7338,8 +7361,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 IEnumerable sequence = child as IEnumerable;
                 if (sequence != null && !(child is string))
                     foreach (object item in sequence)
-                        ExpandedSummoningTemplateApplyCount(item, seen, ref count);
-                else ExpandedSummoningTemplateApplyCount(child, seen, ref count);
+                        ExpandedSummoningBuffApplyCount(item, prefix, seen, ref count);
+                else ExpandedSummoningBuffApplyCount(child, prefix, seen, ref count);
             }
         }
 

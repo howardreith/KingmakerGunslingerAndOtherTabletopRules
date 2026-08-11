@@ -11,10 +11,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1118, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1120, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1045, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(6, first.Count(value => value.PlannedType == "BlueprintBuff"), "Template buff identity count changed.");
+            Assertions.Equal(8, first.Count(value => value.PlannedType == "BlueprintBuff"), "Template buff identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -54,6 +54,39 @@ namespace KingmakerGunslinger.DomainTests
                 SummonTemplateBand.Low), "Low template must omit SR below 5 HD.");
             Assertions.True(SummonTemplateBandPolicy.GrantsSpellResistance(
                 SummonTemplateBand.Mid), "Mid template must grant SR at 5 HD.");
+        }
+
+        internal static void TemplateSmitePolicyIsBoundedAndOpposed()
+        {
+            Assertions.True(SummonTemplateSmitePolicy.IsEligible(true, 5),
+                "Celestial smite must recognize neutral evil.");
+            Assertions.True(SummonTemplateSmitePolicy.IsEligible(true, 20),
+                "Celestial smite must recognize chaotic evil.");
+            Assertions.False(SummonTemplateSmitePolicy.IsEligible(true, 18),
+                "Celestial smite must reject chaotic good.");
+            Assertions.True(SummonTemplateSmitePolicy.IsEligible(false, 3),
+                "Fiendish smite must recognize neutral good.");
+            Assertions.False(SummonTemplateSmitePolicy.IsEligible(false, 12),
+                "Fiendish smite must reject lawful evil.");
+            Assertions.Equal(0, SummonTemplateSmitePolicy.AttackBonus(-2),
+                "Smite must not convert a negative Charisma modifier into a penalty.");
+            Assertions.Equal(11, SummonTemplateSmitePolicy.DamageBonus(11),
+                "Smite damage must equal hit dice.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                SummonTemplateSmitePolicy.DamageBonus(-1),
+                "Negative hit dice must fail closed.");
+
+            string component = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningSmiteComponent.cs"));
+            foreach (string token in new[] { "RuleAttackRoll",
+                "RuleCalculateWeaponStats", "RuleAttackWithWeapon",
+                "evt.AddBonusDamage(bonus)", "evt.AttackRoll.IsHit",
+                "Owner.Buffs.RemoveFact(Fact)" })
+                Assertions.True(component.Contains(token),
+                    "Bounded smite component contract is missing: " + token);
+            Assertions.False(component.Contains("ContextActionApplyBuff"),
+                "Bounded smite must not create target buffs.");
         }
 
         internal static void SymbolsEncodeEveryLogicalPlacement()
@@ -134,7 +167,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-template-logical-choices",
                 "expanded-summoning-celestial-executions",
                 "expanded-summoning-fiendish-executions",
-                "expanded-summoning-template-buffs" })
+                "expanded-summoning-template-buffs",
+                "expanded-summoning-smite-markers" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
             string inventory = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
@@ -181,6 +215,12 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.Summoning.Template.Fiendish.\" + band" })
                 Assertions.True(abilities.Contains(token),
                     "Template HD-band contract is missing: " + token);
+            foreach (string token in new[] {
+                "KMG.Summoning.Smite.Celestial.Available",
+                "KMG.Summoning.Smite.Fiendish.Available",
+                "AppendTemplateBuff(target.ComponentsArray, smiteBuff)" })
+                Assertions.True(abilities.Contains(token),
+                    "Bounded template smite publication is missing: " + token);
         }
     }
 }

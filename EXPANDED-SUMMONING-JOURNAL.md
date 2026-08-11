@@ -479,3 +479,29 @@
   `6ffc86d6f1e2b4db76f94ca43d9ea4ea191f0c282a312e203b0fe526eaa3074e`;
   package SHA-256:
   `4589be1fdb76e920eef68735daa5376aec193b91a03f0d45bd7b75c81ef064ae`.
+
+## 2026-08-11 - bounded celestial/fiendish smite source qualification
+
+- Guarded save-free run
+  `20260811T2008011506353Z-observe-expanded-summoning-inventory` passed on
+  committed source `15c3b7f1dc2d91269f44a0480c4ba036f83ea15b` and completed the
+  optional implementation trace. Its shared resource has exact base maximum
+  one, while both smite abilities apply the same permanent non-child target
+  buff. KMG therefore does not reuse that unsafe external-state graph.
+- Added two frozen KMG marker buffs and a summon-local combat handler. The
+  celestial marker recognizes evil and the fiendish marker recognizes good;
+  it grants a nonnegative Charisma attack bonus and HD damage, consumes itself
+  after the first eligible successful hit, and creates no target buff or other
+  state that can outlive the summon. This is the approved conservative
+  adaptation of the swift target-selection mechanic.
+- Every one of 182 celestial and 182 fiendish execution abilities applies its
+  matching marker as a permanent, non-dispellable summon-child buff. The
+  guarded structural observer now checks those 364 applications and exactly
+  two configured marker identities.
+- Expanded Summoning contributes 1,120 identities. The append-only ledger is
+  1,375 IDs: 1,374 active and one reserved. Repository validation, manifest
+  validation, 1,004/1,004 tests, clean Release, and strict package validation
+  PASS. DLL SHA-256:
+  `f59d4092f169471fc71499da2be5966323f0d50ed38f41d834ef33155decf707`;
+  package SHA-256:
+  `07e451168183fe27553daa440887278a0377c20a3d804513887f5d9789577464`.

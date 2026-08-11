@@ -2329,3 +2329,21 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   maximum and applied-buff identities were still nested. The observer now emits
   depth-12 action graphs and the exact resource amount structure. Exact next
   action: commit/push and run that final dependency observation.
+
+## Expanded Summoning current resume - bounded template smite source-qualified
+
+- Guarded run `20260811T2008011506353Z-observe-expanded-summoning-inventory`
+  passed on `15c3b7f1dc2d91269f44a0480c4ba036f83ea15b`. It proved the optional
+  shared smite resource has fixed maximum one, but both abilities apply the
+  same permanent non-child target buff. Direct reuse was rejected because that
+  external state could survive its summoned source.
+- KMG now registers two summon-local smite markers. Every templated execution
+  receives the appropriate marker as a permanent, non-dispellable child of the
+  summoned unit. The marker grants nonnegative Charisma to attack and HD to
+  damage against the opposed alignment, then consumes itself after the first
+  successful eligible hit; it never creates target state.
+- The deterministic ledger is now 1,375 IDs: 1,374 active and one reserved;
+  Expanded Summoning contributes 1,120 identities. Repository validation,
+  1,004/1,004 tests, clean Release, and strict package validation pass. Exact
+  next action: commit/push, rebuild the immutable SHA, and run the guarded
+  final-live structural observer.

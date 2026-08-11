@@ -56,16 +56,22 @@ namespace KingmakerGunslinger.Blueprints
                         symbol + ".Fiendish");
                     SummonTemplateBand band = SummonTemplateBandPolicy.Select(
                         HitDice(unit));
+                    BlueprintBuff celestialSmite = Require<BlueprintBuff>(bySymbol,
+                        "KMG.Summoning.Smite.Celestial.Available");
+                    BlueprintBuff fiendishSmite = Require<BlueprintBuff>(bySymbol,
+                        "KMG.Summoning.Smite.Fiendish.Available");
                     ConfigureOne(celestial, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
-                            "KMG.Summoning.Template.Celestial." + band), true);
+                            "KMG.Summoning.Template.Celestial." + band),
+                        celestialSmite, true);
                     ConfigureOne(fiendish, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
-                            "KMG.Summoning.Template.Fiendish." + band), false);
+                            "KMG.Summoning.Template.Fiendish." + band),
+                        fiendishSmite, false);
                     ConfigureTemplateChoice(ability, native, variant,
                         celestial, fiendish);
                 }
-                else ConfigureOne(ability, native, unit, variant, null, false);
+                else ConfigureOne(ability, native, unit, variant, null, null, false);
             }
         }
 
@@ -99,7 +105,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureOne(BlueprintAbility target,
             BlueprintAbility native, BlueprintUnit unit, SummonVariantSpec variant,
-            BlueprintBuff templateBuff, bool celestial)
+            BlueprintBuff templateBuff, BlueprintBuff smiteBuff, bool celestial)
         {
             CopyFields(native, target);
             target.name = InternalName(ExpandedSummoningIdentityCatalog.AbilitySymbol(
@@ -113,6 +119,7 @@ namespace KingmakerGunslinger.Blueprints
             if (templateBuff != null)
             {
                 AppendTemplateBuff(target.ComponentsArray, templateBuff);
+                AppendTemplateBuff(target.ComponentsArray, smiteBuff);
                 var alignment = ScriptableObject.CreateInstance<AbilityCasterAlignment>();
                 alignment.Alignment = celestial ? (AlignmentMaskType)63 :
                     (AlignmentMaskType)504;

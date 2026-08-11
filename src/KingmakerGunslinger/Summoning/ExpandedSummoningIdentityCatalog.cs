@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int LogicalAbilityCount = 681;
         internal const int TemplatedPlacementCount = 182;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
-        internal const int TemplateBuffCount = 6;
+        internal const int TemplateBuffCount = 8;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount;
 
@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Fiendish.Low", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Fiendish.Mid", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Fiendish.High", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Smite.Celestial.Available", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Smite.Fiendish.Available", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }
