@@ -70,6 +70,7 @@ namespace KingmakerGunslinger.DomainTests
                 "unit.Body = new BlueprintUnit.UnitBody",
                 "unit.StartingInventory = Array.Empty<BlueprintItem>()",
                 "new DiceFormula(1, dice)",
+                "RequireExactUnitFactReference<",
                 "1a3f2f384bbef804d8f52db1f9aa62d3",
                 "6fed981bf0ef27a499969f369f35b5e8",
                 "094714bb08f4e1943a8e9d2384ebe573" })
@@ -83,6 +84,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(registration.Contains(
                 "ExpandedSummoningNaturalBuilder.Configure(library, registered)"),
                 "The natural reconstruction builder is not registered.");
+            string lookup = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "BlueprintLibraryLookup.cs"));
+            foreach (string token in new[] { "RequireExactUnitFactReference<T>",
+                ".OfType<BlueprintUnit>()", "ReferenceEquals(value, fact)",
+                "distinct.Count != 1", "value.GetType() != typeof(T)" })
+                Assertions.True(lookup.Contains(token),
+                    "Referenced unit-fact lookup lost its exact contract: " + token);
         }
 
         internal static void TemplateExecutionsAreFamilyScoped()

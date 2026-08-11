@@ -1288,8 +1288,14 @@ namespace KingmakerGunslinger.Blueprints
 
         private static BlueprintFeature Feature(LibraryScriptableObject library,
             string guid, string purpose)
-        { return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
-            guid, purpose); }
+        {
+            if (string.Equals(guid, ExtraplanarSubtypeGuid,
+                StringComparison.Ordinal))
+                return BlueprintLibraryLookup.RequireExactUnitFactReference<
+                    BlueprintFeature>(library, guid, purpose);
+            return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                guid, purpose);
+        }
 
         private static ContextActionDealDamage FindDamage(
             IEnumerable<BlueprintComponent> components)

@@ -156,8 +156,9 @@ namespace KingmakerGunslinger.Blueprints
             foreach (string fact in profile.Facts)
                 facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     library, FactGuids[fact], profile.DisplayName + " " + fact));
-            facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
-                library, ExtraplanarGuid, "summoned extraplanar subtype"));
+            facts.Add(BlueprintLibraryLookup.RequireExactUnitFactReference<
+                BlueprintFeature>(library, ExtraplanarGuid,
+                    "summoned extraplanar subtype"));
             unit.AddFacts = facts.ToArray();
         }
 
