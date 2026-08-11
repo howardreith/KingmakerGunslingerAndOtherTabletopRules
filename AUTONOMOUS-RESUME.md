@@ -2421,3 +2421,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   template, and smite action per corresponding spawn branch.
 - Repository validation, 1,005/1,005 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push and rerun the guarded observer.
+
+## Expanded Summoning current resume - spawn-local alignment native PASS
+
+- Guarded save-free run
+  `20260811T2048003275107Z-observe-expanded-summoning-inventory` passed on
+  committed source `b88e99cffb7464d7354416fba82d1da313e17ae2`.
+- Every spawn branch across 182 celestial executions, 182 fiendish executions,
+  and 320 Nature's Ally placements had exactly its required alignment action;
+  each templated branch also had exactly one template and smite application.
+  Non-KMG action contamination was exactly zero. Registry 1,374, 681 parent
+  placements, and all sanitizer invariants remained exact.
+- Exact next action: inventory and implement required special creature
+  adaptations in bounded groups, starting with Lantern Archon, mephits, and
+  elementals against final-live native components.

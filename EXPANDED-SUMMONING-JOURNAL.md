@@ -605,3 +605,21 @@
   `a675b1a4eb7e01c418fd71e842e2d0dedb8c0b6435e7d0e815389ee4d9ab78f8`;
   package SHA-256:
   `7755cdeca8ee554f2ec0456bcac67e72d91ce4a007787e31d31e403e845ff85d`.
+
+## 2026-08-11 - spawn-local alignment and action isolation native PASS
+
+- Guarded save-free run
+  `20260811T2048003275107Z-observe-expanded-summoning-inventory` passed on
+  committed source `b88e99cffb7464d7354416fba82d1da313e17ae2`.
+- Exact final-live alignment checks passed across all 182 celestial, 182
+  fiendish, and 320 Nature's Ally executions. Every native spawn branch had one
+  family-correct alignment action; templated branches also had one template and
+  one bounded-smite application per spawn node. Non-KMG abilities containing
+  any KMG post-spawn action or buff: zero.
+- All earlier invariants remained green: registry 1,374; 67 units; 1,045
+  abilities; 681 placements; six HD-banded buffs; two smite markers; zero
+  donor-component sharing, prohibited references, class spells, or starting
+  inventory. No save was accessed. Committed-source DLL SHA-256:
+  `b8cd73a138056eb4e138ec58da8e41a521764d3fadb907e061cd10a83e7a0d00`;
+  package SHA-256:
+  `601417e301e25ef4a6a64eec16b165d8867c2e3dc194b61ebfca2d7472f9ed60`.

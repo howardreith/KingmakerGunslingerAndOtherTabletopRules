@@ -85,3 +85,10 @@ limited to the observer's incorrect one-action-per-ability assumption; native
 quantity templates may contain multiple spawn nodes. The observer now requires
 one matching alignment/template/smite action per actual spawn branch. This
 cardinality correction is source-qualified and awaits its committed rerun.
+
+That rerun passed as
+`20260811T2048003275107Z-observe-expanded-summoning-inventory` on committed
+source `b88e99cffb7464d7354416fba82d1da313e17ae2`. All celestial, fiendish, and
+Nature's Ally actions matched exact native spawn-branch cardinality, and
+non-KMG action contamination was zero. All registry, placement, template,
+smite, and sanitizer assertions remained green. No save was accessed.
