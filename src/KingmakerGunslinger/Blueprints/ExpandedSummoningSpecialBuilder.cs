@@ -209,21 +209,23 @@ namespace KingmakerGunslinger.Blueprints
             unit.MaxHP = 0;
             unit.StartingInventory = Array.Empty<BlueprintItem>();
             unit.AddFacts = new BlueprintUnitFact[] {
-                Fact(library, ImprovedInitiativeGuid, "Improved Initiative"),
-                Fact(library, NaturalArmor4Guid, "natural armor +4"),
-                Fact(library, ElectricityImmunityGuid, "electricity immunity"),
-                Fact(library, GoodSubtypeGuid, "good subtype"),
-                Fact(library, LawfulSubtypeGuid, "lawful subtype"),
-                Fact(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
-                Fact(library, AirborneGuid, "airborne movement"),
-                Fact(library, AuraOfMenaceBuffGuid, "native Aura of Menace"),
+                Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor4Guid, "natural armor +4"),
+                Feature(library, ElectricityImmunityGuid, "electricity immunity"),
+                Feature(library, GoodSubtypeGuid, "good subtype"),
+                Feature(library, LawfulSubtypeGuid, "lawful subtype"),
+                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                Feature(library, AirborneGuid, "airborne movement"),
+                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                    AuraOfMenaceBuffGuid, "native Aura of Menace"),
                 defenses
             };
         }
 
-        private static BlueprintUnitFact Fact(LibraryScriptableObject library,
+        private static BlueprintFeature Feature(LibraryScriptableObject library,
             string guid, string purpose)
-        { return BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+        { return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
             guid, purpose); }
 
         private static ContextActionDealDamage FindDamage(

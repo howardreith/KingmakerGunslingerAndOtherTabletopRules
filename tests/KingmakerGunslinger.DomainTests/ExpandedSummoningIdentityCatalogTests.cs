@@ -193,7 +193,10 @@ namespace KingmakerGunslinger.DomainTests
                 "SavingThrowBonusAgainstDescriptor",
                 "ArmorClassBonusAgainstAlignment", "unit.Body = new",
                 "unit.Alignment = Alignment.LawfulGood",
-                "brain.Actions = new BlueprintAiAction[] { ai }" })
+                "brain.Actions = new BlueprintAiAction[] { ai }",
+                "RequireExact<BlueprintFeature>",
+                "RequireExact<BlueprintUnitFact>(library",
+                "RequireExact<BlueprintBuff>(library" })
                 Assertions.True(source.Contains(token),
                     "Lantern reconstruction contract is missing: " + token);
             foreach (string forbidden in new[] { "GreaterTeleport", "Gestalt",
