@@ -743,3 +743,29 @@
   `773f57f084555af269ee0b4462e95024e2ca9791042f29a6cbdc60df3ed4ca99`;
   package SHA-256:
   `d0950ac29aa163fc1d2f595515b0e5958b7856359def5f3891d54a93d0f6e5f5`.
+
+## 2026-08-11 - Invisible Stalker and Shadow Demon structural PASS
+
+- Reconstructed Invisible Stalker as a 7-HD Medium neutral air/elemental
+  outsider with official ability scores, two 2d6 slams, 30-foot airborne
+  movement, natural armor +6, relevant combat feats, and the qualified native
+  attack-safe Natural Invisibility buff. Huge-elemental stats, whirlwind, air
+  mastery, class spells, and donor brain are absent.
+- Reconstructed Shadow Demon as a 7-HD Medium chaotic-evil incorporeal outsider
+  with claw/claw/bite, a hit-confirmed 1d6 cold rider, DR 10/cold iron or good,
+  acid/fire resistance 10, cold/electricity/poison immunity, and SR 17. The
+  Soul Eater's Wisdom damage, DR/magic, scaling, and campaign surfaces are
+  absent. Possession, shadow blend, and sprint remain documented conservative
+  omissions; teleportation and summoning are intentionally absent.
+- Frozen `KMG.Summoning.Special.ShadowDemon.CombatTraits` at
+  `f81993d391054678a138227b91141eae`. Ledger is now 1,380 total: 1,379 active,
+  one reserved; Expanded Summoning foundation is 1,125 and aggregate runtime
+  registration is 1,379 in every feature-module state.
+- Guarded save-free run
+  `20260811T2207541420526Z-observe-expanded-summoning-inventory` passed on
+  `b4a3fc86804a8a950808457b4f9c38bddeb8152c`: both new exact assertions,
+  Lantern, 67 units, 1,046 abilities, registry 1,379, all 681 placements, and
+  every sanitizer/isolation assertion passed. DLL SHA-256:
+  `c15c777d8818cf2c9b076d0bf26187763ec324dee182448cc0ddf9abe5fd1cb0`;
+  package SHA-256:
+  `9ad5f4487eadf510133ceb62248104bdf83cf6452e6353029a424979b64f6684`.

@@ -10,12 +10,12 @@
 - Completed: Shield Other range repair; frozen 67-creature/681-placement logical
   catalog; guarded final-live parent/donor/action-graph inventory; additive merge
   and rollback policies; sanitizer contract; schema-3 fourth-module state with
-  all 16 logical combinations; 1,124 Expanded Summoning identities and exact
-  aggregate registry count 1,378; all 681 abilities and additive base-parent
+  all 16 logical combinations; 1,125 Expanded Summoning identities and exact
+  aggregate registry count 1,379; all 681 abilities and additive base-parent
   placements; HD-banded celestial/fiendish templates, spawn-local alignment,
   and bounded smite; all 55 selected donor graphs.
 - Current immutable mechanical source is
-  `37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556`. The complete domain suite is
+  `b4a3fc86804a8a950808457b4f9c38bddeb8152c`. The complete domain suite is
   1,006/1,006 PASS; clean Release and strict package validation PASS.
 - Native elementals and mephits plus the reconstructed Lantern Archon are
   structurally qualified by fresh Steam run
@@ -26,9 +26,9 @@
   and vampiric-touch graphs are captured by guarded PASS run
   `20260811T2156134219365Z-observe-expanded-summoning-inventory`. Stock energy
   drain was rejected because it can become permanent.
-- Exact next action: implement the bounded Salamander, Invisible Stalker,
-  Shadow Demon, and Succubus unit reconstructions, then source-qualify,
-  commit/push, and extend the exact guarded assertions.
+- Invisible Stalker and Shadow Demon are now reconstructed and exact-structure
+  qualified by guarded PASS `20260811T2207541420526Z`. Exact next action is the
+  Salamander and Succubus reconstruction group.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 
