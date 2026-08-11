@@ -208,6 +208,17 @@ namespace KingmakerGunslinger.DomainTests
                 "CreateBrainShell(identity.Symbol)", "result.name = InternalName(symbol)" })
                 Assertions.True(registration.Contains(token),
                     "Special blueprint factory naming contract is missing: " + token);
+
+            string observer = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningInventoryObserver.cs"));
+            foreach (string token in new[] { "ExactSpecialMechanicGuids",
+                "specialDetails", "special-detail=", "missing-details:" })
+                Assertions.True(observer.Contains(token),
+                    "Bounded special-mechanic observer is missing: " + token);
+            Assertions.False(observer.Contains(
+                "foreach (BlueprintScriptableObject value in specialCandidates)"),
+                "Broad discovery candidates must not all receive deep graph inspection.");
         }
 
         internal static void AbilityBuilderPreservesNativeGraphContracts()
@@ -282,7 +293,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "ExpandedSummoningDonorCatalog.All",
                 "Distinct(StringComparer.Ordinal)", "component-graph=",
                 "body-graph=", "view-graph=", "SpecialMechanicTerms",
-                "special-candidate=", "special-candidate-summary=" })
+                "special-detail=", "special-candidate-summary=" })
                 Assertions.True(inventory.Contains(token),
                     "Exact donor graph inventory is missing: " + token);
             foreach (string token in new[] { "ExactTemplateMechanicGuids",

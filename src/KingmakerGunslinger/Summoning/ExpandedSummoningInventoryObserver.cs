@@ -66,6 +66,12 @@ namespace KingmakerGunslinger.Summoning
             "lanternarchon", "lantern archon", "lightray", "light ray",
             "auraofmenace", "aura of menace"
         };
+        private static readonly string[] ExactSpecialMechanicGuids = {
+            "24719a49b84c5cd43b894268d22d9c89",
+            "33e8997912cf76b4c99dca0445082804",
+            "dcfc5e9aec5bea540b36caf754989164",
+            "1ce4878b5e714f659d0854a12f4b3cf2"
+        };
 
         internal static ExpandedSummoningInventoryObservation Observe(
             LibraryScriptableObject library)
@@ -108,17 +114,24 @@ namespace KingmakerGunslinger.Summoning
             BlueprintScriptableObject[] specialCandidates = all.Where(value =>
                 ContainsAny(SearchText(value), SpecialMechanicTerms))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
-            foreach (BlueprintScriptableObject value in specialCandidates)
+            var exactSpecial = new HashSet<string>(ExactSpecialMechanicGuids,
+                StringComparer.Ordinal);
+            BlueprintScriptableObject[] specialDetails = specialCandidates.Where(value =>
+                exactSpecial.Contains(value.AssetGuid)).ToArray();
+            foreach (BlueprintScriptableObject value in specialDetails)
             {
                 BlueprintUnit unit = value as BlueprintUnit;
-                records.Add("special-candidate=" + Describe(value) + ";fields=" +
+                records.Add("special-detail=" + Describe(value) + ";fields=" +
                     Members(value, 160) + ";components=" + Components(value) +
                     ";graph=" + ObjectGraph(value.ComponentsArray, 12) +
                     (unit == null ? string.Empty : ";body-graph=" +
                         ObjectGraph(FieldValue(unit, "Body"), 8) + ";view-graph=" +
                         ObjectGraph(FieldValue(unit, "Prefab"), 8)));
             }
-            records.Add("special-candidate-summary=found:" + specialCandidates.Length);
+            records.Add("special-candidate-summary=found:" + specialCandidates.Length +
+                ";details:" + specialDetails.Length + ";missing-details:" +
+                string.Join(",", ExactSpecialMechanicGuids.Where(guid =>
+                    !specialDetails.Any(value => value.AssetGuid == guid))));
 
             var canonical = new HashSet<string>(CanonicalParentGuids, StringComparer.Ordinal);
             BlueprintAbility[] canonicalParents = all.OfType<BlueprintAbility>()
