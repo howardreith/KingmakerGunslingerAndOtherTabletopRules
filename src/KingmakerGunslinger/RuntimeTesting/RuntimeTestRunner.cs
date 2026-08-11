@@ -7282,6 +7282,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("summon-unit-donor-candidates", ">=40",
                     observation.UnitCount.ToString(), observation.UnitCount >= 40,
                     "final-live BlueprintUnit roster-term inventory"),
+                Assertion("expanded-summoning-exact-donor-inventory", "54;missing=0",
+                    observation.ExactDonorCount + ";missing=" +
+                        observation.MissingDonorCount,
+                    observation.ExactDonorCount == 54 &&
+                        observation.MissingDonorCount == 0,
+                    "all distinct frozen chosen donor GUIDs with component/body/view graphs"),
                 Assertion("expanded-summoning-registered-identities",
                     "units=67;abilities=1045;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +

@@ -2435,3 +2435,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: inventory and implement required special creature
   adaptations in bounded groups, starting with Lantern Archon, mephits, and
   elementals against final-live native components.
+
+## Expanded Summoning current resume - complete frozen donor observer
+
+- Expanded the prior 25-GUID sample to all 54 distinct chosen donor GUIDs
+  derived directly from the frozen donor catalog. The observer now records
+  shallow unit fields plus bounded component, body, and view object graphs and
+  fails if any chosen donor is absent.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, run the guarded save-free
+  observer, and use its exact final-live graphs to partition native reuse from
+  required proxy/special reconstruction.

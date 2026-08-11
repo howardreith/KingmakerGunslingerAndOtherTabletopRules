@@ -92,3 +92,10 @@ source `b88e99cffb7464d7354416fba82d1da313e17ae2`. All celestial, fiendish, and
 Nature's Ally actions matched exact native spawn-branch cardinality, and
 non-KMG action contamination was zero. All registry, placement, template,
 smite, and sanitizer assertions remained green. No save was accessed.
+
+The forensic observer is now source-qualified to require and capture all 54
+distinct chosen donor identities, replacing the earlier 25-unit sample. Each
+record includes bounded component, body, and view graphs for the exact
+final-live blueprint. This inventory extension changes no creature mechanics;
+its committed-source save-free observation is pending and will drive the
+native-reuse versus reconstruction decisions for special units.

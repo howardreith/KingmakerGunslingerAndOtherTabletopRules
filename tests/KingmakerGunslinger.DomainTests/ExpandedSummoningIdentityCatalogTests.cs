@@ -221,12 +221,18 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-smite-markers",
                 "expanded-summoning-runtime-alignments",
                 "expanded-summoning-native-action-isolation",
+                "expanded-summoning-exact-donor-inventory",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
             string inventory = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningInventoryObserver.cs"));
+            foreach (string token in new[] { "ExpandedSummoningDonorCatalog.All",
+                "Distinct(StringComparer.Ordinal)", "component-graph=",
+                "body-graph=", "view-graph=" })
+                Assertions.True(inventory.Contains(token),
+                    "Exact donor graph inventory is missing: " + token);
             foreach (string token in new[] { "ExactTemplateMechanicGuids",
                 "69f0d7d1077f492f8237952f8219a270",
                 "3e33af2ab5974859bdaa92c32987b3e0",

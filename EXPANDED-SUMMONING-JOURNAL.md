@@ -623,3 +623,16 @@
   `b8cd73a138056eb4e138ec58da8e41a521764d3fadb907e061cd10a83e7a0d00`;
   package SHA-256:
   `601417e301e25ef4a6a64eec16b165d8867c2e3dc194b61ebfca2d7472f9ed60`.
+
+## 2026-08-11 - complete frozen donor graph observer
+
+- Replaced the historical 25-GUID donor sample with the exact 54 distinct
+  donor GUIDs derived from `ExpandedSummoningDonorCatalog`. The guarded
+  observer now fails on any missing chosen donor and records bounded component,
+  body, and view graphs alongside every donor's core BlueprintUnit fields.
+- This is forensic instrumentation only; no donor or KMG creature mechanic was
+  changed. Repository validation, 1,005/1,005 tests, clean Release, and strict
+  package validation PASS. DLL SHA-256:
+  `73b57960c90c1838f640359f66ad0794975485023219b0a74296bda0a637b9c1`;
+  package SHA-256:
+  `043f279437749279c6c5a69355637a753ba6b28bf45bd82c6f31fb80940eaa00`.

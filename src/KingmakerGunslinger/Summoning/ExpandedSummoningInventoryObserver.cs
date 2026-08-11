@@ -13,31 +13,26 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class ExpandedSummoningInventoryObservation
     {
         internal ExpandedSummoningInventoryObservation(int parents, int units,
-            int facts, IList<string> records)
-        { ParentCount = parents; UnitCount = units; FactCount = facts; Records = records; }
+            int facts, int exactDonors, int missingDonors, IList<string> records)
+        {
+            ParentCount = parents; UnitCount = units; FactCount = facts;
+            ExactDonorCount = exactDonors; MissingDonorCount = missingDonors;
+            Records = records;
+        }
         internal int ParentCount { get; private set; }
         internal int UnitCount { get; private set; }
         internal int FactCount { get; private set; }
+        internal int ExactDonorCount { get; private set; }
+        internal int MissingDonorCount { get; private set; }
         internal IList<string> Records { get; private set; }
     }
 
     internal static class ExpandedSummoningInventoryObserver
     {
-        private static readonly string[] ExactDonorGuids = {
-            "1ed9a630f0d9d7f44855d3d1d1b2cdf2", "03dd28e92faf2e44eb9564a6ba01fdd0",
-            "9e120b5e0ad3c794491c049aa24b9fde", "768275c9885dd954fb3c84ba69ac4281",
-            "4109b40f6bbb49640840644cc84ada67", "6ec9c63c41a1e754ea4dcd85557625b4",
-            "04944455200bc224d955a8e9bbd64f3f", "3764b43791a00e1468257adbca43ce9b",
-            "2e24256e459468743b91fbb9aa85e1ab", "33bb90ffd13c87b4c8e45d920313752a",
-            "50782bc4eb36aac4287023e20ee00808", "46779f56cab2cb0438161fec0129790d",
-            "10a820de0a417f345866f794324205ad", "4615328295cd7e84bb2ef09d3dba8403",
-            "ece348345859351439e1263115f5fdb9", "58574e8d1d4dc464c976f396d9115b1a",
-            "beae4985629a6f64eb98081e3171e4c1", "028cc6f46e7998f46855a33ffde89567",
-            "1832be68f9814254dbbdab6df7fd5d0b", "313a17cbd273d1f40bd1654ee2ae186e",
-            "c3524f96954a1d94f8525b86e7626633", "6ea3a75279bab234aa723989e30cb15a",
-            "0cc7a2526e4557945b1d8eb277d1fb3a", "58ed91a92b8d70248aa884d303954469",
-            "394610e32cfbc4f43a0efaab16faae49"
-        };
+        private static readonly string[] ExactDonorGuids =
+            ExpandedSummoningDonorCatalog.All.Select(value => value.Guid)
+                .Distinct(StringComparer.Ordinal).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
         private static readonly string[] CanonicalParentGuids = {
             "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7",
             "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef",
@@ -93,7 +88,10 @@ namespace KingmakerGunslinger.Summoning
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
             foreach (BlueprintUnit value in donors)
                 records.Add("donor=" + Describe(value) + ";fields=" + Members(value, 160) +
-                    ";components=" + Components(value));
+                    ";components=" + Components(value) + ";component-graph=" +
+                    ObjectGraph(value.ComponentsArray, 8) + ";body-graph=" +
+                    ObjectGraph(FieldValue(value, "Body"), 8) + ";view-graph=" +
+                    ObjectGraph(FieldValue(value, "Prefab"), 8));
             string[] missingDonors = ExactDonorGuids.Where(guid =>
                 !donors.Any(value => value.AssetGuid == guid)).ToArray();
             records.Add("donor-summary=expected:" + ExactDonorGuids.Length +
@@ -146,7 +144,16 @@ namespace KingmakerGunslinger.Summoning
             records.Add("summary=all:" + all.Length + ";abilities:" + parents.Length +
                 ";units:" + units.Length + ";facts:" + facts.Length);
             return new ExpandedSummoningInventoryObservation(parents.Length,
-                units.Length, facts.Length, records);
+                units.Length, facts.Length, donors.Length, missingDonors.Length,
+                records);
+        }
+
+        private static object FieldValue(object value, string name)
+        {
+            FieldInfo field = AllFields(value.GetType()).SingleOrDefault(item =>
+                string.Equals(item.Name, name, StringComparison.Ordinal) ||
+                string.Equals(item.Name, "m_" + name, StringComparison.Ordinal));
+            return field == null ? null : field.GetValue(value);
         }
 
         private static string Components(BlueprintScriptableObject value)
