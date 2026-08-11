@@ -104,6 +104,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _completionCallback;
         private bool _callbackRegistered;
         private bool _writeObserved;
+        private bool _expectedWorkingWriteArmed;
+        private bool _expectedWorkingSaveInProgress;
+        private int _expectedWorkingSaveRoutineCount;
+        private int _expectedWorkingStashedAreaCount;
         private bool _wrongThread;
         private bool _removed;
         private bool _sealed;
@@ -230,6 +234,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
         internal bool WriteObserved { get { return _writeObserved; } }
+        internal bool ExpectedWorkingWriteObserved
+        {
+            get { return _expectedWorkingSaveRoutineCount == 1; }
+        }
+        internal object WorkingDescriptor { get { return _workingDescriptor; } }
         internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
         internal bool ReceiverBoundObservation { get { return _observeReceiverBoundAction; } }
         internal bool AutonomousReceiverBoundAction
@@ -295,6 +304,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(x => x != null).Select(FormatSignature)
                     .OrderBy(x => x).ToList();
             }
+        }
+
+        internal void ArmExactWorkingSaveWrite()
+        {
+            RequireGameThread();
+            if (_workingDescriptor == null || !_descriptorCorrelated ||
+                !_completionCallback || _stableSamples < 2)
+                throw new InvalidOperationException(
+                    "The exact loaded working descriptor is not ready for an authorized write.");
+            if (_expectedWorkingWriteArmed || _expectedWorkingSaveRoutineCount != 0)
+                throw new InvalidOperationException(
+                    "The exact working-save write was already armed or observed.");
+            _expectedWorkingWriteArmed = true;
+            Add("exact-working-save-write-armed", null, null,
+                "one SaveRoutine invocation; exact captured SaveInfo reference only");
         }
         internal List<string> HookIdentifiers
         {
@@ -540,6 +564,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompletionCallbackObserved = _completionCallback,
                 StableFingerprint = _stableSamples >= 2 ? _lastFingerprint : "",
                 SaveWritingApiObserved = _writeObserved,
+                ExpectedWorkingSaveRoutineCount = _expectedWorkingSaveRoutineCount,
+                ExpectedWorkingStashedAreaCount = _expectedWorkingStashedAreaCount,
                 AllCallbacksOnGameThread = !_wrongThread,
                 HooksRemoved = _removed,
                 HooksInstalled = hooksInstalled,
@@ -1284,6 +1310,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Leaf(Read(value, "FileName")) == BaselineFile;
         }
 
+        private static bool IsExactWorkingFileIdentity(object value)
+        {
+            if (value == null || value.GetType().FullName != DescriptorType ||
+                Read(value, "Name") != ExpectedName) return false;
+            string folder = Leaf(Read(value, "FolderName"));
+            string file = Leaf(Read(value, "FileName"));
+            const string prefix = "Manual_";
+            string suffix = "_" + ExpectedName + ".zks";
+            if (folder != file || !file.StartsWith(prefix,
+                StringComparison.Ordinal) || !file.EndsWith(suffix,
+                StringComparison.Ordinal)) return false;
+            string sequence = file.Substring(prefix.Length,
+                file.Length - prefix.Length - suffix.Length);
+            return sequence.Length != 0 && sequence.All(char.IsDigit);
+        }
+
         private void RegisterCompletionCallback()
         {
             object manager = ReadMember(Kingmaker.Game.Instance, "SaveManager");
@@ -1359,6 +1401,32 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void ObserveEnter(MethodBase method, object receiver, object[] args)
         {
+            if (method.Name == "SaveStashedArea")
+            {
+                object stashedDescriptor = args == null || args.Length == 0
+                    ? null : args[0];
+                if (_expectedWorkingSaveInProgress &&
+                    IsExactWorkingFileIdentity(stashedDescriptor) &&
+                    !IsBaseline(stashedDescriptor))
+                {
+                    _expectedWorkingStashedAreaCount++;
+                    Add("exact-working-stashed-area-write", method, args,
+                        "authorized exact immutable working identity on native clone;count=" +
+                        _expectedWorkingStashedAreaCount);
+                }
+                else
+                {
+                    _writeObserved = true;
+                    Add("unexpected-save-write", method, args,
+                        "unarmed or non-working stashed-area write observed;" +
+                        "reference=" + ReferenceEquals(stashedDescriptor,
+                            _workingDescriptor) +
+                        ";name=" + Read(stashedDescriptor, "Name") +
+                        ";folderLeaf=" + Leaf(Read(stashedDescriptor, "FolderName")) +
+                        ";fileLeaf=" + Leaf(Read(stashedDescriptor, "FileName")));
+                }
+                return;
+            }
             RequireGameThread();
             if ((_observeReceiverBoundAction || _autonomousReceiverBoundAction) &&
                 method == _slotAction)
@@ -1487,9 +1555,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             else
             {
-                _writeObserved = true;
-                Add("unexpected-save-write", method, args,
-                    "native save-writing or migration entry observed");
+                object descriptor = args == null || args.Length == 0
+                    ? null : args[0];
+                bool exactAuthorizedRoutine = _expectedWorkingWriteArmed &&
+                    method.Name == "SaveRoutine" &&
+                    ReferenceEquals(descriptor, _workingDescriptor);
+                if (exactAuthorizedRoutine)
+                {
+                    _expectedWorkingWriteArmed = false;
+                    _expectedWorkingSaveInProgress = true;
+                    _expectedWorkingSaveRoutineCount++;
+                    Add("exact-working-save-write", method, args,
+                        "authorized exact captured SaveInfo reference;count=" +
+                        _expectedWorkingSaveRoutineCount);
+                }
+                else
+                {
+                    _writeObserved = true;
+                    Add("unexpected-save-write", method, args,
+                        "native save-writing, destructive, migration, non-working, or unarmed entry observed");
+                }
             }
         }
 

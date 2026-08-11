@@ -1,5 +1,21 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-11 Shield Other casting/UI regression
+
+No active engineering blocker. Exact-commit standalone, CotW, highest-risk,
+and eight-state module runtime gates pass with exact restoration. Automated UI
+navigation and visual judgment are prohibited by repository policy, so the
+post-rest spellbook/sidebar appearance remains a human confirmation item after
+all automatable work is published.
+
+## 2026-08-10 Shield Other persistence
+
+No active blocker. Synthetic Kingmaker serialization experiments were rejected
+as non-authoritative. The replacement is a guarded two-fresh-launch test that
+may write only the explicitly authorized `KMG_AUTOMATION_WORKING` descriptor;
+all baseline, other-descriptor, delete/migration, unarmed, and extra native save
+boundaries fail closed.
+
 ## 2026-08-10 Acadamae playtest repair
 
 No repair-specific blocker. Early runtime attempts correctly rejected a
@@ -392,3 +408,10 @@ table, and lifecycle tuple could be proven, so Bokken alone is evidence-deferred
 in `planning/PAPER-CARTRIDGES-BOKKEN-INVENTORY.md`. Mandatory Smith, BTSL, and
 renewable crafting acquisition paths passed. No Paper Cartridges mission hard
 stop remains. The inherited Dodge and Targeting Torso blockers are unchanged.
+# Shield Other active blockers (2026-08-09)
+
+None. Initial and first-idle final-live scans found no foreign Shield Other.
+Exact 2.1.7b finalized-damage/pre-HP interception, expanded damage behavior,
+save/load persistence, all eight module combinations, standalone x2, CotW x2,
+and highest-risk combined x2 are runtime-qualified for release 0.0.77. Every
+profile restored the prior Mods directory exactly and protected saves are intact.

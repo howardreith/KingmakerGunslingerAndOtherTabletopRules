@@ -12,6 +12,7 @@ namespace KingmakerGunslinger.FeatureModules
             RareFirearmLoot = active.Gunslinger;
             AcadamaeFeat = active.AcadamaeGraduate;
             CordCapitalStock = active.AcadamaeGraduate;
+            ShieldOtherSpellLists = active.ShieldOther;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -21,5 +22,6 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool RareFirearmLoot { get; private set; }
         internal bool AcadamaeFeat { get; private set; }
         internal bool CordCapitalStock { get; private set; }
+        internal bool ShieldOtherSpellLists { get; private set; }
     }
 }

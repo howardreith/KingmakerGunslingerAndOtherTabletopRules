@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.77 - Shield Other
+
+- Fixes spontaneous-caster availability and action-bar corruption by preserving
+  Kingmaker's required non-null empty material-component contract.
+- Adds a distinct project-owned Shield Other spell/buff icon and removes the
+  obsolete tabletop-item note from the player-facing description.
+- Adds the independent, default-enabled Shield Other module with stable ability
+  and target-buff identities and schema-1-to-2 settings migration.
+- Publishes Shield Other at level 2 to Cleric, Paladin, Inquisitor, Community,
+  and Protection; unambiguous final-live Call of the Wild Oracle, Warpriest,
+  and Psychic lists are reconciled without a compile-time dependency.
+- Adds +1 deflection AC, +1 resistance to all saves, caster-linked close-range
+  lifecycle enforcement, and save/load-persistent caster/target/CL context.
+- Splits only finalized HP damage before HP loss and downstream damage
+  consumers; odd damage favors the caster, defenses apply once, and transferred
+  damage cannot recurse or regenerate source riders.
+- Adds guarded duplicate scans, eight-module matrix coverage, transactional list
+  publication, expanded runtime mechanics, compatibility repetitions, and a
+  two-fresh-launch working-save persistence/cleanup qualification.
+
 ## 0.0.76 - Acadamae mode, persistent fatigue, and Cord icon repair
 
 - Adds the default-off, per-character `Use Acadamae Graduate` native toggle;

@@ -8,6 +8,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string ObserveFeatureModuleSettings =
             "observe-feature-module-settings";
+        internal const string ObserveShieldOtherInventory =
+            "observe-shield-other-inventory";
+        internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
         internal const string DisposableFirearmWwiseAudio = "disposable-firearm-wwise-audio";
@@ -181,6 +184,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveLoadGameButtonAction =
             "observe-load-game-button-action";
         internal const string WorkingSaveSmoke = "working-save-smoke";
+        internal const string WorkingSaveShieldOtherPrepare =
+            "working-save-shield-other-prepare";
+        internal const string WorkingSaveShieldOtherVerifyCleanup =
+            "working-save-shield-other-verify-cleanup";
         internal const string GenericFirearmActions =
             "generic-firearm-actions";
         internal const string ProductionFirearmCatalog =
@@ -202,6 +209,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ModLoadSmoke,
                 ObserveFeatureModuleSettings,
+                ObserveShieldOtherInventory,
+                DisposableShieldOther,
                 ObserveOptionalModCompatibility,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
@@ -290,6 +299,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveSaveCatalogProvider,
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
+                WorkingSaveShieldOtherPrepare,
+                WorkingSaveShieldOtherVerifyCleanup,
                 GenericFirearmActions,
                 ProductionFirearmCatalog,
                 AdvancedCapacity,

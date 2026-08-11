@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 1;
+        internal const int CurrentSchemaVersion = 2;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -31,9 +31,15 @@ namespace KingmakerGunslinger.FeatureModules
                 bool gunslinger = ReadDefaultOn(root, FeatureModuleConfiguration.GunslingerId);
                 bool acadamae = ReadDefaultOn(root,
                     FeatureModuleConfiguration.AcadamaeGraduateId);
-                return new FeatureModuleSettingsState(
-                    new FeatureModuleConfiguration(gunslinger, acadamae), path,
-                    schema == 0 ? "legacy" : "settings", false);
+                bool shieldOther = ReadDefaultOn(root,
+                    FeatureModuleConfiguration.ShieldOtherId);
+                var state = new FeatureModuleSettingsState(
+                    new FeatureModuleConfiguration(gunslinger, acadamae,
+                        shieldOther), path,
+                    schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
+                        "settings", false);
+                if (schema == 1) Save(state);
+                return state;
             }
             catch (Exception exception)
             {
@@ -52,7 +58,7 @@ namespace KingmakerGunslinger.FeatureModules
                         ":" + copyException.Message;
                 }
                 if (warning != null) warning("Malformed feature-module settings at " +
-                    path + "; both modules default ON; " + evidence + "; error=" +
+                    path + "; all modules default ON; " + evidence + "; error=" +
                     exception.GetType().FullName + ":" + exception.Message);
                 return new FeatureModuleSettingsState(
                     FeatureModuleConfiguration.Defaults, path,
@@ -68,7 +74,8 @@ namespace KingmakerGunslinger.FeatureModules
                 ["schemaVersion"] = CurrentSchemaVersion,
                 [FeatureModuleConfiguration.GunslingerId] = state.Pending.Gunslinger,
                 [FeatureModuleConfiguration.AcadamaeGraduateId] =
-                    state.Pending.AcadamaeGraduate
+                    state.Pending.AcadamaeGraduate,
+                [FeatureModuleConfiguration.ShieldOtherId] = state.Pending.ShieldOther
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";

@@ -34,6 +34,8 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
+    'observe-shield-other-inventory',
+    'disposable-shield-other',
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',
     'disposable-acadamae-graduate',
@@ -123,6 +125,8 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
+    'working-save-shield-other-prepare',
+    'working-save-shield-other-verify-cleanup',
     'generic-firearm-actions',
     'production-firearm-catalog',
     'advanced-capacity',
@@ -305,7 +309,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.76'
+    ExpectedVersion = '0.0.77'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -338,7 +342,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.76' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.77' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -393,7 +397,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.76' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.77' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

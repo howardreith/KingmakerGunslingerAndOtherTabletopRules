@@ -5,6 +5,7 @@ using KingmakerGunslinger.Development;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.Spells.ShieldOther;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger
@@ -102,6 +103,7 @@ namespace KingmakerGunslinger
                 }
 
                 ClassCatalogDiagnostics.AttachFirstUpdate(context);
+                ShieldOtherFinalLiveReconciler.AttachFirstUpdate(context);
                 RuntimeTestRunner.TryAttach(context);
                 logger.Info("bootstrap", "load.complete", "Lifecycle bootstrap completed; Sprint 29 registered the full-round Repair Test Musket ability and completed the staged same-item maintenance loop while retaining the accepted firearm attack, reload, persistence, natural-d20 misfire, condition, native 5-foot burst, and Overhaul paths. Overhaul changes exactly one equipped empty/Wrecked Test Musket to empty/Broken and Repair changes exactly one equipped empty/Broken Test Musket to empty/Normal; each consumes exactly one Firearm Repair Kit only during completed delivery, preserves the exact runtime item and item-owned token identity, and advances state exactly once. The process-local qualification fixture prepares a second independent Test Musket and required resources, then reports concise identity, resource, counter, fault, duplicate, and second-item PASS/FAIL evidence through Overhaul, Repair, and Reload. Cancellation before delivery, missing kits, invalid states, ambiguous equipped targets, native Heavy Crossbows, and unrelated firearms remain fail-closed. Generic definition-driven maintenance, Quick Clear, scatter triple damage, class progression, and production firearm content remain deferred.");
                 return true;

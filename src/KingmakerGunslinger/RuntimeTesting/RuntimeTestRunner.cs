@@ -19,6 +19,7 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
@@ -43,6 +44,7 @@ using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
+using KingmakerGunslinger.Spells.ShieldOther;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
@@ -92,6 +94,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _updateCallbackCount;
         private bool _workingReadyWritten;
         private string _workingStartupStage = "request-accepted";
+        private bool _shieldOtherPersistenceSaveStarted;
+        private bool _shieldOtherPersistenceSaveCompleted;
+        private Stopwatch _shieldOtherPersistenceSaveElapsed;
+        private bool _shieldOtherPersistenceContextValid;
+        private bool _shieldOtherPersistenceLinkStateValid;
+        private bool _shieldOtherPersistenceDamageValid;
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
 
@@ -420,6 +428,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveFeatureModuleSettings)
                 {
                     Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveShieldOtherInventory)
+                {
+                    Complete(RunShieldOtherInventoryObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableShieldOther)
+                {
+                    Complete(RunDisposableShieldOther());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -934,6 +954,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
@@ -954,6 +975,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                     _request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||
@@ -1014,6 +1036,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_shieldOtherPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_shieldOtherPersistenceSaveCompleted)
+                {
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_shieldOtherPersistenceSaveElapsed != null &&
+                    _shieldOtherPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteShieldOtherPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_workingSaveSmoke.Stage == "load-game-action-resolution" &&
                 _workingStartupStage != "main-menu-ready")
             {
@@ -1164,7 +1206,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (_request.Scenario ==
+                if (IsShieldOtherPersistenceScenario())
+                {
+                    StartShieldOtherPersistenceSave();
+                }
+                else if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.GenericFirearmActions)
                 {
                     RunSprint30GenericActions();
@@ -1219,6 +1265,154 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompleteWorkingSaveSmoke(status, _workingSaveSmoke.Stage,
                     "Stage-specific timeout expired.");
             }
+        }
+
+        private bool IsShieldOtherPersistenceScenario()
+        {
+            return _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+        }
+
+        private void StartShieldOtherPersistenceSave()
+        {
+            UnitEntityData[] party = Kingmaker.Game.Instance.Player.Party
+                .Where(value => value != null && value.Descriptor != null)
+                .ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before persistence qualification.");
+            UnitEntityData caster = party[0];
+            UnitEntityData subject = party[1];
+            Buff[] links = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint,
+                    BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare)
+            {
+                foreach (Buff existing in links) existing.Remove();
+                var context = new MechanicsContext(caster, caster.Descriptor,
+                    BlueprintBootstrap.ShieldOther.Ability, null,
+                    new TargetWrapper(subject));
+                context.Params.CasterLevel = 5;
+                Buff link = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, context,
+                    TimeSpan.FromHours(5d));
+                _shieldOtherPersistenceContextValid = link != null &&
+                    link.MaybeContext != null &&
+                    link.MaybeContext.MaybeCaster == caster &&
+                    link.MaybeContext.Params.CasterLevel == 5 &&
+                    link.MaybeContext.MainTarget.Unit == subject;
+                _shieldOtherPersistenceLinkStateValid =
+                    subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                        ReferenceEquals(value.Blueprint,
+                            BlueprintBootstrap.ShieldOther.TargetBuff)) == 1;
+            }
+            else
+            {
+                _shieldOtherPersistenceLinkStateValid = links.Length == 1;
+                Buff link = links.Length == 1 ? links[0] : null;
+                _shieldOtherPersistenceContextValid = link != null &&
+                    link.MaybeContext != null &&
+                    link.MaybeContext.MaybeCaster == caster &&
+                    link.MaybeContext.Params.CasterLevel == 5 &&
+                    link.MaybeContext.MainTarget.Unit == subject;
+                int casterDamage = caster.Descriptor.Damage;
+                int subjectDamage = subject.Descriptor.Damage;
+                int casterBefore = caster.HPLeft;
+                int subjectBefore = subject.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3)))
+                    {
+                        DisablePrecisionDamage = true,
+                        IgnoreDamageReduction = true
+                    });
+                _shieldOtherPersistenceDamageValid =
+                    subjectBefore - subject.HPLeft == 1 &&
+                    casterBefore - caster.HPLeft == 2;
+                caster.Descriptor.Damage = casterDamage;
+                subject.Descriptor.Damage = subjectDamage;
+                if (link != null) link.Remove();
+                _shieldOtherPersistenceLinkStateValid =
+                    _shieldOtherPersistenceLinkStateValid &&
+                    !subject.Descriptor.HasFact(
+                        BlueprintBootstrap.ShieldOther.TargetBuff);
+            }
+            if (!_shieldOtherPersistenceContextValid ||
+                !_shieldOtherPersistenceLinkStateValid ||
+                (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup &&
+                 !_shieldOtherPersistenceDamageValid))
+                throw new InvalidOperationException(
+                    "Shield Other persistence phase assertions failed before the guarded save.");
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Kingmaker.Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _shieldOtherPersistenceSaveStarted = true;
+            _shieldOtherPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Kingmaker.Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() => _shieldOtherPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteShieldOtherPersistence(string status, string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool verify = _request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load", "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("shield-other-context", "caster=party[0];target=party[1];CL=5",
+                    _shieldOtherPersistenceContextValid.ToString(),
+                    _shieldOtherPersistenceContextValid,
+                    verify ? "freshly deserialized buff MechanicsContext" :
+                        "pre-save buff MechanicsContext"),
+                Assertion(verify ? "cleaned-link" : "prepared-link",
+                    verify ? "absent before cleanup save" : "exactly one before prepare save",
+                    _shieldOtherPersistenceLinkStateValid.ToString(),
+                    _shieldOtherPersistenceLinkStateValid,
+                    "live target buff collection"),
+                Assertion("odd-damage-after-load", verify ? "subject=1;caster=2" : "not-applicable",
+                    verify ? _shieldOtherPersistenceDamageValid.ToString() : "not-applicable",
+                    !verify || _shieldOtherPersistenceDamageValid,
+                    verify ? "fresh-launch RuleDealDamage observation" : "prepare phase"),
+                Assertion("exact-working-save-write", "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" + evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private int WorkingSaveStageTimeout(string stage)
@@ -6732,8 +6926,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
             bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
+            bool expectedShieldOther = (bool)_request.Parameters["shieldOther"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
+            bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -6814,9 +7010,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rareLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(value =>
                     value != null && ReferenceEquals(value.Item, item) && value.Count == 1);
             }
+            ShieldOtherInventoryObservation shieldObservation =
+                ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
-                expectedAcadamae + ";active=" + activeGunslinger + "/" +
-                activeAcadamae + ";registered=" +
+                expectedAcadamae + "/" + expectedShieldOther + ";active=" +
+                activeGunslinger + "/" + activeAcadamae + "/" +
+                activeShieldOther + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -6825,14 +7024,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
-                ";rareLoot=" + rareLootRows;
+                ";rareLoot=" + rareLootRows + ";shieldLists=" +
+                shieldObservation.PublishedLists + "/" +
+                shieldObservation.ExpectedPublishedLists;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
                     observed, activeGunslinger == expectedGunslinger &&
-                    activeAcadamae == expectedAcadamae, "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "252 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 252,
+                    activeAcadamae == expectedAcadamae &&
+                    activeShieldOther == expectedShieldOther,
+                    "immutable process snapshot"),
+                Assertion("feature-module-identity-count", "254 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 254,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -6856,6 +7059,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         acadAll == (expectedAcadamae ? 1 : 0) &&
                         cordRows == (expectedAcadamae ? 1 : 0),
                     "basic feat selection and Smith table"),
+                Assertion("feature-module-shield-other-publication",
+                    expectedShieldOther ? "all discovered lists singular" :
+                        "all discovered lists absent",
+                    observed, shieldObservation.DuplicateCount == 0 &&
+                        shieldObservation.PublishedLists == (expectedShieldOther ?
+                            shieldObservation.ExpectedPublishedLists : 0),
+                    "required base and optional final-live spell lists"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -6863,6 +7073,667 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+        }
+
+        private RuntimeTestResult RunShieldOtherInventoryObservation()
+        {
+            ShieldOtherInventoryObservation observation =
+                ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("shield-other-foreign-duplicate", "0",
+                    observation.DuplicateCount.ToString(),
+                    observation.DuplicateCount == 0,
+                    "final live BlueprintAbility name/display scan"),
+                Assertion("shield-other-level2-publication",
+                    observation.ExpectedPublishedLists.ToString(),
+                    observation.PublishedLists.ToString(),
+                    observation.ExpectedPublishedLists == observation.PublishedLists,
+                    "required base and discovered optional final-live spell lists"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            foreach (string record in observation.Records)
+                result.Diagnostics.Add(record);
+            return result;
+        }
+
+        private RuntimeTestResult RunDisposableShieldOther()
+        {
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData caster = null, subject = null, secondCaster = null,
+                secondSubject = null;
+            bool casterRegistered = false, subjectRegistered = false,
+                secondCasterRegistered = false, secondSubjectRegistered = false,
+                cleaned = false, replacementOwned = false,
+                multiSubjectOwned = false, rangeRemoved = false,
+                areaRemoved = false, dispelRemoved = false,
+                deathRemoved = false;
+            bool reciprocalOwned = false, reciprocalNoRecursion = false,
+                casterLethal = false, abilityDamageExcluded = false,
+                constitutionDamageExcluded = false;
+            bool subjectTemporaryHpNormal = false,
+                casterTemporaryHpNormal = false;
+            bool availabilityEvaluated = false, nativeAvailable = false,
+                noMaterialRequired = false, commandCanStart = false;
+            int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
+                casterEven = -1, physicalSubject = -1, physicalCaster = -1,
+                energySubject = -1, energyCaster = -1,
+                mitigatedPhysicalSubject = -1, mitigatedPhysicalCaster = -1,
+                mitigatedEnergySubject = -1, mitigatedEnergyCaster = -1,
+                immuneEnergySubject = -1, immuneEnergyCaster = -1,
+                acDelta = -1, fortDelta = -1,
+                reflexDelta = -1, willDelta = -1, linkCount = -1,
+                replacementSubject = -1, replacementFirstCaster = -1,
+                replacementSecondCaster = -1, multipleSubject = -1,
+                multipleCaster = -1, areaSubject = -1, areaCaster = -1,
+                rangedSubject = -1, rangedCaster = -1,
+                dispelledSubject = -1, dispelledCaster = -1;
+            int reciprocalSubject = -1, reciprocalCaster = -1,
+                lethalSubject = -1, lethalCaster = -1,
+                strengthDamage = -1, constitutionDamage = -1;
+            int subjectTempConsumed = -1, subjectTempHpLoss = -1,
+                subjectTempCasterLoss = -1, casterTempConsumed = -1,
+                casterTempSubjectLoss = -1, casterTempHpLoss = -1;
+            long logsBefore = ShieldOtherCombatLog.Published;
+            string stage = "construct";
+            try
+            {
+                caster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                subject = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                secondCaster = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                secondSubject = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 100;
+                subject.Descriptor.Stats.HitPoints.BaseValue = 100;
+                secondCaster.Descriptor.Stats.HitPoints.BaseValue = 100;
+                secondSubject.Descriptor.Stats.HitPoints.BaseValue = 100;
+                caster.Descriptor.State.Immortality.Retain();
+                subject.Descriptor.State.Immortality.Retain();
+                secondCaster.Descriptor.State.Immortality.Retain();
+                secondSubject.Descriptor.State.Immortality.Retain();
+                SetExactProperty(caster, "Position", Vector3.zero);
+                SetExactProperty(subject, "Position", Vector3.zero);
+                SetExactProperty(secondCaster, "Position", Vector3.zero);
+                SetExactProperty(secondSubject, "Position", Vector3.zero);
+                casterRegistered = Kingmaker.Game.Instance.State.Units.All.Add(caster);
+                subjectRegistered = Kingmaker.Game.Instance.State.Units.All.Add(subject);
+                secondCasterRegistered = Kingmaker.Game.Instance.State.Units.All.Add(
+                    secondCaster);
+                secondSubjectRegistered = Kingmaker.Game.Instance.State.Units.All.Add(
+                    secondSubject);
+                if (!casterRegistered || !subjectRegistered ||
+                    !secondCasterRegistered || !secondSubjectRegistered)
+                    throw new InvalidOperationException("Disposable units were not registered.");
+
+                stage = "native-availability";
+                caster.Descriptor.AddFact(BlueprintBootstrap.ShieldOther.Ability);
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    caster.Descriptor.Abilities.GetAbility(
+                        BlueprintBootstrap.ShieldOther.Ability);
+                if (granted == null) throw new InvalidOperationException(
+                    "Shield Other was not granted to the availability fixture.");
+                var abilityData = new AbilityData(granted);
+                noMaterialRequired = !abilityData.RequireMaterialComponent;
+                nativeAvailable = abilityData.IsAvailable;
+                commandCanStart = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
+                    abilityData, new TargetWrapper(subject)).CanStart;
+                availabilityEvaluated = true;
+
+                int acBefore = subject.Stats.AC.ModifiedValue;
+                int fortBefore = subject.Stats.SaveFortitude.ModifiedValue;
+                int reflexBefore = subject.Stats.SaveReflex.ModifiedValue;
+                int willBefore = subject.Stats.SaveWill.ModifiedValue;
+                var context = new MechanicsContext(caster, caster.Descriptor,
+                    BlueprintBootstrap.ShieldOther.Ability, null,
+                    new TargetWrapper(subject));
+                context.Params.CasterLevel = 5;
+                stage = "apply-link";
+                Buff link = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, context,
+                    TimeSpan.FromHours(5d));
+                if (link == null) throw new InvalidOperationException(
+                    "Shield Other target buff was rejected.");
+                linkCount = subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(
+                    value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff));
+                acDelta = subject.Stats.AC.ModifiedValue - acBefore;
+                fortDelta = subject.Stats.SaveFortitude.ModifiedValue - fortBefore;
+                reflexDelta = subject.Stats.SaveReflex.ModifiedValue - reflexBefore;
+                willDelta = subject.Stats.SaveWill.ModifiedValue - willBefore;
+
+                stage = "odd-damage";
+                int subjectBefore = subject.HPLeft;
+                int casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subjectOdd = subjectBefore - subject.HPLeft;
+                casterOdd = casterBefore - caster.HPLeft;
+
+                stage = "even-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 4))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subjectEven = subjectBefore - subject.HPLeft;
+                casterEven = casterBefore - caster.HPLeft;
+
+                stage = "typed-physical-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new PhysicalDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.PhysicalDamageForm.Piercing) {
+                            PreRolledValue = 4
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                physicalSubject = subjectBefore - subject.HPLeft;
+                physicalCaster = casterBefore - caster.HPLeft;
+
+                stage = "typed-energy-damage";
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 4
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                energySubject = subjectBefore - subject.HPLeft;
+                energyCaster = casterBefore - caster.HPLeft;
+
+                stage = "physical-mitigation";
+                BlueprintFeature subjectDr = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_SubjectDR",
+                    ScriptableObject.CreateInstance<AddDamageResistancePhysical>());
+                var subjectDrComponent = subjectDr.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single();
+                subjectDrComponent.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 2 };
+                BlueprintFeature casterDr = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_CasterDR",
+                    ScriptableObject.CreateInstance<AddDamageResistancePhysical>());
+                var casterDrComponent = casterDr.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single();
+                casterDrComponent.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 100 };
+                subject.Descriptor.AddFact(subjectDr);
+                caster.Descriptor.AddFact(casterDr);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new PhysicalDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.PhysicalDamageForm.Piercing) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                mitigatedPhysicalSubject = subjectBefore - subject.HPLeft;
+                mitigatedPhysicalCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(subjectDr);
+                caster.Descriptor.RemoveFact(casterDr);
+                UnityEngine.Object.Destroy(subjectDr);
+                UnityEngine.Object.Destroy(casterDr);
+
+                stage = "energy-mitigation";
+                var subjectFireResistance = ScriptableObject.CreateInstance<
+                    AddDamageResistanceEnergy>();
+                subjectFireResistance.Type =
+                    Kingmaker.Enums.Damage.DamageEnergyType.Fire;
+                subjectFireResistance.Value = new ContextValue {
+                    ValueType = ContextValueType.Simple, Value = 2 };
+                BlueprintFeature subjectResistance = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_SubjectFireResistance",
+                    subjectFireResistance);
+                var casterFireImmunity = ScriptableObject.CreateInstance<
+                    AddEnergyImmunity>();
+                casterFireImmunity.Type =
+                    Kingmaker.Enums.Damage.DamageEnergyType.Fire;
+                BlueprintFeature casterImmunity = CreateDisposableDefenseFeature(
+                    "KMG_Runtime_ShieldOther_CasterFireImmunity",
+                    casterFireImmunity);
+                subject.Descriptor.AddFact(subjectResistance);
+                caster.Descriptor.AddFact(casterImmunity);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                mitigatedEnergySubject = subjectBefore - subject.HPLeft;
+                mitigatedEnergyCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(subjectResistance);
+
+                stage = "energy-immunity";
+                subject.Descriptor.AddFact(casterImmunity);
+                subjectBefore = subject.HPLeft;
+                casterBefore = caster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new EnergyDamage(
+                        new DiceFormula(0, DiceType.D6),
+                        Kingmaker.Enums.Damage.DamageEnergyType.Fire) {
+                            PreRolledValue = 6
+                        })) {
+                    DisablePrecisionDamage = true
+                });
+                immuneEnergySubject = subjectBefore - subject.HPLeft;
+                immuneEnergyCaster = casterBefore - caster.HPLeft;
+                subject.Descriptor.RemoveFact(casterImmunity);
+                caster.Descriptor.RemoveFact(casterImmunity);
+                UnityEngine.Object.Destroy(subjectResistance);
+                UnityEngine.Object.Destroy(casterImmunity);
+
+                stage = "replace-link";
+                var replacementContext = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(subject));
+                replacementContext.Params.CasterLevel = 5;
+                Buff replacement = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, replacementContext,
+                    TimeSpan.FromHours(5d));
+                Buff[] subjectLinks = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+                replacementOwned = replacement != null && subjectLinks.Length == 1 &&
+                    subjectLinks[0].MaybeContext.MaybeCaster == secondCaster;
+                subjectBefore = subject.HPLeft;
+                int firstCasterBefore = caster.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                replacementSubject = subjectBefore - subject.HPLeft;
+                replacementFirstCaster = firstCasterBefore - caster.HPLeft;
+                replacementSecondCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "multiple-subjects";
+                var multipleContext = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(secondSubject));
+                multipleContext.Params.CasterLevel = 5;
+                Buff multiple = secondSubject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
+                    TimeSpan.FromHours(5d));
+                multiSubjectOwned = multiple != null &&
+                    subject.Descriptor.HasFact(BlueprintBootstrap.ShieldOther.TargetBuff) &&
+                    secondSubject.Descriptor.HasFact(
+                        BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                multipleSubject = subjectBefore - secondSubject.HPLeft;
+                multipleCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "area-termination";
+                SetExactProperty(secondCaster, "IsInGame", false);
+                multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                areaRemoved = !secondSubject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                areaSubject = subjectBefore - secondSubject.HPLeft;
+                areaCaster = casterBefore - secondCaster.HPLeft;
+                SetExactProperty(secondCaster, "IsInGame", true);
+
+                stage = "range-termination";
+                multiple = secondSubject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
+                    TimeSpan.FromHours(5d));
+                if (multiple == null) throw new InvalidOperationException(
+                    "Shield Other range fixture link was rejected.");
+                SetExactProperty(secondSubject, "Position", new Vector3(20f, 0f, 0f));
+                multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                rangeRemoved = !secondSubject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = secondSubject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, secondSubject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                rangedSubject = subjectBefore - secondSubject.HPLeft;
+                rangedCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "dispel-removal";
+                subjectLinks = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                        BlueprintBootstrap.ShieldOther.TargetBuff)).ToArray();
+                if (subjectLinks.Length != 1)
+                    throw new InvalidOperationException("Replacement link was lost.");
+                subjectLinks[0].Remove();
+                dispelRemoved = !subject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 2))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                dispelledSubject = subjectBefore - subject.HPLeft;
+                dispelledCaster = casterBefore - secondCaster.HPLeft;
+
+                stage = "non-hp-exclusions";
+                int casterHpBeforeExclusions = secondCaster.HPLeft;
+                int strengthBefore = subject.Stats.Strength.Damage;
+                Rulebook.Trigger(new RuleDealStatDamage(caster, subject,
+                    StatType.Strength, new DiceFormula(0, DiceType.D6), 2));
+                strengthDamage = subject.Stats.Strength.Damage - strengthBefore;
+                abilityDamageExcluded = strengthDamage == 2 &&
+                    secondCaster.HPLeft == casterHpBeforeExclusions;
+                int constitutionBefore = subject.Stats.Constitution.Damage;
+                Rulebook.Trigger(new RuleDealStatDamage(caster, subject,
+                    StatType.Constitution, new DiceFormula(0, DiceType.D6), 1));
+                constitutionDamage = subject.Stats.Constitution.Damage -
+                    constitutionBefore;
+                constitutionDamageExcluded = constitutionDamage == 1 &&
+                    secondCaster.HPLeft == casterHpBeforeExclusions;
+
+                stage = "reciprocal-links";
+                var subjectToCaster = new MechanicsContext(secondCaster,
+                    secondCaster.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(subject));
+                subjectToCaster.Params.CasterLevel = 5;
+                var casterToSubject = new MechanicsContext(subject,
+                    subject.Descriptor, BlueprintBootstrap.ShieldOther.Ability,
+                    null, new TargetWrapper(secondCaster));
+                casterToSubject.Params.CasterLevel = 5;
+                Buff forward = subject.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, subjectToCaster,
+                    TimeSpan.FromHours(5d));
+
+                stage = "subject-temporary-hp";
+                ModifiableValue.Modifier subjectTemporary =
+                    subject.Stats.TemporaryHitPoints
+                    .AddModifier(5, forward, "Shield Other runtime fixture",
+                        ModifierDescriptor.UntypedStackable);
+                int subjectTempBefore = subject.TemporaryHP;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 6))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                subject.Stats.TemporaryHitPoints.UpdateValue();
+                subjectTempConsumed = subjectTempBefore - subject.TemporaryHP;
+                subjectTempHpLoss = subjectBefore - subject.HPLeft;
+                subjectTempCasterLoss = casterBefore - secondCaster.HPLeft;
+                subjectTemporaryHpNormal = subjectTempBefore == 5 &&
+                    subjectTempConsumed == 3 && subjectTempHpLoss == 0 &&
+                    subjectTempCasterLoss == 3;
+                subject.Stats.TemporaryHitPoints.RemoveModifier(subjectTemporary);
+
+                stage = "caster-temporary-hp";
+                ModifiableValue.Modifier casterTemporary =
+                    secondCaster.Stats.TemporaryHitPoints
+                    .AddModifier(5, forward, "Shield Other runtime fixture",
+                        ModifierDescriptor.UntypedStackable);
+                int casterTempBefore = secondCaster.TemporaryHP;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 6))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                secondCaster.Stats.TemporaryHitPoints.UpdateValue();
+                casterTempConsumed = casterTempBefore - secondCaster.TemporaryHP;
+                casterTempSubjectLoss = subjectBefore - subject.HPLeft;
+                casterTempHpLoss = casterBefore - secondCaster.HPLeft;
+                casterTemporaryHpNormal = casterTempBefore == 5 &&
+                    casterTempConsumed == 3 && casterTempSubjectLoss == 3 &&
+                    casterTempHpLoss == 0;
+                secondCaster.Stats.TemporaryHitPoints.RemoveModifier(casterTemporary);
+
+                Buff reverse = secondCaster.Descriptor.Buffs.AddBuff(
+                    BlueprintBootstrap.ShieldOther.TargetBuff, casterToSubject,
+                    TimeSpan.FromHours(5d));
+                reciprocalOwned = forward != null && reverse != null;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                reciprocalSubject = subjectBefore - subject.HPLeft;
+                reciprocalCaster = casterBefore - secondCaster.HPLeft;
+                reciprocalNoRecursion = reciprocalSubject == 1 &&
+                    reciprocalCaster == 2;
+
+                stage = "lethal-caster-transfer";
+                reverse.Remove();
+                secondCaster.Descriptor.State.Immortality.ReleaseAll();
+                secondCaster.Descriptor.Damage = secondCaster.MaxHP - 1;
+                subjectBefore = subject.HPLeft;
+                casterBefore = secondCaster.HPLeft;
+                Rulebook.Trigger(new RuleDealDamage(caster, subject,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), 3))) {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                lethalSubject = subjectBefore - subject.HPLeft;
+                lethalCaster = casterBefore - secondCaster.HPLeft;
+                casterLethal = lethalSubject == 1 && lethalCaster >= 1 &&
+                    (secondCaster.HPLeft <= 0 ||
+                     secondCaster.Descriptor.State.IsDead ||
+                     secondCaster.Descriptor.State.MarkedForDeath ||
+                     secondCaster.Descriptor.State.ForceKill);
+                stage = "caster-death-termination";
+                forward.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
+                    handler => handler.OnNewRound());
+                deathRemoved = !subject.Descriptor.HasFact(
+                    BlueprintBootstrap.ShieldOther.TargetBuff);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Shield Other failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (secondSubjectRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(secondSubject);
+                if (secondCasterRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(secondCaster);
+                if (subjectRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(subject);
+                if (casterRegistered)
+                    Kingmaker.Game.Instance.State.Units.All.Remove(caster);
+                if (secondSubject != null) secondSubject.Dispose();
+                if (secondCaster != null) secondCaster.Dispose();
+                if (subject != null) subject.Dispose();
+                if (caster != null) caster.Dispose();
+                cleaned = (subject == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(subject)) &&
+                    (caster == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(caster)) &&
+                    (secondSubject == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(secondSubject)) &&
+                    (secondCaster == null ||
+                    !Kingmaker.Game.Instance.State.Units.All.Contains(secondCaster));
+            }
+            string observed = "linkCount=" + linkCount + ";bonuses=" + acDelta +
+                "/" + fortDelta + "/" + reflexDelta + "/" + willDelta +
+                ";odd=" + subjectOdd + "/" + casterOdd + ";even=" +
+                subjectEven + "/" + casterEven + ";physical=" +
+                physicalSubject + "/" + physicalCaster + ";energy=" +
+                energySubject + "/" + energyCaster + ";mitigatedPhysical=" +
+                mitigatedPhysicalSubject + "/" + mitigatedPhysicalCaster +
+                ";mitigatedEnergy=" + mitigatedEnergySubject + "/" +
+                mitigatedEnergyCaster + ";immuneEnergy=" + immuneEnergySubject +
+                "/" + immuneEnergyCaster + ";logs=" +
+                (ShieldOtherCombatLog.Published - logsBefore) +
+                ";replacement=" + replacementOwned + "/" + replacementSubject +
+                "/" + replacementFirstCaster + "/" + replacementSecondCaster +
+                ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
+                multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
+                "/" + rangedCaster + ";area=" + areaRemoved + "/" + areaSubject +
+                "/" + areaCaster + ";dispel=" + dispelRemoved + "/" +
+                dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
+            observed += ";exclusions=" + abilityDamageExcluded + "/" +
+                strengthDamage + "/" + constitutionDamageExcluded + "/" +
+                constitutionDamage + ";reciprocal=" + reciprocalOwned + "/" +
+                reciprocalNoRecursion + "/" + reciprocalSubject + "/" +
+                reciprocalCaster + ";lethal=" + casterLethal + "/" +
+                lethalSubject + "/" + lethalCaster;
+            observed += ";tempSubject=" + subjectTemporaryHpNormal + "/" +
+                subjectTempConsumed + "/" + subjectTempHpLoss + "/" +
+                subjectTempCasterLoss + ";tempCaster=" + casterTemporaryHpNormal +
+                "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
+                casterTempHpLoss;
+            observed += ";availability=" + availabilityEvaluated + "/" +
+                nativeAvailable + "/" + noMaterialRequired + "/" + commandCanStart;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("shield-other-native-availability",
+                    "availability evaluates true; no material required", observed,
+                    availabilityEvaluated && nativeAvailable && noMaterialRequired &&
+                    commandCanStart,
+                    "native AbilityData spontaneous/action-bar availability path"),
+                Assertion("shield-other-link-and-bonuses",
+                    "one link; AC/Fort/Reflex/Will +1", observed,
+                    linkCount == 1 && acDelta == 1 && fortDelta == 1 &&
+                    reflexDelta == 1 && willDelta == 1,
+                    "native target buff modifiers"),
+                Assertion("shield-other-odd-split", "subject 1; caster 2",
+                    observed, subjectOdd == 1 && casterOdd == 2,
+                    "finalized damage transpiler and guarded transfer"),
+                Assertion("shield-other-even-split", "subject 2; caster 2",
+                    observed, subjectEven == 2 && casterEven == 2,
+                    "finalized damage transpiler and guarded transfer"),
+                Assertion("shield-other-typed-physical-split",
+                    "finalized piercing 4 becomes subject 2; caster 2",
+                    observed, physicalSubject == 2 && physicalCaster == 2,
+                    "native PhysicalDamage mitigation then finalized split"),
+                Assertion("shield-other-typed-energy-split",
+                    "finalized fire 4 becomes subject 2; caster 2",
+                    observed, energySubject == 2 && energyCaster == 2,
+                    "native EnergyDamage mitigation then finalized split"),
+                Assertion("shield-other-physical-mitigation-once",
+                    "piercing 6 minus target DR 2 finalizes 4, then 2/2; caster DR ignored",
+                    observed, mitigatedPhysicalSubject == 2 &&
+                    mitigatedPhysicalCaster == 2,
+                    "native target DR before split; guarded direct caster share"),
+                Assertion("shield-other-energy-mitigation-once",
+                    "fire 6 minus target resistance 2 finalizes 4, then 2/2; caster immunity ignored",
+                    observed, mitigatedEnergySubject == 2 &&
+                    mitigatedEnergyCaster == 2,
+                    "native target resistance before split; guarded direct caster share"),
+                Assertion("shield-other-target-energy-immunity",
+                    "immune target finalizes zero; subject 0 and caster 0",
+                    observed, immuneEnergySubject == 0 && immuneEnergyCaster == 0,
+                    "native target energy immunity before split"),
+                Assertion("shield-other-link-replacement",
+                    "latest caster owns one link; damage 1/0/1", observed,
+                    replacementOwned && replacementSubject == 1 &&
+                    replacementFirstCaster == 0 && replacementSecondCaster == 1,
+                    "Stacking.Replace and persisted MaybeCaster"),
+                Assertion("shield-other-multiple-subjects",
+                    "one caster owns both; damage 1/1", observed,
+                    multiSubjectOwned && multipleSubject == 1 && multipleCaster == 1,
+                    "independent target buff facts"),
+                Assertion("shield-other-range-termination",
+                    "link removed; damage 2/0", observed,
+                    rangeRemoved && rangedSubject == 2 && rangedCaster == 0,
+                    "caster-level close range round revalidation"),
+                Assertion("shield-other-area-termination",
+                    "caster unload removes link; damage 2/0", observed,
+                    areaRemoved && areaSubject == 2 && areaCaster == 0,
+                    "native UnitEntityData.IsInGame area-load boundary"),
+                Assertion("shield-other-dispel-removal",
+                    "link removed; damage 2/0", observed,
+                    dispelRemoved && dispelledSubject == 2 && dispelledCaster == 0,
+                    "native buff removal"),
+                Assertion("shield-other-non-hp-exclusions",
+                    "Strength 2 and Constitution 1; caster HP unchanged", observed,
+                    abilityDamageExcluded && constitutionDamageExcluded,
+                    "native RuleDealStatDamage path never enters RuleDealDamage"),
+                Assertion("shield-other-reciprocal-guard",
+                    "reciprocal links; original 1 and caster 2 only", observed,
+                    reciprocalOwned && reciprocalNoRecursion,
+                    "thread-static transferred-event recursion guard"),
+                Assertion("shield-other-subject-temporary-hp",
+                    "temp 5 consumes 3; subject HP 0; caster HP 3", observed,
+                    subjectTemporaryHpNormal,
+                    "native subject ModifiableValueTemporaryHitPoints.HandleDamage"),
+                Assertion("shield-other-caster-temporary-hp",
+                    "temp 5 consumes 3; subject HP 3; caster HP 0", observed,
+                    casterTemporaryHpNormal,
+                    "native transferred RuleDealDamage temporary-HP application"),
+                Assertion("shield-other-caster-lethal",
+                    "subject 1; caster reaches lethal threshold", observed,
+                    casterLethal, "native caster HP and death-threshold application"),
+                Assertion("shield-other-caster-death-termination",
+                    "dead caster removes link on native round tick", observed,
+                    deathRemoved, "ITickEachRound lifecycle revalidation"),
+                Assertion("shield-other-transfer-log", "12 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 12,
+                    "native IWarningNotificationUIHandler combat-log event"),
+                Assertion("external-isolation", "disposable units removed", observed,
+                    cleaned, "live unit registry cleanup"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
+        private static BlueprintFeature CreateDisposableDefenseFeature(
+            string name, params BlueprintComponent[] components)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = name;
+            feature.Ranks = 1;
+            feature.ComponentsArray = components;
+            return feature;
         }
 
         private static int CountExactFeatures(BlueprintFeature[] source,

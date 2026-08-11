@@ -1,5 +1,109 @@
 # Autonomous Gunslinger resume handoff
 
+## Shield Other casting/UI regression repair (2026-08-11)
+
+- Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
+- Branch: `codex/shield-other-spell`.
+- Current commit: the commit containing this final handoff (resolve with
+  `git rev-parse HEAD`). Runtime-qualified implementation commit:
+  `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`.
+- Current hypothesis is proven by the user's retained `output_log.txt`: owned
+  Shield Other assigned `MaterialComponent = null`, while Kingmaker/CotW
+  availability code unconditionally dereferences `MaterialComponent.Item`.
+  The repeated spontaneous-slot update exceptions caused the inert cast icon
+  and spellbook/sidebar corruption.
+- Repair: non-null empty material data; distinct packaged 128x128 project icon;
+  obsolete focus text removed; live disposable scenario now requires native
+  `AbilityData` availability and a startable `UnitUseAbility` command.
+- Last completed command: eight-state
+  `.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1` on the exact published
+  package.
+- Last verified result: 981/981 deterministic, exact-reference Release/package,
+  CotW, standalone, highest-risk, and all eight module states PASS. Native
+  availability, no material requirement, and `UnitUseAbility.CanStart` are true;
+  raw CotW log has zero matching failures. Package/DLL SHA-256 are
+  `8ca10ff0ffa543f2befdd2d9e36a176443d756994773dd95ee329a9e84b4f4ca` /
+  `28b0b6a555feff7e0f77aa858e66d1f052bceb29c940c18b8ad9893fbfc09e4e`.
+- Exact next executable action: no autonomous engineering gate remains. The
+  documented human-only visual check may be performed on a disposable Oracle
+  save without changing source.
+- Remaining completion gates: none automated. Final audit before this handoff
+  proved a clean feature branch, local/origin equality, zero Kingmaker
+  processes, zero merge commits, and zero final-log material failures. Visual
+  rest/spellbook/sidebar confirmation remains explicitly human-only.
+- Real blocker: none.
+
+## Shield Other mission — final evidence publication (2026-08-10)
+
+- Current phase: Phase 11 final evidence commit/publication and completion audit.
+  Branch `codex/shield-other-spell`; frozen base
+  `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: second consecutive highest-risk combined
+  `disposable-shield-other` PASS in transaction
+  `compat-20260810T165726Z-dbba50e40dcd`, with `restorationVerified: true`.
+- Exact current commit: release-source
+  `80d468ee22835d6c258041cd63f2cd288ef0401e`; final curated evidence is
+  intentionally uncommitted.
+- Exact next action: run strict validation on the final package without a
+  rebuild, commit/push evidence through the approved helper, verify clean tree
+  and exact local/origin equality, then close the mission.
+- Remaining gates: final package no-rebuild validator, final evidence commit,
+  approved push, remote equality, clean tree, no-process audit, and
+  requirement-by-requirement completion audit.
+- Active blocker: none. Matrix, standalone x2, CotW x2, highest-risk x2,
+  persistence, deterministic, Release, package, restoration, and protected-save
+  gates all pass.
+
+## Active Shield Other mission — 0.0.77 release qualification (2026-08-10)
+
+- Current phase: Phases 10–11, final release commit and exact-commit runtime
+  repetition. Branch is `codex/shield-other-spell`; frozen base is
+  `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: version-aware validation, 981/981 deterministic
+  tests, clean exact-reference Release build, SoundBank validation, and strict
+  standalone package validation PASS for 0.0.77.
+- Exact current commit is `46509db2d1e685eb4cdbc5b4e4a4338701e1ddf3`;
+  intentional release/evidence changes are uncommitted until the release-source
+  checkpoint.
+- Exact next action: finish the evidence diff, commit and publish it through the
+  approved helper, verify origin equality, then run the all-eight feature matrix
+  and consecutive standalone, CotW, and highest-risk combined gates on the exact
+  clean commit.
+- Remaining gates: release-source commit/push; final matrix; standalone x2;
+  CotW x2; highest-risk combined x2; restoration audit; final evidence
+  commit/push; clean tree and remote equality.
+- Active blocker: none. Persistence PASS directories are
+  `20260810T1610288094375Z-working-save-shield-other-prepare` and
+  `20260810T1613120391758Z-working-save-shield-other-verify-cleanup`; protected
+  baseline SHA-256 remains `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+
+## Active Shield Other mission — real save/load persistence (2026-08-10)
+
+- Current phase: Phase 9, guarded two-stage `KMG_AUTOMATION_WORKING`
+  save/load persistence qualification. Branch is `codex/shield-other-spell`;
+  frozen base is `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`.
+- Last completed command/check: after observing native worker-thread
+  `SaveStashedArea`, focused persistence contracts 13/13, runtime
+  preflight 86/86, complete deterministic suite 981/981, exact-reference
+  Release compile, and strict 0.0.76 checkpoint package validation all pass.
+- Exact current commit before this final native-clone guard checkpoint is
+  `47af0dafecf7d3284b61827700a8bdd71cf0bdf4`; the numbered-file guard
+  are intentionally uncommitted until this evidence update is committed.
+- Exact next action: commit and publish the numbered-file guard, rerun
+  `working-save-shield-other-prepare` for structured PASS, then fresh-launch
+  `working-save-shield-other-verify-cleanup` for structured PASS and final clean
+  working-save proof.
+  run `working-save-shield-other-prepare` followed by a fresh-launch
+  `working-save-shield-other-verify-cleanup`, both naming only
+  `KMG_AUTOMATION_WORKING` and exiting after the exact save callback.
+- Remaining gates: prove fresh-load caster/subject/CL context and 3 HP -> 1/2
+  damage, prove cleanup save, audit baseline/working-save evidence, advance all
+  release pins to 0.0.77, final docs/hashes/package, final repeated runtime
+  profiles, clean tree, and local/remote SHA equality.
+- Active blocker: none. `KMG_AUTOMATION_BASELINE` remains protected and the new
+  save sentinel authorizes exactly one `SaveRoutine` call only when its
+  `SaveInfo` argument is the captured working descriptor by object reference.
+
 ## 2026-08-10 Acadamae playtest repair
 
 - Branch `codex/feature-modules-acadamae-graduate`; 0.0.76 mode, permanent-fatigue, and project Cord icon repairs are implemented and targeted runtime-qualified.
@@ -1505,3 +1609,542 @@ and human area-transition result jointly qualify the repaired 0.0.74 candidate.
 ## Current resume point — feature modules release complete
 
 The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order is complete on `codex/feature-modules-acadamae-graduate`. Exact release source `8fea913d7baba880496012576878ac95eaadc74d` passed 967/967 deterministic tests, clean Release/package qualification, all four standalone module settings, consecutive standalone and maximum-risk combined integration runs, and two guarded working-save smokes. Final evidence is in `docs/FEATURE-MODULES-ACADAMAE-GRADUATE-QUALIFICATION.md`. Next retain the branch unmerged for user review.
+# Shield Other active mission (2026-08-09)
+
+- Current phase: Phase 4 stable blueprint construction and base publication.
+- Last completed command/check: guarded final-live inventory PASS at
+  `20260810T0408000666226Z-observe-shield-other-inventory`; 104,644 assets and
+  zero Shield Other candidates.
+- Exact current commit: `ef8b80fd43b0e52e1e804c0399a3a0a3d94e9ef9`
+  (curated runtime evidence changes are uncommitted).
+- Exact next action: commit/publish curated inventory evidence, then register
+  stable ability/target-buff identities and transactional level-2 base lists.
+- Remaining gates: final duplicate scan; module/settings; identities;
+  lifecycle; exact split; base/CotW publication; complete deterministic suite;
+  Release build/package; guarded runtime profiles twice each; documentation,
+  hashes, commits, push-helper publication, and remote-SHA verification.
+- Active blocker: none.
+
+## Shield Other current resume - stable identities checkpoint
+
+- Current phase: Phase 7 transactional spell-list publication.
+- Last completed command/check: `Build-Local.ps1` PASS with 975/975 tests,
+  exact-reference Release build, and strict package validation.
+- Exact current commit: `49725186571660560ff693414cdf6ac21ae75705` with the
+  stable-blueprint checkpoint ready to commit.
+- Exact next action: commit/publish stable identities, verify remote equality,
+  then implement the pure-tested transactional five-list level-2 publisher.
+- Remaining gates: base/CotW publication; lifecycle component; exact damage
+  transpiler/transfer; runtime scenarios; 0.0.77 version/docs/package; required
+  consecutive standalone/CotW/combined profile passes; final hashes and audit.
+- Active blocker: none.
+
+## Shield Other current resume - base publication checkpoint
+
+- Current phase: Phase 7 optional final-live CotW reconciliation.
+- Last completed command/check: `Build-Local.ps1` PASS with 977/977 tests,
+  exact-reference Release build, and strict package validation.
+- Exact current commit: `c4091a8cca908fd0997eb9813d62e3dc7230388f` with the
+  base-publication checkpoint ready to commit.
+- Exact next action: commit/publish base publication, verify remote equality,
+  then add first-idle structural CotW discovery/reconciliation and second pass.
+- Remaining gates: CotW publication; lifecycle component; exact damage
+  transpiler/transfer; runtime scenarios; 0.0.77 release; consecutive runtime
+  profile gates; final package hashes, restoration/protected-save audit.
+- Active blocker: none.
+
+## Shield Other current resume - optional publication checkpoint
+
+- Current phase: Phase 9 guarded blueprint/publication runtime observation.
+- Last completed command/check: `Build-Local.ps1` PASS with 978/978 tests,
+  exact-reference Release build, and strict package validation.
+- Exact current commit: `cd44575bcd44d52798b4f68204259e3b49fc6cd3` with
+  first-idle CotW reconciliation ready to commit.
+- Exact next action: commit/publish, verify remote equality, then implement and
+  run the guarded save-free Shield Other blueprint/list observer on standalone
+  and exact CotW profiles before lifecycle/damage runtime code.
+- Remaining gates: live publication proof; lifecycle; exact damage transfer;
+  disposable behavior scenarios; 0.0.77 release; consecutive standalone/CotW/
+  combined gates; hashes, restoration, protected-save audit, final report.
+- Active blocker: none.
+
+## Shield Other current resume - publication observer ready
+
+- Current phase: Phase 9 guarded blueprint/publication runtime observation.
+- Last completed command/check: `Build-Local.ps1` PASS with 978/978 tests and
+  exact-reference Release/package qualification.
+- Exact current commit: `a5769addf2709d9ea72268b767ef45c0a38f3769` with
+  strengthened observer changes ready to commit.
+- Exact next action: commit/publish, rebuild the clean SHA, then run
+  `observe-shield-other-inventory` through the guarded Steam launcher and
+  inspect exact eight-list and casting-model diagnostics.
+- Remaining gates: runtime publication proof; lifecycle; exact split;
+  disposable scenarios; version 0.0.77; compatibility repetitions; final audit.
+- Active blocker: none.
+
+## Shield Other current resume - first-idle timing repair
+
+- Current phase: guarded publication observer retry after evidence-backed repair.
+- Last completed check: repaired `Build-Local.ps1` PASS, 978/978 tests and exact
+  Release/package. Failed run evidence is
+  `20260810T1235457719557Z-observe-shield-other-inventory`.
+- Exact current commit: `2e2f6d042bc5470bb19c8fa62812cdb6fad48dfe` with the
+  first-idle timing repair ready to commit.
+- Exact next action: commit/publish repair, rebuild clean SHA, rerun guarded
+  `observe-shield-other-inventory`, then inspect structured membership/model data.
+- Remaining gates: live publication; lifecycle/split; behavior/profile runtime;
+  0.0.77 release and final audit. Active blocker: none.
+
+## Shield Other current resume - observer self-filter
+
+- Current phase: final publication observer PASS capture.
+- Last completed runtime result:
+  `20260810T1239058867514Z-observe-shield-other-inventory`; eight-list
+  publication PASS, duplicate assertion false-positive on the project GUID.
+- Exact current commit: `d2a76d896fb9d00507a1c7a306c67303997f35ca`; observer
+  self-filter change is uncommitted.
+- Exact next action: build, commit/publish, rerun guarded observer once, curate
+  PASS evidence, then begin link lifecycle/runtime component implementation.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - compatibility repetitions PASS
+
+- Current phase: Phase 9 guarded real-save persistence, then release conversion.
+- Last completed check: two consecutive CotW and two consecutive highest-risk
+  combined expanded runtime PASS runs on exact commit
+  `76e5ce35a807388053ed4f911ea4f1c892611870`; all four restorations `True`.
+- Exact current commit: `76e5ce35a807388053ed4f911ea4f1c892611870`;
+  compatibility evidence curation is uncommitted.
+- Exact next action: implement the guarded two-stage working-save persistence
+  scenario using only `KMG_AUTOMATION_WORKING`.
+- Remaining gates: real save/load, 0.0.77 docs/version/package/hashes and final
+  release-source audit/repetitions. Active blocker: none.
+
+## Shield Other current resume - disposable restored / real-save next
+
+- Current phase: Phase 9 guarded real-save persistence implementation.
+- Last completed check: `20260810T1517266807175Z-disposable-shield-other`
+  passed on exact commit `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8`;
+  transaction restoration was exact.
+- Exact current commit: `0c6a3c7d6ebd9110c78a88bb00beaa625f1444f8`;
+  evidence curation is uncommitted.
+- Exact next action: inspect and extend the guarded working-save state machine for
+  a two-launch Shield Other persistence check using only `KMG_AUTOMATION_WORKING`.
+- Remaining gates: real save/load; repeated standalone/CotW/high-risk profiles;
+  0.0.77 release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - real-save persistence strategy
+
+- Current phase: Phase 9 guarded real-save persistence implementation.
+- Last runtime proved paired partial JSON is also not the save boundary;
+  transaction `compat-20260810T151320Z-66eaf4e97106` restored exactly.
+- Exact current commit: `de1be27fceaf80ef19b4647ab28c7d7283764e35`;
+  synthetic persistence fixture removal and evidence records are uncommitted.
+- Exact next action: build/commit/publish, confirm disposable scenario PASS, then
+  extend guarded working-save stages for Shield Other using only
+  `KMG_AUTOMATION_WORKING`.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - two-unit native save graph
+
+- Current phase: Phase 9 save-context full graph qualification.
+- Last runtime proved the descriptor utility strips live buffs (`rawFacts=0`);
+  all gameplay assertions and restoration passed.
+- Exact current commit: `e7d2e6dc7bb41536d463ed23468f6b77b4dadf5b`;
+  paired caster/subject `UnitEntityData` native JSON graph is uncommitted.
+- Exact next action: build, commit/publish, and run guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - stable-GUID post-load lookup
+
+- Current phase: Phase 9 save-context cross-load identity qualification.
+- Last runtime completed the exact loader lifecycle but the fixture incorrectly
+  required blueprint CLR-reference identity across load; restoration was exact.
+- Exact current commit: `16e78d32400c37e44fc0e418fd94ea3860942781`;
+  stable-GUID lookup and raw-fact instrumentation are uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - exact JSON unit loader fixture
+
+- Current phase: Phase 9 save-context loader qualification.
+- Last runtime failed because the view constructor was not the save path;
+  transaction restoration was exact.
+- Exact current commit: `83e31a7585a834dcd8728f06ed6b4c7ce7793fbd`;
+  reflected `JsonConstructorMark` + private `Initialize` loader sequence is
+  uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - native unit PostLoad persistence fixture
+
+- Current phase: Phase 9 save-context post-load qualification.
+- Last runtime proved descriptor reconstruction but no materialized `RawFacts`
+  before unit post-load; all gameplay checks passed and restoration was exact.
+- Exact current commit: `45549c369d8d115c28dcb07fbe63cddfcf997700`;
+  detached `UnitEntityData.PostLoad` fixture is uncommitted.
+- Exact next action: build, commit/publish, and rerun guarded standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - save graph field instrumentation
+
+- Current phase: Phase 9 save-context reconstruction diagnosis.
+- Last runtime `20260810T1455123546800Z-disposable-shield-other` serialized a
+  20,465-byte unit graph and passed every gameplay assertion, but the combined
+  reconstructed-context check was false; restoration was exact.
+- Exact current commit: `57181a87a426e3be67f66eb312289cf26c112d9c`;
+  field-by-field reconstruction instrumentation is uncommitted.
+- Exact next action: build, commit/publish, rerun, and repair only the exact
+  unresolved native reference boundary.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - exact unit-save graph repair
+
+- Current phase: Phase 9 save-context runtime repair.
+- Last runtime `20260810T1450578085280Z-disposable-shield-other` failed because
+  top-level `MechanicsContext` serialization is not a supported save boundary;
+  transaction `compat-20260810T145017Z-507e7c5d18d3` restored exactly.
+- Exact current commit: `85f94fbcd24f88471dd037aa34ddbffbbfc01f60`;
+  replacement with `UnitSerialization.Serialize(UnitDescriptor)` is uncommitted.
+- Exact next action: run `Build-Local.ps1`, commit/publish, and rerun standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - native save-context fixture source-qualified
+
+- Current phase: Phase 9 save-context runtime qualification.
+- Last completed command/check: `Build-Local.ps1` passed repository validation,
+  981/981 tests, exact Release, and package validation for the exact native
+  `MechanicsContext` `DefaultJsonSettings` round trip.
+- Exact current commit: `825dd49f3c6f668a218108cb6abdc5eeef2c382d`;
+  save-context fixture and evidence records are uncommitted.
+- Exact next action: commit/publish and run guarded standalone
+  `disposable-shield-other`.
+- Remaining gates: repeated standalone/CotW/high-risk profiles; 0.0.77
+  release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - lethal-state lifecycle repair
+
+- Current phase: Phase 9 lifecycle repair qualification.
+- Last runtime: `20260810T1442147693813Z-disposable-shield-other` failed only
+  immediate post-lethal removal; area unload and all other assertions passed.
+  Transaction `compat-20260810T144135Z-dcad894ec3af` restored exactly.
+- Exact current commit: `454652a71fdb048638cb11428037332aacfd3f31`;
+  full lethal-state validity repair and focused source test are uncommitted.
+- Exact next action: run `Build-Local.ps1`, commit/publish, and rerun standalone.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - area/death lifecycle runtime PASS
+
+- Current phase: Phase 9 save/load persistence qualification.
+- Last completed check: `20260810T1446127542431Z-disposable-shield-other`
+  passed on exact commit `79552bd9974907bf001ca645d0974cb05e72dfd8`;
+  area unload and full lethal-state link removal passed, restoration `True`.
+- Exact current commit: `79552bd9974907bf001ca645d0974cb05e72dfd8`;
+  this evidence curation is uncommitted.
+- Exact next action: inspect Kingmaker's exact save serializer and add a
+  request-local buff/context serialization round trip or, if only a real save
+  can prove it, use the authorized working-save guarded mechanism.
+- Remaining gates: save/load; repeated standalone/CotW/high-risk profiles;
+  0.0.77 release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - mitigation/immunity runtime PASS
+
+- Current phase: Phase 9 remaining lifecycle and save/load qualification.
+- Last completed check: `20260810T1436273826468Z-disposable-shield-other`
+  passed on exact commit `1c152496abb5af17f016d2e1a6c7d03532d64666`;
+  target DR/resistance applied once, caster defenses did not reapply, target
+  immunity produced `0/0`, all regressions passed, restoration `True`.
+- Exact current commit: `1c152496abb5af17f016d2e1a6c7d03532d64666`;
+  this evidence curation is uncommitted.
+- Exact next action: inventory and implement request-local area-transition and
+  serialization round-trip observations without protected-save mutation.
+- Remaining gates: area/save-load; two-pass standalone, CotW, highest-risk
+  combined; 0.0.77 release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - area/death fixture source-qualified
+
+- Current phase: Phase 9 lifecycle runtime qualification.
+- Last completed command/check: `Build-Local.ps1` passed repository validation,
+  981/981 tests, exact Release, and package validation after adding caster-unload
+  and post-lethal round-tick removal assertions.
+- Exact current commit: `46683bfaa9e4cbf7570729d52000344d63f1d72c`;
+  lifecycle fixture and evidence records are uncommitted.
+- Exact next action: commit/publish and run guarded standalone
+  `disposable-shield-other`.
+- Remaining gates: real save/load; repeated standalone/CotW/high-risk profiles;
+  0.0.77 release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - eight-way standalone module matrix PASS
+
+- Current phase: Phase 9 typed-damage and remaining lifecycle runtime qualification.
+- Last completed check: all eight `observe-feature-module-settings` combinations
+  passed on exact commit `c90c0e43710e4801694b770de5e63121e00d2fd3` with
+  254 identities, independent publication surfaces, and exact transactional
+  restoration. Final evidence: `20260810T1424139686495Z-observe-feature-module-settings`.
+- Exact current commit: `c90c0e43710e4801694b770de5e63121e00d2fd3`;
+  this evidence curation is uncommitted.
+- Exact next action: extend/run `disposable-shield-other` for typed physical,
+  energy, immunity/mitigation, and remaining area/death/save-load assertions.
+- Remaining gates: expanded runtime damage/lifecycle coverage; two-pass standalone,
+  CotW, and highest-risk combined profiles; 0.0.77 release/docs/package/hashes.
+- Active blocker: none.
+
+## Shield Other current resume - typed packet fixture source-qualified
+
+- Current phase: Phase 9 typed-damage runtime qualification.
+- Last completed command/check: `Build-Local.ps1` passed repository validation,
+  981/981 deterministic tests, exact-reference Release build, and strict package
+  validation after adding native piercing/fire fixture cases.
+- Exact current commit: `033860b42c258363a8327e5ab20750de81d903ea`;
+  typed fixture and evidence records are uncommitted.
+- Exact next action: commit/publish, then run guarded standalone
+  `disposable-shield-other` and inspect typed target/caster HP deltas.
+- Remaining gates: mitigation/immunity, area/death/save-load; two-pass standalone,
+  CotW, highest-risk combined; 0.0.77 release/docs/package/hashes.
+- Active blocker: none.
+
+## Shield Other current resume - typed physical/energy runtime PASS
+
+- Current phase: Phase 9 mitigation/immunity runtime qualification.
+- Last completed command/check: guarded standalone
+  `20260810T1430187656299Z-disposable-shield-other` passed on exact commit
+  `ee0b4fa5f4d30b94dcb10c141eabac139fe6594b`; piercing and fire 4 each split
+  `2/2`, all prior assertions passed, and transaction restoration was `True`.
+- Exact current commit: `ee0b4fa5f4d30b94dcb10c141eabac139fe6594b`;
+  this evidence curation is uncommitted.
+- Exact next action: inventory native fixture-safe DR/resistance/immunity facts,
+  add focused mitigation cases, then source- and runtime-qualify them.
+- Remaining gates: mitigation/immunity, area/save-load; two-pass standalone,
+  CotW, highest-risk combined; 0.0.77 release/docs/package/hashes.
+- Active blocker: none.
+
+## Shield Other current resume - mitigation fixture source-qualified
+
+- Current phase: Phase 9 mitigation/immunity runtime qualification.
+- Last completed command/check: `Build-Local.ps1` passed repository validation,
+  981/981 tests, exact Release, and strict package validation for request-local
+  DR 2, fire resistance 2, caster DR 100, and fire-immunity cases.
+- Exact current commit: `582fef4a4457830283abeee6d7c6291f445ae0b7`;
+  mitigation fixture and evidence records are uncommitted.
+- Exact next action: commit/publish and run guarded standalone
+  `disposable-shield-other` to prove once-only native defense processing.
+- Remaining gates: area/save-load; two-pass standalone, CotW, highest-risk
+  combined; 0.0.77 release/docs/package/hashes. Active blocker: none.
+
+## Shield Other current resume - publication runtime qualified
+
+- Current phase: Phase 5 link lifecycle runtime implementation.
+- Last completed check: guarded PASS
+  `20260810T1243101482251Z-observe-shield-other-inventory` on exact
+  `823195c683d633fabbe4916119e847e65bb61013`; all eight lists exactly once.
+- Exact current commit: `823195c683d633fabbe4916119e847e65bb61013` with curated
+  publication evidence ready to commit.
+- Exact next action: commit/publish evidence, then implement the save-persistent
+  caster-linked target-buff component, lifecycle/range revalidation, and tests.
+- Remaining gates: lifecycle; exact damage transfer; disposable behavior;
+  version 0.0.77; required profile repetitions; final artifacts/audits/report.
+- Active blocker: none.
+
+## Shield Other current resume - link lifecycle source-qualified
+
+- Current phase: Phase 6 exact finalized HP damage splitting.
+- Last completed command/check: `Build-Local.ps1` PASS with 979/979 tests,
+  exact-reference Release build, strict package validation.
+- Exact current commit: `48d4433341fc92fce89759c721b45ae263be77db` with the
+  lifecycle checkpoint ready to commit.
+- Exact next action: commit/publish, then implement the selected post-difficulty/
+  pre-LastHandledDamage transpiler callback, immediate link revalidation, and
+  exception-safe transferred-event guard.
+- Remaining gates: split runtime; disposable behavior; 0.0.77/profile/release
+  qualification and final audits. Active blocker: none.
+
+## Shield Other current resume - damage runtime source-qualified
+
+- Current phase: Phase 9 disposable Shield Other behavior/runtime qualification.
+- Last completed command/check: approved unrestricted `Build-Local.ps1` PASS
+  with 980/980 tests, exact-reference Release build, and strict package validation.
+- Exact current commit: `9a00d9662994d14f537ef382ce7d5771e4448807`
+  with the finalized-damage runtime checkpoint ready to commit.
+- Exact next action: commit/publish and verify remote equality, then implement a
+  guarded disposable scenario proving casting, bonuses, lifecycle, even/odd
+  transfer, defenses/temp HP, death, exclusion, and recursion contracts.
+- Remaining gates: disposable runtime behavior; module/profile repetitions;
+  0.0.77 version/docs/package; final hashes, restoration/protected-save audit,
+  implementation report, clean tree, and remote equality.
+- Active blocker: none.
+
+## Shield Other current resume - disposable split scenario ready
+
+- Current phase: Phase 9 first guarded Shield Other mechanics run.
+- Last completed command/check: `Build-Local.ps1` PASS with 980/980 tests,
+  exact-reference Release build, and strict package validation; runtime preflight
+  separately passes 86 checks.
+- Exact current commit: `d5891b5233c1b3e5fc281003332f6a1291f989fc`
+  with the disposable scenario changes ready to commit.
+- Exact next action: commit/publish, verify remote equality, rebuild the clean
+  SHA, run guarded `disposable-shield-other`, and inspect structured evidence.
+- Remaining gates: expand behavior/damage/exclusion lifecycle matrix; disabled
+  module and profile repetitions; 0.0.77 release/docs/package; hashes/audits.
+- Active blocker: none.
+
+## Shield Other current resume - switch to isolated standalone profile
+
+- Current phase: Phase 9 guarded standalone mechanics qualification.
+- Last completed runtime attempt: installed-profile run
+  `20260810T1305018393571Z-disposable-shield-other` reached exact build/request
+  ownership but no consumption before the established 600-second CotW bound;
+  no save was named or touched. The unattended process was then terminated.
+- Exact current commit: `0a2698a9fcd902526101acd98473b739b47cf9b9`;
+  compatibility-runner allowlist change and timeout journal are uncommitted.
+- Exact next action: qualify/commit/publish this strategy change, then invoke
+  `gunslinger-only` transactionally for `disposable-shield-other` and verify
+  exact Mods restoration plus structured mechanics evidence.
+- Remaining gates: expanded mechanics matrix; CotW and combined repetitions;
+  disabled module; 0.0.77 docs/package/hashes/audits/final report.
+- Active blocker: none; installed broad-profile startup strategy is retired.
+
+## Shield Other current resume - exact transpiler type repair
+
+- Current phase: repair qualification before standalone mechanics retry.
+- Last completed check: failed isolated evidence
+  `20260810T1320348526120Z-disposable-shield-other` identified the exact
+  `LastHandledDamage` declaring-type mismatch; compatibility transaction
+  `compat-20260810T131953Z-8ac491185118` restoration verified `True`.
+- Exact current commit: `d7978be23729303cd22510ad1cfc9bddabee741d`;
+  one-line production type repair plus focused test/docs are uncommitted.
+- Exact next action: run complete validation, commit/publish, rebuild clean SHA,
+  and rerun transactional `gunslinger-only` `disposable-shield-other`.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - first standalone mechanics PASS
+
+- Current phase: Phase 9 expanded disposable behavior/damage matrix.
+- Last completed runtime check: transactional standalone PASS
+  `20260810T1330351072971Z-disposable-shield-other` on exact published source
+  `5e81423e9002234b1cf0a77de7b8357aef67d77e`; bonuses 1/1/1/1, odd split 1/2,
+  even split 2/2, two logs, cleanup true. Transaction
+  `compat-20260810T132959Z-c342ce67b0f1` restoration verified `True`.
+- Exact current commit: `5e81423e9002234b1cf0a77de7b8357aef67d77e`;
+  curated PASS documentation is uncommitted.
+- Exact next action: commit/publish evidence, then expand the scenario for link
+  replacement/multiple subjects, range/death/dispel, defenses/temp HP/lethal,
+  exclusions, and reciprocal recursion before profile repetitions.
+- Remaining gates: expanded matrix; module/profile repetitions; 0.0.77 release,
+  final hashes/audits/report. Active blocker: none.
+
+## Shield Other current resume - expanded lifecycle scenario ready
+
+- Current phase: Phase 9 expanded link lifecycle runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package validation after adding replacement, multiple-subject,
+  out-of-range, and dispel-equivalent coverage.
+- Exact current commit: `a72765b800d26d686955e6a883a1d1bfc1e7aa9a`;
+  scenario and durable progress changes are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, and run transactional
+  standalone `disposable-shield-other` to inspect expanded structured evidence.
+- Remaining gates: death/area/save-load; defenses/temp HP/lethal/exclusions/
+  recursion; module/profile repetitions; 0.0.77 final release. Blocker: none.
+
+## Shield Other current resume - expanded lifecycle runtime PASS
+
+- Current phase: Phase 9 damage defenses, temporary HP, lethal, exclusions, and
+  recursion runtime matrix.
+- Last completed runtime check: standalone PASS
+  `20260810T1337175179075Z-disposable-shield-other` on exact
+  `9afdc95caa124523f6778f1fd9bb75b60d949cad`; replacement, two subjects,
+  range termination, and dispel-equivalent removal all passed. Transaction
+  `compat-20260810T133642Z-7b898f99d298` restoration verified `True`.
+- Exact current commit: `9afdc95caa124523f6778f1fd9bb75b60d949cad`;
+  curated PASS documentation is uncommitted.
+- Exact next action: commit/publish evidence, then expand live damage coverage
+  for target mitigation, both units' temporary HP, caster lethal damage,
+  non-HP exclusions, and reciprocal recursion guard.
+- Remaining gates: area/death/save-load and full damage matrix; module/profile
+  repetitions; 0.0.77 release/audits/report. Active blocker: none.
+
+## Shield Other current resume - exclusions/recursion/lethal scenario ready
+
+- Current phase: Phase 9 expanded damage runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package validation after adding stat-damage exclusions, reciprocal
+  recursion suppression, and lethal caster transfer.
+- Exact current commit: `9b12bfbcb39b0e68bf97db8118de3919a3e45ae9`;
+  expanded scenario and progress docs are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, run transactional
+  standalone `disposable-shield-other`, and inspect exact structured outcomes.
+- Remaining gates: typed mitigation/temp HP/immunity/area/death/save-load;
+  module/profile repetitions; 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - exclusions/recursion/lethal runtime PASS
+
+- Current phase: Phase 9 native temporary-HP and mitigation runtime coverage.
+- Last completed runtime check: standalone PASS
+  `20260810T1343395800417Z-disposable-shield-other` on exact
+  `30098c73a7aa1820f5f889c140a55d4d376e7859`; stat exclusions, reciprocal guard,
+  lethal caster, six logs, and cleanup passed. Transaction
+  `compat-20260810T134303Z-8c43ad78f3c0` restoration verified `True`.
+- Exact current commit: `30098c73a7aa1820f5f889c140a55d4d376e7859`;
+  curated evidence docs are uncommitted.
+- Exact next action: commit/publish evidence, then add native temporary-HP
+  modifiers for both subject and caster and qualify their consumption semantics.
+- Remaining gates: typed DR/resistance/immunity, area/death/save-load; profiles,
+  modules, and 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - native temporary-HP scenario ready
+
+- Current phase: Phase 9 temporary-HP runtime qualification.
+- Last completed check: `Build-Local.ps1` PASS with 980/980 tests, exact Release,
+  and strict package after adding separate subject/caster native temporary-HP
+  consumption cases.
+- Exact current commit: `bbb87c2a2ef6eb1208589be6f601899f575e398e`;
+  temporary-HP scenario and progress docs are uncommitted.
+- Exact next action: commit/publish, rebuild clean SHA, and run transactional
+  standalone `disposable-shield-other` to prove native temporary-HP semantics.
+- Remaining gates: typed mitigation/immunity, area/death/save-load; profile and
+  module repetitions; 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - temporary-HP observation repair
+
+- Current phase: qualify cached-value refresh before temporary-HP retry.
+- Last runtime result: `20260810T1349330912897Z-disposable-shield-other` failed
+  only stale consumption reads; HP outcomes were correct (`0/3` and `3/0`).
+  Transaction `compat-20260810T134851Z-f1299dd53841` restored exactly.
+- Exact current commit: `881d0c2660b549a032b5b9a62b751c80a360808c`;
+  native `UpdateValue()` observation repair and evidence docs are uncommitted.
+- Exact next action: validate, commit/publish, rebuild, and rerun standalone once.
+- Remaining gates unchanged. Active blocker: none.
+
+## Shield Other current resume - temporary HP PASS / module matrix repair
+
+- Current phase: Phase 3/9 eight-combination runtime qualification.
+- Last runtime PASS: `20260810T1354174801203Z-disposable-shield-other` on exact
+  `5c2c5445fc64ab06149d630d6f16b8bcea83048a`; both native temporary-HP cases
+  consumed 3 and transaction restoration verified.
+- Exact current commit: `5c2c5445fc64ab06149d630d6f16b8bcea83048a`;
+  three-setting observer/profile writer and eight-way direct matrix are uncommitted.
+- Exact next action: validate/commit/publish, then run all eight module settings
+  in isolated standalone profiles and capture constant identity/publication proof.
+- Remaining gates: typed mitigation/immunity, area/death/save-load; profile
+  repetitions and 0.0.77 release. Active blocker: none.
+
+## Shield Other current resume - module request serializer repair
+
+- Current phase: source qualification before eight-combination runtime matrix.
+- Last attempt stopped in pure preflight because `RuntimeAutomation.Common.ps1`
+  still accepted only two module parameters; transaction
+  `compat-20260810T135922Z-4b9aa824e344` restored exactly and no game launched.
+- Exact current commit: `486a38502b12529e53bf54ac83ca882749de5ae8`;
+  authoritative validator/serializer repair and evidence docs are uncommitted.
+- Exact next action: validate/commit/publish, rebuild clean SHA, retry the eight
+  isolated standalone combinations. Remaining gates unchanged; blocker none.
+
+## Shield Other current resume - runtime-side module request repair
+
+- Current phase: final acceptance plumbing before eight-combination runtime.
+- Last run `20260810T1403193768024Z-observe-feature-module-settings` was rejected
+  with `module-states-required`; no observer/save action. Explicit recovery of
+  transaction `compat-20260810T140244Z-f0f80ecf5cc6` verified `True`.
+- Exact current commit: `77273bf7eead256bcdc24460dbe91d2e3ac9b709`;
+  runtime validator and focused source test plus evidence docs are uncommitted.
+- Exact next action: validate/commit/publish/rebuild and retry all-enabled.
+- Remaining gates unchanged. Active blocker: none.

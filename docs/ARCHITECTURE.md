@@ -1,5 +1,21 @@
 # Current architecture
 
+## Shield Other 0.0.77 layer
+
+Shield Other is an independent feature module under `Spells/ShieldOther`.
+Blueprint identities always register; settings gate only spell-list
+publication. `ShieldOtherSpellListPublication` transactionally reconciles the
+five required base lists and optional unambiguous final-live Call of the Wild
+lists without referencing third-party types at compile time.
+
+`ShieldOtherDamageRuntime` patches the exact Kingmaker 2.1.7b finalized-HP
+boundary in `RuleDealDamage.OnTrigger`. It divides the already mitigated HP
+value before native HP application and on-damage consumers. The direct transfer
+uses an exception-safe thread-local guard, bypasses a second defense pass, and
+does not recreate the source bundle or its riders. Link validity and lifecycle
+belong to the dedicated buff component and pure policy classes; bootstrap and
+the runtime test runner remain orchestration-only.
+
 ## Sprint 29 current layer
 
 Version 0.0.29 retains the accepted token-backed runtime architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal → Broken → Wrecked transitions, native five-foot Reflex-half second-misfire burst, and same-item Wrecked → Broken Overhaul.
@@ -469,7 +485,9 @@ activatable ability through `AddFacts`. Its hidden no-FX marker is the exact
 runtime gate for acceleration and defaults off. Command construction snapshots
 an eligible accelerated invocation, so later toggle changes do not rewrite a
 command already in flight. The two new always-loaded identities bring the
-ledger to 253 stable IDs: 252 active and one reserved.
+ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
+register in every module configuration so saved spell and buff references remain
+resolvable when publication is disabled.
 
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`

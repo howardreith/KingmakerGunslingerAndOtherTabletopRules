@@ -94,10 +94,10 @@ namespace KingmakerGunslinger.DomainTests
             string bootstrap = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
             Assertions.True(bootstrap.Contains(
-                "internal const int ExpectedRegisteredBlueprintCount = 252;") &&
+                "internal const int ExpectedRegisteredBlueprintCount = 254;") &&
                 bootstrap.Contains("AcadamaeGraduateBlueprints.AttachMode") &&
                 bootstrap.Contains("AcadamaeGraduateModeBlueprints.Register"),
-                "Bootstrap must register exactly 252 identities and attach the mode grant.");
+                "Bootstrap must register the current 254 active identities and attach the mode grant.");
         }
 
         internal static void CordProjectIconContract()

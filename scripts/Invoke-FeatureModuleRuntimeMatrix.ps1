@@ -1,8 +1,9 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.76',
+    [string]$ExpectedVersion = '0.0.77',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
-    [ValidateSet('all', 'on-off', 'off-on', 'off-off')]
+    [ValidateSet('all', 'on-on-on', 'on-on-off', 'on-off-on', 'on-off-off',
+        'off-on-on', 'off-on-off', 'off-off-on', 'off-off-off')]
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
     [switch]$ConfirmEach
@@ -30,10 +31,14 @@ try {
 } finally { $sha.Dispose() }
 
 $combinations = [ordered]@{
-    'on-on' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $true }
-    'on-off' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $false }
-    'off-on' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $true }
-    'off-off' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $false }
+    'on-on-on' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $true; shieldOther = $true }
+    'on-on-off' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $true; shieldOther = $false }
+    'on-off-on' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $false; shieldOther = $true }
+    'on-off-off' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $false; shieldOther = $false }
+    'off-on-on' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $true; shieldOther = $true }
+    'off-on-off' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $true; shieldOther = $false }
+    'off-off-on' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $false; shieldOther = $true }
+    'off-off-off' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $false; shieldOther = $false }
 }
 if ($Combination -ne 'all') {
     $selected = [ordered]@{}
@@ -45,9 +50,10 @@ $failure = $null
 try {
     foreach ($entry in $combinations.GetEnumerator()) {
         $configuration = [ordered]@{
-            schemaVersion = 1
+            schemaVersion = 2
             gunslinger = [bool]$entry.Value.gunslinger
             'acadamae-graduate' = [bool]$entry.Value.acadamaeGraduate
+            'shield-other' = [bool]$entry.Value.shieldOther
         }
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
@@ -56,7 +62,8 @@ try {
         & $invoke -Scenario observe-feature-module-settings `
             -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
             -Parameters @{ gunslinger = [bool]$entry.Value.gunslinger;
-                acadamaeGraduate = [bool]$entry.Value.acadamaeGraduate } `
+                acadamaeGraduate = [bool]$entry.Value.acadamaeGraduate;
+                shieldOther = [bool]$entry.Value.shieldOther } `
             -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."
