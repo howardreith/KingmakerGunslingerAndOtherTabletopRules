@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "86f7c8b3e9a750cf3fb2670850e05e9de4fce002",
+  "currentSha": "6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "spawn-local-alignment-source-qualified",
-  "nextConcreteAction": "Commit and push the spawn-local alignment action, rebuild the immutable SHA, then run the guarded final-live structural observer before implementing special creature mechanics.",
+  "completedPhase": "action-list-deep-clone-repair-source-qualified",
+  "nextConcreteAction": "Commit and push the ActionList deep-clone repair, rebuild the immutable SHA, then rerun the guarded alignment and native-action-isolation observer.",
   "domainTestResult": "1005/1005 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 b8b0903f254579d71d5f23473e3e9865c47d60978f4d13201587ff0242f69173",
-  "packageResult": "strict PASS; SHA-256 1e28773cd7a34fdb3906e964dbbeea1c9c830c2091ed9437d591ff6750768518",
+  "releaseBuildResult": "PASS; DLL SHA-256 436b15364607b1fd9b98b4fcbec3c1553d2708183d1f111218f0cd0bd02cd67d",
+  "packageResult": "strict PASS; SHA-256 d607d3f3272d72bfbc6f1003618e399bdc0af1d59b644310988b5ab01aeea7da",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {
@@ -158,6 +158,13 @@
       "sourceSha": "a0d8e7752281d4ae1e51ce094c1226f6a30faf16",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2021406071785Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Exact final-live registry 1374; 67 units; 1045 abilities; 681 placements; 182 celestial and 182 fiendish executions; six template buffs and two bounded smite markers; all sanitizer invariants passed. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "FAIL",
+      "sourceSha": "6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2031332882968Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Exact roster, registry, placements, and sanitizer checks passed, but alignment actions accumulated across abilities sharing native ActionList value-type arrays. The result exposed an ActionList deep-clone boundary and motivated the following repair; no save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

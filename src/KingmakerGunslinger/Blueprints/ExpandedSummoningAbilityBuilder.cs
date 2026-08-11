@@ -285,6 +285,15 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (source == null) return null;
             Type type = source.GetType();
+            if (type == typeof(ActionList))
+            {
+                ActionList actions = (ActionList)source;
+                return new ActionList {
+                    Actions = (actions.Actions ?? Array.Empty<GameAction>())
+                        .Select(action => (GameAction)DeepClone(action, seen))
+                        .ToArray()
+                };
+            }
             if (type.IsPrimitive || type.IsEnum || type == typeof(string) ||
                 type == typeof(decimal) || type.IsValueType) return source;
             BlueprintScriptableObject blueprint = source as BlueprintScriptableObject;

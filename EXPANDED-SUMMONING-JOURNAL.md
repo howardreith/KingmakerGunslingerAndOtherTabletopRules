@@ -543,3 +543,25 @@
   `b8b0903f254579d71d5f23473e3e9865c47d60978f4d13201587ff0242f69173`;
   package SHA-256:
   `1e28773cd7a34fdb3906e964dbbeea1c9c830c2091ed9437d591ff6750768518`.
+
+## 2026-08-11 - alignment observer failure and ActionList isolation repair
+
+- Guarded run `20260811T2031332882968Z-observe-expanded-summoning-inventory`
+  completed normally on committed source
+  `6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37`. Registry 1,374, all 681
+  placements, all template counts, and all sanitizer assertions passed, but
+  the new celestial, fiendish, and Nature's Ally alignment assertions failed.
+  No save was accessed.
+- Retained final-live action graphs showed one through four caster-alignment
+  actions accumulating on abilities that reused a native quantity template.
+  `ActionList` is a value type with a reference-valued `GameAction[]`; the
+  generic deep clone returned all value types unchanged, so the array remained
+  shared across otherwise cloned graphs.
+- Added an explicit recursive `ActionList` clone before the value-type fast
+  path. Tightened the observer to require exactly one alignment action and one
+  intended template/smite application per execution, plus zero KMG post-spawn
+  actions or buffs on any non-KMG ability. Repository validation, 1,005/1,005
+  tests, clean Release, and strict package validation PASS. DLL SHA-256:
+  `436b15364607b1fd9b98b4fcbec3c1553d2708183d1f111218f0cd0bd02cd67d`;
+  package SHA-256:
+  `d607d3f3272d72bfbc6f1003618e399bdc0af1d59b644310988b5ab01aeea7da`.

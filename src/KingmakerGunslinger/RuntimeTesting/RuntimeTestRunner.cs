@@ -7199,22 +7199,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (AlignmentMaskType)63 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Good) &&
-                    ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningTemplateApplyCount(value) == 1 &&
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Celestial) ==
-                            ExpandedSummoningTemplateApplyCount(value) &&
-                    ExpandedSummoningSmiteApplyCount(value) >= 1);
+                        SummonAlignmentMode.Celestial) == 1 &&
+                    ExpandedSummoningSmiteApplyCount(value) == 1);
             bool fiendishExact = fiendishExecutions.Length == 182 &&
                 fiendishExecutions.All(value => value.ComponentsArray
                     .OfType<AbilityCasterAlignment>().Single().Alignment ==
                         (AlignmentMaskType)504 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Evil) &&
-                    ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningTemplateApplyCount(value) == 1 &&
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Fiendish) ==
-                            ExpandedSummoningTemplateApplyCount(value) &&
-                    ExpandedSummoningSmiteApplyCount(value) >= 1);
+                        SummonAlignmentMode.Fiendish) == 1 &&
+                    ExpandedSummoningSmiteApplyCount(value) == 1);
             BlueprintAbility[] allyExecutions = all.OfType<BlueprintAbility>()
                 .Where(value => value.name.StartsWith(
                     "KMG_Summoning_Ability_SNA_", StringComparison.Ordinal))
@@ -7222,11 +7220,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool allyAlignmentExact = allyExecutions.Length == 320 &&
                 allyExecutions.All(value =>
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Caster) >= 1 &&
+                        SummonAlignmentMode.Caster) == 1 &&
                     ExpandedSummoningAlignmentActionCount(value,
                         SummonAlignmentMode.Celestial) == 0 &&
                     ExpandedSummoningAlignmentActionCount(value,
                         SummonAlignmentMode.Fiendish) == 0);
+            int contaminatedPreexistingAbilities = all.OfType<BlueprintAbility>()
+                .Count(value => !value.name.StartsWith("KMG_Summoning_",
+                    StringComparison.Ordinal) && (
+                    ExpandedSummoningTemplateApplyCount(value) != 0 ||
+                    ExpandedSummoningSmiteApplyCount(value) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Caster) != 0));
             BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
                 value.name.StartsWith("KMG_Summoning_Template_",
                     StringComparison.Ordinal)).ToArray();
@@ -7304,6 +7313,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fiendishExecutions.Length + ";sna=" + allyExecutions.Length,
                     celestialExact && fiendishExact && allyAlignmentExact,
                     "spawn-local fixed template or exact caster alignment actions"),
+                Assertion("expanded-summoning-native-action-isolation", "0",
+                    contaminatedPreexistingAbilities.ToString(),
+                    contaminatedPreexistingAbilities == 0,
+                    "non-KMG abilities containing KMG post-spawn actions or buffs"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

@@ -58,3 +58,12 @@ exact alignment from the ability context. Missing or invalid context fails
 closed without mutation. Repository validation, 1,005 tests, clean Release,
 and strict package validation pass; committed-source structural observation
 and later actual-cast/save-load proof remain pending.
+
+The first alignment-aware structural run failed and was retained as
+`20260811T2031332882968Z-observe-expanded-summoning-inventory`. It proved that
+the generic graph clone had preserved the reference array inside value-type
+`ActionList`, allowing post-spawn actions to accumulate across abilities using
+the same native quantity template. The repair explicitly deep-clones each
+`ActionList` and every contained action. The observer now also rejects any KMG
+post-spawn action or buff in a non-KMG ability. The repair is source-qualified;
+its committed-source rerun remains pending.

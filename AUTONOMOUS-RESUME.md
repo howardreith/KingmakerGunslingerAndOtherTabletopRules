@@ -2377,3 +2377,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Repository validation, 1,005/1,005 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push, rebuild the immutable SHA,
   and run the guarded final-live structural observer.
+
+## Expanded Summoning current resume - ActionList isolation repair
+
+- Guarded run `20260811T2031332882968Z-observe-expanded-summoning-inventory`
+  on `6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37` failed the new exact
+  alignment assertions while all roster, registry, placement, and sanitizer
+  assertions passed. Retained graphs showed 1-4 duplicated alignment actions
+  across abilities sharing a native quantity template; no save was accessed.
+- Root cause: `ActionList` is a value type containing a `GameAction[]`; the
+  generic clone's value-type fast path retained that reference array. Added an
+  explicit `ActionList` deep clone before the generic value-type case.
+- The observer now requires exactly one family-correct action on every KMG
+  execution and zero KMG actions or buffs on every non-KMG ability. Repository
+  validation, 1,005/1,005 tests, clean Release, and strict package pass. Exact
+  next action: commit/push and rerun the guarded observer on the immutable SHA.

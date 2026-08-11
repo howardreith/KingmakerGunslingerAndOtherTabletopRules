@@ -168,7 +168,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "MonsterParents", "AllyParents",
                 "NativeTemplate", "DeepCloneComponent", "ReplaceSpawnUnits",
                 "Expected at least one native spawn action", "MaterialComponentData",
-                "variant.Multiplicity == SummonMultiplicity.OneD3" })
+                "variant.Multiplicity == SummonMultiplicity.OneD3",
+                "type == typeof(ActionList)",
+                "(GameAction)DeepClone(action, seen)" })
                 Assertions.True(source.Contains(token),
                     "Ability builder contract is missing: " + token);
         }
@@ -214,7 +216,9 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-celestial-executions",
                 "expanded-summoning-fiendish-executions",
                 "expanded-summoning-template-buffs",
-                "expanded-summoning-smite-markers" })
+                "expanded-summoning-smite-markers",
+                "expanded-summoning-runtime-alignments",
+                "expanded-summoning-native-action-isolation" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
             string inventory = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
