@@ -171,3 +171,21 @@
 - Repository validation, 996/996 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `b8a26e3b8e0b2e42efcd1bbea24d86f2003d2d46de95de1c0d1313bae5e42934`;
   package SHA-256: `0542f022c0e3408f5534ab2921b9fe82cd9543c3f06d62fc73d5595b2e273cdf`.
+
+## 2026-08-11 - exact donor-mapped unit foundation
+
+- Lightweight registry repair passed guarded fresh-process scenario
+  `20260811T1820275250965Z-observe-expanded-summoning-inventory` on published
+  source `fde2c66638e68d9c466946e9a90fd91ac709cca3`; duration 85.6 seconds,
+  status PASS, no save selected/loaded/written.
+- Frozen one exact donor GUID decision for each of 67 creature keys. Dedicated
+  summon donors are distinguished from campaign/proxy donors so the latter
+  cannot silently bypass stricter normalization.
+- Unit identities now clone their creature-specific donor, copy the component
+  array before filtering, remove explicit XP/loot/inventory/dialogue/story/
+  companion/persistence surfaces, and force the proven native Summoned faction.
+  No unit is published yet; fact-level travel/summoning removal and mechanical
+  reconstruction remain required before publication.
+- Repository validation, 997/997 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `9ae16529e873ceb7b1c111f383102940141a80a0499a208c94cf7eb3efe2c7e3`;
+  package SHA-256: `9a3b39656ffead6aa01a47273a33f7aaf059e3c97938ee0c172137644edf2765`.

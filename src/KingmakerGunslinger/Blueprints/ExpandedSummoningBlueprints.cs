@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -20,7 +21,7 @@ namespace KingmakerGunslinger.Blueprints
 
     internal static class ExpandedSummoningBlueprints
     {
-        private const string RegistrationUnitDonorGuid =
+        private const string SummonedFactionDonorGuid =
             "1ed9a630f0d9d7f44855d3d1d1b2cdf2";
 
         internal static ExpandedSummoningBlueprintSet Register(
@@ -31,9 +32,15 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningCatalog.Validate();
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            BlueprintUnit unitDonor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
-                library, RegistrationUnitDonorGuid,
-                "dedicated native summon registration donor");
+            ExpandedSummoningDonorCatalog.Validate();
+            BlueprintUnit summonedFactionDonor =
+                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                    SummonedFactionDonorGuid, "dedicated native summon faction donor");
+            var unitDonors = ExpandedSummoningCatalog.All.ToDictionary(
+                ExpandedSummoningIdentityCatalog.UnitSymbol,
+                creature => BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                    ExpandedSummoningDonorCatalog.For(creature.Key).Guid,
+                    creature.DisplayName + " donor"), StringComparer.Ordinal);
             var registered = new Dictionary<string, BlueprintScriptableObject>(
                 StringComparer.Ordinal);
             foreach (SummoningIdentitySpec identity in identities)
@@ -41,7 +48,8 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintScriptableObject blueprint;
                 if (identity.PlannedType == "BlueprintUnit")
                     blueprint = registry.Register<BlueprintUnit>(identity.Symbol,
-                        () => CloneUnitShell(unitDonor, identity.Symbol));
+                        () => CloneUnitShell(unitDonors[identity.Symbol],
+                            summonedFactionDonor, identity.Symbol));
                 else if (identity.PlannedType == "BlueprintAbility")
                     blueprint = registry.Register<BlueprintAbility>(identity.Symbol,
                         () => CreateAbilityShell(identity.Symbol));
@@ -60,8 +68,43 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static BlueprintUnit CloneUnitShell(BlueprintUnit donor, string symbol)
-        { return BlueprintCloneService.Clone(donor, InternalName(symbol)); }
+        private static BlueprintUnit CloneUnitShell(BlueprintUnit donor,
+            BlueprintUnit summonedFactionDonor, string symbol)
+        {
+            BlueprintUnit result = BlueprintCloneService.Clone(donor,
+                InternalName(symbol));
+            result.ComponentsArray = (donor.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(component => component != null &&
+                    !IsForbiddenComponent(component.GetType().Name)).ToArray();
+            SetSummonedFaction(result, summonedFactionDonor);
+            return result;
+        }
+
+        private static bool IsForbiddenComponent(string name)
+        {
+            string value = (name ?? string.Empty).ToLowerInvariant();
+            return value.Contains("experience") || value.Contains("loot") ||
+                value.Contains("inventory") || value.Contains("dialog") ||
+                value.Contains("interaction") || value.Contains("quest") ||
+                value.Contains("cutscene") || value.Contains("companion") ||
+                value.Contains("pet") || value.Contains("area") ||
+                value.Contains("story") || value.Contains("corpse") ||
+                value.Contains("addtags") || value.Contains("mobcaster");
+        }
+
+        private static void SetSummonedFaction(BlueprintUnit target,
+            BlueprintUnit donor)
+        {
+            const System.Reflection.BindingFlags flags =
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic;
+            System.Reflection.FieldInfo field = typeof(BlueprintUnit).GetField(
+                "m_Faction", flags);
+            if (field == null) throw new MissingFieldException(
+                typeof(BlueprintUnit).FullName, "m_Faction");
+            field.SetValue(target, field.GetValue(donor));
+        }
 
         private static BlueprintAbility CreateAbilityShell(string symbol)
         {

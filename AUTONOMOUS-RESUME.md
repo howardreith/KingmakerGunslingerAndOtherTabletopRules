@@ -16,13 +16,12 @@
   registered in every module state; exact registry count is 1,370. The current
   hidden shells are deliberately unpublished and must not be treated as finished
   summon units or abilities.
-- Exact next action: replace registration shells with exact donor-mapped sanitized
-  units, native spawn actions, alignment/template execution, and special
-  adaptations before parent publication.
-- Latest structural run on `e23dc00077dc23cc957c3db4a8309d16b75696f2`
-  timed out in bootstrap because identity registration cloned 1,045 full native
-  ability graphs. The validated uncommitted repair uses lightweight hidden
-  ability shells; rerun the save-free observer immediately after publication.
+- Lightweight registration passed fresh-process structural qualification on
+  `fde2c66638e68d9c466946e9a90fd91ac709cca3`. Exact donor decisions now cover
+  all 67 units and component-level campaign surfaces are filtered.
+- Exact next action: qualify all 67 donor lookups on a fresh process, then
+  sanitize fact-level forbidden abilities and construct exact native spawn
+  action graphs before parent publication.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

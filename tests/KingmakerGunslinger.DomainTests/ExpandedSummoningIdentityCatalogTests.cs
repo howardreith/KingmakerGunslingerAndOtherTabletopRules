@@ -45,5 +45,15 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.Equal(681, found, "Logical placement traversal changed.");
         }
+
+        internal static void DonorsCoverEveryFrozenCreature()
+        {
+            ExpandedSummoningDonorCatalog.Validate();
+            Assertions.Equal(67, ExpandedSummoningDonorCatalog.All.Count,
+                "Every unique creature requires exactly one frozen donor decision.");
+            Assertions.True(ExpandedSummoningDonorCatalog.All.Any(value =>
+                !value.DedicatedSummon),
+                "Proxy donors must remain explicit sanitizer obligations.");
+        }
     }
 }

@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "e23dc00077dc23cc957c3db4a8309d16b75696f2",
+  "currentSha": "fde2c66638e68d9c466946e9a90fd91ac709cca3",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "constant-all-state-identity-registration-performance-repair",
-  "nextConcreteAction": "Rerun the save-free structural observer on the lightweight registration layer, then replace shells with exact donor-mapped sanitized units and native spawn actions.",
-  "domainTestResult": "996/996 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 b8a26e3b8e0b2e42efcd1bbea24d86f2003d2d46de95de1c0d1313bae5e42934",
-  "packageResult": "strict PASS; SHA-256 0542f022c0e3408f5534ab2921b9fe82cd9543c3f06d62fc73d5595b2e273cdf",
+  "completedPhase": "exact-donor-mapped-unit-foundation",
+  "nextConcreteAction": "Qualify all 67 donor lookups on a fresh process, then sanitize fact-level forbidden abilities and construct exact native spawn action graphs before parent publication.",
+  "domainTestResult": "997/997 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 9ae16529e873ceb7b1c111f383102940141a80a0499a208c94cf7eb3efe2c7e3",
+  "packageResult": "strict PASS; SHA-256 9a3b39656ffead6aa01a47273a33f7aaf059e3c97938ee0c172137644edf2765",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -34,6 +34,12 @@
       "result": "TIMEOUT",
       "sourceSha": "e23dc00077dc23cc957c3db4a8309d16b75696f2",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1813067760804Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "fde2c66638e68d9c466946e9a90fd91ac709cca3",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1820275250965Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

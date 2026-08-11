@@ -62,6 +62,12 @@ namespace KingmakerGunslinger.Summoning
                 Token(variant.Creature.Key) + "." + count;
         }
 
+        internal static string UnitSymbol(SummonCreatureSpec creature)
+        {
+            if (creature == null) throw new ArgumentNullException("creature");
+            return "KMG.Summoning.Unit." + Token(creature.Key);
+        }
+
         internal static void Validate(IEnumerable<SummoningIdentitySpec> identities)
         {
             if (identities == null) throw new ArgumentNullException("identities");
