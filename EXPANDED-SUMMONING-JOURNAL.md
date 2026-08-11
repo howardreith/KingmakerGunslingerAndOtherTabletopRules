@@ -415,3 +415,19 @@
   `48175b82c756f080424dcf577ac994798bfbb23daa96999d60708cd88210808b`;
   package SHA-256:
   `d6c8ac7ae2fb742e7027f956d01c26ec0c9372679b443cec72e1ee66d08a8898`.
+
+## 2026-08-11 - exact template spell resistance native PASS
+
+- Guarded save-free run
+  `20260811T1954362756414Z-observe-expanded-summoning-inventory` passed on
+  committed source `d384ba06cf76896543a6b23ed480d3f6715bbba2`.
+- Exact final-live counts passed: 1,372 registered identities, six template
+  buffs, 182 logical choices, 182 celestial executions, 182 fiendish
+  executions, and 681 canonical parent placements. The observer additionally
+  proved low/mid/high resistance values and SR presence, donor isolation, the
+  prohibited-reference deny contract, empty inherited spell arrays, and empty
+  starting inventory.
+- The scenario performed no save access. Committed-source DLL SHA-256:
+  `379c59dfd462a39ac1ec953d71ce9e658f9a7b494d7bef52447eeb231c2cc2f8`;
+  package SHA-256:
+  `39afcc9c9dbb0a90651e4a3837e8e4563dc1522f4e6da47556268502e016bff4`.

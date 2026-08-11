@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "2f5d3b3a6a5bc5937dd5e7a143bc28ef76bed49c",
+  "currentSha": "d384ba06cf76896543a6b23ed480d3f6715bbba2",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "exact-template-spell-resistance-source-qualified",
-  "nextConcreteAction": "Commit and push the six-buff HD-banded template repair, then run the guarded structural observer against the committed source SHA.",
+  "completedPhase": "exact-template-spell-resistance-native-runtime-pass",
+  "nextConcreteAction": "Inventory the final-live native celestial/fiendish smite and alignment mechanisms, then implement a bounded once-per-day template adaptation or record the precise conservative deviation.",
   "domainTestResult": "1003/1003 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 48175b82c756f080424dcf577ac994798bfbb23daa96999d60708cd88210808b",
-  "packageResult": "strict PASS; SHA-256 d6c8ac7ae2fb742e7027f956d01c26ec0c9372679b443cec72e1ee66d08a8898",
+  "releaseBuildResult": "PASS; DLL SHA-256 379c59dfd462a39ac1ec953d71ce9e658f9a7b494d7bef52447eeb231c2cc2f8",
+  "packageResult": "strict PASS; SHA-256 39afcc9c9dbb0a90651e4a3837e8e4563dc1522f4e6da47556268502e016bff4",
   "blueprintLedger": "1118 Expanded Summoning identities; 1372 active, 1 reserved, 1373 total; derived constant registry count 1372",
   "runtimeScenarios": [
     {
@@ -116,6 +116,13 @@
       "sourceSha": "d76f5c6010ca3612ba2b1c24e076b7601fed9227",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1944046651609Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Exact template assertions passed: logical=182, celestial=182, fiendish=182, buffs=4; registry=1370 and placements=681; no save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "d384ba06cf76896543a6b23ed480d3f6715bbba2",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1954362756414Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Exact HD-banded template assertions passed: logical=182, celestial=182, fiendish=182, buffs=6; registry=1372 and placements=681; no save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

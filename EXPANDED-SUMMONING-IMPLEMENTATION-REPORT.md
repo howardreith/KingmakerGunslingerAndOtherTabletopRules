@@ -21,3 +21,10 @@ and high (11+ HD, CR+5 SR), with resistance/DR values 5/5/10. The ledger is
 1,373 stable IDs: 1,372 active and one reserved. Source qualification passes
 1,003 tests, clean Release, and strict package validation; the six-buff graph
 still requires its committed-source guarded runtime observation.
+
+The six-buff graph subsequently passed guarded fresh-process run
+`20260811T1954362756414Z-observe-expanded-summoning-inventory` on committed
+source `d384ba06cf76896543a6b23ed480d3f6715bbba2`, including exact low/mid/high
+mechanics, all aligned execution counts, registry 1,372, and 681 live parent
+placements. The run was save-free. Template smite and runtime unit-alignment
+fidelity remain open and are not claimed as implemented.
