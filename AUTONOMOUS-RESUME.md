@@ -2446,3 +2446,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   validation pass. Exact next action: commit/push, run the guarded save-free
   observer, and use its exact final-live graphs to partition native reuse from
   required proxy/special reconstruction.
+
+## Expanded Summoning current resume - complete donor graph native PASS
+
+- Guarded save-free run
+  `20260811T2055502086857Z-observe-expanded-summoning-inventory` passed on
+  committed source `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`.
+- All 54 distinct frozen donor GUIDs were present. Their bounded component,
+  body, and view graphs were captured; all 17 assertions passed with zero
+  warnings or exception. Registry 1,374 and all 681 placements remained exact.
+- The wrapper reached its 120-second host timeout after the game had already
+  flushed a PASS result and exited; the scenario itself completed in 103,225
+  ms. No save was selected, loaded, or written.
+- Exact next action: classify native reuse and implement the first bounded
+  special-mechanic group: elementals, mephits, and Lantern Archon.

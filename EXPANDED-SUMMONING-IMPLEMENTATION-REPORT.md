@@ -93,9 +93,13 @@ Nature's Ally actions matched exact native spawn-branch cardinality, and
 non-KMG action contamination was zero. All registry, placement, template,
 smite, and sanitizer assertions remained green. No save was accessed.
 
-The forensic observer is now source-qualified to require and capture all 54
-distinct chosen donor identities, replacing the earlier 25-unit sample. Each
-record includes bounded component, body, and view graphs for the exact
-final-live blueprint. This inventory extension changes no creature mechanics;
-its committed-source save-free observation is pending and will drive the
-native-reuse versus reconstruction decisions for special units.
+The complete donor graph passed guarded save-free run
+`20260811T2055502086857Z-observe-expanded-summoning-inventory` on committed
+source `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`. All 54 distinct chosen donor
+identities were present, and bounded component, body, and view graphs were
+captured for each. All 17 structural assertions passed with zero warnings,
+including registry 1,374, 681 placements, and every existing sanitizer and
+alignment invariant. The wrapper reached its host timeout only after the game
+had flushed the PASS result and exited. This inventory now drives the native
+reuse versus reconstruction decisions; it does not itself claim creature
+mechanical fidelity.

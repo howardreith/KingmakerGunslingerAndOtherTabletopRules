@@ -160,3 +160,35 @@ Each templated SM logical placement is represented by one published choice and
 two gated execution identities so neutral casters can choose while good/evil
 casters remain restricted. This produces 182 templated logical placements and
 364 subordinate execution identities.
+
+## Complete frozen donor graph audit
+
+Guarded fresh-process run
+`20260811T2055502086857Z-observe-expanded-summoning-inventory` inspected the
+exact donor set derived from `ExpandedSummoningDonorCatalog` on committed
+source `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`. The final-live library
+contained all 54 distinct selected GUIDs (`54;missing=0`). The run completed
+PASS in 103,225 ms with zero warnings, no exception, and no save access.
+
+For every selected donor the retained evidence contains core `BlueprintUnit`
+fields plus bounded component, body, and view graphs. The inventory confirms
+that visual suitability and summon safety are separate concerns:
+
+- dedicated native summons still commonly carry `Experience`, and some carry
+  `AddLoot`; KMG must continue cloning and sanitizing them;
+- campaign donors expose `AddLoot`, `AddTags`, `MobCaster`, or comparable
+  campaign surfaces and remain visual/body/mechanic references only;
+- the 24 elemental donors and four mephit donors are exact dedicated summon
+  units and are the first native-mechanic reuse candidates;
+- proxy donors such as Wolf, Giant Eagle/Roc, Worg, Leopard, Monitor Lizard,
+  Hodag, Mastodon, Nymph, Doomspider, and Nixie cannot establish the intended
+  creature's stat block merely by being cloned;
+- `AzataGhaelSummoned` is appropriate evidence for Ghaele, but is only a
+  visual donor for Lantern Archon; `SummonedAirElementalHuge` is only a visual
+  donor for Invisible Stalker.
+
+The same run re-proved the immutable construction contract: registry 1,374;
+67 KMG units; 1,045 KMG abilities; 681 live parent placements; all alignment,
+template, smite, clone-isolation, prohibited-reference, inherited-spell, and
+starting-inventory assertions PASS. The 8 MB raw graph remains machine-local;
+this compact interpretation and the exact run ID are the checked-in evidence.

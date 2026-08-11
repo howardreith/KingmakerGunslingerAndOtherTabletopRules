@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "4940dc19ac41ea88dc8955a50cdead2172672696",
+  "currentSha": "9e1d851e75cf413f5d0a576484a9f5a8538b2a2b",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "complete-frozen-donor-observer-source-qualified",
-  "nextConcreteAction": "Commit and push the all-54-donor graph observer, rebuild the immutable SHA, then capture a guarded save-free final-live inventory for special-mechanic decisions.",
+  "completedPhase": "complete-frozen-donor-observer-native-pass",
+  "nextConcreteAction": "Partition exact native reuse from reconstruction and implement the first bounded special-mechanic group: dedicated elementals/mephits plus Lantern Archon.",
   "domainTestResult": "1005/1005 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 73b57960c90c1838f640359f66ad0794975485023219b0a74296bda0a637b9c1",
-  "packageResult": "strict PASS; SHA-256 043f279437749279c6c5a69355637a753ba6b28bf45bd82c6f31fb80940eaa00",
+  "releaseBuildResult": "PASS on 9e1d851e75cf413f5d0a576484a9f5a8538b2a2b; DLL SHA-256 73b57960c90c1838f640359f66ad0794975485023219b0a74296bda0a637b9c1",
+  "packageResult": "strict PASS on 9e1d851e75cf413f5d0a576484a9f5a8538b2a2b; SHA-256 043f279437749279c6c5a69355637a753ba6b28bf45bd82c6f31fb80940eaa00",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {
@@ -186,6 +186,13 @@
       "sourceSha": "b88e99cffb7464d7354416fba82d1da313e17ae2",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2048003275107Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "All alignment/template/smite counts matched actual spawn-branch cardinality across 182 celestial, 182 fiendish, and 320 Nature's Ally executions; non-KMG action contamination was exactly zero; registry 1374 and all prior invariants passed. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "9e1d851e75cf413f5d0a576484a9f5a8538b2a2b",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2055502086857Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All 54 distinct frozen donor GUIDs were present and their bounded unit/component/body/view graphs were captured. All 17 assertions passed, including registry 1374, 681 placements, exact alignment/template/smite structure, and zero sanitizer or native-contamination failures. No save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

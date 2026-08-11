@@ -636,3 +636,18 @@
   `73b57960c90c1838f640359f66ad0794975485023219b0a74296bda0a637b9c1`;
   package SHA-256:
   `043f279437749279c6c5a69355637a753ba6b28bf45bd82c6f31fb80940eaa00`.
+
+## 2026-08-11 - complete frozen donor graph native PASS
+
+- Guarded run `20260811T2055502086857Z-observe-expanded-summoning-inventory`
+  passed on committed source
+  `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`. All 54 distinct catalog donor
+  GUIDs were present; no selected donor was missing.
+- The observer retained core unit fields and bounded component, body, and view
+  graphs for every donor. All 17 assertions passed: registry 1,374; 67 units;
+  1,045 abilities; 681 placements; exact template/alignment/smite execution;
+  zero shared components, prohibited references, inherited class spells,
+  starting inventory, or native action contamination.
+- The host wrapper timed out at 120 seconds only after the game wrote the PASS
+  result and exited; structured scenario duration was 103,225 ms. This is PASS
+  evidence, not a runtime failure. No save was accessed.
