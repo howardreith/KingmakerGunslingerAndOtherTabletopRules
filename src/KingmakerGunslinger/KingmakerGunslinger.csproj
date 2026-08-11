@@ -50,6 +50,7 @@
     <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
     <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningIdentityCatalog.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />

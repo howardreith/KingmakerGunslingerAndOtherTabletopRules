@@ -87,3 +87,16 @@
 - Campaign visual donors retain hostile factions and campaign components and
   remain visual-only. Curated elemental and wolf identities were added to the
   inventory; raw runtime diagnostics were not committed.
+
+## 2026-08-11 - native action graph and identity plan
+
+- Guarded save-free run `20260811T1747085341434Z-observe-expanded-summoning-inventory`
+  PASS on exact published source `ba6500f16b06cf8adb9c5d32149929137e1d98e2`.
+- All 18 canonical parents and 48 direct children confirmed native spawn pool,
+  caster-rank-round duration, tier cleanup buffs, alignment conditionals, and
+  `ProjectilesCount` quantity semantics.
+- Added a deterministic foundation identity plan: 67 units, 681 logical
+  placement abilities, 364 celestial/fiendish execution abilities for 182
+  templated placements, and four standalone template buffs (1,116 total).
+- Complete domain suite: 995/995 PASS. GUIDs remain unallocated until runtime
+  registration and the validator-count migration land in the same phase.

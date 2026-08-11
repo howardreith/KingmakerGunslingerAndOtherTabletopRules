@@ -6,9 +6,9 @@
   "workingBranch": "codex/expanded-summoning",
   "currentSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "exact-donor-runtime-audit-and-sanitizer-policy",
-  "nextConcreteAction": "Inspect native summon action graphs and celestial/fiendish template routing, decide frozen execution-ability boundaries, then generate and validate the manifest ledger.",
-  "domainTestResult": "992/992 PASS",
+  "completedPhase": "native-action-graph-and-foundation-identity-plan",
+  "nextConcreteAction": "Implement manifest allocation/check tooling and runtime registration for the 1116-identity foundation as one count-consistent phase, then add special-mechanic identities append-only.",
+  "domainTestResult": "995/995 PASS",
   "releaseBuildResult": "PASS; DLL SHA-256 d871074d841ebf918a864518c1b4f7b6419936d9b3dbca4b03a7a75d391b7dc1",
   "packageResult": "strict PASS; SHA-256 52339044928028e2c049154303145c915f324db668623c9b7e8fefbc83e3b5d6",
   "runtimeScenarios": [
@@ -22,6 +22,12 @@
       "result": "PASS",
       "sourceSha": "df65c391365ce52367f05b457e6f2bc6a61a3a09",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1741299016346Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "ba6500f16b06cf8adb9c5d32149929137e1d98e2",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1747085341434Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

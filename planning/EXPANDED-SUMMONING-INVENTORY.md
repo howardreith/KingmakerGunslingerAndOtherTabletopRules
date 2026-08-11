@@ -131,3 +131,32 @@ direct spawning.
 The exact Wolf summon identity is
 `76597216769b0d540aafafa07edf0cec` (`WolfSummon`). These identities are donor
 inputs, never KMG output identities.
+
+## Canonical child action graph
+
+Guarded run `20260811T1747085341434Z-observe-expanded-summoning-inventory`
+on source `ba6500f16b06cf8adb9c5d32149929137e1d98e2` inspected all 18 canonical
+parents and 48 final-live direct children.
+
+- Native children use `ContextActionSpawnMonster` with shared pool
+  `d94c93e7240f10e41ae41db4c83d1cbe`.
+- Duration is extendable caster-rank rounds. Spawn cleanup/faction buffs are
+  tier-banded separately for SM and SNA.
+- One-creature actions use count 1. Quantity actions use the correct dice plus
+  `ProjectilesCount`, preserving Superior Summoning through the child ability's
+  rank component.
+- Native aligned-outsider choices use `Conditional` plus
+  `ContextConditionAlignment` on the caster. This is a safe structural model
+  for explicit alignment branches, but the observed base-family natural
+  creatures do not receive celestial/fiendish templates.
+- CotW supplies template buff candidates, but KMG cannot depend on optional
+  assemblies. Standalone template mechanics therefore require KMG-owned,
+  frozen identities and native component construction; optional equivalents
+  may be reused only after exact structural validation.
+
+Publication abilities are not shared across parent tiers: distinct identities
+preserve parent context, UI text, spell level, metamagic, and save stability.
+Each templated SM logical placement is represented by one published choice and
+two gated execution identities so neutral casters can choose while good/evil
+casters remain restricted. This produces 182 templated logical placements and
+364 subordinate execution identities.
