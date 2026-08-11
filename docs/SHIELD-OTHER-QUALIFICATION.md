@@ -1,6 +1,19 @@
 # Shield Other Qualification
 
-Status: COMPLETE
+Status: PRIOR QUALIFICATION SUPERSEDED BY CASTING/UI REGRESSION REPAIR
+
+## 2026-08-11 regression evidence and repair gate
+
+User-path `output_log.txt` evidence identified repeated
+`NullReferenceException` failures in
+`AbilityData.get_RequireMaterialComponent`, called from spontaneous spell
+availability and action-bar slot updates. The cause was the owned Shield Other
+blueprint's null `MaterialComponent`. An empty non-null data object is now
+required and the disposable runtime scenario evaluates
+`RequireMaterialComponent` and `IsAvailable` before mechanics checks. The
+source, 981 deterministic tests, and Release compile pass. Prior runtime claims
+do not qualify this newly repaired source; fresh exact-commit runtime evidence
+is required below.
 
 This document will contain exact deterministic, build, package, runtime,
 compatibility-profile, restoration, protected-save, and hash evidence for

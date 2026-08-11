@@ -1,6 +1,6 @@
 # Shield Other Implementation Report
 
-Status: COMPLETE
+Status: REGRESSION REPAIR SOURCE-QUALIFIED; RUNTIME QUALIFICATION PENDING
 
 Release: 0.0.77
 
@@ -9,6 +9,21 @@ Frozen base: `7ba84439caa1fc92b8c8148ce95ea79fd59bdc57`
 Branch: `codex/shield-other-spell`
 
 ## Delivered implementation
+
+### 2026-08-11 casting and UI repair
+
+The original 0.0.77 blueprint incorrectly replaced the donor's non-null empty
+material-component data with `null`. Kingmaker and CotW dereference that object
+while evaluating spontaneous spell availability, producing a continuous
+exception storm in action-bar slot updates. This made the cast icon inert and
+destabilized the spellbook/sidebar UI. The repaired blueprint owns an empty
+`MaterialComponentData`, which represents no required item without violating
+the engine invariant. The runtime scenario now evaluates the same native
+`AbilityData` availability path.
+
+The player-facing platinum-ring note was removed. Shield Other now uses its own
+project-owned icon for both the ability and target buff rather than the Shield
+of Faith donor icon.
 
 - Independent, default-enabled, restart-required `Shield Other` module. Schema
   2 migrates schema-1 files enabled, defaults missing fields enabled, uses safe

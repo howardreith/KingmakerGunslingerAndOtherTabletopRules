@@ -35,7 +35,7 @@ namespace KingmakerGunslinger.Blueprints
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
                 "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim",
-                "cord-of-stubborn-resolve" };
+                "cord-of-stubborn-resolve", "shield-other" };
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");

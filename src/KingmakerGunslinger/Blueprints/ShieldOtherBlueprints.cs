@@ -53,15 +53,16 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintAbility donor = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                 library, ShieldOfFaithAbilityGuid, "native Shield of Faith ability");
             BlueprintBuff donorBuff = ResolveAppliedBuff(donor);
+            Sprite icon = ProjectAssetIcons.RequireIcon("shield-other");
             BlueprintBuff targetBuff = registry.Register<BlueprintBuff>(
-                TargetBuffSymbol, () => CreateTargetBuff(donorBuff));
+                TargetBuffSymbol, () => CreateTargetBuff(donorBuff, icon));
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
-                AbilitySymbol, () => CreateAbility(donor, targetBuff));
-            Validate(ability, targetBuff);
+                AbilitySymbol, () => CreateAbility(donor, targetBuff, icon));
+            Validate(ability, targetBuff, donor.Icon, icon);
             return new ShieldOtherBlueprintSet(ability, targetBuff);
         }
 
-        private static BlueprintBuff CreateTargetBuff(BlueprintBuff donor)
+        private static BlueprintBuff CreateTargetBuff(BlueprintBuff donor, Sprite icon)
         {
             BlueprintBuff result = BlueprintCloneService.Clone(donor,
                 "KMG_ShieldOther_TargetBuff");
@@ -84,20 +85,20 @@ namespace KingmakerGunslinger.Blueprints
                     "Shield Other"),
                 LocalizationService.Create("KMG.ShieldOther.TargetBuff.Description",
                     "The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. Half of the subject's finalized hit point damage is transferred to the originating caster while the link remains valid."),
-                donor.Icon);
+                icon);
             return result;
         }
 
         private static BlueprintAbility CreateAbility(BlueprintAbility donor,
-            BlueprintBuff targetBuff)
+            BlueprintBuff targetBuff, Sprite icon)
         {
             BlueprintAbility result = BlueprintCloneService.Clone(donor,
                 "KMG_ShieldOther_Ability");
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.ShieldOther.Ability.Name", "Shield Other"),
                 LocalizationService.Create("KMG.ShieldOther.Ability.Description",
-                    "This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. While the subject remains within close range, half of its finalized hit point damage is transferred to you. The paired 50-gp platinum-ring focus is abstracted in Kingmaker and is not consumed."),
-                donor.Icon);
+                    "This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. While the subject remains within close range, half of its finalized hit point damage is transferred to you."),
+                icon);
             result.Type = AbilityType.Spell;
             result.Range = AbilityRange.Close;
             result.CanTargetPoint = false;
@@ -116,7 +117,11 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.ShieldOther.Ability.Duration", "1 hour/level");
             result.LocalizedSavingThrow = LocalizationService.Create(
                 "KMG.ShieldOther.Ability.SavingThrow", "None (harmless)");
-            result.MaterialComponent = null;
+            // Kingmaker's AbilityData availability and tooltip paths dereference
+            // MaterialComponent unconditionally. An empty data object means no
+            // material is required; null causes an exception storm that disables
+            // spontaneous spell slots and corrupts the action-bar/spellbook UI.
+            result.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             result.ResourceAssetIds = Array.Empty<string>();
 
             var rank = ScriptableObject.CreateInstance<ContextRankConfig>();
@@ -179,7 +184,8 @@ namespace KingmakerGunslinger.Blueprints
             field.SetValue(instance, value);
         }
 
-        private static void Validate(BlueprintAbility ability, BlueprintBuff buff)
+        private static void Validate(BlueprintAbility ability, BlueprintBuff buff,
+            Sprite donorIcon, Sprite projectIcon)
         {
             SpellComponent spell = ability.ComponentsArray.OfType<SpellComponent>().Single();
             ContextActionApplyBuff apply = ability.ComponentsArray
@@ -201,6 +207,11 @@ namespace KingmakerGunslinger.Blueprints
                 ac.Value != 1 || ac.Descriptor != ModifierDescriptor.Deflection ||
                 saves.Value != 1 || saves.Descriptor != ModifierDescriptor.Resistance ||
                 link == null ||
+                ability.MaterialComponent == null ||
+                ability.MaterialComponent.Item != null ||
+                projectIcon == null || ReferenceEquals(projectIcon, donorIcon) ||
+                !ReferenceEquals(ability.Icon, projectIcon) ||
+                !ReferenceEquals(buff.Icon, projectIcon) ||
                 buff.Stacking != StackingType.Replace)
                 throw new InvalidOperationException(
                     "Shield Other blueprint contract is incomplete.");

@@ -828,3 +828,28 @@ the final exact-commit matrix and consecutive runtime profiles.
 
 Next: validate the package without rebuilding, commit/push curated evidence,
 then prove a clean tree and local/origin equality.
+# 2026-08-11 user-path casting/UI regression
+
+- User evidence superseded the prior COMPLETE disposition: Shield Other appeared
+  on a CotW Oracle and its detail page opened, but selecting the cast icon did
+  nothing and progressively broke the spellbook and left action sidebar.
+- The preserved `output_log.txt` proves the exact failure: repeated
+  `NullReferenceException` from patched
+  `AbilityData.get_RequireMaterialComponent`, reached by
+  `AbilityData.get_IsAvailableForCast` and
+  `MechanicActionBarSlotSpontaneusSpell.UpdateSlot`.
+- Production construction explicitly assigned `result.MaterialComponent =
+  null`. Kingmaker 2.1.7b IL proves `RequireMaterialComponent` unconditionally
+  reads `Blueprint.MaterialComponent.Item`; CotW also assumes the same non-null
+  contract. The per-frame availability exception storm explains both the inert
+  spontaneous cast icon and the damaged spellbook/sidebar rendering state.
+- Narrow repair: preserve the native invariant with an empty
+  `BlueprintAbility.MaterialComponentData` (no item, so no material cost), add
+  a guarded live `AbilityData.RequireMaterialComponent` / `IsAvailable`
+  assertion to `disposable-shield-other`, and retain the existing mechanics.
+- Removed the platinum-ring implementation note from player-facing spell text.
+- Added a distinct project-owned 128x128 Shield Other icon and source/provenance
+  record. Both the spell and its target buff must reference that exact sprite
+  and must not reuse Shield of Faith's icon.
+- Source validation and all 981 deterministic tests pass after the repair.
+  Release compile passes. Runtime and final package qualification remain pending.

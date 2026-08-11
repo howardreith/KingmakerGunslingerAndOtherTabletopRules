@@ -87,9 +87,25 @@ namespace KingmakerGunslinger.DomainTests
                 "ContextRankBaseValueType.CasterLevel",
                 "ModifierDescriptor.Deflection",
                 "ModifierDescriptor.Resistance", "StackingType.Replace",
-                "result.MaterialComponent = null" })
+                "new BlueprintAbility.MaterialComponentData()",
+                "ProjectAssetIcons.RequireIcon(\"shield-other\")",
+                "ability.MaterialComponent == null",
+                "ability.MaterialComponent.Item != null" })
                 Assertions.True(source.Contains(token),
                     "Shield Other blueprint contract token is missing: " + token);
+            Assertions.False(source.Contains("50-gp") ||
+                source.Contains("platinum-ring") ||
+                source.Contains("MaterialComponent = null"),
+                "Shield Other must not advertise a ring focus or expose a null material contract.");
+            string icon = Path.Combine(root, "assets", "game", "icons",
+                "shield-other.png");
+            Assertions.True(File.Exists(icon),
+                "Shield Other project icon is missing.");
+            byte[] png = File.ReadAllBytes(icon);
+            Assertions.True(png.Length > 24 && png[12] == 0x49 && png[13] == 0x48 &&
+                png[14] == 0x44 && png[15] == 0x52 &&
+                ReadBigEndian(png, 16) == 128 && ReadBigEndian(png, 20) == 128,
+                "Shield Other production art must be a 128x128 PNG.");
         }
 
         internal static void SpellListMergeAndRollbackPolicy()
@@ -253,6 +269,13 @@ namespace KingmakerGunslinger.DomainTests
                 "shield-other-caster-death-termination" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
+            foreach (string token in new[] { "native-availability",
+                "abilityData.RequireMaterialComponent", "abilityData.IsAvailable",
+                "new Kingmaker.UnitLogic.Commands.UnitUseAbility(",
+                "commandCanStart", "shield-other-native-availability" })
+                Assertions.True(runner.Contains(token),
+                    "Runtime Shield Other availability regression contract is missing: " +
+                    token);
         }
 
         private sealed class FakeSpell
@@ -266,6 +289,12 @@ namespace KingmakerGunslinger.DomainTests
             return new ShieldOtherLinkValidityRequest { SubjectPresent = true,
                 CasterPresent = true, CasterAlive = true, SameArea = true,
                 CasterLevel = 1, DistanceFeet = 25f };
+        }
+
+        private static int ReadBigEndian(byte[] bytes, int offset)
+        {
+            return (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
+                (bytes[offset + 2] << 8) | bytes[offset + 3];
         }
 
         private static void AssertInvalid(string status,

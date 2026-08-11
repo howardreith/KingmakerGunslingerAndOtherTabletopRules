@@ -7118,6 +7118,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 constitutionDamageExcluded = false;
             bool subjectTemporaryHpNormal = false,
                 casterTemporaryHpNormal = false;
+            bool availabilityEvaluated = false, nativeAvailable = false,
+                noMaterialRequired = false, commandCanStart = false;
             int subjectOdd = -1, casterOdd = -1, subjectEven = -1,
                 casterEven = -1, physicalSubject = -1, physicalCaster = -1,
                 energySubject = -1, energyCaster = -1,
@@ -7166,6 +7168,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!casterRegistered || !subjectRegistered ||
                     !secondCasterRegistered || !secondSubjectRegistered)
                     throw new InvalidOperationException("Disposable units were not registered.");
+
+                stage = "native-availability";
+                caster.Descriptor.AddFact(BlueprintBootstrap.ShieldOther.Ability);
+                Kingmaker.UnitLogic.Abilities.Ability granted =
+                    caster.Descriptor.Abilities.GetAbility(
+                        BlueprintBootstrap.ShieldOther.Ability);
+                if (granted == null) throw new InvalidOperationException(
+                    "Shield Other was not granted to the availability fixture.");
+                var abilityData = new AbilityData(granted);
+                noMaterialRequired = !abilityData.RequireMaterialComponent;
+                nativeAvailable = abilityData.IsAvailable;
+                commandCanStart = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
+                    abilityData, new TargetWrapper(subject)).CanStart;
+                availabilityEvaluated = true;
 
                 int acBefore = subject.Stats.AC.ModifiedValue;
                 int fortBefore = subject.Stats.SaveFortitude.ModifiedValue;
@@ -7611,8 +7627,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subjectTempCasterLoss + ";tempCaster=" + casterTemporaryHpNormal +
                 "/" + casterTempConsumed + "/" + casterTempSubjectLoss + "/" +
                 casterTempHpLoss;
+            observed += ";availability=" + availabilityEvaluated + "/" +
+                nativeAvailable + "/" + noMaterialRequired + "/" + commandCanStart;
             var assertions = new List<RuntimeTestAssertion>
             {
+                Assertion("shield-other-native-availability",
+                    "availability evaluates true; no material required", observed,
+                    availabilityEvaluated && nativeAvailable && noMaterialRequired &&
+                    commandCanStart,
+                    "native AbilityData spontaneous/action-bar availability path"),
                 Assertion("shield-other-link-and-bonuses",
                     "one link; AC/Fort/Reflex/Will +1", observed,
                     linkCount == 1 && acDelta == 1 && fortDelta == 1 &&
