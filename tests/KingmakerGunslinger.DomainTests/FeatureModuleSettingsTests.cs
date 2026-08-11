@@ -12,11 +12,13 @@ namespace KingmakerGunslinger.DomainTests
             {
                 FeatureModuleSettingsState missing = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(missing.Active.Gunslinger && missing.Active.AcadamaeGraduate &&
-                    missing.Active.ShieldOther, "Missing settings must default ON/ON/ON.");
+                    missing.Active.ShieldOther && missing.Active.ExpandedSummoning,
+                    "Missing settings must default all four modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName), "{}");
                 FeatureModuleSettingsState legacy = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(legacy.Active.Gunslinger && legacy.Active.AcadamaeGraduate &&
-                    legacy.Active.ShieldOther, "Legacy settings must default ON/ON/ON.");
+                    legacy.Active.ShieldOther && legacy.Active.ExpandedSummoning,
+                    "Legacy settings must default all four modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":1,\"gunslinger\":false,\"acadamae-graduate\":true}");
                 FeatureModuleSettingsState migrated = FeatureModuleSettingsStore.Load(path);
@@ -24,27 +26,41 @@ namespace KingmakerGunslinger.DomainTests
                     FeatureModuleSettingsStore.FileName));
                 Assertions.True(!migrated.Active.Gunslinger &&
                     migrated.Active.AcadamaeGraduate && migrated.Active.ShieldOther &&
-                    migratedJson.Contains("\"schemaVersion\": 2") &&
-                    migratedJson.Contains("\"shield-other\": true"),
-                    "Schema 1 must migrate atomically to schema 2 with Shield Other ON.");
+                    migrated.Active.ExpandedSummoning &&
+                    migratedJson.Contains("\"schemaVersion\": 3") &&
+                    migratedJson.Contains("\"shield-other\": true") &&
+                    migratedJson.Contains("\"expanded-summoning\": true"),
+                    "Schema 1 must migrate atomically to schema 3 with newer modules ON.");
+                File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
+                    "{\"schemaVersion\":2,\"gunslinger\":true," +
+                    "\"acadamae-graduate\":false,\"shield-other\":false}");
+                FeatureModuleSettingsState schemaTwo =
+                    FeatureModuleSettingsStore.Load(path);
+                Assertions.True(schemaTwo.Active.Gunslinger &&
+                    !schemaTwo.Active.AcadamaeGraduate &&
+                    !schemaTwo.Active.ShieldOther &&
+                    schemaTwo.Active.ExpandedSummoning,
+                    "Schema 2 must preserve explicit values and add Expanded Summoning ON.");
             });
         }
 
-        internal static void EightCombinationsRoundTrip()
+        internal static void SixteenCombinationsRoundTrip()
         {
             WithDirectory(path =>
             {
                 foreach (bool gunslinger in new[] { false, true })
                 foreach (bool acadamae in new[] { false, true })
                 foreach (bool shieldOther in new[] { false, true })
+                foreach (bool expandedSummoning in new[] { false, true })
                 {
                     FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(path);
-                    state.SetPending(gunslinger, acadamae, shieldOther);
+                    state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning);
                     FeatureModuleSettingsStore.Save(state);
                     FeatureModuleSettingsState loaded = FeatureModuleSettingsStore.Load(path);
                     Assertions.True(loaded.Active.Gunslinger == gunslinger &&
                         loaded.Active.AcadamaeGraduate == acadamae &&
-                        loaded.Active.ShieldOther == shieldOther,
+                        loaded.Active.ShieldOther == shieldOther &&
+                        loaded.Active.ExpandedSummoning == expandedSummoning,
                         "Module combination did not round-trip.");
                 }
             });
@@ -61,8 +77,9 @@ namespace KingmakerGunslinger.DomainTests
                 FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(
                     path, value => warning = value, () => instant);
                 Assertions.True(state.Recovered && state.Active.Gunslinger &&
-                    state.Active.AcadamaeGraduate && state.Active.ShieldOther,
-                    "Malformed settings did not recover ON/ON/ON.");
+                    state.Active.AcadamaeGraduate && state.Active.ShieldOther &&
+                    state.Active.ExpandedSummoning,
+                    "Malformed settings did not recover all four modules ON.");
                 Assertions.True(warning != null && Directory.GetFiles(path,
                     "FeatureModules.json.malformed.*").Length == 1,
                     "Malformed bytes were not quarantined with a diagnostic.");
@@ -75,7 +92,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var state = new FeatureModuleSettingsState(
                 FeatureModuleConfiguration.Defaults, "fixture", "fixture", false);
-            state.SetPending(false, true, false);
+            state.SetPending(false, true, false, false);
             Assertions.True(state.Active.Gunslinger && !state.Pending.Gunslinger &&
                 state.RestartRequired, "UI edits must not mutate the active snapshot.");
             Assertions.Equal("gunslinger", FeatureModuleConfiguration.GunslingerId,
@@ -87,6 +104,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Shield Other module ID changed.");
             Assertions.True(state.Active.ShieldOther && !state.Pending.ShieldOther,
                 "Shield Other pending edits mutated the active snapshot.");
+            Assertions.Equal("expanded-summoning",
+                FeatureModuleConfiguration.ExpandedSummoningId,
+                "Expanded Summoning module ID changed.");
+            Assertions.True(state.Active.ExpandedSummoning &&
+                !state.Pending.ExpandedSummoning,
+                "Expanded Summoning pending edits mutated the active snapshot.");
         }
 
         internal static void PublicationPlansAreIndependent()
@@ -94,9 +117,11 @@ namespace KingmakerGunslinger.DomainTests
             foreach (bool gunslinger in new[] { false, true })
             foreach (bool acadamae in new[] { false, true })
             foreach (bool shieldOther in new[] { false, true })
+            foreach (bool expandedSummoning in new[] { false, true })
             {
                 var plan = new FeatureModulePublicationPlan(
-                    new FeatureModuleConfiguration(gunslinger, acadamae, shieldOther));
+                    new FeatureModuleConfiguration(gunslinger, acadamae, shieldOther,
+                        expandedSummoning));
                 Assertions.True(plan.GunslingerClass == gunslinger &&
                     plan.GunslingerFeats == gunslinger &&
                     plan.FirearmParameters == gunslinger &&
@@ -109,6 +134,8 @@ namespace KingmakerGunslinger.DomainTests
                     "Acadamae and Cord publication gates are not independent.");
                 Assertions.True(plan.ShieldOtherSpellLists == shieldOther,
                     "Shield Other spell-list publication escaped its independent gate.");
+                Assertions.True(plan.ExpandedSummoningParents == expandedSummoning,
+                    "Expanded Summoning parent publication escaped its independent gate.");
             }
         }
 

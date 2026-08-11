@@ -8,12 +8,13 @@
 - Durable contract/state: `planning/EXPANDED-SUMMONING-MISSION.md` and
   `EXPANDED-SUMMONING-STATE.json`.
 - Completed: Shield Other range repair; frozen 67-creature/681-placement logical
-  catalog; guarded final-live parent/donor inventory; additive merge and rollback
-  policies; explicit summon-unit sanitizer contract. The latest complete domain
-  suite is 992/992 PASS.
-- Exact next action: add a guarded exact-GUID donor-structure observer, map its
-  output into the sanitizer contract, and freeze manifest identities only after
-  planned runtime types and ability reuse boundaries are proven.
+  catalog; guarded final-live parent/donor/action-graph inventory; additive merge
+  and rollback policies; sanitizer contract; 1,116 frozen manifest reservations;
+  schema-3 fourth-module domain/UI/publication state with all 16 combinations.
+  The latest complete domain suite is 995/995 PASS.
+- Exact next action: update guarded runtime/profile plumbing from the legacy
+  8-state matrix to all 16 schema-3 configurations, then implement and activate
+  registered summon blueprints.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

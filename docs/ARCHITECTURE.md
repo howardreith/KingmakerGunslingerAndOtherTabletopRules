@@ -369,7 +369,7 @@ Version 0.0.29 does not:
 
 ## 0.0.75 feature-module architecture
 
-The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to Gunslinger ON / Acadamae Graduate ON; malformed bytes are retained for diagnosis. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
+The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to all four modules ON; malformed bytes are retained for diagnosis. Schema 3 adds the independent, default-enabled `expanded-summoning` key while preserving explicit values from every older schema. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
 
 Blueprint bootstrap is split conceptually into an unconditional identity layer and a settings-controlled publication layer. All 250 project-owned identities register in every configuration. `FeatureModulePublicationCoordinator` owns exact transactions for class and feat catalogs, native firearm parameter menus, capital/BTSL/fixed-loot acquisition, Acadamae's general-feat entry, and the Cord's capital row. Transactions merge against current arrays, preserve unrelated order, detect exact reference/GUID duplicates, validate, reconcile idempotently after foreign publishers, and use guarded rollback rather than restoring stale snapshots.
 
@@ -489,8 +489,7 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning freezes the next append-only foundation at 1371 stable IDs:
-254 active and 1117 reserved. The 1116 feature identities remain reserved until
+Expanded Summoning freezes the next append-only foundation at 1371 stable IDs: 254 active and 1117 reserved. The 1116 feature identities remain reserved until
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration.
 

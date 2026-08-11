@@ -111,3 +111,18 @@
   No existing symbol or GUID changed. Exact ledger: 254 active, 1,117 reserved,
   1,371 total. Runtime registration remains exactly 254 until implementation.
 - Allocator check, repository validation, and 995/995 domain tests PASS.
+
+## 2026-08-11 - fourth feature-module domain integration
+
+- Advanced feature settings to schema 3 and added independent, default-enabled,
+  restart-bound `expanded-summoning` state without changing active snapshots
+  when pending UI values change.
+- Schemas 0, 1, and 2 migrate atomically; explicit Gunslinger, Acadamae
+  Graduate, and Shield Other values survive while the absent new module defaults
+  ON. Malformed recovery still quarantines bytes and defaults all four ON.
+- All 16 Boolean configurations round-trip and the pure publication plan gates
+  only Expanded Summoning parent publication. Runtime matrix plumbing remains
+  the next focused phase.
+- Repository validation, 995/995 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `056ff668dd189b50e2d9102cc29223f37fdc1d5673c56d9d67fb259ca5452541`;
+  package SHA-256: `2680b476e25bfe668e087525f418152c187e92254043e09bf28ab8db0702f62d`.

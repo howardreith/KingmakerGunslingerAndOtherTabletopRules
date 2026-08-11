@@ -40,7 +40,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.identities-template-scope", ExpandedSummoningIdentityCatalogTests.TemplateExecutionsAreFamilyScoped),
             Case("expanded-summoning.identities-logical-coverage", ExpandedSummoningIdentityCatalogTests.SymbolsEncodeEveryLogicalPlacement),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
-            Case("feature-settings.eight-combinations", FeatureModuleSettingsTests.EightCombinationsRoundTrip),
+            Case("feature-settings.sixteen-combinations", FeatureModuleSettingsTests.SixteenCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
             Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
             Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
