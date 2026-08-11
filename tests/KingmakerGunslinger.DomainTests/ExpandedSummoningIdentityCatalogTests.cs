@@ -96,6 +96,16 @@ namespace KingmakerGunslinger.DomainTests
                     "Unit component isolation contract is missing: " + token);
             Assertions.False(source.Contains("!IsForbiddenComponent(component.GetType().Name)).ToArray()"),
                 "Retained donor components must not remain shared instances.");
+            string runtime = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            foreach (string token in new[] {
+                "expanded-summoning-donor-component-isolation",
+                "expanded-summoning-prohibited-references",
+                "expanded-summoning-inherited-class-spells",
+                "expanded-summoning-starting-inventory" })
+                Assertions.True(runtime.Contains(token),
+                    "Guarded isolation observer is missing: " + token);
         }
     }
 }

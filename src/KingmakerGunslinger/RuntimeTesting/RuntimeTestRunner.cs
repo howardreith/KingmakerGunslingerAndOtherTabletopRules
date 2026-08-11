@@ -7130,6 +7130,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name.StartsWith("KMG_Summoning_Unit_", StringComparison.Ordinal));
             int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
                 value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal));
+            int sharedComponents = 0, prohibitedReferences = 0,
+                nonemptyInventories = 0, inheritedSpellArrays = 0;
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            {
+                BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
+                    value.name == ExpandedSummoningIdentityCatalog.UnitSymbol(creature)
+                        .Replace('.', '_').Replace('-', '_'));
+                BlueprintUnit donor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    ExpandedSummoningDonorCatalog.For(creature.Key).Guid,
+                    creature.DisplayName + " isolation donor");
+                foreach (BlueprintComponent component in unit.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                {
+                    if ((donor.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Any(value => ReferenceEquals(value, component))) sharedComponents++;
+                    foreach (FieldInfo field in ExpandedSummoningFields(
+                        component.GetType()).Where(value => value.FieldType.IsArray))
+                    {
+                        Array values = field.GetValue(component) as Array;
+                        if ((field.Name == "MemorizeSpells" ||
+                            field.Name == "SelectSpells") &&
+                            values != null && values.Length != 0) inheritedSpellArrays++;
+                        if (values == null || !typeof(BlueprintScriptableObject)
+                            .IsAssignableFrom(field.FieldType.GetElementType())) continue;
+                        prohibitedReferences += values.Cast<object>()
+                            .OfType<BlueprintScriptableObject>().Count(value =>
+                                SummonUnitSanitizationPolicy
+                                    .IsForbiddenRuntimeMemberKey(value.name));
+                    }
+                }
+                if (unit.AddFacts != null)
+                    prohibitedReferences += unit.AddFacts.Count(value => value == null ||
+                        SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
+                            value.name));
+                if (ExpandedSummoningArrayLength(unit, "StartingInventory") != 0)
+                    nonemptyInventories++;
+            }
             string[] parentGuids = {
                 "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7", "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef", "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c", "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0", "52b5df2a97df18242aec67610616ded0",
                 "c6147854641924442a3bb736080cfeb6", "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61", "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e" };
@@ -7157,6 +7195,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
+                Assertion("expanded-summoning-donor-component-isolation", "0",
+                    sharedComponents.ToString(), sharedComponents == 0,
+                    "all 67 KMG units versus frozen donor component references"),
+                Assertion("expanded-summoning-prohibited-references", "0",
+                    prohibitedReferences.ToString(), prohibitedReferences == 0,
+                    "direct facts and component blueprint-array grants"),
+                Assertion("expanded-summoning-inherited-class-spells", "0",
+                    inheritedSpellArrays.ToString(), inheritedSpellArrays == 0,
+                    "AddClassLevels MemorizeSpells and SelectSpells arrays"),
+                Assertion("expanded-summoning-starting-inventory", "0",
+                    nonemptyInventories.ToString(), nonemptyInventories == 0,
+                    "all 67 KMG unit StartingInventory arrays"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -7166,6 +7216,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
+        }
+
+        private static IEnumerable<FieldInfo> ExpandedSummoningFields(Type type)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            for (Type current = type; current != null; current = current.BaseType)
+                foreach (FieldInfo field in current.GetFields(flags)) yield return field;
+        }
+
+        private static int ExpandedSummoningArrayLength(object target, string name)
+        {
+            FieldInfo field = ExpandedSummoningFields(target.GetType()).Single(value =>
+                value.Name == name && value.FieldType.IsArray);
+            Array array = field.GetValue(target) as Array;
+            return array == null ? -1 : array.Length;
         }
 
         private RuntimeTestResult RunDisposableShieldOther()

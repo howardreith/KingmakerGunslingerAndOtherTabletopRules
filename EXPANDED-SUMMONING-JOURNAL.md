@@ -311,3 +311,12 @@
   `84463f21c0f373b04b914a49ac7387363e2da67ec01bc0f354d138ed41454208`;
   package SHA-256:
   `b96b07e3ed21dfa6feacce9f5c1152d2b66065502f72d6e432345ce1ea4915ba`.
+
+## 2026-08-11 - authoritative sanitizer observer
+
+- The guarded structural observer now compares every KMG unit with its frozen
+  donor and fails on shared component instances, prohibited fact/component
+  references, inherited class spell arrays, or nonempty starting inventory.
+- Source validation, 1,001/1,001 tests, clean Release, and strict package PASS.
+  DLL SHA-256: `5d77c1932f48b8ad3c2cba010e65918f9fcfd92a5d11e16ca0d404f227c2c2ec`;
+  package SHA-256: `f61a7e8154db157979b2423abdf410fd2726b580c63e0415c972b7decd46f551`.

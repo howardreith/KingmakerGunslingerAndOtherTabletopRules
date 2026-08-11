@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "a1a2a295a6527253cfbc295516d5c08bb22d16fe",
+  "currentSha": "81eeb23eccbcee8190c11644fd4263c8b6ace717",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "runtime-fact-spell-inventory-sanitization",
-  "nextConcreteAction": "Commit and push the runtime deny contract, then extend the guarded observer to prove component isolation and zero prohibited final-live unit references.",
+  "completedPhase": "authoritative-sanitizer-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the enhanced observer, then run the guarded structural scenario and inspect its four sanitizer assertions.",
   "domainTestResult": "1001/1001 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 84463f21c0f373b04b914a49ac7387363e2da67ec01bc0f354d138ed41454208",
-  "packageResult": "strict PASS; SHA-256 b96b07e3ed21dfa6feacce9f5c1152d2b66065502f72d6e432345ce1ea4915ba",
+  "releaseBuildResult": "PASS; DLL SHA-256 5d77c1932f48b8ad3c2cba010e65918f9fcfd92a5d11e16ca0d404f227c2c2ec",
+  "packageResult": "strict PASS; SHA-256 f61a7e8154db157979b2423abdf410fd2726b580c63e0415c972b7decd46f551",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
