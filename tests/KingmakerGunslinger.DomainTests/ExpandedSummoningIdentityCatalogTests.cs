@@ -106,6 +106,13 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-starting-inventory" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded isolation observer is missing: " + token);
+            foreach (string token in new[] {
+                "expanded-summoning-template-logical-choices",
+                "expanded-summoning-celestial-executions",
+                "expanded-summoning-fiendish-executions",
+                "expanded-summoning-template-buffs" })
+                Assertions.True(runtime.Contains(token),
+                    "Guarded template observer is missing: " + token);
         }
 
         internal static void TemplateBlueprintsUseNativeBoundedMechanics()

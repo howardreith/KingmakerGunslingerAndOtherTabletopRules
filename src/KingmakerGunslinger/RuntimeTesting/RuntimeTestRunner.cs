@@ -61,6 +61,8 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
+using Kingmaker.UnitLogic.Alignments;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
@@ -7177,6 +7179,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ComponentsArray.OfType<AbilityVariants>().Single().Variants.Count(value =>
                     value != null && value.name.StartsWith(
                         "KMG_Summoning_Ability_", StringComparison.Ordinal)));
+            BlueprintAbility[] templateChoices = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.StartsWith("KMG_Summoning_Ability_",
+                    StringComparison.Ordinal) && value.ComponentsArray
+                    .OfType<AbilityVariants>().Any()).ToArray();
+            BlueprintAbility[] celestialExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.EndsWith("_Celestial",
+                    StringComparison.Ordinal)).ToArray();
+            BlueprintAbility[] fiendishExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.EndsWith("_Fiendish",
+                    StringComparison.Ordinal)).ToArray();
+            bool templateChoicesExact = templateChoices.Length == 182 &&
+                templateChoices.All(value => value.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants.Length == 2 &&
+                    !value.ComponentsArray.OfType<AbilityEffectRunAction>().Any());
+            bool celestialExact = celestialExecutions.Length == 182 &&
+                celestialExecutions.All(value => value.ComponentsArray
+                    .OfType<AbilityCasterAlignment>().Single().Alignment ==
+                        (AlignmentMaskType)63 && value.ComponentsArray
+                    .OfType<SpellDescriptorComponent>().Single().Descriptor
+                        .HasAnyFlag(SpellDescriptor.Good) &&
+                    ExpandedSummoningTemplateApplyCount(value) >= 1);
+            bool fiendishExact = fiendishExecutions.Length == 182 &&
+                fiendishExecutions.All(value => value.ComponentsArray
+                    .OfType<AbilityCasterAlignment>().Single().Alignment ==
+                        (AlignmentMaskType)504 && value.ComponentsArray
+                    .OfType<SpellDescriptorComponent>().Single().Descriptor
+                        .HasAnyFlag(SpellDescriptor.Evil) &&
+                    ExpandedSummoningTemplateApplyCount(value) >= 1);
+            BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
+                value.name.StartsWith("KMG_Summoning_Template_",
+                    StringComparison.Ordinal)).ToArray();
+            bool templateBuffsExact = templateBuffs.Length == 4 &&
+                templateBuffs.All(value => value.ComponentsArray
+                    .OfType<AddDamageResistancePhysical>().Count() == 1) &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddDamageResistanceEnergy>().Count() == 3) == 2 &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddDamageResistanceEnergy>().Count() == 2) == 2 &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddSpellResistance>().Count() == 1) == 2;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7207,6 +7249,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-starting-inventory", "0",
                     nonemptyInventories.ToString(), nonemptyInventories == 0,
                     "all 67 KMG unit StartingInventory arrays"),
+                Assertion("expanded-summoning-template-logical-choices", "182",
+                    templateChoices.Length.ToString(), templateChoicesExact,
+                    "nested two-choice AbilityVariants without direct spawn effects"),
+                Assertion("expanded-summoning-celestial-executions", "182",
+                    celestialExecutions.Length.ToString(), celestialExact,
+                    "non-evil mask, Good descriptor, and child template application"),
+                Assertion("expanded-summoning-fiendish-executions", "182",
+                    fiendishExecutions.Length.ToString(), fiendishExact,
+                    "non-good mask, Evil descriptor, and child template application"),
+                Assertion("expanded-summoning-template-buffs", "4",
+                    templateBuffs.Length.ToString(), templateBuffsExact,
+                    "native resistance, alignment DR, and high-tier SR components"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -7232,6 +7286,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Name == name && value.FieldType.IsArray);
             Array array = field.GetValue(target) as Array;
             return array == null ? -1 : array.Length;
+        }
+
+        private static int ExpandedSummoningTemplateApplyCount(
+            BlueprintAbility ability)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningTemplateApplyCount(component, seen, ref count);
+            return count;
+        }
+
+        private static void ExpandedSummoningTemplateApplyCount(object value,
+            ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            ContextActionApplyBuff apply = value as ContextActionApplyBuff;
+            if (apply != null && apply.Buff != null &&
+                apply.Buff.name.StartsWith("KMG_Summoning_Template_",
+                    StringComparison.Ordinal) && apply.Permanent &&
+                apply.IsNotDispelable && apply.AsChild) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningTemplateApplyCount(item, seen, ref count);
+                else ExpandedSummoningTemplateApplyCount(child, seen, ref count);
+            }
         }
 
         private RuntimeTestResult RunDisposableShieldOther()

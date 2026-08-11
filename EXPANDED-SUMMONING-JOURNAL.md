@@ -359,3 +359,23 @@
   the scenario performed no save access.
 - Repository validation, 1,002/1,002 tests, clean Release, and strict package
   validation PASS after the repair.
+
+## 2026-08-11 - localization repair PASS and exact template observer
+
+- Guarded fresh-process run
+  `20260811T1937046769749Z-observe-expanded-summoning-inventory` passed on
+  repaired source `61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5`.
+  The loaded library contained 67 KMG units, 1,045 KMG abilities, 1,370 total
+  identities, and 681 live parent placements; all sanitizer assertions passed
+  and no save was accessed.
+- Added fail-closed final-live assertions for exactly 182 nested logical
+  template choices, 182 celestial executions, 182 fiendish executions, and
+  four template buffs. Execution checks cover alignment masks, Good/Evil
+  descriptors, lack of direct logical effects, and permanent non-dispellable
+  child-buff application on every spawn branch. Buff checks cover DR bypass,
+  exact elemental-resistance component counts, and high-tier CR+5 SR.
+- Repository validation, 1,002/1,002 domain/reflection tests, clean Release,
+  and strict standalone package validation PASS. DLL SHA-256:
+  `17a6c5a3fb889f700d1a3db362ee7c111b52d87b68d26ad74019b7c5d85d3eb2`;
+  package SHA-256:
+  `5f1a75d3b29102d7e77742fed0476005a78db98cd85b5cb6473cff8fc10a6f43`.

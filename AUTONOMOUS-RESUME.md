@@ -2246,3 +2246,18 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   and strict package PASS.
 - Exact next action: commit/push and run the guarded structural observer, then
   add exact template graph assertions and finish SR/smite/alignment fidelity.
+
+## Expanded Summoning current resume - exact template graph observer
+
+- The localization repair passed guarded fresh-process run
+  `20260811T1937046769749Z-observe-expanded-summoning-inventory` on source
+  `61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5`; 67 units, 1,045 abilities,
+  1,370 identities, 681 placements, and all sanitizer checks passed with no
+  save access.
+- The structural observer now requires exactly 182 logical template choices,
+  182 celestial executions, 182 fiendish executions, and four native-component
+  template buffs, including alignment gates, descriptors, child application,
+  resistance/DR structure, and high-tier spell resistance.
+- Repository validation, 1,002/1,002 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rerun the observer on that
+  immutable SHA, then finish template SR/smite/alignment fidelity.

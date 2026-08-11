@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "b77f392f918649beb3fdbfc62026bae48d3490a5",
+  "currentSha": "61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "template-localization-collision-repaired",
-  "nextConcreteAction": "Commit and push the localization-key repair, then retry the guarded structural observer.",
+  "completedPhase": "template-graph-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the exact template graph observer, then run it in a guarded fresh process against the immutable source SHA.",
   "domainTestResult": "1002/1002 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 dbd047731508c0395900f48ab86e6bd862ef348fa36bf4de3933c2baaa43cecc",
-  "packageResult": "strict PASS; SHA-256 f5c42e5160147944420028d91ab80761502c1436e7d60bc56ffe8dcefb86c8db",
+  "releaseBuildResult": "PASS; DLL SHA-256 17a6c5a3fb889f700d1a3db362ee7c111b52d87b68d26ad74019b7c5d85d3eb2",
+  "packageResult": "strict PASS; SHA-256 5f1a75d3b29102d7e77742fed0476005a78db98cd85b5cb6473cff8fc10a6f43",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -101,6 +101,13 @@
       "sourceSha": "b77f392f918649beb3fdbfc62026bae48d3490a5",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1932316147945Z-observe-expanded-summoning-inventory/runtime-evidence.json",
       "rootCause": "Localization key collision between celestial/fiendish execution descriptions; repaired in the following commit."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1937046769749Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Template localization repair loaded cleanly; 67 units, 1045 abilities, 1370 registered identities, 681 parent placements, and sanitizer invariants passed without save access."
     }
   ],
   "compatibilityProfilesCompleted": [],
