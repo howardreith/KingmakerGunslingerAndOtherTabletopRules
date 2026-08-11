@@ -72,7 +72,7 @@ namespace KingmakerGunslinger.Summoning
             "dominateperson", "dominate person", "vampirictouch",
             "vampiric touch", "tailslap", "tail slap", "constrict",
             "improvedgrab", "improved grab", "heatfeature", "subtypedemon",
-            "coldirongood", "cold iron or good"
+            "coldirongood", "cold iron or good", "spear", "longspear"
         };
         private static readonly string[] ExactSpecialMechanicGuids = {
             "24719a49b84c5cd43b894268d22d9c89",
@@ -86,7 +86,9 @@ namespace KingmakerGunslinger.Summoning
             "04dcf5776f9d4315b27d1c0c7c2f3c46",
             "efc1e80fb41e06544be46604983806d6",
             "d7cbd2004ce66a042aeab2e95a3c5c61",
-            "cce5bb72adc78f944b480e01efd3eaef"
+            "cce5bb72adc78f944b480e01efd3eaef",
+            "c0f4e1c24c9cd334ca988ed1bd9d201f",
+            "6cbb040023868574b992677885390f92"
         };
 
         internal static ExpandedSummoningInventoryObservation Observe(
@@ -130,7 +132,7 @@ namespace KingmakerGunslinger.Summoning
             BlueprintScriptableObject[] specialCandidates = all.Where(value =>
                 ContainsAny(SearchText(value), SpecialMechanicTerms))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
-            BlueprintScriptableObject[] specialIndex = specialCandidates.Take(300)
+            BlueprintScriptableObject[] specialIndex = specialCandidates.Take(500)
                 .ToArray();
             foreach (BlueprintScriptableObject value in specialIndex)
                 records.Add("special-index=" + Describe(value) + ";components=" +
