@@ -69,5 +69,18 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Ability builder contract is missing: " + token);
         }
+
+        internal static void RuntimePublicationIsAdditiveAndTransactional()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningPublication.cs"));
+            foreach (string token in new[] { "SummonVariantMergePolicy.Merge",
+                "OriginalComponents", "PublishedComponents",
+                "rollback refused after unrelated mutation",
+                "originals.Any(original => !variants.Variants.Contains(original))" })
+                Assertions.True(source.Contains(token),
+                    "Runtime publication contract is missing: " + token);
+        }
     }
 }

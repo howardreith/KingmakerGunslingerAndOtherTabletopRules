@@ -616,12 +616,17 @@ namespace KingmakerGunslinger.Bootstrap
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
+            ExpandedSummoningPublication expandedSummoningPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
 
-                ExpandedSummoningBlueprints.Register(library, registry);
+                ExpandedSummoningBlueprintSet expandedSummoning =
+                    ExpandedSummoningBlueprints.Register(library, registry);
+                if (publicationPlan.ExpandedSummoningParents)
+                    expandedSummoningPublication = ExpandedSummoningPublisher
+                        .Publish(library, expandedSummoning);
 
                 ShieldOtherBlueprintSet shieldOther =
                     ShieldOtherBlueprints.Register(library, registry);
@@ -992,6 +997,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "shield-other.rollback-failed",
                             "Blueprint initialization failed and Shield Other list rollback was refused.",
                             spellRollbackException);
+                    }
+                }
+                if (expandedSummoningPublication != null)
+                {
+                    try { expandedSummoningPublication.Rollback(); }
+                    catch (Exception summonRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "expanded-summoning.rollback-failed",
+                            "Blueprint initialization failed and Expanded Summoning parent rollback was refused.",
+                            summonRollbackException);
                     }
                 }
                 if (classPublication != null)

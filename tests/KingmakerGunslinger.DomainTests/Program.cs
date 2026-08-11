@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.identities-logical-coverage", ExpandedSummoningIdentityCatalogTests.SymbolsEncodeEveryLogicalPlacement),
             Case("expanded-summoning.donors-exact", ExpandedSummoningIdentityCatalogTests.DonorsCoverEveryFrozenCreature),
             Case("expanded-summoning.ability-builder", ExpandedSummoningIdentityCatalogTests.AbilityBuilderPreservesNativeGraphContracts),
+            Case("expanded-summoning.runtime-publication", ExpandedSummoningIdentityCatalogTests.RuntimePublicationIsAdditiveAndTransactional),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
             Case("feature-settings.sixteen-combinations", FeatureModuleSettingsTests.SixteenCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),

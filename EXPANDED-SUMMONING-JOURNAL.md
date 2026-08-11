@@ -253,3 +253,21 @@
 - Repository validation, 998/998 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `56b964c0c4d6c3b9c459d1aa9943b1773b2f6dd1a56ad987b4f1fcf927fa04ae`;
   package SHA-256: `db84ce95e431fa502b6aa6736fd8308350951963f32516663102e5c061b8511f`.
+
+## 2026-08-11 - native action graph and transactional publication
+
+- Guarded fresh-process run
+  `20260811T1905591662821Z-observe-expanded-summoning-inventory` passed on
+  source `344c9590dc02c086da9e4d9dcd03917e6ebb741a`: all 67 units, 1,045
+  abilities, 1,370 registered identities, and every configured native spawn
+  action graph validated without save access.
+- Added additive publication for all 18 canonical SM/SNA parents. The merge
+  preserves original references and order, appends the 681 KMG logical
+  placements deterministically, rejects duplicate identities, and records the
+  exact component collection for rollback. Rollback refuses an unrelated later
+  mutation rather than overwriting it.
+- Repository validation, 999/999 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256:
+  `ea5e5c6cd7eee93c727ea655617a279128cc33bad4ab89914b0ce882babe91e0`;
+  package SHA-256:
+  `7d1a8860253fb28c9dd0f470c0e40a7b3a4146eec66c75c3697dbfd1d9b55310`.

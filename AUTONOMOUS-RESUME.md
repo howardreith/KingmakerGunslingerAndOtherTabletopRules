@@ -2186,3 +2186,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   runtime validator and focused source test plus evidence docs are uncommitted.
 - Exact next action: validate/commit/publish/rebuild and retry all-enabled.
 - Remaining gates unchanged. Active blocker: none.
+## Expanded Summoning current resume - transactional publication ready
+
+- Working branch: `codex/expanded-summoning`; baseline
+  `2894d9fcce250708e354894ffd8e1be9c7493b9b`.
+- Latest guarded PASS:
+  `20260811T1905591662821Z-observe-expanded-summoning-inventory` on
+  `344c9590dc02c086da9e4d9dcd03917e6ebb741a`; 67 units, 1,045 abilities,
+  1,370 registered identities, and all native spawn graphs validated.
+- Additive transactional publication for the 18 canonical summon parents is
+  source-qualified with 999/999 tests, clean Release, and strict package PASS.
+- Exact next action: commit/push this checkpoint, rebuild from the committed
+  SHA, then run `observe-expanded-summoning-inventory` to prove 681 live KMG
+  placements and exact preservation of all preexisting parent variants.
+- Remaining work includes alignment/template mechanics, fact-level unit
+  normalization, special adaptations, optional-parent reconciliation, guarded
+  mechanical/visual/persistence scenarios, profiles, release metadata, and PR.

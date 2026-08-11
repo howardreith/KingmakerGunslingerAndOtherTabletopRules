@@ -7124,6 +7124,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ExpandedSummoningInventoryObservation observation =
                 ExpandedSummoningInventoryObserver.Observe(BlueprintBootstrap.Library);
+            BlueprintScriptableObject[] all = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            int kmgUnits = all.OfType<BlueprintUnit>().Count(value =>
+                value.name.StartsWith("KMG_Summoning_Unit_", StringComparison.Ordinal));
+            int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
+                value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal));
+            string[] parentGuids = {
+                "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7", "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef", "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c", "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0", "52b5df2a97df18242aec67610616ded0",
+                "c6147854641924442a3bb736080cfeb6", "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61", "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e" };
+            int publishedPlacements = parentGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    BlueprintBootstrap.Library, guid, "canonical summon parent")
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants.Count(value =>
+                    value != null && value.name.StartsWith(
+                        "KMG_Summoning_Ability_", StringComparison.Ordinal)));
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7132,6 +7147,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("summon-unit-donor-candidates", ">=40",
                     observation.UnitCount.ToString(), observation.UnitCount >= 40,
                     "final-live BlueprintUnit roster-term inventory"),
+                Assertion("expanded-summoning-registered-identities",
+                    "units=67;abilities=1045;registry=1370",
+                    "units=" + kmgUnits + ";abilities=" + kmgAbilities +
+                        ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
+                    kmgUnits == 67 && kmgAbilities == 1045 &&
+                        BlueprintBootstrap.RegisteredBlueprintCount == 1370,
+                    "exact final-live KMG blueprint identity scan"),
+                Assertion("expanded-summoning-parent-placements", "681",
+                    publishedPlacements.ToString(), publishedPlacements == 681,
+                    "18 canonical AbilityVariants surfaces"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
