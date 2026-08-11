@@ -309,7 +309,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-inherited-class-spells",
                 "expanded-summoning-starting-inventory",
                 "ExpandedSummoningIsForbiddenReference(value)",
-                "KMG_Summoning_Special_LanternArchon_LightRay",
+                "ExpandedSummoningIdentityCatalog.Build()",
+                "value.name.StartsWith(\"KMG_Summoning_Special_\"",
                 "KMG_Summoning_Special_LanternArchon_Defenses" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded isolation observer is missing: " + token);

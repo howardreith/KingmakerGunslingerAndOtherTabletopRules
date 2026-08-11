@@ -7133,9 +7133,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             int kmgUnits = all.OfType<BlueprintUnit>().Count(value =>
                 value.name.StartsWith("KMG_Summoning_Unit_", StringComparison.Ordinal));
+            int expectedKmgAbilities = ExpandedSummoningIdentityCatalog.Build()
+                .Count(value => value.PlannedType == "BlueprintAbility");
             int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
                 value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal) ||
-                value.name == "KMG_Summoning_Special_LanternArchon_LightRay");
+                value.name.StartsWith("KMG_Summoning_Special_", StringComparison.Ordinal));
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0;
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
@@ -7473,10 +7475,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.SpecialCandidateCount >= 1,
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=67;abilities=1047;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                    "units=67;abilities=" + expectedKmgAbilities + ";registry=" +
+                        BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
-                    kmgUnits == 67 && kmgAbilities == 1047 &&
+                    kmgUnits == 67 && kmgAbilities == expectedKmgAbilities &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
