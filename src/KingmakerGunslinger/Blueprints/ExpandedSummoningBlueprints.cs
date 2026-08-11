@@ -71,6 +71,9 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintItemWeapon")
                     blueprint = registry.Register<BlueprintItemWeapon>(
                         identity.Symbol, () => CreateWeaponShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintAbilityResource")
+                    blueprint = registry.Register<BlueprintAbilityResource>(
+                        identity.Symbol, () => CreateResourceShell(identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -107,6 +110,14 @@ namespace KingmakerGunslinger.Blueprints
                 ScriptableObject.CreateInstance<BlueprintItemWeapon>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        private static BlueprintAbilityResource CreateResourceShell(string symbol)
+        {
+            BlueprintAbilityResource result =
+                ScriptableObject.CreateInstance<BlueprintAbilityResource>();
+            result.name = InternalName(symbol);
             return result;
         }
 

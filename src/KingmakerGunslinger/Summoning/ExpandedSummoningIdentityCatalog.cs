@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 182;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 12;
+        internal const int SpecialIdentityCount = 22;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount;
 
@@ -65,6 +65,16 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Succubus.DominateAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Succubus.Brain", "BlueprintBrain"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Succubus.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.DismantledArmor", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.SleepBow", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.IrresistibleDance", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.IrresistibleDanceResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.SleepArrowResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

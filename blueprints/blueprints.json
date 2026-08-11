@@ -11103,6 +11103,86 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bebelith.Claw",
+      "guid": "85971d6300dd41a0a62b0dd92a570045",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bebelith.CombatTraits",
+      "guid": "d152ef1f0a2e42bea3e7a86228a67f2f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bebelith.DismantledArmor",
+      "guid": "736a349933f24cc2b11bc284b6e559cb",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.SleepBow",
+      "guid": "0a1d8ac4be724595aa952471a9491975",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDance",
+      "guid": "5cacf6a72c724b7fad8d7605cba1e790",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDanceResource",
+      "guid": "dfb8be6f355242ea9c3a71a6205ec740",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.SleepArrowResource",
+      "guid": "43b5e6bcea224d5c95d57427d169dc64",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.CombatTraits",
+      "guid": "8e2f377293a648549397994d2bdc7f59",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDanceAi",
+      "guid": "4293d2f989f949248a3a5f10821b52dc",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pixie.Brain",
+      "guid": "b1ae3931b1ad49c3939b236800fa5720",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

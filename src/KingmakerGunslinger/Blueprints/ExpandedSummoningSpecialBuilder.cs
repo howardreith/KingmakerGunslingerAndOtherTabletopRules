@@ -69,6 +69,29 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Succubus.Brain";
         private const string SuccubusCombatTraitsSymbol =
             "KMG.Summoning.Special.Succubus.CombatTraits";
+        private const string BebelithUnitSymbol =
+            "KMG.Summoning.Unit.Bebelith";
+        private const string BebelithClawSymbol =
+            "KMG.Summoning.Special.Bebelith.Claw";
+        private const string BebelithCombatTraitsSymbol =
+            "KMG.Summoning.Special.Bebelith.CombatTraits";
+        private const string BebelithDismantledArmorSymbol =
+            "KMG.Summoning.Special.Bebelith.DismantledArmor";
+        private const string PixieUnitSymbol = "KMG.Summoning.Unit.Pixie";
+        private const string PixieSleepBowSymbol =
+            "KMG.Summoning.Special.Pixie.SleepBow";
+        private const string PixieDanceSymbol =
+            "KMG.Summoning.Special.Pixie.IrresistibleDance";
+        private const string PixieDanceResourceSymbol =
+            "KMG.Summoning.Special.Pixie.IrresistibleDanceResource";
+        private const string PixieSleepResourceSymbol =
+            "KMG.Summoning.Special.Pixie.SleepArrowResource";
+        private const string PixieCombatTraitsSymbol =
+            "KMG.Summoning.Special.Pixie.CombatTraits";
+        private const string PixieDanceAiSymbol =
+            "KMG.Summoning.Special.Pixie.IrresistibleDanceAi";
+        private const string PixieBrainSymbol =
+            "KMG.Summoning.Special.Pixie.Brain";
 
         private const string NativeRayGuid = "33e8997912cf76b4c99dca0445082804";
         private const string NativeRayAiGuid = "dcfc5e9aec5bea540b36caf754989164";
@@ -122,6 +145,12 @@ namespace KingmakerGunslinger.Blueprints
         private const string MagicalBeastTypeGuid = "625827490ea69d84d8e599a33929fdc6";
         private const string VerminTypeGuid = "09478937695300944a179530664e42ec";
         private const string UndeadTypeGuid = "734a29b693e9ec346ba2951b27987e33";
+        private const string FeyClassGuid = "f2e6e760ead99fb48ade27c7e9d4ac94";
+        private const string HugeBiteGuid = "d2f99947db522e24293a7ec4eded453f";
+        private const string StandardLongbowGuid = "201f6150321e09048bd59e9b7f558cb0";
+        private const string NativeDanceGuid = "fad6a06a3cb04fabaedf4d358c61880d";
+        private const string NativeDanceBuffGuid = "4d283e0b70fb489ba79e69387818c3f3";
+        private const string NativeSleepingBuffGuid = "5e0cd801bac0e95429bb7e4d1bc61a23";
 
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -174,6 +203,44 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSuccubusCombatTraits(library, succubusTraits);
             ConfigureSuccubus(library, Require<BlueprintUnit>(bySymbol,
                 SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits);
+            BlueprintItemWeapon bebelithClaw = Require<BlueprintItemWeapon>(
+                bySymbol, BebelithClawSymbol);
+            BlueprintBuff dismantledArmor = Require<BlueprintBuff>(bySymbol,
+                BebelithDismantledArmorSymbol);
+            BlueprintBuff bebelithTraits = Require<BlueprintBuff>(bySymbol,
+                BebelithCombatTraitsSymbol);
+            ConfigureBebelithClaw(library, bebelithClaw);
+            ConfigureBebelithDismantledArmor(dismantledArmor);
+            ConfigureBebelithCombatTraits(library, bebelithTraits,
+                bebelithClaw, dismantledArmor);
+            ConfigureBebelith(library, Require<BlueprintUnit>(bySymbol,
+                BebelithUnitSymbol), bebelithClaw, bebelithTraits);
+            BlueprintItemWeapon pixieSleepBow = Require<BlueprintItemWeapon>(
+                bySymbol, PixieSleepBowSymbol);
+            BlueprintAbilityResource pixieDanceResource = Require<
+                BlueprintAbilityResource>(bySymbol, PixieDanceResourceSymbol);
+            BlueprintAbilityResource pixieSleepResource = Require<
+                BlueprintAbilityResource>(bySymbol, PixieSleepResourceSymbol);
+            BlueprintAbility pixieDance = Require<BlueprintAbility>(bySymbol,
+                PixieDanceSymbol);
+            BlueprintBuff pixieTraits = Require<BlueprintBuff>(bySymbol,
+                PixieCombatTraitsSymbol);
+            BlueprintAiCastSpell pixieDanceAi = Require<BlueprintAiCastSpell>(
+                bySymbol, PixieDanceAiSymbol);
+            BlueprintBrain pixieBrain = Require<BlueprintBrain>(bySymbol,
+                PixieBrainSymbol);
+            ConfigurePixieSleepBow(library, pixieSleepBow);
+            ConfigureResource(pixieDanceResource, "Irresistible Dance",
+                ExpandedSummoningSpecialProfiles.PixieDanceUses);
+            ConfigureResource(pixieSleepResource, "Sleep Arrows",
+                ExpandedSummoningSpecialProfiles.PixieSleepArrowUses);
+            ConfigurePixieDance(library, pixieDance, pixieDanceResource);
+            ConfigurePixieCombatTraits(library, pixieTraits, pixieSleepBow,
+                pixieSleepResource, pixieDanceResource);
+            ConfigurePixieAi(pixieDanceAi, pixieDance, pixieBrain);
+            ConfigurePixie(library, Require<BlueprintUnit>(bySymbol,
+                PixieUnitSymbol), pixieSleepBow, pixieDance, pixieBrain,
+                pixieTraits);
         }
 
         private static AddClassLevels OutsiderLevels(
@@ -188,6 +255,26 @@ namespace KingmakerGunslinger.Blueprints
             levels.LevelsStat = StatType.Unknown;
             levels.Skills = new[] { StatType.SkillPerception,
                 StatType.SkillMobility, StatType.SkillPersuasion };
+            levels.Archetypes = Array.Empty<BlueprintArchetype>();
+            levels.SelectSpells = Array.Empty<BlueprintAbility>();
+            levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
+            levels.Selections = Array.Empty<SelectionEntry>();
+            return levels;
+        }
+
+        private static AddClassLevels FeyLevels(LibraryScriptableObject library,
+            int hitDice)
+        {
+            var levels = ScriptableObject.CreateInstance<AddClassLevels>();
+            levels.CharacterClass = BlueprintLibraryLookup.RequireExact<
+                BlueprintCharacterClass>(library, FeyClassGuid,
+                    "native fey class");
+            levels.Levels = hitDice;
+            levels.RaceStat = StatType.Constitution;
+            levels.LevelsStat = StatType.Unknown;
+            levels.Skills = new[] { StatType.SkillPerception,
+                StatType.SkillMobility, StatType.SkillPersuasion,
+                StatType.SkillStealth };
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
             levels.SelectSpells = Array.Empty<BlueprintAbility>();
             levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
@@ -684,6 +771,365 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, FireImmunityGuid, "fire immunity"),
                 Feature(library, ElectricityImmunityGuid, "electricity immunity"),
                 Feature(library, PoisonImmunityGuid, "poison immunity"),
+                Feature(library, DodgeGuid, "Dodge"),
+                Feature(library, WeaponFinesseGuid, "Weapon Finesse"),
+                combatTraits
+            };
+        }
+
+        private static void ConfigureBebelithClaw(
+            LibraryScriptableObject library, BlueprintItemWeapon claw)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, LargeClawGuid,
+                    "native animated claw weapon");
+            CopyFields(native, claw);
+            claw.name = InternalName(BebelithClawSymbol);
+            claw.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(claw, "m_OverrideDamageDice", true);
+            SetField(claw, "m_DamageDice", new DiceFormula(2, DiceType.D4));
+            SetField(claw, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        private static void ConfigureBebelithDismantledArmor(BlueprintBuff buff)
+        {
+            var penalty = ScriptableObject.CreateInstance<AddStatBonus>();
+            penalty.Stat = StatType.AC;
+            penalty.Descriptor = ModifierDescriptor.UntypedStackable;
+            penalty.Value = -ExpandedSummoningSpecialProfiles
+                .BebelithDismantleAcPenalty;
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = false;
+            buff.ComponentsArray = new BlueprintComponent[] { penalty };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Name",
+                    "Dismantled Armor"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Description",
+                    "A Bebelith caught and tore the armor. The target takes a bounded -2 AC penalty for one round; no equipped item is mutated."),
+                null);
+        }
+
+        private static void ConfigureBebelithCombatTraits(
+            LibraryScriptableObject library, BlueprintBuff buff,
+            BlueprintItemWeapon claw, BlueprintBuff dismantledArmor)
+        {
+            BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, HugeBiteGuid,
+                    "Bebelith 2d6 bite");
+            var naturalArmor = ScriptableObject.CreateInstance<AddStatBonus>();
+            naturalArmor.Stat = StatType.AC;
+            naturalArmor.Descriptor = ModifierDescriptor.NaturalArmor;
+            naturalArmor.Value = 13;
+            var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
+            dr.Value = Simple(ExpandedSummoningSpecialProfiles
+                .BebelithDamageReduction);
+            dr.BypassedByAlignment = true;
+            dr.Alignment = DamageAlignment.Good;
+            var combat = ScriptableObject.CreateInstance<
+                BebelithCombatComponent>();
+            combat.Claw = claw;
+            combat.Bite = bite;
+            combat.OutsiderType = Feature(library, OutsiderTypeGuid,
+                "outsider creature type");
+            combat.DismantledArmor = dismantledArmor;
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                naturalArmor, dr, combat
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.CombatTraits.Name",
+                    "Bebelith Combat Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.CombatTraits.Description",
+                    "Natural armor, DR 10/good, a bounded armor-dismantling claw sequence, and a +2 attack and damage bonus against chaotic evil outsiders."),
+                null);
+        }
+
+        private static void ConfigureBebelith(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintItemWeapon claw,
+            BlueprintBuff combatTraits)
+        {
+            BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, HugeBiteGuid,
+                    "Bebelith 2d6 bite");
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.BebelithHitDice)
+            };
+            unit.Body = NaturalBody(claw, new[] { claw }, new[] { bite });
+            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
+                library, DumbBrainGuid, "bounded natural-attack brain");
+            ConfigureUnitCore(unit, "Bebelith", "Bebelith",
+                Alignment.ChaoticEvil, Size.Huge,
+                ExpandedSummoningSpecialProfiles.BebelithStrength,
+                ExpandedSummoningSpecialProfiles.BebelithDexterity,
+                ExpandedSummoningSpecialProfiles.BebelithConstitution,
+                ExpandedSummoningSpecialProfiles.BebelithIntelligence,
+                ExpandedSummoningSpecialProfiles.BebelithWisdom,
+                ExpandedSummoningSpecialProfiles.BebelithCharisma,
+                ExpandedSummoningSpecialProfiles.BebelithSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                Feature(library, OutsiderTypeGuid, "outsider creature type"),
+                Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
+                Feature(library, EvilSubtypeGuid, "evil subtype"),
+                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
+                Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
+                combatTraits
+            };
+        }
+
+        private static void ConfigurePixieSleepBow(
+            LibraryScriptableObject library, BlueprintItemWeapon bow)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, StandardLongbowGuid,
+                    "standard longbow arrow rig");
+            CopyFields(native, bow);
+            bow.name = InternalName(PixieSleepBowSymbol);
+            bow.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(bow, "m_OverrideDamageDice", true);
+            SetField(bow, "m_DamageDice", new DiceFormula(0, DiceType.Zero));
+            SetField(bow, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        private static void ConfigureResource(BlueprintAbilityResource resource,
+            string displayName, int maximum)
+        {
+            resource.name = displayName == "Sleep Arrows" ?
+                InternalName(PixieSleepResourceSymbol) :
+                InternalName(PixieDanceResourceSymbol);
+            resource.LocalizedName = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Pixie." +
+                    displayName.Replace(" ", string.Empty) + ".Resource.Name",
+                displayName);
+            resource.LocalizedDescription = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Pixie." +
+                    displayName.Replace(" ", string.Empty) +
+                    ".Resource.Description",
+                "Uses remaining for this summoned Pixie.");
+            FieldInfo amountField = Fields(typeof(BlueprintAbilityResource))
+                .SingleOrDefault(value => value.Name == "m_MaxAmount");
+            if (amountField == null || !amountField.FieldType.IsValueType)
+                throw new MissingFieldException(
+                    typeof(BlueprintAbilityResource).FullName, "m_MaxAmount");
+            object amount = Activator.CreateInstance(amountField.FieldType);
+            FieldInfo baseField = amountField.FieldType.GetField("BaseValue");
+            if (baseField == null || baseField.FieldType != typeof(int))
+                throw new MissingFieldException(amountField.FieldType.FullName,
+                    "BaseValue");
+            baseField.SetValue(amount, maximum);
+            foreach (string arrayName in new[] { "Class", "Archetypes",
+                "ClassDiv", "ArchetypesDiv" })
+            {
+                FieldInfo arrayField = amountField.FieldType.GetField(arrayName);
+                if (arrayField == null || !arrayField.FieldType.IsArray)
+                    throw new MissingFieldException(amountField.FieldType.FullName,
+                        arrayName);
+                arrayField.SetValue(amount, Array.CreateInstance(
+                    arrayField.FieldType.GetElementType(), 0));
+            }
+            amountField.SetValue(resource, amount);
+        }
+
+        private static void ConfigurePixieDance(
+            LibraryScriptableObject library, BlueprintAbility ability,
+            BlueprintAbilityResource resource)
+        {
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeDanceGuid,
+                    "native Irresistible Dance touch delivery");
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeDanceBuffGuid,
+                    "native Irresistible Dance target state");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(PixieDanceSymbol);
+            ability.Type = AbilityType.SpellLike;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            var spell = ScriptableObject.CreateInstance<SpellComponent>();
+            spell.School = SpellSchool.Enchantment;
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.MindAffecting |
+                SpellDescriptor.Compulsion;
+            var parameters = ScriptableObject.CreateInstance<
+                ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Charisma;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(ExpandedSummoningSpecialProfiles
+                .PixieDanceCasterLevel);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles
+                .PixieDanceSpellLevel);
+            AbilityDeliverTouch delivery = (AbilityDeliverTouch)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    native.ComponentsArray.OfType<AbilityDeliverTouch>().Single());
+            var failedApply = new ContextActionApplyBuff {
+                Buff = nativeBuff,
+                DurationValue = new ContextDurationValue {
+                    Rate = DurationRate.Rounds,
+                    DiceType = DiceType.D4,
+                    DiceCountValue = Simple(1),
+                    BonusValue = Simple(1)
+                },
+                IsFromSpell = false,
+                IsNotDispelable = false
+            };
+            var succeededApply = new ContextActionApplyBuff {
+                Buff = nativeBuff,
+                DurationValue = new ContextDurationValue {
+                    Rate = DurationRate.Rounds,
+                    DiceType = DiceType.Zero,
+                    DiceCountValue = Simple(0),
+                    BonusValue = Simple(1)
+                },
+                IsFromSpell = false,
+                IsNotDispelable = false
+            };
+            var saved = new ContextActionConditionalSaved {
+                Failed = new ActionList { Actions = new GameAction[] {
+                    failedApply } },
+                Succeed = new ActionList { Actions = new GameAction[] {
+                    succeededApply } }
+            };
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.SavingThrowType = SavingThrowType.Will;
+            effect.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+            ability.ComponentsArray = new BlueprintComponent[] {
+                spell, descriptor, parameters, cost, delivery, effect
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.Name",
+                    "Irresistible Dance"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.Description",
+                    "Once per summon, a touched creature dances for 1d4+1 rounds on a failed Will save or one round on a successful save."),
+                native.Icon);
+        }
+
+        private static AddAbilityResources AddResource(
+            BlueprintAbilityResource resource)
+        {
+            var add = ScriptableObject.CreateInstance<AddAbilityResources>();
+            add.UseThisAsResource = false;
+            add.Resource = resource;
+            add.Amount = 0;
+            add.RestoreAmount = true;
+            add.RestoreOnLevelUp = false;
+            return add;
+        }
+
+        private static void ConfigurePixieCombatTraits(
+            LibraryScriptableObject library, BlueprintBuff buff,
+            BlueprintItemWeapon sleepBow,
+            BlueprintAbilityResource sleepResource,
+            BlueprintAbilityResource danceResource)
+        {
+            var naturalArmor = ScriptableObject.CreateInstance<AddStatBonus>();
+            naturalArmor.Stat = StatType.AC;
+            naturalArmor.Descriptor = ModifierDescriptor.NaturalArmor;
+            naturalArmor.Value = 1;
+            var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
+            dr.Value = Simple(ExpandedSummoningSpecialProfiles
+                .PixieDamageReduction);
+            dr.BypassedByMaterial = true;
+            dr.Material = PhysicalDamageMaterial.ColdIron;
+            var sr = ScriptableObject.CreateInstance<AddSpellResistance>();
+            sr.Value = Simple(ExpandedSummoningSpecialProfiles
+                .PixieSpellResistance);
+            sr.AddCR = false;
+            var arrows = ScriptableObject.CreateInstance<
+                PixieSleepArrowComponent>();
+            arrows.SleepBow = sleepBow;
+            arrows.SleepArrowResource = sleepResource;
+            arrows.SleepingBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSleepingBuffGuid,
+                    "native bounded Sleeping state");
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                naturalArmor, dr, sr, AddResource(sleepResource),
+                AddResource(danceResource), arrows
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.CombatTraits.Name",
+                    "Pixie Combat Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.CombatTraits.Description",
+                    "DR 10/cold iron, spell resistance 15, sixteen no-damage sleep arrows (Will DC 15), and one use of irresistible dance."),
+                null);
+        }
+
+        private static void ConfigurePixieAi(BlueprintAiCastSpell ai,
+            BlueprintAbility dance, BlueprintBrain brain)
+        {
+            ai.name = InternalName(PixieDanceAiSymbol);
+            ai.Ability = dance;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(PixieBrainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+        }
+
+        private static void ConfigurePixie(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintItemWeapon sleepBow,
+            BlueprintAbility dance, BlueprintBrain brain,
+            BlueprintBuff combatTraits)
+        {
+            var grant = ScriptableObject.CreateInstance<
+                AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { dance };
+            unit.ComponentsArray = new BlueprintComponent[] {
+                FeyLevels(library,
+                    ExpandedSummoningSpecialProfiles.PixieHitDice), grant
+            };
+            unit.Body = NaturalBody(sleepBow,
+                Array.Empty<BlueprintItemWeapon>(),
+                Array.Empty<BlueprintItemWeapon>());
+            unit.Brain = brain;
+            ConfigureUnitCore(unit, "Pixie", "Pixie", Alignment.NeutralGood,
+                Size.Small,
+                ExpandedSummoningSpecialProfiles.PixieStrength,
+                ExpandedSummoningSpecialProfiles.PixieDexterity,
+                ExpandedSummoningSpecialProfiles.PixieConstitution,
+                ExpandedSummoningSpecialProfiles.PixieIntelligence,
+                ExpandedSummoningSpecialProfiles.PixieWisdom,
+                ExpandedSummoningSpecialProfiles.PixieCharisma,
+                ExpandedSummoningSpecialProfiles.PixieSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                Feature(library, FeyTypeGuid, "fey creature type"),
+                Feature(library, AirborneGuid, "airborne movement"),
+                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                    NaturalInvisibilityGuid,
+                    "attack-safe natural invisibility"),
                 Feature(library, DodgeGuid, "Dodge"),
                 Feature(library, WeaponFinesseGuid, "Weapon Finesse"),
                 combatTraits

@@ -56,8 +56,18 @@ def planned():
         ("KMG.Summoning.Special.Succubus.DominateAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Succubus.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.Succubus.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Bebelith.Claw", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Bebelith.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Bebelith.DismantledArmor", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Pixie.SleepBow", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Pixie.IrresistibleDance", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Pixie.IrresistibleDanceResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.Pixie.SleepArrowResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"),
     ))
-    if len(rows) != 1132 or len({symbol for symbol, _ in rows}) != 1132:
+    if len(rows) != 1142 or len({symbol for symbol, _ in rows}) != 1142:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

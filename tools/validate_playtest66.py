@@ -26,7 +26,7 @@ def validate(root: Path, test_count: int = 865) -> None:
         "KMG.Spells.ShieldOther.Ability" for entry in manifest["entries"])
     has_expanded_summoning_reservations = any(entry.get("symbol", "").startswith(
         "KMG.Summoning.") for entry in manifest["entries"])
-    active_count, ledger_count = ((1386, 1387) if has_expanded_summoning_reservations else
+    active_count, ledger_count = ((1396, 1397) if has_expanded_summoning_reservations else
         ((254, 255) if has_shield_other else
         ((252, 253) if current_version == "0.0.76" else (250, 251))))
     validate_playtest64.validate_playtest63.validate_sprint60.validate(

@@ -55,6 +55,7 @@
     <Compile Include="Summoning\SummonTemplateBandPolicy.cs" />
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\ContextActionSetSummonAlignment.cs" />
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />

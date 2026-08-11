@@ -11,13 +11,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1132, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1142, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1047, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
-            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -190,6 +191,38 @@ namespace KingmakerGunslinger.DomainTests
                 .SuccubusHitDice, "Succubus HD changed.");
             Assertions.Equal(27, ExpandedSummoningSpecialProfiles
                 .SuccubusCharisma, "Succubus Charisma changed.");
+            Assertions.Equal(12, ExpandedSummoningSpecialProfiles
+                .BebelithHitDice, "Bebelith HD changed.");
+            Assertions.Equal(25, ExpandedSummoningSpecialProfiles
+                .BebelithDismantleReflexDc, "Bebelith dismantle DC changed.");
+            Assertions.True(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, true, 1, false),
+                "A second same-round claw hit against armor must attempt dismantle.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, true, 0, false),
+                "A first claw hit must not dismantle armor.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, false, 1, false),
+                "An unarmored target must not receive the adapted AC penalty.");
+            Assertions.True(ExpandedSummoningSpecialProfiles
+                .IsBebelithDemonHuntingTarget(true, 20),
+                "Chaotic evil outsiders must receive the demon-hunting bonus.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .IsBebelithDemonHuntingTarget(false, 20),
+                "A chaotic evil non-outsider must not be treated as a demon.");
+            Assertions.Equal(4, ExpandedSummoningSpecialProfiles.PixieHitDice,
+                "Pixie HD changed.");
+            Assertions.Equal(16, ExpandedSummoningSpecialProfiles
+                .PixieSleepArrowUses, "Pixie sleep-arrow uses changed.");
+            Assertions.True(ExpandedSummoningSpecialProfiles
+                .ShouldSpendPixieSleepArrow(true, true, 1),
+                "A successful sleep-bow hit must spend one use.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldSpendPixieSleepArrow(true, false, 16),
+                "A missed arrow must not spend a sleep-arrow use.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldSpendPixieSleepArrow(true, true, 0),
+                "An exhausted Pixie must not apply another sleep arrow.");
             Assertions.Equal("24719a49b84c5cd43b894268d22d9c89",
                 ExpandedSummoningDonorCatalog.For("lantern-archon").Guid,
                 "Lantern visual donor changed.");
@@ -217,7 +250,13 @@ namespace KingmakerGunslinger.DomainTests
                 "SalamanderConstrictDice", "Feature(library, DrMagic10Guid",
                 "ConfigureSuccubus", "Feature(library, AberrationTypeGuid",
                 "RemoveBuffIfCasterIsMissing", "EnergyDrainType.Temporary",
-                "SuccubusDominateRounds", "OnlyOnFirstHit = true" })
+                "SuccubusDominateRounds", "OnlyOnFirstHit = true",
+                "ConfigureBebelith", "BebelithCombatComponent",
+                "DamageAlignment.Good",
+                "ConfigurePixie", "PixieSleepArrowComponent",
+                "NativeSleepingBuffGuid", "NativeDanceBuffGuid",
+                "PixieSleepArrowUses", "AbilityResourceLogic",
+                "new DiceFormula(0, DiceType.Zero)" })
                 Assertions.True(source.Contains(token),
                     "Lantern reconstruction contract is missing: " + token);
             foreach (string forbidden in new[] { "GreaterTeleport", "Gestalt",
@@ -230,6 +269,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Blueprints", "ExpandedSummoningBlueprints.cs"));
             foreach (string token in new[] { "CreateAiCastSpellShell(identity.Symbol)",
                 "CreateBrainShell(identity.Symbol)", "CreateWeaponShell(identity.Symbol)",
+                "CreateResourceShell(identity.Symbol)",
                 "result.name = InternalName(symbol)" })
                 Assertions.True(registration.Contains(token),
                     "Special blueprint factory naming contract is missing: " + token);
@@ -256,6 +296,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(observer.Contains(
                 "foreach (BlueprintScriptableObject value in specialCandidates)"),
                 "Broad discovery candidates must not all receive deep graph inspection.");
+
+            string combat = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
+            foreach (string token in new[] { "ITickEachRound",
+                "RuleSavingThrow(evt.Target", "SavingThrowType.Reflex",
+                "SavingThrowType.Will", "Body.Armor.HasArmor",
+                "ReferenceEquals(evt.Weapon.Blueprint, SleepBow)",
+                "Owner.Resources.Spend(SleepArrowResource, 1)",
+                "TimeSpan.FromSeconds(6d" })
+                Assertions.True(combat.Contains(token),
+                    "Bebelith/Pixie bounded combat contract is missing: " + token);
         }
 
         internal static void AbilityBuilderPreservesNativeGraphContracts()
@@ -329,6 +381,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-shadow-demon",
                 "expanded-summoning-salamander",
                 "expanded-summoning-succubus",
+                "expanded-summoning-bebelith",
+                "expanded-summoning-pixie",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);

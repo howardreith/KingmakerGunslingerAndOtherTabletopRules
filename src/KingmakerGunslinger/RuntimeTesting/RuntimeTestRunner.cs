@@ -7456,6 +7456,95 @@ namespace KingmakerGunslinger.RuntimeTesting
                 succubusDrain[0].Duration.Rate == DurationRate.Rounds &&
                 succubusDrain[0].Duration.BonusValue.Value == 1 &&
                 succubusDrain[0].Value.BonusValue.Value == 1;
+            BlueprintUnit bebelith = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Bebelith");
+            BlueprintItemWeapon bebelithClaw = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_Claw");
+            BlueprintBuff bebelithTraits = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_CombatTraits");
+            BlueprintBuff dismantledArmor = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_DismantledArmor");
+            BebelithCombatComponent bebelithCombat = bebelithTraits
+                .ComponentsArray.OfType<BebelithCombatComponent>().Single();
+            bool bebelithExact = bebelith.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 12 &&
+                bebelith.Size == Size.Huge &&
+                bebelith.Alignment == Alignment.ChaoticEvil &&
+                bebelith.Strength == 28 && bebelith.Dexterity == 12 &&
+                bebelith.Constitution == 24 && bebelith.Intelligence == 11 &&
+                bebelith.Wisdom == 13 && bebelith.Charisma == 13 &&
+                bebelithClaw.Damage.Rolls == 2 &&
+                bebelithClaw.Damage.Dice == DiceType.D4 &&
+                bebelith.Body.PrimaryHand == bebelithClaw &&
+                bebelith.Body.AdditionalLimbs.SequenceEqual(new[] {
+                    bebelithClaw }) &&
+                bebelith.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                bebelith.Body.AdditionalSecondaryLimbs[0].AssetGuid ==
+                    "d2f99947db522e24293a7ec4eded453f" &&
+                bebelith.AddFacts.All(value => value == null ||
+                    (value.AssetGuid != "ef60cd888b834a549898824e6b684918" &&
+                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")) &&
+                ReferenceEquals(bebelithCombat.Claw, bebelithClaw) &&
+                ReferenceEquals(bebelithCombat.DismantledArmor,
+                    dismantledArmor) &&
+                bebelithTraits.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single().Alignment ==
+                        DamageAlignment.Good &&
+                dismantledArmor.ComponentsArray.OfType<AddStatBonus>()
+                    .Single().Value == -2;
+            BlueprintUnit pixie = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Pixie");
+            BlueprintItemWeapon pixieSleepBow = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_SleepBow");
+            BlueprintAbility pixieDance = all.OfType<BlueprintAbility>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDance");
+            BlueprintAbilityResource pixieDanceResource = all.OfType<
+                BlueprintAbilityResource>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceResource");
+            BlueprintAbilityResource pixieSleepResource = all.OfType<
+                BlueprintAbilityResource>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_SleepArrowResource");
+            BlueprintBuff pixieTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Pixie_CombatTraits");
+            PixieSleepArrowComponent pixieArrows = pixieTraits.ComponentsArray
+                .OfType<PixieSleepArrowComponent>().Single();
+            ContextActionApplyBuff[] pixieDanceActions =
+                ExpandedSummoningObjects<ContextActionApplyBuff>(
+                    pixieDance.ComponentsArray).ToArray();
+            bool pixieExact = pixie.ComponentsArray.OfType<AddClassLevels>()
+                    .Single().Levels == 4 && pixie.Size == Size.Small &&
+                pixie.Alignment == Alignment.NeutralGood &&
+                pixie.Strength == 7 && pixie.Dexterity == 21 &&
+                pixie.Constitution == 12 && pixie.Intelligence == 16 &&
+                pixie.Wisdom == 15 && pixie.Charisma == 16 &&
+                ReferenceEquals(pixie.Body.PrimaryHand, pixieSleepBow) &&
+                pixieSleepBow.Damage.Rolls == 0 &&
+                pixieSleepBow.Damage.Dice == DiceType.Zero &&
+                pixie.StartingInventory.Length == 0 &&
+                pixie.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "94b2838e8a492c44ebf89e7fe7a75a62") == 1 &&
+                pixie.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { pixieDance }) &&
+                ExpandedSummoningResourceBase(pixieSleepResource) == 16 &&
+                ExpandedSummoningResourceBase(pixieDanceResource) == 1 &&
+                ReferenceEquals(pixieArrows.SleepBow, pixieSleepBow) &&
+                ReferenceEquals(pixieArrows.SleepArrowResource,
+                    pixieSleepResource) &&
+                pixieDance.ComponentsArray.OfType<AbilityResourceLogic>()
+                    .Count(value => ReferenceEquals(value.RequiredResource,
+                        pixieDanceResource) && value.Amount == 1 &&
+                        value.IsSpendResource) == 1 &&
+                pixieDanceActions.Length == 2 &&
+                pixieDanceActions.All(value => value.Buff != null &&
+                    value.Buff.AssetGuid ==
+                        "4d283e0b70fb489ba79e69387818c3f3") &&
+                pixieTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 15;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7498,6 +7587,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-succubus", "exact",
                     succubusExact ? "exact" : "mismatch", succubusExact,
                     "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
+                Assertion("expanded-summoning-bebelith", "exact",
+                    bebelithExact ? "exact" : "mismatch", bebelithExact,
+                    "12-HD Huge outsider, poison/web-free 2d4 claws and 2d6 bite, DR/good, bounded dismantle, and demon hunting"),
+                Assertion("expanded-summoning-pixie", "exact",
+                    pixieExact ? "exact" : "mismatch", pixieExact,
+                    "4-HD Small fey with native arrow rig, sixteen sleep arrows, one dance use, native invisibility, DR, and SR"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7549,6 +7644,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
+        private static int ExpandedSummoningResourceBase(
+            BlueprintAbilityResource resource)
+        {
+            FieldInfo amountField = ExpandedSummoningFields(
+                typeof(BlueprintAbilityResource)).Single(value =>
+                    value.Name == "m_MaxAmount");
+            object amount = amountField.GetValue(resource);
+            FieldInfo baseField = amountField.FieldType.GetField("BaseValue");
+            return (int)baseField.GetValue(amount);
+        }
+
         private static bool ExpandedSummoningIsForbiddenReference(
             BlueprintScriptableObject blueprint)
         {
@@ -7566,7 +7672,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_Succubus_Domination" ||
                 blueprint.name ==
-                    "KMG_Summoning_Special_Succubus_CombatTraits")
+                    "KMG_Summoning_Special_Succubus_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Bebelith_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Bebelith_DismantledArmor" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDance" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_CombatTraits")
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);

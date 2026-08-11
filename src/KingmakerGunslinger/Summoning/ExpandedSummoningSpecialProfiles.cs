@@ -80,6 +80,53 @@ namespace KingmakerGunslinger.Summoning
         internal const int SuccubusDominateRounds = 3;
         internal const int SuccubusEnergyDrainRounds = 1;
 
+        internal const int BebelithHitDice = 12;
+        internal const int BebelithStrength = 28;
+        internal const int BebelithDexterity = 12;
+        internal const int BebelithConstitution = 24;
+        internal const int BebelithIntelligence = 11;
+        internal const int BebelithWisdom = 13;
+        internal const int BebelithCharisma = 13;
+        internal const int BebelithSpeedFeet = 40;
+        internal const int BebelithDamageReduction = 10;
+        internal const int BebelithDismantleReflexDc = 25;
+        internal const int BebelithDismantleAcPenalty = 2;
+        internal const int BebelithDismantleRounds = 1;
+        internal const int BebelithDemonHunterBonus = 2;
+
+        internal const int PixieHitDice = 4;
+        internal const int PixieStrength = 7;
+        internal const int PixieDexterity = 21;
+        internal const int PixieConstitution = 12;
+        internal const int PixieIntelligence = 16;
+        internal const int PixieWisdom = 15;
+        internal const int PixieCharisma = 16;
+        internal const int PixieSpeedFeet = 60;
+        internal const int PixieDamageReduction = 10;
+        internal const int PixieSpellResistance = 15;
+        internal const int PixieSleepArrowUses = 16;
+        internal const int PixieSleepArrowWillDc = 15;
+        internal const int PixieSleepArrowRounds = 50;
+        internal const int PixieDanceUses = 1;
+        internal const int PixieDanceCasterLevel = 8;
+        internal const int PixieDanceSpellLevel = 6;
+
+        internal static bool ShouldAttemptBebelithDismantle(bool isClaw,
+            bool isHit, bool targetHasArmor, int priorClawHits,
+            bool alreadyAttempted)
+        {
+            return isClaw && isHit && targetHasArmor && priorClawHits == 1 &&
+                !alreadyAttempted;
+        }
+
+        internal static bool IsBebelithDemonHuntingTarget(bool isOutsider,
+            int alignment)
+        { return isOutsider && alignment == 20; }
+
+        internal static bool ShouldSpendPixieSleepArrow(bool isSleepBow,
+            bool isHit, int remainingUses)
+        { return isSleepBow && isHit && remainingUses > 0; }
+
         internal static void Validate()
         {
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)
@@ -97,6 +144,13 @@ namespace KingmakerGunslinger.Summoning
                     throw new InvalidOperationException(
                         "Native reuse requires an exact dedicated donor: " + key + ".");
             }
+            if (BebelithHitDice != 12 || BebelithDismantleReflexDc != 25 ||
+                BebelithDismantleAcPenalty < 1 || BebelithDismantleRounds != 1 ||
+                PixieHitDice != 4 || PixieSleepArrowUses != 16 ||
+                PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||
+                PixieDanceUses != 1 || PixieDanceCasterLevel != 8)
+                throw new InvalidOperationException(
+                    "Bebelith/Pixie bounded special profile changed.");
         }
 
         private static string[] BuildElementalKeys()
