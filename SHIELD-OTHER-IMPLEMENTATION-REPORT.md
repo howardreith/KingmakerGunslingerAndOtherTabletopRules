@@ -1,6 +1,6 @@
 # Shield Other Implementation Report
 
-Status: REGRESSION REPAIR SOURCE-QUALIFIED; RUNTIME QUALIFICATION PENDING
+Status: REGRESSION REPAIR AUTOMATED QUALIFICATION COMPLETE
 
 Release: 0.0.77
 
@@ -21,9 +21,17 @@ destabilized the spellbook/sidebar UI. The repaired blueprint owns an empty
 the engine invariant. The runtime scenario now evaluates the same native
 `AbilityData` availability path.
 
-The player-facing platinum-ring note was removed. Shield Other now uses its own
+The obsolete tabletop-item note was removed. Shield Other now uses its own
 project-owned icon for both the ability and target buff rather than the Shield
 of Faith donor icon.
+
+Exact-commit fresh runtime launches passed standalone, CotW, and the highest-risk
+combined profile. Each evaluated the native availability getter and a normal
+friendly-target `UnitUseAbility` command before running all prior mechanics.
+The CotW raw log recorded no material-availability failure. All eight module
+states also passed and restored settings exactly. Visual rest/menu/sidebar
+confirmation remains manual because repository policy forbids automated UI
+navigation or visual judgment as mechanical evidence.
 
 - Independent, default-enabled, restart-required `Shield Other` module. Schema
   2 migrates schema-1 files enabled, defaults missing fields enabled, uses safe
@@ -36,9 +44,7 @@ of Faith donor icon.
   publication.
 - Level-2 Abjuration spell: standard action, native close range, allied
   non-self harmless targeting, and one hour per caster level. The buff grants
-  +1 deflection AC and +1 resistance to all saves. The paired 50-gp platinum
-  ring focus is abstracted because Kingmaker has no safe paired-focus inventory
-  convention.
+  +1 deflection AC and +1 resistance to all saves.
 - Transactional level-2 publication to Cleric, Paladin, Inquisitor, Community,
   and Protection. Final-live structural discovery supports unambiguous CotW
   Oracle, Warpriest, and Psychic lists without a compile-time CotW reference.
@@ -115,10 +121,17 @@ Constitution-derived maximum-HP changes are excluded.
 
 ## Adaptations and limitations
 
-- The paired 50-gp platinum-ring focus is abstracted; no material is consumed.
 - Native buff dismissal/removal is used; no bespoke multi-target dismissal UI.
 - No unambiguous Friendship or Martyr final-live structure was found, so
   neither was guessed or mutated.
 - Optional CotW publication requires one unambiguous structural match and
   otherwise fails closed without affecting other modules.
 - No merge or pull request was created.
+
+## Manual visual confirmation
+
+On a disposable Oracle test save, open level-2 spells, select Shield Other,
+target an ally, and complete the cast. Confirm the new icon appears, the compact
+spell menu remains intact, and the buff appears. Rest, reopen the spellbook,
+switch to another party member and back, then confirm both the spellbook and
+left sidebar remain present and Shield Other can enter targeting again.

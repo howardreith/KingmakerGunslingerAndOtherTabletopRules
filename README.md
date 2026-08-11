@@ -12,10 +12,6 @@ finalized HP damage is conserved and split evenly, with an odd point assigned
 to the caster. The link ends on expiry, dispel, dismissal, caster death,
 different area, or exceeding caster-level-scaled close range.
 
-Kingmaker has no paired-ring equipment/focus workflow suitable for this spell,
-so the tabletop paired 50-gp platinum-ring focus is abstracted. The spell has no
-consumed material component.
-
 Acadamae Graduate now grants a per-character **Use Acadamae Graduate** mode,
 which defaults off. Leave it off to use a summon spell's native casting time
 with no Acadamae save or fatigue risk. Turn it on to accelerate eligible casts

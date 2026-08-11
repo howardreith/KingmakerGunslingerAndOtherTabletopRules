@@ -103,8 +103,8 @@ publication plus pure publication tests.
 - The factory clones native Shield of Faith presentation, then replaces its
   mechanics with an explicit Abjuration spell, harmless ally-only close-range
   targeting, caster-level hours, Extend-enabled native duration, and exact +1
-  deflection AC/+1 resistance all-saves components. Material focus is documented
-  and abstracted; no inventory component is created.
+  deflection AC/+1 resistance all-saves components. No inventory component is
+  created.
 - Complete validation, 975 deterministic tests, exact-reference Release build,
   strict package validation, and local-runtime packaging PASS.
 
@@ -847,9 +847,41 @@ then prove a clean tree and local/origin equality.
   `BlueprintAbility.MaterialComponentData` (no item, so no material cost), add
   a guarded live `AbilityData.RequireMaterialComponent` / `IsAvailable`
   assertion to `disposable-shield-other`, and retain the existing mechanics.
-- Removed the platinum-ring implementation note from player-facing spell text.
+- Removed the obsolete tabletop-item implementation note from player-facing spell text.
 - Added a distinct project-owned 128x128 Shield Other icon and source/provenance
   record. Both the spell and its target buff must reference that exact sprite
   and must not reuse Shield of Faith's icon.
 - Source validation and all 981 deterministic tests pass after the repair.
   Release compile passes. Runtime and final package qualification remain pending.
+
+## 2026-08-11 exact-commit regression qualification
+
+- Published exact source/documentation commit:
+  `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`.
+- Exact-reference local runtime package PASS: SHA-256
+  `8ca10ff0ffa543f2befdd2d9e36a176443d756994773dd95ee329a9e84b4f4ca`;
+  DLL SHA-256
+  `28b0b6a555feff7e0f77aa858e66d1f052bceb29c940c18b8ad9893fbfc09e4e`.
+- CotW PASS `20260811T1158523875905Z-disposable-shield-other`, restored
+  transaction `compat-20260811T115751Z-1b7c900afaec`.
+- Standalone PASS `20260811T1201290524432Z-disposable-shield-other`, restored
+  transaction `compat-20260811T120104Z-d0ba23a8b7d1`.
+- Highest-risk combined PASS
+  `20260811T1203079904106Z-disposable-shield-other`, restored transaction
+  `compat-20260811T120238Z-f7c21b99da79`.
+- Every run proved `AbilityData.RequireMaterialComponent == false`,
+  `AbilityData.IsAvailable == true`, and native `UnitUseAbility.CanStart ==
+  true`, then passed the complete 22-assertion mechanics/cleanup matrix.
+- The CotW raw game log contains zero `RequireMaterialComponent` failures. Its
+  one null reference is the known unrelated Kingmaker
+  `BugReportCanvas.OnEnable` startup path, before the scenario.
+- All eight module combinations PASS on fresh launches, ordered evidence IDs
+  `20260811T1205228016096Z`, `20260811T1207100820318Z`,
+  `20260811T1208576069818Z`, `20260811T1210445633318Z`,
+  `20260811T1212309113870Z`, `20260811T1214182375432Z`,
+  `20260811T1216054990694Z`, and `20260811T1217525689348Z`, each suffixed
+  `-observe-feature-module-settings`. Original settings restored exactly to
+  SHA-256 `a08c80d5e877d4f6b5deea1247a9764bb48c08031b90da91a6e24d953e465ba6`.
+- The guarded harness may not navigate or mechanically judge Kingmaker UI.
+  Therefore visual spellbook/menu/sidebar behavior after rest and character
+  switching remains a concise human confirmation item, not an automated claim.

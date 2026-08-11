@@ -1,5 +1,13 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-11 Shield Other casting/UI regression
+
+No active engineering blocker. Exact-commit standalone, CotW, highest-risk,
+and eight-state module runtime gates pass with exact restoration. Automated UI
+navigation and visual judgment are prohibited by repository policy, so the
+post-rest spellbook/sidebar appearance remains a human confirmation item after
+all automatable work is published.
+
 ## 2026-08-10 Shield Other persistence
 
 No active blocker. Synthetic Kingmaker serialization experiments were rejected

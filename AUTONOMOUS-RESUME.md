@@ -4,7 +4,7 @@
 
 - Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
 - Branch: `codex/shield-other-spell`.
-- Current commit: `1c2b196f287081c3b3a5943bc1a6419f2c28bf4b`; local and
+- Current published commit: `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`; local and
   `origin/codex/shield-other-spell` are equal.
 - Current hypothesis is proven by the user's retained `output_log.txt`: owned
   Shield Other assigned `MaterialComponent = null`, while Kingmaker/CotW
@@ -12,22 +12,23 @@
   The repeated spontaneous-slot update exceptions caused the inert cast icon
   and spellbook/sidebar corruption.
 - Repair: non-null empty material data; distinct packaged 128x128 project icon;
-  ring-focus text removed; live disposable scenario now requires native
+  obsolete focus text removed; live disposable scenario now requires native
   `AbilityData` availability and a startable `UnitUseAbility` command.
-- Last completed command: `.\scripts\Build-Local.ps1` on exact published commit.
-- Last verified result: repository validation, 981/981 deterministic tests,
-  exact-reference Release build, SoundBank validation, and strict 45-file local
-  runtime package PASS. Package SHA-256 is
-  `8ce86b675e69c7901ddcdd79feaebbfcae27712f5c3bf093d8e7208913130681`;
-  DLL SHA-256 is
-  `3bf7594ec4c4ac3586d593e4b147209efc8a7f222010a71b28915bcfc2a4d5c8`.
-- Exact next executable action: run `disposable-shield-other` through
-  `gunslinger-call-of-the-wild` on the guarded Steam App 640820 path, inspect
-  result and actual game log, then repeat standalone and high-risk as required.
-- Remaining gates: CotW runtime availability/cast/mechanics PASS; standalone
-  and high-risk regression PASS; log exception audit; maximum practical UI
-  refresh/rest/character-switch evidence; final docs/evidence commit; approved
-  push; clean worktree; exact remote equality; no merge.
+- Last completed command: eight-state
+  `.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1` on the exact published
+  package.
+- Last verified result: 981/981 deterministic, exact-reference Release/package,
+  CotW, standalone, highest-risk, and all eight module states PASS. Native
+  availability, no material requirement, and `UnitUseAbility.CanStart` are true;
+  raw CotW log has zero matching failures. Package/DLL SHA-256 are
+  `8ca10ff0ffa543f2befdd2d9e36a176443d756994773dd95ee329a9e84b4f4ca` /
+  `28b0b6a555feff7e0f77aa858e66d1f052bceb29c940c18b8ad9893fbfc09e4e`.
+- Exact next executable action: run final deterministic/build/package audit on
+  the documentation diff, commit/push curated evidence, then verify clean tree,
+  local/origin equality, no Kingmaker process, and no merge.
+- Remaining gates: final source checks; final evidence commit; approved push;
+  clean worktree; exact remote equality; no-process/no-merge audit. Visual
+  rest/spellbook/sidebar confirmation is the documented human-only check.
 - Real blocker: none.
 
 ## Shield Other mission — final evidence publication (2026-08-10)

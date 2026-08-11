@@ -2,6 +2,10 @@
 
 ## 0.0.77 - Shield Other
 
+- Fixes spontaneous-caster availability and action-bar corruption by preserving
+  Kingmaker's required non-null empty material-component contract.
+- Adds a distinct project-owned Shield Other spell/buff icon and removes the
+  obsolete tabletop-item note from the player-facing description.
 - Adds the independent, default-enabled Shield Other module with stable ability
   and target-buff identities and schema-1-to-2 settings migration.
 - Publishes Shield Other at level 2 to Cleric, Paladin, Inquisitor, Community,

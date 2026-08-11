@@ -1,6 +1,6 @@
 # Shield Other Qualification
 
-Status: PRIOR QUALIFICATION SUPERSEDED BY CASTING/UI REGRESSION REPAIR
+Status: REGRESSION REPAIR AUTOMATED QUALIFICATION COMPLETE
 
 ## 2026-08-11 regression evidence and repair gate
 
@@ -14,6 +14,26 @@ required and the disposable runtime scenario evaluates
 source, 981 deterministic tests, and Release compile pass. Prior runtime claims
 do not qualify this newly repaired source; fresh exact-commit runtime evidence
 is required below.
+
+## 2026-08-11 exact-commit regression result
+
+- Exact commit: `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`.
+- Package/DLL SHA-256:
+  `8ca10ff0ffa543f2befdd2d9e36a176443d756994773dd95ee329a9e84b4f4ca` /
+  `28b0b6a555feff7e0f77aa858e66d1f052bceb29c940c18b8ad9893fbfc09e4e`.
+- CotW, standalone, and highest-risk `disposable-shield-other` PASS IDs:
+  `20260811T1158523875905Z`, `20260811T1201290524432Z`, and
+  `20260811T1203079904106Z`. Every result proved availability true, no material
+  requirement, a startable native ability command, complete mechanics, and
+  cleanup. Every compatibility transaction restored exactly.
+- All eight module combinations PASS from `20260811T1205228016096Z` through
+  `20260811T1217525689348Z`; settings restored exactly.
+- CotW `output_log.txt` audit: zero `RequireMaterialComponent` failures. The
+  single unrelated null reference is `BugReportCanvas.OnEnable` during native
+  startup.
+- Automated visual UI navigation is prohibited by repository policy. The final
+  human check is limited to selecting/casting Shield Other, rest, spellbook
+  reopen, and character switch/back; screenshots are optional only.
 
 This document will contain exact deterministic, build, package, runtime,
 compatibility-profile, restoration, protected-save, and hash evidence for

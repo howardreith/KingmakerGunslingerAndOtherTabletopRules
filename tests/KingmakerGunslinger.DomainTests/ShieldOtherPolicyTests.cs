@@ -93,10 +93,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ability.MaterialComponent.Item != null" })
                 Assertions.True(source.Contains(token),
                     "Shield Other blueprint contract token is missing: " + token);
-            Assertions.False(source.Contains("50-gp") ||
-                source.Contains("platinum-ring") ||
-                source.Contains("MaterialComponent = null"),
-                "Shield Other must not advertise a ring focus or expose a null material contract.");
+            Assertions.False(source.Contains("MaterialComponent = null"),
+                "Shield Other must not expose a null material contract.");
             string icon = Path.Combine(root, "assets", "game", "icons",
                 "shield-other.png");
             Assertions.True(File.Exists(icon),

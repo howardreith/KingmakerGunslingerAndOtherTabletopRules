@@ -14,5 +14,5 @@
 | Deterministic qualification | PASS | 981/981 plus clean exact-reference Release and strict package PASS |
 | Runtime qualification | PASS | Final exact-SHA eight-module matrix, standalone x2, CotW x2, high-risk x2, and save/load cleanup PASS |
 | Release 0.0.77 | PASS | Version/docs/package/hash evidence complete; final evidence publication pending only |
-| Casting/spellbook regression | SOURCE-PASS; RUNTIME-PENDING | Non-null empty material contract; native AbilityData availability; no UI exception storm |
-| Unique icon and ring text | SOURCE-PASS; RUNTIME-PENDING | Exact project sprite on spell/buff; no ring-focus player text |
+| Casting/spellbook regression | RUNTIME-PASS; VISUAL-CHECK | Non-null empty material contract; native availability and command start; zero matching raw-log exceptions |
+| Unique icon and obsolete focus text | RUNTIME-PASS | Exact project sprite on spell/buff; player description contains only implemented mechanics |
