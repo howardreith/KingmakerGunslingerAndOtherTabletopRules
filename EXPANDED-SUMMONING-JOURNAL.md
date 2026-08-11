@@ -100,3 +100,14 @@
   templated placements, and four standalone template buffs (1,116 total).
 - Complete domain suite: 995/995 PASS. GUIDs remain unallocated until runtime
   registration and the validator-count migration land in the same phase.
+
+## 2026-08-11 - append-only foundation reservations
+
+- Added `tools/expanded_summoning_manifest.py` with allocate-once and repeatable
+  validation modes. It derives the frozen roster/quantity plan and detects
+  missing symbols, wrong planned types/statuses, malformed GUIDs, collisions,
+  and count drift.
+- Allocated 1,116 random lowercase GUIDs once and appended them as reserved.
+  No existing symbol or GUID changed. Exact ledger: 254 active, 1,117 reserved,
+  1,371 total. Runtime registration remains exactly 254 until implementation.
+- Allocator check, repository validation, and 995/995 domain tests PASS.

@@ -489,6 +489,11 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
+Expanded Summoning freezes the next append-only foundation at 1371 stable IDs:
+254 active and 1117 reserved. The 1116 feature identities remain reserved until
+their exact runtime types are registered deterministically; feature enablement
+will gate publication, never identity registration.
+
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`
 instead of parenting fatigue to the summoning spell context; the buff has no
