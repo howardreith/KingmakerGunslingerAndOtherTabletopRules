@@ -37,9 +37,6 @@ namespace KingmakerGunslinger.Blueprints
             "10c7c5e3c5806bc4ca676e22d6fbf17e";
         private const string NaturalArmor2Guid =
             "45a52ce762f637f4c80cc741c91f58b7";
-        private const string ExtraplanarGuid =
-            "136fa0343d5b4d348bdaa05d83408db3";
-
         private static readonly IDictionary<string, string> FactGuids =
             new Dictionary<string, string>(StringComparer.Ordinal) {
                 { "TripDefenseFourLegs", "13c87ac5985cc85498ef9d1ac8b78923" },
@@ -56,10 +53,12 @@ namespace KingmakerGunslinger.Blueprints
             };
 
         internal static void Configure(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (bySymbol == null) throw new ArgumentNullException("bySymbol");
+            if (extraplanar == null) throw new ArgumentNullException("extraplanar");
             ExpandedSummoningNaturalProfiles.Validate();
             BlueprintItemWeapon nativeBite = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid,
@@ -73,7 +72,8 @@ namespace KingmakerGunslinger.Blueprints
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
                     ExpandedSummoningIdentityCatalog.UnitSymbol(
                         ExpandedSummoningCatalog.All.Single(creature =>
-                            creature.Key == profile.Key))), profile, bySymbol);
+                            creature.Key == profile.Key))), profile, bySymbol,
+                    extraplanar);
         }
 
         private static void ConfigureWeapon(BlueprintItemWeapon native,
@@ -92,7 +92,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureUnit(LibraryScriptableObject library,
             BlueprintUnit unit, NaturalSummonProfile profile,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
         {
             var levels = UnityEngine.ScriptableObject.CreateInstance<
                 AddClassLevels>();
@@ -156,9 +157,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (string fact in profile.Facts)
                 facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     library, FactGuids[fact], profile.DisplayName + " " + fact));
-            facts.Add(BlueprintLibraryLookup.RequireExactUnitFactReference<
-                BlueprintFeature>(library, ExtraplanarGuid,
-                    "summoned extraplanar subtype"));
+            facts.Add(extraplanar);
             unit.AddFacts = facts.ToArray();
         }
 

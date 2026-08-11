@@ -9,6 +9,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items.Weapons;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
@@ -29,6 +30,8 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string SummonedFactionDonorGuid =
             "1ed9a630f0d9d7f44855d3d1d1b2cdf2";
+        private const string ExtraplanarSubtypeGuid =
+            "136fa0343d5b4d348bdaa05d83408db3";
 
         internal static ExpandedSummoningBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
@@ -47,6 +50,11 @@ namespace KingmakerGunslinger.Blueprints
                 creature => BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
                     ExpandedSummoningDonorCatalog.For(creature.Key).Guid,
                     creature.DisplayName + " donor"), StringComparer.Ordinal);
+            BlueprintFeature extraplanar =
+                BlueprintLibraryLookup.RequireExactUnitFactReference<
+                    BlueprintFeature>(unitDonors.Values.Concat(
+                        new[] { summonedFactionDonor }), ExtraplanarSubtypeGuid,
+                        "summoned extraplanar subtype");
             var registered = new Dictionary<string, BlueprintScriptableObject>(
                 StringComparer.Ordinal);
             foreach (SummoningIdentitySpec identity in identities)
@@ -85,8 +93,10 @@ namespace KingmakerGunslinger.Blueprints
                     "Expanded Summoning registration count mismatch.");
             ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
-            ExpandedSummoningNaturalBuilder.Configure(library, registered);
-            ExpandedSummoningSpecialBuilder.Configure(library, registered);
+            ExpandedSummoningNaturalBuilder.Configure(library, registered,
+                extraplanar);
+            ExpandedSummoningSpecialBuilder.Configure(library, registered,
+                extraplanar);
             return result;
         }
 

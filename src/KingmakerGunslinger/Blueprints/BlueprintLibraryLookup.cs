@@ -73,34 +73,24 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// Resolves a unit fact that Kingmaker may keep only as a reference from
-        /// loaded units rather than as a top-level dictionary entry. The fallback
-        /// remains exact: one reference identity, one GUID, and one runtime type.
+        /// Resolves a unit fact from the native donor snapshot before custom
+        /// registration can alter library enumeration. The lookup remains exact:
+        /// one reference identity, one GUID, and one runtime type.
         /// </summary>
         internal static T RequireExactUnitFactReference<T>(
-            LibraryScriptableObject library,
+            IEnumerable<BlueprintUnit> sourceUnits,
             string assetGuid,
             string role)
             where T : BlueprintUnitFact
         {
-            if (library == null) throw new ArgumentNullException("library");
+            if (sourceUnits == null) throw new ArgumentNullException("sourceUnits");
             BlueprintId id = BlueprintId.Parse(assetGuid, "assetGuid");
             if (string.IsNullOrWhiteSpace(role))
                 throw new ArgumentException("A source-blueprint role is required.",
                     "role");
-            if (library.BlueprintsByAssetId == null)
-                throw new InvalidOperationException(
-                    "Kingmaker's blueprint dictionary is unavailable.");
-
-            BlueprintScriptableObject indexed;
-            if (library.BlueprintsByAssetId.TryGetValue(id.Value, out indexed) &&
-                indexed != null)
-                return ValidateExactUnitFact<T>(indexed, id.Value, role,
-                    "indexed");
-
             var distinct = new List<BlueprintUnitFact>();
-            foreach (BlueprintUnitFact fact in library.BlueprintsByAssetId.Values
-                .OfType<BlueprintUnit>()
+            foreach (BlueprintUnitFact fact in sourceUnits
+                .Where(unit => unit != null)
                 .SelectMany(unit => unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                 .Where(fact => fact != null && string.Equals(fact.AssetGuid,
                     id.Value, StringComparison.Ordinal)))
@@ -114,7 +104,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Required referenced unit fact was not unique: role='{0}', guid='{1}', expectedType='{2}', referenceCount={3}.",
                     role, id.Value, typeof(T).FullName, distinct.Count));
             return ValidateExactUnitFact<T>(distinct[0], id.Value, role,
-                "unit-reference");
+                "pre-registration-unit-reference");
         }
 
         private static T ValidateExactUnitFact<T>(BlueprintScriptableObject value,

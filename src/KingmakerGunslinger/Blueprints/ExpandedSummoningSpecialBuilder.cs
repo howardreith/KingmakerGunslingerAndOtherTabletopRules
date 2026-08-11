@@ -153,8 +153,10 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativeSleepingBuffGuid = "5e0cd801bac0e95429bb7e4d1bc61a23";
 
         internal static void Configure(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
         {
+            if (extraplanar == null) throw new ArgumentNullException("extraplanar");
             ExpandedSummoningSpecialProfiles.Validate();
             BlueprintAbility ray = Require<BlueprintAbility>(bySymbol,
                 LanternRaySymbol);
@@ -170,14 +172,14 @@ namespace KingmakerGunslinger.Blueprints
             brain.Actions = new BlueprintAiAction[] { ai };
             ConfigureDefenses(defenses);
             ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
-                LanternUnitSymbol), ray, brain, defenses);
+                LanternUnitSymbol), ray, brain, defenses, extraplanar);
             ConfigureInvisibleStalker(library, Require<BlueprintUnit>(bySymbol,
-                InvisibleStalkerUnitSymbol));
+                InvisibleStalkerUnitSymbol), extraplanar);
             BlueprintBuff shadowTraits = Require<BlueprintBuff>(bySymbol,
                 ShadowDemonCombatTraitsSymbol);
             ConfigureShadowDemonCombatTraits(shadowTraits);
             ConfigureShadowDemon(library, Require<BlueprintUnit>(bySymbol,
-                ShadowDemonUnitSymbol), shadowTraits);
+                ShadowDemonUnitSymbol), shadowTraits, extraplanar);
             BlueprintItemWeapon salamanderTail = Require<BlueprintItemWeapon>(
                 bySymbol, SalamanderTailSymbol);
             BlueprintBuff salamanderTraits = Require<BlueprintBuff>(bySymbol,
@@ -186,7 +188,8 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSalamanderCombatTraits(library, salamanderTraits,
                 salamanderTail);
             ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
-                SalamanderUnitSymbol), salamanderTail, salamanderTraits);
+                SalamanderUnitSymbol), salamanderTail, salamanderTraits,
+                extraplanar);
             BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
                 SuccubusDominationSymbol);
             BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
@@ -202,7 +205,8 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSuccubusAi(dominateAi, dominate, succubusBrain);
             ConfigureSuccubusCombatTraits(library, succubusTraits);
             ConfigureSuccubus(library, Require<BlueprintUnit>(bySymbol,
-                SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits);
+                SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits,
+                extraplanar);
             BlueprintItemWeapon bebelithClaw = Require<BlueprintItemWeapon>(
                 bySymbol, BebelithClawSymbol);
             BlueprintBuff dismantledArmor = Require<BlueprintBuff>(bySymbol,
@@ -214,7 +218,8 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBebelithCombatTraits(library, bebelithTraits,
                 bebelithClaw, dismantledArmor);
             ConfigureBebelith(library, Require<BlueprintUnit>(bySymbol,
-                BebelithUnitSymbol), bebelithClaw, bebelithTraits);
+                BebelithUnitSymbol), bebelithClaw, bebelithTraits,
+                extraplanar);
             BlueprintItemWeapon pixieSleepBow = Require<BlueprintItemWeapon>(
                 bySymbol, PixieSleepBowSymbol);
             BlueprintAbilityResource pixieDanceResource = Require<
@@ -350,7 +355,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureInvisibleStalker(
-            LibraryScriptableObject library, BlueprintUnit unit)
+            LibraryScriptableObject library, BlueprintUnit unit,
+            BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon slam = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeAirSlamGuid,
@@ -377,7 +383,7 @@ namespace KingmakerGunslinger.Blueprints
                     NaturalArmor6Guid, "natural armor +6"),
                 Feature(library, ElementalSubtypeGuid, "elemental subtype"),
                 Feature(library, AirSubtypeGuid, "air subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
@@ -429,7 +435,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureShadowDemon(LibraryScriptableObject library,
-            BlueprintUnit unit, BlueprintBuff combatTraits)
+            BlueprintUnit unit, BlueprintBuff combatTraits,
+            BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon claw = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeClawGuid,
@@ -456,7 +463,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
                 Feature(library, EvilSubtypeGuid, "evil subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, IncorporealGuid, "incorporeal defenses"),
                 Feature(library, ColdImmunityGuid, "cold immunity"),
                 Feature(library, ElectricityImmunityGuid, "electricity immunity"),
@@ -532,7 +539,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureSalamander(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintItemWeapon tail,
-            BlueprintBuff combatTraits)
+            BlueprintBuff combatTraits, BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon spear = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, StandardSpearGuid,
@@ -559,7 +566,7 @@ namespace KingmakerGunslinger.Blueprints
                     NaturalArmor7Guid, "natural armor +7"),
                 Feature(library, DrMagic10Guid, "DR 10/magic"),
                 Feature(library, FireSubtypeGuid, "fire subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, WeaponFocusSpearGuid, "Weapon Focus (spear)"),
                 combatTraits
             };
@@ -738,7 +745,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureSuccubus(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintAbility dominate,
-            BlueprintBrain brain, BlueprintBuff combatTraits)
+            BlueprintBrain brain, BlueprintBuff combatTraits,
+            BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon claw = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeClawGuid,
@@ -767,7 +775,7 @@ namespace KingmakerGunslinger.Blueprints
                     NaturalArmor7Guid, "natural armor +7"),
                 Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
                 Feature(library, EvilSubtypeGuid, "evil subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, FireImmunityGuid, "fire immunity"),
                 Feature(library, ElectricityImmunityGuid, "electricity immunity"),
                 Feature(library, PoisonImmunityGuid, "poison immunity"),
@@ -854,7 +862,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureBebelith(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintItemWeapon claw,
-            BlueprintBuff combatTraits)
+            BlueprintBuff combatTraits, BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, HugeBiteGuid,
@@ -879,7 +887,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, OutsiderTypeGuid, "outsider creature type"),
                 Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
                 Feature(library, EvilSubtypeGuid, "evil subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
                 combatTraits
@@ -1229,7 +1237,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureUnit(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintAbility ray, BlueprintBrain brain,
-            BlueprintBuff defenses)
+            BlueprintBuff defenses, BlueprintFeature extraplanar)
         {
             var levels = ScriptableObject.CreateInstance<AddClassLevels>();
             levels.CharacterClass = BlueprintLibraryLookup.RequireExact<
@@ -1278,7 +1286,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, ElectricityImmunityGuid, "electricity immunity"),
                 Feature(library, GoodSubtypeGuid, "good subtype"),
                 Feature(library, LawfulSubtypeGuid, "lawful subtype"),
-                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                extraplanar,
                 Feature(library, AirborneGuid, "airborne movement"),
                 BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
                     AuraOfMenaceBuffGuid, "native Aura of Menace"),
@@ -1288,14 +1296,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static BlueprintFeature Feature(LibraryScriptableObject library,
             string guid, string purpose)
-        {
-            if (string.Equals(guid, ExtraplanarSubtypeGuid,
-                StringComparison.Ordinal))
-                return BlueprintLibraryLookup.RequireExactUnitFactReference<
-                    BlueprintFeature>(library, guid, purpose);
-            return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
-                guid, purpose);
-        }
+        { return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+            guid, purpose); }
 
         private static ContextActionDealDamage FindDamage(
             IEnumerable<BlueprintComponent> components)
