@@ -2238,3 +2238,11 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact assertions were zero shared donor components, zero prohibited
   references, zero inherited class spell arrays, and zero nonempty inventories.
 - Exact next action: implement celestial/fiendish buffs and alignment routing.
+
+## Expanded Summoning current resume - template foundation
+
+- Four native-component KMG template buffs and 182 nested celestial/fiendish
+  logical choices are source-qualified with 1,002/1,002 tests, clean Release,
+  and strict package PASS.
+- Exact next action: commit/push and run the guarded structural observer, then
+  add exact template graph assertions and finish SR/smite/alignment fidelity.

@@ -6,8 +6,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.ElementsSystem;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Alignments;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -41,15 +47,26 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
                     ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature));
                 BlueprintAbility native = NativeTemplate(library, variant);
-                ConfigureOne(ability, native, unit, variant, false);
                 if (family == SummonFamily.Monster &&
                     variant.Creature.MonsterTemplated)
                 {
-                    ConfigureOne(Require<BlueprintAbility>(bySymbol,
-                        symbol + ".Celestial"), native, unit, variant, true);
-                    ConfigureOne(Require<BlueprintAbility>(bySymbol,
-                        symbol + ".Fiendish"), native, unit, variant, true);
+                    BlueprintAbility celestial = Require<BlueprintAbility>(bySymbol,
+                        symbol + ".Celestial");
+                    BlueprintAbility fiendish = Require<BlueprintAbility>(bySymbol,
+                        symbol + ".Fiendish");
+                    bool high = HitDice(unit) > 10;
+                    ConfigureOne(celestial, native, unit, variant,
+                        Require<BlueprintBuff>(bySymbol,
+                            "KMG.Summoning.Template.Celestial." +
+                            (high ? "High" : "Low")), true);
+                    ConfigureOne(fiendish, native, unit, variant,
+                        Require<BlueprintBuff>(bySymbol,
+                            "KMG.Summoning.Template.Fiendish." +
+                            (high ? "High" : "Low")), false);
+                    ConfigureTemplateChoice(ability, native, variant,
+                        celestial, fiendish);
                 }
+                else ConfigureOne(ability, native, unit, variant, null, false);
             }
         }
 
@@ -83,18 +100,64 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureOne(BlueprintAbility target,
             BlueprintAbility native, BlueprintUnit unit, SummonVariantSpec variant,
-            bool hiddenExecution)
+            BlueprintBuff templateBuff, bool celestial)
         {
             CopyFields(native, target);
             target.name = InternalName(ExpandedSummoningIdentityCatalog.AbilitySymbol(
-                variant) + (hiddenExecution ? ".Execution" : ""));
+                variant) + (templateBuff == null ? "" : celestial ?
+                    ".Celestial" : ".Fiendish"));
             target.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(DeepCloneComponent).ToArray();
             int replacements = ReplaceSpawnUnits(target.ComponentsArray, unit);
             if (replacements < 1) throw new InvalidOperationException(
                 "Expected at least one native spawn action for " + variant.StableKey + ".");
-            target.Hidden = hiddenExecution;
-            target.ActionBarAutoFillIgnored = hiddenExecution;
+            if (templateBuff != null)
+            {
+                AppendTemplateBuff(target.ComponentsArray, templateBuff);
+                var alignment = ScriptableObject.CreateInstance<AbilityCasterAlignment>();
+                alignment.Alignment = celestial ? (AlignmentMaskType)63 :
+                    (AlignmentMaskType)504;
+                target.ComponentsArray = target.ComponentsArray.Concat(
+                    new BlueprintComponent[] { alignment }).ToArray();
+                SpellDescriptorComponent descriptor = target.ComponentsArray
+                    .OfType<SpellDescriptorComponent>().Single();
+                descriptor.Descriptor |= celestial ? SpellDescriptor.Good :
+                    SpellDescriptor.Evil;
+            }
+            target.Hidden = false;
+            target.ActionBarAutoFillIgnored = templateBuff != null;
+            target.MaterialComponent = native.MaterialComponent == null ?
+                new BlueprintAbility.MaterialComponentData() : native.MaterialComponent;
+            BlueprintUnitFactAccess.Resolve().Configure(target,
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    variant.StableKey + (templateBuff == null ? "" : celestial ?
+                        ".Celestial" : ".Fiendish") + ".Name",
+                    (templateBuff == null ? "" : celestial ? "Celestial " :
+                        "Fiendish ") + variant.Creature.DisplayName +
+                        QuantitySuffix(variant.Multiplicity)),
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    variant.StableKey + ".Description",
+                    "Summons " + variant.Creature.DisplayName +
+                    " through the native summon lifecycle."), native.Icon);
+        }
+
+        private static void ConfigureTemplateChoice(BlueprintAbility target,
+            BlueprintAbility native, SummonVariantSpec variant,
+            BlueprintAbility celestial, BlueprintAbility fiendish)
+        {
+            CopyFields(native, target);
+            target.name = InternalName(ExpandedSummoningIdentityCatalog
+                .AbilitySymbol(variant));
+            target.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is AbilityEffectRunAction) && !(value is AbilityVariants))
+                .Select(DeepCloneComponent).ToArray();
+            var choices = ScriptableObject.CreateInstance<AbilityVariants>();
+            choices.Variants = new[] { celestial, fiendish };
+            target.ComponentsArray = target.ComponentsArray.Concat(
+                new BlueprintComponent[] { choices }).ToArray();
+            target.Hidden = false;
+            target.ActionBarAutoFillIgnored = false;
             target.MaterialComponent = native.MaterialComponent == null ?
                 new BlueprintAbility.MaterialComponentData() : native.MaterialComponent;
             BlueprintUnitFactAccess.Resolve().Configure(target,
@@ -103,8 +166,60 @@ namespace KingmakerGunslinger.Blueprints
                     QuantitySuffix(variant.Multiplicity)),
                 LocalizationService.Create("KMG.ExpandedSummoning." +
                     variant.StableKey + ".Description",
-                    "Summons " + variant.Creature.DisplayName +
-                    " through the native summon lifecycle."), native.Icon);
+                    "Choose a celestial or fiendish " +
+                    variant.Creature.DisplayName + "."), native.Icon);
+        }
+
+        private static void AppendTemplateBuff(
+            IEnumerable<BlueprintComponent> components, BlueprintBuff buff)
+        {
+            var seen = new HashSet<object>(ReferenceComparer.Instance);
+            int count = 0;
+            foreach (BlueprintComponent component in components)
+                AppendTemplateBuff(component, buff, seen, ref count);
+            if (count < 1) throw new InvalidOperationException(
+                "A templated summon requires at least one spawn branch.");
+        }
+
+        private static void AppendTemplateBuff(object value, BlueprintBuff buff,
+            ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value)) return;
+            ContextActionSpawnMonster spawn = value as ContextActionSpawnMonster;
+            if (spawn != null)
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                var apply = new ContextActionApplyBuff {
+                    Buff = buff, Permanent = true, IsNotDispelable = true,
+                    AsChild = true };
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
+                    Array.Empty<GameAction>()).Concat(new GameAction[] { apply }).ToArray();
+                count++;
+            }
+            foreach (FieldInfo field in Fields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        AppendTemplateBuff(item, buff, seen, ref count);
+                else AppendTemplateBuff(child, buff, seen, ref count);
+            }
+        }
+
+        private static int HitDice(BlueprintUnit unit)
+        {
+            int total = 0;
+            foreach (BlueprintComponent component in unit.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+            {
+                if (component.GetType().Name != "AddClassLevels") continue;
+                FieldInfo levels = Fields(component.GetType()).Single(value =>
+                    value.Name == "Levels" && value.FieldType == typeof(int));
+                total += (int)levels.GetValue(component);
+            }
+            return total;
         }
 
         private static string QuantitySuffix(SummonMultiplicity value)

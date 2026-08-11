@@ -69,6 +69,7 @@ namespace KingmakerGunslinger.Blueprints
             if (result.Count != ExpandedSummoningIdentityCatalog.FoundationIdentityCount)
                 throw new InvalidOperationException(
                     "Expanded Summoning registration count mismatch.");
+            ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
             return result;
         }

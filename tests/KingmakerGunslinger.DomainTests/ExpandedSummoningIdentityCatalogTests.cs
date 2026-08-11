@@ -107,5 +107,29 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(runtime.Contains(token),
                     "Guarded isolation observer is missing: " + token);
         }
+
+        internal static void TemplateBlueprintsUseNativeBoundedMechanics()
+        {
+            string templates = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningTemplateBuilder.cs"));
+            foreach (string token in new[] { "DamageEnergyType.Acid",
+                "DamageEnergyType.Cold", "DamageEnergyType.Electricity",
+                "DamageEnergyType.Fire", "BypassedByAlignment = true",
+                "DamageAlignment.Evil", "DamageAlignment.Good",
+                "AddSpellResistance", "resistance.AddCR = true" })
+                Assertions.True(templates.Contains(token),
+                    "Template buff contract is missing: " + token);
+            string abilities = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningAbilityBuilder.cs"));
+            foreach (string token in new[] { "ConfigureTemplateChoice",
+                "AbilityCasterAlignment", "(AlignmentMaskType)63",
+                "(AlignmentMaskType)504", "ContextActionApplyBuff",
+                "Permanent = true", "IsNotDispelable = true", "AsChild = true",
+                "SpellDescriptor.Good", "SpellDescriptor.Evil" })
+                Assertions.True(abilities.Contains(token),
+                    "Template execution contract is missing: " + token);
+        }
     }
 }

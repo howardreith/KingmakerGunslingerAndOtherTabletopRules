@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "9b064ac2896d38b69a87777976825fbed795f6a2",
+  "currentSha": "bdd9858c641607089e6a452433b7973cfb0571c3",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "summon-sanitizer-native-runtime-qualified",
-  "nextConcreteAction": "Implement KMG-owned celestial and fiendish template buffs plus deterministic good, neutral, and evil execution routing.",
-  "domainTestResult": "1001/1001 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 5d77c1932f48b8ad3c2cba010e65918f9fcfd92a5d11e16ca0d404f227c2c2ec",
-  "packageResult": "strict PASS; SHA-256 f61a7e8154db157979b2423abdf410fd2726b580c63e0415c972b7decd46f551",
+  "completedPhase": "celestial-fiendish-template-foundation-source-qualified",
+  "nextConcreteAction": "Commit and push template foundation, then run guarded structural runtime and add exact nested-choice/template assertions.",
+  "domainTestResult": "1002/1002 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 dbd047731508c0395900f48ab86e6bd862ef348fa36bf4de3933c2baaa43cecc",
+  "packageResult": "strict PASS; SHA-256 f5c42e5160147944420028d91ab80761502c1436e7d60bc56ffe8dcefb86c8db",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -97,7 +97,11 @@
     }
   ],
   "compatibilityProfilesCompleted": [],
-  "unresolvedDeviations": [],
+  "unresolvedDeviations": [
+    "Celestial/fiendish spell resistance is currently present only on the high (>10 donor HD) buff; exact 5-10 HD SR remains to implement.",
+    "Celestial/fiendish once-per-day smite remains to implement.",
+    "Runtime unit alignment mutation for the selected template remains to implement or document as a conservative engine deviation."
+  ],
   "branchPushed": true,
   "draftPr": null,
   "draftPrBlocker": "gh authentication currently invalid; recheck after local completion"

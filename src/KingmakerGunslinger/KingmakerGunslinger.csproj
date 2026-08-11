@@ -53,6 +53,7 @@
     <Compile Include="Summoning\ExpandedSummoningIdentityCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />

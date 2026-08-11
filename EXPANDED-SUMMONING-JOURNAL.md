@@ -329,3 +329,21 @@
 - Exact native assertions: shared donor components `0`; prohibited fact or
   component references `0`; inherited class spell arrays `0`; nonempty
   starting inventories `0`. Registry remained 1,370 and live placements 681.
+
+## 2026-08-11 - standalone celestial/fiendish template foundation
+
+- Configured the four frozen KMG template buffs using only native Owlcat
+  components. Celestial grants acid/cold/electricity resistance and DR/evil;
+  fiendish grants cold/fire resistance and DR/good. Low values are 5 and high
+  values 10; high also grants CR+5 spell resistance.
+- Each of the 182 templated logical SM placements now routes to its frozen
+  celestial and fiendish executions. Non-evil casters may use celestial,
+  non-good casters may use fiendish, so neutral casters retain both choices.
+  Execution descriptors are Good/Evil and every native spawn branch receives
+  the selected buff as a permanent, non-dispellable child for bounded cleanup.
+- Unfinished fidelity: exact SR for creatures with 5–10 HD and once-per-day
+  smite are not yet implemented; low-tier omission is conservative, not claimed
+  as final fidelity.
+- Repository validation, 1,002/1,002 tests, clean Release, and strict package
+  PASS. DLL SHA-256: `dbd047731508c0395900f48ab86e6bd862ef348fa36bf4de3933c2baaa43cecc`;
+  package SHA-256: `f5c42e5160147944420028d91ab80761502c1436e7d60bc56ffe8dcefb86c8db`.
