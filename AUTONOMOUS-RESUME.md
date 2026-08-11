@@ -12,9 +12,8 @@
   and rollback policies; sanitizer contract; 1,116 frozen manifest reservations;
   schema-3 fourth-module domain/UI/publication state with all 16 combinations.
   The latest complete domain suite is 995/995 PASS.
-- Exact next action: update guarded runtime/profile plumbing from the legacy
-  8-state matrix to all 16 schema-3 configurations, then implement and activate
-  registered summon blueprints.
+- Exact next action: implement and activate deterministic summon unit, template,
+  and ability blueprints, then publish them additively into final-live parents.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

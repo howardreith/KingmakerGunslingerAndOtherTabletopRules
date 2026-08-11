@@ -6934,9 +6934,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
             bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
             bool expectedShieldOther = (bool)_request.Parameters["shieldOther"];
+            bool expectedExpandedSummoning =
+                (bool)_request.Parameters["expandedSummoning"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
+            bool activeExpandedSummoning =
+                _context.FeatureModules.Active.ExpandedSummoning;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -7020,9 +7024,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
-                expectedAcadamae + "/" + expectedShieldOther + ";active=" +
+                expectedAcadamae + "/" + expectedShieldOther + "/" +
+                expectedExpandedSummoning + ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
-                activeShieldOther + ";registered=" +
+                activeShieldOther + "/" + activeExpandedSummoning + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -7039,7 +7044,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("feature-module-active-snapshot", "request-local expected states",
                     observed, activeGunslinger == expectedGunslinger &&
                     activeAcadamae == expectedAcadamae &&
-                    activeShieldOther == expectedShieldOther,
+                    activeShieldOther == expectedShieldOther &&
+                    activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", "254 identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == 254,
@@ -7073,6 +7079,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         shieldObservation.PublishedLists == (expectedShieldOther ?
                             shieldObservation.ExpectedPublishedLists : 0),
                     "required base and optional final-live spell lists"),
+                Assertion("feature-module-expanded-summoning-publication-gate",
+                    expectedExpandedSummoning ? "enabled" : "disabled",
+                    activeExpandedSummoning ? "enabled" : "disabled",
+                    activeExpandedSummoning == expectedExpandedSummoning,
+                    "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

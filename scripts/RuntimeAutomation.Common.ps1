@@ -715,14 +715,16 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 3 -or
+        if ($Parameters.Count -ne 4 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
             $Parameters.acadamaeGraduate -isnot [bool] -or
             -not $Parameters.ContainsKey('shieldOther') -or
-            $Parameters.shieldOther -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, and shieldOther parameters."
+            $Parameters.shieldOther -isnot [bool] -or
+            -not $Parameters.ContainsKey('expandedSummoning') -or
+            $Parameters.expandedSummoning -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, and expandedSummoning parameters."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -826,6 +828,7 @@ function New-KmgRuntimeRequest {
                 gunslinger = [bool]$Parameters.gunslinger
                 acadamaeGraduate = [bool]$Parameters.acadamaeGraduate
                 shieldOther = [bool]$Parameters.shieldOther
+                expandedSummoning = [bool]$Parameters.expandedSummoning
             }
         } else { [ordered]@{} }
     }

@@ -126,3 +126,18 @@
 - Repository validation, 995/995 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `056ff668dd189b50e2d9102cc29223f37fdc1d5673c56d9d67fb259ca5452541`;
   package SHA-256: `2680b476e25bfe668e087525f418152c187e92254043e09bf28ab8db0702f62d`.
+
+## 2026-08-11 - guarded 16-state runtime plumbing
+
+- Replaced the legacy hard-coded eight-state runtime matrix with deterministic
+  enumeration from one ordered four-module catalog. Every transaction writes
+  schema 3 and still restores the original settings bytes exactly.
+- Guarded request creation, request validation, compatibility-profile setup,
+  and the native observer now require and report `expandedSummoning` alongside
+  the three established module states.
+- The observer proves the active restart snapshot and feature-local gate now;
+  exact parent publication/count assertions will replace that provisional gate
+  assertion when the reserved summon identities are activated.
+- Repository validation, 996/996 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `d4c097f6137116eb7e226dd275de996afcfedccaa8fb5992f90d309e9194f8d4`;
+  package SHA-256: `8533ae5bca74359485fcff0e780e97529b7d9013690c7efe1f6203f5b6fb767c`.

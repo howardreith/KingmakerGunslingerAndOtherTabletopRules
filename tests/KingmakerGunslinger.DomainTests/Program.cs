@@ -44,6 +44,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
             Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
             Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
+            Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeFourModuleCatalog),
             Case("shield-other.damage-split", ShieldOtherPolicyTests.DamageSplitBoundariesAndConservation),
             Case("shield-other.damage-guards", ShieldOtherPolicyTests.DamageSplitGuards),
             Case("shield-other.link-validity", ShieldOtherPolicyTests.LinkValidityMatrix),

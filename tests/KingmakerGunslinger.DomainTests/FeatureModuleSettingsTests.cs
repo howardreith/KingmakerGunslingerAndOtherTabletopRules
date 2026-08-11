@@ -139,6 +139,25 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        internal static void RuntimeMatrixUsesAuthoritativeFourModuleCatalog()
+        {
+            string root = Environment.CurrentDirectory;
+            string matrix = File.ReadAllText(Path.Combine(root, "scripts",
+                "Invoke-FeatureModuleRuntimeMatrix.ps1"));
+            foreach (string token in new[] {
+                "$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning')",
+                "foreach ($mask in 15..0)", "schemaVersion = 3",
+                "expandedSummoning = [bool]$entry.Value.expandedSummoning",
+                "Settings byte-for-byte restoration failed." })
+                Assertions.True(matrix.Contains(token),
+                    "The 16-state runtime matrix contract is missing: " + token);
+            string common = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(common.Contains("$Parameters.Count -ne 4") &&
+                common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning"),
+                "The guarded request writer does not require the fourth module state.");
+        }
+
         private static void WithDirectory(Action<string> action)
         {
             string path = Path.Combine(Path.GetTempPath(),
