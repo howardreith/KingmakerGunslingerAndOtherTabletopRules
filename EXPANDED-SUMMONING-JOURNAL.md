@@ -347,3 +347,15 @@
 - Repository validation, 1,002/1,002 tests, clean Release, and strict package
   PASS. DLL SHA-256: `dbd047731508c0395900f48ab86e6bd862ef348fa36bf4de3933c2baaa43cecc`;
   package SHA-256: `f5c42e5160147944420028d91ab80761502c1436e7d60bc56ffe8dcefb86c8db`.
+
+## 2026-08-11 - template localization collision repair
+
+- Guarded run `20260811T1932316147945Z-observe-expanded-summoning-inventory`
+  timed out after bootstrap rolled back. The authoritative log identified a
+  localization collision: celestial/fiendish executions used unique name keys
+  but shared the logical placement description key.
+- Execution description keys now include the Celestial/Fiendish suffix. The
+  exact harness-launched Kingmaker PID 15760 was terminated after the timeout;
+  the scenario performed no save access.
+- Repository validation, 1,002/1,002 tests, clean Release, and strict package
+  validation PASS after the repair.

@@ -136,7 +136,8 @@ namespace KingmakerGunslinger.Blueprints
                         "Fiendish ") + variant.Creature.DisplayName +
                         QuantitySuffix(variant.Multiplicity)),
                 LocalizationService.Create("KMG.ExpandedSummoning." +
-                    variant.StableKey + ".Description",
+                    variant.StableKey + (templateBuff == null ? "" : celestial ?
+                        ".Celestial" : ".Fiendish") + ".Description",
                     "Summons " + variant.Creature.DisplayName +
                     " through the native summon lifecycle."), native.Icon);
         }
