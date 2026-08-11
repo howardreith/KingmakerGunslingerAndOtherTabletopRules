@@ -77,3 +77,11 @@ the clone's Unity-object preservation guard. The follow-up now creates and
 recursively copies each GameAction while still preserving immutable referenced
 Unity assets. This deeper repair is source-qualified; its committed-source
 rerun remains pending.
+
+The deeper repair was proved by
+`20260811T2043115519772Z-observe-expanded-summoning-inventory`: contamination
+of non-KMG abilities fell from 286 to zero. Remaining assertion failures were
+limited to the observer's incorrect one-action-per-ability assumption; native
+quantity templates may contain multiple spawn nodes. The observer now requires
+one matching alignment/template/smite action per actual spawn branch. This
+cardinality correction is source-qualified and awaits its committed rerun.

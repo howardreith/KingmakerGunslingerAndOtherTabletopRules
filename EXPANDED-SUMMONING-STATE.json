@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0",
+  "currentSha": "0759783da38db3843905f368c62a964217870545",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "game-action-deep-clone-repair-source-qualified",
-  "nextConcreteAction": "Commit and push the GameAction ScriptableObject deep-clone repair, rebuild the immutable SHA, then rerun the guarded alignment and native-action-isolation observer.",
+  "completedPhase": "spawn-branch-cardinality-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the observer's per-spawn-branch cardinality correction, rebuild the immutable SHA, then rerun guarded alignment qualification.",
   "domainTestResult": "1005/1005 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 b515558f54db01c1694a25507df298415c6c7ca0c2053e21f81db63a67c37507",
-  "packageResult": "strict PASS; SHA-256 597637b7698117bd5e86cb9f074581a3020419392032e923612b96baf962d729",
+  "releaseBuildResult": "PASS; DLL SHA-256 a675b1a4eb7e01c418fd71e842e2d0dedb8c0b6435e7d0e815389ee4d9ab78f8",
+  "packageResult": "strict PASS; SHA-256 7755cdeca8ee554f2ec0456bcac67e72d91ce4a007787e31d31e403e845ff85d",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {
@@ -172,6 +172,13 @@
       "sourceSha": "ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2037058339804Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Explicit ActionList cloning alone did not isolate the graph: 286 non-KMG abilities retained KMG actions because GameAction is a ScriptableObject rejected by the clone's Unity-object guard. The following repair creates independent GameAction objects; no save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "FAIL",
+      "sourceSha": "0759783da38db3843905f368c62a964217870545",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2043115519772Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Native-action isolation passed at zero and representative KMG abilities contained one independent action. Remaining failures came from the observer assuming one spawn node per ability instead of one alignment/template/smite action per actual native spawn branch. No save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

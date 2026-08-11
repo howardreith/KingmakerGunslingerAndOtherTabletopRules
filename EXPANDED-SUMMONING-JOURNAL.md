@@ -586,3 +586,22 @@
   `b515558f54db01c1694a25507df298415c6c7ca0c2053e21f81db63a67c37507`;
   package SHA-256:
   `597637b7698117bd5e86cb9f074581a3020419392032e923612b96baf962d729`.
+
+## 2026-08-11 - GameAction isolation proved; branch-cardinality correction
+
+- Guarded run `20260811T2043115519772Z-observe-expanded-summoning-inventory`
+  completed on committed source
+  `0759783da38db3843905f368c62a964217870545`. The new native-action-isolation
+  assertion passed at zero, proving the 286 contaminated non-KMG graphs were
+  repaired. Representative KMG graphs contained one independent caster action.
+  No save was accessed.
+- Celestial, fiendish, and aggregate alignment assertions still failed because
+  they required exactly one added action per ability. Native summon quantity
+  graphs can legitimately contain multiple spawn nodes. Reframed the invariant
+  to require a nonzero spawn count and exact equality between spawn-node count
+  and family-correct alignment/template/smite action counts.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `a675b1a4eb7e01c418fd71e842e2d0dedb8c0b6435e7d0e815389ee4d9ab78f8`;
+  package SHA-256:
+  `7755cdeca8ee554f2ec0456bcac67e72d91ce4a007787e31d31e403e845ff85d`.

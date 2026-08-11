@@ -7194,33 +7194,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<AbilityVariants>().Single().Variants.Length == 2 &&
                     !value.ComponentsArray.OfType<AbilityEffectRunAction>().Any());
             bool celestialExact = celestialExecutions.Length == 182 &&
-                celestialExecutions.All(value => value.ComponentsArray
+                celestialExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    value.ComponentsArray
                     .OfType<AbilityCasterAlignment>().Single().Alignment ==
                         (AlignmentMaskType)63 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Good) &&
-                    ExpandedSummoningTemplateApplyCount(value) == 1 &&
+                    ExpandedSummoningTemplateApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value) &&
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Celestial) == 1 &&
-                    ExpandedSummoningSmiteApplyCount(value) == 1);
+                        SummonAlignmentMode.Celestial) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningSmiteApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
             bool fiendishExact = fiendishExecutions.Length == 182 &&
-                fiendishExecutions.All(value => value.ComponentsArray
+                fiendishExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    value.ComponentsArray
                     .OfType<AbilityCasterAlignment>().Single().Alignment ==
                         (AlignmentMaskType)504 && value.ComponentsArray
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Evil) &&
-                    ExpandedSummoningTemplateApplyCount(value) == 1 &&
+                    ExpandedSummoningTemplateApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value) &&
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Fiendish) == 1 &&
-                    ExpandedSummoningSmiteApplyCount(value) == 1);
+                        SummonAlignmentMode.Fiendish) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningSmiteApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
             BlueprintAbility[] allyExecutions = all.OfType<BlueprintAbility>()
                 .Where(value => value.name.StartsWith(
                     "KMG_Summoning_Ability_SNA_", StringComparison.Ordinal))
                 .ToArray();
             bool allyAlignmentExact = allyExecutions.Length == 320 &&
                 allyExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
                     ExpandedSummoningAlignmentActionCount(value,
-                        SummonAlignmentMode.Caster) == 1 &&
+                        SummonAlignmentMode.Caster) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
                     ExpandedSummoningAlignmentActionCount(value,
                         SummonAlignmentMode.Celestial) == 0 &&
                     ExpandedSummoningAlignmentActionCount(value,
@@ -7364,6 +7376,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningAlignmentActionCount(component, mode, seen,
                     ref count);
             return count;
+        }
+
+        private static int ExpandedSummoningSpawnActionCount(
+            BlueprintAbility ability)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningSpawnActionCount(component, seen, ref count);
+            return count;
+        }
+
+        private static void ExpandedSummoningSpawnActionCount(object value,
+            ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            if (value is ContextActionSpawnMonster) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningSpawnActionCount(item, seen, ref count);
+                else ExpandedSummoningSpawnActionCount(child, seen, ref count);
+            }
         }
 
         private static void ExpandedSummoningAlignmentActionCount(object value,

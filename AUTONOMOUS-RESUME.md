@@ -2407,3 +2407,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Repository validation, 1,005/1,005 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push and rerun the exact alignment
   and zero-native-contamination observer.
+
+## Expanded Summoning current resume - per-spawn-branch observer correction
+
+- Guarded run `20260811T2043115519772Z-observe-expanded-summoning-inventory`
+  on `0759783da38db3843905f368c62a964217870545` proved the GameAction repair:
+  native/third-party contamination fell from 286 to zero, and representative
+  KMG graphs held one independent alignment action. No save was accessed.
+- The remaining failures were observer overconstraint. Some native quantity
+  templates legitimately contain multiple `ContextActionSpawnMonster` nodes;
+  requiring exactly one added action per ability rejects those valid graphs.
+  The observer now counts spawn nodes and requires exactly one alignment,
+  template, and smite action per corresponding spawn branch.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and rerun the guarded observer.

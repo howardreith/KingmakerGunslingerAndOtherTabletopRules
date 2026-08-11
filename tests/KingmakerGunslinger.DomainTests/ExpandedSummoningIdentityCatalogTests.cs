@@ -220,7 +220,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-template-buffs",
                 "expanded-summoning-smite-markers",
                 "expanded-summoning-runtime-alignments",
-                "expanded-summoning-native-action-isolation" })
+                "expanded-summoning-native-action-isolation",
+                "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
             string inventory = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
