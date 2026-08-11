@@ -444,3 +444,21 @@
   `df9060c481b80cf7dc78302cc5d680652e1a25ad1cee4780335e009ae96b9f1e`;
   package SHA-256:
   `bec91cc818b9007eb8cf8fc919dee0da23e9c6f23a1b8815830da0bb85b46484`.
+
+## 2026-08-11 - template-mechanic inventory PASS and smite follow-up
+
+- Guarded save-free run
+  `20260811T2000068867927Z-observe-expanded-summoning-inventory` passed on
+  committed source `63d77276ea97468f6bb31768b3f4e7125a390250`; all nine exact
+  final-live template features/facts were found.
+- The optional template features themselves use only base-game `AddFacts`.
+  Their smite facts use base `AddFacts` and `AddAbilityResources`, but delegate
+  to Smite Evil/Good abilities `f009c072167c4b53a37c1071a2251c3f` and
+  `320b92730bd54842b9707931a5dbab18` plus shared resource
+  `b4274c5bb0bf2ad4190eb7c44859048b`. Those exact dependencies are now included
+  in a deeper fields/action-graph observer.
+- Repository validation, 1,003/1,003 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `dbec700adf841b346350c10f74c7c6bcaa46529242ece270635a421f09bff060`;
+  package SHA-256:
+  `265760f09f186fab4f67f819d8c2896f8b9ac1811bb0be4166d77929a22cc3a5`.

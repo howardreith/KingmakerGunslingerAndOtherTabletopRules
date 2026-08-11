@@ -145,6 +145,9 @@ namespace KingmakerGunslinger.DomainTests
                 "3e33af2ab5974859bdaa92c32987b3e0",
                 "bf0882a6d254407bb259356f1aa66392",
                 "a432066702694b2590260b58426fee28",
+                "f009c072167c4b53a37c1071a2251c3f",
+                "320b92730bd54842b9707931a5dbab18",
+                "b4274c5bb0bf2ad4190eb7c44859048b",
                 "template-mechanic-summary" })
                 Assertions.True(inventory.Contains(token),
                     "Exact template-mechanic inventory is missing: " + token);

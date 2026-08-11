@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "bcd0df35c0be779911d51e11e45c7be1f4106e5c",
+  "currentSha": "63d77276ea97468f6bb31768b3f4e7125a390250",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "exact-template-mechanic-observer-source-qualified",
-  "nextConcreteAction": "Commit and push the exact nine-GUID template-mechanic observer, then run it against the final-live Call of the Wild profile to inventory smite component internals.",
+  "completedPhase": "exact-template-smite-dependency-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the exact smite ability/resource graph observer, then run it in the final-live Call of the Wild profile.",
   "domainTestResult": "1003/1003 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 df9060c481b80cf7dc78302cc5d680652e1a25ad1cee4780335e009ae96b9f1e",
-  "packageResult": "strict PASS; SHA-256 bec91cc818b9007eb8cf8fc919dee0da23e9c6f23a1b8815830da0bb85b46484",
+  "releaseBuildResult": "PASS; DLL SHA-256 dbec700adf841b346350c10f74c7c6bcaa46529242ece270635a421f09bff060",
+  "packageResult": "strict PASS; SHA-256 265760f09f186fab4f67f819d8c2896f8b9ac1811bb0be4166d77929a22cc3a5",
   "blueprintLedger": "1118 Expanded Summoning identities; 1372 active, 1 reserved, 1373 total; derived constant registry count 1372",
   "runtimeScenarios": [
     {
@@ -123,6 +123,13 @@
       "sourceSha": "d384ba06cf76896543a6b23ed480d3f6715bbba2",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1954362756414Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Exact HD-banded template assertions passed: logical=182, celestial=182, fiendish=182, buffs=6; registry=1372 and placements=681; no save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "63d77276ea97468f6bb31768b3f4e7125a390250",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2000068867927Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All nine exact Call of the Wild template features and referenced mechanics were present; smite features use base AddFacts/AddAbilityResources and reference two abilities plus one shared resource; no save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

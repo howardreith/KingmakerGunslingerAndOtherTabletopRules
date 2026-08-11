@@ -2307,3 +2307,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Repository validation, 1,003/1,003 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push and run the observer in the
   composed profile to capture the smite component internals.
+
+## Expanded Summoning current resume - exact smite dependency follow-up
+
+- Guarded run `20260811T2000068867927Z-observe-expanded-summoning-inventory`
+  passed on `63d77276ea97468f6bb31768b3f4e7125a390250`; all nine exact
+  Call of the Wild template-mechanic GUIDs were present and no save was used.
+- Smite Evil/Good template features use base `AddFacts` and
+  `AddAbilityResources`, pointing to exact abilities `f009c072...` / `320b9273...`
+  and shared resource `b4274c5b...`. The observer now follows those three
+  identities with full fields/action graphs. Exact next action: commit/push and
+  execute that focused observation.

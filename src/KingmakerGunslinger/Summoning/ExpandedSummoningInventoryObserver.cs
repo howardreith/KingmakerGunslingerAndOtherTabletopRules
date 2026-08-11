@@ -54,7 +54,8 @@ namespace KingmakerGunslinger.Summoning
             "bf0882a6d254407bb259356f1aa66392", "a432066702694b2590260b58426fee28",
             "0e7481a8ceb041129a692bf59f24d057", "46a19a521e0d40f792d8b4f64931be8a",
             "368bc4311f7f4ba9af3752ff4418d0a8", "4170f7f5874a4e45bc7050a53727452f",
-            "a203d617f8d547459e1f25790f886b6e"
+            "a203d617f8d547459e1f25790f886b6e", "f009c072167c4b53a37c1071a2251c3f",
+            "320b92730bd54842b9707931a5dbab18", "b4274c5bb0bf2ad4190eb7c44859048b"
         };
         private static readonly string[] UnitTerms = ExpandedSummoningCatalog.All
             .SelectMany(value => new[] { value.DisplayName, value.Visual })
@@ -123,8 +124,9 @@ namespace KingmakerGunslinger.Summoning
                 templateMechanics.Contains(value.AssetGuid)).OrderBy(value =>
                     value.AssetGuid, StringComparer.Ordinal).ToArray();
             foreach (BlueprintScriptableObject value in observedTemplateMechanics)
-                records.Add("template-mechanic=" + Describe(value) + ";components=" +
-                    Components(value));
+                records.Add("template-mechanic=" + Describe(value) + ";fields=" +
+                    Members(value, 160) + ";components=" + Components(value) +
+                    ";graph=" + ObjectGraph(value.ComponentsArray, 7));
             records.Add("template-mechanic-summary=expected:" +
                 ExactTemplateMechanicGuids.Length + ";found:" +
                 observedTemplateMechanics.Length + ";missing:" + string.Join(",",
