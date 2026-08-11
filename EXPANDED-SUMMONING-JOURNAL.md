@@ -34,3 +34,14 @@
 - SNA always uses caster-alignment policy; SM template policy is explicit per row.
 - Complete suite: 985/985 PASS. Repository validation, clean Release build, and
   strict standalone package validation PASS.
+
+## 2026-08-11 - guarded final-live inventory observer
+
+- Added save-free `observe-expanded-summoning-inventory` to the managed and
+  PowerShell guarded allowlists.
+- Observer records final-live summon-family abilities and component fields,
+  roster-matched unit donors and view/body/fact references, and native summon
+  feat/template/pool candidates. It performs no blueprint or save mutation.
+- Runtime preflight: 86 checks PASS. Repository validation, 985/985 domain tests,
+  clean Release build, and strict standalone package validation PASS.
+- Exact next step is a clean-commit Steam App ID 640820 observer run.

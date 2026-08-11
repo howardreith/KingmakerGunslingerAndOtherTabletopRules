@@ -45,6 +45,7 @@ using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Spells.ShieldOther;
+using KingmakerGunslinger.Summoning;
 using Kingmaker.View.Animation;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
@@ -434,6 +435,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningInventory)
+                {
+                    Complete(RunExpandedSummoningInventoryObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -7099,6 +7106,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             foreach (string record in observation.Records)
                 result.Diagnostics.Add(record);
+            return result;
+        }
+
+        private RuntimeTestResult RunExpandedSummoningInventoryObservation()
+        {
+            ExpandedSummoningInventoryObservation observation =
+                ExpandedSummoningInventoryObserver.Observe(BlueprintBootstrap.Library);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("summon-family-ability-candidates", ">=18",
+                    observation.ParentCount.ToString(), observation.ParentCount >= 18,
+                    "final-live BlueprintAbility name/display/component inventory"),
+                Assertion("summon-unit-donor-candidates", ">=40",
+                    observation.UnitCount.ToString(), observation.UnitCount >= 40,
+                    "final-live BlueprintUnit roster-term inventory"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
         }
 

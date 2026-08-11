@@ -35,6 +35,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
     'observe-shield-other-inventory',
+    'observe-expanded-summoning-inventory',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',

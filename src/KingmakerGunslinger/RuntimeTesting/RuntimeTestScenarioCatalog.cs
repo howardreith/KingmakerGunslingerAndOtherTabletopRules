@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-feature-module-settings";
         internal const string ObserveShieldOtherInventory =
             "observe-shield-other-inventory";
+        internal const string ObserveExpandedSummoningInventory =
+            "observe-expanded-summoning-inventory";
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
@@ -210,6 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModLoadSmoke,
                 ObserveFeatureModuleSettings,
                 ObserveShieldOtherInventory,
+                ObserveExpandedSummoningInventory,
                 DisposableShieldOther,
                 ObserveOptionalModCompatibility,
                 ObserveClassBlueprintContracts,
