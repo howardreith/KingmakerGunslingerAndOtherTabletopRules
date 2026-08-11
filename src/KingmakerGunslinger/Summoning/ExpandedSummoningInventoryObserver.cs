@@ -90,6 +90,15 @@ namespace KingmakerGunslinger.Summoning
             "c0f4e1c24c9cd334ca988ed1bd9d201f",
             "6cbb040023868574b992677885390f92"
         };
+        private static readonly string[] BebelithPixieTerms = {
+            "bebilith", "bebelith", "doomspider", "doom spider",
+            "giantspiderdoom", "dismantlearmor", "dismantle armor",
+            "armorrend", "armor rend", "penetratingstrike",
+            "penetrating strike", "demonbane", "demon bane",
+            "pixie", "nixie", "irresistibledance", "irresistible dance",
+            "sleeparrow", "sleep arrow", "sleepspell", "sleep spell",
+            "sleep"
+        };
 
         internal static ExpandedSummoningInventoryObservation Observe(
             LibraryScriptableObject library)
@@ -159,6 +168,24 @@ namespace KingmakerGunslinger.Summoning
                 specialDetails.Length + ";missing-details:" +
                 string.Join(",", ExactSpecialMechanicGuids.Where(guid =>
                     !specialDetails.Any(value => value.AssetGuid == guid))));
+
+            BlueprintScriptableObject[] bebilithPixieCandidates = all.Where(value =>
+                ContainsAny(SearchText(value), BebelithPixieTerms)).OrderBy(value =>
+                    value.AssetGuid, StringComparer.Ordinal).Take(120).ToArray();
+            foreach (BlueprintScriptableObject value in bebilithPixieCandidates)
+            {
+                BlueprintUnit unit = value as BlueprintUnit;
+                records.Add("bebelith-pixie-candidate=" + Describe(value) +
+                    ";fields=" + Members(value, 160) + ";components=" +
+                    Components(value) + ";graph=" +
+                    ObjectGraph(value.ComponentsArray, 12) +
+                    (unit == null ? string.Empty : ";body-graph=" +
+                        ObjectGraph(FieldValue(unit, "Body"), 8) +
+                        ";view-graph=" +
+                        ObjectGraph(FieldValue(unit, "Prefab"), 8)));
+            }
+            records.Add("bebelith-pixie-candidate-summary=found:" +
+                bebilithPixieCandidates.Length + ";cap:120");
 
             var canonical = new HashSet<string>(CanonicalParentGuids, StringComparer.Ordinal);
             BlueprintAbility[] canonicalParents = all.OfType<BlueprintAbility>()

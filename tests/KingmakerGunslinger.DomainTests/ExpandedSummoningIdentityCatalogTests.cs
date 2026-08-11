@@ -337,7 +337,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "ExpandedSummoningDonorCatalog.All",
                 "Distinct(StringComparer.Ordinal)", "component-graph=",
                 "body-graph=", "view-graph=", "SpecialMechanicTerms",
-                "special-detail=", "special-candidate-summary=" })
+                "special-detail=", "special-candidate-summary=",
+                "BebelithPixieTerms", "bebelith-pixie-candidate=",
+                "bebelith-pixie-candidate-summary=" })
                 Assertions.True(inventory.Contains(token),
                     "Exact donor graph inventory is missing: " + token);
             foreach (string token in new[] { "ExactTemplateMechanicGuids",
