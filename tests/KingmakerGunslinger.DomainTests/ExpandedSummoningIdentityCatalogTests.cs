@@ -290,7 +290,12 @@ namespace KingmakerGunslinger.DomainTests
                 "cce5bb72adc78f944b480e01efd3eaef",
                 "c0f4e1c24c9cd334ca988ed1bd9d201f",
                 "6cbb040023868574b992677885390f92",
-                "0c852a2405dd9f14a8bbcfaf245ff823", "longspear" })
+                "0c852a2405dd9f14a8bbcfaf245ff823",
+                "1a3f2f384bbef804d8f52db1f9aa62d3",
+                "6fed981bf0ef27a499969f369f35b5e8",
+                "094714bb08f4e1943a8e9d2384ebe573", "longspear",
+                "giantfrogpoisonous", "centipedepoison",
+                "giantspiderpoison" })
                 Assertions.True(observer.Contains(token),
                     "Bounded special-mechanic observer is missing: " + token);
             Assertions.False(observer.Contains(

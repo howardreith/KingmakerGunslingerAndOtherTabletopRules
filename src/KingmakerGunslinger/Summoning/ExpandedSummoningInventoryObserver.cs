@@ -72,7 +72,9 @@ namespace KingmakerGunslinger.Summoning
             "dominateperson", "dominate person", "vampirictouch",
             "vampiric touch", "tailslap", "tail slap", "constrict",
             "improvedgrab", "improved grab", "heatfeature", "subtypedemon",
-            "coldirongood", "cold iron or good", "spear", "longspear"
+            "coldirongood", "cold iron or good", "spear", "longspear",
+            "giantfrogpoisonous", "giant frog poison", "centipedepoison",
+            "centipede poison", "giantspiderpoison", "giant spider poison"
         };
         private static readonly string[] ExactSpecialMechanicGuids = {
             "24719a49b84c5cd43b894268d22d9c89",
@@ -89,7 +91,10 @@ namespace KingmakerGunslinger.Summoning
             "cce5bb72adc78f944b480e01efd3eaef",
             "c0f4e1c24c9cd334ca988ed1bd9d201f",
             "6cbb040023868574b992677885390f92",
-            "0c852a2405dd9f14a8bbcfaf245ff823"
+            "0c852a2405dd9f14a8bbcfaf245ff823",
+            "1a3f2f384bbef804d8f52db1f9aa62d3",
+            "6fed981bf0ef27a499969f369f35b5e8",
+            "094714bb08f4e1943a8e9d2384ebe573"
         };
         private static readonly string[] BebelithPixieTerms = {
             "bebilith", "bebelith", "doomspider", "doom spider",
