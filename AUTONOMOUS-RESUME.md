@@ -19,6 +19,10 @@
 - Exact next action: replace registration shells with exact donor-mapped sanitized
   units, native spawn actions, alignment/template execution, and special
   adaptations before parent publication.
+- Latest structural run on `e23dc00077dc23cc957c3db4a8309d16b75696f2`
+  timed out in bootstrap because identity registration cloned 1,045 full native
+  ability graphs. The validated uncommitted repair uses lightweight hidden
+  ability shells; rerun the save-free observer immediately after publication.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

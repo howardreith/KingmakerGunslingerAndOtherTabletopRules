@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
-using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
@@ -24,8 +22,6 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string RegistrationUnitDonorGuid =
             "1ed9a630f0d9d7f44855d3d1d1b2cdf2";
-        private const string RegistrationParentGuid =
-            "8fd74eddd9b6c224693d9ab241f25e84";
 
         internal static ExpandedSummoningBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
@@ -38,13 +34,6 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnit unitDonor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
                 library, RegistrationUnitDonorGuid,
                 "dedicated native summon registration donor");
-            BlueprintAbility parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                library, RegistrationParentGuid,
-                "native Summon Monster I registration parent");
-            AbilityVariants variants = (parent.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>().Single();
-            BlueprintAbility abilityDonor = (variants.Variants ??
-                Array.Empty<BlueprintAbility>()).First(value => value != null);
             var registered = new Dictionary<string, BlueprintScriptableObject>(
                 StringComparer.Ordinal);
             foreach (SummoningIdentitySpec identity in identities)
@@ -55,7 +44,7 @@ namespace KingmakerGunslinger.Blueprints
                         () => CloneUnitShell(unitDonor, identity.Symbol));
                 else if (identity.PlannedType == "BlueprintAbility")
                     blueprint = registry.Register<BlueprintAbility>(identity.Symbol,
-                        () => CloneAbilityShell(abilityDonor, identity.Symbol));
+                        () => CreateAbilityShell(identity.Symbol));
                 else if (identity.PlannedType == "BlueprintBuff")
                     blueprint = registry.Register<BlueprintBuff>(identity.Symbol,
                         () => CreateBuffShell(identity.Symbol));
@@ -74,13 +63,15 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintUnit CloneUnitShell(BlueprintUnit donor, string symbol)
         { return BlueprintCloneService.Clone(donor, InternalName(symbol)); }
 
-        private static BlueprintAbility CloneAbilityShell(BlueprintAbility donor,
-            string symbol)
+        private static BlueprintAbility CreateAbilityShell(string symbol)
         {
-            BlueprintAbility result = BlueprintCloneService.Clone(donor,
-                InternalName(symbol));
+            BlueprintAbility result = ScriptableObject.CreateInstance<BlueprintAbility>();
+            result.name = InternalName(symbol);
             result.Hidden = true;
             result.ActionBarAutoFillIgnored = true;
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            result.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            result.ResourceAssetIds = Array.Empty<string>();
             return result;
         }
 

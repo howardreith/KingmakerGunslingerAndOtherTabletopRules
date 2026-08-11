@@ -157,3 +157,17 @@
 - Repository validation, 996/996 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `8646b6614e3bded1e17498dc68655580e36cf5adbad9babfc124eee629a68fcd`;
   package SHA-256: `ee68ba029abff8202c20e0e8e536f97f30051b55a604411fa90f1cc2a3c3352a`.
+
+## 2026-08-11 - registration performance repair
+
+- Fresh-process structural run `20260811T1813067760804Z-observe-expanded-summoning-inventory`
+  failed closed at 300 seconds with `timeoutStage=request-accepted` and zero
+  assertions. No save was selected, loaded, or written.
+- Instrumentation isolated the cost to cloning 1,045 complete native ability
+  graphs during identity-only registration. Replaced those unreachable shells
+  with lightweight hidden `BlueprintAbility` instances carrying non-null empty
+  native data structures; frozen symbols, GUIDs, planned types, and registry
+  count are unchanged.
+- Repository validation, 996/996 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `b8a26e3b8e0b2e42efcd1bbea24d86f2003d2d46de95de1c0d1313bae5e42934`;
+  package SHA-256: `0542f022c0e3408f5534ab2921b9fe82cd9543c3f06d62fc73d5595b2e273cdf`.
