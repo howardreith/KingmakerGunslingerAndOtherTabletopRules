@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 
 namespace KingmakerGunslinger.Summoning
@@ -35,6 +37,17 @@ namespace KingmakerGunslinger.Summoning
             "c3524f96954a1d94f8525b86e7626633", "6ea3a75279bab234aa723989e30cb15a",
             "0cc7a2526e4557945b1d8eb277d1fb3a", "58ed91a92b8d70248aa884d303954469",
             "394610e32cfbc4f43a0efaab16faae49"
+        };
+        private static readonly string[] CanonicalParentGuids = {
+            "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7",
+            "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef",
+            "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c",
+            "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0",
+            "52b5df2a97df18242aec67610616ded0", "c6147854641924442a3bb736080cfeb6",
+            "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61",
+            "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe",
+            "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33",
+            "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e"
         };
         private static readonly string[] UnitTerms = ExpandedSummoningCatalog.All
             .SelectMany(value => new[] { value.DisplayName, value.Visual })
@@ -77,6 +90,25 @@ namespace KingmakerGunslinger.Summoning
                 !donors.Any(value => value.AssetGuid == guid)).ToArray();
             records.Add("donor-summary=expected:" + ExactDonorGuids.Length +
                 ";found:" + donors.Length + ";missing:" + string.Join(",", missingDonors));
+
+            var canonical = new HashSet<string>(CanonicalParentGuids, StringComparer.Ordinal);
+            BlueprintAbility[] canonicalParents = all.OfType<BlueprintAbility>()
+                .Where(value => canonical.Contains(value.AssetGuid)).ToArray();
+            foreach (BlueprintAbility parent in canonicalParents)
+            {
+                AbilityVariants variants = (parent.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AbilityVariants>().SingleOrDefault();
+                IEnumerable<BlueprintAbility> children = variants == null
+                    ? new[] { parent } : (variants.Variants ?? Array.Empty<BlueprintAbility>());
+                foreach (BlueprintAbility child in children.Where(value => value != null))
+                {
+                    AbilityEffectRunAction effect = (child.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                    records.Add("summon-action=parent:" + Describe(parent) + ";child:" +
+                        Describe(child) + ";graph:" + ObjectGraph(effect == null ? null : effect.Actions, 6));
+                }
+            }
+            records.Add("summon-action-summary=parents:" + canonicalParents.Length);
 
             BlueprintScriptableObject[] facts = all.Where(value =>
                 !(value is BlueprintAbility) && !(value is BlueprintUnit) &&
@@ -125,6 +157,52 @@ namespace KingmakerGunslinger.Summoning
             foreach (FieldInfo field in current.GetFields(BindingFlags.Public |
                 BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
                 yield return field;
+        }
+
+        private static string ObjectGraph(object root, int depth)
+        {
+            var rows = new List<string>();
+            Visit(root, "root", depth, rows, new HashSet<object>(ReferenceComparer.Instance));
+            return string.Join("|", rows.Take(300));
+        }
+
+        private static void Visit(object value, string path, int depth,
+            IList<string> rows, ISet<object> seen)
+        {
+            if (value == null) { rows.Add(path + "=<null>"); return; }
+            BlueprintScriptableObject blueprint = value as BlueprintScriptableObject;
+            if (blueprint != null) { rows.Add(path + "=" + Describe(blueprint)); return; }
+            Type type = value.GetType();
+            if (type.IsEnum || type.IsPrimitive || value is string || value is decimal)
+            { rows.Add(path + "=" + value); return; }
+            if (depth <= 0) { rows.Add(path + "=<" + type.FullName + ">"); return; }
+            if (!type.IsValueType && !seen.Add(value)) { rows.Add(path + "=<cycle>"); return; }
+            IEnumerable sequence = value as IEnumerable;
+            if (sequence != null && !(value is string))
+            {
+                int index = 0;
+                foreach (object item in sequence) {
+                    Visit(item, path + "[" + index + "]", depth - 1, rows, seen);
+                    if (++index >= 50) break;
+                }
+                return;
+            }
+            foreach (FieldInfo field in AllFields(type).OrderBy(v =>
+                v.DeclaringType.FullName + "." + v.Name, StringComparer.Ordinal))
+            {
+                if (field.DeclaringType == typeof(UnityEngine.Object)) continue;
+                object item; try { item = field.GetValue(value); } catch { continue; }
+                Visit(item, path + "." + field.DeclaringType.Name + "." + field.Name,
+                    depth - 1, rows, seen);
+                if (rows.Count >= 300) return;
+            }
+        }
+
+        private sealed class ReferenceComparer : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceComparer Instance = new ReferenceComparer();
+            public new bool Equals(object x, object y) { return ReferenceEquals(x, y); }
+            public int GetHashCode(object obj) { return RuntimeHelpers.GetHashCode(obj); }
         }
 
         private static string References(object owner, string term)

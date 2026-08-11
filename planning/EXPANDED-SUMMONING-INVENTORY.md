@@ -95,3 +95,39 @@ standard Worg `313a17cbd273d1f40bd1654ee2ae186e`, Hodag
 `58ed91a92b8d70248aa884d303954469`, and Nixie
 `394610e32cfbc4f43a0efaab16faae49`. These are visual/mechanical clues only;
 campaign units will never be summoned directly.
+
+## Exact donor structure audit
+
+Guarded fresh-process run
+`20260811T1741299016346Z-observe-expanded-summoning-inventory` inspected the
+exact 25 GUID allowlist on source commit
+`df65c391365ce52367f05b457e6f2bc6a61a3a09`. All 25 were found; no save was
+selected, loaded, or written.
+
+The audit proves that a `Summoned` name is not a safety contract. Every
+inspected dedicated donor except Giant Spider retains an `Experience`
+component. Dire Wolf, Mastodon, and Smilodon also retain `AddLoot`; the latter
+two therefore require the same stripping as ordinary campaign donors. Native
+dedicated donors already use faction `Summoned`
+(`1b08d9ed04518ec46a9b3e4e23cb5105`) and are preferred for body, prefab,
+animation, and combat-profile clues only. KMG clones must create independent
+component/fact arrays, remove XP/loot and other forbidden surfaces, and prove
+the source blueprint unchanged.
+
+The Worg, Hodag, Erinyes, Nymph, Ankou, and Nixie candidates use campaign
+factions and may include `AddLoot`, `AddTags`, `MobCaster`, or post-load fixer
+components. They are visual donors only. No campaign unit is eligible for
+direct spawning.
+
+### Dedicated elemental summon identities
+
+| Element | Small | Medium | Large | Huge | Greater | Elder |
+|---|---|---|---|---|---|---|
+| Air | `04944455200bc224d955a8e9bbd64f3f` | pending exact-name observation | `3764b43791a00e1468257adbca43ce9b` | `2e24256e459468743b91fbb9aa85e1ab` | pending exact-name observation | `33bb90ffd13c87b4c8e45d920313752a` |
+| Earth | `651600a51edd20141adb67696986c582` | `812c9a0348e004242ba4e46efa91e38e` | `d3d9ab560534bd948b10ac00abbff083` | `3b86a449e7264174eaccef9b8f02fe20` | `cda7013db24f4c547b79bfc5c617066b` | `6b4cb9b6116f2194192e1e7e379c48d7` |
+| Fire | `46cede83b1f34ad4fa46b8776e352b02` | `a0ab0c31b1a92554291a82e598f39ba4` | `ba5026596b06b204eb2efed2b411c5b9` | `640fb7efb7c916945837bbcab995267e` | `b0b4091bdaebb464e903857a95189dea` | `ea0f0bbc6e5e471428d535501b21eb26` |
+| Water | `56372b0a2749c224392a5ee74105c534` | `62a3e860e6e72e6499c38bb8b2fe303e` | `680b5b61c80af664daec46af7644486c` | `877c154a296ee8e45be1a00668319923` | `fcc939e3acf355b458ddf9617d8c6c28` | `3bd31a0b4d800f04a8c5b7b1a6d7061e` |
+
+The exact Wolf summon identity is
+`76597216769b0d540aafafa07edf0cec` (`WolfSummon`). These identities are donor
+inputs, never KMG output identities.
