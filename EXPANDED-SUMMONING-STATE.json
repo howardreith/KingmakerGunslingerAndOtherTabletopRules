@@ -4,10 +4,10 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "81eeb23eccbcee8190c11644fd4263c8b6ace717",
+  "currentSha": "9b064ac2896d38b69a87777976825fbed795f6a2",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "authoritative-sanitizer-observer-source-qualified",
-  "nextConcreteAction": "Commit and push the enhanced observer, then run the guarded structural scenario and inspect its four sanitizer assertions.",
+  "completedPhase": "summon-sanitizer-native-runtime-qualified",
+  "nextConcreteAction": "Implement KMG-owned celestial and fiendish template buffs plus deterministic good, neutral, and evil execution routing.",
   "domainTestResult": "1001/1001 PASS",
   "releaseBuildResult": "PASS; DLL SHA-256 5d77c1932f48b8ad3c2cba010e65918f9fcfd92a5d11e16ca0d404f227c2c2ec",
   "packageResult": "strict PASS; SHA-256 f61a7e8154db157979b2423abdf410fd2726b580c63e0415c972b7decd46f551",
@@ -88,6 +88,12 @@
       "result": "PASS",
       "sourceSha": "7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1912513494823Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "9b064ac2896d38b69a87777976825fbed795f6a2",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1924349269417Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

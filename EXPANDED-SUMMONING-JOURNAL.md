@@ -320,3 +320,12 @@
 - Source validation, 1,001/1,001 tests, clean Release, and strict package PASS.
   DLL SHA-256: `5d77c1932f48b8ad3c2cba010e65918f9fcfd92a5d11e16ca0d404f227c2c2ec`;
   package SHA-256: `f61a7e8154db157979b2423abdf410fd2726b580c63e0415c972b7decd46f551`.
+
+## 2026-08-11 - sanitizer native runtime PASS
+
+- Guarded save-free run
+  `20260811T1924349269417Z-observe-expanded-summoning-inventory` passed on
+  source `9b064ac2896d38b69a87777976825fbed795f6a2`.
+- Exact native assertions: shared donor components `0`; prohibited fact or
+  component references `0`; inherited class spell arrays `0`; nonempty
+  starting inventories `0`. Registry remained 1,370 and live placements 681.
