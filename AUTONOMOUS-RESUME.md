@@ -2347,3 +2347,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   1,004/1,004 tests, clean Release, and strict package validation pass. Exact
   next action: commit/push, rebuild the immutable SHA, and run the guarded
   final-live structural observer.
+
+## Expanded Summoning current resume - bounded template smite native PASS
+
+- The first guarded launch on `a0d8e7752281d4ae1e51ce094c1226f6a30faf16`
+  accepted the exact request but exited during platform initialization before
+  blueprint inspection; it accessed no save. The next fresh Steam launch
+  passed as run `20260811T2021406071785Z-observe-expanded-summoning-inventory`.
+- Exact final-live assertions passed: registry 1,374; 67 units; 1,045
+  abilities; 681 placements; 182 celestial and 182 fiendish executions; six
+  template buffs; two bounded smite markers; zero sanitizer violations. No
+  save was accessed.
+- Exact next action: implement save-safe summon-child alignment assignment for
+  celestial, fiendish, and Nature's Ally units, then source- and runtime-qualify
+  it before special creature mechanics.

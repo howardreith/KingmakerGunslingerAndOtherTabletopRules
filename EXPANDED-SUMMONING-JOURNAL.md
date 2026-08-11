@@ -505,3 +505,22 @@
   `f59d4092f169471fc71499da2be5966323f0d50ed38f41d834ef33155decf707`;
   package SHA-256:
   `07e451168183fe27553daa440887278a0377c20a3d804513887f5d9789577464`.
+
+## 2026-08-11 - bounded template smite native structural PASS
+
+- A first guarded fresh launch on committed source
+  `a0d8e7752281d4ae1e51ce094c1226f6a30faf16` accepted the exact request
+  and loaded the expected DLL, then exited during Steam/platform initialization
+  before final-live blueprint inspection. The structured failure is
+  `20260811T2020185475961Z-observe-expanded-summoning-inventory`; no save was
+  accessed and no feature assertion failed.
+- The subsequent fresh Steam launch passed as
+  `20260811T2021406071785Z-observe-expanded-summoning-inventory`. It proved
+  exact registry 1,374; 67 units; 1,045 abilities; 681 placements; 182
+  celestial and 182 fiendish executions; six HD-banded template buffs; two
+  summon-local smite markers; and zero donor-sharing, prohibited-reference,
+  inherited-spell, or starting-inventory violations. No save was accessed.
+- Committed-source clean Release DLL SHA-256:
+  `bf51c14793b878636502bf43cc2f2119b3c0e5a12208972e2d36b44d22b724b0`;
+  package SHA-256:
+  `40516139bebc06bcea6ef29e67d93485a072a6f6605e6587d935931b65d5e425`.

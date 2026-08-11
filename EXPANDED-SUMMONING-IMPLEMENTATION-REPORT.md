@@ -39,3 +39,13 @@ state. This intentionally omits manual swift target selection and persistent
 bonuses against one selected target, a conservative non-overpowered lifecycle
 adaptation. Its committed-source structural runtime qualification remains
 pending. Runtime unit-alignment fidelity also remains open and is not claimed.
+
+That structural qualification subsequently passed on committed source
+`a0d8e7752281d4ae1e51ce094c1226f6a30faf16` as guarded run
+`20260811T2021406071785Z-observe-expanded-summoning-inventory`: exact registry
+1,374, 67 units, 1,045 abilities, 681 placements, 182 executions per template,
+six template buffs, two smite markers, and all sanitizer checks passed. The
+preceding fresh launch exited during platform initialization after request
+acceptance and before blueprint inspection; it was retained as failed evidence
+and the evidence-supported retry passed. Neither run accessed a save. Runtime
+unit-alignment fidelity remains open and is not claimed.
