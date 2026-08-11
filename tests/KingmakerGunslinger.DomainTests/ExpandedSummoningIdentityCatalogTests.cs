@@ -200,6 +200,14 @@ namespace KingmakerGunslinger.DomainTests
                 "WillOWispTouchGuid", "SummonMonster" })
                 Assertions.False(source.Contains(forbidden),
                     "Lantern reconstruction retained a forbidden surface: " + forbidden);
+
+            string registration = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningBlueprints.cs"));
+            foreach (string token in new[] { "CreateAiCastSpellShell(identity.Symbol)",
+                "CreateBrainShell(identity.Symbol)", "result.name = InternalName(symbol)" })
+                Assertions.True(registration.Contains(token),
+                    "Special blueprint factory naming contract is missing: " + token);
         }
 
         internal static void AbilityBuilderPreservesNativeGraphContracts()

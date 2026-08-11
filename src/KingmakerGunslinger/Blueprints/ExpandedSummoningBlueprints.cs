@@ -63,10 +63,10 @@ namespace KingmakerGunslinger.Blueprints
                         () => CreateBuffShell(identity.Symbol));
                 else if (identity.PlannedType == "BlueprintAiCastSpell")
                     blueprint = registry.Register<BlueprintAiCastSpell>(identity.Symbol,
-                        () => ScriptableObject.CreateInstance<BlueprintAiCastSpell>());
+                        () => CreateAiCastSpellShell(identity.Symbol));
                 else if (identity.PlannedType == "BlueprintBrain")
                     blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
-                        () => ScriptableObject.CreateInstance<BlueprintBrain>());
+                        () => CreateBrainShell(identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -79,6 +79,21 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
             ExpandedSummoningSpecialBuilder.Configure(library, registered);
+            return result;
+        }
+
+        private static BlueprintAiCastSpell CreateAiCastSpellShell(string symbol)
+        {
+            BlueprintAiCastSpell result =
+                ScriptableObject.CreateInstance<BlueprintAiCastSpell>();
+            result.name = InternalName(symbol);
+            return result;
+        }
+
+        private static BlueprintBrain CreateBrainShell(string symbol)
+        {
+            BlueprintBrain result = ScriptableObject.CreateInstance<BlueprintBrain>();
+            result.name = InternalName(symbol);
             return result;
         }
 
