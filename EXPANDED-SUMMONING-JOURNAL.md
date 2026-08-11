@@ -769,3 +769,34 @@
   `c15c777d8818cf2c9b076d0bf26187763ec324dee182448cc0ddf9abe5fd1cb0`;
   package SHA-256:
   `9ad5f4487eadf510133ceb62248104bdf83cf6452e6353029a424979b64f6684`.
+
+## 2026-08-11 - Salamander and Succubus structural PASS
+
+- Reconstructed Salamander as an 8-HD Medium fire outsider with official
+  ability scores, spear and 2d6 tail routine, hit-confirmed heat, bounded
+  grab/constrict, natural armor +7, and DR 10/magic. The Lizardfolk donor is
+  visual only; its equipment, progression, inventory, and campaign behavior
+  are absent.
+- Reconstructed Succubus as an 8-HD Medium chaotic-evil outsider with two
+  claws, bounded three-round humanoid domination, a one-round temporary
+  first-hit energy drain, DR 10/cold iron or good, energy defenses, and SR 18.
+  The native permanent-capable energy drain, profane gift, teleportation, and
+  summoning were not retained.
+- Two fail-closed runtime type mismatches exposed concrete native
+  `BlueprintFeature` types for DR and creature-type facts. Both were repaired
+  without weakening exact GUID/type validation. A subsequent run passed every
+  mechanical assertion and isolated one observer-only omission of the new
+  Succubus special ability; catalog-driven accounting replaced the special-case
+  count.
+- Guarded save-free run
+  `20260811T2238575798728Z-observe-expanded-summoning-inventory` passed on
+  committed source `b0deb04ff9b387b375202c5304a6741c9549ef0a`.
+  All 24 assertions passed: 67 units, 1,047 abilities, registry 1,386, all 681
+  placements, exact Salamander and Succubus structures, exact template and
+  alignment executions, and zero shared donor components, prohibited
+  references, inherited spells, or starting inventory. No save was accessed.
+- Repository validation, `1006/1006` domain tests, clean Release, and strict
+  package validation passed. DLL SHA-256:
+  `8a109ca92f13f3ce69b867cc0da08c182be84ce927a36f4d47a8c12d9f10dfca`;
+  package SHA-256:
+  `87c793d7be7040c3df4a0fc7c6a710ab24860420b9327015f439c37cefa2f7e6`.

@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "b4a3fc86804a8a950808457b4f9c38bddeb8152c",
+  "currentSha": "b0deb04ff9b387b375202c5304a6741c9549ef0a",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "invisible-stalker-and-shadow-demon-runtime-structure-qualified",
-  "nextConcreteAction": "Implement the bounded Salamander and Succubus unit reconstructions using the qualified exact native graphs, then extend exact structural assertions.",
+  "completedPhase": "salamander-and-succubus-runtime-structure-qualified",
+  "nextConcreteAction": "Inventory and implement the bounded Bebelith and Pixie reconstructions, including exact armor-rending, demon-hunting, dance, sleep-arrow, view, projectile, and cleanup contracts.",
   "domainTestResult": "1006/1006 PASS",
-  "releaseBuildResult": "PASS for runtime-qualified Invisible Stalker and Shadow Demon; DLL SHA-256 c15c777d8818cf2c9b076d0bf26187763ec324dee182448cc0ddf9abe5fd1cb0",
-  "packageResult": "strict PASS for runtime-qualified Invisible Stalker and Shadow Demon; SHA-256 9ad5f4487eadf510133ceb62248104bdf83cf6452e6353029a424979b64f6684",
-  "blueprintLedger": "1125 Expanded Summoning identities; 1379 active, 1 reserved, 1380 total; derived constant registry count 1379",
+  "releaseBuildResult": "PASS for runtime-qualified Salamander and Succubus; DLL SHA-256 8a109ca92f13f3ce69b867cc0da08c182be84ce927a36f4d47a8c12d9f10dfca",
+  "packageResult": "strict PASS for runtime-qualified Salamander and Succubus; SHA-256 87c793d7be7040c3df4a0fc7c6a710ab24860420b9327015f439c37cefa2f7e6",
+  "blueprintLedger": "1132 Expanded Summoning identities; 1386 active, 1 reserved, 1387 total; derived constant registry count 1386",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -249,6 +249,13 @@
       "sourceSha": "b4a3fc86804a8a950808457b4f9c38bddeb8152c",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2207541420526Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Exact Invisible Stalker and Shadow Demon assertions passed with registry 1379, 67 units, 1046 abilities, all 681 placements, and zero sanitizer or donor-alias failures. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "b0deb04ff9b387b375202c5304a6741c9549ef0a",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2238575798728Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All exact Salamander and Succubus assertions passed with 67 units, 1047 abilities, registry 1386, all 681 placements, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, or inherited-spell failures. No save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

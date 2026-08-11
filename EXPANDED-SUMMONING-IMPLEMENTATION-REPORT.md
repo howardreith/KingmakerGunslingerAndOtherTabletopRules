@@ -114,3 +114,16 @@ native Aura of Menace carrier. Wisp and Ghaele combat/campaign mechanics are
 not retained. Greater teleport and gestalt are conservative summon-safety
 omissions. Source qualification is 1,006 tests plus clean Release and strict
 package PASS; exact final-live structure and actual runtime use remain open.
+
+The next two reconstruction groups are now structurally qualified. Invisible
+Stalker and Shadow Demon passed exact final-live assertions in
+`20260811T2207541420526Z-observe-expanded-summoning-inventory`. Salamander and
+Succubus then passed in
+`20260811T2238575798728Z-observe-expanded-summoning-inventory` on committed
+source `b0deb04ff9b387b375202c5304a6741c9549ef0a`. That final save-free run passed
+all 24 assertions: 67 units, 1,047 abilities, registry 1,386, all 681 parent
+placements, exact special structures, exact alignment/template counts, and
+zero donor aliases, prohibited references, inherited class spells, or starting
+inventory. Actual casts, visual contracts, persistence, feature-state launches,
+and complete compatibility-profile qualification remain open and are not
+claimed.
