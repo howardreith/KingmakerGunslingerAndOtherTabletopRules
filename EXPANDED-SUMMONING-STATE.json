@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "fde2c66638e68d9c466946e9a90fd91ac709cca3",
+  "currentSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "exact-donor-mapped-unit-foundation",
-  "nextConcreteAction": "Qualify all 67 donor lookups on a fresh process, then sanitize fact-level forbidden abilities and construct exact native spawn action graphs before parent publication.",
+  "completedPhase": "bounded-structural-unit-cloning",
+  "nextConcreteAction": "Rerun exact-donor qualification on structural clones, then sanitize fact-level forbidden abilities and construct exact native spawn action graphs before parent publication.",
   "domainTestResult": "997/997 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 9ae16529e873ceb7b1c111f383102940141a80a0499a208c94cf7eb3efe2c7e3",
-  "packageResult": "strict PASS; SHA-256 9a3b39656ffead6aa01a47273a33f7aaf059e3c97938ee0c172137644edf2765",
+  "releaseBuildResult": "PASS; DLL SHA-256 80be16ab0d14224d2f0427573c18501c025356cfd3f4ff77da0c70dfc3f665c5",
+  "packageResult": "strict PASS; SHA-256 a916354b594550e521e493baae6d835fbd2c5693e5c512d42ec49d8577074047",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -40,6 +40,18 @@
       "result": "PASS",
       "sourceSha": "fde2c66638e68d9c466946e9a90fd91ac709cca3",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1820275250965Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1827302141068Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1831132044960Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

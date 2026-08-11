@@ -189,3 +189,17 @@
 - Repository validation, 997/997 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `9ae16529e873ceb7b1c111f383102940141a80a0499a208c94cf7eb3efe2c7e3`;
   package SHA-256: `9a3b39656ffead6aa01a47273a33f7aaf059e3c97938ee0c172137644edf2765`.
+
+## 2026-08-11 - bounded structural unit cloning
+
+- Exact-donor runs `20260811T1827302141068Z` (180 seconds) and
+  `20260811T1831132044960Z` (300 seconds) both failed closed at
+  `timeoutStage=request-accepted`; no assertions and no save access. Deep Unity
+  cloning of 67 complete unit graphs is therefore rejected as an architecture.
+- Replaced it with fresh `BlueprintUnit` creation plus structural copying of
+  non-Unity blueprint fields. Every array is defensively cloned, native cached
+  pointers and KMG GUIDs are never copied, and component filtering/faction
+  normalization occurs only on the new unit.
+- Repository validation, 997/997 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `80be16ab0d14224d2f0427573c18501c025356cfd3f4ff77da0c70dfc3f665c5`;
+  package SHA-256: `a916354b594550e521e493baae6d835fbd2c5693e5c512d42ec49d8577074047`.

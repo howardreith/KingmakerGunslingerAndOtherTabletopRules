@@ -71,13 +71,33 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintUnit CloneUnitShell(BlueprintUnit donor,
             BlueprintUnit summonedFactionDonor, string symbol)
         {
-            BlueprintUnit result = BlueprintCloneService.Clone(donor,
-                InternalName(symbol));
+            BlueprintUnit result = ScriptableObject.CreateInstance<BlueprintUnit>();
+            CopyBlueprintFields(donor, result);
+            result.name = InternalName(symbol);
             result.ComponentsArray = (donor.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(component => component != null &&
                     !IsForbiddenComponent(component.GetType().Name)).ToArray();
             SetSummonedFaction(result, summonedFactionDonor);
             return result;
+        }
+
+        private static void CopyBlueprintFields(BlueprintUnit source,
+            BlueprintUnit target)
+        {
+            const System.Reflection.BindingFlags flags =
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.DeclaredOnly;
+            for (Type type = typeof(BlueprintUnit); type != null &&
+                type != typeof(UnityEngine.Object); type = type.BaseType)
+            foreach (System.Reflection.FieldInfo field in type.GetFields(flags))
+            {
+                if (field.Name == "m_AssetGuid" || field.IsInitOnly) continue;
+                object value = field.GetValue(source);
+                Array array = value as Array;
+                field.SetValue(target, array == null ? value : array.Clone());
+            }
         }
 
         private static bool IsForbiddenComponent(string name)

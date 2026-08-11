@@ -19,9 +19,12 @@
 - Lightweight registration passed fresh-process structural qualification on
   `fde2c66638e68d9c466946e9a90fd91ac709cca3`. Exact donor decisions now cover
   all 67 units and component-level campaign surfaces are filtered.
-- Exact next action: qualify all 67 donor lookups on a fresh process, then
-  sanitize fact-level forbidden abilities and construct exact native spawn
-  action graphs before parent publication.
+- Deep Unity unit cloning timed out at both 180 and 300 seconds on published
+  `b354c8210d3da44506533f0ec2c53ed86d179336`. The validated uncommitted repair
+  creates fresh units and defensively copies non-Unity blueprint fields.
+- Exact next action: publish and rerun exact-donor qualification on structural
+  clones, then sanitize fact-level forbidden abilities and construct exact
+  native spawn action graphs before parent publication.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 
