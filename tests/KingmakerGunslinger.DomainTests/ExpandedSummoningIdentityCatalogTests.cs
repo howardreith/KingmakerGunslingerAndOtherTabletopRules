@@ -89,6 +89,52 @@ namespace KingmakerGunslinger.DomainTests
                 "Bounded smite must not create target buffs.");
         }
 
+        internal static void RuntimeAlignmentPolicyIsFamilyScopedAndExact()
+        {
+            int resolved;
+            Assertions.True(SummonAlignmentRuntimePolicy.TryResolve(
+                SummonAlignmentMode.Celestial, 9, null, out resolved),
+                "Lawful-neutral celestial resolution failed.");
+            Assertions.Equal(10, resolved,
+                "Celestial must preserve law and replace the moral axis.");
+            Assertions.True(SummonAlignmentRuntimePolicy.TryResolve(
+                SummonAlignmentMode.Fiendish, 17, null, out resolved),
+                "Chaotic-neutral fiendish resolution failed.");
+            Assertions.Equal(20, resolved,
+                "Fiendish must preserve chaos and replace the moral axis.");
+            Assertions.True(SummonAlignmentRuntimePolicy.TryResolve(
+                SummonAlignmentMode.Caster, 1, 12, out resolved),
+                "Nature's Ally caster alignment resolution failed.");
+            Assertions.Equal(12, resolved,
+                "Nature's Ally must receive the caster's exact alignment.");
+            Assertions.False(SummonAlignmentRuntimePolicy.TryResolve(
+                SummonAlignmentMode.Caster, 1, null, out resolved),
+                "Missing caster alignment must fail closed.");
+            Assertions.False(SummonAlignmentRuntimePolicy.TryResolve(
+                (SummonAlignmentMode)99, 1, null, out resolved),
+                "Unknown alignment mode must fail closed.");
+            Assertions.False(SummonAlignmentRuntimePolicy.TryResolve(
+                SummonAlignmentMode.Celestial, 511, null, out resolved),
+                "Non-exact owner alignment must fail closed.");
+
+            string action = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ContextActionSetSummonAlignment.cs"));
+            foreach (string token in new[] { "Context.MaybeCaster",
+                "target.Descriptor.Alignment.Set", "Target.Unit",
+                "SummonAlignmentRuntimePolicy.TryResolve" })
+                Assertions.True(action.Contains(token),
+                    "Spawn alignment action is missing: " + token);
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningAbilityBuilder.cs"));
+            foreach (string token in new[] { "SummonAlignmentMode.Celestial",
+                "SummonAlignmentMode.Fiendish", "SummonAlignmentMode.Caster",
+                "AppendAlignmentAction(target.ComponentsArray" })
+                Assertions.True(builder.Contains(token),
+                    "Family-scoped alignment publication is missing: " + token);
+        }
+
         internal static void SymbolsEncodeEveryLogicalPlacement()
         {
             var identities = ExpandedSummoningIdentityCatalog.Build();

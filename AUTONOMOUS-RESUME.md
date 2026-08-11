@@ -2361,3 +2361,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: implement save-safe summon-child alignment assignment for
   celestial, fiendish, and Nature's Ally units, then source- and runtime-qualify
   it before special creature mechanics.
+
+## Expanded Summoning current resume - spawn-local alignment source-qualified
+
+- Added a native post-spawn context action that mutates only the new unit
+  descriptor, never its shared KMG unit blueprint. Celestial and fiendish
+  summons preserve the unit's law/chaos axis and replace its moral axis;
+  Nature's Ally summons copy the caster's exact alignment and fail closed if
+  the caster context is absent or malformed.
+- All 182 celestial executions, 182 fiendish executions, and 320 Nature's Ally
+  placements carry the family-correct action. Because `UnitAlignment.Set`
+  writes the unit descriptor, the assigned value uses the engine's ordinary
+  serialized state and summon cleanup requires no external marker or target
+  state.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rebuild the immutable SHA,
+  and run the guarded final-live structural observer.

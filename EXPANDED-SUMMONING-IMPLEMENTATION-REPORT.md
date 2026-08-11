@@ -49,3 +49,12 @@ preceding fresh launch exited during platform initialization after request
 acceptance and before blueprint inspection; it was retained as failed evidence
 and the evidence-supported retry passed. Neither run accessed a save. Runtime
 unit-alignment fidelity remains open and is not claimed.
+
+Spawn-local alignment is now source-qualified. A custom native post-spawn
+action sets the new unit descriptor rather than changing a shared blueprint.
+Celestial and fiendish summons preserve the unit's law/chaos axis while
+replacing its moral axis; all Nature's Ally placements copy the actual caster's
+exact alignment from the ability context. Missing or invalid context fails
+closed without mutation. Repository validation, 1,005 tests, clean Release,
+and strict package validation pass; committed-source structural observation
+and later actual-cast/save-load proof remain pending.

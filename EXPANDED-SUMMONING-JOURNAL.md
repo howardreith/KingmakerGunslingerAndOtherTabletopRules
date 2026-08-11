@@ -524,3 +524,22 @@
   `bf51c14793b878636502bf43cc2f2119b3c0e5a12208972e2d36b44d22b724b0`;
   package SHA-256:
   `40516139bebc06bcea6ef29e67d93485a072a6f6605e6587d935931b65d5e425`.
+
+## 2026-08-11 - spawn-local summon alignment source qualification
+
+- Inspected the exact 2.1.7b assembly alignment surface. `UnitDescriptor`
+  owns a `UnitAlignment`; `UnitAlignment.Set(Alignment)` is public; the exact
+  enum is the nine Pathfinder alignments encoded as moral and law/chaos bits.
+- Added a pure fail-closed resolver plus a native post-spawn context action.
+  Celestial and fiendish resolution preserves law/chaos and replaces good/evil;
+  Nature's Ally copies the actual caster's exact alignment from
+  `Context.MaybeCaster`. The action mutates only the spawned unit descriptor,
+  so donor and KMG blueprint objects remain unchanged and the engine serializes
+  the resolved alignment as normal unit state.
+- The structural observer now requires family-correct alignment actions across
+  all 182 celestial executions, 182 fiendish executions, and 320 Nature's Ally
+  placements, with no cross-family modes. Repository validation, 1,005/1,005
+  tests, clean Release, and strict package validation PASS. DLL SHA-256:
+  `b8b0903f254579d71d5f23473e3e9865c47d60978f4d13201587ff0242f69173`;
+  package SHA-256:
+  `1e28773cd7a34fdb3906e964dbbeea1c9c830c2091ed9437d591ff6750768518`.

@@ -51,6 +51,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdentityCatalog.cs"><Link>Summoning\ExpandedSummoningIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateBandPolicy.cs"><Link>Summoning\SummonTemplateBandPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateSmitePolicy.cs"><Link>Summoning\SummonTemplateSmitePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonAlignmentRuntimePolicy.cs"><Link>Summoning\SummonAlignmentRuntimePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />

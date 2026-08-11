@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "a0d8e7752281d4ae1e51ce094c1226f6a30faf16",
+  "currentSha": "86f7c8b3e9a750cf3fb2670850e05e9de4fce002",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "bounded-template-smite-native-structural-qualified",
-  "nextConcreteAction": "Implement summon-child runtime alignment assignment/restoration for celestial, fiendish, and Nature's Ally units, with save-safe cleanup and focused tests.",
-  "domainTestResult": "1004/1004 PASS",
-  "releaseBuildResult": "PASS; committed-source DLL SHA-256 bf51c14793b878636502bf43cc2f2119b3c0e5a12208972e2d36b44d22b724b0",
-  "packageResult": "strict PASS; committed-source SHA-256 40516139bebc06bcea6ef29e67d93485a072a6f6605e6587d935931b65d5e425",
+  "completedPhase": "spawn-local-alignment-source-qualified",
+  "nextConcreteAction": "Commit and push the spawn-local alignment action, rebuild the immutable SHA, then run the guarded final-live structural observer before implementing special creature mechanics.",
+  "domainTestResult": "1005/1005 PASS",
+  "releaseBuildResult": "PASS; DLL SHA-256 b8b0903f254579d71d5f23473e3e9865c47d60978f4d13201587ff0242f69173",
+  "packageResult": "strict PASS; SHA-256 1e28773cd7a34fdb3906e964dbbeea1c9c830c2091ed9437d591ff6750768518",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {
@@ -161,9 +161,7 @@
     }
   ],
   "compatibilityProfilesCompleted": [],
-  "unresolvedDeviations": [
-    "Runtime unit alignment mutation for the selected template remains to implement or document as a conservative engine deviation."
-  ],
+  "unresolvedDeviations": [],
   "branchPushed": true,
   "draftPr": null,
   "draftPrBlocker": "gh authentication currently invalid; recheck after local completion"

@@ -63,15 +63,17 @@ namespace KingmakerGunslinger.Blueprints
                     ConfigureOne(celestial, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
                             "KMG.Summoning.Template.Celestial." + band),
-                        celestialSmite, true);
+                        celestialSmite, true, SummonAlignmentMode.Celestial);
                     ConfigureOne(fiendish, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
                             "KMG.Summoning.Template.Fiendish." + band),
-                        fiendishSmite, false);
+                        fiendishSmite, false, SummonAlignmentMode.Fiendish);
                     ConfigureTemplateChoice(ability, native, variant,
                         celestial, fiendish);
                 }
-                else ConfigureOne(ability, native, unit, variant, null, null, false);
+                else ConfigureOne(ability, native, unit, variant, null, null,
+                    false, family == SummonFamily.NaturesAlly ?
+                        SummonAlignmentMode.Caster : (SummonAlignmentMode?)null);
             }
         }
 
@@ -105,7 +107,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureOne(BlueprintAbility target,
             BlueprintAbility native, BlueprintUnit unit, SummonVariantSpec variant,
-            BlueprintBuff templateBuff, BlueprintBuff smiteBuff, bool celestial)
+            BlueprintBuff templateBuff, BlueprintBuff smiteBuff, bool celestial,
+            SummonAlignmentMode? alignmentMode)
         {
             CopyFields(native, target);
             target.name = InternalName(ExpandedSummoningIdentityCatalog.AbilitySymbol(
@@ -130,6 +133,9 @@ namespace KingmakerGunslinger.Blueprints
                 descriptor.Descriptor |= celestial ? SpellDescriptor.Good :
                     SpellDescriptor.Evil;
             }
+            if (alignmentMode.HasValue)
+                AppendAlignmentAction(target.ComponentsArray,
+                    alignmentMode.Value);
             target.Hidden = false;
             target.ActionBarAutoFillIgnored = templateBuff != null;
             target.MaterialComponent = native.MaterialComponent == null ?
@@ -186,6 +192,44 @@ namespace KingmakerGunslinger.Blueprints
                 AppendTemplateBuff(component, buff, seen, ref count);
             if (count < 1) throw new InvalidOperationException(
                 "A templated summon requires at least one spawn branch.");
+        }
+
+        private static void AppendAlignmentAction(
+            IEnumerable<BlueprintComponent> components,
+            SummonAlignmentMode mode)
+        {
+            var seen = new HashSet<object>(ReferenceComparer.Instance);
+            int count = 0;
+            foreach (BlueprintComponent component in components)
+                AppendAlignmentAction(component, mode, seen, ref count);
+            if (count < 1) throw new InvalidOperationException(
+                "A summon alignment action requires at least one spawn branch.");
+        }
+
+        private static void AppendAlignmentAction(object value,
+            SummonAlignmentMode mode, ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value)) return;
+            ContextActionSpawnMonster spawn = value as ContextActionSpawnMonster;
+            if (spawn != null)
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
+                    Array.Empty<GameAction>()).Concat(new GameAction[] {
+                        new ContextActionSetSummonAlignment { Mode = mode }
+                    }).ToArray();
+                count++;
+            }
+            foreach (FieldInfo field in Fields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        AppendAlignmentAction(item, mode, seen, ref count);
+                else AppendAlignmentAction(child, mode, seen, ref count);
+            }
         }
 
         private static void AppendTemplateBuff(object value, BlueprintBuff buff,

@@ -7200,6 +7200,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Good) &&
                     ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) ==
+                            ExpandedSummoningTemplateApplyCount(value) &&
                     ExpandedSummoningSmiteApplyCount(value) >= 1);
             bool fiendishExact = fiendishExecutions.Length == 182 &&
                 fiendishExecutions.All(value => value.ComponentsArray
@@ -7208,7 +7211,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<SpellDescriptorComponent>().Single().Descriptor
                         .HasAnyFlag(SpellDescriptor.Evil) &&
                     ExpandedSummoningTemplateApplyCount(value) >= 1 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) ==
+                            ExpandedSummoningTemplateApplyCount(value) &&
                     ExpandedSummoningSmiteApplyCount(value) >= 1);
+            BlueprintAbility[] allyExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.StartsWith(
+                    "KMG_Summoning_Ability_SNA_", StringComparison.Ordinal))
+                .ToArray();
+            bool allyAlignmentExact = allyExecutions.Length == 320 &&
+                allyExecutions.All(value =>
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Caster) >= 1 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) == 0 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) == 0);
             BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
                 value.name.StartsWith("KMG_Summoning_Template_",
                     StringComparison.Ordinal)).ToArray();
@@ -7280,6 +7298,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-smite-markers", "2",
                     smiteMarkers.Length.ToString(), smiteMarkersExact,
                     "unit-local opposed-alignment once-per-summon attack handlers"),
+                Assertion("expanded-summoning-runtime-alignments",
+                    "celestial=182;fiendish=182;sna=320",
+                    "celestial=" + celestialExecutions.Length + ";fiendish=" +
+                    fiendishExecutions.Length + ";sna=" + allyExecutions.Length,
+                    celestialExact && fiendishExact && allyAlignmentExact,
+                    "spawn-local fixed template or exact caster alignment actions"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -7316,6 +7340,40 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility ability)
         { return ExpandedSummoningBuffApplyCount(ability,
             "KMG_Summoning_Smite_"); }
+
+        private static int ExpandedSummoningAlignmentActionCount(
+            BlueprintAbility ability, SummonAlignmentMode mode)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningAlignmentActionCount(component, mode, seen,
+                    ref count);
+            return count;
+        }
+
+        private static void ExpandedSummoningAlignmentActionCount(object value,
+            SummonAlignmentMode mode, ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            ContextActionSetSummonAlignment action = value as
+                ContextActionSetSummonAlignment;
+            if (action != null && action.Mode == mode) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningAlignmentActionCount(item, mode, seen,
+                            ref count);
+                else ExpandedSummoningAlignmentActionCount(child, mode, seen,
+                    ref count);
+            }
+        }
 
         private static int ExpandedSummoningBuffApplyCount(
             BlueprintAbility ability, string prefix)
