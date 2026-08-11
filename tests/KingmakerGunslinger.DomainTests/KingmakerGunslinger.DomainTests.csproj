@@ -36,12 +36,15 @@
 
   <ItemGroup>
     <Compile Include="ExpandedSummoningCatalogTests.cs" />
+    <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCreatureSpec.cs"><Link>Summoning\SummonCreatureSpec.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantSpec.cs"><Link>Summoning\SummonVariantSpec.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />

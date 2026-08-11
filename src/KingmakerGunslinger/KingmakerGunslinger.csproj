@@ -47,6 +47,8 @@
     <Compile Include="Summoning\SummonVariantSpec.cs" />
     <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningInventoryObserver.cs" />
+    <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
+    <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />

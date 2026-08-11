@@ -45,3 +45,17 @@
 - Runtime preflight: 86 checks PASS. Repository validation, 985/985 domain tests,
   clean Release build, and strict standalone package validation PASS.
 - Exact next step is a clean-commit Steam App ID 640820 observer run.
+
+## 2026-08-11 - final-live parent inventory and publication policies
+
+- Guarded run `20260811T1727529145302Z-observe-expanded-summoning-inventory`
+  PASS on a fresh Steam process. No save was loaded or written.
+- Curated all 18 canonical SM/SNA parent GUIDs in
+  `planning/EXPANDED-SUMMONING-INVENTORY.md`; broad name matching is explicitly
+  rejected because the CotW-composed graph contained 523 summon-named abilities.
+- Added pure additive merge and multi-parent transaction policies. Tests prove
+  reference/order preservation, GUID/reference singularization, idempotence,
+  exact rollback, setter-mutate-then-throw recovery, and refusal after unrelated
+  later mutation.
+- The first rollback fixture exposed missing journal-before-write handling; the
+  transaction was corrected and the complete suite now passes 989/989.
