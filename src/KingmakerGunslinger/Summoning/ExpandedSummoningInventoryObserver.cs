@@ -88,7 +88,8 @@ namespace KingmakerGunslinger.Summoning
             "d7cbd2004ce66a042aeab2e95a3c5c61",
             "cce5bb72adc78f944b480e01efd3eaef",
             "c0f4e1c24c9cd334ca988ed1bd9d201f",
-            "6cbb040023868574b992677885390f92"
+            "6cbb040023868574b992677885390f92",
+            "0c852a2405dd9f14a8bbcfaf245ff823"
         };
         private static readonly string[] BebelithPixieTerms = {
             "bebilith", "bebelith", "doomspider", "doom spider",
@@ -97,7 +98,7 @@ namespace KingmakerGunslinger.Summoning
             "penetrating strike", "demonbane", "demon bane",
             "pixie", "nixie", "irresistibledance", "irresistible dance",
             "sleeparrow", "sleep arrow", "sleepspell", "sleep spell",
-            "sleep"
+            "sleep", "longbow", "acid splash", "acidsplash"
         };
 
         internal static ExpandedSummoningInventoryObservation Observe(
