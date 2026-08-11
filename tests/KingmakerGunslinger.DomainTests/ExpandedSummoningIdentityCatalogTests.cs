@@ -170,7 +170,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Expected at least one native spawn action", "MaterialComponentData",
                 "variant.Multiplicity == SummonMultiplicity.OneD3",
                 "type == typeof(ActionList)",
-                "(GameAction)DeepClone(action, seen)" })
+                "(GameAction)DeepClone(action, seen)",
+                "!(source is GameAction)",
+                "source is BlueprintComponent || source is GameAction" })
                 Assertions.True(source.Contains(token),
                     "Ability builder contract is missing: " + token);
         }

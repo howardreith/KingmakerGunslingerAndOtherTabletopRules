@@ -299,7 +299,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintScriptableObject blueprint = source as BlueprintScriptableObject;
             if (blueprint != null) return blueprint;
             UnityEngine.Object unity = source as UnityEngine.Object;
-            if (unity != null && !(source is BlueprintComponent)) return unity;
+            if (unity != null && !(source is BlueprintComponent) &&
+                !(source is GameAction)) return unity;
             object existing;
             if (seen.TryGetValue(source, out existing)) return existing;
             Array array = source as Array;
@@ -311,7 +312,7 @@ namespace KingmakerGunslinger.Blueprints
                     copy.SetValue(DeepClone(array.GetValue(index), seen), index);
                 return copy;
             }
-            object result = source is BlueprintComponent ?
+            object result = source is BlueprintComponent || source is GameAction ?
                 ScriptableObject.CreateInstance(type) :
                 FormatterServices.GetUninitializedObject(type);
             seen.Add(source, result);

@@ -61,9 +61,19 @@ and later actual-cast/save-load proof remain pending.
 
 The first alignment-aware structural run failed and was retained as
 `20260811T2031332882968Z-observe-expanded-summoning-inventory`. It proved that
-the generic graph clone had preserved the reference array inside value-type
-`ActionList`, allowing post-spawn actions to accumulate across abilities using
-the same native quantity template. The repair explicitly deep-clones each
-`ActionList` and every contained action. The observer now also rejects any KMG
+the generic graph clone had preserved references within native action lists,
+allowing post-spawn actions to accumulate across abilities using the same
+native quantity template. The initial repair explicitly cloned each
+`ActionList`; the following run narrowed the deeper alias to its GameAction
+elements. The observer now also rejects any KMG
 post-spawn action or buff in a non-KMG ability. The repair is source-qualified;
 its committed-source rerun remains pending.
+
+That rerun (`20260811T2037058339804Z-observe-expanded-summoning-inventory`)
+proved the ActionList-only repair incomplete: 286 non-KMG abilities still
+contained KMG actions. Exact assembly inspection established that every
+`GameAction` is itself a `SerializedScriptableObject` and was being returned by
+the clone's Unity-object preservation guard. The follow-up now creates and
+recursively copies each GameAction while still preserving immutable referenced
+Unity assets. This deeper repair is source-qualified; its committed-source
+rerun remains pending.

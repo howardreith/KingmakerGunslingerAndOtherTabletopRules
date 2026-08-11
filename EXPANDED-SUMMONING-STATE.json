@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37",
+  "currentSha": "ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "action-list-deep-clone-repair-source-qualified",
-  "nextConcreteAction": "Commit and push the ActionList deep-clone repair, rebuild the immutable SHA, then rerun the guarded alignment and native-action-isolation observer.",
+  "completedPhase": "game-action-deep-clone-repair-source-qualified",
+  "nextConcreteAction": "Commit and push the GameAction ScriptableObject deep-clone repair, rebuild the immutable SHA, then rerun the guarded alignment and native-action-isolation observer.",
   "domainTestResult": "1005/1005 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 436b15364607b1fd9b98b4fcbec3c1553d2708183d1f111218f0cd0bd02cd67d",
-  "packageResult": "strict PASS; SHA-256 d607d3f3272d72bfbc6f1003618e399bdc0af1d59b644310988b5ab01aeea7da",
+  "releaseBuildResult": "PASS; DLL SHA-256 b515558f54db01c1694a25507df298415c6c7ca0c2053e21f81db63a67c37507",
+  "packageResult": "strict PASS; SHA-256 597637b7698117bd5e86cb9f074581a3020419392032e923612b96baf962d729",
   "blueprintLedger": "1120 Expanded Summoning identities; 1374 active, 1 reserved, 1375 total; derived constant registry count 1374",
   "runtimeScenarios": [
     {
@@ -164,7 +164,14 @@
       "result": "FAIL",
       "sourceSha": "6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2031332882968Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact roster, registry, placements, and sanitizer checks passed, but alignment actions accumulated across abilities sharing native ActionList value-type arrays. The result exposed an ActionList deep-clone boundary and motivated the following repair; no save access."
+      "evidence": "Exact roster, registry, placements, and sanitizer checks passed, but alignment actions accumulated across abilities sharing native action graphs. The initial repair isolated ActionList containers; the next run proved their GameAction elements were the deeper alias. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "FAIL",
+      "sourceSha": "ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2037058339804Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Explicit ActionList cloning alone did not isolate the graph: 286 non-KMG abilities retained KMG actions because GameAction is a ScriptableObject rejected by the clone's Unity-object guard. The following repair creates independent GameAction objects; no save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

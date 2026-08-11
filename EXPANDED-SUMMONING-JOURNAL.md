@@ -554,14 +554,35 @@
   No save was accessed.
 - Retained final-live action graphs showed one through four caster-alignment
   actions accumulating on abilities that reused a native quantity template.
-  `ActionList` is a value type with a reference-valued `GameAction[]`; the
-  generic deep clone returned all value types unchanged, so the array remained
-  shared across otherwise cloned graphs.
-- Added an explicit recursive `ActionList` clone before the value-type fast
-  path. Tightened the observer to require exactly one alignment action and one
+  The initial graph comparison implicated the `ActionList` container and its
+  `GameAction[]`; a subsequent run narrowed the remaining alias to the action
+  ScriptableObjects themselves.
+- Added an explicit recursive `ActionList` clone. Tightened the observer to
+  require exactly one alignment action and one
   intended template/smite application per execution, plus zero KMG post-spawn
   actions or buffs on any non-KMG ability. Repository validation, 1,005/1,005
   tests, clean Release, and strict package validation PASS. DLL SHA-256:
   `436b15364607b1fd9b98b4fcbec3c1553d2708183d1f111218f0cd0bd02cd67d`;
   package SHA-256:
   `d607d3f3272d72bfbc6f1003618e399bdc0af1d59b644310988b5ab01aeea7da`.
+
+## 2026-08-11 - GameAction ScriptableObject isolation follow-up
+
+- The committed ActionList-only repair still failed guarded run
+  `20260811T2037058339804Z-observe-expanded-summoning-inventory` on
+  `ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0`. Exact counts showed 286
+  non-KMG abilities containing KMG post-spawn actions or buffs. No save was
+  accessed.
+- Assembly metadata and retained graphs identified the deeper boundary:
+  `GameAction` inherits `SerializedScriptableObject`, so the generic Unity
+  object guard returned each native action by reference. The explicit
+  `ActionList` clone consequently cloned an array whose action elements were
+  still shared.
+- The clone now treats `GameAction` like `BlueprintComponent`: it creates a
+  distinct ScriptableObject of the exact runtime type and recursively copies
+  its fields, while continuing to preserve referenced blueprints, prefabs,
+  icons, and other immutable Unity assets. Repository validation, 1,005/1,005
+  tests, clean Release, and strict package validation PASS. DLL SHA-256:
+  `b515558f54db01c1694a25507df298415c6c7ca0c2053e21f81db63a67c37507`;
+  package SHA-256:
+  `597637b7698117bd5e86cb9f074581a3020419392032e923612b96baf962d729`.

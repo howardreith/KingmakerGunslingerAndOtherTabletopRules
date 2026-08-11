@@ -2385,10 +2385,25 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   alignment assertions while all roster, registry, placement, and sanitizer
   assertions passed. Retained graphs showed 1-4 duplicated alignment actions
   across abilities sharing a native quantity template; no save was accessed.
-- Root cause: `ActionList` is a value type containing a `GameAction[]`; the
-  generic clone's value-type fast path retained that reference array. Added an
-  explicit `ActionList` deep clone before the generic value-type case.
+- Initial evidence implicated the `ActionList` container and its `GameAction[]`;
+  an explicit recursive list clone was added. The next run narrowed the deeper
+  alias to the ScriptableObject action elements themselves.
 - The observer now requires exactly one family-correct action on every KMG
   execution and zero KMG actions or buffs on every non-KMG ability. Repository
   validation, 1,005/1,005 tests, clean Release, and strict package pass. Exact
   next action: commit/push and rerun the guarded observer on the immutable SHA.
+
+## Expanded Summoning current resume - GameAction isolation follow-up
+
+- Guarded run `20260811T2037058339804Z-observe-expanded-summoning-inventory`
+  on `ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0` retained 286 contaminated
+  non-KMG abilities, proving the first `ActionList`-only repair was incomplete.
+  No save was accessed.
+- Exact assembly inspection showed `GameAction` derives from
+  `SerializedScriptableObject`. The clone's Unity-object guard therefore
+  returned each spawn action by reference before reaching its newly cloned
+  `ActionList`. The repair now creates independent `GameAction` ScriptableObjects
+  and recursively clones their fields while preserving unrelated Unity assets.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and rerun the exact alignment
+  and zero-native-contamination observer.
