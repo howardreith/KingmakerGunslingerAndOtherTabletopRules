@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1380 stable identifiers: 1379 active and one reserved.
+Validator contract: 1387 stable identifiers: 1386 active and one reserved.
 The 1,120 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 681 logical placement abilities, 364 celestial/fiendish execution
 abilities, six HD-banded template buffs, and two bounded smite markers. They register in every feature

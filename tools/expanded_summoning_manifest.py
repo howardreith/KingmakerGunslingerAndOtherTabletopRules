@@ -49,8 +49,15 @@ def planned():
         ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),
         ("KMG.Summoning.Special.ShadowDemon.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Salamander.Tail", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Salamander.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Succubus.Dominate", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Succubus.Domination", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Succubus.DominateAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Succubus.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Succubus.CombatTraits", "BlueprintBuff"),
     ))
-    if len(rows) != 1125 or len({symbol for symbol, _ in rows}) != 1125:
+    if len(rows) != 1132 or len({symbol for symbol, _ in rows}) != 1132:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

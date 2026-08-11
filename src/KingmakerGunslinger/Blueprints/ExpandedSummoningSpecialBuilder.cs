@@ -16,10 +16,13 @@ using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
@@ -48,6 +51,24 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.ShadowDemon";
         private const string ShadowDemonCombatTraitsSymbol =
             "KMG.Summoning.Special.ShadowDemon.CombatTraits";
+        private const string SalamanderUnitSymbol =
+            "KMG.Summoning.Unit.Salamander";
+        private const string SalamanderTailSymbol =
+            "KMG.Summoning.Special.Salamander.Tail";
+        private const string SalamanderCombatTraitsSymbol =
+            "KMG.Summoning.Special.Salamander.CombatTraits";
+        private const string SuccubusUnitSymbol =
+            "KMG.Summoning.Unit.Succubus";
+        private const string SuccubusDominateSymbol =
+            "KMG.Summoning.Special.Succubus.Dominate";
+        private const string SuccubusDominationSymbol =
+            "KMG.Summoning.Special.Succubus.Domination";
+        private const string SuccubusDominateAiSymbol =
+            "KMG.Summoning.Special.Succubus.DominateAi";
+        private const string SuccubusBrainSymbol =
+            "KMG.Summoning.Special.Succubus.Brain";
+        private const string SuccubusCombatTraitsSymbol =
+            "KMG.Summoning.Special.Succubus.CombatTraits";
 
         private const string NativeRayGuid = "33e8997912cf76b4c99dca0445082804";
         private const string NativeRayAiGuid = "dcfc5e9aec5bea540b36caf754989164";
@@ -77,6 +98,30 @@ namespace KingmakerGunslinger.Blueprints
         private const string LargeAirSlamGuid = "72aa06bd4e7a8fa4db8a20d1b5f1a103";
         private const string LargeClawGuid = "c76f72a862d168d44838206524366e1c";
         private const string LargeBiteGuid = "ec35ef997ed5a984280e1a6d87ae80a8";
+        private const string NaturalArmor7Guid = "e73864391ccf0894997928443a29d755";
+        private const string FireImmunityGuid = "11ac3433adfa74642a93111624376070";
+        private const string FireSubtypeGuid = "23dc7b90d148b9d439f48e015a520a9c";
+        private const string DrMagic10Guid = "ac5a99153e1790941b7bb93c06586ea5";
+        private const string WeaponFocusSpearGuid = "8c7e86088025ad3448849d4972335dc8";
+        private const string StandardSpearGuid = "4abc27631e2894f4b8b70270e31694f1";
+        private const string LargeTailGuid = "ae822725634c6f0418b8c48bd29df255";
+        private const string NativeGrabGuid = "efc1e80fb41e06544be46604983806d6";
+        private const string NativeDominateGuid = "d7cbd2004ce66a042aeab2e95a3c5c61";
+        private const string NativeDominationGuid = "c0f4e1c24c9cd334ca988ed1bd9d201f";
+        private const string NativeEnergyDrainGuid = "ab966bf06859119419989ccb0061ba39";
+        private const string DodgeGuid = "97e216dbb46ae3c4faef90cf6bbe6fd5";
+        private const string WeaponFinesseGuid = "90e54424d682d104ab36436bd527af09";
+        private const string AberrationTypeGuid = "3bec99efd9a363242a6c8d9957b75e91";
+        private const string ConstructTypeGuid = "fd389783027d63343b4a5634bd81645f";
+        private const string DragonTypeGuid = "455ac88e22f55804ab87c2467deff1d6";
+        private const string FeyTypeGuid = "018af8005220ac94a9a4f47b3e9c2b4e";
+        private const string OutsiderTypeGuid = "9054d3988d491d944ac144e27b6bc318";
+        private const string PlantTypeGuid = "706e61781d692a042b35941f14bc41c5";
+        private const string AnimalTypeGuid = "a95311b3dc996964cbaa30ff9965aaf6";
+        private const string MonstrousHumanoidTypeGuid = "57614b50e8d86b24395931fffc5e409b";
+        private const string MagicalBeastTypeGuid = "625827490ea69d84d8e599a33929fdc6";
+        private const string VerminTypeGuid = "09478937695300944a179530664e42ec";
+        private const string UndeadTypeGuid = "734a29b693e9ec346ba2951b27987e33";
 
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -104,6 +149,31 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureShadowDemonCombatTraits(shadowTraits);
             ConfigureShadowDemon(library, Require<BlueprintUnit>(bySymbol,
                 ShadowDemonUnitSymbol), shadowTraits);
+            BlueprintItemWeapon salamanderTail = Require<BlueprintItemWeapon>(
+                bySymbol, SalamanderTailSymbol);
+            BlueprintBuff salamanderTraits = Require<BlueprintBuff>(bySymbol,
+                SalamanderCombatTraitsSymbol);
+            ConfigureSalamanderTail(library, salamanderTail);
+            ConfigureSalamanderCombatTraits(library, salamanderTraits,
+                salamanderTail);
+            ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
+                SalamanderUnitSymbol), salamanderTail, salamanderTraits);
+            BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
+                SuccubusDominationSymbol);
+            BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
+                SuccubusDominateSymbol);
+            BlueprintAiCastSpell dominateAi = Require<BlueprintAiCastSpell>(
+                bySymbol, SuccubusDominateAiSymbol);
+            BlueprintBrain succubusBrain = Require<BlueprintBrain>(bySymbol,
+                SuccubusBrainSymbol);
+            BlueprintBuff succubusTraits = Require<BlueprintBuff>(bySymbol,
+                SuccubusCombatTraitsSymbol);
+            ConfigureSuccubusDomination(library, domination);
+            ConfigureSuccubusDominate(library, dominate, domination);
+            ConfigureSuccubusAi(dominateAi, dominate, succubusBrain);
+            ConfigureSuccubusCombatTraits(library, succubusTraits);
+            ConfigureSuccubus(library, Require<BlueprintUnit>(bySymbol,
+                SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits);
         }
 
         private static AddClassLevels OutsiderLevels(
@@ -174,11 +244,15 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static ContextActionDealDamage ColdDamage(int diceCount)
+        { return EnergyDamage(DamageEnergyType.Cold, diceCount); }
+
+        private static ContextActionDealDamage EnergyDamage(
+            DamageEnergyType energy, int diceCount)
         {
             return new ContextActionDealDamage {
                 DamageType = new DamageTypeDescription {
                     Type = DamageType.Energy,
-                    Energy = DamageEnergyType.Cold
+                    Energy = energy
                 },
                 Value = new ContextDiceValue {
                     DiceType = DiceType.D6,
@@ -302,6 +376,317 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, PoisonImmunityGuid, "poison immunity"),
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, WeaponFocusClawGuid, "Weapon Focus (claw)"),
+                combatTraits
+            };
+        }
+
+        private static void ConfigureSalamanderTail(
+            LibraryScriptableObject library, BlueprintItemWeapon tail)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, LargeTailGuid,
+                    "native animated tail weapon");
+            CopyFields(native, tail);
+            tail.name = InternalName(SalamanderTailSymbol);
+            tail.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(tail, "m_OverrideDamageDice", true);
+            SetField(tail, "m_DamageDice", new DiceFormula(2, DiceType.D6));
+            SetField(tail, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        private static void ConfigureSalamanderCombatTraits(
+            LibraryScriptableObject library, BlueprintBuff buff,
+            BlueprintItemWeapon tail)
+        {
+            BlueprintFeature nativeGrab = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeGrabGuid,
+                    "native bounded grab/constrict graph");
+            AddInitiatorAttackWithWeaponTrigger grab =
+                (AddInitiatorAttackWithWeaponTrigger)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    nativeGrab.ComponentsArray.OfType<
+                        AddInitiatorAttackWithWeaponTrigger>().Single());
+            grab.WeaponType = tail.Type;
+            ContextActionDealDamage constrict = FindDamage(
+                new BlueprintComponent[] { grab });
+            constrict.Value = new ContextDiceValue {
+                DiceType = DiceType.D6,
+                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles
+                    .SalamanderConstrictDice),
+                BonusValue = Simple(ExpandedSummoningSpecialProfiles
+                    .SalamanderConstrictBonus)
+            };
+            ManeuverBonus grappleBonus = (ManeuverBonus)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    nativeGrab.ComponentsArray.OfType<ManeuverBonus>().Single());
+            var heat = ScriptableObject.CreateInstance<
+                AddInitiatorAttackWithWeaponTrigger>();
+            heat.OnlyHit = true;
+            heat.Action = new ActionList { Actions = new GameAction[] {
+                EnergyDamage(DamageEnergyType.Fire,
+                    ExpandedSummoningSpecialProfiles.SalamanderHeatDice)
+            }};
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                grab, grappleBonus, heat
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Name",
+                    "Salamander Heat and Constrict"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Description",
+                    "Successful attacks deal 1d6 fire damage; tail hits can grab and constrict for 2d6+4 damage."), null);
+        }
+
+        private static void ConfigureSalamander(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintItemWeapon tail,
+            BlueprintBuff combatTraits)
+        {
+            BlueprintItemWeapon spear = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, StandardSpearGuid,
+                    "standard 1d8 spear");
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.SalamanderHitDice)
+            };
+            unit.Body = NaturalBody(spear, Array.Empty<BlueprintItemWeapon>(),
+                new[] { tail });
+            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
+                library, DumbBrainGuid, "bounded natural-attack brain");
+            ConfigureUnitCore(unit, "Salamander", "Salamander",
+                Alignment.ChaoticEvil, Size.Medium,
+                ExpandedSummoningSpecialProfiles.SalamanderStrength,
+                ExpandedSummoningSpecialProfiles.SalamanderDexterity,
+                ExpandedSummoningSpecialProfiles.SalamanderConstitution,
+                ExpandedSummoningSpecialProfiles.SalamanderIntelligence,
+                ExpandedSummoningSpecialProfiles.SalamanderWisdom,
+                ExpandedSummoningSpecialProfiles.SalamanderCharisma,
+                ExpandedSummoningSpecialProfiles.SalamanderSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor7Guid, "natural armor +7"),
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    DrMagic10Guid, "DR 10/magic"),
+                Feature(library, FireSubtypeGuid, "fire subtype"),
+                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                Feature(library, WeaponFocusSpearGuid, "Weapon Focus (spear)"),
+                combatTraits
+            };
+        }
+
+        private static void ConfigureSuccubusDomination(
+            LibraryScriptableObject library, BlueprintBuff buff)
+        {
+            BlueprintBuff native = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeDominationGuid,
+                    "native Dominate Person target state");
+            CopyFields(native, buff);
+            buff.name = InternalName(SuccubusDominationSymbol);
+            var components = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToList();
+            components.Add(ScriptableObject.CreateInstance<
+                RemoveBuffIfCasterIsMissing>());
+            buff.ComponentsArray = components.ToArray();
+            buff.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.Domination.Name",
+                    "Succubus Domination"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.Domination.Description",
+                    "A bounded domination effect that ends when its summoned caster is missing."),
+                native.Icon);
+        }
+
+        private static void ConfigureSuccubusDominate(
+            LibraryScriptableObject library, BlueprintAbility ability,
+            BlueprintBuff domination)
+        {
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeDominateGuid,
+                    "native Dominate Person presentation");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(SuccubusDominateSymbol);
+            ability.Type = AbilityType.SpellLike;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Parent = null;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            var spell = ScriptableObject.CreateInstance<SpellComponent>();
+            spell.School = SpellSchool.Enchantment;
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.MindAffecting |
+                SpellDescriptor.Compulsion;
+            var parameters = ScriptableObject.CreateInstance<
+                ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Charisma;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(
+                ExpandedSummoningSpecialProfiles.SuccubusHitDice);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(4);
+            var targets = ScriptableObject.CreateInstance<AbilityTargetHasFact>();
+            targets.Inverted = true;
+            targets.CheckedFacts = new BlueprintUnitFact[] {
+                UnitFact(library, AberrationTypeGuid, "aberration type"),
+                UnitFact(library, ConstructTypeGuid, "construct type"),
+                UnitFact(library, DragonTypeGuid, "dragon type"),
+                UnitFact(library, FeyTypeGuid, "fey type"),
+                UnitFact(library, OutsiderTypeGuid, "outsider type"),
+                UnitFact(library, PlantTypeGuid, "plant type"),
+                UnitFact(library, AnimalTypeGuid, "animal type"),
+                UnitFact(library, MonstrousHumanoidTypeGuid,
+                    "monstrous humanoid type"),
+                UnitFact(library, MagicalBeastTypeGuid, "magical beast type"),
+                UnitFact(library, VerminTypeGuid, "vermin type"),
+                UnitFact(library, UndeadTypeGuid, "undead type")
+            };
+            var apply = new ContextActionApplyBuff {
+                Buff = domination,
+                DurationValue = new ContextDurationValue {
+                    Rate = DurationRate.Rounds,
+                    BonusValue = ExpandedSummoningSpecialProfiles
+                        .SuccubusDominateRounds
+                },
+                IsNotDispelable = false
+            };
+            var saved = new ContextActionConditionalSaved {
+                Failed = new ActionList { Actions = new GameAction[] { apply } },
+                Succeed = new ActionList { Actions = Array.Empty<GameAction>() }
+            };
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.SavingThrowType = SavingThrowType.Will;
+            effect.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            ability.ComponentsArray = new BlueprintComponent[] {
+                spell, descriptor, parameters, targets, effect
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.Dominate.Name",
+                    "Dominate Person"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.Dominate.Description",
+                    "A humanoid that fails a Will save is dominated for 3 rounds. The effect ends immediately if the summoned succubus is gone."),
+                native.Icon);
+        }
+
+        private static void ConfigureSuccubusAi(BlueprintAiCastSpell ai,
+            BlueprintAbility dominate, BlueprintBrain brain)
+        {
+            ai.name = InternalName(SuccubusDominateAiSymbol);
+            ai.Ability = dominate;
+            ai.Variant = null;
+            ai.BaseScore = 2;
+            ai.CooldownRounds = 1;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(SuccubusBrainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+        }
+
+        private static void ConfigureSuccubusCombatTraits(
+            LibraryScriptableObject library, BlueprintBuff buff)
+        {
+            var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
+            dr.Value = Simple(ExpandedSummoningSpecialProfiles
+                .SuccubusDamageReduction);
+            dr.Or = true;
+            dr.BypassedByMaterial = true;
+            dr.Material = PhysicalDamageMaterial.ColdIron;
+            dr.BypassedByAlignment = true;
+            dr.Alignment = DamageAlignment.Good;
+            var acid = Energy(DamageEnergyType.Acid,
+                ExpandedSummoningSpecialProfiles.SuccubusEnergyResistance);
+            var cold = Energy(DamageEnergyType.Cold,
+                ExpandedSummoningSpecialProfiles.SuccubusEnergyResistance);
+            var sr = ScriptableObject.CreateInstance<AddSpellResistance>();
+            sr.Value = Simple(ExpandedSummoningSpecialProfiles
+                .SuccubusSpellResistance);
+            BlueprintFeature nativeDrain = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeEnergyDrainGuid,
+                    "native energy-drain attack trigger");
+            AddInitiatorAttackWithWeaponTrigger drain =
+                (AddInitiatorAttackWithWeaponTrigger)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    nativeDrain.ComponentsArray.OfType<
+                        AddInitiatorAttackWithWeaponTrigger>().Single());
+            drain.OnlyOnFirstHit = true;
+            ContextActionDealDamage drainAction = FindDamage(
+                new BlueprintComponent[] { drain });
+            drainAction.EnergyDrainType = EnergyDrainType.Temporary;
+            drainAction.Duration = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                BonusValue = ExpandedSummoningSpecialProfiles
+                    .SuccubusEnergyDrainRounds
+            };
+            drainAction.Value = new ContextDiceValue {
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(1)
+            };
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                dr, acid, cold, sr, drain
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.CombatTraits.Name",
+                    "Succubus Combat Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Succubus.CombatTraits.Description",
+                    "Demonic defenses and a first-hit energy drain that applies one temporary negative level for one round."), null);
+        }
+
+        private static void ConfigureSuccubus(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintAbility dominate,
+            BlueprintBrain brain, BlueprintBuff combatTraits)
+        {
+            BlueprintItemWeapon claw = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, LargeClawGuid,
+                    "Succubus 1d6 claw");
+            var grant = ScriptableObject.CreateInstance<
+                AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { dominate };
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.SuccubusHitDice), grant
+            };
+            unit.Body = NaturalBody(claw, new[] { claw },
+                Array.Empty<BlueprintItemWeapon>());
+            unit.Brain = brain;
+            ConfigureUnitCore(unit, "Succubus", "Succubus",
+                Alignment.ChaoticEvil, Size.Medium,
+                ExpandedSummoningSpecialProfiles.SuccubusStrength,
+                ExpandedSummoningSpecialProfiles.SuccubusDexterity,
+                ExpandedSummoningSpecialProfiles.SuccubusConstitution,
+                ExpandedSummoningSpecialProfiles.SuccubusIntelligence,
+                ExpandedSummoningSpecialProfiles.SuccubusWisdom,
+                ExpandedSummoningSpecialProfiles.SuccubusCharisma,
+                ExpandedSummoningSpecialProfiles.SuccubusSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor7Guid, "natural armor +7"),
+                Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
+                Feature(library, EvilSubtypeGuid, "evil subtype"),
+                Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
+                Feature(library, FireImmunityGuid, "fire immunity"),
+                Feature(library, ElectricityImmunityGuid, "electricity immunity"),
+                Feature(library, PoisonImmunityGuid, "poison immunity"),
+                Feature(library, DodgeGuid, "Dodge"),
+                Feature(library, WeaponFinesseGuid, "Weapon Finesse"),
                 combatTraits
             };
         }
@@ -461,6 +846,11 @@ namespace KingmakerGunslinger.Blueprints
         { return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
             guid, purpose); }
 
+        private static BlueprintUnitFact UnitFact(
+            LibraryScriptableObject library, string guid, string purpose)
+        { return BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+            guid, purpose); }
+
         private static ContextActionDealDamage FindDamage(
             IEnumerable<BlueprintComponent> components)
         {
@@ -500,6 +890,15 @@ namespace KingmakerGunslinger.Blueprints
                 Array array = value as Array;
                 field.SetValue(target, array == null ? value : array.Clone());
             }
+        }
+
+        private static void SetField(object target, string name, object value)
+        {
+            FieldInfo field = Fields(target.GetType()).SingleOrDefault(candidate =>
+                candidate.Name == name);
+            if (field == null) throw new MissingFieldException(
+                target.GetType().FullName, name);
+            field.SetValue(target, value);
         }
 
         private static IEnumerable<FieldInfo> Fields(Type type)

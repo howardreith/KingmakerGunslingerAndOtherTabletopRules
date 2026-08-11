@@ -11,12 +11,13 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1125, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1132, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1046, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(10, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(1047, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -183,6 +184,12 @@ namespace KingmakerGunslinger.DomainTests
                 .ShadowDemonHitDice, "Shadow Demon HD changed.");
             Assertions.Equal(17, ExpandedSummoningSpecialProfiles
                 .ShadowDemonSpellResistance, "Shadow Demon SR changed.");
+            Assertions.Equal(8, ExpandedSummoningSpecialProfiles
+                .SalamanderHitDice, "Salamander HD changed.");
+            Assertions.Equal(8, ExpandedSummoningSpecialProfiles
+                .SuccubusHitDice, "Succubus HD changed.");
+            Assertions.Equal(27, ExpandedSummoningSpecialProfiles
+                .SuccubusCharisma, "Succubus Charisma changed.");
             Assertions.Equal("24719a49b84c5cd43b894268d22d9c89",
                 ExpandedSummoningDonorCatalog.For("lantern-archon").Guid,
                 "Lantern visual donor changed.");
@@ -206,7 +213,10 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureInvisibleStalker", "NaturalInvisibilityGuid",
                 "ConfigureShadowDemon", "IncorporealGuid",
                 "DamageEnergyType.Cold", "PhysicalDamageMaterial.ColdIron",
-                "ShadowDemonCombatTraitsSymbol" })
+                "ShadowDemonCombatTraitsSymbol", "ConfigureSalamander",
+                "SalamanderConstrictDice", "ConfigureSuccubus",
+                "RemoveBuffIfCasterIsMissing", "EnergyDrainType.Temporary",
+                "SuccubusDominateRounds", "OnlyOnFirstHit = true" })
                 Assertions.True(source.Contains(token),
                     "Lantern reconstruction contract is missing: " + token);
             foreach (string forbidden in new[] { "GreaterTeleport", "Gestalt",
@@ -218,7 +228,8 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningBlueprints.cs"));
             foreach (string token in new[] { "CreateAiCastSpellShell(identity.Symbol)",
-                "CreateBrainShell(identity.Symbol)", "result.name = InternalName(symbol)" })
+                "CreateBrainShell(identity.Symbol)", "CreateWeaponShell(identity.Symbol)",
+                "result.name = InternalName(symbol)" })
                 Assertions.True(registration.Contains(token),
                     "Special blueprint factory naming contract is missing: " + token);
 
@@ -313,6 +324,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-special-mechanic-candidates",
                 "expanded-summoning-invisible-stalker",
                 "expanded-summoning-shadow-demon",
+                "expanded-summoning-salamander",
+                "expanded-summoning-succubus",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);

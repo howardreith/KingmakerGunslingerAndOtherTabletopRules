@@ -58,6 +58,7 @@ using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
@@ -7368,6 +7369,91 @@ namespace KingmakerGunslinger.RuntimeTesting
                 shadowColdDamage[0].DamageType.Energy == DamageEnergyType.Cold &&
                 shadowColdDamage[0].Value.DiceType == DiceType.D6 &&
                 shadowColdDamage[0].Value.DiceCountValue.Value == 1;
+            BlueprintUnit salamander = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Salamander");
+            BlueprintItemWeapon salamanderTail = all.OfType<
+                BlueprintItemWeapon>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Salamander_Tail");
+            BlueprintBuff salamanderTraits = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Salamander_CombatTraits");
+            ContextActionDealDamage[] salamanderDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    salamanderTraits.ComponentsArray).ToArray();
+            bool salamanderExact = salamander.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 8 &&
+                salamander.Size == Size.Medium &&
+                salamander.Alignment == Alignment.ChaoticEvil &&
+                salamander.Strength == 16 && salamander.Dexterity == 13 &&
+                salamander.Constitution == 18 && salamander.Intelligence == 14 &&
+                salamander.Wisdom == 15 && salamander.Charisma == 13 &&
+                salamander.Body.PrimaryHand != null &&
+                salamander.Body.PrimaryHand.AssetGuid ==
+                    "4abc27631e2894f4b8b70270e31694f1" &&
+                salamander.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                ReferenceEquals(salamander.Body.AdditionalSecondaryLimbs[0],
+                    salamanderTail) &&
+                salamanderTail.Damage.Rolls == 2 &&
+                salamanderTail.Damage.Dice == DiceType.D6 &&
+                salamanderTraits.ComponentsArray.OfType<
+                    AddInitiatorAttackWithWeaponTrigger>().Count() == 2 &&
+                salamanderDamage.Count(value => value.DamageType.Type ==
+                    DamageType.Energy && value.DamageType.Energy ==
+                    DamageEnergyType.Fire && value.Value.DiceCountValue.Value == 1) == 1 &&
+                salamanderDamage.Count(value => value.DamageType.Type ==
+                    DamageType.Physical && value.Value.DiceType == DiceType.D6 &&
+                    value.Value.DiceCountValue.Value == 2 &&
+                    value.Value.BonusValue.Value == 4) == 1;
+            BlueprintUnit succubus = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Succubus");
+            BlueprintAbility succubusDominate = all.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Succubus_Dominate");
+            BlueprintBuff succubusDomination = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Succubus_Domination");
+            BlueprintBuff succubusTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name ==
+                    "KMG_Summoning_Special_Succubus_CombatTraits");
+            ContextActionApplyBuff[] dominationActions =
+                ExpandedSummoningObjects<ContextActionApplyBuff>(
+                    succubusDominate.ComponentsArray).ToArray();
+            ContextActionDealDamage[] succubusDrain =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    succubusTraits.ComponentsArray).Where(value =>
+                        value.EnergyDrainType == EnergyDrainType.Temporary &&
+                        value.Duration.Rate == DurationRate.Rounds &&
+                        value.Duration.BonusValue.Value == 1 &&
+                        value.Value.BonusValue.Value == 1).ToArray();
+            bool succubusExact = succubus.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 8 &&
+                succubus.Size == Size.Medium &&
+                succubus.Alignment == Alignment.ChaoticEvil &&
+                succubus.Strength == 13 && succubus.Dexterity == 17 &&
+                succubus.Constitution == 14 && succubus.Intelligence == 18 &&
+                succubus.Wisdom == 13 && succubus.Charisma == 27 &&
+                succubus.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { succubusDominate }) &&
+                succubusDominate.Type == AbilityType.SpellLike &&
+                succubusDominate.ComponentsArray.OfType<
+                    ContextCalculateAbilityParams>().Single().StatType ==
+                    StatType.Charisma &&
+                dominationActions.Length == 1 &&
+                ReferenceEquals(dominationActions[0].Buff, succubusDomination) &&
+                dominationActions[0].DurationValue.Rate == DurationRate.Rounds &&
+                dominationActions[0].DurationValue.BonusValue.Value == 3 &&
+                succubusDomination.ComponentsArray.OfType<ChangeFaction>()
+                    .Count() == 1 &&
+                succubusDomination.ComponentsArray.OfType<
+                    RemoveBuffIfCasterIsMissing>().Count() == 1 &&
+                succubusTraits.ComponentsArray.OfType<
+                    AddDamageResistanceEnergy>().Count() == 2 &&
+                succubusTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 18 &&
+                succubusDrain.Length == 1 &&
+                succubusDrain[0].Duration.Rate == DurationRate.Rounds &&
+                succubusDrain[0].Duration.BonusValue.Value == 1 &&
+                succubusDrain[0].Value.BonusValue.Value == 1;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7387,10 +7473,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.SpecialCandidateCount >= 1,
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=67;abilities=1046;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                    "units=67;abilities=1047;registry=" + BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
-                    kmgUnits == 67 && kmgAbilities == 1046 &&
+                    kmgUnits == 67 && kmgAbilities == 1047 &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
@@ -7403,6 +7489,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-shadow-demon", "exact",
                     shadowDemonExact ? "exact" : "mismatch", shadowDemonExact,
                     "7-HD incorporeal demon with claw/bite routine, bounded defenses, and cold rider"),
+                Assertion("expanded-summoning-salamander", "exact",
+                    salamanderExact ? "exact" : "mismatch", salamanderExact,
+                    "8-HD fire outsider with spear, 2d6 tail, heat, and bounded grab/constrict"),
+                Assertion("expanded-summoning-succubus", "exact",
+                    succubusExact ? "exact" : "mismatch", succubusExact,
+                    "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7463,7 +7555,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_Defenses" ||
                 blueprint.name ==
-                    "KMG_Summoning_Special_ShadowDemon_CombatTraits")
+                    "KMG_Summoning_Special_ShadowDemon_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Salamander_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_Dominate" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_Domination" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_CombatTraits")
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);

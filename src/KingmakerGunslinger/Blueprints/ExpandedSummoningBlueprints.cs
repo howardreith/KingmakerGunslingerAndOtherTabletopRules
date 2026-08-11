@@ -9,6 +9,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Blueprints.Items.Weapons;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -67,6 +68,9 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintBrain")
                     blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
                         () => CreateBrainShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintItemWeapon")
+                    blueprint = registry.Register<BlueprintItemWeapon>(
+                        identity.Symbol, () => CreateWeaponShell(identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -94,6 +98,15 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintBrain result = ScriptableObject.CreateInstance<BlueprintBrain>();
             result.name = InternalName(symbol);
+            return result;
+        }
+
+        private static BlueprintItemWeapon CreateWeaponShell(string symbol)
+        {
+            BlueprintItemWeapon result =
+                ScriptableObject.CreateInstance<BlueprintItemWeapon>();
+            result.name = InternalName(symbol);
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
             return result;
         }
 

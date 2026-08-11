@@ -54,6 +54,32 @@ namespace KingmakerGunslinger.Summoning
         internal const int ShadowDemonSpellResistance = 17;
         internal const int ShadowDemonColdDamageDice = 1;
 
+        internal const int SalamanderHitDice = 8;
+        internal const int SalamanderStrength = 16;
+        internal const int SalamanderDexterity = 13;
+        internal const int SalamanderConstitution = 18;
+        internal const int SalamanderIntelligence = 14;
+        internal const int SalamanderWisdom = 15;
+        internal const int SalamanderCharisma = 13;
+        internal const int SalamanderSpeedFeet = 20;
+        internal const int SalamanderHeatDice = 1;
+        internal const int SalamanderConstrictDice = 2;
+        internal const int SalamanderConstrictBonus = 4;
+
+        internal const int SuccubusHitDice = 8;
+        internal const int SuccubusStrength = 13;
+        internal const int SuccubusDexterity = 17;
+        internal const int SuccubusConstitution = 14;
+        internal const int SuccubusIntelligence = 18;
+        internal const int SuccubusWisdom = 13;
+        internal const int SuccubusCharisma = 27;
+        internal const int SuccubusSpeedFeet = 30;
+        internal const int SuccubusDamageReduction = 10;
+        internal const int SuccubusEnergyResistance = 10;
+        internal const int SuccubusSpellResistance = 18;
+        internal const int SuccubusDominateRounds = 3;
+        internal const int SuccubusEnergyDrainRounds = 1;
+
         internal static void Validate()
         {
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)
