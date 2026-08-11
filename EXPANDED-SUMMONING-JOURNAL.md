@@ -462,3 +462,20 @@
   `dbec700adf841b346350c10f74c7c6bcaa46529242ece270635a421f09bff060`;
   package SHA-256:
   `265760f09f186fab4f67f819d8c2896f8b9ac1811bb0be4166d77929a22cc3a5`.
+
+## 2026-08-11 - smite dependency graph PASS and deep trace
+
+- Guarded save-free run
+  `20260811T2004013138253Z-observe-expanded-summoning-inventory` passed on
+  committed source `f5587d327e67a202adcca89b7961f2683c2b2a0f`.
+- Both optional template smites are swift supernatural targeted abilities,
+  consume one unit-local shared resource, use Charisma and character-level
+  ranks, check target alignment/current smite state, and conditionally apply a
+  target buff. Direct reuse is not yet safe because resource maximum and
+  applied-buff identities were nested below the prior graph depth.
+- Increased the exact graph depth and added explicit resource-amount expansion.
+  Repository validation, 1,003/1,003 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `6ffc86d6f1e2b4db76f94ca43d9ea4ea191f0c282a312e203b0fe526eaa3074e`;
+  package SHA-256:
+  `4589be1fdb76e920eef68735daa5376aec193b91a03f0d45bd7b75c81ef064ae`.

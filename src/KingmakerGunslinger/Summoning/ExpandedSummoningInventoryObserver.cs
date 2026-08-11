@@ -126,7 +126,8 @@ namespace KingmakerGunslinger.Summoning
             foreach (BlueprintScriptableObject value in observedTemplateMechanics)
                 records.Add("template-mechanic=" + Describe(value) + ";fields=" +
                     Members(value, 160) + ";components=" + Components(value) +
-                    ";graph=" + ObjectGraph(value.ComponentsArray, 7));
+                    ";graph=" + ObjectGraph(value.ComponentsArray, 12) +
+                    ";resource-amount=" + TemplateResourceAmount(value));
             records.Add("template-mechanic-summary=expected:" +
                 ExactTemplateMechanicGuids.Length + ";found:" +
                 observedTemplateMechanics.Length + ";missing:" + string.Join(",",
@@ -153,6 +154,14 @@ namespace KingmakerGunslinger.Summoning
             return string.Join("|", (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .Where(component => component != null).Select(component =>
                     component.GetType().FullName + "{" + Members(component) + "}"));
+        }
+
+        private static string TemplateResourceAmount(BlueprintScriptableObject value)
+        {
+            FieldInfo amount = AllFields(value.GetType()).SingleOrDefault(field =>
+                field.Name == "m_MaxAmount");
+            return amount == null ? "not-resource" :
+                ObjectGraph(amount.GetValue(value), 8);
         }
 
         private static string Members(object value)

@@ -2318,3 +2318,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   and shared resource `b4274c5b...`. The observer now follows those three
   identities with full fields/action graphs. Exact next action: commit/push and
   execute that focused observation.
+
+## Expanded Summoning current resume - deep smite graph observer
+
+- Guarded run `20260811T2004013138253Z-observe-expanded-summoning-inventory`
+  passed on `f5587d327e67a202adcca89b7961f2683c2b2a0f` and confirmed both
+  optional template smites are swift, one-resource targeted abilities using
+  Charisma and character-level ranks plus conditional target buffs.
+- Reusing that graph directly remains unapproved because the shared resource
+  maximum and applied-buff identities were still nested. The observer now emits
+  depth-12 action graphs and the exact resource amount structure. Exact next
+  action: commit/push and run that final dependency observation.

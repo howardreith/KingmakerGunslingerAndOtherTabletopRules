@@ -148,7 +148,8 @@ namespace KingmakerGunslinger.DomainTests
                 "f009c072167c4b53a37c1071a2251c3f",
                 "320b92730bd54842b9707931a5dbab18",
                 "b4274c5bb0bf2ad4190eb7c44859048b",
-                "template-mechanic-summary" })
+                "template-mechanic-summary", "TemplateResourceAmount",
+                "ObjectGraph(value.ComponentsArray, 12)" })
                 Assertions.True(inventory.Contains(token),
                     "Exact template-mechanic inventory is missing: " + token);
         }

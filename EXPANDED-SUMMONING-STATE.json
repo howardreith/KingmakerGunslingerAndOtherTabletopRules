@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "63d77276ea97468f6bb31768b3f4e7125a390250",
+  "currentSha": "f5587d327e67a202adcca89b7961f2683c2b2a0f",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "exact-template-smite-dependency-observer-source-qualified",
-  "nextConcreteAction": "Commit and push the exact smite ability/resource graph observer, then run it in the final-live Call of the Wild profile.",
+  "completedPhase": "deep-template-smite-graph-observer-source-qualified",
+  "nextConcreteAction": "Commit and push the depth-12 smite graph/resource observer, then run it to capture applied-buff and resource-maximum semantics.",
   "domainTestResult": "1003/1003 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 dbec700adf841b346350c10f74c7c6bcaa46529242ece270635a421f09bff060",
-  "packageResult": "strict PASS; SHA-256 265760f09f186fab4f67f819d8c2896f8b9ac1811bb0be4166d77929a22cc3a5",
+  "releaseBuildResult": "PASS; DLL SHA-256 6ffc86d6f1e2b4db76f94ca43d9ea4ea191f0c282a312e203b0fe526eaa3074e",
+  "packageResult": "strict PASS; SHA-256 4589be1fdb76e920eef68735daa5376aec193b91a03f0d45bd7b75c81ef064ae",
   "blueprintLedger": "1118 Expanded Summoning identities; 1372 active, 1 reserved, 1373 total; derived constant registry count 1372",
   "runtimeScenarios": [
     {
