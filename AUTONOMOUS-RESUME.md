@@ -31,6 +31,9 @@
 - Exact next action: publish and structurally qualify every action graph, then
   implement template branching, fact sanitization, special adaptations, and
   additive parent publication.
+- Published action-graph run failed closed on native SM V elemental conditional
+  branches. The validated repair retargets every branch to the same KMG unit and
+  requires at least one spawn action, preserving routing without mixed packs.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

@@ -231,3 +231,15 @@
 - Repository validation, 998/998 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `b5c5f5ee16394c2c5149c739cc32f01fd7d5463612c06f44cac4812688de7cec`;
   package SHA-256: `ffce07d9c936a0fd421b140757a96f99533df9651b72aa27cc3e7d985d4ce89f`.
+
+## 2026-08-11 - conditional multi-branch spawn repair
+
+- Guarded run `20260811T1851191704530Z` failed closed. The game log proved
+  initialization completed all identity registrations, then rolled back because
+  native SM V Large Air Elemental contains multiple conditional spawn actions.
+- Updated the invariant from exactly one action to at least one action, and
+  retarget every branch to the same KMG unit. Conditional alignment/routing is
+  preserved and no branch can create a mixed-kind pack.
+- Repository validation, 998/998 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `277e364708c26d5a1fc19d01f8127c722517a478f8679ebe9e814a8b53f298c8`;
+  package SHA-256: `7800aea247364c952a27e45a39b1098e05d83e324d27e958ebc41278c916a7b4`.

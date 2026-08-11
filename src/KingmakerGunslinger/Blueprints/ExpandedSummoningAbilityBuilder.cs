@@ -84,8 +84,8 @@ namespace KingmakerGunslinger.Blueprints
             target.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(DeepCloneComponent).ToArray();
             int replacements = ReplaceSpawnUnits(target.ComponentsArray, unit);
-            if (replacements != 1) throw new InvalidOperationException(
-                "Expected exactly one native spawn action for " + variant.StableKey + ".");
+            if (replacements < 1) throw new InvalidOperationException(
+                "Expected at least one native spawn action for " + variant.StableKey + ".");
             target.Hidden = hiddenExecution;
             target.ActionBarAutoFillIgnored = hiddenExecution;
             target.MaterialComponent = native.MaterialComponent == null ?

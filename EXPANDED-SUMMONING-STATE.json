@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "787a970d019efdc731c667a50ce7816776e46e1d",
+  "currentSha": "a689525f6b7ac4392e19337f5837d74370b389ed",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "native-variant-action-construction",
-  "nextConcreteAction": "Qualify all 1045 independently cloned native action graphs on a fresh process, then implement template branching, fact sanitization, special adaptations, and additive parent publication.",
+  "completedPhase": "conditional-multi-branch-spawn-repair",
+  "nextConcreteAction": "Publish and rerun all action graphs after preserving native conditional multi-spawn branches, then implement template branching and additive parent publication.",
   "domainTestResult": "998/998 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 b5c5f5ee16394c2c5149c739cc32f01fd7d5463612c06f44cac4812688de7cec",
-  "packageResult": "strict PASS; SHA-256 ffce07d9c936a0fd421b140757a96f99533df9651b72aa27cc3e7d985d4ce89f",
+  "releaseBuildResult": "PASS; DLL SHA-256 277e364708c26d5a1fc19d01f8127c722517a478f8679ebe9e814a8b53f298c8",
+  "packageResult": "strict PASS; SHA-256 7800aea247364c952a27e45a39b1098e05d83e324d27e958ebc41278c916a7b4",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -64,6 +64,12 @@
       "result": "PASS",
       "sourceSha": "787a970d019efdc731c667a50ce7816776e46e1d",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1843447348611Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "a689525f6b7ac4392e19337f5837d74370b389ed",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1851191704530Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

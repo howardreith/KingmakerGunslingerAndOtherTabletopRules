@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningAbilityBuilder.cs"));
             foreach (string token in new[] { "MonsterParents", "AllyParents",
                 "NativeTemplate", "DeepCloneComponent", "ReplaceSpawnUnits",
-                "Expected exactly one native spawn action", "MaterialComponentData",
+                "Expected at least one native spawn action", "MaterialComponentData",
                 "variant.Multiplicity == SummonMultiplicity.OneD3" })
                 Assertions.True(source.Contains(token),
                     "Ability builder contract is missing: " + token);
