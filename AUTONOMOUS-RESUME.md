@@ -4,8 +4,9 @@
 
 - Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
 - Branch: `codex/shield-other-spell`.
-- Current published commit: `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`; local and
-  `origin/codex/shield-other-spell` are equal.
+- Current commit: the commit containing this final handoff (resolve with
+  `git rev-parse HEAD`). Runtime-qualified implementation commit:
+  `9af3b9193c6d9be4ec267e211beeb2ab14a137d2`.
 - Current hypothesis is proven by the user's retained `output_log.txt`: owned
   Shield Other assigned `MaterialComponent = null`, while Kingmaker/CotW
   availability code unconditionally dereferences `MaterialComponent.Item`.
@@ -23,12 +24,13 @@
   raw CotW log has zero matching failures. Package/DLL SHA-256 are
   `8ca10ff0ffa543f2befdd2d9e36a176443d756994773dd95ee329a9e84b4f4ca` /
   `28b0b6a555feff7e0f77aa858e66d1f052bceb29c940c18b8ad9893fbfc09e4e`.
-- Exact next executable action: run final deterministic/build/package audit on
-  the documentation diff, commit/push curated evidence, then verify clean tree,
-  local/origin equality, no Kingmaker process, and no merge.
-- Remaining gates: final source checks; final evidence commit; approved push;
-  clean worktree; exact remote equality; no-process/no-merge audit. Visual
-  rest/spellbook/sidebar confirmation is the documented human-only check.
+- Exact next executable action: no autonomous engineering gate remains. The
+  documented human-only visual check may be performed on a disposable Oracle
+  save without changing source.
+- Remaining completion gates: none automated. Final audit before this handoff
+  proved a clean feature branch, local/origin equality, zero Kingmaker
+  processes, zero merge commits, and zero final-log material failures. Visual
+  rest/spellbook/sidebar confirmation remains explicitly human-only.
 - Real blocker: none.
 
 ## Shield Other mission — final evidence publication (2026-08-10)
