@@ -470,8 +470,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] {
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
                     NaturalArmor7Guid, "natural armor +7"),
-                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
-                    DrMagic10Guid, "DR 10/magic"),
+                Feature(library, DrMagic10Guid, "DR 10/magic"),
                 Feature(library, FireSubtypeGuid, "fire subtype"),
                 Feature(library, ExtraplanarSubtypeGuid, "extraplanar subtype"),
                 Feature(library, WeaponFocusSpearGuid, "Weapon Focus (spear)"),
