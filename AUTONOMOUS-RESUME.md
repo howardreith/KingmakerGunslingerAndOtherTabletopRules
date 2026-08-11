@@ -1,5 +1,35 @@
 # Autonomous Gunslinger resume handoff
 
+## Shield Other casting/UI regression repair (2026-08-11)
+
+- Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
+- Branch: `codex/shield-other-spell`.
+- Current commit: `1c2b196f287081c3b3a5943bc1a6419f2c28bf4b`; local and
+  `origin/codex/shield-other-spell` are equal.
+- Current hypothesis is proven by the user's retained `output_log.txt`: owned
+  Shield Other assigned `MaterialComponent = null`, while Kingmaker/CotW
+  availability code unconditionally dereferences `MaterialComponent.Item`.
+  The repeated spontaneous-slot update exceptions caused the inert cast icon
+  and spellbook/sidebar corruption.
+- Repair: non-null empty material data; distinct packaged 128x128 project icon;
+  ring-focus text removed; live disposable scenario now requires native
+  `AbilityData` availability and a startable `UnitUseAbility` command.
+- Last completed command: `.\scripts\Build-Local.ps1` on exact published commit.
+- Last verified result: repository validation, 981/981 deterministic tests,
+  exact-reference Release build, SoundBank validation, and strict 45-file local
+  runtime package PASS. Package SHA-256 is
+  `8ce86b675e69c7901ddcdd79feaebbfcae27712f5c3bf093d8e7208913130681`;
+  DLL SHA-256 is
+  `3bf7594ec4c4ac3586d593e4b147209efc8a7f222010a71b28915bcfc2a4d5c8`.
+- Exact next executable action: run `disposable-shield-other` through
+  `gunslinger-call-of-the-wild` on the guarded Steam App 640820 path, inspect
+  result and actual game log, then repeat standalone and high-risk as required.
+- Remaining gates: CotW runtime availability/cast/mechanics PASS; standalone
+  and high-risk regression PASS; log exception audit; maximum practical UI
+  refresh/rest/character-switch evidence; final docs/evidence commit; approved
+  push; clean worktree; exact remote equality; no merge.
+- Real blocker: none.
+
 ## Shield Other mission — final evidence publication (2026-08-10)
 
 - Current phase: Phase 11 final evidence commit/publication and completion audit.
