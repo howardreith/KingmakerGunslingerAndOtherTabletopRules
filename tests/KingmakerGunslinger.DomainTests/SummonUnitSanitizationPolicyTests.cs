@@ -43,5 +43,23 @@ namespace KingmakerGunslinger.DomainTests
                 new SummonDonorMember("same", SummonDonorHazard.Loot, false)
             }), "Duplicate member identities must fail.");
         }
+
+        internal static void RuntimeMemberNamesFailClosedOnProhibitedPowers()
+        {
+            foreach (string key in new[] { "SummonMonsterIX", "GreaterTeleport",
+                "Dimension_Door", "Plane-Shift", "ProfaneGift", "QuestDialogue",
+                "AnimalCompanionFeature", "CampaignLoot" })
+                Assertions.True(SummonUnitSanitizationPolicy
+                    .IsForbiddenRuntimeMemberKey(key),
+                    "Prohibited runtime member was accepted: " + key);
+            foreach (string key in new[] { "HellhoundBreathWeapon", "TrippingBite",
+                "NaturalArmor6", "SubtypeExtraplanar", "WeaponFinesse" })
+                Assertions.False(SummonUnitSanitizationPolicy
+                    .IsForbiddenRuntimeMemberKey(key),
+                    "Approved combat member was rejected: " + key);
+            Assertions.True(SummonUnitSanitizationPolicy
+                .IsForbiddenRuntimeMemberKey(null),
+                "Unidentified members must fail closed.");
+        }
     }
 }

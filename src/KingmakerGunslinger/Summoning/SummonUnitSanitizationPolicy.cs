@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -55,6 +56,13 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class SummonUnitSanitizationPolicy
     {
+        private static readonly string[] ForbiddenRuntimeTokens = {
+            "summon", "conjuration", "teleport", "dimensiondoor",
+            "dimension door", "planeshift", "plane shift", "greaterteleport",
+            "gate", "profane gift", "profanegift", "dialog", "interaction",
+            "quest", "cutscene", "companion", "animalcompanion", "petfeature",
+            "loot", "inventory", "story", "kingdom"
+        };
         internal const SummonDonorHazard ForbiddenHazards =
             SummonDonorHazard.Experience |
             SummonDonorHazard.Loot |
@@ -91,6 +99,14 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             return new SummonUnitSanitizationPlan(retained, removed, replacements);
+        }
+
+        internal static bool IsForbiddenRuntimeMemberKey(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return true;
+            string normalized = key.Replace("_", " ").Replace("-", " ")
+                .ToLowerInvariant();
+            return ForbiddenRuntimeTokens.Any(token => normalized.Contains(token));
         }
     }
 }

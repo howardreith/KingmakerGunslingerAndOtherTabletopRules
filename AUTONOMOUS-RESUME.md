@@ -2221,3 +2221,12 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   validation pass.
 - Exact next action: commit/push, then remove forbidden facts and spell grants
   from proxy/custom donor graphs before implementing template routing.
+
+## Expanded Summoning current resume - fact/spell deny contract
+
+- Prohibited summon/conjuration/teleport/planar/campaign facts and component
+  grants are filtered, class spell selections are cleared, and inventory is
+  forced empty on all KMG units.
+- Source validation, 1,001/1,001 tests, clean Release, and strict package pass.
+- Exact next action: commit/push and add authoritative final-live observer
+  assertions for donor isolation and prohibited-reference absence.

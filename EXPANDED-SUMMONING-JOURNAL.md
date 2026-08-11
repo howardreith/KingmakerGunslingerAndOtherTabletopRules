@@ -296,3 +296,18 @@
   `c267f3aadb27291326eaaeab2d72f594a18cdd0bbe685a733f60adc56af4277d`;
   package SHA-256:
   `489843a5eeda59e562334fafaf07c579a501632456a49151305b5cdaba7e3f24`.
+
+## 2026-08-11 - runtime fact and spell deny contract
+
+- Added a fail-closed runtime member classifier for creature summoning,
+  conjuration, teleportation, planar travel, permanent profane gifts, and
+  campaign/companion/loot surfaces.
+- KMG units now filter prohibited direct facts and component-granted blueprint
+  arrays, clear all donor class-level memorized/selected spells, and always
+  receive a non-null empty starting-inventory array. Approved combat members
+  such as natural armor, tripping bite, and hell-hound breath remain eligible.
+- Repository validation, 1,001/1,001 domain tests, clean Release build, and
+  strict package validation PASS. DLL SHA-256:
+  `84463f21c0f373b04b914a49ac7387363e2da67ec01bc0f354d138ed41454208`;
+  package SHA-256:
+  `b96b07e3ed21dfa6feacce9f5c1152d2b66065502f72d6e432345ce1ea4915ba`.

@@ -82,9 +82,73 @@ namespace KingmakerGunslinger.Blueprints
             result.ComponentsArray = (donor.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(component => component != null &&
                     !IsForbiddenComponent(component.GetType().Name))
-                .Select(DeepCloneUnitComponent).ToArray();
+                .Select(DeepCloneUnitComponent).Select(SanitizeComponent).ToArray();
+            FilterBlueprintArrayField(result, "AddFacts");
+            ClearArrayField(result, "StartingInventory");
             SetSummonedFaction(result, summonedFactionDonor);
             return result;
+        }
+
+        private static BlueprintComponent SanitizeComponent(BlueprintComponent component)
+        {
+            foreach (FieldInfo field in Fields(component.GetType()))
+            {
+                if (!field.FieldType.IsArray) continue;
+                Array values = field.GetValue(component) as Array;
+                Type element = field.FieldType.GetElementType();
+                if (field.Name == "MemorizeSpells" || field.Name == "SelectSpells")
+                {
+                    field.SetValue(component, Array.CreateInstance(element, 0));
+                    continue;
+                }
+                if (values == null ||
+                    !typeof(BlueprintScriptableObject).IsAssignableFrom(element)) continue;
+                object[] retained = values.Cast<object>().Where(value =>
+                {
+                    BlueprintScriptableObject blueprint = value as BlueprintScriptableObject;
+                    return blueprint != null &&
+                        !SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
+                            blueprint.name);
+                }).ToArray();
+                Array replacement = Array.CreateInstance(element, retained.Length);
+                for (int index = 0; index < retained.Length; index++)
+                    replacement.SetValue(retained[index], index);
+                field.SetValue(component, replacement);
+            }
+            return component;
+        }
+
+        private static void ClearArrayField(object target, string name)
+        {
+            FieldInfo field = Fields(target.GetType()).SingleOrDefault(value =>
+                value.Name == name && value.FieldType.IsArray);
+            if (field == null) throw new MissingFieldException(
+                target.GetType().FullName, name);
+            field.SetValue(target, Array.CreateInstance(
+                field.FieldType.GetElementType(), 0));
+        }
+
+        private static void FilterBlueprintArrayField(object target, string name)
+        {
+            FieldInfo field = Fields(target.GetType()).SingleOrDefault(value =>
+                value.Name == name && value.FieldType.IsArray);
+            if (field == null) throw new MissingFieldException(
+                target.GetType().FullName, name);
+            Type element = field.FieldType.GetElementType();
+            Array source = field.GetValue(target) as Array;
+            object[] retained = source == null ? Array.Empty<object>() :
+                source.Cast<object>().Where(value =>
+                {
+                    BlueprintScriptableObject blueprint =
+                        value as BlueprintScriptableObject;
+                    return blueprint != null &&
+                        !SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
+                            blueprint.name);
+                }).ToArray();
+            Array replacement = Array.CreateInstance(element, retained.Length);
+            for (int index = 0; index < retained.Length; index++)
+                replacement.SetValue(retained[index], index);
+            field.SetValue(target, replacement);
         }
 
         private static BlueprintComponent DeepCloneUnitComponent(
