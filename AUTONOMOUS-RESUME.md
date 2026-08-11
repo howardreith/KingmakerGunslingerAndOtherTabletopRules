@@ -11,9 +11,14 @@
   catalog; guarded final-live parent/donor/action-graph inventory; additive merge
   and rollback policies; sanitizer contract; 1,116 frozen manifest reservations;
   schema-3 fourth-module domain/UI/publication state with all 16 combinations.
-  The latest complete domain suite is 995/995 PASS.
-- Exact next action: implement and activate deterministic summon unit, template,
-  and ability blueprints, then publish them additively into final-live parents.
+  The latest complete domain suite is 996/996 PASS.
+- All 1,116 Expanded Summoning identities are now active and deterministically
+  registered in every module state; exact registry count is 1,370. The current
+  hidden shells are deliberately unpublished and must not be treated as finished
+  summon units or abilities.
+- Exact next action: replace registration shells with exact donor-mapped sanitized
+  units, native spawn actions, alignment/template execution, and special
+  adaptations before parent publication.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

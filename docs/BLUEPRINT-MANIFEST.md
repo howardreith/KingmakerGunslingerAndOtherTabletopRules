@@ -7,8 +7,8 @@ The append-only contract contains 233 stable identifiers: 232 active and one res
 The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
-manifest contains 1,371 stable identifiers: 254 active and 1,117 reserved.
-Validator contract: 1371 stable identifiers: 254 active and 1117 reserved.
+manifest contains 1,371 stable identifiers: 1,370 active and one reserved.
+Validator contract: 1371 stable identifiers: 1370 active and one reserved.
 The 1,116 new reservations freeze the Expanded Summoning foundation before
 runtime activation: 67 unit identities, 681 logical placement abilities, 364
 celestial/fiendish execution abilities, and four template buffs. They remain

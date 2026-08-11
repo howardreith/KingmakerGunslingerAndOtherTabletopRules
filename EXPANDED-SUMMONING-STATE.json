@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "27c6102b10ba48d887cfa4c80612fb0709a50a15",
+  "currentSha": "ac157a2f8ac29bba806c83cca5e73a32748833c2",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "guarded-16-state-runtime-plumbing",
-  "nextConcreteAction": "Implement and activate deterministic summon unit, template, and ability blueprints, then publish them additively into final-live parents.",
+  "completedPhase": "constant-all-state-identity-registration",
+  "nextConcreteAction": "Replace unreachable registration shells with exact donor-mapped sanitized units, native spawn actions, alignment/template execution, and special adaptations before parent publication.",
   "domainTestResult": "996/996 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 d4c097f6137116eb7e226dd275de996afcfedccaa8fb5992f90d309e9194f8d4",
-  "packageResult": "strict PASS; SHA-256 8533ae5bca74359485fcff0e780e97529b7d9013690c7efe1f6203f5b6fb767c",
+  "releaseBuildResult": "PASS; DLL SHA-256 8646b6614e3bded1e17498dc68655580e36cf5adbad9babfc124eee629a68fcd",
+  "packageResult": "strict PASS; SHA-256 ee68ba029abff8202c20e0e8e536f97f30051b55a604411fa90f1cc2a3c3352a",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",

@@ -141,3 +141,19 @@
 - Repository validation, 996/996 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `d4c097f6137116eb7e226dd275de996afcfedccaa8fb5992f90d309e9194f8d4`;
   package SHA-256: `8533ae5bca74359485fcff0e780e97529b7d9013690c7efe1f6203f5b6fb767c`.
+
+## 2026-08-11 - constant all-state identity registration
+
+- Activated all 1,116 frozen Expanded Summoning manifest identities without
+  changing a GUID: 67 units, 681 logical abilities, 364 aligned execution
+  abilities, and four template buffs. Exact ledger and runtime registry contract
+  are now 1,370 active plus one historical reservation.
+- Added a deterministic registration layer that consumes only frozen symbols and
+  uses hidden, unpublished donor-shaped shells. The feature gate does not control
+  registration, so disabled-state save deserialization remains possible.
+- These shells are intentionally unreachable from live spell parents and are not
+  claimed as sanitized or mechanically complete; exact unit builders and spawn
+  actions are the immediate next phase before any publication.
+- Repository validation, 996/996 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `8646b6614e3bded1e17498dc68655580e36cf5adbad9babfc124eee629a68fcd`;
+  package SHA-256: `ee68ba029abff8202c20e0e8e536f97f30051b55a604411fa90f1cc2a3c3352a`.

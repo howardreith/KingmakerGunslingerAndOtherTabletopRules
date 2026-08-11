@@ -68,6 +68,7 @@ def validate(manifest, plan):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--allocate", action="store_true")
+    parser.add_argument("--activate", action="store_true")
     args = parser.parse_args()
     plan = planned()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -89,6 +90,13 @@ def main():
                 "milestone": "Expanded Summoning",
                 "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
             })
+        MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if args.activate:
+        planned_symbols = {symbol for symbol, _ in plan}
+        for entry in manifest["entries"]:
+            if entry["symbol"] in planned_symbols:
+                entry["status"] = "active"
+                entry["notes"] = "Registered in every feature-module state; live parent publication remains independently gated."
         MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     validate(manifest, plan)
 

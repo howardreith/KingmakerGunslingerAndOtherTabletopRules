@@ -7047,8 +7047,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeShieldOther == expectedShieldOther &&
                     activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "254 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 254,
+                Assertion("feature-module-identity-count", "1370 identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 1370,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
