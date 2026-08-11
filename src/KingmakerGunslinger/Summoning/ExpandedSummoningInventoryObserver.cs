@@ -21,6 +21,21 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningInventoryObserver
     {
+        private static readonly string[] ExactDonorGuids = {
+            "1ed9a630f0d9d7f44855d3d1d1b2cdf2", "03dd28e92faf2e44eb9564a6ba01fdd0",
+            "9e120b5e0ad3c794491c049aa24b9fde", "768275c9885dd954fb3c84ba69ac4281",
+            "4109b40f6bbb49640840644cc84ada67", "6ec9c63c41a1e754ea4dcd85557625b4",
+            "04944455200bc224d955a8e9bbd64f3f", "3764b43791a00e1468257adbca43ce9b",
+            "2e24256e459468743b91fbb9aa85e1ab", "33bb90ffd13c87b4c8e45d920313752a",
+            "50782bc4eb36aac4287023e20ee00808", "46779f56cab2cb0438161fec0129790d",
+            "10a820de0a417f345866f794324205ad", "4615328295cd7e84bb2ef09d3dba8403",
+            "ece348345859351439e1263115f5fdb9", "58574e8d1d4dc464c976f396d9115b1a",
+            "beae4985629a6f64eb98081e3171e4c1", "028cc6f46e7998f46855a33ffde89567",
+            "1832be68f9814254dbbdab6df7fd5d0b", "313a17cbd273d1f40bd1654ee2ae186e",
+            "c3524f96954a1d94f8525b86e7626633", "6ea3a75279bab234aa723989e30cb15a",
+            "0cc7a2526e4557945b1d8eb277d1fb3a", "58ed91a92b8d70248aa884d303954469",
+            "394610e32cfbc4f43a0efaab16faae49"
+        };
         private static readonly string[] UnitTerms = ExpandedSummoningCatalog.All
             .SelectMany(value => new[] { value.DisplayName, value.Visual })
             .SelectMany(value => value.Split(new[] { '/', ' ' },
@@ -51,6 +66,18 @@ namespace KingmakerGunslinger.Summoning
                     ";body=" + References(value, "Body") +
                     ";view=" + References(value, "Prefab"));
 
+            var exact = new HashSet<string>(ExactDonorGuids, StringComparer.Ordinal);
+            BlueprintUnit[] donors = all.OfType<BlueprintUnit>()
+                .Where(value => exact.Contains(value.AssetGuid))
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            foreach (BlueprintUnit value in donors)
+                records.Add("donor=" + Describe(value) + ";fields=" + Members(value, 160) +
+                    ";components=" + Components(value));
+            string[] missingDonors = ExactDonorGuids.Where(guid =>
+                !donors.Any(value => value.AssetGuid == guid)).ToArray();
+            records.Add("donor-summary=expected:" + ExactDonorGuids.Length +
+                ";found:" + donors.Length + ";missing:" + string.Join(",", missingDonors));
+
             BlueprintScriptableObject[] facts = all.Where(value =>
                 !(value is BlueprintAbility) && !(value is BlueprintUnit) &&
                 ContainsAny(SearchText(value), "augment summoning", "augmentsummoning",
@@ -74,17 +101,30 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static string Members(object value)
+        { return Members(value, 40); }
+
+        private static string Members(object value, int limit)
         {
             var rows = new List<string>();
-            foreach (FieldInfo field in value.GetType().GetFields(BindingFlags.Public |
-                BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(v => v.Name))
+            foreach (FieldInfo field in AllFields(value.GetType()).OrderBy(v =>
+                v.DeclaringType.FullName + "." + v.Name, StringComparer.Ordinal))
             {
                 object item;
                 try { item = field.GetValue(value); } catch { continue; }
                 string text = Scalar(item);
-                if (text != null) rows.Add(field.Name + "=" + text);
+                if (text == null && item != null)
+                    text = "<" + item.GetType().FullName + ">";
+                if (text != null) rows.Add(field.DeclaringType.Name + "." + field.Name + "=" + text);
             }
-            return string.Join(",", rows.Take(40));
+            return string.Join(",", rows.Take(limit));
+        }
+
+        private static IEnumerable<FieldInfo> AllFields(Type type)
+        {
+            for (Type current = type; current != null; current = current.BaseType)
+            foreach (FieldInfo field in current.GetFields(BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                yield return field;
         }
 
         private static string References(object owner, string term)
