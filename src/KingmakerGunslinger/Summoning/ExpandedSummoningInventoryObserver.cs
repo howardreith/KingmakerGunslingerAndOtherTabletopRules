@@ -73,7 +73,7 @@ namespace KingmakerGunslinger.Summoning
             "vampiric touch", "tailslap", "tail slap", "constrict",
             "improvedgrab", "improved grab", "heatfeature", "subtypedemon",
             "coldirongood", "cold iron or good", "spear", "longspear",
-            "giantfrogpoisonous", "giant frog poison", "centipedepoison",
+            "giantfrogpoisonous", "giantfrogpoison", "giant frog poison", "centipedepoison",
             "centipede poison", "giantspiderpoison", "giant spider poison"
         };
         private static readonly string[] ExactSpecialMechanicGuids = {
