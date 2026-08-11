@@ -203,3 +203,15 @@
 - Repository validation, 997/997 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `80be16ab0d14224d2f0427573c18501c025356cfd3f4ff77da0c70dfc3f665c5`;
   package SHA-256: `a916354b594550e521e493baae6d835fbd2c5693e5c512d42ec49d8577074047`.
+
+## 2026-08-11 - faction field runtime repair
+
+- Published structural-clone run `20260811T1838286338373Z` timed out, but the
+  authoritative game log exposed the immediate owned root cause: initialization
+  rolled back after `MissingFieldException` for `BlueprintUnit.m_Faction`.
+- The installed 2.1.7b assembly exposes the field as `Faction`. Resolution now
+  searches the exact two supported names across the hierarchy and still fails
+  closed on absence or ambiguity.
+- Repository validation, 997/997 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `259c904aec1492b9b83fa36be0bf1573e17572703db5f8e242f4c571390abae0`;
+  package SHA-256: `1ae6af5c30617807422d188fb53e53fb5c8e0829ad4443034122f9b8dda247df`.

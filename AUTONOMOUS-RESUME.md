@@ -25,6 +25,10 @@
 - Exact next action: publish and rerun exact-donor qualification on structural
   clones, then sanitize fact-level forbidden abilities and construct exact
   native spawn action graphs before parent publication.
+- Latest published run exposed an exact `BlueprintUnit.m_Faction` versus
+  `BlueprintUnit.Faction` assembly-shape mismatch and rolled back safely. The
+  validated uncommitted repair resolves either exact field name across the type
+  hierarchy and fails closed otherwise.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

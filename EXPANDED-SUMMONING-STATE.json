@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
+  "currentSha": "219dfbe44c7abdfb8d534755f2ea65f06459da04",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "bounded-structural-unit-cloning",
-  "nextConcreteAction": "Rerun exact-donor qualification on structural clones, then sanitize fact-level forbidden abilities and construct exact native spawn action graphs before parent publication.",
+  "completedPhase": "faction-field-runtime-repair",
+  "nextConcreteAction": "Publish and rerun exact-donor qualification after resolving the 2.1.7b Faction field, then continue fact sanitization and native spawn actions.",
   "domainTestResult": "997/997 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 80be16ab0d14224d2f0427573c18501c025356cfd3f4ff77da0c70dfc3f665c5",
-  "packageResult": "strict PASS; SHA-256 a916354b594550e521e493baae6d835fbd2c5693e5c512d42ec49d8577074047",
+  "releaseBuildResult": "PASS; DLL SHA-256 259c904aec1492b9b83fa36be0bf1573e17572703db5f8e242f4c571390abae0",
+  "packageResult": "strict PASS; SHA-256 1ae6af5c30617807422d188fb53e53fb5c8e0829ad4443034122f9b8dda247df",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -52,6 +52,12 @@
       "result": "TIMEOUT",
       "sourceSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1831132044960Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "219dfbe44c7abdfb8d534755f2ea65f06459da04",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1838286338373Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],

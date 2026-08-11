@@ -119,10 +119,14 @@ namespace KingmakerGunslinger.Blueprints
                 System.Reflection.BindingFlags.Instance |
                 System.Reflection.BindingFlags.Public |
                 System.Reflection.BindingFlags.NonPublic;
-            System.Reflection.FieldInfo field = typeof(BlueprintUnit).GetField(
-                "m_Faction", flags);
+            System.Reflection.FieldInfo field = null;
+            for (Type type = typeof(BlueprintUnit); type != null && field == null;
+                type = type.BaseType)
+                field = type.GetFields(flags).SingleOrDefault(value =>
+                    string.Equals(value.Name, "Faction", StringComparison.Ordinal) ||
+                    string.Equals(value.Name, "m_Faction", StringComparison.Ordinal));
             if (field == null) throw new MissingFieldException(
-                typeof(BlueprintUnit).FullName, "m_Faction");
+                typeof(BlueprintUnit).FullName, "Faction");
             field.SetValue(target, field.GetValue(donor));
         }
 
