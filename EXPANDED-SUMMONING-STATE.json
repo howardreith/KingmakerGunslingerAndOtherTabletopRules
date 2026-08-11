@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5",
+  "currentSha": "d76f5c6010ca3612ba2b1c24e076b7601fed9227",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "template-graph-observer-source-qualified",
-  "nextConcreteAction": "Commit and push the exact template graph observer, then run it in a guarded fresh process against the immutable source SHA.",
+  "completedPhase": "template-graph-native-runtime-pass",
+  "nextConcreteAction": "Implement exact 5-10 HD celestial/fiendish spell resistance using frozen mid-tier buff identities, then qualify the expanded template tiers.",
   "domainTestResult": "1002/1002 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 17a6c5a3fb889f700d1a3db362ee7c111b52d87b68d26ad74019b7c5d85d3eb2",
-  "packageResult": "strict PASS; SHA-256 5f1a75d3b29102d7e77742fed0476005a78db98cd85b5cb6473cff8fc10a6f43",
+  "releaseBuildResult": "PASS; DLL SHA-256 d45d94e9cfab1e032b597b7b42de7ca49990702ef8e8d165fcbbdd04acd7aa84",
+  "packageResult": "strict PASS; SHA-256 f356e94fca20e335fbba8ef70d5241903527aecc2ef2593b93f631564f798dd0",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -108,6 +108,13 @@
       "sourceSha": "61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1937046769749Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Template localization repair loaded cleanly; 67 units, 1045 abilities, 1370 registered identities, 681 parent placements, and sanitizer invariants passed without save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "d76f5c6010ca3612ba2b1c24e076b7601fed9227",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1944046651609Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Exact template assertions passed: logical=182, celestial=182, fiendish=182, buffs=4; registry=1370 and placements=681; no save access."
     }
   ],
   "compatibilityProfilesCompleted": [],

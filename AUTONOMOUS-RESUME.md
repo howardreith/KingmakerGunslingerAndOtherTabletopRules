@@ -2261,3 +2261,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Repository validation, 1,002/1,002 tests, clean Release, and strict package
   validation pass. Exact next action: commit/push, rerun the observer on that
   immutable SHA, then finish template SR/smite/alignment fidelity.
+
+## Expanded Summoning current resume - template graph native PASS
+
+- Guarded fresh-process run
+  `20260811T1944046651609Z-observe-expanded-summoning-inventory` passed on
+  committed source `d76f5c6010ca3612ba2b1c24e076b7601fed9227`.
+- Exact final-live counts passed: 182 logical template choices, 182 celestial
+  executions, 182 fiendish executions, four template buffs, 681 parent
+  placements, and 1,370 registered identities. No save was accessed.
+- Exact next action: add frozen mid-tier celestial/fiendish buffs so creatures
+  with 5-10 HD receive CR+5 SR without over-granting SR below 5 HD; then qualify
+  the resulting six-buff template graph.

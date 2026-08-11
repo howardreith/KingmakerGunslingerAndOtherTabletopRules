@@ -379,3 +379,19 @@
   `17a6c5a3fb889f700d1a3db362ee7c111b52d87b68d26ad74019b7c5d85d3eb2`;
   package SHA-256:
   `5f1a75d3b29102d7e77742fed0476005a78db98cd85b5cb6473cff8fc10a6f43`.
+
+## 2026-08-11 - exact template graph native PASS
+
+- Guarded save-free run
+  `20260811T1944046651609Z-observe-expanded-summoning-inventory` passed on
+  committed source `d76f5c6010ca3612ba2b1c24e076b7601fed9227`.
+- Exact final-live assertions passed: 182 logical template choices, 182
+  celestial executions, 182 fiendish executions, and four native-component
+  template buffs. Registry count remained 1,370 and canonical placements 681;
+  donor isolation and all sanitizer invariants remained zero-failure.
+- The scenario did not access a save. The guarded harness completed its normal
+  deployment transaction and process exit without requiring UI evidence.
+- Committed-source clean Release DLL SHA-256:
+  `d45d94e9cfab1e032b597b7b42de7ca49990702ef8e8d165fcbbdd04acd7aa84`;
+  package SHA-256:
+  `f356e94fca20e335fbba8ef70d5241903527aecc2ef2593b93f631564f798dd0`.
