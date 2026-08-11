@@ -243,3 +243,13 @@
 - Repository validation, 998/998 domain tests, clean Release build, and strict
   package validation PASS. DLL SHA-256: `277e364708c26d5a1fc19d01f8127c722517a478f8679ebe9e814a8b53f298c8`;
   package SHA-256: `7800aea247364c952a27e45a39b1098e05d83e324d27e958ebc41278c916a7b4`.
+
+## 2026-08-11 - direct tier-I template repair
+
+- Guarded run `20260811T1858359771129Z` failed closed after registration because
+  direct parent `SummonNaturesAllyI` has no `AbilityVariants` component and no
+  `Single` name token. Direct parents now supply only the one-creature template;
+  quantity requests against a direct parent fail closed.
+- Repository validation, 998/998 domain tests, clean Release build, and strict
+  package validation PASS. DLL SHA-256: `56b964c0c4d6c3b9c459d1aa9943b1773b2f6dd1a56ad987b4f1fcf927fa04ae`;
+  package SHA-256: `db84ce95e431fa502b6aa6736fd8308350951963f32516663102e5c061b8511f`.

@@ -63,8 +63,15 @@ namespace KingmakerGunslinger.Blueprints
             AbilityVariants variants = (parent.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
                 .SingleOrDefault();
-            BlueprintAbility[] choices = variants == null ? new[] { parent } :
-                (variants.Variants ?? Array.Empty<BlueprintAbility>());
+            if (variants == null)
+            {
+                if (variant.Multiplicity != SummonMultiplicity.One)
+                    throw new InvalidOperationException(
+                        "A direct summon parent cannot supply a quantity template.");
+                return parent;
+            }
+            BlueprintAbility[] choices = variants.Variants ??
+                Array.Empty<BlueprintAbility>();
             string token = variant.Multiplicity == SummonMultiplicity.One ? "single" :
                 variant.Multiplicity == SummonMultiplicity.OneD3 ? "d3" : "d4";
             BlueprintAbility result = choices.SingleOrDefault(value => value != null &&

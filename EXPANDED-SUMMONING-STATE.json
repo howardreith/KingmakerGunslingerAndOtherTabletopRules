@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "a689525f6b7ac4392e19337f5837d74370b389ed",
+  "currentSha": "d50fe67f6bdbdefc9c914d03c5d724302ca16c40",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "conditional-multi-branch-spawn-repair",
-  "nextConcreteAction": "Publish and rerun all action graphs after preserving native conditional multi-spawn branches, then implement template branching and additive parent publication.",
+  "completedPhase": "direct-tier-one-template-repair",
+  "nextConcreteAction": "Publish and rerun all action graphs after supporting direct tier-I parents, then implement template branching and additive parent publication.",
   "domainTestResult": "998/998 PASS",
-  "releaseBuildResult": "PASS; DLL SHA-256 277e364708c26d5a1fc19d01f8127c722517a478f8679ebe9e814a8b53f298c8",
-  "packageResult": "strict PASS; SHA-256 7800aea247364c952a27e45a39b1098e05d83e324d27e958ebc41278c916a7b4",
+  "releaseBuildResult": "PASS; DLL SHA-256 56b964c0c4d6c3b9c459d1aa9943b1773b2f6dd1a56ad987b4f1fcf927fa04ae",
+  "packageResult": "strict PASS; SHA-256 db84ce95e431fa502b6aa6736fd8308350951963f32516663102e5c061b8511f",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -70,6 +70,12 @@
       "result": "TIMEOUT",
       "sourceSha": "a689525f6b7ac4392e19337f5837d74370b389ed",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1851191704530Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "d50fe67f6bdbdefc9c914d03c5d724302ca16c40",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1858359771129Z-observe-expanded-summoning-inventory/runtime-result.json"
     }
   ],
   "compatibilityProfilesCompleted": [],
