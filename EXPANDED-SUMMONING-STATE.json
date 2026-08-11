@@ -7,7 +7,7 @@
   "currentSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "actualReleaseVersion": "0.0.77",
   "completedPhase": "canonical-parent-inventory-and-pure-publication-policies",
-  "nextConcreteAction": "Qualify, commit, and push the parent inventory/publication policy checkpoint, then narrow and curate donor-unit/sanitizer contracts from the guarded inventory.",
+  "nextConcreteAction": "Audit exact components, facts, body, prefab, faction, loot, XP, interaction, persistence, and combat profiles for the dedicated summon donors; define and test the sanitizer allow/deny policy before cloning.",
   "domainTestResult": "989/989 PASS",
   "releaseBuildResult": "PASS; DLL SHA-256 6cc7d0186f7b5d57b58644bffb2fc23c71feb898816bdea0da2acf63954f29b0",
   "packageResult": "strict PASS; SHA-256 6d097f33e70cfce3364a015d9e59c541d14444cbaf55f082314d47e026f0d431",

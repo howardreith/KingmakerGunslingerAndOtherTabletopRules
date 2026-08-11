@@ -60,3 +60,38 @@ Tier I is a direct ability. Tiers II-IX expose `AbilityVariants`.
 Donor-unit and sanitizer rows remain in progress; broad roster-term matching
 found 533 candidates and is evidence for narrowing, not selection authority.
 
+## Dedicated summon donors confirmed in composed final-live graph
+
+These are donor candidates, not yet approved clones. Each still requires the
+full component/fact/body/view sanitizer audit and source-nonmutation proof.
+
+| Intended/proxy | GUID | Blueprint name |
+|---|---|---|
+| Giant frog | `1ed9a630f0d9d7f44855d3d1d1b2cdf2` | `GiantFrogSummoned` |
+| Dire wolf | `03dd28e92faf2e44eb9564a6ba01fdd0` | `DireWolfSummon` |
+| Giant spider | `9e120b5e0ad3c794491c049aa24b9fde` | `GiantSpiderSummoned` |
+| Leopard | `768275c9885dd954fb3c84ba69ac4281` | `LeopardSummoned` |
+| Monitor lizard | `4109b40f6bbb49640840644cc84ada67` | `MonitorLizardSummoned` |
+| Dire boar | `6ec9c63c41a1e754ea4dcd85557625b4` | `DireBoarSummoned` |
+| Air elemental, small | `04944455200bc224d955a8e9bbd64f3f` | `SummonedAirElementalSmall` |
+| Air elemental, large | `3764b43791a00e1468257adbca43ce9b` | `SummonedAirElementalLarge` |
+| Air elemental, huge | `2e24256e459468743b91fbb9aa85e1ab` | `SummonedAirElementalHuge` |
+| Air elemental, elder | `33bb90ffd13c87b4c8e45d920313752a` | `SummonedAirElementalElder` |
+| Air mephit | `50782bc4eb36aac4287023e20ee00808` | `MephitAirSummoned` |
+| Earth mephit | `46779f56cab2cb0438161fec0129790d` | `MephitEarthSummoned` |
+| Fire mephit | `10a820de0a417f345866f794324205ad` | `MephitFireSummoned` |
+| Water mephit | `4615328295cd7e84bb2ef09d3dba8403` | `MephitWaterSummoned` |
+| Hell hound | `ece348345859351439e1263115f5fdb9` | `HellhoundSummoned` |
+| Bralani | `58574e8d1d4dc464c976f396d9115b1a` | `AzataBralaniSummoned` |
+| Smilodon | `beae4985629a6f64eb98081e3171e4c1` | `SmilodonSummoned` |
+| Mastodon | `028cc6f46e7998f46855a33ffde89567` | `MastodonSummon` |
+| Soul eater proxy | `1832be68f9814254dbbdab6df7fd5d0b` | `SoulEaterSummoned` |
+
+The composed graph also confirms plausible non-summon visual donors including
+standard Worg `313a17cbd273d1f40bd1654ee2ae186e`, Hodag
+`c3524f96954a1d94f8525b86e7626633`, Erinyes
+`6ea3a75279bab234aa723989e30cb15a`, Nymph
+`0cc7a2526e4557945b1d8eb277d1fb3a`, Ankou
+`58ed91a92b8d70248aa884d303954469`, and Nixie
+`394610e32cfbc4f43a0efaab16faae49`. These are visual/mechanical clues only;
+campaign units will never be summoned directly.

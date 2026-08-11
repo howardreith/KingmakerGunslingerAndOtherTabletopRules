@@ -59,3 +59,6 @@
   later mutation.
 - The first rollback fixture exposed missing journal-before-write handling; the
   transaction was corrected and the complete suite now passes 989/989.
+- Exact-name narrowing identified nineteen dedicated summon-unit donor candidates
+  and six fallback visual donors. Broad substring false positives (notably Roc)
+  are rejected; the next phase audits exact component/fact/view structures.
