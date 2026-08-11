@@ -221,7 +221,11 @@ namespace KingmakerGunslinger.DomainTests
                 "invisiblestalker", "shadowdemon", "succubus",
                 "salamander", "energydrain", "charmmonster", "tailslap",
                 "constrict", "subtypedemon", "94b2838e8a492c44ebf89e7fe7a75a62",
-                "c4a7f98d743bc784c9d4cf2105852c39" })
+                "c4a7f98d743bc784c9d4cf2105852c39",
+                "04dcf5776f9d4315b27d1c0c7c2f3c46",
+                "efc1e80fb41e06544be46604983806d6",
+                "d7cbd2004ce66a042aeab2e95a3c5c61",
+                "cce5bb72adc78f944b480e01efd3eaef" })
                 Assertions.True(observer.Contains(token),
                     "Bounded special-mechanic observer is missing: " + token);
             Assertions.False(observer.Contains(

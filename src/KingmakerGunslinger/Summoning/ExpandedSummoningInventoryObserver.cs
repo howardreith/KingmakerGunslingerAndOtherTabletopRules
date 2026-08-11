@@ -82,7 +82,11 @@ namespace KingmakerGunslinger.Summoning
             "94b2838e8a492c44ebf89e7fe7a75a62",
             "c4a7f98d743bc784c9d4cf2105852c39",
             "84f41b83ef6b8c242a15381045822f94",
-            "ab966bf06859119419989ccb0061ba39"
+            "ab966bf06859119419989ccb0061ba39",
+            "04dcf5776f9d4315b27d1c0c7c2f3c46",
+            "efc1e80fb41e06544be46604983806d6",
+            "d7cbd2004ce66a042aeab2e95a3c5c61",
+            "cce5bb72adc78f944b480e01efd3eaef"
         };
 
         internal static ExpandedSummoningInventoryObservation Observe(
