@@ -692,3 +692,26 @@
   `646f2b131aa23d63c0531526d481a5a9bffb8d94b4d01fe4bdff1b6239cc6236`;
   package SHA-256:
   `c792287814bd894a95f980cbe6bbcad475db22b9c3c0cf4e338e8616bee7a155`.
+
+## 2026-08-11 - elementals, mephits, and Lantern Archon native PASS
+
+- The first guarded launch exposed two fail-closed construction contracts:
+  special AI/brain shells must be named before registry validation, and native
+  Lantern facts must be requested by their exact installed concrete types.
+  Both repairs were narrow, source-qualified, committed, and pushed.
+- A subsequent complete structural run reached all assertions and found one
+  observer-only false positive: the generic forbidden-token policy matched the
+  `KMG_Summoning` namespace on the bounded Light Ray and Archon Defenses facts.
+  The observer now permits only those two exact owned identities; every other
+  unit-granted fact and ability remains subject to the full forbidden policy.
+- Guarded fresh-process run
+  `20260811T2138366091237Z-observe-expanded-summoning-inventory` passed on
+  committed source `fa91900ea6e64206986a9db2deeccbe866f75190`.
+  All 19 assertions passed: 67 units, 1,046 abilities, registry 1,378, 681
+  placements, 55 exact donors, exact Lantern stats/ray/aura/defenses, zero
+  shared donor components, zero prohibited references, zero inherited spells
+  or inventories, and exact template/alignment/smite structure. No save was
+  accessed. DLL SHA-256:
+  `6231443bf123bfaeee7d67df5ea5a20a487307f310132fed4e3a1ad00b43189e`;
+  package SHA-256:
+  `0e0d09dcad78e33d074ebc5355a8eef90c12e0a257555530f412628b389d8c2a`.

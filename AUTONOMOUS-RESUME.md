@@ -9,31 +9,22 @@
   `EXPANDED-SUMMONING-STATE.json`.
 - Completed: Shield Other range repair; frozen 67-creature/681-placement logical
   catalog; guarded final-live parent/donor/action-graph inventory; additive merge
-  and rollback policies; sanitizer contract; 1,116 frozen manifest reservations;
-  schema-3 fourth-module domain/UI/publication state with all 16 combinations.
-  The latest complete domain suite is 996/996 PASS.
-- All 1,116 Expanded Summoning identities are now active and deterministically
-  registered in every module state; exact registry count is 1,370. The current
-  hidden shells are deliberately unpublished and must not be treated as finished
-  summon units or abilities.
-- Lightweight registration passed fresh-process structural qualification on
-  `fde2c66638e68d9c466946e9a90fd91ac709cca3`. Exact donor decisions now cover
-  all 67 units and component-level campaign surfaces are filtered.
-- Deep Unity unit cloning timed out at both 180 and 300 seconds on published
-  `b354c8210d3da44506533f0ec2c53ed86d179336`. The validated uncommitted repair
-  creates fresh units and defensively copies non-Unity blueprint fields.
-- Exact next action: publish and rerun exact-donor qualification on structural
-  clones, then sanitize fact-level forbidden abilities and construct exact
-  native spawn action graphs before parent publication.
-- Exact donor/unit registration passed on published `787a970d019efdc731c667a50ce7816776e46e1d`.
-  The validated uncommitted builder configures all 1,045 ability identities from
-  exact native family/tier/multiplicity graphs without publishing parent arrays.
-- Exact next action: publish and structurally qualify every action graph, then
-  implement template branching, fact sanitization, special adaptations, and
-  additive parent publication.
-- Published action-graph run failed closed on native SM V elemental conditional
-  branches. The validated repair retargets every branch to the same KMG unit and
-  requires at least one spawn action, preserving routing without mixed packs.
+  and rollback policies; sanitizer contract; schema-3 fourth-module state with
+  all 16 logical combinations; 1,124 Expanded Summoning identities and exact
+  aggregate registry count 1,378; all 681 abilities and additive base-parent
+  placements; HD-banded celestial/fiendish templates, spawn-local alignment,
+  and bounded smite; all 55 selected donor graphs.
+- Current immutable mechanical source is
+  `fa91900ea6e64206986a9db2deeccbe866f75190`. The complete domain suite is
+  1,006/1,006 PASS; clean Release and strict package validation PASS.
+- Native elementals and mephits plus the reconstructed Lantern Archon are
+  structurally qualified by fresh Steam run
+  `20260811T2138366091237Z-observe-expanded-summoning-inventory`: all 19
+  assertions PASS, including exact Lantern mechanics, zero sanitizer failures,
+  and zero native action contamination. No save was accessed.
+- Exact next action: inventory and implement the next bounded special-creature
+  group (Salamander, Invisible Stalker, Shadow Demon, and Succubus), then
+  source-qualify, commit/push, and extend the exact guarded observer.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "8c576bc2ff741f726493ce347de16f02c7ee02de",
+  "currentSha": "fa91900ea6e64206986a9db2deeccbe866f75190",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "native-elemental-mephit-profile-and-lantern-reconstruction-source-qualified",
-  "nextConcreteAction": "Commit and push the Lantern/native-reuse mechanical group, rebuild the immutable SHA, and run the guarded exact Lantern structural observation.",
+  "completedPhase": "native-elemental-mephit-profile-and-lantern-reconstruction-runtime-qualified",
+  "nextConcreteAction": "Inventory and implement the next bounded special-creature group: Salamander, Invisible Stalker, Shadow Demon, and Succubus, with exact donor mechanics and conservative cleanup contracts.",
   "domainTestResult": "1006/1006 PASS",
-  "releaseBuildResult": "PASS for Lantern/native-reuse mechanical group; DLL SHA-256 646f2b131aa23d63c0531526d481a5a9bffb8d94b4d01fe4bdff1b6239cc6236",
-  "packageResult": "strict PASS for Lantern/native-reuse mechanical group; SHA-256 c792287814bd894a95f980cbe6bbcad475db22b9c3c0cf4e338e8616bee7a155",
+  "releaseBuildResult": "PASS for runtime-qualified Lantern/native-reuse group; DLL SHA-256 6231443bf123bfaeee7d67df5ea5a20a487307f310132fed4e3a1ad00b43189e",
+  "packageResult": "strict PASS for runtime-qualified Lantern/native-reuse group; SHA-256 0e0d09dcad78e33d074ebc5355a8eef90c12e0a257555530f412628b389d8c2a",
   "blueprintLedger": "1124 Expanded Summoning identities; 1378 active, 1 reserved, 1379 total; derived constant registry count 1378",
   "runtimeScenarios": [
     {
@@ -200,6 +200,34 @@
       "sourceSha": "8c576bc2ff741f726493ce347de16f02c7ee02de",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2102583998517Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "Focused final-live candidate inventory found 75 exact Will-o'-Wisp, archon, light-ray, and aura surfaces. It froze the Will-o'-Wisp view donor, Ghaele two-projectile ray donor, and native Aura of Menace carrier used by the following reconstruction. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "f7c399527b64d072fc18f982861e49c49b6692ad",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2120595436392Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "The registry rejected an unnamed Lantern AI shell before configuration. Owned registrations rolled back; no save access. Repaired by naming AI and brain shells inside their factories."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "TIMEOUT",
+      "sourceSha": "376d6aece4bb3533d04c17aab4a3927d96724a78",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2128429047818Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Strict lookup exposed the installed library's concrete native fact types before observation. Owned registrations rolled back; no save access. Repaired from prior exact inventory evidence without weakening GUID/type checks."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "FAIL",
+      "sourceSha": "3205515a5415d8e4717ea132b36f20372872af9d",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2134201112193Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "Blueprint construction and 18 of 19 assertions completed. The remaining diagnostic false positive treated the KMG.Summoning namespace on the bounded Lantern ray and defense facts as a forbidden summon mechanic. No save access."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "fa91900ea6e64206986a9db2deeccbe866f75190",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2138366091237Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All 19 structural assertions passed: 67 units, 1046 abilities, registry 1378, 681 placements, 55 exact donors, exact Lantern reconstruction, zero forbidden references or donor aliases, and exact celestial/fiendish/SNA execution structure. No save access."
     }
   ],
   "compatibilityProfilesCompleted": [],
