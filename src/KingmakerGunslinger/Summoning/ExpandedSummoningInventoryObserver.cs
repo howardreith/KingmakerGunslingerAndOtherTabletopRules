@@ -68,13 +68,21 @@ namespace KingmakerGunslinger.Summoning
             "invisiblestalker", "invisible stalker", "naturalinvisibility",
             "natural invisibility", "shadowdemon", "shadow demon",
             "incorporeal", "succubus", "energydrain", "energy drain",
-            "profanegift", "profane gift"
+            "profanegift", "profane gift", "charmmonster", "charm monster",
+            "dominateperson", "dominate person", "vampirictouch",
+            "vampiric touch", "tailslap", "tail slap", "constrict",
+            "improvedgrab", "improved grab", "heatfeature", "subtypedemon",
+            "coldirongood", "cold iron or good"
         };
         private static readonly string[] ExactSpecialMechanicGuids = {
             "24719a49b84c5cd43b894268d22d9c89",
             "33e8997912cf76b4c99dca0445082804",
             "dcfc5e9aec5bea540b36caf754989164",
-            "1ce4878b5e714f659d0854a12f4b3cf2"
+            "1ce4878b5e714f659d0854a12f4b3cf2",
+            "94b2838e8a492c44ebf89e7fe7a75a62",
+            "c4a7f98d743bc784c9d4cf2105852c39",
+            "84f41b83ef6b8c242a15381045822f94",
+            "ab966bf06859119419989ccb0061ba39"
         };
 
         internal static ExpandedSummoningInventoryObservation Observe(
