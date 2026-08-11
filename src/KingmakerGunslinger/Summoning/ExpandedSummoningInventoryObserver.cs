@@ -49,6 +49,13 @@ namespace KingmakerGunslinger.Summoning
             "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33",
             "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e"
         };
+        private static readonly string[] ExactTemplateMechanicGuids = {
+            "69f0d7d1077f492f8237952f8219a270", "3e33af2ab5974859bdaa92c32987b3e0",
+            "bf0882a6d254407bb259356f1aa66392", "a432066702694b2590260b58426fee28",
+            "0e7481a8ceb041129a692bf59f24d057", "46a19a521e0d40f792d8b4f64931be8a",
+            "368bc4311f7f4ba9af3752ff4418d0a8", "4170f7f5874a4e45bc7050a53727452f",
+            "a203d617f8d547459e1f25790f886b6e"
+        };
         private static readonly string[] UnitTerms = ExpandedSummoningCatalog.All
             .SelectMany(value => new[] { value.DisplayName, value.Visual })
             .SelectMany(value => value.Split(new[] { '/', ' ' },
@@ -109,6 +116,20 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             records.Add("summon-action-summary=parents:" + canonicalParents.Length);
+
+            var templateMechanics = new HashSet<string>(ExactTemplateMechanicGuids,
+                StringComparer.Ordinal);
+            BlueprintScriptableObject[] observedTemplateMechanics = all.Where(value =>
+                templateMechanics.Contains(value.AssetGuid)).OrderBy(value =>
+                    value.AssetGuid, StringComparer.Ordinal).ToArray();
+            foreach (BlueprintScriptableObject value in observedTemplateMechanics)
+                records.Add("template-mechanic=" + Describe(value) + ";components=" +
+                    Components(value));
+            records.Add("template-mechanic-summary=expected:" +
+                ExactTemplateMechanicGuids.Length + ";found:" +
+                observedTemplateMechanics.Length + ";missing:" + string.Join(",",
+                    ExactTemplateMechanicGuids.Where(guid =>
+                        !observedTemplateMechanics.Any(value => value.AssetGuid == guid))));
 
             BlueprintScriptableObject[] facts = all.Where(value =>
                 !(value is BlueprintAbility) && !(value is BlueprintUnit) &&

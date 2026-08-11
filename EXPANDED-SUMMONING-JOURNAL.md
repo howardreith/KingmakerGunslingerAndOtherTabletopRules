@@ -431,3 +431,16 @@
   `379c59dfd462a39ac1ec953d71ce9e658f9a7b494d7bef52447eeb231c2cc2f8`;
   package SHA-256:
   `39afcc9c9dbb0a90651e4a3837e8e4563dc1522f4e6da47556268502e016bff4`.
+
+## 2026-08-11 - exact native/optional template-mechanic observer
+
+- Added a nine-GUID final-live inventory for the Call of the Wild celestial
+  and fiendish template features plus their referenced Smite Evil, Smite Good,
+  spell-resistance, energy-resistance, and alignment-DR facts. The observer is
+  structural and uses only base blueprint types; KMG retains no optional-mod
+  compile-time reference.
+- Repository validation, 1,003/1,003 tests, clean Release, and strict package
+  validation PASS. DLL SHA-256:
+  `df9060c481b80cf7dc78302cc5d680652e1a25ad1cee4780335e009ae96b9f1e`;
+  package SHA-256:
+  `bec91cc818b9007eb8cf8fc919dee0da23e9c6f23a1b8815830da0bb85b46484`.

@@ -137,6 +137,17 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-template-buffs" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);
+            string inventory = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningInventoryObserver.cs"));
+            foreach (string token in new[] { "ExactTemplateMechanicGuids",
+                "69f0d7d1077f492f8237952f8219a270",
+                "3e33af2ab5974859bdaa92c32987b3e0",
+                "bf0882a6d254407bb259356f1aa66392",
+                "a432066702694b2590260b58426fee28",
+                "template-mechanic-summary" })
+                Assertions.True(inventory.Contains(token),
+                    "Exact template-mechanic inventory is missing: " + token);
         }
 
         internal static void TemplateBlueprintsUseNativeBoundedMechanics()

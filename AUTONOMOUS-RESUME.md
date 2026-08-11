@@ -2298,3 +2298,12 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   placements; zero sanitizer failures. No save was accessed.
 - Exact next action: inventory native celestial/fiendish smite and alignment
   machinery, then implement a bounded adaptation or document why it is unsafe.
+
+## Expanded Summoning current resume - exact template-mechanic observer
+
+- The save-free inventory now records the two exact Call of the Wild template
+  features and their seven referenced smite/SR/resistance/DR facts by GUID,
+  without any optional-mod compile-time dependency.
+- Repository validation, 1,003/1,003 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and run the observer in the
+  composed profile to capture the smite component internals.
