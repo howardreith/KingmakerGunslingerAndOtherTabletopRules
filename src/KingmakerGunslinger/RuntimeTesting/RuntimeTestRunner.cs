@@ -7160,14 +7160,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .IsAssignableFrom(field.FieldType.GetElementType())) continue;
                         prohibitedReferences += values.Cast<object>()
                             .OfType<BlueprintScriptableObject>().Count(value =>
-                                SummonUnitSanitizationPolicy
-                                    .IsForbiddenRuntimeMemberKey(value.name));
+                                ExpandedSummoningIsForbiddenReference(value));
                     }
                 }
                 if (unit.AddFacts != null)
                     prohibitedReferences += unit.AddFacts.Count(value => value == null ||
-                        SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
-                            value.name));
+                        ExpandedSummoningIsForbiddenReference(value));
                 if (ExpandedSummoningArrayLength(unit, "StartingInventory") != 0)
                     nonemptyInventories++;
             }
@@ -7386,6 +7384,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
+        }
+
+        private static bool ExpandedSummoningIsForbiddenReference(
+            BlueprintScriptableObject blueprint)
+        {
+            if (blueprint == null) return true;
+            if (blueprint.name ==
+                    "KMG_Summoning_Special_LanternArchon_LightRay" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_LanternArchon_Defenses")
+                return false;
+            return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
+                blueprint.name);
         }
 
         private static IEnumerable<FieldInfo> ExpandedSummoningFields(Type type)
