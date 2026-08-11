@@ -283,3 +283,16 @@
 - The loaded library contained 523 summon-family ability candidates, including
   optional-mod clones. Those remain inventory evidence only; KMG mutated only
   the 18 exact base parents at this checkpoint.
+
+## 2026-08-11 - donor component reference isolation
+
+- Retained donor components are now recursively cloned per KMG unit. Blueprint
+  references and Unity assets remain shared read-only inputs, while component
+  instances, arrays, and mutable nested value/action graphs are isolated.
+- This removes the possibility that runtime component ownership or application
+  state on a KMG summon mutates the native donor blueprint's component graph.
+- Repository validation, 1,000/1,000 domain tests, clean Release build, and
+  strict package validation PASS. DLL SHA-256:
+  `c267f3aadb27291326eaaeab2d72f594a18cdd0bbe685a733f60adc56af4277d`;
+  package SHA-256:
+  `489843a5eeda59e562334fafaf07c579a501632456a49151305b5cdaba7e3f24`.

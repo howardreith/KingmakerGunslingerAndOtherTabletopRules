@@ -82,5 +82,20 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
         }
+
+        internal static void RuntimeUnitComponentsAreReferenceIsolated()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningBlueprints.cs"));
+            foreach (string token in new[] { "DeepCloneUnitComponent",
+                "FormatterServices.GetUninitializedObject",
+                "ScriptableObject.CreateInstance(type)",
+                "source is BlueprintScriptableObject", "ReferenceComparer.Instance" })
+                Assertions.True(source.Contains(token),
+                    "Unit component isolation contract is missing: " + token);
+            Assertions.False(source.Contains("!IsForbiddenComponent(component.GetType().Name)).ToArray()"),
+                "Retained donor components must not remain shared instances.");
+        }
     }
 }

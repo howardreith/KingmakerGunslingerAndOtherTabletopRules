@@ -1,6 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -77,8 +81,50 @@ namespace KingmakerGunslinger.Blueprints
             result.name = InternalName(symbol);
             result.ComponentsArray = (donor.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(component => component != null &&
-                    !IsForbiddenComponent(component.GetType().Name)).ToArray();
+                    !IsForbiddenComponent(component.GetType().Name))
+                .Select(DeepCloneUnitComponent).ToArray();
             SetSummonedFaction(result, summonedFactionDonor);
+            return result;
+        }
+
+        private static BlueprintComponent DeepCloneUnitComponent(
+            BlueprintComponent source)
+        {
+            return (BlueprintComponent)DeepClone(source,
+                new Dictionary<object, object>(ReferenceComparer.Instance));
+        }
+
+        private static object DeepClone(object source,
+            IDictionary<object, object> seen)
+        {
+            if (source == null) return null;
+            Type type = source.GetType();
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string) ||
+                type == typeof(decimal) || type.IsValueType) return source;
+            if (source is BlueprintScriptableObject) return source;
+            UnityEngine.Object unity = source as UnityEngine.Object;
+            if (unity != null && !(source is BlueprintComponent)) return unity;
+            object existing;
+            if (seen.TryGetValue(source, out existing)) return existing;
+            Array array = source as Array;
+            if (array != null)
+            {
+                Array copy = Array.CreateInstance(type.GetElementType(), array.Length);
+                seen.Add(source, copy);
+                for (int index = 0; index < array.Length; index++)
+                    copy.SetValue(DeepClone(array.GetValue(index), seen), index);
+                return copy;
+            }
+            object result = source is BlueprintComponent ?
+                ScriptableObject.CreateInstance(type) :
+                FormatterServices.GetUninitializedObject(type);
+            seen.Add(source, result);
+            foreach (FieldInfo field in Fields(type))
+            {
+                if (field.IsInitOnly || field.DeclaringType == typeof(UnityEngine.Object))
+                    continue;
+                field.SetValue(result, DeepClone(field.GetValue(source), seen));
+            }
             return result;
         }
 
@@ -153,5 +199,20 @@ namespace KingmakerGunslinger.Blueprints
 
         private static string InternalName(string symbol)
         { return symbol.Replace('.', '_').Replace('-', '_'); }
+
+        private static IEnumerable<FieldInfo> Fields(Type type)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            for (Type current = type; current != null; current = current.BaseType)
+                foreach (FieldInfo field in current.GetFields(flags)) yield return field;
+        }
+
+        private sealed class ReferenceComparer : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceComparer Instance = new ReferenceComparer();
+            public new bool Equals(object x, object y) { return ReferenceEquals(x, y); }
+            public int GetHashCode(object obj) { return RuntimeHelpers.GetHashCode(obj); }
+        }
     }
 }

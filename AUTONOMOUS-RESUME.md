@@ -2212,3 +2212,12 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: implement KMG-owned celestial/fiendish template mechanics
   and deterministic good/neutral/evil execution routing without optional-mod
   compile-time references.
+
+## Expanded Summoning current resume - donor component isolation
+
+- Every retained KMG unit component is now an independent deep clone; native
+  donor component instances and mutable arrays are no longer shared.
+- Full source validation, 1,000/1,000 tests, clean Release, and strict package
+  validation pass.
+- Exact next action: commit/push, then remove forbidden facts and spell grants
+  from proxy/custom donor graphs before implementing template routing.
