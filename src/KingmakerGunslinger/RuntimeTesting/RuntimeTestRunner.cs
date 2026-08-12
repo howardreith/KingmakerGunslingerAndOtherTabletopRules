@@ -7800,6 +7800,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SummonAlignmentMode.Celestial) == 0 &&
                     ExpandedSummoningAlignmentActionCount(value,
                         SummonAlignmentMode.Fiendish) == 0);
+            SummonVariantSpec[] logicalVariants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly)).ToArray();
+            BlueprintAbility[] canonicalSummonParents = parentGuids.Select(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    BlueprintBootstrap.Library, guid,
+                    "canonical summon contract parent")).ToArray();
+            int exactParentMappings = 0, nativeContractNodes = 0,
+                acadamaeClassifiedNodes = 0, materialContractNodes = 0,
+                metamagicContractNodes = 0, actionBarContractNodes = 0;
+            foreach (SummonVariantSpec variant in logicalVariants)
+            {
+                int parentIndex = (variant.Family == SummonFamily.Monster ? 0 : 9) +
+                    variant.ParentTier - 1;
+                BlueprintAbility parent = canonicalSummonParents[parentIndex];
+                BlueprintAbility native = ExpandedSummoningNativeTemplate(
+                    parent, variant.Multiplicity);
+                BlueprintAbility root = all.OfType<BlueprintAbility>().Single(value =>
+                    value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(variant)));
+                int matchingParents = canonicalSummonParents.Count(value =>
+                    value.ComponentsArray.OfType<AbilityVariants>().Single()
+                        .Variants.Count(item => ReferenceEquals(item, root)) == 1);
+                if (matchingParents == 1 && parent.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants.Count(item =>
+                        ReferenceEquals(item, root)) == 1) exactParentMappings++;
+                BlueprintAbility[] nodes;
+                bool choice = variant.Family == SummonFamily.Monster &&
+                    variant.Creature.MonsterTemplated;
+                if (choice)
+                    nodes = new[] { root }.Concat(root.ComponentsArray
+                        .OfType<AbilityVariants>().Single().Variants).ToArray();
+                else nodes = new[] { root };
+                foreach (BlueprintAbility node in nodes)
+                {
+                    if (ExpandedSummoningNativeAbilityContractExact(node, native,
+                        choice && !ReferenceEquals(node, root)))
+                        nativeContractNodes++;
+                    if (node.IsSpell && node.School == SpellSchool.Conjuration &&
+                        node.IsFullRoundAction && (node.SpellDescriptor &
+                            SpellDescriptor.Summoning) != 0)
+                        acadamaeClassifiedNodes++;
+                    if (node.MaterialComponent != null) materialContractNodes++;
+                    if (ExpandedSummoningMemberEquals(node, native,
+                        "AvailableMetamagic")) metamagicContractNodes++;
+                    bool execution = choice && !ReferenceEquals(node, root);
+                    if (!node.Hidden && node.ActionBarAutoFillIgnored == execution)
+                        actionBarContractNodes++;
+                }
+            }
+            int expectedContractNodes = logicalVariants.Length +
+                (templateChoices.Length * 2);
+            bool abilityContractsExact = logicalVariants.Length == 681 &&
+                expectedContractNodes == 1045 && exactParentMappings == 681 &&
+                nativeContractNodes == expectedContractNodes &&
+                acadamaeClassifiedNodes == expectedContractNodes &&
+                materialContractNodes == expectedContractNodes &&
+                metamagicContractNodes == expectedContractNodes &&
+                actionBarContractNodes == expectedContractNodes;
+            string abilityContractObserved = "roots=" + logicalVariants.Length +
+                ";nodes=" + expectedContractNodes + ";parents=" +
+                exactParentMappings + ";native=" + nativeContractNodes +
+                ";acadamae=" + acadamaeClassifiedNodes + ";material=" +
+                materialContractNodes + ";metamagic=" +
+                metamagicContractNodes + ";actionBar=" +
+                actionBarContractNodes;
             int contaminatedPreexistingAbilities = all.OfType<BlueprintAbility>()
                 .Count(value => !value.name.StartsWith("KMG_Summoning_",
                     StringComparison.Ordinal) && (
@@ -8303,6 +8370,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
+                Assertion("expanded-summoning-native-ability-contracts",
+                    "roots=681;nodes=1045;parents=681;native=1045;acadamae=1045;material=1045;metamagic=1045;actionBar=1045",
+                    abilityContractObserved, abilityContractsExact,
+                    "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
                 Assertion("expanded-summoning-native-tier-one-preservation",
                     "SM I and SNA I original cast graphs first and castable",
                     nativeTierOnePreserved ? "exact" : "mismatch",
@@ -10056,6 +10127,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             string name = ExpandedSummoningInternalName(symbol);
             return blueprints.OfType<BlueprintAbility>().Single(value =>
                 value.name == name);
+        }
+
+        private static BlueprintAbility ExpandedSummoningNativeTemplate(
+            BlueprintAbility parent, SummonMultiplicity multiplicity)
+        {
+            AbilityVariants variants = parent.ComponentsArray
+                .OfType<AbilityVariants>().Single();
+            BlueprintAbility[] choices = variants.Variants ??
+                Array.Empty<BlueprintAbility>();
+            if (parent.AssetGuid == "8fd74eddd9b6c224693d9ab241f25e84" ||
+                parent.AssetGuid == "c6147854641924442a3bb736080cfeb6")
+                return choices.Single(value => value != null &&
+                    value.name.StartsWith("KMG_Summoning_Native_",
+                        StringComparison.Ordinal));
+            string token = multiplicity == SummonMultiplicity.One ? "single" :
+                multiplicity == SummonMultiplicity.OneD3 ? "d3" : "d4";
+            return choices.Single(value => value != null &&
+                !value.name.StartsWith("KMG_Summoning_", StringComparison.Ordinal) &&
+                value.name.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static bool ExpandedSummoningNativeAbilityContractExact(
+            BlueprintAbility ability, BlueprintAbility native, bool execution)
+        {
+            return ability != null && native != null && ability.IsSpell &&
+                ability.School == native.School &&
+                ability.School == SpellSchool.Conjuration &&
+                ability.Range == native.Range && ability.Range == AbilityRange.Close &&
+                ability.ActionType == native.ActionType &&
+                ability.IsFullRoundAction == native.IsFullRoundAction &&
+                ability.IsFullRoundAction &&
+                ability.CanTargetPoint == native.CanTargetPoint &&
+                (ability.SpellDescriptor & native.SpellDescriptor) ==
+                    native.SpellDescriptor &&
+                (ability.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
+                ability.ComponentsArray != null &&
+                ability.MaterialComponent != null &&
+                !ability.Hidden && ability.ActionBarAutoFillIgnored == execution &&
+                ExpandedSummoningMemberEquals(ability, native,
+                    "SpellResistance") &&
+                ExpandedSummoningMemberEquals(ability, native, "Type");
+        }
+
+        private static bool ExpandedSummoningMemberEquals(object left,
+            object right, string name)
+        {
+            return Equals(ExpandedSummoningMember(left, name),
+                ExpandedSummoningMember(right, name));
+        }
+
+        private static object ExpandedSummoningMember(object value, string name)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            PropertyInfo property = value.GetType().GetProperty(name,
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (property != null && property.GetIndexParameters().Length == 0)
+                return property.GetValue(value, null);
+            FieldInfo field = ExpandedSummoningFields(value.GetType())
+                .SingleOrDefault(item => item.Name == name ||
+                    item.Name == "m_" + name);
+            if (field == null) throw new MissingMemberException(
+                value.GetType().FullName, name);
+            return field.GetValue(value);
         }
 
         private static string ExpandedSummoningInternalName(string symbol)

@@ -1,9 +1,10 @@
 # Expanded Summoning implementation report
 
-Status: complete. Implementation, native runtime qualification, deterministic
-release packaging, and publication are complete. The release artifact was
-frozen from documentation-bearing source
-`193d73cc22fe41fda8546f1d2e1750e185ed8288`; draft PR
+Status: final audit qualification in progress. The completion audit required
+one stronger final-live assertion tying all 681 roots and 364 template
+executions to their native spell, Acadamae, metamagic, material-data, and
+action-bar contracts. That focused assertion is source-qualified; its guarded
+immutable-source rerun and resulting artifact re-freeze are pending. Draft PR
 [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
 targets `master` and remains unmerged for review.
 

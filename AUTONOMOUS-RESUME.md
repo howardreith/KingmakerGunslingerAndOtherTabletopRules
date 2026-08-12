@@ -27,6 +27,12 @@
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
   Each compatibility transaction restored the prior Mods directory exactly;
   `KMG_AUTOMATION_BASELINE` was never modified.
+- Completion-audit update: an explicit 1,045-node final-live assertion was
+  added for exact parent mapping plus inherited school, Summoning descriptor,
+  full-round/close targeting, metamagic, material data, and action-bar state.
+  Repository validation, `1009/1009` tests, and clean Release compile pass. The
+  exact next action is commit/push, guarded structural observation on that SHA,
+  and final artifact/hash refresh before closing PR #2's audit.
 
 - Branch: `codex/expanded-summoning`; selected baseline `origin/master` at
   `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor

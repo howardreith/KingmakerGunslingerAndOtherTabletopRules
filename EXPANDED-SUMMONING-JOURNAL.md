@@ -56,6 +56,18 @@
   contains all 99 feature-branch commits then present.
 - Exact next action: publish this final PR record and prove clean-tree,
   local/origin, and PR-head equality before closing the mission.
+- Completion audit found that all generated abilities inherited native spell
+  fields, but the final runtime assertions did not explicitly aggregate that
+  evidence. Added one 1,045-node invariant spanning 681 logical roots and 364
+  template executions: exact parent mapping, Conjuration/Summoning/full-round/
+  close native contract, metamagic equality, non-null material data, and exact
+  root-versus-execution action-bar behavior. The invariant links every new
+  choice to Acadamae's actual classifier while the existing Acadamae runtime
+  scenario proves eligible/ineligible, save, fatigue, cancellation, and
+  exactly-once behavior.
+- Repository validation, `1009/1009` domain tests, and clean Release compile
+  pass. Exact next action: commit/push and execute the strengthened structural
+  observer on its immutable source.
 
 ## 2026-08-11 - baseline and mission intake
 
