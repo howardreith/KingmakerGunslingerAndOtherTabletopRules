@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1152, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1155, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1050, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -20,7 +20,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(10, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintFeature"), "Subtype marker identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
@@ -715,8 +716,10 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningAbilityBuilder.cs"));
             foreach (string token in new[] { "ConfigureTemplateChoice",
                 "AbilityCasterAlignment", "(AlignmentMaskType)63",
-                "(AlignmentMaskType)504", "ContextActionApplyBuff",
-                "Permanent = true", "IsNotDispelable = true", "AsChild = true",
+                "(AlignmentMaskType)504", "CreateInstance<",
+                "ContextActionApplySummonBuff>();",
+                "NativeMonsterTemplateBuffs",
+                "ReplacedNativeTemplateBuffs",
                 "SpellDescriptor.Good", "SpellDescriptor.Evil" })
                 Assertions.True(abilities.Contains(token),
                     "Template execution contract is missing: " + token);
@@ -728,7 +731,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "KMG.Summoning.Smite.Celestial.Available",
                 "KMG.Summoning.Smite.Fiendish.Available",
-                "AppendTemplateBuff(target.ComponentsArray, smiteBuff)" })
+                "AppendTemplateBuff(target.ComponentsArray, smiteBuff," })
                 Assertions.True(abilities.Contains(token),
                     "Bounded template smite publication is missing: " + token);
         }

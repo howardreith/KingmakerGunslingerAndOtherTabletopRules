@@ -59,6 +59,8 @@
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\ContextActionSetSummonAlignment.cs" />
+    <Compile Include="Summoning\ContextActionApplySummonBuff.cs" />
+    <Compile Include="Summoning\ContextActionSuccubusDominate.cs" />
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />

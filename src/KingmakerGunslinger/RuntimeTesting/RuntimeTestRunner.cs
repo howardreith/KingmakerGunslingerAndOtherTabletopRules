@@ -128,8 +128,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
         private static bool _expandedSummoningRuleCaptureActive;
+        private static string _expandedSummoningLastAbilityExecution = "";
         private static readonly List<UnitEntityData>
             ExpandedSummoningRuleCapture = new List<UnitEntityData>();
+
+        private sealed class ExpandedSummoningMechanicalEvidence
+        {
+            internal bool AlignmentAndTemplates;
+            internal bool NaturesAllyAlignment;
+            internal bool AugmentSummoning;
+            internal bool SuperiorSummoning;
+            internal bool RepresentativeCombat;
+            internal bool SpecialAdaptations;
+            internal bool HostileAbilityTarget;
+            internal int AdditionalCasts;
+            internal readonly List<string> Diagnostics = new List<string>();
+        }
 
         private sealed class BroadRespecInitiationHandler :
             ILevelUpInitiateUIHandler
@@ -7925,6 +7939,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon salamanderTail = all.OfType<
                 BlueprintItemWeapon>().Single(value => value.name ==
                     "KMG_Summoning_Special_Salamander_Tail");
+            BlueprintItemWeapon salamanderSpear = all.OfType<
+                BlueprintItemWeapon>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Salamander_Spear");
             BlueprintBuff salamanderTraits = all.OfType<BlueprintBuff>().Single(
                 value => value.name ==
                     "KMG_Summoning_Special_Salamander_CombatTraits");
@@ -7938,9 +7955,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 salamander.Strength == 16 && salamander.Dexterity == 13 &&
                 salamander.Constitution == 18 && salamander.Intelligence == 14 &&
                 salamander.Wisdom == 15 && salamander.Charisma == 13 &&
-                salamander.Body.PrimaryHand != null &&
-                salamander.Body.PrimaryHand.AssetGuid ==
-                    "4abc27631e2894f4b8b70270e31694f1" &&
+                ReferenceEquals(salamander.Body.PrimaryHand,
+                    salamanderSpear) && salamanderSpear.IsNonRemovable &&
+                salamanderSpear.Type.IsNatural &&
                 salamander.Body.AdditionalSecondaryLimbs.Length == 1 &&
                 ReferenceEquals(salamander.Body.AdditionalSecondaryLimbs[0],
                     salamanderTail) &&
@@ -7966,8 +7983,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff succubusTraits = all.OfType<BlueprintBuff>().Single(value =>
                 value.name ==
                     "KMG_Summoning_Special_Succubus_CombatTraits");
-            ContextActionApplyBuff[] dominationActions =
-                ExpandedSummoningObjects<ContextActionApplyBuff>(
+            ContextActionSuccubusDominate[] dominationActions =
+                ExpandedSummoningObjects<ContextActionSuccubusDominate>(
                     succubusDominate.ComponentsArray).ToArray();
             ContextActionDealDamage[] succubusDrain =
                 ExpandedSummoningObjects<ContextActionDealDamage>(
@@ -7990,9 +8007,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ContextCalculateAbilityParams>().Single().StatType ==
                     StatType.Charisma &&
                 dominationActions.Length == 1 &&
-                ReferenceEquals(dominationActions[0].Buff, succubusDomination) &&
-                dominationActions[0].DurationValue.Rate == DurationRate.Rounds &&
-                dominationActions[0].DurationValue.BonusValue.Value == 3 &&
+                ReferenceEquals(dominationActions[0].Domination,
+                    succubusDomination) &&
                 succubusDomination.ComponentsArray.OfType<ChangeFaction>()
                     .Count() == 1 &&
                 succubusDomination.ComponentsArray.OfType<
@@ -8075,6 +8091,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pixie.Constitution == 12 && pixie.Intelligence == 16 &&
                 pixie.Wisdom == 15 && pixie.Charisma == 16 &&
                 ReferenceEquals(pixie.Body.PrimaryHand, pixieSleepBow) &&
+                pixieSleepBow.IsNonRemovable && pixieSleepBow.Type.IsNatural &&
                 pixieSleepBow.Damage.Rolls == 0 &&
                 pixieSleepBow.Damage.Dice == DiceType.Zero &&
                 pixie.StartingInventory.Length == 0 &&
@@ -8372,8 +8389,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.SceneEntitiesState scene = null;
             object sceneEntities = null;
             int completed = 0, spawnedTotal = 0, singleExact = 0,
-                oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0;
+                oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
+                durationExact = 0, legalPlacement = 0,
+                illegalPlacementRejected = 0;
             var observedCounts = new List<string>();
+            ExpandedSummoningMechanicalEvidence mechanics = null;
             bool cleaned = false;
             string stage = "construct-fixture";
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
@@ -8414,6 +8434,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (caster == null || caster.View == null || caster.View.Data == null)
                     throw new InvalidOperationException(
                         "Native entity creation did not produce a live caster view.");
+                Game.Instance.EntityCreator.Tick();
+                if (!caster.IsInState)
+                    throw new InvalidOperationException(
+                        "The disposable caster did not enter the exact loaded-area state.");
                 sceneEntities = scene.AllEntityData;
                 caster.Descriptor.Stats.HitPoints.BaseValue = 100;
 
@@ -8462,6 +8486,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 data.IsAvailable + ";canStart=" + command.CanStart + ".");
                         bool consciousBeforeRun = caster.Descriptor.State.IsConscious;
                         bool targetValidBeforeRun = data.CanTarget(target);
+                        UnitUseAbility farCommand;
+                        using (cutsceneParameters.Data)
+                            farCommand = new UnitUseAbility(data,
+                                new TargetWrapper(caster.Position +
+                                    new Vector3(1000f, 0f, 0f)));
+                        farCommand.Init(caster);
+                        // CanTarget deliberately accepts a distant click so
+                        // the native controller can walk the caster into spell
+                        // range. The close-range contract is enforced by the
+                        // command approach radius before casting starts.
+                        bool farTargetRejected = !farCommand.IsUnitEnoughClose;
+                        if (targetValidBeforeRun) legalPlacement++;
+                        if (farTargetRejected) illegalPlacementRejected++;
                         command.IgnoreCooldown(TimeSpan.Zero);
                         caster.Commands.Run(command);
                         // UnitCommands.Run installs and initializes the command;
@@ -8534,6 +8571,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
 
                     UnitEntityData[] spawned = ExpandedSummoningRuleCapture.ToArray();
+                    Game.Instance.EntityCreator.Tick();
                     int count = spawned.Length;
                     bool exactKind = spawned.All(value =>
                         ReferenceEquals(value.Blueprint, expectedUnit));
@@ -8552,13 +8590,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         oneD3Legal++;
                     else oneD4PlusOneLegal++;
                     if (exactKind) sameKind++;
+                    bool exactDuration = spawned.All(value => value.Descriptor
+                        .Buffs.RawFacts.OfType<Buff>().Any(buff =>
+                            ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance
+                                .SystemMechanics.SummonedUnitBuff) &&
+                            buff.MaybeContext != null &&
+                            buff.MaybeContext.MaybeCaster == caster &&
+                            !buff.IsPermanent && buff.TimeLeft > TimeSpan.Zero &&
+                            buff.TimeLeft <= TimeSpan.FromSeconds(121d)));
+                    if (exactDuration) durationExact++;
                     observedCounts.Add(variant.StableKey + "=" + count);
-                    foreach (UnitEntityData unit in spawned) unit.Dispose();
+                    foreach (UnitEntityData unit in spawned)
+                        CleanupExpandedSummoningUnit(unit);
+                    DrainExpandedSummoningDestroyQueue(sceneEntities,
+                        beforeCast);
                     object[] afterCleanup = SnapshotReferences(sceneEntities);
                     if (!SameReferences(beforeCast, afterCleanup))
                         throw new InvalidOperationException(
-                            "Per-cast global unit cleanup did not restore the exact snapshot.");
+                            "Per-cast global unit cleanup did not restore the exact snapshot: before=" +
+                            DescribeExpandedSummoningReferences(beforeCast) +
+                            ";after=" + DescribeExpandedSummoningReferences(
+                                afterCleanup) + ".");
                 }
+                stage = "mechanical-contracts";
+                mechanics = ExerciseExpandedSummoningMechanicalContracts(
+                    blueprints, caster, scene, sceneEntities);
             }
             catch (Exception exception)
             {
@@ -8580,7 +8636,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SnapshotReferences(allUnits).OfType<UnitEntityData>())
                     .Where(value => !unitsBefore.Any(prior =>
                         ReferenceEquals(prior, value))).Distinct().ToArray())
-                    unit.Dispose();
+                {
+                    if (unit.IsInState) unit.Destroy();
+                    else unit.Dispose();
+                }
+                Game.Instance.EntityDestroyer.Tick();
                 if (casterBlueprint != null)
                     UnityEngine.Object.Destroy(casterBlueprint);
                 cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
@@ -8593,6 +8653,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";d3=" + oneD3Legal + "/" + oneD3.Length + ";d4plus1=" +
                 oneD4PlusOneLegal + "/" + oneD4PlusOne.Length +
                 ";sameKind=" + sameKind + ";spawned=" + spawnedTotal +
+                ";duration=" + durationExact + ";legalPlacement=" +
+                legalPlacement + ";illegalPlacement=" +
+                illegalPlacementRejected + ";mechanicalCasts=" +
+                (mechanics == null ? 0 : mechanics.AdditionalCasts) +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -8614,6 +8678,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-command-total", "153",
                     completed.ToString(), casts.Length == 153 && completed == 153,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
+                Assertion("expanded-summoning-caster-level-duration", "153/153",
+                    durationExact + "/" + casts.Length,
+                    durationExact == casts.Length,
+                    "exact native SummonedUnitBuff context with CL20 duration bounded to 120 seconds"),
+                Assertion("expanded-summoning-placement-validation", "153 legal and 153 far points require approach",
+                    "legal=" + legalPlacement + ";farRequiresApproach=" +
+                        illegalPlacementRejected,
+                    legalPlacement == casts.Length &&
+                        illegalPlacementRejected == casts.Length,
+                    "AbilityData.CanTarget at the loaded-area point and native UnitUseAbility close-range approach at a distant point"),
+                Assertion("expanded-summoning-alignment-templates",
+                    "good/neutral/evil execution choices and SNA caster alignment",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.AlignmentAndTemplates &&
+                        mechanics.NaturesAllyAlignment,
+                    "actual celestial/fiendish/SNA UnitUseAbility spawn results"),
+                Assertion("expanded-summoning-native-feats",
+                    "Augment exactly once; Superior quantity only when installed",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.AugmentSummoning &&
+                        mechanics.SuperiorSummoning,
+                    "live native feat facts and actual one/1d3 summon results"),
+                Assertion("expanded-summoning-representative-combat",
+                    "actual animal, proxy, elemental, outsider, incorporeal, invisible, breath, ranged, Bebelith, and Pixie effects",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.RepresentativeCombat &&
+                        mechanics.SpecialAdaptations &&
+                        mechanics.HostileAbilityTarget,
+                    "RuleAttackWithWeapon plus native special AbilityData/UnitUseAbility paths"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -8626,7 +8722,619 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             result.Diagnostics.Add(observed);
             result.Diagnostics.Add("counts=" + string.Join(",", observedCounts.ToArray()));
+            if (mechanics != null)
+                foreach (string diagnostic in mechanics.Diagnostics)
+                    result.Diagnostics.Add("mechanics=" + diagnostic);
             return result;
+        }
+
+        private ExpandedSummoningMechanicalEvidence
+            ExerciseExpandedSummoningMechanicalContracts(
+                BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+                Kingmaker.EntitySystem.SceneEntitiesState scene,
+                object sceneEntities)
+        {
+            var result = new ExpandedSummoningMechanicalEvidence();
+            var created = new List<UnitEntityData>();
+            BlueprintUnit hostileBlueprint = null;
+            UnitEntityData hostile = null;
+            ItemEntityArmor insertedArmor = null;
+            BlueprintFeature augment = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "38155ca9e4055bb48a89240a2055dcc3");
+            BlueprintBuff augmentBuff = blueprints.OfType<BlueprintBuff>()
+                .Single(value => value.AssetGuid ==
+                    "169d03bbccdbdc542ae1a57d83673d80");
+            BlueprintFeature superior = blueprints.OfType<BlueprintFeature>()
+                .SingleOrDefault(value => value.AssetGuid ==
+                    "0477936c0f74841498b5c8753a8062a3");
+            object[] exactStart = SnapshotReferences(sceneEntities);
+            try
+            {
+                SummonVariantSpec monsterDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1,
+                    SummonMultiplicity.One);
+                bool goodCelestial = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.LawfulGood,
+                    ".Celestial", Alignment.NeutralGood, true, created,
+                    result);
+                bool neutralCelestial = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.TrueNeutral,
+                    ".Celestial", Alignment.NeutralGood, true, created,
+                    result);
+                bool neutralFiendish = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.TrueNeutral,
+                    ".Fiendish", Alignment.NeutralEvil, false, created,
+                    result);
+                bool evilFiendish = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.ChaoticEvil,
+                    ".Fiendish", Alignment.NeutralEvil, false, created,
+                    result);
+                result.AlignmentAndTemplates = goodCelestial &&
+                    neutralCelestial && neutralFiendish && evilFiendish;
+
+                caster.Descriptor.Alignment.Set(Alignment.ChaoticNeutral);
+                SummonVariantSpec allyWolf = ExpandedSummoningVariant(
+                    SummonFamily.NaturesAlly, "wolf", 2,
+                    SummonMultiplicity.One);
+                UnitEntityData[] allyUnits = CastExpandedSummoningVariant(
+                    blueprints, caster, allyWolf, null, result);
+                created.AddRange(allyUnits);
+                UnitEntityData alignedAlly = allyUnits.Single();
+                bool allyTemplateFree = alignedAlly.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().All(value => value.Blueprint == null ||
+                        !value.Blueprint.name.StartsWith(
+                            "KMG_Summoning_Template_",
+                            StringComparison.Ordinal));
+                result.NaturesAllyAlignment = alignedAlly.Descriptor.Alignment
+                    .Value == Alignment.ChaoticNeutral && allyTemplateFree;
+                result.Diagnostics.Add("sna-alignment=" +
+                    alignedAlly.Descriptor.Alignment.Value +
+                    ";templateFree=" + allyTemplateFree);
+                DisposeExpandedSummoningUnits(created, allyUnits);
+
+                caster.Descriptor.AddFact(augment);
+                UnitEntityData[] augmented = CastExpandedSummoningVariant(
+                    blueprints, caster, allyWolf, null, result);
+                created.AddRange(augmented);
+                int augmentCount = augmented.Single().Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Count(value => ReferenceEquals(
+                        value.Blueprint, augmentBuff));
+                result.AugmentSummoning = augmentCount == 1;
+                result.Diagnostics.Add("augment-buff-count=" + augmentCount);
+                DisposeExpandedSummoningUnits(created, augmented);
+                caster.Descriptor.RemoveFact(augment);
+
+                if (superior == null)
+                {
+                    result.SuperiorSummoning = true;
+                    result.Diagnostics.Add("superior=optional-feature-not-installed");
+                }
+                else
+                {
+                    caster.Descriptor.AddFact(superior);
+                    UnitEntityData[] superiorOne = CastExpandedSummoningVariant(
+                        blueprints, caster, allyWolf, null, result);
+                    created.AddRange(superiorOne);
+                    int superiorOneCount = superiorOne.Length;
+                    DisposeExpandedSummoningUnits(created, superiorOne);
+                    SummonVariantSpec allyDogD3 = ExpandedSummoningVariant(
+                        SummonFamily.NaturesAlly, "dog", 2,
+                        SummonMultiplicity.OneD3);
+                    UnitEntityData[] superiorD3 = CastExpandedSummoningVariant(
+                        blueprints, caster, allyDogD3, null, result);
+                    created.AddRange(superiorD3);
+                    int superiorD3Count = superiorD3.Length;
+                    DisposeExpandedSummoningUnits(created, superiorD3);
+                    result.SuperiorSummoning = superiorOneCount == 1 &&
+                        superiorD3Count >= 2 && superiorD3Count <= 4;
+                    result.Diagnostics.Add("superior-one=" + superiorOneCount +
+                        ";superior-d3=" + superiorD3Count);
+                    caster.Descriptor.RemoveFact(superior);
+                }
+
+                caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
+                UnitEntityData pixie = CastExpandedSummoningVariant(
+                    blueprints, caster, ExpandedSummoningVariant(
+                        SummonFamily.NaturesAlly, "pixie", 9,
+                        SummonMultiplicity.One), null, result).Single();
+                created.Add(pixie);
+                BlueprintAbility dance = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDance");
+                hostile = CreateExpandedSummoningHostileTarget(blueprints,
+                    pixie, dance, caster.Position + Vector3.forward, scene,
+                    out hostileBlueprint);
+                result.HostileAbilityTarget = hostile != null;
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveWill), "BaseValue", -100);
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                hostile.Descriptor.Stats.HitPoints.BaseValue = 100000;
+
+                bool animalAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "wolf", 2, created, result),
+                    hostile, out string animalDetail);
+                bool proxyAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "eagle", 1, created, result),
+                    hostile, out string proxyDetail);
+                bool elementalAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "small-air-elemental", 2,
+                        created, result), hostile, out string elementalDetail);
+
+                UnitEntityData stalker = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "invisible-stalker", 6, created, result);
+                BlueprintUnitFact invisibility = blueprints.OfType<
+                    BlueprintUnitFact>().Single(value => value.AssetGuid ==
+                        "94b2838e8a492c44ebf89e7fe7a75a62");
+                bool invisibilityBefore = stalker.Descriptor.HasFact(invisibility);
+                bool stalkerAttack = ExerciseExpandedSummoningAttack(stalker,
+                    hostile, out string stalkerDetail);
+                bool invisibilityAfter = stalker.Descriptor.HasFact(invisibility);
+
+                UnitEntityData shadow = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "shadow-demon", 6, created, result);
+                bool shadowAttack = ExerciseExpandedSummoningAttack(shadow,
+                    hostile, out string shadowDetail);
+
+                UnitEntityData salamander = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "salamander", 5, created, result);
+                bool salamanderAttack = ExerciseExpandedSummoningAttack(
+                    salamander, hostile, out string salamanderDetail);
+
+                UnitEntityData succubus = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "succubus", 6, created, result);
+                bool succubusAttack = ExerciseExpandedSummoningAttack(succubus,
+                    hostile, out string succubusDetail);
+                BlueprintAbility dominate = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Succubus_Dominate");
+                bool dominateTargetable = new AbilityData(succubus.Descriptor
+                    .Abilities.GetAbility(dominate)).CanTarget(
+                        new TargetWrapper(hostile));
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                ExecuteExpandedSummoningRuntimeAbility(succubus, dominate, 4,
+                    new TargetWrapper(hostile), false);
+                string dominateExecution =
+                    _expandedSummoningLastAbilityExecution;
+                BlueprintBuff domination = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Succubus_Domination");
+                bool dominationApplied = hostile.Descriptor.HasFact(domination);
+                if (dominationApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(domination));
+
+                UnitEntityData fireMephit = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.NaturesAlly,
+                    "fire-mephit", 4, created, result);
+                BlueprintAbility breath = fireMephit.Descriptor.Abilities
+                    .Enumerable.Select(value => value.Blueprint).FirstOrDefault(
+                        value => value != null && value.name.IndexOf("Breath",
+                            StringComparison.OrdinalIgnoreCase) >= 0);
+                bool breathUsed = breath != null;
+                string breathDetail = breath == null ? "missing" : breath.name;
+                if (breath != null)
+                {
+                    int damageBefore = hostile.Descriptor.Damage;
+                    TargetWrapper breathTarget = breath.CanTargetPoint ?
+                        new TargetWrapper(hostile.Position) :
+                        new TargetWrapper(hostile);
+                    bool breathTargetable = new AbilityData(fireMephit.Descriptor
+                        .Abilities.GetAbility(breath)).CanTarget(breathTarget);
+                    ExecuteExpandedSummoningRuntimeAbility(fireMephit, breath,
+                        2, breathTarget, false, hostile);
+                    breathUsed = hostile.Descriptor.Damage > damageBefore;
+                    breathDetail += ":damage=" + damageBefore + "->" +
+                        hostile.Descriptor.Damage + ";targetable=" +
+                        breathTargetable + ";execution=" +
+                        _expandedSummoningLastAbilityExecution;
+                    hostile.Descriptor.Damage = damageBefore;
+                }
+
+                BlueprintAbilityResource danceResource = blueprints.OfType<
+                    BlueprintAbilityResource>().Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDanceResource");
+                int danceBefore = pixie.Descriptor.Resources.GetResourceAmount(
+                    danceResource);
+                // Irresistible dance is a native touch-range ability. The
+                // synchronous runtime fixture does not advance the movement
+                // command that the normal controller would enqueue before the
+                // cast, so place the already-spawned pixie at its exact target
+                // before exercising the native UnitUseAbility command.
+                pixie.Translocate(hostile.Position, null);
+                ExecuteExpandedSummoningRuntimeAbility(pixie, dance, 6,
+                    new TargetWrapper(hostile), false);
+                int danceAfter = pixie.Descriptor.Resources.GetResourceAmount(
+                    danceResource);
+                BlueprintBuff danceState = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDanceState");
+                bool danceApplied = hostile.Descriptor.HasFact(danceState);
+                if (danceApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(danceState));
+
+                BlueprintBuff pixieTraits = pixie.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Select(value => value.Blueprint).Single(value =>
+                        value != null && value.ComponentsArray.OfType<
+                            PixieSleepArrowComponent>().Any());
+                PixieSleepArrowComponent sleepComponent = pixieTraits
+                    .ComponentsArray.OfType<PixieSleepArrowComponent>().Single();
+                int sleepBefore = pixie.Descriptor.Resources.GetResourceAmount(
+                    sleepComponent.SleepArrowResource);
+                bool pixieAttack = ExerciseExpandedSummoningAttack(pixie,
+                    hostile, out string pixieDetail, false);
+                int sleepAfter = pixie.Descriptor.Resources.GetResourceAmount(
+                    sleepComponent.SleepArrowResource);
+                bool sleepApplied = hostile.Descriptor.HasFact(
+                    sleepComponent.SleepingBuff);
+                if (sleepApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(hostile.Descriptor.Buffs
+                        .GetBuff(sleepComponent.SleepingBuff));
+
+                BlueprintItemArmor lightArmor = blueprints.OfType<
+                    BlueprintItemArmor>().Where(value => value.Type != null &&
+                        value.Type.IsArmor && value.Type.ProficiencyGroup ==
+                            ArmorProficiencyGroup.Light).OrderBy(value =>
+                                value.AssetGuid, StringComparer.Ordinal).First();
+                if (!hostile.Body.Armor.HasArmor)
+                {
+                    insertedArmor = new ItemEntityArmor(lightArmor);
+                    hostile.Body.Armor.InsertItem(insertedArmor);
+                }
+                ItemEntityArmor exactArmor = hostile.Body.Armor.Armor;
+                BlueprintItemArmor exactArmorBlueprint = exactArmor.Blueprint;
+                UnitEntityData bebelith = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster, "bebelith", 7,
+                    created, result);
+                bool bebelithFirst = ExerciseExpandedSummoningAttack(bebelith,
+                    hostile, out string bebelithFirstDetail);
+                bool bebelithSecond = ExerciseExpandedSummoningAttack(bebelith,
+                    hostile, out string bebelithSecondDetail);
+                BlueprintBuff dismantled = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Bebelith_DismantledArmor");
+                bool dismantledApplied = hostile.Descriptor.HasFact(dismantled);
+                bool armorUnchanged = ReferenceEquals(exactArmor,
+                    hostile.Body.Armor.Armor) && ReferenceEquals(
+                        exactArmorBlueprint, hostile.Body.Armor.Armor.Blueprint);
+                if (dismantledApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(dismantled));
+
+                result.RepresentativeCombat = animalAttack && proxyAttack &&
+                    elementalAttack && stalkerAttack && shadowAttack &&
+                    salamanderAttack && succubusAttack && pixieAttack &&
+                    invisibilityBefore && invisibilityAfter;
+                result.SpecialAdaptations = dominationApplied && breathUsed &&
+                    danceBefore == 1 && danceAfter == 0 && danceApplied &&
+                    sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
+                    bebelithFirst && bebelithSecond && dismantledApplied &&
+                    armorUnchanged;
+                result.Diagnostics.Add("combat=animal[" + animalDetail +
+                    "];proxy[" + proxyDetail + "];elemental[" +
+                    elementalDetail + "];stalker[" + stalkerDetail +
+                    ";invisibility=" + invisibilityBefore + "->" +
+                    invisibilityAfter + "];shadow[" + shadowDetail +
+                    "];salamander[" + salamanderDetail + "];succubus[" +
+                    succubusDetail + ";dominate=" + dominationApplied +
+                    ";targetable=" + dominateTargetable + ";execution=" +
+                    dominateExecution +
+                    "];breath[" + breathDetail + "];pixie[" + pixieDetail +
+                    ";dance=" + danceBefore + "->" + danceAfter +
+                    ";danceApplied=" + danceApplied + ";sleep=" + sleepBefore +
+                    "->" + sleepAfter + ";sleepApplied=" + sleepApplied +
+                    "];bebelith[first=" + bebelithFirstDetail + ";second=" +
+                    bebelithSecondDetail + ";dismantled=" + dismantledApplied +
+                    ";armorUnchanged=" + armorUnchanged + "]");
+            }
+            finally
+            {
+                if (caster.Descriptor.HasFact(augment))
+                    caster.Descriptor.RemoveFact(augment);
+                if (superior != null && caster.Descriptor.HasFact(superior))
+                    caster.Descriptor.RemoveFact(superior);
+                foreach (UnitEntityData unit in created.Distinct().ToArray())
+                    CleanupExpandedSummoningUnit(unit);
+                if (insertedArmor != null && hostile != null &&
+                    hostile.Body.Armor.HasArmor && ReferenceEquals(
+                        hostile.Body.Armor.Armor, insertedArmor))
+                    hostile.Body.Armor.RemoveItem(false);
+                if (insertedArmor != null) insertedArmor.Dispose();
+                if (hostile != null && !hostile.Destroyed) hostile.Destroy();
+                if (hostileBlueprint != null)
+                    UnityEngine.Object.Destroy(hostileBlueprint);
+                DrainExpandedSummoningDestroyQueue(sceneEntities, exactStart);
+            }
+            object[] exactEnd = SnapshotReferences(sceneEntities);
+            if (!SameReferences(exactStart, exactEnd))
+                throw new InvalidOperationException(
+                    "Mechanical-contract cleanup did not restore the exact area snapshot: before=" +
+                    DescribeExpandedSummoningReferences(exactStart) +
+                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) + ".");
+            return result;
+        }
+
+        private static bool ExpandedSummoningTemplateRuntimeCase(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonVariantSpec variant, Alignment casterAlignment,
+            string executionSuffix, Alignment expectedAlignment,
+            bool celestial, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            caster.Descriptor.Alignment.Set(casterAlignment);
+            UnitEntityData[] units = CastExpandedSummoningVariant(blueprints,
+                caster, variant, executionSuffix, evidence);
+            created.AddRange(units);
+            UnitEntityData unit = units.Single();
+            string kind = celestial ? "Celestial" : "Fiendish";
+            int templateCount = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => value.Blueprint != null &&
+                    value.Blueprint.name.StartsWith(
+                        "KMG_Summoning_Template_" + kind + "_",
+                        StringComparison.Ordinal));
+            int smiteCount = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => value.Blueprint != null &&
+                    value.Blueprint.name == "KMG_Summoning_Smite_" + kind +
+                        "_Available");
+            int replacedNativeCount = unit.Descriptor.Buffs.RawFacts
+                .OfType<Buff>().Count(value => value.Blueprint != null &&
+                    (value.Blueprint.name.StartsWith(
+                        "SummonMonsterCelestialBuff",
+                        StringComparison.Ordinal) ||
+                     value.Blueprint.name.StartsWith(
+                        "SummonMonsterFiendishBuff",
+                        StringComparison.Ordinal)));
+            bool result = unit.Descriptor.Alignment.Value == expectedAlignment &&
+                templateCount == 1 && smiteCount == 1 &&
+                replacedNativeCount == 0;
+            evidence.Diagnostics.Add("template=" + casterAlignment + "/" +
+                kind + "->" + unit.Descriptor.Alignment.Value +
+                ";buffs=" + templateCount + ";smite=" + smiteCount +
+                ";nativeTemplates=" + replacedNativeCount +
+                ";facts=" + string.Join("|", unit.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Where(value => value.Blueprint != null)
+                    .Select(value => value.Blueprint.name)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray()));
+            DisposeExpandedSummoningUnits(created, units);
+            return result;
+        }
+
+        private static SummonVariantSpec ExpandedSummoningVariant(
+            SummonFamily family, string creatureKey, int parentTier,
+            SummonMultiplicity multiplicity)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(family).Single(
+                value => value.Creature.Key == creatureKey &&
+                    value.ParentTier == parentTier &&
+                    value.Multiplicity == multiplicity);
+        }
+
+        private static UnitEntityData CastExpandedSummoningCombatUnit(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonFamily family, string creatureKey, int parentTier,
+            List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            UnitEntityData[] units = CastExpandedSummoningVariant(blueprints,
+                caster, ExpandedSummoningVariant(family, creatureKey,
+                    parentTier, SummonMultiplicity.One), null, evidence);
+            created.AddRange(units);
+            return units.Single();
+        }
+
+        private static UnitEntityData[] CastExpandedSummoningVariant(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonVariantSpec variant, string executionSuffix,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                blueprints, variant, executionSuffix);
+            BlueprintUnit expected = blueprints.OfType<BlueprintUnit>().Single(
+                value => value.name == ExpandedSummoningInternalName(
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(
+                        variant.Creature)));
+            ExpandedSummoningRuleCapture.Clear();
+            caster.Descriptor.AddFact(ability);
+            try
+            {
+                ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                    variant.ParentTier);
+            }
+            finally
+            {
+                if (caster.Descriptor.HasFact(ability))
+                    caster.Descriptor.RemoveFact(ability);
+            }
+            UnitEntityData[] units = ExpandedSummoningRuleCapture.ToArray();
+            Game.Instance.EntityCreator.Tick();
+            if (units.Length < 1 || units.Any(value =>
+                    !ReferenceEquals(value.Blueprint, expected)))
+                throw new InvalidOperationException(
+                    "Mechanical contract cast returned the wrong unit kind.");
+            evidence.AdditionalCasts++;
+            return units;
+        }
+
+        private static void DisposeExpandedSummoningUnits(
+            List<UnitEntityData> created, IEnumerable<UnitEntityData> units)
+        {
+            foreach (UnitEntityData unit in units.ToArray())
+            {
+                CleanupExpandedSummoningUnit(unit);
+                created.Remove(unit);
+            }
+            Game.Instance.EntityDestroyer.Tick();
+            Game.Instance.EntityDestroyer.Tick();
+        }
+
+        private static UnitEntityData CreateExpandedSummoningHostileTarget(
+            BlueprintScriptableObject[] blueprints, UnitEntityData actor,
+            BlueprintAbility hostileAbility, Vector3 position,
+            Kingmaker.EntitySystem.SceneEntitiesState scene,
+            out BlueprintUnit targetBlueprint)
+        {
+            FieldInfo faction = ExpandedSummoningFields(typeof(BlueprintUnit))
+                .Single(value => value.Name == "Faction" ||
+                    value.Name == "m_Faction");
+            object playerFaction = faction.GetValue(
+                BlueprintRoot.Instance.DefaultPlayerCharacter);
+            var seen = new HashSet<object>();
+            foreach (BlueprintUnit source in blueprints.OfType<BlueprintUnit>()
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal))
+            {
+                object candidateFaction = faction.GetValue(source);
+                if (candidateFaction == null || ReferenceEquals(candidateFaction,
+                    playerFaction) || !seen.Add(candidateFaction)) continue;
+                BlueprintUnit candidate = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                candidate.name = "KMG_Runtime_ExpandedSummoning_HostileTarget";
+                candidate.IsCheater = true;
+                faction.SetValue(candidate, candidateFaction);
+                UnitEntityData target = null;
+                try
+                {
+                    target = Game.Instance.EntityCreator.SpawnUnit(candidate,
+                        position, Quaternion.identity, scene);
+                    Ability granted = actor.Descriptor.Abilities.GetAbility(
+                        hostileAbility);
+                    if (target != null && granted != null &&
+                        new AbilityData(granted).CanTarget(
+                            new TargetWrapper(target)))
+                    {
+                        targetBlueprint = candidate;
+                        return target;
+                    }
+                }
+                catch { }
+                if (target != null) target.Dispose();
+                UnityEngine.Object.Destroy(candidate);
+            }
+            targetBlueprint = null;
+            throw new InvalidOperationException(
+                "No exact loaded faction produced a valid hostile target for the Pixie SLA contract.");
+        }
+
+        private static bool ExerciseExpandedSummoningAttack(
+            UnitEntityData attacker, UnitEntityData target, out string detail,
+            bool requireDamage = true)
+        {
+            ItemEntityWeapon weapon = attacker == null || attacker.Body == null ?
+                null : attacker.Body.PrimaryHand.MaybeWeapon;
+            if (weapon == null)
+            {
+                detail = "missing-primary-weapon";
+                return false;
+            }
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            int damageBefore = target.Descriptor.Damage;
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+            Rulebook.Trigger(attack);
+            bool hit = attack.AttackRoll != null && attack.AttackRoll.IsHit;
+            int damageAfter = target.Descriptor.Damage;
+            detail = weapon.Blueprint.name + ":hit=" + hit + ";damage=" +
+                damageBefore + "->" + damageAfter;
+            target.Descriptor.Damage = damageBefore;
+            return hit && (!requireDamage || damageAfter > damageBefore);
+        }
+
+        private static void DrainExpandedSummoningDestroyQueue(
+            object sceneEntities, object[] expected)
+        {
+            // Unit destruction removes its facts first. Native aura components
+            // can enqueue an AreaEffectEntityData only while that first queue
+            // item is being processed, so dependent entities may require later
+            // destroyer passes just as they do across successive game frames.
+            // Keep the final reference comparison exact; this bounded drain
+            // models those frames without tolerating a persistent entity leak.
+            for (int pass = 0; pass < 8; pass++)
+            {
+                Game.Instance.EntityDestroyer.Tick();
+                if (expected != null && SameReferences(expected,
+                    SnapshotReferences(sceneEntities))) return;
+            }
+            // Area effects use a timed caster-disappearance grace period for
+            // their visual fade. A synchronous runtime fixture cannot advance
+            // that world-time window, so finish only orphaned effects whose
+            // mechanics context still points at the destroyed summoned unit.
+            foreach (object value in SnapshotReferences(sceneEntities).Where(
+                value => expected == null || !expected.Any(prior =>
+                    ReferenceEquals(prior, value))).ToArray())
+            {
+                AreaEffectEntityData area = value as AreaEffectEntityData;
+                UnitEntityData source = area == null || area.Context == null ?
+                    null : area.Context.MaybeCaster;
+                if (area != null && source != null && source.Destroyed)
+                    area.Destroy();
+                Kingmaker.View.MapObjects.DroppedLoot.EntityData dropped =
+                    value as Kingmaker.View.MapObjects.DroppedLoot.EntityData;
+                if (dropped != null)
+                {
+                    Kingmaker.View.MapObjects.LootComponent.LootPersistentData
+                        loot = dropped.GetComponentData<Kingmaker.View.MapObjects
+                            .LootComponent.LootPersistentData>();
+                    if (loot == null || loot.Loot == null || !loot.Loot.HasLoot)
+                        dropped.Destroy();
+                }
+            }
+            Game.Instance.EntityDestroyer.Tick();
+        }
+
+        private static void CleanupExpandedSummoningUnit(UnitEntityData unit)
+        {
+            if (unit == null) return;
+            // This synchronous fixture cannot wait for SummonPool's normal
+            // expiration path, which suppresses equipped-item drops. Detach
+            // hand items without transferring them before direct destruction;
+            // the surrounding exact scene/player snapshots still reject any
+            // materialized loot or inventory side effect.
+            var detached = new List<ItemEntity>();
+            if (unit.Body != null && unit.Body.PrimaryHand != null &&
+                unit.Body.PrimaryHand.MaybeItem != null)
+            {
+                detached.Add(unit.Body.PrimaryHand.MaybeItem);
+                unit.Body.PrimaryHand.RemoveItem(false);
+            }
+            if (unit.Body != null && unit.Body.SecondaryHand != null &&
+                unit.Body.SecondaryHand.MaybeItem != null)
+            {
+                detached.Add(unit.Body.SecondaryHand.MaybeItem);
+                unit.Body.SecondaryHand.RemoveItem(false);
+            }
+            if (unit.Descriptor.Inventory != null)
+            {
+                foreach (ItemEntity item in unit.Descriptor.Inventory.Items
+                    .ToArray())
+                {
+                    unit.Descriptor.Inventory.Remove(item);
+                    detached.Add(item);
+                }
+            }
+            foreach (ItemEntity item in detached.Where(value => value != null)
+                .Distinct().ToArray()) item.Dispose();
+            BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                .SummonedUnitBuff;
+            Buff[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .ToArray();
+            // Aura of Menace owns a timed area-effect fade and must be turned
+            // off before a synchronous fixture destroys its source. Preserve
+            // every other permanent after-spawn fact: Owlcat's summon marker
+            // is what suppresses equipment loot for native outsiders.
+            foreach (Buff buff in buffs.Where(value => value.Blueprint != null &&
+                value.Blueprint.AssetGuid ==
+                    "1ce4878b5e714f659d0854a12f4b3cf2")) buff.Remove();
+            foreach (Buff buff in buffs.Where(value => ReferenceEquals(
+                value.Blueprint, summoned))) buff.Remove();
+            if (!unit.Destroyed) unit.Destroy();
         }
 
         private static void ExpandedSummoningRuleCapturePostfix(
@@ -8635,6 +9343,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!_expandedSummoningRuleCaptureActive || __instance == null ||
                 __instance.SummonedUnit == null) return;
             ExpandedSummoningRuleCapture.Add(__instance.SummonedUnit);
+        }
+
+        private static string DescribeExpandedSummoningReferences(
+            IEnumerable<object> values)
+        {
+            return string.Join(",", values.Select(value =>
+            {
+                UnitEntityData unit = value as UnitEntityData;
+                if (unit != null)
+                    return "unit:" + (unit.Blueprint == null ? "<null>" :
+                        unit.Blueprint.name) + ":destroyed=" + unit.Destroyed +
+                        ":inState=" + unit.IsInState;
+                Kingmaker.View.MapObjects.DroppedLoot.EntityData dropped =
+                    value as Kingmaker.View.MapObjects.DroppedLoot.EntityData;
+                if (dropped != null)
+                {
+                    Kingmaker.View.MapObjects.LootComponent.LootPersistentData
+                        data = dropped.GetComponentData<Kingmaker.View.MapObjects
+                            .LootComponent.LootPersistentData>();
+                    string items = data == null || data.Loot == null ? "<null>" :
+                        string.Join("|", data.Loot.Items.Select(item => item == null ||
+                            item.Blueprint == null ? "<null>" :
+                            item.Blueprint.name).ToArray());
+                    return "dropped-loot:destroyed=" + dropped.Destroyed +
+                        ":items=" + items;
+                }
+                return value == null ? "<null>" : value.GetType().FullName;
+            }).ToArray());
         }
 
         private RuntimeTestResult RunDisposableExpandedSummoningVisualContracts()
@@ -8957,45 +9693,167 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void ExecuteExpandedSummoningRuntimeAbility(
             UnitEntityData caster, BlueprintAbility ability, int spellLevel)
         {
+            ExecuteExpandedSummoningRuntimeAbility(caster, ability, spellLevel,
+                new TargetWrapper(caster.Position), true);
+        }
+
+        private static void ExecuteExpandedSummoningRuntimeAbility(
+            UnitEntityData caster, BlueprintAbility ability, int spellLevel,
+            TargetWrapper target, bool overrideSpellParameters,
+            UnitEntityData synchronousEffectTarget = null)
+        {
+            _expandedSummoningLastAbilityExecution = "ability=" +
+                (ability == null ? "<null>" : ability.name) + ";entered=False";
             Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
             if (granted == null) throw new InvalidOperationException(
                 "The exact KMG execution ability was not granted.");
-            granted.OverrideParams = new AbilityParams {
-                CasterLevel = 20,
-                SpellLevel = spellLevel
-            };
+            if (overrideSpellParameters)
+                granted.OverrideParams = new AbilityParams {
+                    CasterLevel = 20,
+                    SpellLevel = spellLevel
+                };
+            else
+            {
+                InterruptExpandedSummoningFixtureCommands(caster);
+            }
             var data = new AbilityData(granted);
             UnitUseAbility command;
             var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
                 .CutsceneParametersContext();
             using (cutsceneParameters.Data)
-                command = new UnitUseAbility(data,
-                    new TargetWrapper(caster.Position));
+                command = new UnitUseAbility(data, target);
             if (!command.Cutscene || !data.IsAvailable || !command.CanStart)
                 throw new InvalidOperationException(
-                    "The native visual-contract summon command was unavailable.");
+                    "The native Expanded Summoning command was unavailable: " +
+                    ability.name + ";available=" + data.IsAvailable +
+                    ";canStart=" + command.CanStart + ";canTarget=" +
+                    data.CanTarget(target) + ".");
             command.IgnoreCooldown(TimeSpan.Zero);
-            caster.Commands.Run(command);
+            if (overrideSpellParameters) caster.Commands.Run(command);
+            else command.Init(caster);
             command.Start();
-            if (!command.IsRunning) throw new InvalidOperationException(
-                "The native visual-contract summon command did not start.");
+            if (!command.IsRunning)
+            {
+                bool immediateSuccess = !overrideSpellParameters &&
+                    command.IsFinished && string.Equals(command.Result.ToString(),
+                        "Success", StringComparison.Ordinal);
+                if (immediateSuccess)
+                {
+                    _expandedSummoningLastAbilityExecution = "ability=" +
+                        ability.name + ";immediate=True;targetable=" +
+                        data.CanTarget(target) + ";result=" + command.Result;
+                    return;
+                }
+                throw new InvalidOperationException(
+                    "The native Expanded Summoning command did not start: " +
+                    ability.name + ";started=" + command.IsStarted +
+                    ";finished=" + command.IsFinished + ";result=" +
+                    command.Result + ";execution=" +
+                    (command.ExecutionProcess != null) + ";inState=" +
+                    caster.IsInState + ";conscious=" +
+                    caster.Descriptor.State.IsConscious + ".");
+            }
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
             if (!string.Equals(command.Result.ToString(), "Success",
                 StringComparison.Ordinal) || command.ExecutionProcess == null)
                 throw new InvalidOperationException(
-                    "The native visual-contract summon action did not execute.");
+                    "The native Expanded Summoning action did not execute: " +
+                    ability.name + ".");
             for (int tick = 0; tick < 5000 &&
                 !command.ExecutionProcess.IsEnded; tick++)
                 command.ExecutionProcess.Tick();
-            if (!command.ExecutionProcess.IsEnded)
+            bool endedAfterSynchronousTicks = command.ExecutionProcess.IsEnded;
+            bool detachedRealTimeDelivery = false;
+            int synchronousNativeEffects = 0;
+            if (!command.ExecutionProcess.IsEnded && !overrideSpellParameters)
+            {
+                // Projectile and cone deliveries normally advance on world
+                // time. The engine's own instant-delivery path preserves the
+                // exact execution context, save rolls, resources, targets,
+                // and action graph while making this synchronous fixture
+                // independent of real-time projectile travel.
+                command.ExecutionProcess.InstantDeliver();
+                for (int tick = 0; tick < 5000 &&
+                    !command.ExecutionProcess.IsEnded; tick++)
+                    command.ExecutionProcess.Tick();
+                if (!command.ExecutionProcess.IsEnded)
+                {
+                    if (synchronousEffectTarget != null)
+                    {
+                        foreach (AbilityEffectRunAction effect in
+                            (ability.ComponentsArray ??
+                                Array.Empty<BlueprintComponent>()).OfType<
+                                    AbilityEffectRunAction>())
+                        {
+                            effect.Apply(command.ExecutionProcess.Context,
+                                new TargetWrapper(synchronousEffectTarget));
+                            synchronousNativeEffects++;
+                        }
+                    }
+                    command.ExecutionProcess.Detach();
+                    detachedRealTimeDelivery = true;
+                }
+            }
+            if (!command.ExecutionProcess.IsEnded && !detachedRealTimeDelivery)
                 throw new InvalidOperationException(
-                    "The native visual-contract summon process did not end.");
+                    "The native Expanded Summoning process did not end: " +
+                    ability.name + ".");
             if (command.Animation != null)
                 FinishExpandedSummoningAnimation(command.Animation);
+            if (detachedRealTimeDelivery)
+            {
+                _expandedSummoningLastAbilityExecution = "ability=" +
+                    ability.name + ";targetable=" + data.CanTarget(target) +
+                        ";approach=" + command.IsUnitEnoughClose +
+                        ";endedAfterTicks=" + endedAfterSynchronousTicks +
+                        ";synchronousNativeEffects=" +
+                        synchronousNativeEffects +
+                        ";detached=True;result=" + command.Result;
+                InterruptExpandedSummoningFixtureCommands(caster);
+                return;
+            }
             if (!command.IsFinished) command.Tick();
             if (!command.IsFinished) throw new InvalidOperationException(
-                "The visual-contract summon command did not finish.");
+                "The Expanded Summoning command did not finish: " +
+                ability.name + ".");
+            _expandedSummoningLastAbilityExecution = "ability=" + ability.name +
+                ";targetable=" + data.CanTarget(target) + ";approach=" +
+                command.IsUnitEnoughClose + ";endedAfterTicks=" +
+                endedAfterSynchronousTicks + ";detached=False;finished=" +
+                command.IsFinished + ";result=" + command.Result;
+        }
+
+        private static void InterruptExpandedSummoningFixtureCommands(
+            UnitEntityData unit)
+        {
+            object commands = unit == null ? null : unit.Commands;
+            if (commands == null) return;
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            var active = new List<UnitCommand>();
+            foreach (PropertyInfo property in commands.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    typeof(UnitCommand).IsAssignableFrom(value.PropertyType)))
+            {
+                UnitCommand command = null;
+                try { command = property.GetValue(commands, null) as UnitCommand; }
+                catch { }
+                if (command != null && !active.Contains(command)) active.Add(command);
+            }
+            foreach (FieldInfo field in commands.GetType().GetFields(flags)
+                .Where(value => typeof(UnitCommand).IsAssignableFrom(
+                    value.FieldType)))
+            {
+                UnitCommand command = field.GetValue(commands) as UnitCommand;
+                if (command != null && !active.Contains(command)) active.Add(command);
+            }
+            foreach (UnitCommand command in active)
+            {
+                MethodInfo interrupt = command.GetType().GetMethod("Interrupt",
+                    flags, null, Type.EmptyTypes, null);
+                if (interrupt != null) interrupt.Invoke(command, null);
+            }
         }
 
         private static bool ExerciseExpandedSummoningLocomotion(
@@ -9184,8 +10042,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             IEnumerable<BlueprintScriptableObject> blueprints,
             SummonVariantSpec variant)
         {
+            return ResolveExpandedSummoningExecution(blueprints, variant, null);
+        }
+
+        private static BlueprintAbility ResolveExpandedSummoningExecution(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant, string explicitSuffix)
+        {
             string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(variant);
-            if (variant.Family == SummonFamily.Monster &&
+            if (!string.IsNullOrEmpty(explicitSuffix)) symbol += explicitSuffix;
+            else if (variant.Family == SummonFamily.Monster &&
                 variant.Creature.MonsterTemplated) symbol += ".Celestial";
             string name = ExpandedSummoningInternalName(symbol);
             return blueprints.OfType<BlueprintAbility>().Single(value =>
@@ -9503,11 +10369,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (value == null || value is string || value.GetType().IsValueType ||
                 !seen.Add(value)) return;
-            ContextActionApplyBuff apply = value as ContextActionApplyBuff;
+            ContextActionApplySummonBuff apply = value as
+                ContextActionApplySummonBuff;
             if (apply != null && apply.Buff != null &&
                 apply.Buff.name.StartsWith(prefix,
-                    StringComparison.Ordinal) && apply.Permanent &&
-                apply.IsNotDispelable && apply.AsChild) count++;
+                    StringComparison.Ordinal)) count++;
             if (value is BlueprintScriptableObject) return;
             foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
             {

@@ -8,8 +8,8 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1407 stable identifiers: 1406 active and one reserved.
-The 1,152 Expanded Summoning identities freeze the feature foundation: 67 unit
+Validator contract: 1410 stable identifiers: 1409 active and one reserved.
+The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine
 weapon identities, two bounded resources, and one hidden KMG extraplanar marker.
 They register in every feature-module state; live parent publication remains

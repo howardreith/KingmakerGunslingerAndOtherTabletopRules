@@ -33,6 +33,11 @@ namespace KingmakerGunslinger.Blueprints
             "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c",
             "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0",
             "a7469ef84ba50ac4cbf3d145e3173f8e" };
+        private static readonly string[] NativeMonsterTemplateBuffs = {
+            "83a8a909e7ad19b4fa57e306884cc8bd",
+            "c707fdbe58d0c614a89a872b76777f4b",
+            "ec906031bb8766f42a37a52cf1d89836",
+            "4b808ccd7e0b7bd43b10b2d47733b1a4" };
 
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -43,6 +48,10 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureNativeTierOnePreservation(library, bySymbol,
                 AllyParents[0],
                 ExpandedSummoningIdentityCatalog.NativeNaturesAllyTierOneSymbol);
+            BlueprintBuff[] replacedNativeTemplateBuffs =
+                NativeMonsterTemplateBuffs.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                        guid, "native summon template buff")).ToArray();
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
                 SummonFamily.NaturesAlly })
             foreach (SummonVariantSpec variant in
@@ -69,16 +78,19 @@ namespace KingmakerGunslinger.Blueprints
                     ConfigureOne(celestial, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
                             "KMG.Summoning.Template.Celestial." + band),
-                        celestialSmite, true, SummonAlignmentMode.Celestial);
+                        celestialSmite, replacedNativeTemplateBuffs, true,
+                        SummonAlignmentMode.Celestial);
                     ConfigureOne(fiendish, native, unit, variant,
                         Require<BlueprintBuff>(bySymbol,
                             "KMG.Summoning.Template.Fiendish." + band),
-                        fiendishSmite, false, SummonAlignmentMode.Fiendish);
+                        fiendishSmite, replacedNativeTemplateBuffs, false,
+                        SummonAlignmentMode.Fiendish);
                     ConfigureTemplateChoice(ability, native, variant,
                         celestial, fiendish);
                 }
                 else ConfigureOne(ability, native, unit, variant, null, null,
-                    false, family == SummonFamily.NaturesAlly ?
+                    Array.Empty<BlueprintBuff>(), false,
+                    family == SummonFamily.NaturesAlly ?
                         SummonAlignmentMode.Caster : (SummonAlignmentMode?)null);
             }
         }
@@ -136,7 +148,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureOne(BlueprintAbility target,
             BlueprintAbility native, BlueprintUnit unit, SummonVariantSpec variant,
-            BlueprintBuff templateBuff, BlueprintBuff smiteBuff, bool celestial,
+            BlueprintBuff templateBuff, BlueprintBuff smiteBuff,
+            BlueprintBuff[] replacedNativeTemplateBuffs, bool celestial,
             SummonAlignmentMode? alignmentMode)
         {
             CopyFields(native, target);
@@ -150,8 +163,10 @@ namespace KingmakerGunslinger.Blueprints
                 "Expected at least one native spawn action for " + variant.StableKey + ".");
             if (templateBuff != null)
             {
-                AppendTemplateBuff(target.ComponentsArray, templateBuff);
-                AppendTemplateBuff(target.ComponentsArray, smiteBuff);
+                AppendTemplateBuff(target.ComponentsArray, templateBuff,
+                    replacedNativeTemplateBuffs);
+                AppendTemplateBuff(target.ComponentsArray, smiteBuff,
+                    replacedNativeTemplateBuffs);
                 var alignment = ScriptableObject.CreateInstance<AbilityCasterAlignment>();
                 alignment.Alignment = celestial ? (AlignmentMaskType)63 :
                     (AlignmentMaskType)504;
@@ -213,12 +228,14 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void AppendTemplateBuff(
-            IEnumerable<BlueprintComponent> components, BlueprintBuff buff)
+            IEnumerable<BlueprintComponent> components, BlueprintBuff buff,
+            BlueprintBuff[] replacedNativeTemplateBuffs)
         {
             var seen = new HashSet<object>(ReferenceComparer.Instance);
             int count = 0;
             foreach (BlueprintComponent component in components)
-                AppendTemplateBuff(component, buff, seen, ref count);
+                AppendTemplateBuff(component, buff, replacedNativeTemplateBuffs,
+                    seen, ref count);
             if (count < 1) throw new InvalidOperationException(
                 "A templated summon requires at least one spawn branch.");
         }
@@ -244,9 +261,12 @@ namespace KingmakerGunslinger.Blueprints
             if (spawn != null)
             {
                 if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                ContextActionSetSummonAlignment alignment = ScriptableObject
+                    .CreateInstance<ContextActionSetSummonAlignment>();
+                alignment.Mode = mode;
                 spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
                     Array.Empty<GameAction>()).Concat(new GameAction[] {
-                        new ContextActionSetSummonAlignment { Mode = mode }
+                        alignment
                     }).ToArray();
                 count++;
             }
@@ -262,7 +282,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void AppendTemplateBuff(object value, BlueprintBuff buff,
-            ISet<object> seen, ref int count)
+            BlueprintBuff[] replacedNativeTemplateBuffs, ISet<object> seen,
+            ref int count)
         {
             if (value == null || value is string || value.GetType().IsValueType ||
                 value is BlueprintScriptableObject || !seen.Add(value)) return;
@@ -270,9 +291,11 @@ namespace KingmakerGunslinger.Blueprints
             if (spawn != null)
             {
                 if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
-                var apply = new ContextActionApplyBuff {
-                    Buff = buff, Permanent = true, IsNotDispelable = true,
-                    AsChild = true };
+                ContextActionApplySummonBuff apply = ScriptableObject
+                    .CreateInstance<ContextActionApplySummonBuff>();
+                apply.Buff = buff;
+                apply.ReplacedNativeTemplateBuffs =
+                    replacedNativeTemplateBuffs ?? Array.Empty<BlueprintBuff>();
                 spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
                     Array.Empty<GameAction>()).Concat(new GameAction[] { apply }).ToArray();
                 count++;
@@ -283,8 +306,10 @@ namespace KingmakerGunslinger.Blueprints
                 IEnumerable sequence = child as IEnumerable;
                 if (sequence != null && !(child is string))
                     foreach (object item in sequence)
-                        AppendTemplateBuff(item, buff, seen, ref count);
-                else AppendTemplateBuff(child, buff, seen, ref count);
+                        AppendTemplateBuff(item, buff,
+                            replacedNativeTemplateBuffs, seen, ref count);
+                else AppendTemplateBuff(child, buff,
+                    replacedNativeTemplateBuffs, seen, ref count);
             }
         }
 

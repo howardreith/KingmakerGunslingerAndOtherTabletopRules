@@ -56,6 +56,10 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.ShadowDemon.CombatTraits";
         private const string SalamanderUnitSymbol =
             "KMG.Summoning.Unit.Salamander";
+        private const string SalamanderSpearTypeSymbol =
+            "KMG.Summoning.Special.Salamander.SpearType";
+        private const string SalamanderSpearSymbol =
+            "KMG.Summoning.Special.Salamander.Spear";
         private const string SalamanderTailSymbol =
             "KMG.Summoning.Special.Salamander.Tail";
         private const string SalamanderCombatTraitsSymbol =
@@ -81,6 +85,8 @@ namespace KingmakerGunslinger.Blueprints
         private const string BebelithDismantledArmorSymbol =
             "KMG.Summoning.Special.Bebelith.DismantledArmor";
         private const string PixieUnitSymbol = "KMG.Summoning.Unit.Pixie";
+        private const string PixieSleepBowTypeSymbol =
+            "KMG.Summoning.Special.Pixie.SleepBowType";
         private const string PixieSleepBowSymbol =
             "KMG.Summoning.Special.Pixie.SleepBow";
         private const string PixieDanceSymbol =
@@ -183,16 +189,25 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureShadowDemonCombatTraits(shadowTraits);
             ConfigureShadowDemon(library, Require<BlueprintUnit>(bySymbol,
                 ShadowDemonUnitSymbol), shadowTraits, extraplanar);
+            BlueprintWeaponType salamanderSpearType = Require<
+                BlueprintWeaponType>(bySymbol, SalamanderSpearTypeSymbol);
+            BlueprintItemWeapon salamanderSpear = Require<BlueprintItemWeapon>(
+                bySymbol, SalamanderSpearSymbol);
             BlueprintItemWeapon salamanderTail = Require<BlueprintItemWeapon>(
                 bySymbol, SalamanderTailSymbol);
             BlueprintBuff salamanderTraits = Require<BlueprintBuff>(bySymbol,
                 SalamanderCombatTraitsSymbol);
+            ConfigureSummonWeaponType(library, StandardSpearGuid,
+                "standard 1d8 spear", SalamanderSpearTypeSymbol,
+                salamanderSpearType);
+            ConfigureSalamanderSpear(library, salamanderSpear,
+                salamanderSpearType);
             ConfigureSalamanderTail(library, salamanderTail);
             ConfigureSalamanderCombatTraits(library, salamanderTraits,
                 salamanderTail);
             ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
-                SalamanderUnitSymbol), salamanderTail, salamanderTraits,
-                extraplanar);
+                SalamanderUnitSymbol), salamanderSpear, salamanderTail,
+                salamanderTraits, extraplanar);
             BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
                 SuccubusDominationSymbol);
             BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
@@ -223,6 +238,8 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBebelith(library, Require<BlueprintUnit>(bySymbol,
                 BebelithUnitSymbol), bebelithClaw, bebelithTraits,
                 extraplanar);
+            BlueprintWeaponType pixieSleepBowType = Require<BlueprintWeaponType>(
+                bySymbol, PixieSleepBowTypeSymbol);
             BlueprintItemWeapon pixieSleepBow = Require<BlueprintItemWeapon>(
                 bySymbol, PixieSleepBowSymbol);
             BlueprintAbilityResource pixieDanceResource = Require<
@@ -239,7 +256,11 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, PixieDanceAiSymbol);
             BlueprintBrain pixieBrain = Require<BlueprintBrain>(bySymbol,
                 PixieBrainSymbol);
-            ConfigurePixieSleepBow(library, pixieSleepBow);
+            ConfigureSummonWeaponType(library, StandardLongbowGuid,
+                "standard longbow arrow rig", PixieSleepBowTypeSymbol,
+                pixieSleepBowType);
+            ConfigurePixieSleepBow(library, pixieSleepBow,
+                pixieSleepBowType);
             ConfigureResource(pixieDanceResource, "Irresistible Dance",
                 ExpandedSummoningSpecialProfiles.PixieDanceUses);
             ConfigureResource(pixieSleepResource, "Sleep Arrows",
@@ -348,17 +369,18 @@ namespace KingmakerGunslinger.Blueprints
         private static ContextActionDealDamage EnergyDamage(
             DamageEnergyType energy, int diceCount)
         {
-            return new ContextActionDealDamage {
-                DamageType = new DamageTypeDescription {
+            ContextActionDealDamage result = ScriptableObject.CreateInstance<
+                ContextActionDealDamage>();
+            result.DamageType = new DamageTypeDescription {
                     Type = DamageType.Energy,
                     Energy = energy
-                },
-                Value = new ContextDiceValue {
+                };
+            result.Value = new ContextDiceValue {
                     DiceType = DiceType.D6,
                     DiceCountValue = Simple(diceCount),
                     BonusValue = Simple(0)
-                }
-            };
+                };
+            return result;
         }
 
         private static void ConfigureInvisibleStalker(
@@ -498,6 +520,26 @@ namespace KingmakerGunslinger.Blueprints
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
 
+        private static void ConfigureSalamanderSpear(
+            LibraryScriptableObject library, BlueprintItemWeapon spear,
+            BlueprintWeaponType spearType)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, StandardSpearGuid,
+                    "standard 1d8 spear");
+            CopyFields(native, spear);
+            spear.name = InternalName(SalamanderSpearSymbol);
+            spear.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(spear, "m_Type", spearType);
+            spear.IsNonRemovable = true;
+            SetField(spear, "m_Cost", 0);
+            SetField(spear, "m_Weight", 0f);
+            SetField(spear, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
         private static void ConfigureSalamanderCombatTraits(
             LibraryScriptableObject library, BlueprintBuff buff,
             BlueprintItemWeapon tail)
@@ -545,12 +587,10 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureSalamander(LibraryScriptableObject library,
-            BlueprintUnit unit, BlueprintItemWeapon tail,
+            BlueprintUnit unit, BlueprintItemWeapon spear,
+            BlueprintItemWeapon tail,
             BlueprintBuff combatTraits, BlueprintFeature extraplanar)
         {
-            BlueprintItemWeapon spear = BlueprintLibraryLookup.RequireExact<
-                BlueprintItemWeapon>(library, StandardSpearGuid,
-                    "standard 1d8 spear");
             unit.ComponentsArray = new BlueprintComponent[] {
                 OutsiderLevels(library,
                     ExpandedSummoningSpecialProfiles.SalamanderHitDice)
@@ -649,22 +689,14 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, VerminTypeGuid, "vermin type"),
                 Feature(library, UndeadTypeGuid, "undead type")
             };
-            var apply = new ContextActionApplyBuff {
-                Buff = domination,
-                DurationValue = new ContextDurationValue {
-                    Rate = DurationRate.Rounds,
-                    BonusValue = ExpandedSummoningSpecialProfiles
-                        .SuccubusDominateRounds
-                },
-                IsNotDispelable = false
-            };
-            var saved = new ContextActionConditionalSaved {
-                Failed = new ActionList { Actions = new GameAction[] { apply } },
-                Succeed = new ActionList { Actions = Array.Empty<GameAction>() }
-            };
+            ContextActionSuccubusDominate apply = ScriptableObject.CreateInstance<
+                ContextActionSuccubusDominate>();
+            apply.Domination = domination;
+            // ContextActionSuccubusDominate applies the bounded
+            // SuccubusDominateRounds duration after its native Will save.
             var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
-            effect.SavingThrowType = SavingThrowType.Will;
-            effect.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            effect.SavingThrowType = SavingThrowType.Unknown;
+            effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
             ability.ComponentsArray = new BlueprintComponent[] {
                 spell, descriptor, parameters, targets, effect
             };
@@ -902,7 +934,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigurePixieSleepBow(
-            LibraryScriptableObject library, BlueprintItemWeapon bow)
+            LibraryScriptableObject library, BlueprintItemWeapon bow,
+            BlueprintWeaponType bowType)
         {
             BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, StandardLongbowGuid,
@@ -912,9 +945,30 @@ namespace KingmakerGunslinger.Blueprints
             bow.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(bow, "m_Type", bowType);
             SetField(bow, "m_OverrideDamageDice", true);
             SetField(bow, "m_DamageDice", new DiceFormula(0, DiceType.Zero));
             SetField(bow, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+            bow.IsNonRemovable = true;
+            SetField(bow, "m_Cost", 0);
+            SetField(bow, "m_Weight", 0f);
+        }
+
+        private static void ConfigureSummonWeaponType(
+            LibraryScriptableObject library, string sourceWeaponGuid,
+            string sourceRole, string symbol, BlueprintWeaponType result)
+        {
+            BlueprintItemWeapon source = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, sourceWeaponGuid, sourceRole);
+            CopyFields(source.Type, result);
+            result.name = InternalName(symbol);
+            result.ComponentsArray = (source.Type.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(result, "m_IsNatural", true);
+            SetField(result, "m_Weight", 0f);
+            SetField(result, "m_Enchantments", Array.Empty<
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
 
@@ -1022,34 +1076,34 @@ namespace KingmakerGunslinger.Blueprints
             parameters.ReplaceSpellLevel = true;
             parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles
                 .PixieDanceSpellLevel);
-            var failedApply = new ContextActionApplyBuff {
-                Buff = danceState,
-                DurationValue = new ContextDurationValue {
+            ContextActionApplyBuff failedApply = ScriptableObject.CreateInstance<
+                ContextActionApplyBuff>();
+            failedApply.Buff = danceState;
+            failedApply.DurationValue = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
                     DiceType = DiceType.D4,
                     DiceCountValue = Simple(1),
                     BonusValue = Simple(1)
-                },
-                IsFromSpell = false,
-                IsNotDispelable = false
-            };
-            var succeededApply = new ContextActionApplyBuff {
-                Buff = danceState,
-                DurationValue = new ContextDurationValue {
+                };
+            failedApply.IsFromSpell = false;
+            failedApply.IsNotDispelable = false;
+            ContextActionApplyBuff succeededApply = ScriptableObject.CreateInstance<
+                ContextActionApplyBuff>();
+            succeededApply.Buff = danceState;
+            succeededApply.DurationValue = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
                     DiceType = DiceType.Zero,
                     DiceCountValue = Simple(0),
                     BonusValue = Simple(1)
-                },
-                IsFromSpell = false,
-                IsNotDispelable = false
-            };
-            var saved = new ContextActionConditionalSaved {
-                Failed = new ActionList { Actions = new GameAction[] {
-                    failedApply } },
-                Succeed = new ActionList { Actions = new GameAction[] {
-                    succeededApply } }
-            };
+                };
+            succeededApply.IsFromSpell = false;
+            succeededApply.IsNotDispelable = false;
+            ContextActionConditionalSaved saved = ScriptableObject.CreateInstance<
+                ContextActionConditionalSaved>();
+            saved.Failed = new ActionList { Actions = new GameAction[] {
+                failedApply } };
+            saved.Succeed = new ActionList { Actions = new GameAction[] {
+                succeededApply } };
             var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             effect.SavingThrowType = SavingThrowType.Will;
             effect.Actions = new ActionList { Actions = new GameAction[] { saved } };

@@ -141,6 +141,8 @@ def planned():
         ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),
         ("KMG.Summoning.Special.ShadowDemon.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Salamander.SpearType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Special.Salamander.Spear", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Salamander.Tail", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Salamander.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Succubus.Dominate", "BlueprintAbility"),
@@ -151,6 +153,7 @@ def planned():
         ("KMG.Summoning.Special.Bebelith.Claw", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Bebelith.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Bebelith.DismantledArmor", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Pixie.SleepBowType", "BlueprintWeaponType"),
         ("KMG.Summoning.Special.Pixie.SleepBow", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDance", "BlueprintAbility"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDanceState", "BlueprintBuff"),
@@ -167,7 +170,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1152 or len({symbol for symbol, _ in rows}) != 1152:
+    if len(rows) != 1155 or len({symbol for symbol, _ in rows}) != 1155:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
