@@ -2,22 +2,20 @@
 
 ## Active Expanded Summoning mission (2026-08-11)
 
-- Current release state (2026-08-12): mission complete. Implementation and every
-  native runtime gate are complete, with the strengthened structural and
-  153-command mechanical repetitions passing on pushed source
+- Current release state (2026-08-12): behavior and native runtime qualification
+  are complete; a literal definition-of-done evidence audit is active before
+  the final artifact/hash freeze and PR refresh. The strengthened structural and
+  153-command mechanical repetitions passed on pushed source
   `5205805eab3fe0115d6888c53bce73c80474d1b7`. Final structural, 153-command
   mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
-  states, and all eight required compatibility launches PASS. The subsequent
-  documentation-bearing deterministic package/hash freeze, final evidence
-  publication, and draft-PR gates are also complete:
-  deterministic package SHA-256 is
-  `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`
-  and draft PR
+  states, and all eight required compatibility launches PASS. Draft PR
   [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
-  is open against `master`. Artifact source is
-  `a6bdfccc4c814ca26769d71816db2f1069702f48`; the only next human action is
-  PR review plus the residual aesthetic visual checklist. This paragraph
-  supersedes older checkpoint entries below.
+  is open against `master`. The previous artifact source was
+  `a6bdfccc4c814ca26769d71816db2f1069702f48`; its hashes remain valid for that
+  source but will be refreshed after the audit documentation is committed.
+  The requirement-to-evidence map is
+  `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`. This paragraph supersedes
+  older checkpoint entries below.
 - Current counts: 66 SM entries, 57 SNA entries, 67 unique units, 681
   placements, 1,155 Expanded Summoning identities, 1,409 active repository
   identities plus one reserved, settings schema 3, and `1009/1009` domain

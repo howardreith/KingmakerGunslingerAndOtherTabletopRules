@@ -1,6 +1,7 @@
 # Expanded Summoning implementation report
 
-Status: complete. The completion audit added a final-live
+Status: behavior and native qualification complete; final artifact/hash
+refreeze in progress. The completion audit added a final-live
 assertion tying all 681 roots and 364 template executions to their native spell,
 Acadamae, metamagic, material-data, and action-bar contracts. That assertion and
 the complete mechanical matrix passed on pushed source
@@ -74,6 +75,24 @@ release state.
   and protected `KMG_AUTOMATION_BASELINE` SHA-256
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
   The protected baseline was never selected or modified.
+
+### Completion-audit clarifications
+
+- The final-live observer explicitly searched normalized `Sacred Summons` and
+  `SacredSummons` names and found zero candidates in the installed Call of the
+  Wild/high-risk graph. Sacred Summons was therefore not structurally available;
+  KMG correctly made no guessed optional mutation. Augment Summoning and CotW
+  Superior Summoning were both discovered and passed their actual mechanical
+  cases.
+- All 153 cast-matrix summons carried Owlcat's exact `SummonedUnitBuff` with
+  caster context and bounded CL20 duration. Enabled and disabled persistence
+  proved fresh-process identity, context, remaining duration, area/control,
+  explicit native lifecycle removal, destruction/detachment, and zero live
+  references. KMG adds no area-transition, rest, caster-death, RTwP, or
+  turn-based lifecycle branch; those boundaries remain the exact native summon
+  mechanism rather than a parallel approximation.
+- The literal section-by-section evidence mapping is checked in at
+  `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`.
 
 ### Conservative adaptations and omissions
 

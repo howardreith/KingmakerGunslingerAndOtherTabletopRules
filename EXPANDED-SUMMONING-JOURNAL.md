@@ -1195,3 +1195,21 @@
 - Completion remains intentionally open while the final requirement-to-evidence
   pass confirms explicit optional-feat and lifecycle-edge coverage. This audit
   corrects the earlier status estimate without discarding any passing evidence.
+
+## 2026-08-12 - Requirement-to-evidence audit complete
+
+- Added `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`, mapping all 22
+  mission sections to source, domain, native runtime, persistence, module,
+  profile, build, publication, and restoration evidence.
+- The final-live observer's normalized fact search proves no Sacred Summons
+  structure exists in the installed supported graph. This satisfies the
+  authorized optional-surface fail-closed path; Augment and Superior remain
+  directly exercised.
+- Lifecycle review confirmed 153/153 exact native `SummonedUnitBuff` instances,
+  CL20 duration, and enabled/disabled fresh-process context/control/expiration
+  cleanup. No KMG-specific rest, area-transition, caster-death, RTwP, or
+  turn-based lifecycle path exists, so those boundaries retain exact Owlcat
+  semantics.
+- No implementation correction was required. Remaining automated work is the
+  final deterministic artifact/hash freeze, evidence update, PR refresh, and
+  clean local/origin verification.
