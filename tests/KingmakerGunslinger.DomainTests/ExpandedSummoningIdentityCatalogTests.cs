@@ -598,6 +598,12 @@ namespace KingmakerGunslinger.DomainTests
                 "result.FxOnRemove = new Kingmaker.ResourceLinks.PrefabLink()" })
                 Assertions.True(source.Contains(token),
                     "Unit component isolation contract is missing: " + token);
+            string special = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
+            Assertions.True(special.Contains(
+                    "UnitAnimationActionCastSpell.CastAnimationStyle.Immediate"),
+                "Lantern Archon must use the native animationless ray fallback.");
             Assertions.False(source.Contains("!IsForbiddenComponent(component.GetType().Name)).ToArray()"),
                 "Retained donor components must not remain shared instances.");
             string runtime = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
@@ -630,6 +636,15 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-succubus",
                 "expanded-summoning-bebelith",
                 "expanded-summoning-pixie",
+                "expanded-summoning-visual-instances",
+                "expanded-summoning-renderable-geometry",
+                "expanded-summoning-bounded-footprints",
+                "expanded-summoning-selection-navigation",
+                "expanded-summoning-locomotion-events",
+                "expanded-summoning-attack-animations",
+                "expanded-summoning-hit-and-death",
+                "expanded-summoning-projectile-origins",
+                "expanded-summoning-view-cleanup",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);

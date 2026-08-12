@@ -48,6 +48,8 @@ using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Spells.ShieldOther;
 using KingmakerGunslinger.Summoning;
 using Kingmaker.View.Animation;
+using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
@@ -357,6 +359,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -972,6 +975,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -994,6 +998,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1255,6 +1260,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableExpandedSummoning)
                 {
                     Complete(RunDisposableExpandedSummoning());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningVisualContracts)
+                {
+                    Complete(RunDisposableExpandedSummoningVisualContracts());
                 }
                 else
                 {
@@ -1608,6 +1618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||
@@ -8086,6 +8097,537 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!_expandedSummoningRuleCaptureActive || __instance == null ||
                 __instance.SummonedUnit == null) return;
             ExpandedSummoningRuleCapture.Add(__instance.SummonedUnit);
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoningVisualContracts()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            SummonVariantSpec[] variants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly))
+                .Where(value => value.Multiplicity == SummonMultiplicity.One)
+                .GroupBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .Select(group => group.OrderBy(value => value.Family)
+                    .ThenBy(value => value.ParentTier).First())
+                .OrderBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .ToArray();
+
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            object sceneEntities = null;
+            int instantiated = 0, renderable = 0, bounded = 0,
+                selectionReady = 0, locomotion = 0, attack = 0, hit = 0,
+                death = 0, ranged = 0, rangedReady = 0, detachedViews = 0;
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            var diagnostics = new List<string>();
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            try
+            {
+                if (variants.Length != 67)
+                    throw new InvalidOperationException(
+                        "Visual matrix did not resolve exactly 67 unique creatures.");
+                if (summonRuleMethod == null) throw new MissingMethodException(
+                    typeof(RuleSummonUnit).FullName, "OnTrigger");
+                MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                    BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+
+                object[] anchors = partyBefore.OfType<UnitEntityData>()
+                    .Where(value => value.HoldingState != null).Cast<object>()
+                    .ToArray();
+                UnitEntityData areaAnchor = anchors.OfType<UnitEntityData>()
+                    .FirstOrDefault();
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no party unit in an exact area state.");
+                scene = areaAnchor.HoldingState;
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name =
+                    "KMG_Runtime_ExpandedSummoning_VisualCaster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(casterBlueprint,
+                    areaAnchor.Position, Quaternion.identity, scene);
+                if (caster == null || caster.View == null || caster.View.Data == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not attach the visual caster.");
+                sceneEntities = scene.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+
+                foreach (SummonVariantSpec variant in variants)
+                {
+                    stage = "visual-" + variant.Creature.Key;
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    BlueprintUnit expectedUnit = blueprints.OfType<BlueprintUnit>()
+                        .Single(value => value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                variant.Creature)));
+                    object[] beforeCast = SnapshotReferences(sceneEntities);
+                    ExpandedSummoningRuleCapture.Clear();
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                            variant.ParentTier);
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+
+                    UnitEntityData[] spawned = ExpandedSummoningRuleCapture
+                        .ToArray();
+                    if (spawned.Length != 1 || !ReferenceEquals(
+                        spawned[0].Blueprint, expectedUnit))
+                        throw new InvalidOperationException(
+                            "Visual cast did not produce one exact intended unit.");
+                    UnitEntityData unit = spawned[0];
+                    var view = unit.View;
+                    bool attached = view != null && view.Data != null &&
+                        ReferenceEquals(view.Data, unit) && view.gameObject != null &&
+                        view.gameObject.activeInHierarchy;
+                    if (attached) instantiated++;
+
+                    Renderer[] renderers = view == null
+                        ? Array.Empty<Renderer>()
+                        : view.GetComponentsInChildren<Renderer>(true)
+                            .Where(value => value != null).ToArray();
+                    Bounds combined = new Bounds();
+                    bool hasBounds = false;
+                    foreach (Renderer renderer in renderers)
+                    {
+                        if (!hasBounds)
+                        {
+                            combined = renderer.bounds;
+                            hasBounds = true;
+                        }
+                        else combined.Encapsulate(renderer.bounds);
+                    }
+                    bool hasMaterial = renderers.Any(value =>
+                        value.sharedMaterials != null &&
+                        value.sharedMaterials.Any(material => material != null));
+                    bool hasGeometry = hasBounds &&
+                        combined.size.sqrMagnitude > 0.0001f;
+                    if (renderers.Length > 0 && hasMaterial && hasGeometry)
+                        renderable++;
+
+                    Vector3 scale = view == null ? Vector3.zero :
+                        view.transform.lossyScale;
+                    float maximumBound = hasBounds ? Mathf.Max(combined.size.x,
+                        Mathf.Max(combined.size.y, combined.size.z)) : -1f;
+                    bool finiteBounded = attached && unit.Corpulence > 0.05f &&
+                        unit.Corpulence <= 10f && scale.x > 0.01f &&
+                        scale.y > 0.01f && scale.z > 0.01f && scale.x <= 10f &&
+                        scale.y <= 10f && scale.z <= 10f && maximumBound > 0.01f &&
+                        maximumBound <= 25f && renderers.Length <= 256;
+                    if (finiteBounded) bounded++;
+
+                    IEnumerable colliderSequence = view == null ? null :
+                        ReadExactMember(view, "Colliders") as IEnumerable;
+                    int colliderCount = colliderSequence == null ? 0 :
+                        colliderSequence.Cast<object>().Count(value => value != null);
+                    bool selectable = colliderCount > 0 && view.CenterTorso != null &&
+                        view.MovementAgent != null && view.IsInGame;
+                    if (selectable) selectionReady++;
+
+                    UnitAnimationManager manager = view == null ? null :
+                        view.AnimationManager;
+                    string locomotionDetail;
+                    bool locomotionReady = ExerciseExpandedSummoningLocomotion(
+                        unit, view, manager, out locomotionDetail);
+                    if (locomotionReady) locomotion++;
+                    string attackDetail;
+                    bool attackReady =
+                        ExerciseExpandedSummoningCombatAnimation(manager,
+                            out attackDetail);
+                    if (!attackReady && variant.Creature.Key ==
+                        "lantern-archon")
+                    {
+                        bool rayReady = ExpandedSummoningLanternRayVisualExact(
+                            blueprints, view);
+                        attackDetail += ";lantern-ray-fallback=" + rayReady;
+                        attackReady = rayReady;
+                    }
+                    if (attackReady) attack++;
+
+                    int hpBefore = unit.HPLeft;
+                    Rulebook.Trigger(new RuleDealDamage(caster, unit,
+                        new DamageBundle(new DirectDamage(
+                            new DiceFormula(0, DiceType.D6), 1))) {
+                        DisablePrecisionDamage = true,
+                        IgnoreDamageReduction = true
+                    });
+                    string hitDetail;
+                    bool hitAnimation = ExerciseExpandedSummoningAnimation(
+                        manager, UnitAnimationType.Hit, out hitDetail);
+                    bool hitCallback = InvokeExpandedSummoningViewCallback(
+                        view, "HandleDamage", out string hitCallbackDetail);
+                    bool hitReady = hitCallback;
+                    if (hitReady) hit++;
+
+                    ItemEntityWeapon weapon = unit.Body.PrimaryHand.MaybeWeapon;
+                    bool isRanged = weapon != null && weapon.Blueprint.IsRanged;
+                    bool projectileReady = true;
+                    int projectileCount = 0;
+                    if (isRanged)
+                    {
+                        ranged++;
+                        WeaponVisualParameters visual =
+                            weapon.Blueprint.VisualParameters;
+                        projectileCount = visual == null ||
+                            visual.Projectiles == null ? 0 :
+                            visual.Projectiles.Count(value => value != null);
+                        projectileReady = projectileCount > 0 &&
+                            view.CenterTorso != null;
+                        if (projectileReady) rangedReady++;
+                    }
+
+                    unit.Descriptor.State.Immortality.ReleaseAll();
+                    unit.Descriptor.Damage = Math.Max(unit.MaxHP + 1,
+                        unit.Descriptor.Damage + 1);
+                    bool deathCallback = InvokeExpandedSummoningViewCallback(
+                        view, "HandleDeath", out string deathCallbackDetail);
+                    if (manager != null) manager.Tick();
+                    bool deathState = unit.HPLeft <= 0 ||
+                        unit.Descriptor.State.IsDead || unit.Descriptor.State
+                            .MarkedForDeath || unit.Descriptor.State.ForceKill;
+                    bool deathReady = deathCallback && deathState;
+                    if (deathReady) death++;
+
+                    diagnostics.Add(variant.Creature.Key + ":view=" + attached +
+                        ";renderers=" + renderers.Length + ";bounds=" +
+                        maximumBound.ToString("R") + ";scale=" +
+                        scale.ToString("R") + ";corpulence=" +
+                        unit.Corpulence.ToString("R") + ";colliders=" +
+                        colliderCount + ";loco=" + locomotionDetail +
+                        ";attack=" + attackDetail + ";hit=" + hitDetail +
+                        ";hitCallback=" + hitCallbackDetail + ";hp=" +
+                        hpBefore + "->" + unit.HPLeft +
+                        ";ranged=" + isRanged + ";projectiles=" +
+                        projectileCount + ";deathCallback=" +
+                        deathCallbackDetail + ";deathState=" + deathState +
+                        ";actions=" + ExpandedSummoningAnimationTypes(manager));
+
+                    unit.Dispose();
+                    bool detached = !ContainsReference(sceneEntities, unit) &&
+                        (view == null || view.Data == null || !view.IsInGame);
+                    if (detached) detachedViews++;
+                    if (!SameReferences(beforeCast,
+                        SnapshotReferences(sceneEntities)))
+                        throw new InvalidOperationException(
+                            "Visual unit cleanup did not restore the exact area snapshot.");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Expanded Summoning visual contracts failed at stage " +
+                    stage + ".", exception);
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                if (summonRuleMethod != null)
+                    _context.Harmony.Unpatch(summonRuleMethod,
+                        HarmonyPatchType.All, _context.ModId);
+                IEnumerable<UnitEntityData> localUnits = sceneEntities == null
+                    ? Enumerable.Empty<UnitEntityData>()
+                    : SnapshotReferences(sceneEntities).OfType<UnitEntityData>();
+                foreach (UnitEntityData unit in localUnits.Concat(
+                    SnapshotReferences(allUnits).OfType<UnitEntityData>())
+                    .Where(value => !unitsBefore.Any(prior =>
+                        ReferenceEquals(prior, value))).Distinct().ToArray())
+                    unit.Dispose();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    (caster == null || !ContainsReference(allUnits, caster));
+            }
+
+            string observed = "unique=" + variants.Length + ";instantiated=" +
+                instantiated + ";renderable=" + renderable + ";bounded=" +
+                bounded + ";selection=" + selectionReady + ";locomotion=" +
+                locomotion + ";attack=" + attack + ";hit=" + hit +
+                ";death=" + death + ";ranged=" + ranged + "/" + rangedReady +
+                ";detachedViews=" + detachedViews + ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-visual-instances", "67/67",
+                    instantiated + "/" + variants.Length,
+                    variants.Length == 67 && instantiated == 67,
+                    "actual native summon views attached to exact unit data"),
+                Assertion("expanded-summoning-renderable-geometry", "67/67",
+                    renderable + "/" + variants.Length, renderable == 67,
+                    "runtime Renderer materials and nonzero combined bounds"),
+                Assertion("expanded-summoning-bounded-footprints", "67/67",
+                    bounded + "/" + variants.Length, bounded == 67,
+                    "corpulence, world scale, renderer bounds, and renderer-count limits"),
+                Assertion("expanded-summoning-selection-navigation", "67/67",
+                    selectionReady + "/" + variants.Length,
+                    selectionReady == 67,
+                    "selection colliders, torso origin, movement agent, and exact area membership"),
+                Assertion("expanded-summoning-locomotion-events", "67/67",
+                    locomotion + "/" + variants.Length, locomotion == 67,
+                    "native movement-start/interruption and locomotion clip path"),
+                Assertion("expanded-summoning-attack-animations", "67/67",
+                    attack + "/" + variants.Length, attack == 67,
+                    "native main-hand or creature-special action handle execution"),
+                Assertion("expanded-summoning-hit-and-death", "67/67 each",
+                    "hit=" + hit + ";death=" + death,
+                    hit == 67 && death == 67,
+                    "native damage plus exact UnitEntityView hit/death callbacks"),
+                Assertion("expanded-summoning-projectile-origins",
+                    "every detected ranged weapon has projectile and torso origin",
+                    rangedReady + "/" + ranged,
+                    ranged > 0 && rangedReady == ranged,
+                    "live primary weapon visual parameters and CenterTorso fallback"),
+                Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
+                    "detached=" + detachedViews + ";cleaned=" + cleaned,
+                    detachedViews == 67 && cleaned,
+                    "disposed unit/view detachment and exact party/global snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            result.Diagnostics.Add(observed);
+            foreach (string diagnostic in diagnostics)
+                result.Diagnostics.Add(diagnostic);
+            return result;
+        }
+
+        private static void ExecuteExpandedSummoningRuntimeAbility(
+            UnitEntityData caster, BlueprintAbility ability, int spellLevel)
+        {
+            Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
+            if (granted == null) throw new InvalidOperationException(
+                "The exact KMG execution ability was not granted.");
+            granted.OverrideParams = new AbilityParams {
+                CasterLevel = 20,
+                SpellLevel = spellLevel
+            };
+            var data = new AbilityData(granted);
+            UnitUseAbility command;
+            var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutsceneParameters.Data)
+                command = new UnitUseAbility(data,
+                    new TargetWrapper(caster.Position));
+            if (!command.Cutscene || !data.IsAvailable || !command.CanStart)
+                throw new InvalidOperationException(
+                    "The native visual-contract summon command was unavailable.");
+            command.IgnoreCooldown(TimeSpan.Zero);
+            caster.Commands.Run(command);
+            command.Start();
+            if (!command.IsRunning) throw new InvalidOperationException(
+                "The native visual-contract summon command did not start.");
+            if (command.Animation != null) command.Animation.IsActed = true;
+            command.Tick();
+            if (!string.Equals(command.Result.ToString(), "Success",
+                StringComparison.Ordinal) || command.ExecutionProcess == null)
+                throw new InvalidOperationException(
+                    "The native visual-contract summon action did not execute.");
+            for (int tick = 0; tick < 5000 &&
+                !command.ExecutionProcess.IsEnded; tick++)
+                command.ExecutionProcess.Tick();
+            if (!command.ExecutionProcess.IsEnded)
+                throw new InvalidOperationException(
+                    "The native visual-contract summon process did not end.");
+            if (command.Animation != null)
+                FinishExpandedSummoningAnimation(command.Animation);
+            if (!command.IsFinished) command.Tick();
+            if (!command.IsFinished) throw new InvalidOperationException(
+                "The visual-contract summon command did not finish.");
+        }
+
+        private static bool ExerciseExpandedSummoningLocomotion(
+            UnitEntityData unit, Kingmaker.View.UnitEntityView view,
+            UnitAnimationManager manager, out string detail)
+        {
+            try
+            {
+                if (unit == null || view == null || manager == null)
+                {
+                    detail = "missing-runtime-surface";
+                    return false;
+                }
+                var action = manager.GetAction(UnitAnimationType.LocoMotion);
+                int clips = action == null ? 0 : action.Clips.Count(value =>
+                    value != null);
+                MethodInfo started = view.GetType().GetMethod(
+                    "OnMovementStarted", BindingFlags.Instance |
+                    BindingFlags.NonPublic, null,
+                    new[] { typeof(Vector3), typeof(bool) }, null);
+                MethodInfo interrupted = view.GetType().GetMethod(
+                    "OnMovementInterrupted", BindingFlags.Instance |
+                    BindingFlags.NonPublic, null,
+                    new[] { typeof(Vector3) }, null);
+                if (started == null || interrupted == null)
+                {
+                    detail = "missing-exact-movement-callbacks";
+                    return false;
+                }
+                started.Invoke(view, new object[] {
+                    unit.Position + Vector3.forward, false });
+                manager.Tick();
+                interrupted.Invoke(view, new object[] { unit.Position });
+                manager.Tick();
+                detail = "clips=" + clips + ";agent=" +
+                    (view.MovementAgent != null);
+                return action != null && view.MovementAgent != null;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" + exception.Message;
+                return false;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningAnimation(
+            UnitAnimationManager manager, UnitAnimationType type,
+            out string detail)
+        {
+            try
+            {
+                if (manager == null)
+                {
+                    detail = "missing-manager";
+                    return false;
+                }
+                var action = manager.GetAction(type);
+                int clips = action == null ? 0 : action.Clips.Count(value =>
+                    value != null);
+                UnitAnimationActionHandle handle = manager.CreateHandle(type,
+                    false);
+                if (handle == null)
+                {
+                    detail = "clips=" + clips + ";missing-handle";
+                    return false;
+                }
+                manager.Execute(handle);
+                manager.Tick();
+                bool started = handle.IsStarted;
+                handle.IsActed = true;
+                FinishExpandedSummoningAnimation(handle);
+                manager.Tick();
+                detail = "clips=" + clips + ";started=" + started +
+                    ";finished=" + handle.IsFinished;
+                return clips > 0 && started && handle.IsFinished;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" + exception.Message;
+                return false;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningCombatAnimation(
+            UnitAnimationManager manager, out string detail)
+        {
+            string mainDetail;
+            if (ExerciseExpandedSummoningAnimation(manager,
+                UnitAnimationType.MainHandAttack, out mainDetail))
+            {
+                detail = "main-hand:" + mainDetail;
+                return true;
+            }
+            string specialDetail;
+            bool special = ExerciseExpandedSummoningAnimation(manager,
+                UnitAnimationType.SpecialAttack, out specialDetail);
+            detail = "main-hand:" + mainDetail + ";special:" + specialDetail;
+            return special;
+        }
+
+        private static bool InvokeExpandedSummoningViewCallback(
+            Kingmaker.View.UnitEntityView view, string name, out string detail)
+        {
+            try
+            {
+                MethodInfo method = null;
+                for (Type type = view == null ? null : view.GetType();
+                    type != null && method == null; type = type.BaseType)
+                    method = type.GetMethod(name, BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
+                if (method == null)
+                {
+                    detail = "missing-exact-callback";
+                    return false;
+                }
+                method.Invoke(view, null);
+                detail = method.DeclaringType.FullName + "." + method.Name;
+                return true;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" +
+                    (exception.InnerException == null ? exception.Message :
+                        exception.InnerException.GetType().Name + ":" +
+                        exception.InnerException.Message);
+                return false;
+            }
+        }
+
+        private static bool ExpandedSummoningLanternRayVisualExact(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            Kingmaker.View.UnitEntityView view)
+        {
+            BlueprintAbility ray = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_LanternArchon_LightRay");
+            AbilityDeliverProjectile delivery = ray.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            return view != null && view.CenterTorso != null &&
+                delivery.Projectiles != null &&
+                delivery.Projectiles.Length == 2 &&
+                delivery.Projectiles.All(value => value != null) &&
+                ray.Animation == UnitAnimationActionCastSpell.CastAnimationStyle
+                    .Immediate;
+        }
+
+        private static string ExpandedSummoningAnimationTypes(
+            UnitAnimationManager manager)
+        {
+            if (manager == null) return "<missing>";
+            return string.Join(",", manager.ActionSet.Where(value => value != null)
+                .Select(value => value.Type + "=" + (value.Clips == null ? 0 :
+                    value.Clips.Count(clip => clip != null))).OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray());
+        }
+
+        private static void FinishExpandedSummoningAnimation(object handle)
+        {
+            PropertyInfo property = null;
+            for (Type type = handle == null ? null : handle.GetType();
+                type != null && property == null; type = type.BaseType)
+                property = type.GetProperty("IsFinished", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null) throw new MissingMethodException(
+                handle == null ? "<null>" : handle.GetType().FullName,
+                "set_IsFinished");
+            setter.Invoke(handle, new object[] { true });
         }
 
         private static SummonVariantSpec[] SelectExpandedSummoningQuantityCoverage(

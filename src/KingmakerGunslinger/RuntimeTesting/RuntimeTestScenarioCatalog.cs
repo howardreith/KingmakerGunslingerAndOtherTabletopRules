@@ -14,6 +14,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-inventory";
         internal const string DisposableExpandedSummoning =
             "disposable-expanded-summoning";
+        internal const string DisposableExpandedSummoningVisualContracts =
+            "disposable-expanded-summoning-visual-contracts";
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
@@ -216,6 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
                 DisposableExpandedSummoning,
+                DisposableExpandedSummoningVisualContracts,
                 DisposableShieldOther,
                 ObserveOptionalModCompatibility,
                 ObserveClassBlueprintContracts,

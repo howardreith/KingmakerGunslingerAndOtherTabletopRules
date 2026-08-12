@@ -37,6 +37,7 @@ $expected = @(
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',
+    'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',
@@ -184,6 +185,15 @@ Assert-True $expandedSummoning.RequiresSaveName `
 Assert-True ($expandedSummoning.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'expanded-summoning-only-permits-working-save'
+$expandedSummoningVisual = Get-KmgRuntimeScenarioMetadata `
+    'disposable-expanded-summoning-visual-contracts'
+Assert-True (-not $expandedSummoningVisual.RequiresManualInteraction) `
+    'expanded-summoning-visual-is-autonomous'
+Assert-True $expandedSummoningVisual.RequiresSaveName `
+    'expanded-summoning-visual-requires-save-name'
+Assert-True ($expandedSummoningVisual.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'expanded-summoning-visual-only-permits-working-save'
 $productionCatalog = Get-KmgRuntimeScenarioMetadata 'production-firearm-catalog'
 Assert-True (-not $productionCatalog.RequiresManualInteraction) `
     'sprint31-catalog-is-autonomous'

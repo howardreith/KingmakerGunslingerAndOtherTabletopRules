@@ -1160,6 +1160,12 @@ namespace KingmakerGunslinger.Blueprints
             ray.CanTargetSelf = false;
             ray.CanTargetFriends = false;
             ray.SpellResistance = false;
+            // The Will-o'-Wisp visual rig has no cast or attack clip. Use the
+            // native immediate ability path so the two ray projectiles can use
+            // CenterTorso as their bounded origin without waiting on a missing
+            // Ghaele animation event.
+            ray.Animation = Kingmaker.Visual.Animation.Kingmaker.Actions
+                .UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
             AbilityDeliverProjectile delivery = ray.ComponentsArray
                 .OfType<AbilityDeliverProjectile>().Single();
             delivery.Length = new Feet(
