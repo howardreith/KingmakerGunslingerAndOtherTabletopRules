@@ -830,3 +830,29 @@
   `bac9447730454c6b46da2bdef17b7634e154e49c308c1423b00c8b38a63cdd56`;
   package SHA-256:
   `0a295fa0f05a38da920dbd07c019e96e563830d3bec1b17887efda727f94e631`.
+
+## 2026-08-12 - Low-tier natural reconstruction structural PASS
+
+- Reconstructed Dog, Eagle, Poisonous Frog, Giant Centipede, Giant Spider,
+  Goblin Dog, and Hyena from explicit tabletop profiles. Donors now supply
+  views/rigs only where the native summon chassis was mechanically wrong.
+- Added frozen KMG 1d4 and 1d3 bite identities and rebuilt HD, size, ability
+  scores, speed, natural armor, attacks, feats, trip behavior, and the exact
+  native poison graphs selected by the forensic inventory.
+- Bootstrap evidence proved CotW's extraplanar subtype feature is not available
+  during standalone KMG registration. Added hidden frozen identity
+  `KMG.Summoning.Subtype.Extraplanar` and applied it exactly once to all 67 KMG
+  units; final-live optional native-marker reconciliation remains pending.
+- Guarded save-free run
+  `20260812T0010300046437Z-observe-expanded-summoning-inventory` passed on
+  committed source `c2bee19c6598f559436e5f09af5029dc1da746de`.
+  All 27 assertions passed: 67 units, 1,048 abilities, registry 1,399, all 681
+  placements, 67 exact extraplanar markers, exact low-tier and special
+  structures, and zero donor aliases, prohibited references, inherited class
+  spells, starting inventory, or native-action contamination. Call of the Wild
+  summon parents were preserved. No save was accessed.
+- Repository validation, `1007/1007` domain tests, clean Release, and strict
+  package validation passed. DLL SHA-256:
+  `49e19b17c15e7f0419b9caf01be223804161c2963151dd039d30c679b367fbba`;
+  package SHA-256:
+  `4a875b25bcad49996242755a37c1abef1d46b92b870a7b54ed4db19ed05649e6`.

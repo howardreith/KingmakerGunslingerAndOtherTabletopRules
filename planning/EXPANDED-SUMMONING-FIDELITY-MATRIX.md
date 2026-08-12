@@ -30,6 +30,24 @@ fast healing to element-specific environments. Kingmaker has no safe local
 environment predicate established yet; retaining Owlcat's native practical
 adaptation is explicitly recorded pending mechanical runtime qualification.
 
+## Low-tier natural reconstruction
+
+| Creature | Families/tiers | KMG unit | Delivered chassis/offense | Deviation | Qualification |
+|---|---|---|---|---|---|
+| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Structural PASS `20260812T0010300046437Z`; actual cast/visual pending |
+| Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c` | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse | Separate 10-foot ground speed omitted; Roc visual still requires scale/navigation proof | Structural PASS; actual cast/visual pending |
+| Poisonous Frog | SM I; SNA I | `e1a8e5e206154dd48b6aca1d4262e8e7` | Tiny animal 1; bite 1; native six-tick 1d2 Constitution poison, Fortitude, one save cures | Swim movement omitted | Structural PASS; poison use/cast/visual pending |
+| Giant Centipede | SM II; SNA I | `baf9e8f829e9410db8f3d200bb62a2c6` | Medium vermin 1; speed 40; bite 1d6-1; native six-tick 1d3 Dexterity poison; eight-leg trip defense | Int 1 represents absent Intelligence; climb omitted; native poison lacks the tabletop +2 racial DC bonus | Structural PASS; poison use/cast/visual pending |
+| Giant Spider | SM II; SNA II | `4a3cd49e751448c8b8836485b262fdf1` | Medium vermin 3; bite 1d6; native four-tick 1d2 Strength poison; natural armor +1 | Int 1 represents absent Intelligence; web, climb, and tremorsense omitted pending bounded contracts | Structural PASS; poison use/cast/visual pending |
+| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; Worg view only | Disease immunity and allergic reaction omitted pending safe exact contracts | Structural PASS; actual cast/visual pending |
+| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Wolf view only | Structural PASS; actual cast/visual pending |
+
+All 67 KMG summon units carry hidden marker
+`KMG.Summoning.Subtype.Extraplanar` (`1812739855844dc4adf3c32a70f13512`)
+exactly once. This provides deterministic standalone subtype metadata without
+requiring CotW's later-loaded feature during bootstrap; native optional-marker
+reconciliation remains open.
+
 ## Lantern Archon
 
 | Field | Delivered behavior |

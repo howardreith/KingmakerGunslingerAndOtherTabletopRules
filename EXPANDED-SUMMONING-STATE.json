@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7",
+  "currentSha": "c2bee19c6598f559436e5f09af5029dc1da746de",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "bebelith-and-pixie-runtime-structure-qualified",
-  "nextConcreteAction": "Inventory, reconstruct, and qualify the remaining natural/proxy creature mechanics and fidelity contracts before actual-cast, visual, persistence, matrix, and compatibility qualification.",
-  "domainTestResult": "1006/1006 PASS",
-  "releaseBuildResult": "PASS for runtime-qualified Bebelith and Pixie; DLL SHA-256 bac9447730454c6b46da2bdef17b7634e154e49c308c1423b00c8b38a63cdd56",
-  "packageResult": "strict PASS for runtime-qualified Bebelith and Pixie; SHA-256 0a295fa0f05a38da920dbd07c019e96e563830d3bec1b17887efda727f94e631",
-  "blueprintLedger": "1142 Expanded Summoning identities; 1396 active, 1 reserved, 1397 total; derived constant registry count 1396",
+  "completedPhase": "low-tier-natural-reconstruction-runtime-structure-qualified",
+  "nextConcreteAction": "Inventory, reconstruct, and qualify the remaining natural/proxy creature mechanics, beginning with the tier III-IV animal group, before actual-cast, visual, persistence, matrix, and compatibility qualification.",
+  "domainTestResult": "1007/1007 PASS",
+  "releaseBuildResult": "PASS for runtime-qualified low-tier natural reconstruction; DLL SHA-256 49e19b17c15e7f0419b9caf01be223804161c2963151dd039d30c679b367fbba",
+  "packageResult": "strict PASS for runtime-qualified low-tier natural reconstruction; SHA-256 4a875b25bcad49996242755a37c1abef1d46b92b870a7b54ed4db19ed05649e6",
+  "blueprintLedger": "1145 Expanded Summoning identities; 1399 active, 1 reserved, 1400 total; derived constant registry count 1399",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -263,10 +263,21 @@
       "sourceSha": "f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2310424930290Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "All 25 assertions passed: 67 units, 1048 abilities, registry 1396, all 681 placements, exact Bebelith and Pixie structures, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were observed and preserved. No save was accessed."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "c2bee19c6598f559436e5f09af5029dc1da746de",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0010300046437Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All 27 assertions passed: 67 units, 1048 abilities, registry 1399, all 681 placements, one exact hidden KMG extraplanar marker per unit, exact low-tier natural and special structures, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
     }
   ],
   "compatibilityProfilesCompleted": [],
-  "unresolvedDeviations": [],
+  "unresolvedDeviations": [
+    "The hidden KMG extraplanar marker is deterministic in standalone; optional Call of the Wild native-marker reconciliation remains pending.",
+    "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",
+    "Actual casts, visual contracts, cleanup/persistence, the 16-state launch matrix, and compatibility-profile qualification remain pending."
+  ],
   "branchPushed": true,
   "draftPr": null,
   "draftPrBlocker": "gh authentication currently invalid; recheck after local completion"

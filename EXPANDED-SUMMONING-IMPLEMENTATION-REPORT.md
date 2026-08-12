@@ -149,3 +149,16 @@ teleportation, summoning, planar travel, poison, web, or persistent external
 state. Actual casts, special-action execution, visuals, cleanup, persistence,
 feature-state launches, and complete compatibility-profile qualification
 remain open and are not claimed.
+
+The first low-tier natural group is now structurally qualified on committed
+source `c2bee19c6598f559436e5f09af5029dc1da746de`. Dog, Eagle, Poisonous Frog,
+Giant Centipede, Giant Spider, Goblin Dog, and Hyena use explicit tabletop
+chassis and attacks; their donors no longer supply unrelated enemy mechanics.
+Guarded run
+`20260812T0010300046437Z-observe-expanded-summoning-inventory` passed all 27
+assertions with registry 1,399, all 681 placements, exactly 67 hidden KMG
+extraplanar markers, and zero sanitizer, donor-alias, inventory, inherited-spell,
+or native-action contamination failures. Static validation, `1007/1007`
+domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
+cleanup/persistence, module-state launches, and compatibility profiles remain
+open and are not claimed.
