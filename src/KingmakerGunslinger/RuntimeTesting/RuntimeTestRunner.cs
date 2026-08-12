@@ -7792,21 +7792,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility allyTierOneParent = BlueprintLibraryLookup
                 .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                     parentGuids[9], "native Summon Nature's Ally I parent");
-            bool nativeTierOnePreserved = monsterTierOneParent.ComponentsArray
-                    .OfType<AbilityVariants>().Single().Variants.FirstOrDefault() ==
-                        nativeMonsterTierOne &&
-                allyTierOneParent.ComponentsArray.OfType<AbilityVariants>()
-                    .Single().Variants.FirstOrDefault() == nativeAllyTierOne &&
+            BlueprintAbility[] monsterTierOneDisplayed = monsterTierOneParent
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+            BlueprintAbility[] allyTierOneDisplayed = allyTierOneParent
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+            bool nativeTierOnePreserved = monsterTierOneDisplayed.Count(value =>
+                    ReferenceEquals(value, nativeMonsterTierOne)) == 0 &&
+                allyTierOneDisplayed.Count(value => ReferenceEquals(value,
+                    nativeAllyTierOne)) == 1 &&
                 ExpandedSummoningSpawnActionCount(nativeMonsterTierOne) >= 1 &&
                 ExpandedSummoningSpawnActionCount(nativeAllyTierOne) >= 1 &&
                 nativeMonsterTierOne.Range == monsterTierOneParent.Range &&
                 nativeAllyTierOne.Range == allyTierOneParent.Range &&
                 nativeMonsterTierOne.ActionType == monsterTierOneParent.ActionType &&
                 nativeAllyTierOne.ActionType == allyTierOneParent.ActionType;
-            BlueprintAbility[] templateChoices = all.OfType<BlueprintAbility>()
-                .Where(value => value.name.StartsWith("KMG_Summoning_Ability_",
-                    StringComparison.Ordinal) && value.ComponentsArray
-                    .OfType<AbilityVariants>().Any()).ToArray();
+            SummonVariantSpec[] templateSpecs = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Where(value =>
+                    value.Creature.MonsterTemplated).ToArray();
+            BlueprintAbility[] templateChoices = templateSpecs.Select(spec =>
+                all.OfType<BlueprintAbility>().Single(value => value.name ==
+                    ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(spec))))
+                .ToArray();
             BlueprintAbility[] celestialExecutions = all.OfType<BlueprintAbility>()
                 .Where(value => value.name.EndsWith("_Celestial",
                     StringComparison.Ordinal)).ToArray();
@@ -7814,9 +7821,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => value.name.EndsWith("_Fiendish",
                     StringComparison.Ordinal)).ToArray();
             bool templateChoicesExact = templateChoices.Length == 182 &&
-                templateChoices.All(value => value.ComponentsArray
-                    .OfType<AbilityVariants>().Single().Variants.Length == 2 &&
-                    !value.ComponentsArray.OfType<AbilityEffectRunAction>().Any());
+                templateChoices.All(value => !value.ComponentsArray
+                    .OfType<AbilityVariants>().Any() && value.ComponentsArray
+                    .OfType<AbilityEffectRunAction>().Count() == 1 &&
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    ExpandedSummoningTemplateByCasterCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
             bool celestialExact = celestialExecutions.Length == 182 &&
                 celestialExecutions.All(value =>
                     ExpandedSummoningSpawnActionCount(value) >= 1 &&
@@ -7877,8 +7887,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int parentIndex = (variant.Family == SummonFamily.Monster ? 0 : 9) +
                     variant.ParentTier - 1;
                 BlueprintAbility parent = canonicalSummonParents[parentIndex];
-                BlueprintAbility native = ExpandedSummoningNativeTemplate(
-                    parent, variant.Multiplicity);
+                BlueprintAbility native = ExpandedSummoningNativeTemplate(all,
+                    variant.Family, variant.ParentTier, variant.Multiplicity);
                 BlueprintAbility root = all.OfType<BlueprintAbility>().Single(value =>
                     value.name == ExpandedSummoningInternalName(
                         ExpandedSummoningIdentityCatalog.AbilitySymbol(variant)));
@@ -7888,17 +7898,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (matchingParents == 1 && parent.ComponentsArray
                     .OfType<AbilityVariants>().Single().Variants.Count(item =>
                         ReferenceEquals(item, root)) == 1) exactParentMappings++;
-                BlueprintAbility[] nodes;
-                bool choice = variant.Family == SummonFamily.Monster &&
-                    variant.Creature.MonsterTemplated;
-                if (choice)
-                    nodes = new[] { root }.Concat(root.ComponentsArray
-                        .OfType<AbilityVariants>().Single().Variants).ToArray();
-                else nodes = new[] { root };
+                BlueprintAbility[] nodes = new[] { root };
                 foreach (BlueprintAbility node in nodes)
                 {
                     if (ExpandedSummoningNativeAbilityContractExact(node, native,
-                        choice && !ReferenceEquals(node, root)))
+                        false))
                         nativeContractNodes++;
                     if (node.IsSpell && node.School == SpellSchool.Conjuration &&
                         node.IsFullRoundAction && (node.SpellDescriptor &
@@ -7907,15 +7911,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (node.MaterialComponent != null) materialContractNodes++;
                     if (ExpandedSummoningMemberEquals(node, native,
                         "AvailableMetamagic")) metamagicContractNodes++;
-                    bool execution = choice && !ReferenceEquals(node, root);
-                    if (!node.Hidden && node.ActionBarAutoFillIgnored == execution)
+                    if (!node.Hidden && !node.ActionBarAutoFillIgnored)
                         actionBarContractNodes++;
                 }
             }
-            int expectedContractNodes = logicalVariants.Length +
-                (templateChoices.Length * 2);
+            int expectedContractNodes = logicalVariants.Length;
             bool abilityContractsExact = logicalVariants.Length == 681 &&
-                expectedContractNodes == 1045 && exactParentMappings == 681 &&
+                expectedContractNodes == 681 && exactParentMappings == 681 &&
                 nativeContractNodes == expectedContractNodes &&
                 acadamaeClassifiedNodes == expectedContractNodes &&
                 materialContractNodes == expectedContractNodes &&
@@ -8432,11 +8434,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
                 Assertion("expanded-summoning-native-ability-contracts",
-                    "roots=681;nodes=1045;parents=681;native=1045;acadamae=1045;material=1045;metamagic=1045;actionBar=1045",
+                    "roots=681;nodes=681;parents=681;native=681;acadamae=681;material=681;metamagic=681;actionBar=681",
                     abilityContractObserved, abilityContractsExact,
                     "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
                 Assertion("expanded-summoning-native-tier-one-preservation",
-                    "SM I and SNA I original cast graphs first and castable",
+                    "SM I exact duplicate hidden; SNA I unique native retained; both identities castable",
                     nativeTierOnePreserved ? "exact" : "mismatch",
                     nativeTierOnePreserved,
                     "frozen child clones of the two originally direct native parents"),
@@ -8457,7 +8459,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all 67 KMG unit StartingInventory arrays"),
                 Assertion("expanded-summoning-template-logical-choices", "182",
                     templateChoices.Length.ToString(), templateChoicesExact,
-                    "nested two-choice AbilityVariants without direct spawn effects"),
+                    "direct executable roots with one caster-selected post-spawn template action"),
                 Assertion("expanded-summoning-celestial-executions", "182",
                     celestialExecutions.Length.ToString(), celestialExact,
                     "non-evil mask, Good descriptor, and child template application"),
@@ -10834,23 +10836,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static BlueprintAbility ExpandedSummoningNativeTemplate(
-            BlueprintAbility parent, SummonMultiplicity multiplicity)
+            IEnumerable<BlueprintScriptableObject> all, SummonFamily family,
+            int tier, SummonMultiplicity multiplicity)
         {
-            AbilityVariants variants = parent.ComponentsArray
-                .OfType<AbilityVariants>().Single();
-            BlueprintAbility[] choices = variants.Variants ??
-                Array.Empty<BlueprintAbility>();
-            if (parent.AssetGuid == "8fd74eddd9b6c224693d9ab241f25e84" ||
-                parent.AssetGuid == "c6147854641924442a3bb736080cfeb6")
-                return choices.Single(value => value != null &&
-                    value.name.StartsWith("KMG_Summoning_Native_",
-                        StringComparison.Ordinal));
-            string token = multiplicity == SummonMultiplicity.One ? "single" :
-                multiplicity == SummonMultiplicity.OneD3 ? "d3" : "d4";
-            return choices.Single(value => value != null &&
-                !value.name.StartsWith("KMG_Summoning_", StringComparison.Ordinal) &&
-                value.name.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0);
+            SummonNativeOptionSpec native = SummonNativeOptionCatalog.All.Single(
+                value => value.Family == family && value.Tier == tier &&
+                    value.Multiplicity == multiplicity);
+            return all.OfType<BlueprintAbility>().Single(value =>
+                value.AssetGuid == native.Guid);
         }
+
+        private static int ExpandedSummoningTemplateByCasterCount(
+            BlueprintAbility ability)
+        { return ExpandedSummoningObjects<
+            ContextActionApplySummonTemplateByCaster>(ability.ComponentsArray)
+                .Count(); }
 
         private static bool ExpandedSummoningNativeAbilityContractExact(
             BlueprintAbility ability, BlueprintAbility native, bool execution)
