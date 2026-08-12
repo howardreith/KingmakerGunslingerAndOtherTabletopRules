@@ -1318,3 +1318,25 @@
   passed all 67 views, bounded footprints, locomotion, attacks, hits, deaths,
   projectile origins, and cleanup. Repository validation, 1,013 domain tests,
   and the Release build pass. No protected save was selected or modified.
+
+## 2026-08-12 - Complete final-live menu audit PASS
+
+- The structural observer now derives a reference-exact expected display
+  sequence for each of the 18 canonical parents from the frozen 681-placement
+  KMG catalog and 48-GUID native catalog. It proves every KMG root is singular,
+  mapped semantic native duplicates are absent, unique native choices are
+  singular, and every suppressed native identity remains registered.
+- It also proves current-tier KMG singles precede unique native singles, then
+  1d3, then 1d4+1 choices; any unclassified third-party entries form a stable
+  tail. All KMG icons are non-null, required animal/element/mephit/outsider
+  categories are reference-distinct, and quantity names carry their dice.
+- Guarded run
+  `20260812T1850060235984Z-f8fb2f115ddb41b28d8720a4ca342a50`
+  passed every audit. It flushed 27 seconds after the orchestration script's
+  conservative 120-second result window, so later repetitions use the existing
+  `-TimeoutSeconds 240` parameter; the runtime result itself is complete PASS.
+- Final standalone menu totals are: SM I-IX =
+  `3,13,21,35,44,56,64,68,69`; SNA I-IX =
+  `5,14,21,33,40,47,53,57,59`. SM VIII retains the exact native Movanic
+  Deva/Frost Giant conditional option and SM IX retains its exact unique native
+  option. Zero unclassified third-party entries were present in this profile.

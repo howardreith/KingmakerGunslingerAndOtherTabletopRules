@@ -207,6 +207,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<string> Diagnostics = new List<string>();
         }
 
+        private sealed class ExpandedSummoningMenuAudit
+        {
+            internal int MissingOrDuplicateKmgRoots;
+            internal int VisibleMappedNativeDuplicates;
+            internal int MissingUniqueNativeOptions;
+            internal int MissingRegisteredNativeIdentities;
+            internal int MisorderedParents;
+            internal int MissingIcons;
+            internal int MalformedQuantityNames;
+            internal int CountMismatches;
+            internal bool CategoryIconsDistinct;
+            internal bool HighTierUniqueNativeExact;
+            internal string Counts;
+
+            internal bool ReconciliationExact
+            {
+                get
+                {
+                    return MissingOrDuplicateKmgRoots == 0 &&
+                        VisibleMappedNativeDuplicates == 0 &&
+                        MissingUniqueNativeOptions == 0 &&
+                        MissingRegisteredNativeIdentities == 0;
+                }
+            }
+
+            internal bool PresentationExact
+            {
+                get
+                {
+                    return MisorderedParents == 0 && MissingIcons == 0 &&
+                        MalformedQuantityNames == 0 && CountMismatches == 0 &&
+                        CategoryIconsDistinct;
+                }
+            }
+        }
+
         private sealed class BroadRespecInitiationHandler :
             ILevelUpInitiateUIHandler
         {
@@ -7889,6 +7925,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                     BlueprintBootstrap.Library, guid,
                     "canonical summon contract parent")).ToArray();
+            ExpandedSummoningMenuAudit menuAudit =
+                AuditExpandedSummoningMenus(all, canonicalSummonParents,
+                    logicalVariants);
             int exactParentMappings = 0, nativeContractNodes = 0,
                 acadamaeClassifiedNodes = 0, materialContractNodes = 0,
                 metamagicContractNodes = 0, actionBarContractNodes = 0;
@@ -8472,6 +8511,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeTierOnePreserved ? "exact" : "mismatch",
                     nativeTierOnePreserved,
                     "frozen child clones of the two originally direct native parents"),
+                Assertion("expanded-summoning-menu-reconciliation",
+                    "KMG roots=exact;mapped native duplicates=0;unique native=exact;all frozen native identities registered",
+                    "kmgMissingOrDuplicate=" +
+                        menuAudit.MissingOrDuplicateKmgRoots +
+                        ";mappedVisible=" +
+                        menuAudit.VisibleMappedNativeDuplicates +
+                        ";uniqueMissing=" +
+                        menuAudit.MissingUniqueNativeOptions +
+                        ";registeredMissing=" +
+                        menuAudit.MissingRegisteredNativeIdentities,
+                    menuAudit.ReconciliationExact,
+                    "all 18 final-live canonical AbilityVariants surfaces and frozen GUID catalog"),
+                Assertion("expanded-summoning-menu-order-and-icons",
+                    "current singles;unique native singles;1d3;1d4+1;foreign stable tail;category icons distinct",
+                    "misordered=" + menuAudit.MisorderedParents +
+                        ";missingIcons=" + menuAudit.MissingIcons +
+                        ";badQuantityNames=" +
+                        menuAudit.MalformedQuantityNames +
+                        ";categoryDistinct=" +
+                        menuAudit.CategoryIconsDistinct,
+                    menuAudit.PresentationExact,
+                    "reference-exact display sequence, immutable creature icon catalog, and localized quantity suffixes"),
+                Assertion("expanded-summoning-menu-counts",
+                    "18 exact before/after tier and multiplicity equations",
+                    menuAudit.Counts, menuAudit.CountMismatches == 0,
+                    "frozen native catalog plus preserved foreign tail and generated KMG placement catalog"),
+                Assertion("expanded-summoning-high-tier-native-choices",
+                    "SM VIII Movanic Deva/Frost Giant and SM IX native unique option retained once",
+                    menuAudit.HighTierUniqueNativeExact ? "exact" :
+                        "mismatch", menuAudit.HighTierUniqueNativeExact,
+                    "exact GUID-based unique native reconciliation at sparse KMG tiers VIII and IX"),
                 Assertion("expanded-summoning-donor-component-isolation", "0",
                     sharedComponents.ToString(), sharedComponents == 0,
                     "all 67 KMG units versus frozen donor component references"),
@@ -11112,6 +11182,159 @@ namespace KingmakerGunslinger.RuntimeTesting
             string name = ExpandedSummoningInternalName(symbol);
             return blueprints.OfType<BlueprintAbility>().Single(value =>
                 value.name == name);
+        }
+
+        private static ExpandedSummoningMenuAudit AuditExpandedSummoningMenus(
+            BlueprintScriptableObject[] all, BlueprintAbility[] parents,
+            SummonVariantSpec[] logicalVariants)
+        {
+            var result = new ExpandedSummoningMenuAudit();
+            var countRows = new List<string>();
+            var categoryIcons = new Dictionary<string, Sprite>(
+                StringComparer.Ordinal);
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            {
+                SummonVariantSpec representative = logicalVariants.First(value =>
+                    ReferenceEquals(value.Creature, creature));
+                BlueprintAbility ability = all.OfType<BlueprintAbility>().Single(
+                    value => value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(
+                            representative)));
+                string category = SummonIconCatalog.CategoryFor(creature.Key);
+                if (!categoryIcons.ContainsKey(category))
+                    categoryIcons.Add(category, ability.Icon);
+            }
+            result.CategoryIconsDistinct =
+                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
+                    "canine", "feline", "bear", "bird", "reptile",
+                    "vermin") &&
+                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
+                    "air-elemental", "earth-elemental", "fire-elemental",
+                    "water-elemental") &&
+                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
+                    "air-mephit", "earth-mephit", "fire-mephit",
+                    "water-mephit") &&
+                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
+                    "celestial", "fiend");
+
+            for (int parentIndex = 0; parentIndex < parents.Length; parentIndex++)
+            {
+                SummonFamily family = parentIndex < 9 ? SummonFamily.Monster :
+                    SummonFamily.NaturesAlly;
+                int tier = parentIndex % 9 + 1;
+                BlueprintAbility[] displayed = parents[parentIndex]
+                    .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+                SummonVariantSpec[] specs = logicalVariants.Where(value =>
+                    value.Family == family && value.ParentTier == tier).ToArray();
+                var rootByGuid = specs.Select(spec => new {
+                    Spec = spec,
+                    Ability = all.OfType<BlueprintAbility>().Single(value =>
+                        value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(spec)))
+                }).ToDictionary(value => value.Ability.AssetGuid,
+                    value => value, StringComparer.Ordinal);
+                SummonNativeOptionSpec[] natives = SummonNativeOptionCatalog.All
+                    .Where(value => value.Family == family &&
+                        value.Tier == tier).ToArray();
+                var nativeByGuid = natives.ToDictionary(value => value.Guid,
+                    value => value, StringComparer.Ordinal);
+                Func<BlueprintAbility, SummonMultiplicity?> menuMultiplicity =
+                    value => rootByGuid.ContainsKey(value.AssetGuid) ?
+                        (SummonMultiplicity?)rootByGuid[value.AssetGuid].Spec
+                            .Multiplicity : nativeByGuid.ContainsKey(
+                                value.AssetGuid) ?
+                            (SummonMultiplicity?)nativeByGuid[value.AssetGuid]
+                                .Multiplicity : null;
+                foreach (var root in rootByGuid.Values)
+                {
+                    if (displayed.Count(value => ReferenceEquals(value,
+                        root.Ability)) != 1)
+                        result.MissingOrDuplicateKmgRoots++;
+                    if (root.Ability.Icon == null) result.MissingIcons++;
+                    string name = root.Ability.Name ?? "";
+                    if ((root.Spec.Multiplicity == SummonMultiplicity.OneD3 &&
+                            name.IndexOf("1d3", StringComparison.Ordinal) < 0) ||
+                        (root.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD4PlusOne &&
+                            name.IndexOf("1d4+1", StringComparison.Ordinal) < 0))
+                        result.MalformedQuantityNames++;
+                }
+                foreach (SummonNativeOptionSpec native in natives)
+                {
+                    BlueprintAbility identity = all.OfType<BlueprintAbility>()
+                        .SingleOrDefault(value => value.AssetGuid == native.Guid);
+                    if (identity == null)
+                    {
+                        result.MissingRegisteredNativeIdentities++;
+                        continue;
+                    }
+                    int visible = displayed.Count(value =>
+                        ReferenceEquals(value, identity));
+                    if (native.IsSemanticDuplicate)
+                        result.VisibleMappedNativeDuplicates += visible;
+                    else if (visible != 1)
+                        result.MissingUniqueNativeOptions++;
+                }
+
+                var expectedKnown = new List<BlueprintAbility>();
+                foreach (SummonMultiplicity multiplicity in new[] {
+                    SummonMultiplicity.One, SummonMultiplicity.OneD3,
+                    SummonMultiplicity.OneD4PlusOne })
+                {
+                    expectedKnown.AddRange(specs.Where(value =>
+                        value.Multiplicity == multiplicity).Select(value =>
+                            rootByGuid.Values.Single(item =>
+                                ReferenceEquals(item.Spec, value)).Ability));
+                    expectedKnown.AddRange(natives.Where(value =>
+                        !value.IsSemanticDuplicate &&
+                        value.Multiplicity == multiplicity).Select(value =>
+                            all.OfType<BlueprintAbility>().Single(item =>
+                                item.AssetGuid == value.Guid)));
+                }
+                bool exactPrefix = displayed.Length >= expectedKnown.Count &&
+                    displayed.Take(expectedKnown.Count).SequenceEqual(expectedKnown);
+                BlueprintAbility[] foreignTail = displayed.Skip(
+                    expectedKnown.Count).ToArray();
+                bool foreignTailExact = foreignTail.All(value => value != null &&
+                    !rootByGuid.ContainsKey(value.AssetGuid) &&
+                    !nativeByGuid.ContainsKey(value.AssetGuid));
+                if (!exactPrefix || !foreignTailExact)
+                    result.MisorderedParents++;
+
+                int expectedBefore = natives.Length + foreignTail.Length;
+                int expectedAfter = specs.Length + natives.Count(value =>
+                    !value.IsSemanticDuplicate) + foreignTail.Length;
+                if (displayed.Length != expectedAfter)
+                    result.CountMismatches++;
+                string prefix = family == SummonFamily.Monster ? "SM" : "SNA";
+                countRows.Add(prefix + tier + ":before=" + expectedBefore +
+                    ";after=" + displayed.Length + ";one=" +
+                    expectedKnown.Count(value =>
+                        menuMultiplicity(value) == SummonMultiplicity.One) +
+                    ";d3=" + expectedKnown.Count(value =>
+                        menuMultiplicity(value) == SummonMultiplicity.OneD3) +
+                    ";d4=" + expectedKnown.Count(value =>
+                        menuMultiplicity(value) ==
+                            SummonMultiplicity.OneD4PlusOne) +
+                    ";foreign=" + foreignTail.Length);
+            }
+            result.HighTierUniqueNativeExact = new[] {
+                "eb6df7ddfc0669d4fb3fc9af4bd34bca",
+                "e96593e67d206ab49ad1b567327d1e75"
+            }.All(guid => parents.SelectMany(value => value.ComponentsArray
+                .OfType<AbilityVariants>().Single().Variants).Count(value =>
+                    value != null && value.AssetGuid == guid) == 1);
+            result.Counts = string.Join("|", countRows.ToArray());
+            return result;
+        }
+
+        private static bool ExpandedSummoningCategoryIconsDistinct(
+            IDictionary<string, Sprite> icons, params string[] categories)
+        {
+            Sprite[] selected = categories.Select(value => icons.ContainsKey(value) ?
+                icons[value] : null).ToArray();
+            return selected.All(value => value != null) &&
+                selected.Distinct().Count() == selected.Length;
         }
 
         private static BlueprintAbility ExpandedSummoningNativeTemplate(

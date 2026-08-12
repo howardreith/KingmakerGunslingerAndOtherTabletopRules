@@ -4,11 +4,11 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "f3a6cea0161f88e683bfd91e7ef4a1cab421c8b6",
-  "currentShaSemantics": "Last pushed repair checkpoint; the qualified Erinyes special-profile working tree will advance this SHA in the next coherent commit.",
+  "currentSha": "3c9674553f806f578da04e166953f94cc982a2a3",
+  "currentShaSemantics": "Last pushed repair checkpoint; the qualified complete-menu audit working tree will advance this SHA in the next coherent commit.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "all-681-player-roots-and-erinyes-visual-repair-qualified",
-  "nextConcreteAction": "Commit and push the Erinyes checkpoint, then extend final-live assertions across all 18 menus for GUID reconciliation, ordering, icons, high-tier unique native choices, and exact counts.",
+  "completedPhase": "all-18-menu-reconciliation-order-icon-count-audit-qualified",
+  "nextConcreteAction": "Commit and push the menu audit, then add actual-parent invalid/cancelled no-slot evidence and prove the standalone Summon Elemental surface remains untouched.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS twice from final artifact source; byte-identical DLL output",
@@ -39,6 +39,27 @@
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
+    {
+      "scenario": "observe-expanded-summoning-inventory (repair menu audit)",
+      "runId": "20260812T1850060235984Z-f8fb2f115ddb41b28d8720a4ca342a50",
+      "result": "PASS; all 18 reconciliation/order/icon/count surfaces exact",
+      "sourceSha": "3c9674553f806f578da04e166953f94cc982a2a3 plus qualified observer working tree",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1850059945974Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-player-path (all placements)",
+      "runId": "20260812T1824547130714Z-668cd85d823f48dea9f4bc9b7fb6667d",
+      "result": "PASS; 681/681 actual native-parent spellbook roots",
+      "sourceSha": "f3a6cea0161f88e683bfd91e7ef4a1cab421c8b6",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1824546856828Z-disposable-expanded-summoning-player-path/runtime-result.json"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-visual-contracts (repair)",
+      "runId": "20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4",
+      "result": "PASS; 67/67 views and all ranged projectile origins",
+      "sourceSha": "3c9674553f806f578da04e166953f94cc982a2a3 qualified working tree",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1842003636222Z-disposable-expanded-summoning-visual-contracts/runtime-result.json"
+    },
     {
       "scenario": "observe-expanded-summoning-inventory",
       "runId": "20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4",
