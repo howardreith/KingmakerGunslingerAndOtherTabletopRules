@@ -69,9 +69,12 @@ def planned():
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Tail3d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Bite2d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1146 or len({symbol for symbol, _ in rows}) != 1146:
+    if len(rows) != 1149 or len({symbol for symbol, _ in rows}) != 1149:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

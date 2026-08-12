@@ -40,6 +40,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.identities-exact", ExpandedSummoningIdentityCatalogTests.FoundationLedgerIsExactAndDeterministic),
             Case("expanded-summoning.natural-low-tier-profiles", ExpandedSummoningIdentityCatalogTests.LowTierNaturalProfilesAreExact),
             Case("expanded-summoning.natural-tier-three-four-profiles", ExpandedSummoningIdentityCatalogTests.TierThreeFourNaturalProfilesAreExact),
+            Case("expanded-summoning.natural-tier-five-seven-profiles", ExpandedSummoningIdentityCatalogTests.TierFiveSevenNaturalProfilesAreExact),
             Case("expanded-summoning.identities-template-scope", ExpandedSummoningIdentityCatalogTests.TemplateExecutionsAreFamilyScoped),
             Case("expanded-summoning.template-hd-bands", ExpandedSummoningIdentityCatalogTests.TemplateHitDiceBandsAreExact),
             Case("expanded-summoning.template-smite", ExpandedSummoningIdentityCatalogTests.TemplateSmitePolicyIsBoundedAndOpposed),

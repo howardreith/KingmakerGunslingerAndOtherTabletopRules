@@ -59,10 +59,10 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 19 || Values.Select(value => value.Key)
+            if (Values.Length != 26 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
-                    "The tier I-IV natural reconstruction catalog is incomplete or duplicated.");
+                    "The tier I-VII natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
@@ -193,7 +193,58 @@ namespace KingmakerGunslinger.Summoning
                     16, 19, 15, 2, 15, 12, 50, 2, "Bite2d6",
                     Array.Empty<string>(), A("Airborne", "Dodge",
                         "ImprovedInitiative", "SkillFocusPerception"),
-                    "Kingmaker exposes one movement speed; 50-foot fly speed is used with airborne navigation and the 10-foot ground speed is omitted.")
+                    "Kingmaker exposes one movement speed; 50-foot fly speed is used with airborne navigation and the 10-foot ground speed is omitted."),
+                PS("dire-lion", "Dire Lion", "Animal", 8, "Large",
+                    25, 15, 17, 2, 12, 10, 40, 4, "Bite1d8",
+                    A("Claw1d6", "Claw1d6"), A("Claw1d6", "Claw1d6"),
+                    A("ReducedReach", "Pounce", "TripDefenseFourLegs",
+                        "ImprovedInitiative", "SkillFocusPerception",
+                        "WeaponFocusClaw"),
+                    "The secondary claw pair is Kingmaker's bounded representation of rake during pounce; actual charge-only cadence requires runtime qualification.",
+                    "Grab and Run are omitted because no summon-safe exact final-live contracts were proven."),
+                P("ankylosaurus", "Ankylosaurus", "Animal", 10, "Huge",
+                    27, 10, 17, 2, 13, 8, 30, 14, "Tail3d6",
+                    Array.Empty<string>(), A("GreatFortitude", "PowerAttack"),
+                    "The tail's Strength-based daze/stun rider is omitted pending an exact bounded native dazed-buff contract; the omission is conservative and never increases damage or control.",
+                    "Improved Bull Rush, Improved Overrun, and Weapon Focus (tail) are omitted because exact concrete final-live feature identities were not proven."),
+                P("dire-bear", "Dire Bear", "Animal", 10, "Large",
+                    25, 13, 21, 2, 12, 10, 40, 8, "Bite1d8",
+                    A("Claw1d6", "Claw1d6"), A("ReducedReach",
+                        "ImprovedInitiative", "IronWill",
+                        "SkillFocusPerception"),
+                    "Claw grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior.",
+                    "Endurance and Run are omitted because exact concrete final-live feature identities were not proven."),
+                PS("dire-tiger", "Dire Tiger / Smilodon", "Animal", 14,
+                    "Large", 27, 15, 17, 2, 12, 10, 40, 6,
+                    "BiteLarge2d6", A("Claw2d4", "Claw2d4"),
+                    A("Claw2d4", "Claw2d4"), A("ReducedReach", "Pounce",
+                        "TripDefenseFourLegs", "ImprovedCriticalBite",
+                        "ImprovedCriticalClaw", "ImprovedInitiative",
+                        "SkillFocusPerception", "SkillFocusStealth",
+                        "WeaponFocusBite", "WeaponFocusClaw"),
+                    "The secondary claw pair is Kingmaker's bounded representation of rake during pounce; actual charge-only cadence requires runtime qualification.",
+                    "Grab and Run are omitted because no summon-safe exact final-live contracts were proven."),
+                PS("elephant", "Elephant", "Animal", 11, "Huge",
+                    30, 10, 19, 2, 13, 7, 40, 9, "Gore2d8",
+                    Array.Empty<string>(), A("Slam2d6"),
+                    A("GreatFortitude", "IronWill", "PowerAttack",
+                        "SkillFocusPerception"),
+                    "Trample is omitted pending a player-commandable, path-safe native movement contract; ordinary gore and slam attacks remain exact and the omission is conservative.",
+                    "Endurance and Improved Bull Rush are omitted because exact concrete final-live feature identities were not proven."),
+                PS("mastodon", "Mastodon", "Animal", 14, "Huge",
+                    34, 12, 21, 2, 13, 7, 40, 12, "Gore2d8",
+                    Array.Empty<string>(), A("Slam2d6"),
+                    A("IronWill", "PowerAttack", "SkillFocusPerception"),
+                    "Trample is omitted pending a player-commandable, path-safe native movement contract; ordinary gore and slam attacks remain exact and the omission is conservative.",
+                    "Endurance, Improved Bull Rush, Improved Iron Will, and Weapon Focus (gore) are omitted because exact concrete final-live feature identities were not proven."),
+                P("roc", "Roc", "Animal", 16, "Gargantuan",
+                    28, 15, 17, 2, 12, 11, 80, 14, "Bite2d8",
+                    A("Talon2d6", "Talon2d6"), A("Airborne",
+                        "ImprovedCriticalClaw", "ImprovedInitiative",
+                        "IronWill", "LightningReflexes", "PowerAttack",
+                        "SkillFocusPerception", "WeaponFocusClaw"),
+                    "Kingmaker exposes one movement speed; 80-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
+                    "Talon grab and Flyby Attack are omitted because no summon-safe exact final-live contracts were proven.")
             };
         }
 

@@ -7559,6 +7559,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon naturalTail1d12 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Tail1d12");
+            BlueprintItemWeapon naturalTail3d6 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Tail3d6");
+            BlueprintItemWeapon naturalBite2d8 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite2d8");
+            BlueprintItemWeapon naturalTalon2d6 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Talon2d6");
             BlueprintUnit dog = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_Dog");
             BlueprintUnit eagle = all.OfType<BlueprintUnit>().Single(value =>
@@ -7645,6 +7654,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 tierThreeFourKeys.All(key =>
                     ExpandedSummoningNaturalUnitExact(all,
                         ExpandedSummoningNaturalProfiles.For(key)));
+            string[] tierFiveSevenKeys = { "dire-lion", "ankylosaurus",
+                "dire-bear", "dire-tiger", "elephant", "mastodon", "roc" };
+            bool tierFiveSevenNaturalsExact =
+                naturalTail3d6.Damage.Rolls == 3 &&
+                naturalTail3d6.Damage.Dice == DiceType.D6 &&
+                naturalBite2d8.Damage.Rolls == 2 &&
+                naturalBite2d8.Damage.Dice == DiceType.D8 &&
+                naturalTalon2d6.Damage.Rolls == 2 &&
+                naturalTalon2d6.Damage.Dice == DiceType.D6 &&
+                tierFiveSevenKeys.All(key =>
+                    ExpandedSummoningNaturalUnitExact(all,
+                        ExpandedSummoningNaturalProfiles.For(key)));
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7701,6 +7722,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tierThreeFourNaturalsExact ? "exact" : "mismatch",
                     tierThreeFourNaturalsExact,
                     "twelve exact animal-HD chassis with native pounce, ferocity, trip, poison, armor, natural attacks, and bounded documented deviations"),
+                Assertion("expanded-summoning-tier-five-seven-naturals", "exact",
+                    tierFiveSevenNaturalsExact ? "exact" : "mismatch",
+                    tierFiveSevenNaturalsExact,
+                    "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7791,14 +7816,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "Gore1d8", "73ed4e955295e62469fe471f1d49d9ef" },
                     { "Gore2d6", "d1f80b5c5c73cc84db7854774850b08c" },
                     { "Tail1d12", all.OfType<BlueprintItemWeapon>().Single(value =>
-                        value.name == "KMG_Summoning_Natural_Tail1d12").AssetGuid }
+                        value.name == "KMG_Summoning_Natural_Tail1d12").AssetGuid },
+                    { "Tail3d6", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Tail3d6").AssetGuid },
+                    { "BiteLarge2d6", "48647a4517e6512419e937f7a617ea5c" },
+                    { "Claw2d4", "8afc47748d00b3e4a8aff2787d9ee350" },
+                    { "Bite2d8", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Bite2d8").AssetGuid },
+                    { "Talon2d6", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Talon2d6").AssetGuid },
+                    { "Gore2d8", "de42c58801037b84c9d992634ddd7220" },
+                    { "Slam2d6", "c2ce7bc3559b2024ea91ddf5bb321f0a" }
                 };
             IDictionary<int, string> armorGuids = new Dictionary<int, string> {
                 { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
                 { 2, "45a52ce762f637f4c80cc741c91f58b7" },
                 { 3, "f6e106931f95fec4eb995f0d0629fb84" },
                 { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
-                { 6, "987ba44303e88054c9504cb3083ba0c9" }
+                { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
+                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
+                { 14, "209a2920891b580418b4e5e80466e134" }
             };
             IDictionary<string, string> factGuids =
                 new Dictionary<string, string>(StringComparer.Ordinal) {
@@ -7817,7 +7856,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
                     { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
                     { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
-                    { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" }
+                    { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" },
+                    { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
+                    { "ImprovedCriticalBite", "8388e2e50bb779840adc8129b3d63bf1" },
+                    { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
+                    { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
+                    { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
+                    { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
                 };
             string[] expectedFacts = profile.Facts.Select(value =>
                 factGuids[value]).Concat(profile.NaturalArmor == 0

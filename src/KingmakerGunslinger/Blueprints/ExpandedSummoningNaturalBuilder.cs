@@ -25,6 +25,12 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Bite1d3";
         private const string Tail1d12Symbol =
             "KMG.Summoning.Natural.Tail1d12";
+        private const string Tail3d6Symbol =
+            "KMG.Summoning.Natural.Tail3d6";
+        private const string Bite2d8Symbol =
+            "KMG.Summoning.Natural.Bite2d8";
+        private const string Talon2d6Symbol =
+            "KMG.Summoning.Natural.Talon2d6";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -37,12 +43,20 @@ namespace KingmakerGunslinger.Blueprints
             "118fdd03e569a66459ab01a20af6811a";
         private const string NativeClaw1d6Guid =
             "c76f72a862d168d44838206524366e1c";
+        private const string NativeClaw2d4Guid =
+            "8afc47748d00b3e4a8aff2787d9ee350";
         private const string NativeGore1d8Guid =
             "73ed4e955295e62469fe471f1d49d9ef";
         private const string NativeGore2d6Guid =
             "d1f80b5c5c73cc84db7854774850b08c";
         private const string NativeTail1d8Guid =
             "ae822725634c6f0418b8c48bd29df255";
+        private const string NativeBiteLarge2d6Guid =
+            "48647a4517e6512419e937f7a617ea5c";
+        private const string NativeMastodonGoreGuid =
+            "de42c58801037b84c9d992634ddd7220";
+        private const string NativeMastodonSlamGuid =
+            "c2ce7bc3559b2024ea91ddf5bb321f0a";
         private const string AnimalClassGuid =
             "4cd1757a0eea7694ba5c933729a53920";
         private const string VerminClassGuid =
@@ -55,7 +69,11 @@ namespace KingmakerGunslinger.Blueprints
                 { 2, "45a52ce762f637f4c80cc741c91f58b7" },
                 { 3, "f6e106931f95fec4eb995f0d0629fb84" },
                 { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
-                { 6, "987ba44303e88054c9504cb3083ba0c9" }
+                { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
+                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
+                { 14, "209a2920891b580418b4e5e80466e134" }
             };
         private static readonly IDictionary<string, string> FactGuids =
             new Dictionary<string, string>(StringComparer.Ordinal) {
@@ -79,7 +97,13 @@ namespace KingmakerGunslinger.Blueprints
                 { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
                 { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
                 { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
-                { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" }
+                { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" },
+                { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
+                { "ImprovedCriticalBite", "8388e2e50bb779840adc8129b3d63bf1" },
+                { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
+                { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
+                { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
+                { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
             };
         private static readonly ISet<string> BaseUnitFactKeys =
             new HashSet<string>(new[] { "ReducedReach", "Ferocity" },
@@ -97,14 +121,29 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintItemWeapon>(library, NativeBite1d6Guid,
                     "native bite animation weapon");
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
-                Bite1d4Symbol), Bite1d4Symbol, DiceType.D4);
+                Bite1d4Symbol), Bite1d4Symbol, 1, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
-                Bite1d3Symbol), Bite1d3Symbol, DiceType.D3);
+                Bite1d3Symbol), Bite1d3Symbol, 1, DiceType.D3);
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeTail1d8Guid,
                     "native animated tail weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Tail1d12Symbol),
-                Tail1d12Symbol, DiceType.D12);
+                Tail1d12Symbol, 1, DiceType.D12);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeTail1d8Guid,
+                    "native animated tail weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Tail3d6Symbol),
+                Tail3d6Symbol, 3, DiceType.D6);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBiteLarge2d6Guid,
+                    "native large bite weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Bite2d8Symbol),
+                Bite2d8Symbol, 2, DiceType.D8);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw2d4Guid,
+                    "native large claw animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Talon2d6Symbol),
+                Talon2d6Symbol, 2, DiceType.D6);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -115,7 +154,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureWeapon(BlueprintItemWeapon native,
-            BlueprintItemWeapon target, string symbol, DiceType dice)
+            BlueprintItemWeapon target, string symbol, int rolls, DiceType dice)
         {
             CopyFields(native, target);
             target.name = InternalName(symbol);
@@ -123,7 +162,7 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             SetField(target, "m_OverrideDamageDice", true);
-            SetField(target, "m_DamageDice", new DiceFormula(1, dice));
+            SetField(target, "m_DamageDice", new DiceFormula(rolls, dice));
             SetField(target, "m_Enchantments", Array.Empty<Kingmaker.Blueprints
                 .Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
@@ -230,12 +269,29 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintItemWeapon>(library, NativeClaw1d4Guid, "1d4 claw");
             if (key == "Claw1d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeClaw1d6Guid, "1d6 claw");
+            if (key == "Claw2d4") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw2d4Guid, "2d4 claw");
             if (key == "Gore1d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeGore1d8Guid, "1d8 gore");
             if (key == "Gore2d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeGore2d6Guid, "2d6 gore");
             if (key == "Tail1d12") return Require<BlueprintItemWeapon>(bySymbol,
                 Tail1d12Symbol);
+            if (key == "Tail3d6") return Require<BlueprintItemWeapon>(bySymbol,
+                Tail3d6Symbol);
+            if (key == "BiteLarge2d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBiteLarge2d6Guid,
+                    "large 2d6 bite");
+            if (key == "Bite2d8") return Require<BlueprintItemWeapon>(bySymbol,
+                Bite2d8Symbol);
+            if (key == "Talon2d6") return Require<BlueprintItemWeapon>(bySymbol,
+                Talon2d6Symbol);
+            if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
+                    "mastodon 2d8 gore");
+            if (key == "Slam2d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeMastodonSlamGuid,
+                    "mastodon 2d6 slam");
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }
