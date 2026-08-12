@@ -1,7 +1,7 @@
 # Expanded Summoning fidelity matrix
 
 Status: incremental; template/alignment, seven custom special creatures, and
-the tier I-IV natural/proxy group are final-live structure-qualified. Runtime
+the complete tier I-VII natural/proxy group are final-live structure-qualified. Runtime
 cast, visual, persistence, and compatibility columns remain open unless
 explicitly marked.
 
@@ -30,6 +30,13 @@ Primary rules references:
 - [Grizzly Bear](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Grizzly+Bear)
 - [Lion](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lion)
 - [Pteranodon](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Pteranodon)
+- [Dire Lion](https://legacy.aonprd.com/bestiary/lion.html)
+- [Ankylosaurus](https://legacy.aonprd.com/bestiary/dinosaur.html)
+- [Dire Bear](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dire+Bear+%28Cave+Bear%29)
+- [Dire Tiger / Smilodon](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dire+Tiger+%28Smilodon%29)
+- [Elephant](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Elephant)
+- [Mastodon](https://legacy.aonprd.com/bestiary/elephant.html)
+- [Roc](https://legacy.aonprd.com/bestiary/roc.html)
 
 ## Native dedicated summon reuse
 
@@ -87,6 +94,30 @@ The fresh-process assertion compares every row's HD/class, size, six ability
 scores, speed, primary/additional/secondary weapon references, natural armor,
 feat/special-fact GUIDs, extraplanar marker, and empty inventory against the
 checked-in catalog. It also verifies the KMG crocodile tail is exactly 1d12.
+
+## Tier V-VII natural and proxy reconstruction
+
+The final natural group uses the same immutable reconstruction contract: the
+donor supplies only the view/rig, while KMG owns all HD, stats, body weapons,
+facts, brain, inventory, and alignment state. The three KMG weapon identities
+below preserve proven native animation categories while freezing tabletop dice.
+
+| Creature | Families/tier | KMG unit; visual donor | Delivered chassis/offense | Conservative deviation | Qualification |
+|---|---|---|---|---|---|
+| Dire Lion | SM V; SNA V | `56c64aa6765a4c37a1b30c0c5b31427b`; Smilodon `beae4985629a6f64eb98081e3171e4c1` | Large animal 8; 25/15/17/2/12/10; speed 40; NA +4; bite 1d8, two 1d6 claws plus two secondary rake claws; Pounce, Improved Initiative, Perception/claw focus | Grab and Run omitted; secondary rake cadence requires actual-charge proof | Structural PASS `20260812T0045336396930Z`; cast/visual pending |
+| Ankylosaurus | SM V; SNA V | `10c80d5cfa594332bd3e5127799e426f`; Hodag `c3524f96954a1d94f8525b86e7626633` | Huge animal 10; 27/10/17/2/13/8; speed 30; NA +14; KMG 3d6 tail `15394605e1664a51bce4b50f38a7603a`; Great Fortitude, Power Attack | Strength-based daze/stun rider omitted pending a proven bounded native Dazed contract; bull-rush/overrun/tail-focus identities unproven | Structural PASS; tail animation/cast/visual pending |
+| Dire Bear | SM VI; SNA VI | `11b15a81cea1498babfdb57af1b53c41`; `260da5b557e3fb04bb4960a36a5d1dc4` | Large animal 10; 25/13/21/2/12/10; speed 40; NA +8; bite 1d8, two claws 1d6; Improved Initiative, Iron Will, Perception focus | Grab, Endurance, and Run omitted | Structural PASS; full attack/cast/visual pending |
+| Dire Tiger / Smilodon | SM VI; SNA VI | `d15ee151c2274f9f86ab523f111bc3af`; `beae4985629a6f64eb98081e3171e4c1` | Large animal 14; 27/15/17/2/12/10; speed 40; NA +6; 2d6/19-20 bite, two 2d4 claws plus two secondary rake claws; Pounce and exact critical/focus feats | Grab and Run omitted; secondary rake cadence requires actual-charge proof | Structural PASS; charge/full-attack/cast/visual pending |
+| Elephant | SM VI; SNA VI | `9dd8544097234f05bcd35d400d91b510`; Mastodon `028cc6f46e7998f46855a33ffde89567` | Huge animal 11; 30/10/19/2/13/7; speed 40; NA +9; native 2d8 gore and secondary 2d6 slam; Great Fortitude, Iron Will, Power Attack, Perception focus | Trample omitted pending a commandable path-safe movement contract; Endurance and Improved Bull Rush identities unproven | Structural PASS; gore/slam/cast/scale pending |
+| Mastodon | SM VII; SNA VII | `e129ffc2768d47c5bee61bb99b0c8703`; dedicated summon `028cc6f46e7998f46855a33ffde89567` | Huge animal 14; 34/12/21/2/13/7; speed 40; NA +12; native 2d8 gore and secondary 2d6 slam; Iron Will, Power Attack, Perception focus | Trample omitted; Endurance, Improved Bull Rush/Will, and gore-focus concrete identities unproven | Structural PASS; gore/slam/cast/scale pending |
+| Roc | SM VII; SNA VII | `439e955cb0fd41daafd0478d3641615a`; Giant Eagle/Roc rig `406c1e1af5400ac4881e330502ccbd9e` | Gargantuan animal 16; 28/15/17/2/12/11; 80-foot airborne movement; NA +14; KMG 2d8 bite `c19d1025fe2b47769c93a3b76d0c052c` and two 2d6 talons `8a3741a7598147baa08de552565635ad`; exact critical/initiative/save/focus feats | Separate ground speed, talon grab, and Flyby Attack omitted | Structural PASS; footprint/reach/navigation/camera/cast/visual pending |
+
+Fresh Steam-backed run `20260812T0045336396930Z` passed all 29 assertions on
+exact source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. It checked every
+profile field and attack reference, exact 3d6/2d8/2d6 custom weapon dice, all
+681 placements, the constant 1,403 registry, and zero donor component aliases,
+forbidden references, inherited spells, inventory, or native-action
+contamination. No save was accessed.
 
 ## Lantern Archon
 

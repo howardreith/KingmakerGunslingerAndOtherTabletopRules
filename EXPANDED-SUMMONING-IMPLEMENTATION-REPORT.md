@@ -164,6 +164,22 @@ domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
 
+The complete tier I-VII natural/proxy catalog is now structurally qualified on
+committed source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. The final group adds
+Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon,
+and Roc with immutable PF1e chassis and proxy-only donor views. Three frozen
+KMG weapons provide exact 3d6 tail, 2d8 bite, and 2d6 talon dice without
+mutating native weapons. Guarded run
+`20260812T0045336396930Z-observe-expanded-summoning-inventory` passed all 29
+assertions in 107,891 ms: 67 units, 1,048 abilities, registry 1,403, all 681
+placements, exact tier I-VII and special structures, and zero sanitizer,
+donor-alias, prohibited-reference, inventory, inherited-spell, or native-action
+contamination failures. Call of the Wild final-live parents remained intact;
+no save was accessed. Static validation and all 1,009 domain tests, clean
+Release, exact-reference local build, and strict packages pass. Actual casts,
+quantity rolls, visuals, cleanup/persistence, the 16-state fresh-launch matrix,
+and compatibility-profile qualification remain open and are not claimed.
+
 The tier III-IV natural/proxy tranche is now structurally qualified on
 committed source `2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6`. Boar, Leopard,
 Monitor Lizard, Cheetah, Crocodile, Dire Bat, Wolverine, Dire Boar, Dire Wolf,

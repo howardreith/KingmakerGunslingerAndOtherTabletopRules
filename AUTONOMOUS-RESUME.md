@@ -10,15 +10,15 @@
 - Completed: Shield Other range repair; frozen 67-creature/681-placement logical
   catalog; guarded final-live parent/donor/action-graph inventory; additive merge
   and rollback policies; sanitizer contract; schema-3 fourth-module state with
-  all 16 logical combinations; 1,146 Expanded Summoning identities and exact
-  aggregate registry count 1,400; all 681 abilities and additive base-parent
+  all 16 logical combinations; 1,149 Expanded Summoning identities and exact
+  aggregate registry count 1,403; all 681 abilities and additive base-parent
   placements; HD-banded celestial/fiendish templates, spawn-local alignment,
-  bounded smite; all 55 selected donor graphs; all tier I-IV natural/proxy
+  bounded smite; all 55 selected donor graphs; all tier I-VII natural/proxy
   chassis; and the special Lantern Archon, Invisible Stalker, Shadow Demon,
   Salamander, Succubus, Bebelith, and Pixie structures.
 - Current immutable mechanical source is
-  `2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6`. The complete domain suite is
-  1,008/1,008 PASS; clean Release and strict package validation PASS.
+  `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. The complete domain suite is
+  1,009/1,009 PASS; clean Release and strict package validation PASS.
 - Native elementals and mephits plus the reconstructed Lantern Archon are
   structurally qualified by fresh Steam run
   `20260811T2138366091237Z-observe-expanded-summoning-inventory`: all 19
@@ -31,13 +31,14 @@
 - Invisible Stalker and Shadow Demon are reconstructed and exact-structure
   qualified by guarded PASS `20260811T2207541420526Z`.
 - Latest guarded PASS is
-  `20260812T0031212209441Z-observe-expanded-summoning-inventory`: all 28
-  assertions passed on exact source `2534f57`, including 67 units, 1,048
-  abilities, registry 1,400, all 681 placements, exact tier I-IV natural/proxy
-  and special structures, and zero sanitizer/isolation failures. No save was
-  accessed. Exact next action is the remaining tier V-VII natural/proxy group:
-  Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon,
-  and Roc.
+  `20260812T0045336396930Z-observe-expanded-summoning-inventory`: all 29
+  assertions passed on exact source `3c2c5fe`, including 67 units, 1,048
+  abilities, registry 1,403, all 681 placements, exact tier I-VII natural/proxy
+  and special structures, and zero sanitizer/isolation failures. Call of the
+  Wild final-live parents were preserved and no save was accessed. Exact next
+  action is the actual-cast/disposable harness covering every one-creature
+  option and representative quantity/feat/cleanup mechanics, followed by
+  visual, persistence, 16-state, and compatibility qualification.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

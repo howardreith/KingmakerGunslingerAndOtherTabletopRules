@@ -892,3 +892,35 @@
   `b89370cc94f4ef125e407c9e7e9fa8164db6e5d2ddf049d9cb7f6ba1d3713725`;
   local-runtime package SHA-256:
   `994ab69e830668d50147901bdf7d410c50aa732f0ba36ace1903f85f99875eb0`.
+
+## 2026-08-12 - Tier V-VII natural/proxy structural PASS
+
+- Added immutable tabletop profiles for Dire Lion, Ankylosaurus, Dire Bear,
+  Dire Tiger/Smilodon, Elephant, Mastodon, and Roc. Donors contribute only
+  their selected view/rig; exact animal HD, ability scores, size, speed,
+  natural armor, weapons, feats, brain, inventory, and alignment are KMG-owned.
+- Added frozen weapons `KMG.Summoning.Natural.Tail3d6`
+  (`15394605e1664a51bce4b50f38a7603a`), `Bite2d8`
+  (`c19d1025fe2b47769c93a3b76d0c052c`), and `Talon2d6`
+  (`8a3741a7598147baa08de552565635ad`). The ledger is 1,403 active plus one
+  reserved; feature-local/registry counts are 1,149/1,403 in every module state.
+- Reused exact native Smilodon critical/focus/pounce structures and Mastodon
+  gore/slam weapons. Recorded conservative omissions for ankylosaurus stun,
+  elephant/mastodon trample, grab, separate movement modes, and unproven feat
+  identities; none adds damage, control, or persistent state.
+- Repository validation, `1009/1009` domain tests, clean Release, and strict
+  package validation passed. Runtime DLL SHA-256:
+  `af525f7db07df088a4f71e674365644500fd9a2982da9e92f0d99ecd648fd199`;
+  strict package SHA-256:
+  `3431fefac0163119b889f40908f92bb12f8a9731bf8fe01bc342fbdf5159cc3c`;
+  local-runtime package SHA-256:
+  `d05baab244a7841171cc43648144b3c4cdc176624b76682fa8bf77bb6a64f908`.
+- Guarded fresh-process run
+  `20260812T0045336396930Z-observe-expanded-summoning-inventory` passed on
+  committed source `3c2c5fef82a7d9b032f7da906385013a5699cc8c` in 107,891 ms.
+  All 29 assertions passed: 67 units, 1,048 abilities, registry 1,403, all 681
+  placements, exact tier I-VII natural/proxy and special structures, and zero
+  donor aliases, prohibited references, inherited spells, starting inventory,
+  or native-action contamination. Call of the Wild final-live summon surfaces
+  were preserved. No save was accessed; the harness restored the Mods/settings
+  transaction.

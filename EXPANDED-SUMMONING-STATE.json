@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6",
+  "currentSha": "3c2c5fef82a7d9b032f7da906385013a5699cc8c",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "tier-three-four-natural-proxy-reconstruction-runtime-structure-qualified",
-  "nextConcreteAction": "Inventory, reconstruct, and structurally qualify the remaining tier V-VII natural/proxy group (Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon, and Roc), then proceed to actual-cast, visual, persistence, matrix, and compatibility qualification.",
-  "domainTestResult": "1008/1008 PASS",
-  "releaseBuildResult": "PASS for runtime-qualified tier III-IV natural/proxy reconstruction; DLL SHA-256 f09a132d50cd9058c16f609f9910181c30e04e630dc19166233f441891241794",
-  "packageResult": "strict PASS for runtime-qualified tier III-IV natural/proxy reconstruction; package SHA-256 b89370cc94f4ef125e407c9e7e9fa8164db6e5d2ddf049d9cb7f6ba1d3713725; local-runtime SHA-256 994ab69e830668d50147901bdf7d410c50aa732f0ba36ace1903f85f99875eb0",
-  "blueprintLedger": "1146 Expanded Summoning identities; 1400 active, 1 reserved, 1401 total; derived constant registry count 1400",
+  "completedPhase": "complete-tier-one-seven-natural-proxy-reconstruction-runtime-structure-qualified",
+  "nextConcreteAction": "Implement and qualify the disposable actual-cast harness for every one-creature option plus per-family/tier quantity, feat, control, duration, and cleanup coverage; then run visual, persistence, 16-state, and compatibility qualification.",
+  "domainTestResult": "1009/1009 PASS",
+  "releaseBuildResult": "PASS for runtime-qualified complete tier I-VII natural/proxy reconstruction; exact-reference DLL SHA-256 af525f7db07df088a4f71e674365644500fd9a2982da9e92f0d99ecd648fd199",
+  "packageResult": "strict PASS for runtime-qualified complete tier I-VII natural/proxy reconstruction; package SHA-256 3431fefac0163119b889f40908f92bb12f8a9731bf8fe01bc342fbdf5159cc3c; local-runtime SHA-256 d05baab244a7841171cc43648144b3c4cdc176624b76682fa8bf77bb6a64f908",
+  "blueprintLedger": "1149 Expanded Summoning identities; 1403 active, 1 reserved, 1404 total; derived constant registry count 1403",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -284,6 +284,13 @@
       "sourceSha": "2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0031212209441Z-observe-expanded-summoning-inventory/runtime-result.json",
       "evidence": "All 28 assertions passed in 106947 ms: 67 units, 1048 abilities, registry 1400, all 681 placements, exact tier I-IV natural/proxy and special structures, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory",
+      "result": "PASS",
+      "sourceSha": "3c2c5fef82a7d9b032f7da906385013a5699cc8c",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0045336396930Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "evidence": "All 29 assertions passed in 107891 ms: 67 units, 1048 abilities, registry 1403, all 681 placements, exact tier I-VII natural/proxy and special structures, exact 3d6/2d8/2d6 custom weapon dice, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
     }
   ],
   "compatibilityProfilesCompleted": [],
@@ -291,6 +298,7 @@
     "The hidden KMG extraplanar marker is deterministic in standalone; optional Call of the Wild native-marker reconciliation remains pending.",
     "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",
     "Tier III-IV natural deviations are explicit: separate movement modes, generic grab/death roll, cheetah sprint, dire-bat blindsense/Alertness, wolverine rage, and unproven Run/Endurance/Survival-focus identities are conservatively omitted; Leopard/Lion use Owlcat's four-claw pounce/rake body representation pending actual cadence proof.",
+    "Tier V-VII natural deviations are explicit: Ankylosaurus daze/stun and Elephant/Mastodon trample await exact bounded contracts; grab, separate movement modes, Flyby Attack, and unproven feat identities are conservatively omitted; Dire Lion/Tiger rake uses secondary native limbs pending actual charge-cadence proof.",
     "Actual casts, visual contracts, cleanup/persistence, the 16-state launch matrix, and compatibility-profile qualification remain pending."
   ],
   "branchPushed": true,
