@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
+            SummonIconCatalog.Validate();
             ConfigureNativeTierOnePreservation(library, bySymbol,
                 MonsterParents[0],
                 ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol);
@@ -99,7 +100,43 @@ namespace KingmakerGunslinger.Blueprints
                     Array.Empty<BlueprintBuff>(), false,
                     family == SummonFamily.NaturesAlly ?
                         SummonAlignmentMode.Caster : (SummonAlignmentMode?)null);
+                Sprite icon = IconFor(variant.Creature, unit, bySymbol,
+                    native.Icon);
+                BlueprintUnitFactAccess.Resolve().SetIcon(ability, icon);
+                if (family == SummonFamily.Monster &&
+                    variant.Creature.MonsterTemplated)
+                {
+                    BlueprintUnitFactAccess.Resolve().SetIcon(
+                        Require<BlueprintAbility>(bySymbol,
+                            symbol + ".Celestial"), icon);
+                    BlueprintUnitFactAccess.Resolve().SetIcon(
+                        Require<BlueprintAbility>(bySymbol,
+                            symbol + ".Fiendish"), icon);
+                }
             }
+        }
+
+        private static Sprite IconFor(SummonCreatureSpec creature,
+            BlueprintUnit unit,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            Sprite fallback)
+        {
+            if (unit.PortraitSafe != null &&
+                unit.PortraitSafe.SmallPortrait != null)
+                return unit.PortraitSafe.SmallPortrait;
+            string representativeKey = SummonIconCatalog.RepresentativeFor(
+                SummonIconCatalog.CategoryFor(creature.Key));
+            SummonCreatureSpec representative = ExpandedSummoningCatalog.All
+                .Single(value => value.Key == representativeKey);
+            BlueprintUnit representativeUnit = Require<BlueprintUnit>(bySymbol,
+                ExpandedSummoningIdentityCatalog.UnitSymbol(representative));
+            if (representativeUnit.PortraitSafe != null &&
+                representativeUnit.PortraitSafe.SmallPortrait != null)
+                return representativeUnit.PortraitSafe.SmallPortrait;
+            if (fallback == null) throw new InvalidOperationException(
+                "Summon option has neither creature/category portrait nor " +
+                "native fallback icon: " + creature.Key + ".");
+            return fallback;
         }
 
         private static void ConfigureNativeTierOnePreservation(

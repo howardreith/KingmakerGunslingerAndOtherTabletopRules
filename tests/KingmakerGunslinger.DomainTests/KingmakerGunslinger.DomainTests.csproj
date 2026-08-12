@@ -46,6 +46,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantSpec.cs"><Link>Summoning\SummonVariantSpec.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeOptionCatalog.cs"><Link>Summoning\SummonNativeOptionCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonIconCatalog.cs"><Link>Summoning\SummonIconCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdentityCatalog.cs"><Link>Summoning\ExpandedSummoningIdentityCatalog.cs</Link></Compile>

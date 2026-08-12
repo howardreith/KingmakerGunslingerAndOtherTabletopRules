@@ -457,6 +457,12 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningDonorCatalog.Validate();
             Assertions.Equal(67, ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
+            Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",
+                ExpandedSummoningDonorCatalog.For("invisible-stalker").Guid,
+                "Invisible Stalker must use the Medium Air Elemental view.");
+            Assertions.Equal("2e24256e459468743b91fbb9aa85e1ab",
+                ExpandedSummoningDonorCatalog.For("huge-air-elemental").Guid,
+                "The real Huge Air Elemental donor must remain unchanged.");
             Assertions.True(ExpandedSummoningDonorCatalog.All.Any(value =>
                 !value.DedicatedSummon),
                 "Proxy donors must remain explicit sanitizer obligations.");
@@ -641,12 +647,14 @@ namespace KingmakerGunslinger.DomainTests
             string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningPublication.cs"));
-            foreach (string token in new[] { "SummonVariantMergePolicy.Merge",
+            foreach (string token in new[] { "SummonDisplayOrderPolicy.Order",
                 "OriginalComponents", "PublishedComponents",
                 "rollback refused after unrelated mutation",
                 "nativePreservation", "new[] { nativePreservation }",
                 "Direct summon publication requires exactly one frozen native-preservation child",
-                "originals.Any(original => !variants.Variants.Contains(original))" })
+                "SummonNativeOptionCatalog.Find",
+                "Native duplicate map did not resolve exactly one KMG option",
+                "preservedOriginals.Any(original =>" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
             string builder = File.ReadAllText(Path.Combine(

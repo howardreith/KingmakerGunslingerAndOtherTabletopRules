@@ -55,6 +55,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static ExpandedSummoningPublication Publish(
             LibraryScriptableObject library, ExpandedSummoningBlueprintSet set)
         {
+            SummonNativeOptionCatalog.Validate();
             var records = new List<ExpandedSummoningPublication.Record>();
             try
             {
@@ -67,9 +68,10 @@ namespace KingmakerGunslinger.Blueprints
                     BlueprintAbility parent = BlueprintLibraryLookup
                         .RequireExact<BlueprintAbility>(library, guid,
                             "required native summon parent");
-                    BlueprintAbility[] additions = ExpandedSummoningCatalog
+                    SummonVariantSpec[] specs = ExpandedSummoningCatalog
                         .GenerateVariants(family).Where(value =>
-                            value.ParentTier == tier).Select(value =>
+                            value.ParentTier == tier).ToArray();
+                    BlueprintAbility[] additions = specs.Select(value =>
                                 (BlueprintAbility)set.BySymbol[
                                     ExpandedSummoningIdentityCatalog.AbilitySymbol(value)])
                         .ToArray();
@@ -79,7 +81,8 @@ namespace KingmakerGunslinger.Blueprints
                                 .NativeMonsterTierOneSymbol :
                             ExpandedSummoningIdentityCatalog
                                 .NativeNaturesAllyTierOneSymbol];
-                    PublishParent(parent, nativePreservation, additions, records);
+                    PublishParent(parent, family, tier, nativePreservation,
+                        additions, specs, records);
                 }
                 return new ExpandedSummoningPublication(records);
             }
@@ -130,7 +133,9 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void PublishParent(BlueprintAbility parent,
+            SummonFamily family, int tier,
             BlueprintAbility nativePreservation, BlueprintAbility[] additions,
+            SummonVariantSpec[] specs,
             List<ExpandedSummoningPublication.Record> records)
         {
             BlueprintComponent[] before = parent.ComponentsArray ??
@@ -144,8 +149,38 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintAbility[] originals = existing == null ?
                 new[] { nativePreservation } : existing.Variants ??
                     Array.Empty<BlueprintAbility>();
-            IList<BlueprintAbility> merged = SummonVariantMergePolicy.Merge(
-                originals, additions, value => value.AssetGuid);
+            if (originals.Any(value => value == null) ||
+                additions.Any(value => value == null) ||
+                originals.Concat(additions).GroupBy(value => value.AssetGuid,
+                    StringComparer.Ordinal).Any(group => group.Count() > 1))
+                throw new InvalidOperationException(
+                    "Expanded Summoning parent contains a null or duplicate GUID: " +
+                    parent.AssetGuid);
+            var additionSpecs = additions.Select((ability, index) => new {
+                Ability = ability, Spec = specs[index] }).ToDictionary(
+                    value => value.Ability.AssetGuid, value => value.Spec,
+                    StringComparer.Ordinal);
+            BlueprintAbility[] preservedOriginals = originals.Where(original =>
+            {
+                SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
+                    family, tier, original.AssetGuid);
+                if (native == null || !native.IsSemanticDuplicate) return true;
+                int matches = specs.Count(value => value.Creature.Key ==
+                    native.EquivalentCreatureKey && value.Multiplicity ==
+                    native.Multiplicity);
+                if (matches != 1) throw new InvalidOperationException(
+                    "Native duplicate map did not resolve exactly one KMG option: " +
+                    native.Guid);
+                return false;
+            }).ToArray();
+            IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
+                preservedOriginals, additions,
+                value => {
+                    SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
+                        family, tier, value.AssetGuid);
+                    return native == null ? (SummonMultiplicity?)null :
+                        native.Multiplicity;
+                }, value => additionSpecs[value.AssetGuid].Multiplicity);
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
             variants.name = "$KMG_ExpandedSummoning_Variants";
             variants.Variants = merged.ToArray();
@@ -160,7 +195,10 @@ namespace KingmakerGunslinger.Blueprints
             if (!ReferenceEquals(parent.ComponentsArray, after) ||
                 additions.Any(addition => variants.Variants.Count(value =>
                     value.AssetGuid == addition.AssetGuid) != 1) ||
-                originals.Any(original => !variants.Variants.Contains(original)))
+                preservedOriginals.Any(original =>
+                    !variants.Variants.Contains(original)) ||
+                originals.Where(original => !preservedOriginals.Contains(original))
+                    .Any(original => variants.Variants.Contains(original)))
                 throw new InvalidOperationException(
                     "Expanded Summoning parent publication validation failed: " +
                     parent.AssetGuid);

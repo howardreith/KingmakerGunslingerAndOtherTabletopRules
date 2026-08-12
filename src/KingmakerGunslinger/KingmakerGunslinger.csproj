@@ -50,6 +50,9 @@
     <Compile Include="Summoning\ExpandedSummoningSpecialProfiles.cs" />
     <Compile Include="Summoning\ExpandedSummoningNaturalProfiles.cs" />
     <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
+    <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
+    <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
+    <Compile Include="Summoning\SummonIconCatalog.cs" />
     <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningIdentityCatalog.cs" />
