@@ -5,7 +5,7 @@
 - The human spellbook/UI acceptance test supersedes the prior completion
   statement below. The repair baseline is
   `e9f251c584607dd45a45a2414e2aaffabff4c44b`; the last pushed checkpoint is
-  `f3a6cea0161f88e683bfd91e7ef4a1cab421c8b6` on
+  `7174ca25d672dae4ef57c07a827b2dc6f3dd3848` on
   `codex/expanded-summoning`; draft PR #2 remains open and must not merge.
 - Durable repair contract:
   `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
@@ -21,9 +21,16 @@
   and 67-view run
   `20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4`
   pass.
-- Exact next action: commit/push Erinyes, then finish all-18-parent menu count,
-  reconciliation/order/icon assertions, invalid-cast no-slot evidence,
-  persistence/module/profile regression, and final 0.0.79 artifact freeze.
+- All 18 parent-menu contracts and the six exact standalone Summon Elemental
+  roots pass structural run
+  `20260812T1920367972975Z-41fb84e591cc47eb8cacecf3ca2c1ad4`.
+  Actual-parent run
+  `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
+  repeats all `681/681` placements and proves a distant command cancelled
+  before cast range spends no slot and fires no cast/spawn rules.
+- Exact next action: commit/push this evidence checkpoint, then finish dynamic
+  template descriptor qualification, persistence/module/profile regression,
+  and the final 0.0.79 artifact freeze.
 - The old package hashes and completion evidence are historical controls, not
   repaired-release qualification.
 

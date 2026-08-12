@@ -152,6 +152,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string AbilityDataLinks;
             internal bool CanTarget;
             internal bool CanCast;
+            internal bool WithinCastRange;
             internal bool CommandStarted;
             internal string CommandResult;
             internal int RuleCastCount;
@@ -178,7 +179,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Spellbook + ";level=" + SpellLevel + ";slots=" +
                     SlotsBefore + "->" + SlotsAfter + ";links=" +
                     AbilityDataLinks + ";canTarget=" + CanTarget +
-                    ";canCast=" + CanCast + ";started=" + CommandStarted +
+                    ";canCast=" + CanCast + ";withinCastRange=" +
+                    WithinCastRange + ";started=" + CommandStarted +
                     ";result=" + CommandResult + ";ruleCast=" + RuleCastCount +
                     ";spawnActions=" + SpawnActionCount + ";ruleSummon=" +
                     RuleSummonCount + ";live=" + LiveCount + ";kind=" +
@@ -7928,6 +7930,46 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMenuAudit menuAudit =
                 AuditExpandedSummoningMenus(all, canonicalSummonParents,
                     logicalVariants);
+            string[] standaloneElementalRootGuids = {
+                "970c6db48ff0c6f43afc9dbb48780d03",
+                "e42b1dbff4262c6469a9ff0a6ce730e3",
+                "89404dd71edc1aa42962824b44156fe5",
+                "766ec978fa993034f86a372c8eb1fc10",
+                "8eb769e3b583f594faabe1cfdb0bb696",
+                "8a7f8c1223bda1541b42fd0320cdbe2b" };
+            BlueprintAbility[] standaloneElementalCandidates =
+                standaloneElementalRootGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        BlueprintBootstrap.Library, guid,
+                        "standalone Summon Elemental root")).ToArray();
+            bool standaloneElementalExact = standaloneElementalCandidates.Length ==
+                standaloneElementalRootGuids.Length &&
+                standaloneElementalCandidates.All(value =>
+                {
+                    AbilityVariants variants = value.ComponentsArray
+                        .OfType<AbilityVariants>().Single();
+                    return !parentGuids.Contains(value.AssetGuid) &&
+                        variants.Variants != null &&
+                        variants.Variants.Length == 4 &&
+                        variants.Variants.All(variant => variant != null &&
+                            !variant.name.StartsWith("KMG_",
+                                StringComparison.Ordinal) &&
+                            ExpandedSummoningSpawnActionCount(variant) == 1 &&
+                            ExpandedSummoningTemplateApplyCount(variant) == 0 &&
+                            ExpandedSummoningTemplateByCasterCount(variant) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Caster) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Celestial) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Fiendish) == 0);
+                });
+            string standaloneElementalObserved = string.Join("|",
+                standaloneElementalCandidates.Select(value => value.AssetGuid +
+                    ":" + value.name + ":" + value.Name + ":variants=" +
+                    value.ComponentsArray.OfType<AbilityVariants>()
+                        .Single().Variants.Length)
+                    .ToArray());
             int exactParentMappings = 0, nativeContractNodes = 0,
                 acadamaeClassifiedNodes = 0, materialContractNodes = 0,
                 metamagicContractNodes = 0, actionBarContractNodes = 0;
@@ -8542,6 +8584,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     menuAudit.HighTierUniqueNativeExact ? "exact" :
                         "mismatch", menuAudit.HighTierUniqueNativeExact,
                     "exact GUID-based unique native reconciliation at sparse KMG tiers VIII and IX"),
+                Assertion("expanded-summoning-standalone-summon-elemental",
+                    "present with native/optional graph and zero KMG mutation",
+                    standaloneElementalObserved, standaloneElementalExact,
+                    "final-live exact candidate scan outside all 18 canonical parent GUIDs"),
                 Assertion("expanded-summoning-donor-component-isolation", "0",
                     sharedComponents.ToString(), sharedComponents == 0,
                     "all 67 KMG units versus frozen donor component references"),
@@ -8617,6 +8663,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.NonPublic | BindingFlags.Instance);
             var cases = new List<ExpandedSummoningPlayerPathCase>();
             var broadCases = new List<ExpandedSummoningPlayerPathCase>();
+            ExpandedSummoningPlayerPathCase rejectedDog = null;
             bool cleaned = false;
             string stage = "construct-fixture";
             try
@@ -8738,6 +8785,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Alignment.NeutralGood, false, sceneEntities, allUnits,
                     SummonAlignmentMode.Celestial));
                 cases[cases.Count - 1].Name = "kmg-sm1-dog-logical";
+                stage = "kmg-dog-cancelled-before-range";
+                rejectedDog = ExerciseRejectedExpandedSummoningPlayerPathCase(
+                    caster, spellbook, sm1, dogRoot, 1);
+                rejectedDog.Name = "kmg-sm1-dog-cancelled-before-range";
                 stage = "celestial-dog-direct";
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm1, dogCelestial,
@@ -8988,6 +9039,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live exact summon and one prepared slot spent",
                     logical.Describe(), logical.LiveContract && logical.SlotContract,
                     "real SM I parent -> KMG logical root AbilityData chain"),
+                Assertion("expanded-summoning-invalid-cast-slot-preservation",
+                    "actual-parent KMG Dog accepted distant target cancelled before range; no rule/spawn; slot unchanged",
+                    rejectedDog == null ? "<missing>" : rejectedDog.Describe(),
+                    rejectedDog != null && rejectedDog.CanTarget &&
+                        rejectedDog.CanCast && !rejectedDog.WithinCastRange &&
+                        !rejectedDog.CommandStarted &&
+                        rejectedDog.RuleCastCount == 0 &&
+                        rejectedDog.SpawnActionCount == 0 &&
+                        rejectedDog.RuleSummonCount == 0 &&
+                        rejectedDog.SlotContract,
+                    "real SM I parent -> KMG logical root with invalid unit target"),
                 Assertion("expanded-summoning-dog-execution-controls",
                     "both direct execution children summon exact live Dog",
                     celestial.Describe() + " | " + fiendish.Describe(),
@@ -9024,6 +9086,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.Diagnostics.Add(item.Name + ":output-log-tail=" +
                         item.LogTail);
             }
+            if (rejectedDog != null)
+                result.Diagnostics.Add(rejectedDog.Describe());
             return result;
         }
 
@@ -9287,6 +9351,58 @@ namespace KingmakerGunslinger.RuntimeTesting
             _expandedSummoningPlayerPathRuleCastCount = 0;
             _expandedSummoningPlayerPathSpawnActionCount = 0;
             ExpandedSummoningRuleCapture.Clear();
+            return evidence;
+        }
+
+        private static ExpandedSummoningPlayerPathCase
+            ExerciseRejectedExpandedSummoningPlayerPathCase(
+                UnitEntityData caster, Spellbook spellbook,
+                BlueprintAbility parent, BlueprintAbility selected,
+                int spellLevel)
+        {
+            var evidence = new ExpandedSummoningPlayerPathCase {
+                ParentGuid = parent.AssetGuid,
+                LogicalGuid = selected.AssetGuid,
+                ExecutionGuid = "<none>",
+                CasterAlignment = caster.Descriptor.Alignment.Value.ToString(),
+                Spellbook = spellbook.Blueprint.name + ":" +
+                    spellbook.Blueprint.AssetGuid,
+                SpellLevel = spellLevel,
+                CommandResult = "RejectedBeforeRun",
+                Exception = "<none>",
+                PostTickState = "no-command-no-entity"
+            };
+            ExpandedSummoningRuleCapture.Clear();
+            ExpandedSummoningPlayerPathEvents.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            AbilityData data = PrepareExpandedSummoningPlayerPathSpell(
+                spellbook, parent, selected, spellLevel);
+            evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.AbilityDataLinks = DescribeExpandedSummoningAbilityData(data);
+            var invalidTarget = new TargetWrapper(caster.Position +
+                new Vector3(1000f, 0f, 0f));
+            evidence.CanTarget = data.CanTarget(invalidTarget);
+            var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            UnitUseAbility command;
+            using (cutsceneParameters.Data)
+                command = new UnitUseAbility(data, invalidTarget);
+            command.Init(caster);
+            evidence.CanCast = data.IsAvailable && command.CanStart;
+            evidence.WithinCastRange = command.IsUnitEnoughClose;
+            evidence.CommandStarted = false;
+            evidence.RuleCastCount = _expandedSummoningPlayerPathRuleCastCount;
+            evidence.SpawnActionCount =
+                _expandedSummoningPlayerPathSpawnActionCount;
+            evidence.RuleSummonCount = ExpandedSummoningRuleCapture.Count;
+            evidence.SlotsAfter = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.SlotContract = evidence.SlotsAfter == evidence.SlotsBefore;
+            ExpandedSummoningRuleCapture.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
             return evidence;
         }
 

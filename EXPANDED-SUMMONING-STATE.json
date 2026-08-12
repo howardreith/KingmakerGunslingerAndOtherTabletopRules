@@ -4,11 +4,11 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "3c9674553f806f578da04e166953f94cc982a2a3",
-  "currentShaSemantics": "Last pushed repair checkpoint; the qualified complete-menu audit working tree will advance this SHA in the next coherent commit.",
+  "currentSha": "7174ca25d672dae4ef57c07a827b2dc6f3dd3848",
+  "currentShaSemantics": "Last pushed repair checkpoint; the qualified cancelled-cast and exact standalone-elemental observer working tree will advance this SHA in the next coherent commit.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "all-18-menu-reconciliation-order-icon-count-audit-qualified",
-  "nextConcreteAction": "Commit and push the menu audit, then add actual-parent invalid/cancelled no-slot evidence and prove the standalone Summon Elemental surface remains untouched.",
+  "completedPhase": "all-681-player-paths-cancelled-no-slot-and-standalone-elemental-qualified",
+  "nextConcreteAction": "Commit and push this runtime-evidence checkpoint, then qualify dynamic celestial/fiendish descriptor behavior before final persistence, module, profile, regression, and artifact-freeze repetitions.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS twice from final artifact source; byte-identical DLL output",
@@ -39,6 +39,20 @@
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
+    {
+      "scenario": "disposable-expanded-summoning-player-path (all placements plus cancelled cast)",
+      "runId": "20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37",
+      "result": "PASS; 681/681 actual native-parent roots; each success spent one slot; distant pre-range cancellation spent zero",
+      "sourceSha": "7174ca25d672dae4ef57c07a827b2dc6f3dd3848 plus qualified observer working tree",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1912292446693Z-disposable-expanded-summoning-player-path/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory (exact standalone-elemental audit)",
+      "runId": "20260812T1920367972975Z-41fb84e591cc47eb8cacecf3ca2c1ad4",
+      "result": "PASS; all 18 menus exact and six standalone Summon Elemental roots retain four original non-KMG children each",
+      "sourceSha": "7174ca25d672dae4ef57c07a827b2dc6f3dd3848 plus qualified observer working tree",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1920367630040Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
     {
       "scenario": "observe-expanded-summoning-inventory (repair menu audit)",
       "runId": "20260812T1850060235984Z-f8fb2f115ddb41b28d8720a4ca342a50",

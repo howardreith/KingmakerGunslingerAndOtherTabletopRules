@@ -1340,3 +1340,24 @@
   `5,14,21,33,40,47,53,57,59`. SM VIII retains the exact native Movanic
   Deva/Frost Giant conditional option and SM IX retains its exact unique native
   option. Zero unclassified third-party entries were present in this profile.
+
+## 2026-08-12 - Cancelled-cast and standalone-elemental contracts PASS
+
+- The actual-parent player-path harness now records the native cancellation
+  boundary. Kingmaker accepts a distant summon click so the controller can
+  approach; the test initializes that real command, proves it is not yet in
+  cast range, cancels before `Start`, and observes zero `RuleCastSpell`, spawn
+  actions, `RuleSummonUnit`, or prepared-slot expenditure (`7 -> 7`).
+- Guarded run
+  `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
+  passed all nine assertions, including the cancellation contract and a fresh
+  `681/681` actual-native-parent repetition. Every successful cast spent
+  exactly one slot and completed exact-kind, quantity, post-tick live-world,
+  renderer, template/alignment, and cleanup contracts.
+- The structural observer now freezes Owlcat's six standalone Summon Elemental
+  roots by exact GUID. Guarded run
+  `20260812T1920367972975Z-41fb84e591cc47eb8cacecf3ca2c1ad4`
+  passed 37/37 assertions: every root retains exactly four original non-KMG
+  one-spawn children, with zero KMG template/alignment action contamination.
+  The standalone spell is unchanged. Repository validation, all 1,013 domain
+  tests, the exact-reference Release build, and `git diff --check` pass.

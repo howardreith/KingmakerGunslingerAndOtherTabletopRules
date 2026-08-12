@@ -67,6 +67,9 @@ namespace KingmakerGunslinger.DomainTests
                 "evidence.TemplateContract",
                 "evidence.RenderableContract",
                 "expanded-summoning-all-logical-player-paths",
+                "ExerciseRejectedExpandedSummoningPlayerPathCase",
+                "expanded-summoning-invalid-cast-slot-preservation",
+                "kmg-sm1-dog-cancelled-before-range",
                 "broadCases.Count == 681",
                 "result.QuantityContract" })
                 Assertions.True(runner.Contains(token) || catalog.Contains(token) ||
@@ -674,6 +677,8 @@ namespace KingmakerGunslinger.DomainTests
                 "preservedOriginals.Any(original =>" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
+            Assertions.False(source.Contains("SummonElemental"),
+                "Expanded Summoning publication must not target the standalone Summon Elemental spell.");
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningAbilityBuilder.cs"));
@@ -738,6 +743,8 @@ namespace KingmakerGunslinger.DomainTests
                 "AuditExpandedSummoningMenus",
                 "VisibleMappedNativeDuplicates",
                 "CategoryIconsDistinct",
+                "expanded-summoning-standalone-summon-elemental",
+                "standaloneElementalCandidates",
                 "expectedContractNodes == 681",
                 "ExpandedSummoningTemplateByCasterCount(value)",
                 "SummonNativeOptionCatalog.All.Single",
