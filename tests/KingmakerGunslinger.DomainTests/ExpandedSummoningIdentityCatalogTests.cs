@@ -65,7 +65,10 @@ namespace KingmakerGunslinger.DomainTests
                 "native-sm8-movanic-deva",
                 "native-sm8-frost-giant",
                 "evidence.TemplateContract",
-                "evidence.RenderableContract" })
+                "evidence.RenderableContract",
+                "expanded-summoning-all-logical-player-paths",
+                "broadCases.Count == 681",
+                "result.QuantityContract" })
                 Assertions.True(runner.Contains(token) || catalog.Contains(token) ||
                     request.Contains(token) || automation.Contains(token),
                     "Player-path acceptance contract is missing: " + token);

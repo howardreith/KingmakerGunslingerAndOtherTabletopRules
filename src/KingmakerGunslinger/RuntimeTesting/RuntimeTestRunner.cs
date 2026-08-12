@@ -164,6 +164,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string TemplateFacts;
             internal bool TemplateContract;
             internal bool RenderableContract;
+            internal bool QuantityContract;
             internal bool LiveContract;
             internal bool SlotContract;
             internal string Exception;
@@ -186,6 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";templateFacts=" + TemplateFacts +
                     ";templateContract=" + TemplateContract +
                     ";renderable=" + RenderableContract +
+                    ";quantityContract=" + QuantityContract +
                     ";liveContract=" + LiveContract +
                     ";slotContract=" + SlotContract + ";exception=" +
                     Exception;
@@ -8524,6 +8526,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetMethod("RunAction", BindingFlags.Public |
                     BindingFlags.NonPublic | BindingFlags.Instance);
             var cases = new List<ExpandedSummoningPlayerPathCase>();
+            var broadCases = new List<ExpandedSummoningPlayerPathCase>();
             bool cleaned = false;
             string stage = "construct-fixture";
             try
@@ -8811,6 +8814,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         allUnits, null));
                     cases[cases.Count - 1].Name = nativeRow.Name;
                 }
+
+                stage = "all-681-logical-roots";
+                SummonVariantSpec[] broadVariants = ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.Monster).Concat(
+                        ExpandedSummoningCatalog.GenerateVariants(
+                            SummonFamily.NaturesAlly)).ToArray();
+                foreach (SummonVariantSpec variant in broadVariants)
+                {
+                    string broadName = "broad-" + variant.Family + "-t" +
+                        variant.ParentTier + "-" + variant.Creature.Key + "-" +
+                        variant.Multiplicity;
+                    stage = broadName;
+                    Alignment broadAlignment =
+                        ExpandedSummoningPlayerPathAlignmentFor(variant);
+                    SummonAlignmentMode? broadMode = variant.Family ==
+                        SummonFamily.NaturesAlly ?
+                            (SummonAlignmentMode?)SummonAlignmentMode.Caster :
+                        variant.Creature.MonsterTemplated ?
+                            (SummonAlignmentMode?)SummonAlignmentMode.Celestial :
+                            null;
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, variant, broadAlignment,
+                        broadMode, sceneEntities, allUnits, broadName);
+                    broadCases.Add(cases[cases.Count - 1]);
+                }
             }
             catch (Exception exception)
             {
@@ -8857,6 +8885,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Name == "kmg-sna1-dog-logical");
             bool allPlayerPaths = cases.Where(value => value.ExecutionGuid ==
                 "<none>").All(value => value.LiveContract && value.SlotContract);
+            bool allBroadPlayerPaths = broadCases.Count == 681 &&
+                broadCases.All(value => value.LiveContract &&
+                    value.SlotContract && value.QuantityContract);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-native-dog-player-path",
@@ -8880,6 +8911,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all non-direct cases live with exact one-slot spend",
                     string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
                     allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
+                Assertion("expanded-summoning-all-logical-player-paths",
+                    "681/681 live exact-kind roots with one-slot and quantity contracts",
+                    broadCases.Count(value => value.LiveContract &&
+                        value.SlotContract && value.QuantityContract) + "/" +
+                        broadCases.Count, allBroadPlayerPaths,
+                    "all approved SM/SNA logical placements through native spellbook parents"),
                 Assertion("request-local-cleanup", "exact party/global snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "dispose all request-local caster and summon entities"),
@@ -8953,8 +8990,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningUnit(blueprints, variant), root, null,
                     variant.ParentTier, alignment, false, sceneEntities,
                     allUnits, expectedAlignmentMode);
+            int minimum = variant.Multiplicity == SummonMultiplicity.One ? 1 :
+                variant.Multiplicity == SummonMultiplicity.OneD3 ? 1 : 2;
+            int maximum = variant.Multiplicity == SummonMultiplicity.One ? 1 :
+                variant.Multiplicity == SummonMultiplicity.OneD3 ? 3 : 5;
+            result.QuantityContract = result.LiveCount >= minimum &&
+                result.LiveCount <= maximum;
+            result.LiveContract = result.LiveContract &&
+                result.QuantityContract;
             result.Name = name;
             cases.Add(result);
+        }
+
+        private static Alignment ExpandedSummoningPlayerPathAlignmentFor(
+            SummonVariantSpec variant)
+        {
+            if (variant.Family == SummonFamily.NaturesAlly)
+                return Alignment.ChaoticNeutral;
+            if (variant.Creature.MonsterTemplated)
+                return Alignment.NeutralGood;
+            switch (variant.Creature.Key)
+            {
+                case "lantern-archon":
+                case "bralani-azata":
+                case "ghaele-azata":
+                    return Alignment.NeutralGood;
+                case "hell-hound":
+                case "erinyes-devil":
+                case "shadow-demon":
+                case "succubus":
+                case "salamander":
+                case "bebelith":
+                    return Alignment.LawfulEvil;
+                default:
+                    return Alignment.TrueNeutral;
+            }
         }
 
         private static ExpandedSummoningPlayerPathCase
@@ -9108,6 +9178,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         renderer.sharedMaterials.Any(material => material != null) &&
                         renderer.bounds.size.sqrMagnitude > 0.0001f);
             });
+            evidence.QuantityContract = live.Length > 0;
             evidence.LiveContract = live.Length > 0 && evidence.ExactKind &&
                 live.All(value => ExpandedSummoningPlayerPathUnitExact(
                     value, caster)) && evidence.TemplateContract &&
