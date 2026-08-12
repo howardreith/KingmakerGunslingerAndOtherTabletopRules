@@ -76,6 +76,7 @@ using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
+using Harmony12;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -108,6 +109,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _shieldOtherPersistenceDamageValid;
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
+        private static bool _expandedSummoningRuleCaptureActive;
+        private static readonly List<UnitEntityData>
+            ExpandedSummoningRuleCapture = new List<UnitEntityData>();
 
         private sealed class BroadRespecInitiationHandler :
             ILevelUpInitiateUIHandler
@@ -352,6 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -966,6 +971,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -987,6 +993,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1243,6 +1250,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter)
                 {
                     RunGunslingerStartingItems(true);
+                }
+                else if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableExpandedSummoning)
+                {
+                    Complete(RunDisposableExpandedSummoning());
                 }
                 else
                 {
@@ -1595,6 +1607,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||
@@ -7778,6 +7791,330 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoning()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            IReadOnlyList<SummonVariantSpec> monster =
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
+            IReadOnlyList<SummonVariantSpec> ally =
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly);
+            SummonVariantSpec[] oneCreature = monster.Concat(ally)
+                .Where(value => value.Multiplicity == SummonMultiplicity.One)
+                .ToArray();
+            SummonVariantSpec[] oneD3 = SelectExpandedSummoningQuantityCoverage(
+                monster, ally, SummonMultiplicity.OneD3);
+            SummonVariantSpec[] oneD4PlusOne =
+                SelectExpandedSummoningQuantityCoverage(monster, ally,
+                    SummonMultiplicity.OneD4PlusOne);
+            SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
+                .Concat(oneD4PlusOne).ToArray();
+
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            object sceneEntities = null;
+            int completed = 0, spawnedTotal = 0, singleExact = 0,
+                oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0;
+            var observedCounts = new List<string>();
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            try
+            {
+                if (summonRuleMethod == null) throw new MissingMethodException(
+                    typeof(RuleSummonUnit).FullName, "OnTrigger");
+                MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                    BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+                UnityEngine.SceneManagement.Scene activeScene =
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                if (!activeScene.IsValid() || !activeScene.isLoaded ||
+                    string.IsNullOrWhiteSpace(activeScene.name))
+                    throw new InvalidOperationException(
+                        "No exact loaded Unity scene was available for the disposable caster.");
+                UnitEntityData areaAnchor = partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value.HoldingState != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The exact guarded working save did not provide a party unit with an area state.");
+                // Native spawn placement requires the loaded area's pathfinding
+                // graph. Keep the caster disposable, but place it in the exact
+                // guarded working-save state instead of constructing a main-menu
+                // scene that cannot satisfy ObstacleAnalyzer.
+                scene = areaAnchor.HoldingState;
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name = "KMG_Runtime_ExpandedSummoning_Caster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(
+                    casterBlueprint, Vector3.zero,
+                    Quaternion.identity, scene);
+                if (caster == null || caster.View == null || caster.View.Data == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not produce a live caster view.");
+                sceneEntities = scene.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 100;
+
+                for (int index = 0; index < casts.Length; index++)
+                {
+                    SummonVariantSpec variant = casts[index];
+                    stage = "cast-" + variant.StableKey;
+                    BlueprintUnit expectedUnit = blueprints.OfType<BlueprintUnit>()
+                        .Single(value => value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                variant.Creature)));
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    object[] beforeCast = SnapshotReferences(sceneEntities);
+                    ExpandedSummoningRuleCapture.Clear();
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
+                        if (granted == null) throw new InvalidOperationException(
+                            "The exact KMG execution ability was not granted.");
+                        granted.OverrideParams = new AbilityParams {
+                            CasterLevel = 20,
+                            SpellLevel = variant.ParentTier
+                        };
+                        var data = new AbilityData(granted);
+                        // Native summon spells target a point, not a unit. A unit
+                        // wrapper would make UnitCommand enforce persistent-game-
+                        // state membership before the spell can reach RuleCastSpell.
+                        var target = new TargetWrapper(caster.Position);
+                        UnitUseAbility command;
+                        // The real command constructor snapshots the engine's
+                        // cutscene context. That is the native mechanism used to
+                        // execute an ability without UI/navmesh target revalidation;
+                        // it does not bypass RuleCastSpell or the ability effect.
+                        var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                            .CutsceneParametersContext();
+                        using (cutsceneParameters.Data)
+                            command = new UnitUseAbility(data, target);
+                        if (!command.Cutscene)
+                            throw new InvalidOperationException(
+                                "The request-local command did not capture the native cutscene context.");
+                        if (!data.IsAvailable || !command.CanStart)
+                            throw new InvalidOperationException(
+                                "The native summon command was unavailable: available=" +
+                                data.IsAvailable + ";canStart=" + command.CanStart + ".");
+                        bool consciousBeforeRun = caster.Descriptor.State.IsConscious;
+                        bool targetValidBeforeRun = data.CanTarget(target);
+                        command.IgnoreCooldown(TimeSpan.Zero);
+                        caster.Commands.Run(command);
+                        // UnitCommands.Run installs and initializes the command;
+                        // the normal unit-command controller calls Start on its
+                        // next update. This scenario executes synchronously inside
+                        // that update callback, so advance the same native boundary
+                        // explicitly before ticking the command.
+                        command.Start();
+                        bool enteredRunningState = command.IsRunning;
+                        bool occupiedCommandSlot = ReferenceEquals(
+                            caster.Commands.Standard, command);
+                        if (!enteredRunningState)
+                            throw new InvalidOperationException(
+                                "The native UnitUseAbility command did not enter its running state: " +
+                                "conscious=" + consciousBeforeRun + ";targetValid=" +
+                                targetValidBeforeRun + ";cutscene=" + command.Cutscene +
+                                ";casterInState=" + caster.IsInState + ";slot=" +
+                                occupiedCommandSlot + ";started=" + command.IsStarted +
+                                ";finished=" + command.IsFinished + ";result=" +
+                                command.Result + ".");
+                        // This scenario runs synchronously inside one update, so
+                        // the native animation clock cannot advance independently.
+                        // Signal the same cast-act event emitted by the native
+                        // animation callback, then tick the command once so its
+                        // protected OnAction reaches RuleCastSpell.
+                        if (command.Animation != null)
+                            command.Animation.IsActed = true;
+                        command.Tick();
+                        if (!string.Equals(command.Result.ToString(), "Success",
+                            StringComparison.Ordinal) ||
+                            command.ExecutionProcess == null)
+                            throw new InvalidOperationException(
+                                "The native UnitUseAbility action did not start its execution process; result=" +
+                                command.Result + ";scene=" + activeScene.name +
+                                ";loaded=" + scene.IsSceneLoaded + ";targetValid=" +
+                                targetValidBeforeRun + ";cutscene=" + command.Cutscene +
+                                ";casterInState=" + caster.IsInState + ";acted=" +
+                                command.IsActed + ";execution=" +
+                                (command.ExecutionProcess != null) + ".");
+                        for (int tick = 0; tick < 5000 &&
+                            !command.ExecutionProcess.IsEnded; tick++)
+                            command.ExecutionProcess.Tick();
+                        if (!command.ExecutionProcess.IsEnded)
+                            throw new InvalidOperationException(
+                                "The successful UnitUseAbility command did not complete its ability execution process.");
+                        if (command.Animation != null)
+                        {
+                            PropertyInfo finishedProperty = typeof(
+                                Kingmaker.Visual.Animation.Actions.AnimationActionHandle)
+                                .GetProperty("IsFinished", BindingFlags.Public |
+                                    BindingFlags.NonPublic | BindingFlags.Instance);
+                            MethodInfo finishedSetter = finishedProperty == null ? null :
+                                finishedProperty.GetSetMethod(true);
+                            if (finishedSetter == null)
+                                throw new MissingMethodException(
+                                    command.Animation.GetType().FullName,
+                                    "set_IsFinished");
+                            finishedSetter.Invoke(command.Animation,
+                                new object[] { true });
+                        }
+                        if (!command.IsFinished) command.Tick();
+                        if (!command.IsFinished)
+                            throw new InvalidOperationException(
+                                "The successful UnitUseAbility command did not complete after its native execution and animation paths ended.");
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+
+                    UnitEntityData[] spawned = ExpandedSummoningRuleCapture.ToArray();
+                    int count = spawned.Length;
+                    bool exactKind = spawned.All(value =>
+                        ReferenceEquals(value.Blueprint, expectedUnit));
+                    bool legal = variant.Multiplicity == SummonMultiplicity.One ?
+                        count == 1 : variant.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? count >= 1 && count <= 3 :
+                            count >= 2 && count <= 5;
+                    if (!legal || !exactKind)
+                        throw new InvalidOperationException(
+                            "Spawn result mismatch: count=" + count + ";kind=" +
+                            exactKind + ";expected=" + expectedUnit.name + ".");
+                    completed++;
+                    spawnedTotal += count;
+                    if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
+                    else if (variant.Multiplicity == SummonMultiplicity.OneD3)
+                        oneD3Legal++;
+                    else oneD4PlusOneLegal++;
+                    if (exactKind) sameKind++;
+                    observedCounts.Add(variant.StableKey + "=" + count);
+                    foreach (UnitEntityData unit in spawned) unit.Dispose();
+                    object[] afterCleanup = SnapshotReferences(sceneEntities);
+                    if (!SameReferences(beforeCast, afterCleanup))
+                        throw new InvalidOperationException(
+                            "Per-cast global unit cleanup did not restore the exact snapshot.");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Expanded Summoning failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                if (summonRuleMethod != null)
+                    _context.Harmony.Unpatch(summonRuleMethod,
+                        HarmonyPatchType.All, _context.ModId);
+                IEnumerable<UnitEntityData> localUnits = sceneEntities == null
+                    ? Enumerable.Empty<UnitEntityData>()
+                    : SnapshotReferences(sceneEntities).OfType<UnitEntityData>();
+                foreach (UnitEntityData unit in localUnits.Concat(
+                    SnapshotReferences(allUnits).OfType<UnitEntityData>())
+                    .Where(value => !unitsBefore.Any(prior =>
+                        ReferenceEquals(prior, value))).Distinct().ToArray())
+                    unit.Dispose();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    (caster == null || !ContainsReference(allUnits, caster));
+            }
+
+            string observed = "casts=" + completed + "/" + casts.Length +
+                ";single=" + singleExact + "/" + oneCreature.Length +
+                ";d3=" + oneD3Legal + "/" + oneD3.Length + ";d4plus1=" +
+                oneD4PlusOneLegal + "/" + oneD4PlusOne.Length +
+                ";sameKind=" + sameKind + ";spawned=" + spawnedTotal +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-all-one-creature-casts", "123/123",
+                    singleExact + "/" + oneCreature.Length,
+                    oneCreature.Length == 123 && singleExact == 123,
+                    "actual UnitUseAbility commands for every SM and SNA roster entry"),
+                Assertion("expanded-summoning-d3-tier-coverage", "16/16",
+                    oneD3Legal + "/" + oneD3.Length,
+                    oneD3.Length == 16 && oneD3Legal == 16,
+                    "one actual 1d3 command per family and eligible parent tier"),
+                Assertion("expanded-summoning-d4plus1-tier-coverage", "14/14",
+                    oneD4PlusOneLegal + "/" + oneD4PlusOne.Length,
+                    oneD4PlusOne.Length == 14 && oneD4PlusOneLegal == 14,
+                    "one actual 1d4+1 command per family and eligible parent tier"),
+                Assertion("expanded-summoning-same-kind-runtime", casts.Length.ToString(),
+                    sameKind.ToString(), sameKind == casts.Length,
+                    "spawned BlueprintUnit reference equality for every command"),
+                Assertion("expanded-summoning-command-total", "153",
+                    completed.ToString(), casts.Length == 153 && completed == 153,
+                    "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
+                Assertion("expanded-summoning-disposable-cleanup",
+                    "exact party and global-unit snapshots restored", observed,
+                    cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            result.Diagnostics.Add(observed);
+            result.Diagnostics.Add("counts=" + string.Join(",", observedCounts.ToArray()));
+            return result;
+        }
+
+        private static void ExpandedSummoningRuleCapturePostfix(
+            RuleSummonUnit __instance)
+        {
+            if (!_expandedSummoningRuleCaptureActive || __instance == null ||
+                __instance.SummonedUnit == null) return;
+            ExpandedSummoningRuleCapture.Add(__instance.SummonedUnit);
+        }
+
+        private static SummonVariantSpec[] SelectExpandedSummoningQuantityCoverage(
+            IReadOnlyList<SummonVariantSpec> monster,
+            IReadOnlyList<SummonVariantSpec> ally, SummonMultiplicity multiplicity)
+        {
+            return monster.Concat(ally).Where(value =>
+                value.Multiplicity == multiplicity).GroupBy(value =>
+                    value.Family + ":" + value.ParentTier).OrderBy(value =>
+                        value.Key, StringComparer.Ordinal).Select(value => value
+                            .OrderBy(item => item.Creature.Key,
+                                StringComparer.Ordinal).First()).ToArray();
+        }
+
+        private static BlueprintAbility ResolveExpandedSummoningExecution(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(variant);
+            if (variant.Family == SummonFamily.Monster &&
+                variant.Creature.MonsterTemplated) symbol += ".Celestial";
+            string name = ExpandedSummoningInternalName(symbol);
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static string ExpandedSummoningInternalName(string symbol)
+        {
+            return symbol.Replace('.', '_').Replace('-', '_');
         }
 
         private static int ExpandedSummoningResourceBase(

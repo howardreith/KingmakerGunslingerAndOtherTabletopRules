@@ -593,7 +593,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "DeepCloneUnitComponent",
                 "FormatterServices.GetUninitializedObject",
                 "ScriptableObject.CreateInstance(type)",
-                "source is BlueprintScriptableObject", "ReferenceComparer.Instance" })
+                "source is BlueprintScriptableObject", "ReferenceComparer.Instance",
+                "result.FxOnStart = new Kingmaker.ResourceLinks.PrefabLink()",
+                "result.FxOnRemove = new Kingmaker.ResourceLinks.PrefabLink()" })
                 Assertions.True(source.Contains(token),
                     "Unit component isolation contract is missing: " + token);
             Assertions.False(source.Contains("!IsForbiddenComponent(component.GetType().Name)).ToArray()"),

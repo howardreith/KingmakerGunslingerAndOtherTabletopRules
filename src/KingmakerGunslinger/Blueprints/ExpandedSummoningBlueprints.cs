@@ -372,6 +372,10 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBuff result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            // Native buff view attachment dereferences both link objects even
+            // when the buff intentionally has no start/remove visual effect.
+            result.FxOnStart = new Kingmaker.ResourceLinks.PrefabLink();
+            result.FxOnRemove = new Kingmaker.ResourceLinks.PrefabLink();
             return result;
         }
 
