@@ -7,8 +7,8 @@
   "currentSha": "1db4de6f0f3a6732df870ea690904d82287d2f4c",
   "currentShaSemantics": "Last pushed repair checkpoint; final evidence documentation will advance this SHA before immutable-source runtime repetition and artifact freeze.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "functional-repair-persistence-16-state-profiles-and-focused-regressions-qualified",
-  "nextConcreteAction": "Commit and push final repair evidence, repeat player-path/observer/visual on immutable source, freeze deterministic artifacts, and refresh draft PR 2 without merging.",
+  "completedPhase": "immutable-source-player-path-structural-visual-and-all-compatibility-profiles-qualified",
+  "nextConcreteAction": "Commit/push immutable-source evidence, run two clean deterministic package builds, record hashes, and refresh draft PR 2 without merging.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS on repair checkpoints; final immutable-source double build pending",
@@ -39,6 +39,27 @@
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
+    {
+      "scenario": "disposable-expanded-summoning-player-path (immutable repair source)",
+      "runId": "20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363",
+      "result": "PASS; 681/681 actual native-parent roots, exactly one slot per success, zero on cancellation",
+      "sourceSha": "11dabc92f4a84b226bab8df03196da98b9ca5f28",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T2133228787636Z-disposable-expanded-summoning-player-path/runtime-result.json"
+    },
+    {
+      "scenario": "observe-expanded-summoning-inventory (immutable repair source)",
+      "runId": "20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc",
+      "result": "PASS; 37/37 structural/menu/icon/reconciliation/standalone-elemental assertions",
+      "sourceSha": "11dabc92f4a84b226bab8df03196da98b9ca5f28",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T2140370391572Z-observe-expanded-summoning-inventory/runtime-result.json"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-visual-contracts (immutable repair source)",
+      "runId": "20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac",
+      "result": "PASS; 10/10 and 67/67 unique views",
+      "sourceSha": "11dabc92f4a84b226bab8df03196da98b9ca5f28",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T2144335390183Z-disposable-expanded-summoning-visual-contracts/runtime-result.json"
+    },
     {
       "scenario": "working-save-expanded-summoning enabled/disabled repair repetition",
       "runId": "20260812T1929470099833Z-bb3292f38b3644b6923940b52fc491e4 through 20260812T1943438977236Z-003950a75a8d4c448b8865c651413c33",
@@ -143,27 +164,27 @@
     {
       "profile": "standalone",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T201850Z-c5a07cfc955e", "compat-20260812T202109Z-c1bd197ce6ca"]
+      "transactions": ["compat-20260812T214659Z-a8408890bf7c", "compat-20260812T214914Z-2bf507fe07aa"]
     },
     {
       "profile": "Call of the Wild 1.14.4c-2.1",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T202324Z-10ac0552d9eb", "compat-20260812T202715Z-eee0aa7926aa"]
+      "transactions": ["compat-20260812T215130Z-3fbac165ac9e", "compat-20260812T215520Z-067b42b7677a"]
     },
     {
       "profile": "Arms and Armor 1.0.10",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T203105Z-c11cd33c2df9"]
+      "transactions": ["compat-20260812T220654Z-a2e8eabf9736"]
     },
     {
       "profile": "Toggle Custom Soundpacks 1.0.1",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T203318Z-e4887a3c64fe"]
+      "transactions": ["compat-20260812T220911Z-976210443a94"]
     },
     {
       "profile": "highest-risk combined",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T203535Z-72786ce6ba3a", "compat-20260812T203926Z-3da6a8617ea8"]
+      "transactions": ["compat-20260812T215909Z-2f991684eb43", "compat-20260812T220300Z-b0dc049fc8b2"]
     }
   ],
   "restoration": {

@@ -1408,3 +1408,23 @@
 - Bounded high-tier review retained the frozen roster. No dedicated safe
   Astral Deva, Trumpet Archon, or high-tier fiend addition was proven; those
   candidates remain deferred instead of using weak campaign proxies.
+
+## 2026-08-12 - Immutable-source summoning and compatibility PASS
+
+- On pushed `11dabc92f4a84b226bab8df03196da98b9ca5f28`, the decisive
+  player-path run `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`
+  passed all 681 native-parent logical roots plus exact successful/cancelled
+  slot semantics and cleanup.
+- Structural run `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`
+  passed 37/37. Visual run
+  `20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac`
+  passed 10/10 for 67/67 units.
+- Final-source compatibility transactions all passed with exact restoration:
+  standalone `compat-20260812T214659Z-a8408890bf7c` and
+  `compat-20260812T214914Z-2bf507fe07aa`; Call of the Wild
+  `compat-20260812T215130Z-3fbac165ac9e` and
+  `compat-20260812T215520Z-067b42b7677a`; Arms and Armor
+  `compat-20260812T220654Z-a2e8eabf9736`; Toggle Custom Soundpacks
+  `compat-20260812T220911Z-976210443a94`; highest-risk combined
+  `compat-20260812T215909Z-2f991684eb43` and
+  `compat-20260812T220300Z-b0dc049fc8b2`.

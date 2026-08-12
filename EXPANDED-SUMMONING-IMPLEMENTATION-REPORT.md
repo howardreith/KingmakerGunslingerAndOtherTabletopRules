@@ -2,8 +2,8 @@
 
 ## First-playtest repair qualification
 
-Status: functionally repaired; final immutable-source repetition and artifact
-freeze are in progress. The human failure superseded the earlier completion
+Status: repaired and runtime-qualified; final deterministic artifact freeze is
+in progress. The human failure superseded the earlier completion
 claim and was reproduced before repair.
 
 - Root cause: each templated Summon Monster choice was a non-executable logical
@@ -31,6 +31,9 @@ claim and was reproduced before repair.
   Every success spent exactly one slot and produced the correct live kind and
   legal quantity after queued entity creation. A distant command cancelled
   before cast range fired no cast/spawn rule and preserved slots `7 -> 7`.
+  The immutable pushed-source repetition
+  `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`
+  passed the same 681/681 and cancellation contracts on `11dabc9`.
 - Erinyes' separate fault was inherited campaign `BuffOnEntityCreated` /
   `AppearFromFog` state. Its KMG unit now uses a fresh 9-HD outsider component
   chassis while retaining the proven ranged body, brain, facts and view.
@@ -52,6 +55,21 @@ claim and was reproduced before repair.
   registrations and byte-identical settings restoration. Final profile runs
   passed standalone twice, Call of the Wild twice, Arms and Armor, Toggle
   Custom Soundpacks, and highest-risk combined twice, with exact restoration.
+  Final-source repetitions on `11dabc9` were standalone
+  `compat-20260812T214659Z-a8408890bf7c` and
+  `compat-20260812T214914Z-2bf507fe07aa`; Call of the Wild
+  `compat-20260812T215130Z-3fbac165ac9e` and
+  `compat-20260812T215520Z-067b42b7677a`; Arms and Armor
+  `compat-20260812T220654Z-a2e8eabf9736`; Toggle Custom Soundpacks
+  `compat-20260812T220911Z-976210443a94`; and highest-risk combined
+  `compat-20260812T215909Z-2f991684eb43` and
+  `compat-20260812T220300Z-b0dc049fc8b2`.
+- Final-source structural run
+  `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`
+  passed 37/37, including exact menus, icons, reconciliation, all identities,
+  and standalone Summon Elemental isolation. Final-source visual run
+  `20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac`
+  passed 10/10 for all 67 units.
 - Exact engine limitation: Kingmaker 2.1.7b exposes spell descriptors only on
   the shared `BlueprintAbility`, not per `AbilityData`/caster invocation.
   Dynamically mutating a shared root would race party casters and corrupt
