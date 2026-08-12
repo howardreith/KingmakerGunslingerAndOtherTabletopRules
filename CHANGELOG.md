@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.0.78 - Expanded Summoning
+
+- Adds an independent, default-enabled, restart-bound Expanded Summoning
+  module for Summon Monster I-IX and Summon Nature's Ally I-IX.
+- Adds the approved 66-entry Summon Monster roster and 57-entry Nature's Ally
+  roster, sharing 67 summon-safe creature identities and generating all 681
+  legal one/1d3/1d4+1 same-kind placements.
+- Preserves every vanilla and third-party summon option by reference and order
+  through additive, idempotent, transactional final-live reconciliation.
+- Adds caster-aligned celestial/fiendish Summon Monster choices, Nature's Ally
+  alignment handling, native summon lifecycle/feat integration, and bounded
+  Lantern Archon, Salamander, Invisible Stalker, Shadow Demon, Succubus,
+  Bebelith, and Pixie adaptations.
+- Keeps all 1,150 Expanded Summoning identities registered when the module is
+  disabled so existing saves and active summons remain load-safe.
+- Corrects Shield Other so close range limits initial targeting only; an
+  established link now ends on duration/removal, dead or missing endpoints, or
+  area separation, not ordinary post-cast distance.
+- Adds guarded 153-cast quantity coverage, 67-unit visual contracts,
+  persistence/cleanup qualification, all 16 module states, and standalone,
+  Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and combined
+  compatibility profiles.
+
 ## 0.0.77 - Shield Other
 
 - Fixes spontaneous-caster availability and action-bar corruption by preserving

@@ -1,16 +1,24 @@
 # Kingmaker Gunslinger
 
-Version `0.0.77-shield-other` adds Shield Other as a third independent,
-default-enabled feature module for Pathfinder: Kingmaker 2.1.7b while retaining
-the complete Gunslinger and Acadamae Graduate packages.
+Version `0.0.78-expanded-summoning` adds Expanded Summoning as a fourth
+independent, default-enabled feature module for Pathfinder: Kingmaker 2.1.7b
+while retaining the complete Gunslinger, Acadamae Graduate, and Shield Other
+packages.
+
+Expanded Summoning additively extends Summon Monster I-IX and Summon Nature's
+Ally I-IX with the approved tabletop rosters and higher-tier same-kind quantity
+choices. It never replaces native or third-party choices. Its 67 summon-safe
+creature identities remain registered even when publication is disabled,
+allowing active summons and old saves to deserialize and clean up.
 
 Shield Other is a level-2 Abjuration spell on the Cleric, Paladin, Inquisitor,
 Community domain, and Protection domain lists. With an unambiguous installed
 Call of the Wild profile it is also published to Oracle, Warpriest, and Psychic
 at level 2. The target gains +1 deflection AC and +1 resistance to all saves;
 finalized HP damage is conserved and split evenly, with an odd point assigned
-to the caster. The link ends on expiry, dispel, dismissal, caster death,
-different area, or exceeding caster-level-scaled close range.
+to the caster. Close range limits initial targeting; the established link ends
+on expiry, dispel, dismissal, dead or missing endpoints, or area separation,
+not ordinary post-cast distance.
 
 Acadamae Graduate now grants a per-character **Use Acadamae Graduate** mode,
 which defaults off. Leave it off to use a summon spell's native casting time
@@ -26,13 +34,18 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find three checkboxes:
-**Gunslinger**, **Acadamae Graduate**, and **Shield Other**. All default enabled.
-Schema-1 settings migrate to schema 2 with Shield Other enabled.
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find four checkboxes:
+**Gunslinger**, **Acadamae Graduate**, **Shield Other**, and **Expanded
+Summoning**. All default enabled. Older settings migrate to schema 3 while
+preserving explicit existing values and enabling Expanded Summoning when absent.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
-Disabling a module hides its content from new character choices and acquisition. It does not unregister stable blueprints or strip existing characters, facts, items, ammunition state, or equipment from a save. Gunslinger and Acadamae Graduate are independent. Keep the whole mod installed for any campaign that has used project content.
+Disabling a module hides its content from new character choices and acquisition.
+It does not unregister stable blueprints or strip existing characters, facts,
+items, summons, ammunition state, or equipment from a save. All four modules
+publish independently. Keep the whole mod installed for any campaign that has
+used project content.
 
 ## Acadamae Graduate
 
@@ -46,7 +59,9 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
-The sections below retain historical subsystem detail; where version-specific wording conflicts, the 0.0.77 text above and its qualification report are authoritative.
+The sections below retain historical subsystem detail; where version-specific
+wording conflicts, the 0.0.78 text above and its implementation report are
+authoritative.
 
 ## Current vertical slice
 

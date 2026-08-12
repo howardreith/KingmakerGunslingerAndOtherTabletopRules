@@ -1,5 +1,21 @@
 # Current architecture
 
+## Expanded Summoning 0.0.78 layer
+
+Expanded Summoning is a data-driven fourth feature module. Immutable creature
+and variant specifications generate all legal one/1d3/1d4+1 same-kind
+placements. Registration is unconditional and publication is independently
+restart-gated. A pure merge policy and transactional final-live reconciler
+preserve native and third-party variants by reference and order, append KMG
+choices deterministically, reject ambiguity, and roll back only when exact
+rollback preconditions still hold.
+
+The summon builder clones and sanitizes donor units, then reconstructs approved
+combat profiles without mutating donors. Runtime abilities retain the native
+summon family's duration, placement, caster context, pool, feat markers, and
+cleanup behavior. See `planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md` for the
+per-creature mechanical and adaptation contract.
+
 ## Shield Other 0.0.77 layer
 
 Shield Other is an independent feature module under `Spells/ShieldOther`.

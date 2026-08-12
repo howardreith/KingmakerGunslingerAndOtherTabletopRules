@@ -5,7 +5,7 @@
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
   "currentSha": "5bce781d25ba6f3efadf693dafef2267fd2003fe",
-  "actualReleaseVersion": "0.0.77",
+  "actualReleaseVersion": "0.0.78",
   "completedPhase": "required-compatibility-profiles-qualified-with-repeat-policy-and-exact-restoration",
   "nextConcreteAction": "Freeze release 0.0.78 metadata, rerun final-source runtime regressions and the 16-state matrix at registry count 1404, then package, hash, audit, push, and open the draft PR.",
   "domainTestResult": "1009/1009 PASS",
