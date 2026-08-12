@@ -1,10 +1,11 @@
 # Expanded Summoning implementation report
 
-Status: final audit qualification in progress. The completion audit required
-one stronger final-live assertion tying all 681 roots and 364 template
-executions to their native spell, Acadamae, metamagic, material-data, and
-action-bar contracts. That focused assertion is source-qualified; its guarded
-immutable-source rerun and resulting artifact re-freeze are pending. Draft PR
+Status: implementation and native runtime qualification complete; deterministic
+release artifact re-freeze is in progress. The completion audit added a final-live
+assertion tying all 681 roots and 364 template executions to their native spell,
+Acadamae, metamagic, material-data, and action-bar contracts. That assertion and
+the complete mechanical matrix passed on pushed source
+`5205805eab3fe0115d6888c53bce73c80474d1b7`. Draft PR
 [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
 targets `master` and remains unmerged for review.
 
@@ -30,12 +31,14 @@ release state.
   Two clean exact-reference `Build-Local.ps1` executions produced byte-identical
   DLL and deterministic package outputs.
 - Structural runtime: guarded run
-  `20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0` passed all 30
+  `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4` passed all 31
   assertions, including every registered identity, 18 required parent spells,
   all 681 placements, donor immutability, sanitizer contracts, exact special
-  structures, and preservation of preexisting final-live variants.
+  structures, preservation of preexisting final-live variants, and all 1,045
+  generated ability nodes' native spell/Acadamae/material/metamagic/action-bar
+  contracts.
 - Mechanical runtime: guarded run
-  `20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889` passed every
+  `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405` passed every
   assertion and all 153 production commands: 123 logical one-creature choices,
   16 `1d3` tier/family cases, and 14 `1d4+1` cases. Counts, same-kind identity,
   CL20 duration, close placement, Augment/Superior Summoning, Acadamae
@@ -57,7 +60,14 @@ release state.
 - Compatibility: standalone twice, Call of the Wild 1.14.4c-2.1 twice, Arms
   and Armor 1.0.10 once, Toggle Custom Soundpacks 1.0.1 once, and the
   highest-risk combined profile twice all passed and restored the Mods
-  directory and settings transaction exactly.
+  directory and settings transaction exactly. The required final-source
+  repetitions passed on `5205805`: standalone transactions
+  `compat-20260812T133252Z-8ab70bfdbf75` and
+  `compat-20260812T133451Z-f7096e45017c`; Call of the Wild transactions
+  `compat-20260812T133727Z-74e8798f7849` and
+  `compat-20260812T134033Z-433e1ea1a746`; highest-risk combined transactions
+  `compat-20260812T134340Z-adb4d15f893d` and
+  `compat-20260812T134649Z-1b83742188f4`.
 - Save safety: restored settings SHA-256
   `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
   working-save SHA-256
@@ -98,7 +108,7 @@ The manual residual visual checklist is limited to aesthetic judgment of proxy
 scale, camera framing, projectile appearance, and animation quality; all
 mechanical visual contracts already pass.
 
-### Final release hashes
+### Superseded release hashes pending final artifact re-freeze
 
 - Release artifact source commit:
   `193d73cc22fe41fda8546f1d2e1750e185ed8288`.

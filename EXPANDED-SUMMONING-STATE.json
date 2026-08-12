@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "e5aba193c0eb421a41d4441fc2ae7b9f7bc5358d",
+  "currentSha": "5205805eab3fe0115d6888c53bce73c80474d1b7",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "all-variant-native-ability-contract-source-qualified",
-  "nextConcreteAction": "Commit and push the audit assertion, run the guarded structural observer on the immutable source, then repeat final package hashes and publication audit.",
+  "completedPhase": "final-native-runtime-and-compatibility-qualified",
+  "nextConcreteAction": "Commit and push the final runtime evidence, then regenerate and hash the deterministic release package and complete the publication audit.",
   "domainTestResult": "1009/1009 PASS",
   "staticValidationResult": "PASS",
-  "releaseBuildResult": "PASS for the audit assertion source; earlier deterministic release hashes are superseded after its guarded runtime rerun",
-  "packageResult": "Earlier strict deterministic package PASS; final audit-source package/hash refresh pending",
+  "releaseBuildResult": "PASS on 5205805 through final profile repetitions",
+  "packageResult": "Earlier strict deterministic package PASS; final 5205805 evidence-source package/hash refresh pending",
   "roster": {
     "summonMonsterEntries": 66,
     "summonNaturesAllyEntries": 57,
@@ -40,17 +40,17 @@
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
-      "runId": "20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0",
-      "result": "PASS (30/30)",
-      "sourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1149141636854Z-observe-expanded-summoning-inventory/runtime-result.json"
+      "runId": "20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4",
+      "result": "PASS (31/31; 681 roots and 1045 native ability nodes)",
+      "sourceSha": "5205805eab3fe0115d6888c53bce73c80474d1b7",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1327062384245Z-observe-expanded-summoning-inventory/runtime-result.json"
     },
     {
       "scenario": "disposable-expanded-summoning",
-      "runId": "20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889",
+      "runId": "20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405",
       "result": "PASS (12/12 assertions; 153/153 production commands)",
-      "sourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1303503583591Z-disposable-expanded-summoning/runtime-result.json"
+      "sourceSha": "5205805eab3fe0115d6888c53bce73c80474d1b7",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1330147580164Z-disposable-expanded-summoning/runtime-result.json"
     },
     {
       "scenario": "disposable-expanded-summoning-visual-contracts",
@@ -100,12 +100,12 @@
     {
       "profile": "standalone",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T124359Z-72c449cc3b90", "compat-20260812T124547Z-ca13807d841b"]
+      "transactions": ["compat-20260812T133252Z-8ab70bfdbf75", "compat-20260812T133451Z-f7096e45017c"]
     },
     {
       "profile": "Call of the Wild 1.14.4c-2.1",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T124739Z-1ba7466cc239", "compat-20260812T125021Z-b7705ae5d118"]
+      "transactions": ["compat-20260812T133727Z-74e8798f7849", "compat-20260812T134033Z-433e1ea1a746"]
     },
     {
       "profile": "Arms and Armor 1.0.10",
@@ -120,7 +120,7 @@
     {
       "profile": "highest-risk combined",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T125646Z-3f7c9460e14d", "compat-20260812T125929Z-3ff453ed348b"]
+      "transactions": ["compat-20260812T134340Z-adb4d15f893d", "compat-20260812T134649Z-1b83742188f4"]
     }
   ],
   "restoration": {

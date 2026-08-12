@@ -1144,3 +1144,27 @@
   residual native templates, Fire Mephit damage `0->18`, and all listed
   representative special contracts. `KMG_AUTOMATION_BASELINE` was neither
   selected nor modified.
+
+## 2026-08-12 - Completion-audit native contracts and final profiles PASS
+
+- The completion audit added one aggregate final-live assertion over all 681
+  published roots and 364 celestial/fiendish execution children. Guarded
+  save-free run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`
+  passed all 31 assertions on pushed source
+  `5205805eab3fe0115d6888c53bce73c80474d1b7`: 681 roots, 1,045 total nodes,
+  and exact parent mapping, native spell contract, Acadamae classification,
+  non-null material data, metamagic equality, and action-bar state for every
+  node.
+- The complete native mechanical matrix was repeated on the same source as run
+  `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; all 12
+  aggregate assertions and 153/153 production commands passed.
+- Final-source compatibility repetitions all passed and restored the original
+  Mods tree: standalone `compat-20260812T133252Z-8ab70bfdbf75` and
+  `compat-20260812T133451Z-f7096e45017c`; Call of the Wild
+  `compat-20260812T133727Z-74e8798f7849` and
+  `compat-20260812T134033Z-433e1ea1a746`; highest-risk combined
+  `compat-20260812T134340Z-adb4d15f893d` and
+  `compat-20260812T134649Z-1b83742188f4`.
+- The only changes after the already-passing visual, persistence, and 16-state
+  evidence are documentation and guarded test instrumentation; no production
+  summoning, publication, settings, or persistence code changed.
