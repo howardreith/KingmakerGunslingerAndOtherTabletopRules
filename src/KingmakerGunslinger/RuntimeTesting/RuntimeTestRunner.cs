@@ -158,6 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int SpawnActionCount;
             internal int RuleSummonCount;
             internal int LiveCount;
+            internal string PostTickState;
             internal bool ExactKind;
             internal bool LiveContract;
             internal bool SlotContract;
@@ -176,7 +177,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";result=" + CommandResult + ";ruleCast=" + RuleCastCount +
                     ";spawnActions=" + SpawnActionCount + ";ruleSummon=" +
                     RuleSummonCount + ";live=" + LiveCount + ";kind=" +
-                    ExactKind + ";liveContract=" + LiveContract +
+                    ExactKind + ";postTick=" + PostTickState +
+                    ";liveContract=" + LiveContract +
                     ";slotContract=" + SlotContract + ";exception=" +
                     Exception;
             }
@@ -8558,6 +8560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The player-path caster did not enter the live area.");
                 sceneEntities = caster.HoldingState.AllEntityData;
                 caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                caster.Descriptor.Stats.Intelligence.BaseValue = 30;
 
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup
                     .RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
@@ -8569,8 +8572,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (spellbook == null)
                     throw new InvalidOperationException(
                         "The level-eleven player-path caster has no Wizard spellbook.");
+                int wizardLevel = caster.Descriptor.Progression.GetClassLevel(wizard);
+                while (spellbook.CasterLevel < wizardLevel)
+                    spellbook.AddCasterLevel();
                 spellbook.UpdateAllSlotsSize(false);
                 spellbook.Rest();
+                _trace.Record("expanded-summoning-player-path-spellbook",
+                    "wizardLevel=" + wizardLevel + ";casterLevel=" +
+                    spellbook.CasterLevel + ";intelligence=" +
+                    caster.Descriptor.Stats.Intelligence.ModifiedValue +
+                    ";level1=" + spellbook.GetSpellsPerDay(1) +
+                    ";level2=" + spellbook.GetSpellsPerDay(2) +
+                    ";level6=" + spellbook.GetSpellsPerDay(6));
 
                 BlueprintAbility sm1 = BlueprintLibraryLookup.RequireExact<
                     BlueprintAbility>(BlueprintBootstrap.Library,
@@ -8894,6 +8907,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ContainsReference(sceneEntities, value) &&
                 ContainsReference(allUnits, value)).ToArray();
             evidence.LiveCount = live.Length;
+            evidence.PostTickState = string.Join("|", summoned.Select(value =>
+                value == null ? "<null>" : "destroyed=" + value.Destroyed +
+                    ",inState=" + value.IsInState + ",scene=" +
+                    ContainsReference(sceneEntities, value) + ",global=" +
+                    ContainsReference(allUnits, value) + ",holding=" +
+                    (value.HoldingState != null) + ",descriptor=" +
+                    (value.Descriptor != null) + ",view=" +
+                    (value.View != null) + ",viewData=" +
+                    (value.View != null && value.View.Data == value)).ToArray());
             evidence.ExactKind = live.Length > 0 && (expectedUnit == null ||
                 live.All(value => ReferenceEquals(value.Blueprint, expectedUnit)));
             evidence.LiveContract = live.Length > 0 && evidence.ExactKind &&
@@ -9071,10 +9093,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string path = Path.Combine(Application.persistentDataPath,
                     "output_log.txt");
                 if (!File.Exists(path)) return "<missing>";
-                return string.Join(" || ", File.ReadLines(path).Reverse().Take(24)
-                    .Reverse()
-                    .Select(value => value.Length > 500 ? value.Substring(0, 500) :
-                        value).ToArray());
+                var lines = new Queue<string>();
+                using (var stream = new FileStream(path, FileMode.Open,
+                    FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                using (var reader = new StreamReader(stream))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (lines.Count == 24) lines.Dequeue();
+                        lines.Enqueue(line.Length > 500 ?
+                            line.Substring(0, 500) : line);
+                    }
+                }
+                return string.Join(" || ", lines.ToArray());
             }
             catch (Exception exception)
             {
