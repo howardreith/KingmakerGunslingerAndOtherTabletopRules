@@ -45,6 +45,34 @@ claim and was reproduced before repair.
   I-IX `5,14,21,33,40,47,53,57,59`. Movanic Deva, Frost Giant and every other
   unique native choice remain. The six standalone Summon Elemental roots each
   retain their exact four original non-KMG children and are untouched.
+
+The final immutable structural observer recorded the exact original-parent
+count (`before`) and repaired enabled count split by displayed multiplicity:
+
+| Parent | Before | After | One | 1d3 | 1d4+1 |
+|---|---:|---:|---:|---:|---:|
+| SM I | 1 | 3 | 3 | 0 | 0 |
+| SM II | 2 | 13 | 10 | 3 | 0 |
+| SM III | 3 | 21 | 8 | 10 | 3 |
+| SM IV | 3 | 35 | 14 | 8 | 13 |
+| SM V | 3 | 44 | 9 | 14 | 21 |
+| SM VI | 3 | 56 | 12 | 9 | 35 |
+| SM VII | 3 | 64 | 8 | 12 | 44 |
+| SM VIII | 3 | 68 | 5 | 8 | 55 |
+| SM IX | 3 | 69 | 2 | 5 | 62 |
+| SNA I | 1 | 5 | 5 | 0 | 0 |
+| SNA II | 2 | 14 | 9 | 5 | 0 |
+| SNA III | 3 | 21 | 7 | 9 | 5 |
+| SNA IV | 3 | 33 | 13 | 7 | 13 |
+| SNA V | 3 | 40 | 7 | 13 | 20 |
+| SNA VI | 3 | 47 | 7 | 7 | 33 |
+| SNA VII | 3 | 53 | 6 | 7 | 40 |
+| SNA VIII | 3 | 57 | 5 | 6 | 46 |
+| SNA IX | 3 | 59 | 2 | 5 | 52 |
+
+Every row had zero unclassified foreign-tail entries in the final supported
+profile observer; structurally discovered third-party entries are still
+preserved in stable relative order when present.
 - All 67 creatures use a frozen icon catalog preferring exact donor icons and
   then canine, feline, bear, flying, reptile/dinosaur, vermin, per-element
   elemental/mephit, celestial, or fiend fallbacks. Quantity remains explicit
