@@ -2,6 +2,17 @@
 
 ## 0.0.78 - Expanded Summoning
 
+- Repairs the first-playtest no-op for templated natural/proxy summons by
+  replacing unsupported nested player-facing variants with direct executable
+  roots and caster-selected post-spawn templates.
+- Reconciles 48 exact-GUID native semantic duplicates, orders singles before
+  `1d3` before `1d4+1`, adds category/donor icon selection, moves Invisible
+  Stalker to the Medium Air Elemental view, and rebuilds Erinyes on a safe
+  outsider chassis.
+- Adds an actual native-parent spellbook acceptance scenario covering all 681
+  logical roots, exact one-slot success semantics, zero-slot pre-cast
+  cancellation, post-creation live-world state, and exact cleanup.
+
 - Adds an independent, default-enabled, restart-bound Expanded Summoning
   module for Summon Monster I-IX and Summon Nature's Ally I-IX.
 - Adds the approved 66-entry Summon Monster roster and 57-entry Nature's Ally
@@ -13,7 +24,7 @@
   alignment handling, native summon lifecycle/feat integration, and bounded
   Lantern Archon, Salamander, Invisible Stalker, Shadow Demon, Succubus,
   Bebelith, and Pixie adaptations.
-- Keeps all 1,155 Expanded Summoning identities registered when the module is
+- Keeps all 1,158 Expanded Summoning identities registered when the module is
   disabled so existing saves and active summons remain load-safe.
 - Corrects Shield Other so close range limits initial targeting only; an
   established link now ends on duration/removal, dead or missing endpoints, or

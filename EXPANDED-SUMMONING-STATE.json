@@ -4,15 +4,15 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "7174ca25d672dae4ef57c07a827b2dc6f3dd3848",
-  "currentShaSemantics": "Last pushed repair checkpoint; the qualified cancelled-cast and exact standalone-elemental observer working tree will advance this SHA in the next coherent commit.",
+  "currentSha": "1db4de6f0f3a6732df870ea690904d82287d2f4c",
+  "currentShaSemantics": "Last pushed repair checkpoint; final evidence documentation will advance this SHA before immutable-source runtime repetition and artifact freeze.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "all-681-player-paths-cancelled-no-slot-and-standalone-elemental-qualified",
-  "nextConcreteAction": "Commit and push this runtime-evidence checkpoint, then qualify dynamic celestial/fiendish descriptor behavior before final persistence, module, profile, regression, and artifact-freeze repetitions.",
+  "completedPhase": "functional-repair-persistence-16-state-profiles-and-focused-regressions-qualified",
+  "nextConcreteAction": "Commit and push final repair evidence, repeat player-path/observer/visual on immutable source, freeze deterministic artifacts, and refresh draft PR 2 without merging.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
-  "releaseBuildResult": "PASS twice from final artifact source; byte-identical DLL output",
-  "packageResult": "PASS twice from artifact source 8e08834; canonical deterministic 45-file package byte-identical to local-runtime package and strict validation PASS",
+  "releaseBuildResult": "PASS on repair checkpoints; final immutable-source double build pending",
+  "packageResult": "PASS on repair checkpoints; final deterministic package/hash freeze pending",
   "roster": {
     "summonMonsterEntries": 66,
     "summonNaturesAllyEntries": 57,
@@ -33,12 +33,19 @@
     "expandedSummoningDefaultEnabled": true,
     "restartBound": true,
     "matrixResult": "16/16 PASS",
-    "matrixSourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
-    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1211226889431Z-observe-feature-module-settings/runtime-result.json",
-    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1241396573801Z-observe-feature-module-settings/runtime-result.json",
+    "matrixSourceSha": "9cb5f54d318afdbf5dfed5b67f35b7cd06796fe0",
+    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1946182751586Z-observe-feature-module-settings/runtime-result.json",
+    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T2016559819327Z-observe-feature-module-settings/runtime-result.json",
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
+    {
+      "scenario": "working-save-expanded-summoning enabled/disabled repair repetition",
+      "runId": "20260812T1929470099833Z-bb3292f38b3644b6923940b52fc491e4 through 20260812T1943438977236Z-003950a75a8d4c448b8865c651413c33",
+      "result": "6/6 fresh-process stages PASS; active identities, remaining duration, cleanup, disabled load safety, and zero disabled publication",
+      "sourceSha": "9cb5f54d318afdbf5dfed5b67f35b7cd06796fe0",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1929469787328Z-working-save-expanded-summoning-prepare through 20260812T1943438820924Z-working-save-expanded-summoning-verify-absent"
+    },
     {
       "scenario": "disposable-expanded-summoning-player-path (all placements plus cancelled cast)",
       "runId": "20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37",
@@ -136,27 +143,27 @@
     {
       "profile": "standalone",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T133252Z-8ab70bfdbf75", "compat-20260812T133451Z-f7096e45017c"]
+      "transactions": ["compat-20260812T201850Z-c5a07cfc955e", "compat-20260812T202109Z-c1bd197ce6ca"]
     },
     {
       "profile": "Call of the Wild 1.14.4c-2.1",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T133727Z-74e8798f7849", "compat-20260812T134033Z-433e1ea1a746"]
+      "transactions": ["compat-20260812T202324Z-10ac0552d9eb", "compat-20260812T202715Z-eee0aa7926aa"]
     },
     {
       "profile": "Arms and Armor 1.0.10",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T125302Z-b93f3cd123d7"]
+      "transactions": ["compat-20260812T203105Z-c11cd33c2df9"]
     },
     {
       "profile": "Toggle Custom Soundpacks 1.0.1",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T125454Z-1d1dbe9924c8"]
+      "transactions": ["compat-20260812T203318Z-e4887a3c64fe"]
     },
     {
       "profile": "highest-risk combined",
       "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T134340Z-adb4d15f893d", "compat-20260812T134649Z-1b83742188f4"]
+      "transactions": ["compat-20260812T203535Z-72786ce6ba3a", "compat-20260812T203926Z-3da6a8617ea8"]
     }
   ],
   "restoration": {
@@ -167,10 +174,10 @@
     "kmgAutomationBaselineModified": false
   },
   "releaseHashes": {
-    "artifactSourceSha": "8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd",
-    "dllSha256": "729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c",
-    "packageSha256": "165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53",
-    "sourceArchiveSha256": "608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5"
+    "artifactSourceSha": null,
+    "dllSha256": null,
+    "packageSha256": null,
+    "sourceArchiveSha256": null
   },
   "unresolvedDeviations": [
     "Lantern Archon Aura of Menace is present only when a compatible optional carrier is structurally available; greater teleport, gestalt, truespeech, and separately modeled darkvision are omitted.",
@@ -179,7 +186,9 @@
     "Succubus profane gift is omitted; charm and energy drain use bounded domination and a one-round temporary negative level.",
     "Bebelith permanent armor destruction is replaced by a one-round -2 AC dismantle effect; rot and climb are omitted.",
     "Pixie sleep uses a zero-damage, non-inventory bow and bounded resource; dance uses a frozen bounded state.",
-    "Natural/proxy omissions are enumerated per creature in planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md, principally unsupported movement modes, grab/trample/sprint/rage, and unproven donor-specific feats or senses."
+    "Natural/proxy omissions are enumerated per creature in planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md, principally unsupported movement modes, grab/trample/sprint/rage, and unproven donor-specific feats or senses.",
+    "Kingmaker descriptors are shared blueprint state, not per-caster AbilityData state; direct roots retain Summoning while spawned template/alignment/smite are caster-correct, and absent Sacred Summons integration fails closed.",
+    "The pre-existing detached Gunslinger's Dodge runtime fixture lacks a Swift-action controller and interrupts before Start; focused domain coverage and gameplay source were unchanged by this repair."
   ],
   "branchPushed": true,
   "draftPrNumber": 2,

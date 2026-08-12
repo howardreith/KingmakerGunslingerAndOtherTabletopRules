@@ -20,6 +20,7 @@ Native automation must use the guarded request workflow in
 `docs/WIN10-AUTONOMOUS-RUNTIME-TESTING.md` and Steam App ID 640820. Expanded
 Summoning qualification uses `observe-expanded-summoning-inventory`,
 `disposable-expanded-summoning`,
+`disposable-expanded-summoning-player-path`,
 `disposable-expanded-summoning-visual-contracts`, the three
 `working-save-expanded-summoning-*` persistence stages, and all 16
 `observe-feature-module-settings` configurations.
@@ -37,3 +38,10 @@ Mods directory and feature settings exactly even on failure. Required release
 profiles are standalone, Call of the Wild, Arms and Armor, Toggle Custom
 Soundpacks, and the highest-risk combined profile; standalone, Call of the
 Wild, and highest-risk combined require two fresh PASS runs.
+
+`disposable-expanded-summoning-player-path` is the acceptance gate. It learns
+the native parent in a real spellbook, resolves each published logical root
+through the parent/variant `AbilityData` chain, advances native command,
+animation, execution and entity-creation work, and checks exact slot spend,
+live-world survival, kind/quantity, template/alignment and cleanup. Directly
+granting a Celestial/Fiendish compatibility child is lower-layer evidence only.

@@ -1361,3 +1361,50 @@
   one-spawn children, with zero KMG template/alignment action contamination.
   The standalone spell is unchanged. Repository validation, all 1,013 domain
   tests, the exact-reference Release build, and `git diff --check` pass.
+
+## 2026-08-12 - Repair persistence, module, compatibility, and regressions
+
+- Repeated the guarded enabled persistence sequence on pushed `9cb5f54`:
+  prepare `20260812T1929470099833Z-bb3292f38b3644b6923940b52fc491e4`,
+  cleanup `20260812T1932384938123Z-38502fdc53534e7bab8b9ff1f0c9737b`,
+  and absence `20260812T1935299471647Z-9e6533fcb51d421ea31e545fdd28aa51`.
+  Repeated disabled load safety with prepare
+  `20260812T1938060304326Z-4f4f1d75920e45fdb86513c0bb48c61d`,
+  cleanup `20260812T1941047028065Z-e853f261c5e64fe9bd172692d7538997`,
+  and absence `20260812T1943438977236Z-003950a75a8d4c448b8865c651413c33`.
+  All six stages passed.
+- All 16 fresh feature-module configurations passed with constant 1,412
+  registrations, independent publication, and settings restored to SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+- Required repaired-source compatibility passed with exact restoration:
+  standalone `compat-20260812T201850Z-c5a07cfc955e` and
+  `compat-20260812T202109Z-c1bd197ce6ca`; Call of the Wild
+  `compat-20260812T202324Z-10ac0552d9eb` and
+  `compat-20260812T202715Z-eee0aa7926aa`; Arms and Armor
+  `compat-20260812T203105Z-c11cd33c2df9`; Toggle Custom Soundpacks
+  `compat-20260812T203318Z-e4887a3c64fe`; highest-risk combined
+  `compat-20260812T203535Z-72786ce6ba3a` and
+  `compat-20260812T203926Z-3da6a8617ea8`.
+- The Acadamae fixture initially guessed the KMG Dog internal name. It now
+  derives the exact published logical root from the frozen summon catalog.
+  Fresh run `20260812T2058347680701Z-8cdc06e4886a41cba7ac7592462864b5`
+  passed 13/13 through the native Summon Monster I parent and retained Cord
+  behavior. Shield Other passed 23/23 in
+  `20260812T2101121022865Z-89f2bb1c40ea4d43abba943f1ce05b8e`.
+  Paper cartridge/firearm/vendor comprehensive passed 6/6 in high-risk
+  transaction `compat-20260812T212522Z-f2d2def65434`.
+- The broad Gunslinger comprehensive run passed 184 assertions except its
+  known detached Gunslinger's Dodge fixture. Instrumented attempts proved its
+  save-free unit has no Swift-action controller: the command interrupts before
+  `Start`, with no resource spend, execution process, or production effect
+  entry. All diagnostic source edits were removed. This is an inherited
+  fixture limitation; no summoning or Dodge gameplay source changed.
+- Assembly reflection proved spell descriptor state exists only on the shared
+  `BlueprintAbility`; no per-invocation `AbilityData` descriptor exists.
+  Dynamic shared mutation was rejected as nondeterministic and cache-unsafe.
+  Direct roots keep `Summoning`; spawned alignment, Celestial/Fiendish buff,
+  and smite remain caster-correct. Supported profiles expose no Sacred Summons
+  surface, so the optional path fails closed.
+- Bounded high-tier review retained the frozen roster. No dedicated safe
+  Astral Deva, Trumpet Archon, or high-tier fiend addition was proven; those
+  candidates remain deferred instead of using weak campaign proxies.

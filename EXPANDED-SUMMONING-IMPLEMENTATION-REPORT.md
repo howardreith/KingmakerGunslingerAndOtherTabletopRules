@@ -1,5 +1,80 @@
 # Expanded Summoning implementation report
 
+## First-playtest repair qualification
+
+Status: functionally repaired; final immutable-source repetition and artifact
+freeze are in progress. The human failure superseded the earlier completion
+claim and was reproduced before repair.
+
+- Root cause: each templated Summon Monster choice was a non-executable logical
+  `AbilityVariants` wrapper beneath Owlcat's spell parent, with Celestial and
+  Fiendish abilities nested one level deeper. Kingmaker rejected that second
+  variant level (`Can't cast variational ability`) before `RuleCastSpell`, so
+  the unit never spawned and the prepared slot was not spent. Directly granted
+  execution children and the same KMG Dog unit through SNA both worked, proving
+  the old 153-command harness had bypassed the player failure.
+- Repair: all 182 templated logical roots are now direct executable spawn
+  abilities. One post-spawn action selects Celestial for good casters,
+  Fiendish for evil casters, and a persistent per-character neutral mode
+  (Celestial by default; toggle on for Fiendish). The 364 old execution-child
+  identities remain registered and unpublished for save compatibility.
+- Discriminating pre-repair run
+  `20260812T1729340453662Z-0ebb1d302b9045389454b13fbe812a06`
+  passed native Dog, direct Celestial/Fiendish Dog, SNA Dog, Giant Spider
+  control, Small Earth Elemental and Erinyes controls while the KMG SM Dog and
+  Spider logical-root paths failed before cast. Post-repair run
+  `20260812T1747088695607Z-de3328d9413644bfab2a460382b70e9c`
+  passed the same matrix through the player route with one slot spent.
+- Complete player-path run
+  `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
+  passed all 681 logical roots through their real native spellbook parents.
+  Every success spent exactly one slot and produced the correct live kind and
+  legal quantity after queued entity creation. A distant command cancelled
+  before cast range fired no cast/spawn rule and preserved slots `7 -> 7`.
+- Erinyes' separate fault was inherited campaign `BuffOnEntityCreated` /
+  `AppearFromFog` state. Its KMG unit now uses a fresh 9-HD outsider component
+  chassis while retaining the proven ranged body, brain, facts and view.
+- A frozen 48-GUID reconciliation map removes only proven semantic native
+  duplicates from displayed parents. Original blueprints remain unchanged and
+  registered; unique native and third-party choices remain once. Current-tier
+  singles precede unique native singles, then `1d3`, then `1d4+1`.
+- Final enabled menu counts are SM I-IX `3,13,21,35,44,56,64,68,69` and SNA
+  I-IX `5,14,21,33,40,47,53,57,59`. Movanic Deva, Frost Giant and every other
+  unique native choice remain. The six standalone Summon Elemental roots each
+  retain their exact four original non-KMG children and are untouched.
+- All 67 creatures use a frozen icon catalog preferring exact donor icons and
+  then canine, feline, bear, flying, reptile/dinosaur, vermin, per-element
+  elemental/mephit, celestial, or fiend fallbacks. Quantity remains explicit
+  in names. Invisible Stalker now uses the Medium Air Elemental view; the true
+  Huge Air Elemental summon is unchanged.
+- Repaired persistence passed enabled and disabled six-stage fresh-process
+  sequences on `9cb5f54`. All 16 feature states passed with constant 1,412
+  registrations and byte-identical settings restoration. Final profile runs
+  passed standalone twice, Call of the Wild twice, Arms and Armor, Toggle
+  Custom Soundpacks, and highest-risk combined twice, with exact restoration.
+- Exact engine limitation: Kingmaker 2.1.7b exposes spell descriptors only on
+  the shared `BlueprintAbility`, not per `AbilityData`/caster invocation.
+  Dynamically mutating a shared root would race party casters and corrupt
+  cached UI/immunity decisions. Direct roots therefore retain the required
+  Summoning descriptor while the post-spawn template, unit alignment and
+  bounded smite are caster-correct. No Sacred Summons surface exists in the
+  installed supported profiles, so optional integration fails closed. The old
+  alignment-specific children remain registered but are not player-facing.
+- Bounded high-tier review found no additional dedicated summon-safe candidate
+  that justified expanding the frozen roster. Astral Deva/Trumpet Archon and
+  speculative high-tier fiends remain deferred; no poor campaign proxy was
+  added. SM VIII/IX sparsity is catalog design, not an engine limitation.
+
+Existing-feature regressions on repaired source: Shield Other 23/23 PASS,
+Acadamae/Cord 13/13 PASS through the exact published KMG Dog root, and the
+paper-cartridge/firearm/vendor comprehensive scenario 6/6 PASS in the
+highest-risk combined profile. The broad Gunslinger comprehensive run passed
+184 assertions except its repository-pre-existing detached Gunslinger's Dodge
+Swift-command fixture, which still interrupts before `Start` because that
+save-free fixture has no turn/action controller. No summoning source caused or
+changed that inherited harness limitation, and no unrelated gameplay change
+was made to hide it.
+
 Status: complete and release-qualified. The completion audit added a final-live
 assertion tying all 681 roots and 364 template executions to their native spell,
 Acadamae, metamagic, material-data, and action-bar contracts. That assertion and

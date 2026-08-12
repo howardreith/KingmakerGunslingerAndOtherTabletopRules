@@ -5,7 +5,7 @@
 - The human spellbook/UI acceptance test supersedes the prior completion
   statement below. The repair baseline is
   `e9f251c584607dd45a45a2414e2aaffabff4c44b`; the last pushed checkpoint is
-  `7174ca25d672dae4ef57c07a827b2dc6f3dd3848` on
+  `1db4de6f0f3a6732df870ea690904d82287d2f4c` on
   `codex/expanded-summoning`; draft PR #2 remains open and must not merge.
 - Durable repair contract:
   `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
@@ -28,9 +28,13 @@
   `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
   repeats all `681/681` placements and proves a distant command cancelled
   before cast range spends no slot and fires no cast/spawn rules.
-- Exact next action: commit/push this evidence checkpoint, then finish dynamic
-  template descriptor qualification, persistence/module/profile regression,
-  and the final 0.0.79 artifact freeze.
+- Persistence, all 16 module states, and all required compatibility profiles
+  pass on the repaired production source. Shield Other, Acadamae/Cord, and
+  paper/firearm/vendor regressions pass; the historical detached Dodge fixture
+  limitation is documented without an unrelated gameplay mutation.
+- Exact next action: commit/push final evidence documentation, repeat the
+  player-path/observer/visual gates on that immutable source, freeze the 0.0.78
+  artifacts and hashes, and refresh draft PR #2 without merging.
 - The old package hashes and completion evidence are historical controls, not
   repaired-release qualification.
 

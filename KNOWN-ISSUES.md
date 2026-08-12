@@ -4,6 +4,11 @@
   mechanically reconstructed but cannot perfectly match every tabletop body.
   The final manual checklist covers residual aesthetic judgment for scale,
   camera framing, projectile appearance, and animation style.
+- Kingmaker stores spell descriptors on shared ability blueprints rather than
+  per caster invocation. KMG direct templated roots retain `Summoning`; their
+  spawned alignment, Celestial/Fiendish template and smite are caster-correct.
+  KMG does not mutate shared descriptors dynamically. Sacred Summons therefore
+  remains fail-closed when no exact optional surface is installed.
 - Standalone Kingmaker 2.1.7b has no proven Aura of Menace carrier. Lantern
   Archon reuses the exact carrier when Call of the Wild supplies it and
   conservatively omits the aura standalone.
@@ -27,3 +32,8 @@
   content. Disabling Expanded Summoning is supported: identities remain
   registered, active summons load and expire safely, and no new KMG variants
   are published after restart.
+- The save-free comprehensive Gunslinger runtime fixture has a historical
+  limitation: its detached unit has no Swift-action controller, so the
+  Gunslinger's Dodge command interrupts before `Start`. This is a test-fixture
+  limitation, not a change introduced by Expanded Summoning; focused domain
+  coverage and prior live gameplay behavior remain unchanged.
