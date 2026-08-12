@@ -1,5 +1,24 @@
 # Autonomous Gunslinger resume handoff
 
+## Expanded Summoning first-playtest repair (active, 2026-08-12)
+
+- The human spellbook/UI acceptance test supersedes the prior completion
+  statement below. Repair baseline and current branch head are
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b` on
+  `codex/expanded-summoning`; draft PR #2 remains open and must not merge.
+- Durable repair contract:
+  `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
+- Primary hypothesis: the old 153-command harness granted Celestial/Fiendish
+  execution children directly and bypassed the unsupported second-level
+  player-facing variant beneath the native summon parent. Prove this with the
+  mandatory Dog/Spider-or-Wolf/SNA/elemental/Erinyes matrix before changing
+  units.
+- Exact next action: inspect and extend the guarded runtime harness to cast a
+  selected logical root through an actual spellbook and native parent while
+  recording slot, `AbilityData`, rule, spawn, tick and live-world evidence.
+- The old package hashes and completion evidence are historical controls, not
+  repaired-release qualification.
+
 ## Active Expanded Summoning mission (2026-08-11)
 
 - Current release state (2026-08-12): mission complete and release-qualified.

@@ -1231,3 +1231,20 @@
 - Two independent `git archive` runs over the artifact source matched at
   `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
   Generated packages remain ignored and uncommitted.
+
+## 2026-08-12 - Human first-playtest failure reopens qualification
+
+- Human acceptance through the actual spellbook/UI route found that most
+  templated natural/proxy SM choices no-op without spending a slot, while
+  native summons, elementals, mephits and most special KMG summons work.
+- The failure partition makes the nested KMG logical-root ->
+  Celestial/Fiendish execution-child path the first hypothesis. The prior
+  153-command suite granted execution children directly, so it is now labeled
+  lower-layer evidence rather than end-to-end acceptance.
+- Erinyes is tracked as an independent campaign-donor failure. Presentation
+  repair also covers exact native duplicate reconciliation, single-before-
+  quantity ordering, immutable icon selection and a Medium Air Elemental view
+  for Invisible Stalker.
+- Repair baseline is clean pushed head
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b`; branch and draft PR #2 are
+  retained. Exact next action is a discriminating real-spellbook reproduction.
