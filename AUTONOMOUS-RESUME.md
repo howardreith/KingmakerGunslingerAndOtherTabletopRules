@@ -1,5 +1,23 @@
 # Autonomous Gunslinger resume handoff
 
+## Expanded Summoning polish / release hardening (active, 2026-08-12)
+
+- Starting head: `1767b8f08cc5ce1be8d8cb0a16cfa4b07c7c225e` on
+  `codex/expanded-summoning`; release remains 0.0.78 and draft PR #2 remains
+  open, draft, and unmerged.
+- Durable pass contract:
+  `planning/EXPANDED-SUMMONING-POLISH-MISSION.md`.
+- Fresh baseline player-path run
+  `20260812T2313510042210Z-disposable-expanded-summoning-player-path` passed
+  all 681 SM/SNA logical placements with exact live kind/quantity and spell
+  slot semantics. Fresh mechanical run
+  `20260812T2321394890850Z-disposable-expanded-summoning` passed representative
+  natural/special combat contracts and cleanup.
+- Next action: add failing domain/runtime contracts for exact umbrella
+  expansion, per-creature icons, view scale ratios, Dire Bat donor inventory,
+  and representative live combat/AI; then implement and fully requalify.
+
+
 ## Expanded Summoning first-playtest repair (complete, 2026-08-12)
 
 - The human spellbook/UI acceptance test superseded the prior completion

@@ -1447,3 +1447,21 @@
   SHA-256 `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`.
   The protected baseline remained unchanged at
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+# 2026-08-12 - Polish/release-hardening pass opened
+
+- Human playtest accepted the repaired native-parent execution pipeline and
+  opened a new pass for SNA/combat proof, native umbrella cleanup, scale/proxy
+  repair, icon differentiation, and final menu polish.
+- Fresh guarded real-parent run
+  `20260812T2313510042210Z-disposable-expanded-summoning-player-path` passed
+  all 681 generated SM/SNA placements. Every successful actual-parent cast
+  produced the exact live unit/quantity after queued entity creation and spent
+  one spell slot; the invalid/cancelled case spent zero.
+- Fresh guarded mechanical run
+  `20260812T2321394890850Z-disposable-expanded-summoning` passed the existing
+  153-command matrix, exact natural weapon profiles, quantities, summon feats,
+  template modes, representative special actions, and cleanup.
+- Exact frozen Owlcat graphs show four alignment-condition umbrellas and one
+  direct Bogeyman spawn. The pass will materialize the unique native creatures
+  as individually named KMG-owned ability shells while retaining the original
+  native blueprints untouched and registered.
