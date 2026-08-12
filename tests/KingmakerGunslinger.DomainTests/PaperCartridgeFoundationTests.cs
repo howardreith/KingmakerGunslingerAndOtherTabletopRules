@@ -377,11 +377,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(runtime.Contains("_isActive") || runtime.Contains("Dictionary<Unit"),
                 "mode runtime must not own global mutable selection state");
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
+            string package = File.ReadAllText(Path.Combine(root, "scripts",
+                "package.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
             Assertions.True(localBuild.Contains("{ 45 } else { 43 }") &&
                 packager.Contains("choices=(41, 42, 43, 44, 45)"),
                 "deterministic package counts include all project-owned runtime icons");
+            Assertions.True(package.Contains("create_deterministic_package.py") &&
+                package.Contains("expectedPackageFileCount") &&
+                !package.Contains("Compress-Archive"),
+                "standalone release package must use the deterministic ZIP builder");
         }
 
         internal static void LightningReloadDynamicActions()

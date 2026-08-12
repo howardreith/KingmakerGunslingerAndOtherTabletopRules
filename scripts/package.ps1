@@ -78,7 +78,16 @@ if (Test-Path -LiteralPath $checksumPath) {
     Remove-Item -LiteralPath $checksumPath -Force
 }
 
-Compress-Archive -LiteralPath $modDirectory -DestinationPath $packagePath -CompressionLevel Optimal
+$python = (Get-Command python -ErrorAction Stop).Source
+$hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
+    'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 45 } else { 43 }
+& $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
+    --source $modDirectory --output $packagePath `
+    --expected-file-count $expectedPackageFileCount
+if ($LASTEXITCODE -ne 0) {
+    throw 'Deterministic standalone package creation failed.'
+}
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
 
 $checksum = Get-KmgSha256 -Path $packagePath
