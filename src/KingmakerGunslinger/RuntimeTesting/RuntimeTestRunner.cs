@@ -439,6 +439,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     !IsExpandedSummoningPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
@@ -1056,6 +1057,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
@@ -1080,6 +1082,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
@@ -2181,6 +2184,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
