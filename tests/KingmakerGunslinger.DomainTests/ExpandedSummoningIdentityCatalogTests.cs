@@ -88,7 +88,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "KMG.Summoning.Subtype.Extraplanar",
                 "ConfigureExtraplanar(extraplanar)",
-                "feature.HideInUI = true" })
+                "feature.HideInUI = true",
+                "ApplyExtraplanarMarker(registered, extraplanar)",
+                "ExpandedSummoningCatalog.All" })
                 Assertions.True(registration.Contains(token),
                     "The local extraplanar marker contract is missing: " + token);
         }

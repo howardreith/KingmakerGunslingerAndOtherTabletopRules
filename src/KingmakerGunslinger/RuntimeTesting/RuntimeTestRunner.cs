@@ -7139,7 +7139,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal) ||
                 value.name.StartsWith("KMG_Summoning_Special_", StringComparison.Ordinal));
             int sharedComponents = 0, prohibitedReferences = 0,
-                nonemptyInventories = 0, inheritedSpellArrays = 0;
+                nonemptyInventories = 0, inheritedSpellArrays = 0,
+                extraplanarMarkers = 0;
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
             {
                 BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
@@ -7169,8 +7170,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
                 if (unit.AddFacts != null)
+                {
                     prohibitedReferences += unit.AddFacts.Count(value => value == null ||
                         ExpandedSummoningIsForbiddenReference(value));
+                    extraplanarMarkers += unit.AddFacts.Count(value => value != null &&
+                        value.name == "KMG_Summoning_Subtype_Extraplanar");
+                }
                 if (ExpandedSummoningArrayLength(unit, "StartingInventory") != 0)
                     nonemptyInventories++;
             }
@@ -7688,6 +7693,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-prohibited-references", "0",
                     prohibitedReferences.ToString(), prohibitedReferences == 0,
                     "direct facts and component blueprint-array grants"),
+                Assertion("expanded-summoning-extraplanar-markers", "67",
+                    extraplanarMarkers.ToString(), extraplanarMarkers == 67,
+                    "one exact hidden KMG marker per custom summon unit"),
                 Assertion("expanded-summoning-inherited-class-spells", "0",
                     inheritedSpellArrays.ToString(), inheritedSpellArrays == 0,
                     "AddClassLevels MemorizeSpells and SelectSpells arrays"),
@@ -7745,7 +7753,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintScriptableObject blueprint)
         {
             if (blueprint == null) return true;
-            if (blueprint.name ==
+            if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
+                blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_Defenses" ||

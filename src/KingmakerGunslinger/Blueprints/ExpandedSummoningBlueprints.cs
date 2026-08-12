@@ -10,6 +10,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Localization;
 using KingmakerGunslinger.Summoning;
@@ -101,6 +102,7 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar);
             ExpandedSummoningSpecialBuilder.Configure(library, registered,
                 extraplanar);
+            ApplyExtraplanarMarker(registered, extraplanar);
             return result;
         }
 
@@ -160,6 +162,29 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.ExpandedSummoning.Subtype.Extraplanar.Description",
                     "This creature is present through a summoning effect and is treated as extraplanar for the duration of that effect."),
                 null);
+        }
+
+        private static void ApplyExtraplanarMarker(
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
+        {
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            {
+                BlueprintUnit unit = bySymbol[
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(creature)]
+                    as BlueprintUnit;
+                if (unit == null) throw new InvalidOperationException(
+                    "Expanded Summoning unit identity type mismatch for " +
+                    creature.Key + ".");
+                BlueprintUnitFact[] facts = unit.AddFacts ??
+                    Array.Empty<BlueprintUnitFact>();
+                if (facts.Any(value => value != null &&
+                    (ReferenceEquals(value, extraplanar) || string.Equals(
+                        value.AssetGuid, extraplanar.AssetGuid,
+                        StringComparison.Ordinal)))) continue;
+                unit.AddFacts = facts.Concat(new BlueprintUnitFact[] {
+                    extraplanar }).ToArray();
+            }
         }
 
         private static BlueprintUnit CloneUnitShell(BlueprintUnit donor,
