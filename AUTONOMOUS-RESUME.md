@@ -56,6 +56,16 @@
   release freeze and final evidence.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
+- Strengthened guarded mechanical run
+  `20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db` passes all 153
+  casts plus templates, feats, duration/range, representative combat, Fire
+  Mephit breath, Succubus, Pixie, Bebelith, and exact cleanup. The ledger is
+  now 1,155 Expanded Summoning identities and 1,409 active registrations plus
+  one reserved identity. Exact next action is to commit/push this checkpoint,
+  then repeat all required final-source runtime gates on that immutable SHA.
+- Mechanical source checkpoint `317759478539127ebf237067bbde697b1da8c60d`
+  is pushed to `origin/codex/expanded-summoning`. The next action is now the
+  exact immutable-source runtime repetition set.
 
 
 ## Shield Other casting/UI regression repair (2026-08-11)

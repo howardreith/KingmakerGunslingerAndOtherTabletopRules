@@ -1047,3 +1047,31 @@
   `compat-20260812T055928Z-f3f395ae342e`,
   `compat-20260812T060121Z-d337b4c24bd8`, and
   `compat-20260812T060411Z-37a29b64137f`.
+
+## 2026-08-12 - Strengthened complete mechanical runtime PASS
+
+- Expanded the disposable mechanical scenario from summon creation alone to
+  exact caster-level duration, native close-range approach, good/neutral/evil
+  celestial and fiendish choices, SNA caster alignment, Augment Summoning,
+  Superior Summoning, and representative natural, proxy, elemental,
+  outsider, incorporeal, invisible, breath, projectile, Bebelith, Succubus,
+  and Pixie mechanics.
+- Added summon-local buff application because Owlcat's generic nested permanent
+  buff action did not survive the native spawn graph. The feature action first
+  removes the four exact Owlcat celestial/fiendish template buffs before
+  applying one selected HD-banded KMG template and bounded smite marker. This
+  prevents neutral fiendish choices from retaining Owlcat's default celestial
+  defenses.
+- Added a bounded native-save Succubus domination action and project-owned,
+  nontransferable Salamander/Pixie weapons. The synchronous harness uses the
+  already-started native Fire Mephit command and its exact execution context to
+  deliver the native effect graph when cone world-time cannot advance inside
+  the post-load callback.
+- Repository validation, the complete `1009/1009` domain suite, clean Release,
+  and strict package construction passed. Guarded Steam run
+  `20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db` passed all
+  assertions: 153/153 commands, 123/123 single entries, 16/16 `1d3`, 14/14
+  `1d4+1`, same-kind identity, 153/153 duration/placement, exact cleanup, zero
+  residual native templates, Fire Mephit damage `0->18`, and all listed
+  representative special contracts. `KMG_AUTOMATION_BASELINE` was neither
+  selected nor modified.

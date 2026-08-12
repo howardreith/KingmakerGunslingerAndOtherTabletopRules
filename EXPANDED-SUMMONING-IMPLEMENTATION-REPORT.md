@@ -164,6 +164,27 @@ domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
 
+## Strengthened mechanical qualification
+
+The current 1,155-identity implementation passed the complete guarded
+mechanical scenario in run
+`20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db`. All 153 native
+ability commands passed: every 123 logical one-creature SM/SNA entry, 16
+family/tier `1d3` cases, and 14 family/tier `1d4+1` cases. Runtime evidence
+proves same-kind identity, CL20 duration, close-range approach, exact cleanup,
+Augment and Superior Summoning, good/neutral/evil template choice, SNA caster
+alignment, and representative natural/proxy/elemental/outsider/special combat.
+
+The selected KMG celestial/fiendish template now replaces all four exact
+native Owlcat summon-template buffs on the spawned KMG unit. Runtime cases for
+good celestial, neutral celestial, neutral fiendish, and evil fiendish each
+contained exactly one KMG template and smite marker and zero native template
+buffs. The actual Fire Mephit breath command dealt 18 fire damage through its
+native effect graph; Succubus domination, Pixie dance/sleep arrows, bounded
+Bebelith dismantling, and permanent-on-attack Invisible Stalker invisibility
+also passed. Final immutable-source repetition remains required before release
+qualification is claimed.
+
 ## Active-summon persistence qualification
 
 Guarded prepare/load/cleanup/absence transactions pass with Expanded Summoning

@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "5bce781d25ba6f3efadf693dafef2267fd2003fe",
+  "currentSha": "317759478539127ebf237067bbde697b1da8c60d",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "required-compatibility-profiles-qualified-with-repeat-policy-and-exact-restoration",
-  "nextConcreteAction": "Freeze release 0.0.78 metadata, rerun final-source runtime regressions and the 16-state matrix at registry count 1404, then package, hash, audit, push, and open the draft PR.",
+  "completedPhase": "strengthened-complete-mechanical-runtime-contract-qualified",
+  "nextConcreteAction": "Commit and push the mechanically qualified 1,155-identity source, then rerun the structural, visual, persistence, 16-state, and compatibility gates on the immutable final-source commit.",
   "domainTestResult": "1009/1009 PASS",
-  "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
-  "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
-  "blueprintLedger": "1150 Expanded Summoning identities; 1404 active, 1 reserved, 1405 total; derived constant registry count 1404",
+  "releaseBuildResult": "PASS for strengthened mechanical source; exact-reference DLL SHA-256 cb42098c786792cb786c9f4ab457c8e38a8e5208e0907a7cc7eef821c802e9cb",
+  "packageResult": "strict PASS for strengthened mechanical source; local-runtime package SHA-256 a2289e9305d2e667183c24ca03ad5e8846f4c8d4e55f2200e972a049219c531e",
+  "blueprintLedger": "1155 Expanded Summoning identities; 1409 active, 1 reserved, 1410 total; derived constant registry count 1409",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
@@ -338,6 +338,14 @@
       "result": "PASS",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0436578330836Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
       "evidence": "Disabled second fresh process deserialized zero KMG summons, retained exactly zero KMG parent references, and made no save write."
+    },
+    {
+      "scenario": "disposable-expanded-summoning",
+      "result": "PASS",
+      "sourceSha": "317759478539127ebf237067bbde697b1da8c60d-content-identical-precommit-run",
+      "runId": "20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1143069876490Z-disposable-expanded-summoning/runtime-result.json",
+      "evidence": "All 153 native commands passed: 123 one-creature, 16 tier/family 1d3, and 14 tier/family 1d4+1 cases. Same-kind identity, CL20 duration, close-range approach, exact cleanup, good/neutral/evil template selection with zero residual native template buffs, Augment/Superior behavior, representative attacks, bounded special mechanics, and native Fire Mephit breath damage all passed."
     }
   ],
   "compatibilityProfilesCompleted": [
