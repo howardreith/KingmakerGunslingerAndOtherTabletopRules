@@ -4,10 +4,10 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "db60d47e446bc9fca51cabc970d823f2d562e791",
+  "currentSha": "5e25656d0ed869973d97ed11191ed3175330f4ac",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "active-summon-persistence-qualified-enabled-and-disabled-on-working-source",
-  "nextConcreteAction": "Commit and push the persistence harness, repeat it on the immutable commit, then qualify the 16-state launch matrix and compatibility profiles.",
+  "completedPhase": "active-summon-persistence-and-sixteen-state-runtime-matrix-qualified-on-immutable-source",
+  "nextConcreteAction": "Qualify standalone, Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined compatibility profiles, then freeze release metadata and final evidence.",
   "domainTestResult": "1009/1009 PASS",
   "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
   "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
@@ -341,6 +341,13 @@
     }
   ],
   "compatibilityProfilesCompleted": [],
+  "featureModuleMatrix": {
+    "result": "16/16 PASS on fresh Steam processes",
+    "sourceSha": "5e25656d0ed869973d97ed11191ed3175330f4ac",
+    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0450331105561Z-observe-feature-module-settings/runtime-result.json",
+    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0521369892566Z-observe-feature-module-settings/runtime-result.json",
+    "settingsRestoredSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
+  },
   "unresolvedDeviations": [
     "The hidden KMG extraplanar marker is deterministic in standalone; optional Call of the Wild native-marker reconciliation remains pending.",
     "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",

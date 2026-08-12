@@ -1006,3 +1006,18 @@
   and `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
   `KMG_AUTOMATION_BASELINE` remained unchanged at
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+
+## 2026-08-12 - Sixteen-state fresh-launch module matrix PASS
+
+- Ran all 16 combinations of Gunslinger, Acadamae Graduate, Shield Other, and
+  Expanded Summoning on immutable pushed source
+  `5e25656d0ed869973d97ed11191ed3175330f4ac`.
+- All 16 fresh Steam launches passed with zero failed assertions. Every process
+  observed the exact requested active snapshot and the constant 1,403
+  registered identities. Each preexisting feature controlled only its own
+  publication surface; Expanded Summoning published all 681 required-base
+  references when enabled and exactly zero when disabled.
+- The outer transaction restored `FeatureModules.json` byte-for-byte to
+  SHA-256 `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+  Independent post-run hashes also confirmed the working save and protected
+  baseline remained at their original hashes.

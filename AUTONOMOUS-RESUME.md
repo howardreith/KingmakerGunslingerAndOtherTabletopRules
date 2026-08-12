@@ -47,8 +47,13 @@
   disabled. The working save was restored byte-for-byte after both guarded
   transactions, feature settings were restored, and the baseline hash never
   changed. Exact next action is to commit/push the persistence harness, repeat
-  on its immutable commit, then run the 16-state launch matrix and compatibility
-  profiles.
+  on its immutable commit.
+- The complete 16-state fresh-launch matrix passes on immutable pushed source
+  `5e25656d0ed869973d97ed11191ed3175330f4ac`: exact active snapshots, constant
+  1,403 registrations, independent publication surfaces, and 681/zero Expanded
+  Summoning references all passed. Settings and both save hashes were restored
+  exactly. Exact next action is compatibility-profile qualification followed by
+  release freeze and final evidence.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

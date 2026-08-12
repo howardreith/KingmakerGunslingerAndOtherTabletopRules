@@ -176,6 +176,15 @@ settings were restored to their original hashes, and
 `KMG_AUTOMATION_BASELINE` was never modified. Immutable-commit repetition is
 the next release gate; it is not yet claimed here.
 
+## Feature-module runtime matrix
+
+All 16 restart-bound configurations passed on immutable source `5e25656`.
+Each fresh process registered exactly 1,403 active identities independent of
+module state. Existing feature publication remained isolated, and Expanded
+Summoning contributed exactly 681 required-base parent references when enabled
+and zero when disabled. The settings transaction restored the original file
+byte-for-byte; working and protected-baseline save hashes were unchanged.
+
 ## Native cast qualification
 
 Committed source `8647ceff29ae45c416f948a979fd25098422910d` passed guarded
