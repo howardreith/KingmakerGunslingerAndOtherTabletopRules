@@ -41,6 +41,15 @@ namespace KingmakerGunslinger.Summoning
         internal const int InvisibleStalkerCharisma = 11;
         internal const int InvisibleStalkerSpeedFeet = 30;
 
+        internal const int ErinyesHitDice = 9;
+        internal const int ErinyesStrength = 20;
+        internal const int ErinyesDexterity = 23;
+        internal const int ErinyesConstitution = 21;
+        internal const int ErinyesIntelligence = 14;
+        internal const int ErinyesWisdom = 18;
+        internal const int ErinyesCharisma = 21;
+        internal const int ErinyesSpeedFeet = 50;
+
         internal const int ShadowDemonHitDice = 7;
         internal const int ShadowDemonStrength = 17;
         internal const int ShadowDemonDexterity = 20;
@@ -144,7 +153,9 @@ namespace KingmakerGunslinger.Summoning
                     throw new InvalidOperationException(
                         "Native reuse requires an exact dedicated donor: " + key + ".");
             }
-            if (BebelithHitDice != 12 || BebelithDismantleReflexDc != 25 ||
+            if (ErinyesHitDice != 9 || ErinyesDexterity != 23 ||
+                ErinyesSpeedFeet != 50 || BebelithHitDice != 12 ||
+                BebelithDismantleReflexDc != 25 ||
                 BebelithDismantleAcPenalty < 1 || BebelithDismantleRounds != 1 ||
                 PixieHitDice != 4 || PixieSleepArrowUses != 16 ||
                 PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||

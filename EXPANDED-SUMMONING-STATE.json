@@ -4,12 +4,12 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "e9f251c584607dd45a45a2414e2aaffabff4c44b",
-  "currentShaSemantics": "Reviewed first-playtest repair baseline; prior release evidence is historical control evidence until the real spellbook-parent path passes.",
+  "currentSha": "f3a6cea0161f88e683bfd91e7ef4a1cab421c8b6",
+  "currentShaSemantics": "Last pushed repair checkpoint; the qualified Erinyes special-profile working tree will advance this SHA in the next coherent commit.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "first-playtest-repair-baseline-established",
-  "nextConcreteAction": "Implement and run the discriminating native-parent/logical-root/execution-child/SNA/elemental/Erinyes reproduction with slot and post-EntityCreator.Tick evidence.",
-  "domainTestResult": "1009/1009 PASS",
+  "completedPhase": "all-681-player-roots-and-erinyes-visual-repair-qualified",
+  "nextConcreteAction": "Commit and push the Erinyes checkpoint, then extend final-live assertions across all 18 menus for GUID reconciliation, ordering, icons, high-tier unique native choices, and exact counts.",
+  "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS twice from final artifact source; byte-identical DLL output",
   "packageResult": "PASS twice from artifact source 8e08834; canonical deterministic 45-file package byte-identical to local-runtime package and strict validation PASS",
@@ -22,11 +22,11 @@
     "totalPlacements": 681
   },
   "blueprintLedger": {
-    "expandedSummoningActiveIdentities": 1155,
-    "repositoryActive": 1409,
+    "expandedSummoningActiveIdentities": 1158,
+    "repositoryActive": 1412,
     "repositoryReserved": 1,
-    "repositoryTotal": 1410,
-    "constantRuntimeRegistrationCount": 1409
+    "repositoryTotal": 1413,
+    "constantRuntimeRegistrationCount": 1412
   },
   "featureSettings": {
     "schemaVersion": 3,

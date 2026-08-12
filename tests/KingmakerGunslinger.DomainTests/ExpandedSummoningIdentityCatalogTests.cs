@@ -496,6 +496,10 @@ namespace KingmakerGunslinger.DomainTests
                 .LanternRayDieSides, "Lantern light-ray die changed.");
             Assertions.Equal(7, ExpandedSummoningSpecialProfiles
                 .InvisibleStalkerHitDice, "Invisible Stalker HD changed.");
+            Assertions.Equal(9, ExpandedSummoningSpecialProfiles.ErinyesHitDice,
+                "Erinyes outsider HD changed.");
+            Assertions.Equal(23, ExpandedSummoningSpecialProfiles
+                .ErinyesDexterity, "Erinyes Dexterity changed.");
             Assertions.Equal(7, ExpandedSummoningSpecialProfiles
                 .ShadowDemonHitDice, "Shadow Demon HD changed.");
             Assertions.Equal(17, ExpandedSummoningSpecialProfiles
@@ -561,6 +565,8 @@ namespace KingmakerGunslinger.DomainTests
                 "RequireExact<BlueprintUnitFact>(library",
                 "RequireExact<BlueprintBuff>(library",
                 "ConfigureInvisibleStalker", "NaturalInvisibilityGuid",
+                "ConfigureErinyes", "ErinyesHitDice",
+                "ranged == null || !ranged.IsRanged",
                 "ConfigureShadowDemon", "IncorporealGuid",
                 "DamageEnergyType.Cold", "PhysicalDamageMaterial.ColdIron",
                 "ShadowDemonCombatTraitsSymbol", "ConfigureSalamander",
@@ -734,6 +740,7 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-exact-donor-inventory",
                 "expanded-summoning-special-mechanic-candidates",
                 "expanded-summoning-invisible-stalker",
+                "expanded-summoning-erinyes",
                 "expanded-summoning-shadow-demon",
                 "expanded-summoning-salamander",
                 "expanded-summoning-succubus",

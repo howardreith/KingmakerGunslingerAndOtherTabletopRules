@@ -1285,3 +1285,36 @@
   cleanup passed. Static validation, 1,010/1,010 domain tests, exact-reference
   Release build, deterministic package construction, and strict package
   validation also passed.
+
+## 2026-08-12 - Player-path, presentation, and Erinyes repair checkpoint
+
+- The production catalog now suppresses 48 frozen GUID-mapped semantic native
+  duplicates without mutating or unregistering their blueprints. Display order
+  is current-tier singles, unique native singles, 1d3 choices, then 1d4+1
+  choices; unknown third-party entries retain stable relative order. All 67
+  creature keys use an immutable donor/category icon policy.
+- Invisible Stalker now uses the exact Medium Air Elemental view rather than
+  the Huge Air Elemental view. The true Huge Air Elemental unit is unchanged.
+- Guarded actual-parent run
+  `20260812T1820149527504Z-1fd92e30891847a6970a5b4d34c470d7`
+  passed the expanded 25-case human path, including native Dog, representative
+  natural/proxy/special summons, neutral template modes, quantities, SNA,
+  Movanic Deva, and Frost Giant with exact one-slot expenditure and cleanup.
+- Guarded actual-parent run
+  `20260812T1824547130714Z-668cd85d823f48dea9f4bc9b7fb6667d`
+  then passed every one of the 681 approved logical placements through its
+  actual native spellbook parent, proving exact kind, legal quantity, template
+  and alignment, live post-tick renderer/state, one-slot spend, and cleanup.
+- Erinyes' distinct human presentation failure was traced to the non-dedicated
+  campaign donor's inherited `BuffOnEntityCreated` / `AppearFromFog` component.
+  Its KMG-owned profile now retains the proven ranged body, brain, facts, and
+  view while replacing the campaign component graph with a fresh 9-HD outsider
+  chassis and explicit Medium lawful-evil tabletop statistics.
+- Save-free structural run
+  `20260812T1838020780354Z-93eb2a40a02c4d77a9386354d9a5d46a`
+  passed all exact contracts: 681 roots, 1,412 registered identities, 182
+  direct template roots, and the fog-free Erinyes profile. Visual run
+  `20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4`
+  passed all 67 views, bounded footprints, locomotion, attacks, hits, deaths,
+  projectile origins, and cleanup. Repository validation, 1,013 domain tests,
+  and the Release build pass. No protected save was selected or modified.

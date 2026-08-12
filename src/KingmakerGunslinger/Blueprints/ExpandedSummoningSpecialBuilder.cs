@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.LanternArchon.Defenses";
         private const string InvisibleStalkerUnitSymbol =
             "KMG.Summoning.Unit.InvisibleStalker";
+        private const string ErinyesUnitSymbol =
+            "KMG.Summoning.Unit.ErinyesDevil";
         private const string ShadowDemonUnitSymbol =
             "KMG.Summoning.Unit.ShadowDemon";
         private const string ShadowDemonCombatTraitsSymbol =
@@ -184,6 +186,8 @@ namespace KingmakerGunslinger.Blueprints
                 LanternUnitSymbol), ray, brain, defenses, extraplanar);
             ConfigureInvisibleStalker(library, Require<BlueprintUnit>(bySymbol,
                 InvisibleStalkerUnitSymbol), extraplanar);
+            ConfigureErinyes(library, Require<BlueprintUnit>(bySymbol,
+                ErinyesUnitSymbol));
             BlueprintBuff shadowTraits = Require<BlueprintBuff>(bySymbol,
                 ShadowDemonCombatTraitsSymbol);
             ConfigureShadowDemonCombatTraits(shadowTraits);
@@ -420,6 +424,29 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
                     NaturalInvisibilityGuid, "attack-safe natural invisibility")
             };
+        }
+
+        private static void ConfigureErinyes(LibraryScriptableObject library,
+            BlueprintUnit unit)
+        {
+            BlueprintItemWeapon ranged = unit.Body == null ? null :
+                unit.Body.PrimaryHand as BlueprintItemWeapon;
+            if (ranged == null || !ranged.IsRanged || unit.Brain == null)
+                throw new InvalidOperationException(
+                    "Erinyes donor lacks its proven ranged body/brain chassis.");
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.ErinyesHitDice)
+            };
+            ConfigureUnitCore(unit, "ErinyesDevil", "Erinyes Devil",
+                Alignment.LawfulEvil, Size.Medium,
+                ExpandedSummoningSpecialProfiles.ErinyesStrength,
+                ExpandedSummoningSpecialProfiles.ErinyesDexterity,
+                ExpandedSummoningSpecialProfiles.ErinyesConstitution,
+                ExpandedSummoningSpecialProfiles.ErinyesIntelligence,
+                ExpandedSummoningSpecialProfiles.ErinyesWisdom,
+                ExpandedSummoningSpecialProfiles.ErinyesCharisma,
+                ExpandedSummoningSpecialProfiles.ErinyesSpeedFeet);
         }
 
         private static void ConfigureShadowDemonCombatTraits(BlueprintBuff buff)

@@ -3,19 +3,27 @@
 ## Expanded Summoning first-playtest repair (active, 2026-08-12)
 
 - The human spellbook/UI acceptance test supersedes the prior completion
-  statement below. Repair baseline and current branch head are
-  `e9f251c584607dd45a45a2414e2aaffabff4c44b` on
+  statement below. The repair baseline is
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b`; the last pushed checkpoint is
+  `f3a6cea0161f88e683bfd91e7ef4a1cab421c8b6` on
   `codex/expanded-summoning`; draft PR #2 remains open and must not merge.
 - Durable repair contract:
   `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
-- Primary hypothesis: the old 153-command harness granted Celestial/Fiendish
-  execution children directly and bypassed the unsupported second-level
-  player-facing variant beneath the native summon parent. Prove this with the
-  mandatory Dog/Spider-or-Wolf/SNA/elemental/Erinyes matrix before changing
-  units.
-- Exact next action: inspect and extend the guarded runtime harness to cast a
-  selected logical root through an actual spellbook and native parent while
-  recording slot, `AbilityData`, rule, spawn, tick and live-world evidence.
+- Root cause is proven and repaired: the old harness bypassed the unsupported
+  nested `AbilityVariants`; all 182 templated roots are now direct executable
+  abilities with caster-selected post-spawn templates. All 681 actual native-
+  parent placements passed run
+  `20260812T1824547130714Z-668cd85d823f48dea9f4bc9b7fb6667d`.
+- Erinyes' separate presentation fault was inherited `AppearFromFog` campaign
+  state. The qualified working tree replaces it with a fresh 9-HD outsider
+  chassis while preserving the proven ranged view/rig; structural run
+  `20260812T1838020780354Z-93eb2a40a02c4d77a9386354d9a5d46a`
+  and 67-view run
+  `20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4`
+  pass.
+- Exact next action: commit/push Erinyes, then finish all-18-parent menu count,
+  reconciliation/order/icon assertions, invalid-cast no-slot evidence,
+  persistence/module/profile regression, and final 0.0.79 artifact freeze.
 - The old package hashes and completion evidence are historical controls, not
   repaired-release qualification.
 

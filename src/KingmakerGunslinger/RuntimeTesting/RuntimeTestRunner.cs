@@ -8033,6 +8033,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 invisibleStalker.Body.AdditionalLimbs.Length == 1 &&
                 invisibleStalker.AddFacts.Count(value => value != null &&
                     value.AssetGuid == "94b2838e8a492c44ebf89e7fe7a75a62") == 1;
+            BlueprintUnit erinyes = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_ErinyesDevil");
+            BlueprintItemWeapon erinyesWeapon = erinyes.Body.PrimaryHand as
+                BlueprintItemWeapon;
+            bool erinyesExact = erinyes.ComponentsArray.OfType<AddClassLevels>()
+                    .Single().Levels == 9 &&
+                erinyes.ComponentsArray.Length == 1 &&
+                erinyes.ComponentsArray.All(value => value.GetType().Name !=
+                    "BuffOnEntityCreated") &&
+                erinyes.Size == Size.Medium &&
+                erinyes.Alignment == Alignment.LawfulEvil &&
+                erinyes.Strength == 20 && erinyes.Dexterity == 23 &&
+                erinyes.Constitution == 21 && erinyes.Intelligence == 14 &&
+                erinyes.Wisdom == 18 && erinyes.Charisma == 21 &&
+                erinyes.Speed.Value == 50 && erinyesWeapon != null &&
+                erinyesWeapon.IsRanged && erinyes.Brain != null &&
+                erinyes.StartingInventory.Length == 0;
             BlueprintUnit shadowDemon = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_ShadowDemon");
             BlueprintBuff shadowTraits = all.OfType<BlueprintBuff>().Single(value =>
@@ -8413,6 +8430,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     invisibleStalkerExact ? "exact" : "mismatch",
                     invisibleStalkerExact,
                     "7-HD Medium air outsider with two 2d6 slams and attack-safe natural invisibility"),
+                Assertion("expanded-summoning-erinyes", "exact",
+                    erinyesExact ? "exact" : "mismatch", erinyesExact,
+                    "9-HD Medium LE outsider with donor ranged rig and no inherited fog/campaign component"),
                 Assertion("expanded-summoning-shadow-demon", "exact",
                     shadowDemonExact ? "exact" : "mismatch", shadowDemonExact,
                     "7-HD incorporeal demon with claw/bite routine, bounded defenses, and cold rider"),
