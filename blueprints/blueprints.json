@@ -11287,6 +11287,30 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.AlignmentMode.Feature",
+      "guid": "3ade320ab096401b9da60c6279701458",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning first-playtest repair",
+      "notes": "Save-safe per-character grant for the neutral-caster celestial/fiendish choice; registered in every module state."
+    },
+    {
+      "symbol": "KMG.Summoning.AlignmentMode.FiendishMarker",
+      "guid": "b8429fbbf07f43ccbf88520c6256cd0d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning first-playtest repair",
+      "notes": "Persistent unit-local neutral-caster mode marker; ignored for morally good or evil casters."
+    },
+    {
+      "symbol": "KMG.Summoning.AlignmentMode.Toggle",
+      "guid": "387d0e7514c043bc9827e38bf3efbc99",
+      "plannedType": "BlueprintActivatableAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning first-playtest repair",
+      "notes": "Off-by-default toggle: neutral casters use celestial while inactive and fiendish while active."
     }
   ]
 }

@@ -8905,7 +8905,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] live = summoned.Where(value => value != null &&
                 !value.Destroyed && value.IsInState &&
                 ContainsReference(sceneEntities, value) &&
-                ContainsReference(allUnits, value)).ToArray();
+                value.HoldingState != null && value.Descriptor != null &&
+                value.View != null && value.View.Data == value).ToArray();
             evidence.LiveCount = live.Length;
             evidence.PostTickState = string.Join("|", summoned.Select(value =>
                 value == null ? "<null>" : "destroyed=" + value.Destroyed +

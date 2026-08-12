@@ -85,8 +85,15 @@ namespace KingmakerGunslinger.Blueprints
                             "KMG.Summoning.Template.Fiendish." + band),
                         fiendishSmite, replacedNativeTemplateBuffs, false,
                         SummonAlignmentMode.Fiendish);
-                    ConfigureTemplateChoice(ability, native, variant,
-                        celestial, fiendish);
+                    ConfigureDynamicTemplate(ability, native, unit, variant,
+                        Require<BlueprintBuff>(bySymbol,
+                            "KMG.Summoning.Template.Celestial." + band),
+                        Require<BlueprintBuff>(bySymbol,
+                            "KMG.Summoning.Template.Fiendish." + band),
+                        celestialSmite, fiendishSmite,
+                        Require<BlueprintBuff>(bySymbol,
+                            "KMG.Summoning.AlignmentMode.FiendishMarker"),
+                        replacedNativeTemplateBuffs);
                 }
                 else ConfigureOne(ability, native, unit, variant, null, null,
                     Array.Empty<BlueprintBuff>(), false,
@@ -198,21 +205,32 @@ namespace KingmakerGunslinger.Blueprints
                     " through the native summon lifecycle."), native.Icon);
         }
 
-        private static void ConfigureTemplateChoice(BlueprintAbility target,
-            BlueprintAbility native, SummonVariantSpec variant,
-            BlueprintAbility celestial, BlueprintAbility fiendish)
+        private static void ConfigureDynamicTemplate(BlueprintAbility target,
+            BlueprintAbility native, BlueprintUnit unit,
+            SummonVariantSpec variant, BlueprintBuff celestialTemplate,
+            BlueprintBuff fiendishTemplate, BlueprintBuff celestialSmite,
+            BlueprintBuff fiendishSmite, BlueprintBuff neutralFiendishMode,
+            BlueprintBuff[] replacedNativeTemplateBuffs)
         {
             CopyFields(native, target);
             target.name = InternalName(ExpandedSummoningIdentityCatalog
                 .AbilitySymbol(variant));
             target.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(value =>
-                    !(value is AbilityEffectRunAction) && !(value is AbilityVariants))
+                    !(value is AbilityVariants) &&
+                    !(value is AbilityCasterAlignment))
                 .Select(DeepCloneComponent).ToArray();
-            var choices = ScriptableObject.CreateInstance<AbilityVariants>();
-            choices.Variants = new[] { celestial, fiendish };
-            target.ComponentsArray = target.ComponentsArray.Concat(
-                new BlueprintComponent[] { choices }).ToArray();
+            int replacements = ReplaceSpawnUnits(target.ComponentsArray, unit);
+            if (replacements < 1) throw new InvalidOperationException(
+                "Expected a direct native spawn graph for " +
+                variant.StableKey + ".");
+            AppendDynamicTemplate(target.ComponentsArray, celestialTemplate,
+                fiendishTemplate, celestialSmite, fiendishSmite,
+                neutralFiendishMode, replacedNativeTemplateBuffs);
+            SpellDescriptorComponent descriptor = target.ComponentsArray
+                .OfType<SpellDescriptorComponent>().Single();
+            descriptor.Descriptor &= ~(SpellDescriptor.Good |
+                SpellDescriptor.Evil);
             target.Hidden = false;
             target.ActionBarAutoFillIgnored = false;
             target.MaterialComponent = native.MaterialComponent == null ?
@@ -223,8 +241,72 @@ namespace KingmakerGunslinger.Blueprints
                     QuantitySuffix(variant.Multiplicity)),
                 LocalizationService.Create("KMG.ExpandedSummoning." +
                     variant.StableKey + ".Description",
-                    "Choose a celestial or fiendish " +
-                    variant.Creature.DisplayName + "."), native.Icon);
+                    "Summons a celestial or fiendish " +
+                    variant.Creature.DisplayName + " based on the caster's " +
+                    "alignment. Neutral casters use their persistent " +
+                    "Fiendish Summoning mode."), native.Icon);
+        }
+
+        private static void AppendDynamicTemplate(
+            IEnumerable<BlueprintComponent> components,
+            BlueprintBuff celestialTemplate, BlueprintBuff fiendishTemplate,
+            BlueprintBuff celestialSmite, BlueprintBuff fiendishSmite,
+            BlueprintBuff neutralFiendishMode,
+            BlueprintBuff[] replacedNativeTemplateBuffs)
+        {
+            var seen = new HashSet<object>(ReferenceComparer.Instance);
+            int count = 0;
+            foreach (BlueprintComponent component in components)
+                AppendDynamicTemplate(component, celestialTemplate,
+                    fiendishTemplate, celestialSmite, fiendishSmite,
+                    neutralFiendishMode, replacedNativeTemplateBuffs, seen,
+                    ref count);
+            if (count < 1) throw new InvalidOperationException(
+                "A dynamic templated summon requires a spawn branch.");
+        }
+
+        private static void AppendDynamicTemplate(object value,
+            BlueprintBuff celestialTemplate, BlueprintBuff fiendishTemplate,
+            BlueprintBuff celestialSmite, BlueprintBuff fiendishSmite,
+            BlueprintBuff neutralFiendishMode,
+            BlueprintBuff[] replacedNativeTemplateBuffs, ISet<object> seen,
+            ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value)) return;
+            ContextActionSpawnMonster spawn = value as ContextActionSpawnMonster;
+            if (spawn != null)
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                ContextActionApplySummonTemplateByCaster apply = ScriptableObject
+                    .CreateInstance<ContextActionApplySummonTemplateByCaster>();
+                apply.CelestialTemplate = celestialTemplate;
+                apply.FiendishTemplate = fiendishTemplate;
+                apply.CelestialSmite = celestialSmite;
+                apply.FiendishSmite = fiendishSmite;
+                apply.NeutralFiendishMode = neutralFiendishMode;
+                apply.ReplacedNativeTemplateBuffs =
+                    replacedNativeTemplateBuffs ?? Array.Empty<BlueprintBuff>();
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
+                    Array.Empty<GameAction>()).Concat(new GameAction[] {
+                        apply }).ToArray();
+                count++;
+            }
+            foreach (FieldInfo field in Fields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        AppendDynamicTemplate(item, celestialTemplate,
+                            fiendishTemplate, celestialSmite, fiendishSmite,
+                            neutralFiendishMode, replacedNativeTemplateBuffs,
+                            seen, ref count);
+                else AppendDynamicTemplate(child, celestialTemplate,
+                    fiendishTemplate, celestialSmite, fiendishSmite,
+                    neutralFiendishMode, replacedNativeTemplateBuffs, seen,
+                    ref count);
+            }
         }
 
         private static void AppendTemplateBuff(

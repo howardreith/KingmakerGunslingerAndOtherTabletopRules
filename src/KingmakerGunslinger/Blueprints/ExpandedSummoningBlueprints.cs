@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Localization;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -86,6 +87,10 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintFeature")
                     blueprint = registry.Register<BlueprintFeature>(identity.Symbol,
                         () => CreateFeatureShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintActivatableAbility")
+                    blueprint = registry.Register<BlueprintActivatableAbility>(
+                        identity.Symbol, () => CreateActivatableShell(
+                            identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -96,6 +101,21 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException(
                     "Expanded Summoning registration count mismatch.");
             ExpandedSummoningTemplateBuilder.Configure(registered);
+            BlueprintAbility alignmentIconDonor = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(library,
+                    "8fd74eddd9b6c224693d9ab241f25e84",
+                    "Summon Monster I alignment-mode icon donor");
+            ExpandedSummoningAlignmentModeBlueprintSet alignmentMode =
+                ExpandedSummoningAlignmentModeBlueprints.Configure(
+                    Require<BlueprintFeature>(registered,
+                        ExpandedSummoningAlignmentModeBlueprints.FeatureSymbol),
+                    Require<BlueprintBuff>(registered,
+                        ExpandedSummoningAlignmentModeBlueprints.MarkerSymbol),
+                    Require<BlueprintActivatableAbility>(registered,
+                        ExpandedSummoningAlignmentModeBlueprints.AbilitySymbol),
+                    alignmentIconDonor.Icon);
+            ExpandedSummoningAlignmentModeRuntime.Configure(
+                alignmentMode.Feature);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
             BlueprintFeature extraplanar = registered[ExtraplanarSubtypeSymbol]
                 as BlueprintFeature;
@@ -155,6 +175,16 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintFeature result = ScriptableObject.CreateInstance<
                 BlueprintFeature>();
+            result.name = InternalName(symbol);
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        private static BlueprintActivatableAbility CreateActivatableShell(
+            string symbol)
+        {
+            BlueprintActivatableAbility result = ScriptableObject.CreateInstance<
+                BlueprintActivatableAbility>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
             return result;
@@ -377,6 +407,16 @@ namespace KingmakerGunslinger.Blueprints
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
             result.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             result.ResourceAssetIds = Array.Empty<string>();
+            return result;
+        }
+
+        private static T Require<T>(
+            IDictionary<string, BlueprintScriptableObject> values,
+            string symbol) where T : BlueprintScriptableObject
+        {
+            T result = values[symbol] as T;
+            if (result == null) throw new InvalidOperationException(
+                "Expanded Summoning identity type mismatch for " + symbol + ".");
             return result;
         }
 

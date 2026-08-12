@@ -11,19 +11,22 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1155, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1158, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1050, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(10, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintFeature"), "Subtype marker identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType ==
+                "BlueprintActivatableAbility"),
+                "Neutral alignment-mode toggle identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -403,6 +406,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SummonAlignmentRuntimePolicy.TryResolve(
                 SummonAlignmentMode.Celestial, 511, null, out resolved),
                 "Non-exact owner alignment must fail closed.");
+            Assertions.Equal(SummonAlignmentMode.Celestial,
+                SummonTemplateSelectionPolicy.Select(10, true),
+                "Good casters must ignore the neutral mode.");
+            Assertions.Equal(SummonAlignmentMode.Fiendish,
+                SummonTemplateSelectionPolicy.Select(12, false),
+                "Evil casters must ignore the neutral mode.");
+            Assertions.Equal(SummonAlignmentMode.Celestial,
+                SummonTemplateSelectionPolicy.Select(1, false),
+                "Neutral mode must deterministically default to celestial.");
+            Assertions.Equal(SummonAlignmentMode.Fiendish,
+                SummonTemplateSelectionPolicy.Select(1, true),
+                "Neutral casters must be able to select fiendish.");
 
             string action = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
@@ -761,15 +776,19 @@ namespace KingmakerGunslinger.DomainTests
             string abilities = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningAbilityBuilder.cs"));
-            foreach (string token in new[] { "ConfigureTemplateChoice",
+            foreach (string token in new[] { "ConfigureDynamicTemplate",
                 "AbilityCasterAlignment", "(AlignmentMaskType)63",
                 "(AlignmentMaskType)504", "CreateInstance<",
                 "ContextActionApplySummonBuff>();",
+                "ContextActionApplySummonTemplateByCaster>();",
                 "NativeMonsterTemplateBuffs",
                 "ReplacedNativeTemplateBuffs",
                 "SpellDescriptor.Good", "SpellDescriptor.Evil" })
                 Assertions.True(abilities.Contains(token),
                     "Template execution contract is missing: " + token);
+            Assertions.False(abilities.Contains(
+                    "choices.Variants = new[] { celestial, fiendish }"),
+                "Player-facing logical roots must not retain nested template variants.");
             foreach (string token in new[] { "SummonTemplateBandPolicy.Select",
                 "KMG.Summoning.Template.Celestial.\" + band",
                 "KMG.Summoning.Template.Fiendish.\" + band" })

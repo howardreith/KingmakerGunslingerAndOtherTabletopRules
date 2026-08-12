@@ -117,6 +117,9 @@ def planned():
     rows.extend((
         ("KMG.Summoning.Native.SM.Tier1", "BlueprintAbility"),
         ("KMG.Summoning.Native.SNA.Tier1", "BlueprintAbility"),
+        ("KMG.Summoning.AlignmentMode.Feature", "BlueprintFeature"),
+        ("KMG.Summoning.AlignmentMode.FiendishMarker", "BlueprintBuff"),
+        ("KMG.Summoning.AlignmentMode.Toggle", "BlueprintActivatableAbility"),
     ))
     for family, index in (("SM", 1), ("SNA", 3)):
         for parent in range(1, 10):
@@ -170,7 +173,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1155 or len({symbol for symbol, _ in rows}) != 1155:
+    if len(rows) != 1158 or len({symbol for symbol, _ in rows}) != 1158:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

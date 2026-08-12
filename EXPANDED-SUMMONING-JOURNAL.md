@@ -1248,3 +1248,40 @@
 - Repair baseline is clean pushed head
   `e9f251c584607dd45a45a2414e2aaffabff4c44b`; branch and draft PR #2 are
   retained. Exact next action is a discriminating real-spellbook reproduction.
+
+## 2026-08-12 - Nested template wrapper reproduced and repaired
+
+- Authoritative pre-repair run
+  `20260812T1729340453662Z-0ebb1d302b9045389454b13fbe812a06`
+  reproduced the player failure: native SM I Dog, direct Celestial/Fiendish
+  Dog children, SNA I Dog, and Small Earth Elemental all executed, while the
+  KMG SM Dog and Giant Spider logical roots threw `Can't cast variational
+  ability` before `RuleCastSpell`; their slots remained unspent.
+- SNA I Dog used the same KMG Dog unit and remained non-destroyed in the loaded
+  scene after `EntityCreator.Tick`, proving that the shared natural unit was
+  viable and the nested player-facing `AbilityVariants` was the primary root
+  cause. Erinyes separately executed and created a bound live view, leaving
+  its human-visible presentation failure as a distinct chassis/render task.
+- All 182 templated SM logical placements now clone the proven native spawn
+  graph directly. A single post-spawn action chooses Celestial for good,
+  Fiendish for evil, and an off-by-default persistent per-character mode for
+  morally neutral casters (Celestial off, Fiendish on). The 364 old execution
+  identities remain frozen and registered but are no longer nested beneath
+  player-facing roots.
+- Three append-only identities were added for the neutral mode, bringing the
+  feature foundation to 1,158, repository active identities to 1,412, and the
+  total ledger to 1,413 including one reserved identity.
+- The first repaired runtime run showed every case succeeding and spending
+  exactly one slot, but exposed a harness-only error: it required membership
+  in `Game.State.AllUnits`, which the native Dog control also lacked. Exact
+  loaded-scene membership, non-destroyed/in-state status, holding state,
+  descriptor, and bound view are the authoritative native-matched contract;
+  `AllUnits` remains diagnostic.
+- Corrected fresh-process run
+  `20260812T1747088695607Z-de3328d9413644bfab2a460382b70e9c`
+  passed 7/7 assertions. Native Dog, KMG Dog, SNA Dog, Giant Spider, Small
+  Earth Elemental, Erinyes, and both direct-child controls each fired the
+  expected rules; all real-parent cases spent exactly one prepared slot and
+  cleanup passed. Static validation, 1,010/1,010 domain tests, exact-reference
+  Release build, deterministic package construction, and strict package
+  validation also passed.

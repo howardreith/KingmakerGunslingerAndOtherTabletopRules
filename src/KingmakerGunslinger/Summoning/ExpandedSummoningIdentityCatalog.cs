@@ -27,9 +27,10 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplateBuffCount = 8;
         internal const int SpecialIdentityCount = 33;
         internal const int NativePreservationIdentityCount = 2;
+        internal const int AlignmentModeIdentityCount = 3;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount +
-            NativePreservationIdentityCount;
+            NativePreservationIdentityCount + AlignmentModeIdentityCount;
 
         internal const string NativeMonsterTierOneSymbol =
             "KMG.Summoning.Native.SM.Tier1";
@@ -45,6 +46,13 @@ namespace KingmakerGunslinger.Summoning
                 "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec(NativeNaturesAllyTierOneSymbol,
                 "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec(
+                "KMG.Summoning.AlignmentMode.Feature", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                "KMG.Summoning.AlignmentMode.FiendishMarker", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(
+                "KMG.Summoning.AlignmentMode.Toggle",
+                "BlueprintActivatableAbility"));
             foreach (SummonFamily family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(family))
             {
