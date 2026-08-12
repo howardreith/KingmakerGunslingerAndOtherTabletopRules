@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -129,8 +130,57 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static RuntimeBuildIdentity _loadedBuildIdentity;
         private static bool _expandedSummoningRuleCaptureActive;
         private static string _expandedSummoningLastAbilityExecution = "";
+        private static bool _expandedSummoningPlayerPathCaptureActive;
+        private static int _expandedSummoningPlayerPathRuleCastCount;
+        private static int _expandedSummoningPlayerPathSpawnActionCount;
+        private static readonly List<string> ExpandedSummoningPlayerPathEvents =
+            new List<string>();
         private static readonly List<UnitEntityData>
             ExpandedSummoningRuleCapture = new List<UnitEntityData>();
+
+        private sealed class ExpandedSummoningPlayerPathCase
+        {
+            internal string Name;
+            internal string ParentGuid;
+            internal string LogicalGuid;
+            internal string ExecutionGuid;
+            internal string CasterAlignment;
+            internal string Spellbook;
+            internal int SpellLevel;
+            internal int SlotsBefore;
+            internal int SlotsAfter;
+            internal string AbilityDataLinks;
+            internal bool CanTarget;
+            internal bool CanCast;
+            internal bool CommandStarted;
+            internal string CommandResult;
+            internal int RuleCastCount;
+            internal int SpawnActionCount;
+            internal int RuleSummonCount;
+            internal int LiveCount;
+            internal bool ExactKind;
+            internal bool LiveContract;
+            internal bool SlotContract;
+            internal string Exception;
+            internal string LogTail;
+
+            internal string Describe()
+            {
+                return Name + ":parent=" + ParentGuid + ";logical=" +
+                    LogicalGuid + ";execution=" + ExecutionGuid +
+                    ";alignment=" + CasterAlignment + ";spellbook=" +
+                    Spellbook + ";level=" + SpellLevel + ";slots=" +
+                    SlotsBefore + "->" + SlotsAfter + ";links=" +
+                    AbilityDataLinks + ";canTarget=" + CanTarget +
+                    ";canCast=" + CanCast + ";started=" + CommandStarted +
+                    ";result=" + CommandResult + ";ruleCast=" + RuleCastCount +
+                    ";spawnActions=" + SpawnActionCount + ";ruleSummon=" +
+                    RuleSummonCount + ";live=" + LiveCount + ";kind=" +
+                    ExactKind + ";liveContract=" + LiveContract +
+                    ";slotContract=" + SlotContract + ";exception=" +
+                    Exception;
+            }
+        }
 
         private sealed class ExpandedSummoningMechanicalEvidence
         {
@@ -1317,6 +1367,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.DisposableExpandedSummoning)
                 {
                     Complete(RunDisposableExpandedSummoning());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPlayerPath)
+                {
+                    Complete(RunDisposableExpandedSummoningPlayerPath());
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningVisualContracts)
@@ -8428,6 +8483,618 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoningPlayerPath()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            object levelController = null;
+            object sceneEntities = null;
+            Spellbook spellbook = null;
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo castRuleMethod = typeof(RuleCastSpell).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo spawnActionMethod = typeof(ContextActionSpawnMonster)
+                .GetMethod("RunAction", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+            var cases = new List<ExpandedSummoningPlayerPathCase>();
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            try
+            {
+                if (summonRuleMethod == null || castRuleMethod == null ||
+                    spawnActionMethod == null)
+                    throw new MissingMethodException(
+                        "Expanded Summoning player-path capture boundary missing.");
+                MethodInfo summonPostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                        BindingFlags.Static);
+                MethodInfo castPostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningPlayerPathRuleCastPostfix",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo spawnPrefix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningPlayerPathSpawnPrefix",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(summonPostfix), null);
+                _context.Harmony.Patch(castRuleMethod, null,
+                    new HarmonyMethod(castPostfix), null);
+                _context.Harmony.Patch(spawnActionMethod,
+                    new HarmonyMethod(spawnPrefix), null, null);
+                _expandedSummoningRuleCaptureActive = true;
+                _expandedSummoningPlayerPathCaptureActive = true;
+
+                UnitEntityData areaAnchor = partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value.HoldingState != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no active-area party anchor.");
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name =
+                    "KMG_Runtime_ExpandedSummoning_PlayerPath_Caster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(casterBlueprint,
+                    areaAnchor.Position, Quaternion.identity,
+                    areaAnchor.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (caster == null || !caster.IsInState || caster.View == null ||
+                    caster.View.Data != caster)
+                    throw new InvalidOperationException(
+                        "The player-path caster did not enter the live area.");
+                sceneEntities = caster.HoldingState.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+
+                BlueprintCharacterClass wizard = BlueprintLibraryLookup
+                    .RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                        "ba34257984f4c41408ce1dc2004e342e",
+                        "native Wizard player-path spellbook");
+                AdvanceDisposableSpellcaster(caster.Descriptor, wizard, 11,
+                    ref levelController);
+                spellbook = caster.Descriptor.GetSpellbook(wizard);
+                if (spellbook == null)
+                    throw new InvalidOperationException(
+                        "The level-eleven player-path caster has no Wizard spellbook.");
+                spellbook.UpdateAllSlotsSize(false);
+                spellbook.Rest();
+
+                BlueprintAbility sm1 = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "8fd74eddd9b6c224693d9ab241f25e84", "Summon Monster I");
+                BlueprintAbility sm2 = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "1724061e89c667045a6891179ee2e8e7", "Summon Monster II");
+                BlueprintAbility sm6 = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "e740afbab0147944dab35d83faa0ae1c", "Summon Monster VI");
+                BlueprintAbility sna1 = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "c6147854641924442a3bb736080cfeb6", "Summon Nature's Ally I");
+                BlueprintAbility nativeDog = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog
+                            .NativeMonsterTierOneSymbol));
+                SummonVariantSpec smDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1, SummonMultiplicity.One);
+                SummonVariantSpec snaDog = ExpandedSummoningVariant(
+                    SummonFamily.NaturesAlly, "dog", 1,
+                    SummonMultiplicity.One);
+                SummonVariantSpec spider = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "giant-spider", 2,
+                    SummonMultiplicity.One);
+                SummonVariantSpec earth = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "small-earth-elemental", 2,
+                    SummonMultiplicity.One);
+                SummonVariantSpec erinyes = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "erinyes-devil", 6,
+                    SummonMultiplicity.One);
+                BlueprintAbility dogRoot = ExpandedSummoningRoot(blueprints, smDog);
+                BlueprintAbility dogCelestial = ExpandedSummoningExecutionChild(
+                    blueprints, smDog, ".Celestial");
+                BlueprintAbility dogFiendish = ExpandedSummoningExecutionChild(
+                    blueprints, smDog, ".Fiendish");
+
+                stage = "native-dog";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, nativeDog, null, null, null, 1,
+                    Alignment.NeutralGood, false, sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "native-sm1-dog";
+                stage = "kmg-dog-logical-root";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogRoot,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot, null, 1,
+                    Alignment.NeutralGood, false, sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-sm1-dog-logical";
+                stage = "celestial-dog-direct";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogCelestial,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot,
+                    dogCelestial, 1, Alignment.NeutralGood, true,
+                    sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-dog-celestial-direct";
+                stage = "fiendish-dog-direct";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogFiendish,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot,
+                    dogFiendish, 1, Alignment.LawfulEvil, true,
+                    sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-dog-fiendish-direct";
+                stage = "sna-dog";
+                BlueprintAbility snaDogRoot = ExpandedSummoningRoot(blueprints,
+                    snaDog);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sna1, snaDogRoot,
+                    ExpandedSummoningUnit(blueprints, snaDog), snaDogRoot, null,
+                    1, Alignment.ChaoticNeutral, false, sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-sna1-dog-logical";
+                stage = "giant-spider";
+                BlueprintAbility spiderRoot = ExpandedSummoningRoot(blueprints,
+                    spider);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm2, spiderRoot,
+                    ExpandedSummoningUnit(blueprints, spider), spiderRoot, null,
+                    2, Alignment.NeutralGood, false, sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-sm2-giant-spider-logical";
+                stage = "small-earth-elemental";
+                BlueprintAbility earthRoot = ExpandedSummoningRoot(blueprints,
+                    earth);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm2, earthRoot,
+                    ExpandedSummoningUnit(blueprints, earth), earthRoot, null,
+                    2, Alignment.TrueNeutral, false, sceneEntities, allUnits));
+                cases[cases.Count - 1].Name = "kmg-sm2-small-earth-elemental";
+                stage = "erinyes";
+                BlueprintAbility erinyesRoot = ExpandedSummoningRoot(blueprints,
+                    erinyes);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm6, erinyesRoot,
+                    ExpandedSummoningUnit(blueprints, erinyes), erinyesRoot,
+                    null, 6, Alignment.LawfulEvil, false, sceneEntities,
+                    allUnits));
+                cases[cases.Count - 1].Name = "kmg-sm6-erinyes";
+            }
+            catch (Exception exception)
+            {
+                _trace.Record("expanded-summoning-player-path-error",
+                    "stage=" + stage, exception);
+                throw new InvalidOperationException(
+                    "Expanded Summoning player-path matrix failed at fixture stage " +
+                    stage + ".", exception);
+            }
+            finally
+            {
+                _expandedSummoningPlayerPathCaptureActive = false;
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningPlayerPathEvents.Clear();
+                ExpandedSummoningRuleCapture.Clear();
+                foreach (MethodInfo method in new[] { summonRuleMethod,
+                    castRuleMethod, spawnActionMethod }.Where(value => value != null))
+                    _context.Harmony.Unpatch(method, HarmonyPatchType.All,
+                        _context.ModId);
+                if (levelController != null)
+                    levelController.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance)
+                        .Invoke(levelController, null);
+                foreach (UnitEntityData unit in SnapshotReferences(allUnits)
+                    .OfType<UnitEntityData>().Where(value => !unitsBefore.Any(
+                        prior => ReferenceEquals(prior, value))).ToArray())
+                    unit.Dispose();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                Game.Instance.EntityDestroyer.Tick();
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party));
+            }
+
+            ExpandedSummoningPlayerPathCase native = cases.Single(value =>
+                value.Name == "native-sm1-dog");
+            ExpandedSummoningPlayerPathCase logical = cases.Single(value =>
+                value.Name == "kmg-sm1-dog-logical");
+            ExpandedSummoningPlayerPathCase celestial = cases.Single(value =>
+                value.Name == "kmg-dog-celestial-direct");
+            ExpandedSummoningPlayerPathCase fiendish = cases.Single(value =>
+                value.Name == "kmg-dog-fiendish-direct");
+            ExpandedSummoningPlayerPathCase sna = cases.Single(value =>
+                value.Name == "kmg-sna1-dog-logical");
+            bool allPlayerPaths = cases.Where(value => value.ExecutionGuid ==
+                "<none>").All(value => value.LiveContract && value.SlotContract);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-native-dog-player-path",
+                    "live exact summon and one prepared slot spent",
+                    native.Describe(), native.LiveContract && native.SlotContract,
+                    "native parent plus frozen native-preservation selected child"),
+                Assertion("expanded-summoning-kmg-dog-player-path",
+                    "live exact summon and one prepared slot spent",
+                    logical.Describe(), logical.LiveContract && logical.SlotContract,
+                    "real SM I parent -> KMG logical root AbilityData chain"),
+                Assertion("expanded-summoning-dog-execution-controls",
+                    "both direct execution children summon exact live Dog",
+                    celestial.Describe() + " | " + fiendish.Describe(),
+                    celestial.LiveContract && fiendish.LiveContract,
+                    "lower-layer direct-fact controls retained only to discriminate the wrapper"),
+                Assertion("expanded-summoning-sna-dog-control",
+                    "shared Dog unit lives and one prepared slot is spent",
+                    sna.Describe(), sna.LiveContract && sna.SlotContract,
+                    "real SNA I parent without celestial/fiendish nesting"),
+                Assertion("expanded-summoning-player-path-matrix",
+                    "all non-direct cases live with exact one-slot spend",
+                    string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
+                    allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
+                Assertion("request-local-cleanup", "exact party/global snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "dispose all request-local caster and summon entities"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            foreach (ExpandedSummoningPlayerPathCase item in cases)
+            {
+                result.Diagnostics.Add(item.Describe());
+                if (!string.IsNullOrEmpty(item.LogTail))
+                    result.Diagnostics.Add(item.Name + ":output-log-tail=" +
+                        item.LogTail);
+            }
+            return result;
+        }
+
+        private static void AdvanceDisposableSpellcaster(UnitDescriptor owner,
+            BlueprintCharacterClass characterClass, int levels,
+            ref object activeController)
+        {
+            Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+            MethodInfo start = type.GetMethods(BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                    value.Name == "StartWithoutAssigningStaticInstance" &&
+                    value.GetParameters().Length == 5);
+            MethodInfo select = type.GetMethod("SelectClass", BindingFlags.Public |
+                BindingFlags.Instance, null,
+                new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+            MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo cancel = type.GetMethod("Cancel", BindingFlags.Public |
+                BindingFlags.Instance);
+            object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                "CharGen", false);
+            for (int index = 0; index < levels; index++)
+            {
+                activeController = start.Invoke(null,
+                    new object[] { owner, false, null, null, charGen });
+                if (!(bool)select.Invoke(activeController,
+                    new object[] { characterClass, false }))
+                    throw new InvalidOperationException(
+                        "Disposable spellcaster class selection failed at level " +
+                        (index + 1) + ".");
+                mechanics.Invoke(activeController, null);
+                apply.Invoke(activeController, new object[] { owner });
+                cancel.Invoke(activeController, null);
+                activeController = null;
+            }
+        }
+
+        private static ExpandedSummoningPlayerPathCase
+            ExerciseExpandedSummoningPlayerPathCase(UnitEntityData caster,
+                Spellbook spellbook, BlueprintAbility parent,
+                BlueprintAbility selected, BlueprintUnit expectedUnit,
+                BlueprintAbility logical, BlueprintAbility execution,
+                int spellLevel, Alignment alignment, bool direct,
+                object sceneEntities, object allUnits)
+        {
+            var evidence = new ExpandedSummoningPlayerPathCase {
+                ParentGuid = parent.AssetGuid,
+                LogicalGuid = logical == null ? selected.AssetGuid :
+                    logical.AssetGuid,
+                ExecutionGuid = execution == null ? "<none>" :
+                    execution.AssetGuid,
+                CasterAlignment = alignment.ToString(),
+                Spellbook = spellbook.Blueprint.name + ":" +
+                    spellbook.Blueprint.AssetGuid,
+                SpellLevel = spellLevel,
+                CommandResult = "NotStarted",
+                Exception = "<none>"
+            };
+            caster.Descriptor.Alignment.Set(alignment);
+            object[] beforeCast = SnapshotReferences(sceneEntities);
+            ExpandedSummoningRuleCapture.Clear();
+            ExpandedSummoningPlayerPathEvents.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            AbilityData data = null;
+            Ability directFact = null;
+            evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            try
+            {
+                if (direct)
+                {
+                    caster.Descriptor.AddFact(selected);
+                    directFact = caster.Descriptor.Abilities.GetAbility(selected);
+                    if (directFact == null)
+                        throw new InvalidOperationException(
+                            "Direct execution control was not granted.");
+                    directFact.OverrideParams = new AbilityParams {
+                        CasterLevel = 11, SpellLevel = spellLevel
+                    };
+                    data = new AbilityData(directFact);
+                }
+                else data = PrepareExpandedSummoningPlayerPathSpell(spellbook,
+                    parent, selected, spellLevel);
+                evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                    spellbook, spellLevel);
+                evidence.AbilityDataLinks = DescribeExpandedSummoningAbilityData(
+                    data);
+                var target = new TargetWrapper(caster.Position);
+                evidence.CanTarget = data.CanTarget(target);
+                UnitUseAbility command;
+                var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                    .CutsceneParametersContext();
+                using (cutsceneParameters.Data)
+                    command = new UnitUseAbility(data, target);
+                evidence.CanCast = data.IsAvailable && command.CanStart;
+                if (evidence.CanCast)
+                {
+                    command.IgnoreCooldown(TimeSpan.Zero);
+                    caster.Commands.Run(command);
+                    command.Start();
+                    evidence.CommandStarted = command.IsRunning;
+                    if (command.IsRunning)
+                    {
+                        if (command.Animation != null)
+                            command.Animation.IsActed = true;
+                        command.Tick();
+                        if (command.ExecutionProcess != null)
+                            for (int tick = 0; tick < 5000 &&
+                                !command.ExecutionProcess.IsEnded; tick++)
+                                command.ExecutionProcess.Tick();
+                        if (command.Animation != null)
+                            FinishExpandedSummoningAnimation(command.Animation);
+                        if (!command.IsFinished) command.Tick();
+                    }
+                    evidence.CommandResult = command.Result.ToString();
+                }
+            }
+            catch (Exception exception)
+            {
+                evidence.Exception = DescribeExpandedSummoningException(exception);
+                evidence.LogTail = ReadExpandedSummoningOutputLogTail();
+            }
+            finally
+            {
+                if (directFact != null && caster.Descriptor.HasFact(selected))
+                    caster.Descriptor.RemoveFact(selected);
+            }
+
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData[] summoned = ExpandedSummoningRuleCapture.ToArray();
+            evidence.RuleCastCount = _expandedSummoningPlayerPathRuleCastCount;
+            evidence.SpawnActionCount =
+                _expandedSummoningPlayerPathSpawnActionCount;
+            evidence.RuleSummonCount = summoned.Length;
+            UnitEntityData[] live = summoned.Where(value => value != null &&
+                !value.Destroyed && value.IsInState &&
+                ContainsReference(sceneEntities, value) &&
+                ContainsReference(allUnits, value)).ToArray();
+            evidence.LiveCount = live.Length;
+            evidence.ExactKind = live.Length > 0 && (expectedUnit == null ||
+                live.All(value => ReferenceEquals(value.Blueprint, expectedUnit)));
+            evidence.LiveContract = live.Length > 0 && evidence.ExactKind &&
+                live.All(value => ExpandedSummoningPlayerPathUnitExact(
+                    value, caster));
+            evidence.SlotsAfter = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.SlotContract = direct ?
+                evidence.SlotsAfter == evidence.SlotsBefore :
+                evidence.SlotsAfter == evidence.SlotsBefore - 1;
+            if (string.IsNullOrEmpty(evidence.AbilityDataLinks))
+                evidence.AbilityDataLinks = data == null ? "<no-data>" :
+                    DescribeExpandedSummoningAbilityData(data);
+            foreach (UnitEntityData unit in summoned)
+                CleanupExpandedSummoningUnit(unit);
+            DrainExpandedSummoningDestroyQueue(sceneEntities, beforeCast);
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            ExpandedSummoningRuleCapture.Clear();
+            return evidence;
+        }
+
+        private static AbilityData PrepareExpandedSummoningPlayerPathSpell(
+            Spellbook spellbook, BlueprintAbility parent,
+            BlueprintAbility selected, int spellLevel)
+        {
+            spellbook.AddKnown(spellLevel, parent, true);
+            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                .FirstOrDefault(value => value != null && value.Spell != null &&
+                    ReferenceEquals(value.Spell.Blueprint, parent));
+            if (slot == null)
+            {
+                if (!spellbook.Memorize(new AbilityData(parent, spellbook), null))
+                    throw new InvalidOperationException(
+                        "The native spellbook rejected memorization of " +
+                        parent.name + " at level " + spellLevel + ".");
+                slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                    .FirstOrDefault(value => value != null && value.Spell != null &&
+                        ReferenceEquals(value.Spell.Blueprint, parent));
+            }
+            if (slot == null || slot.Spell == null)
+                throw new InvalidOperationException(
+                    "Memorization produced no exact parent spell slot.");
+            slot.Available = true;
+            slot.Spell.ParamSpellSlot = slot;
+            AbilityData result = ReferenceEquals(parent, selected) ? slot.Spell :
+                new AbilityData(slot.Spell, selected);
+            result.ParamSpellSlot = slot;
+            return result;
+        }
+
+        private static int CountAvailableExpandedSummoningSlots(
+            Spellbook spellbook, int level)
+        {
+            return spellbook.GetMemorizedSpellSlots(level).Count(value =>
+                value != null && value.Available);
+        }
+
+        private static bool ExpandedSummoningPlayerPathUnitExact(
+            UnitEntityData unit, UnitEntityData caster)
+        {
+            Buff lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            object faction = ExpandedSummoningFields(unit.Blueprint.GetType())
+                .Single(value => value.Name == "Faction" ||
+                    value.Name == "m_Faction").GetValue(unit.Blueprint);
+            return unit.Descriptor != null && unit.Commands != null &&
+                unit.HoldingState != null && unit.View != null &&
+                unit.View.Data == unit && faction != null && lifecycle != null &&
+                lifecycle.MaybeContext != null &&
+                lifecycle.MaybeContext.MaybeCaster == caster &&
+                !lifecycle.IsPermanent && lifecycle.TimeLeft > TimeSpan.Zero;
+        }
+
+        private static BlueprintAbility ExpandedSummoningRoot(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(variant));
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static BlueprintAbility ExpandedSummoningExecutionChild(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant, string suffix)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(variant) + suffix);
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static BlueprintUnit ExpandedSummoningUnit(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature));
+            return blueprints.OfType<BlueprintUnit>().Single(value =>
+                value.name == name);
+        }
+
+        private static string DescribeExpandedSummoningAbilityData(
+            AbilityData data)
+        {
+            if (data == null) return "<null>";
+            var values = new List<string> {
+                "blueprint=" + (data.Blueprint == null ? "<null>" :
+                    data.Blueprint.AssetGuid),
+                "spellbook=" + (data.Spellbook == null ||
+                    data.Spellbook.Blueprint == null ? "<null>" :
+                    data.Spellbook.Blueprint.AssetGuid),
+                "slot=" + (data.ParamSpellSlot == null ? "<null>" :
+                    RuntimeHelpers.GetHashCode(data.ParamSpellSlot).ToString())
+            };
+            string[] tokens = { "Parent", "Converted", "Source" };
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (PropertyInfo property in data.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    tokens.Any(token => value.Name.IndexOf(token,
+                        StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(value => value.Name, StringComparer.Ordinal))
+            {
+                object value = null;
+                try { value = property.GetValue(data, null); }
+                catch { }
+                values.Add("property." + property.Name + "=" +
+                    DescribeExpandedSummoningLink(value));
+            }
+            foreach (FieldInfo field in ExpandedSummoningFields(data.GetType())
+                .Where(value => tokens.Any(token => value.Name.IndexOf(token,
+                    StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(value => value.Name, StringComparer.Ordinal))
+                values.Add("field." + field.Name + "=" +
+                    DescribeExpandedSummoningLink(field.GetValue(data)));
+            return string.Join(",", values.ToArray());
+        }
+
+        private static string DescribeExpandedSummoningLink(object value)
+        {
+            if (value == null) return "<null>";
+            AbilityData data = value as AbilityData;
+            if (data != null)
+                return "AbilityData:" + (data.Blueprint == null ? "<null>" :
+                    data.Blueprint.AssetGuid);
+            Ability fact = value as Ability;
+            if (fact != null)
+                return "Ability:" + (fact.Blueprint == null ? "<null>" :
+                    fact.Blueprint.AssetGuid);
+            BlueprintScriptableObject blueprint = value as BlueprintScriptableObject;
+            if (blueprint != null)
+                return blueprint.GetType().Name + ":" + blueprint.AssetGuid;
+            return value.GetType().FullName + "#" +
+                RuntimeHelpers.GetHashCode(value);
+        }
+
+        private static string DescribeExpandedSummoningException(
+            Exception exception)
+        {
+            var values = new List<string>();
+            for (Exception current = exception; current != null;
+                current = current.InnerException)
+                values.Add(current.GetType().FullName + ":" + current.Message);
+            return string.Join(" -> ", values.ToArray());
+        }
+
+        private static string ReadExpandedSummoningOutputLogTail()
+        {
+            try
+            {
+                string path = Path.Combine(Application.persistentDataPath,
+                    "output_log.txt");
+                if (!File.Exists(path)) return "<missing>";
+                return string.Join(" || ", File.ReadLines(path).Reverse().Take(24)
+                    .Reverse()
+                    .Select(value => value.Length > 500 ? value.Substring(0, 500) :
+                        value).ToArray());
+            }
+            catch (Exception exception)
+            {
+                return "<unavailable:" + exception.GetType().Name + ">";
+            }
+        }
+
+        private static void ExpandedSummoningPlayerPathRuleCastPostfix(
+            RuleCastSpell __instance)
+        {
+            if (!_expandedSummoningPlayerPathCaptureActive ||
+                __instance == null) return;
+            _expandedSummoningPlayerPathRuleCastCount++;
+            ExpandedSummoningPlayerPathEvents.Add("RuleCastSpell:" +
+                __instance.Success);
+        }
+
+        private static void ExpandedSummoningPlayerPathSpawnPrefix(
+            ContextActionSpawnMonster __instance)
+        {
+            if (!_expandedSummoningPlayerPathCaptureActive ||
+                __instance == null) return;
+            _expandedSummoningPlayerPathSpawnActionCount++;
+            ExpandedSummoningPlayerPathEvents.Add("ContextActionSpawnMonster");
         }
 
         private RuntimeTestResult RunDisposableExpandedSummoning()

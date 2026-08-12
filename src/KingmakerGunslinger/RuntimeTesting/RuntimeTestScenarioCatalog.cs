@@ -14,6 +14,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-inventory";
         internal const string DisposableExpandedSummoning =
             "disposable-expanded-summoning";
+        internal const string DisposableExpandedSummoningPlayerPath =
+            "disposable-expanded-summoning-player-path";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
         internal const string WorkingSaveExpandedSummoningPrepare =
@@ -224,6 +226,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
                 DisposableExpandedSummoning,
+                DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningVisualContracts,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,

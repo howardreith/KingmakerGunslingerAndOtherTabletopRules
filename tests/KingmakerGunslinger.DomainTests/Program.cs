@@ -52,6 +52,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.runtime-publication", ExpandedSummoningIdentityCatalogTests.RuntimePublicationIsAdditiveAndTransactional),
             Case("expanded-summoning.unit-component-isolation", ExpandedSummoningIdentityCatalogTests.RuntimeUnitComponentsAreReferenceIsolated),
             Case("expanded-summoning.template-blueprints", ExpandedSummoningIdentityCatalogTests.TemplateBlueprintsUseNativeBoundedMechanics),
+            Case("expanded-summoning.player-path-harness", ExpandedSummoningIdentityCatalogTests.PlayerPathHarnessUsesRealSpellbookParents),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
             Case("feature-settings.sixteen-combinations", FeatureModuleSettingsTests.SixteenCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),

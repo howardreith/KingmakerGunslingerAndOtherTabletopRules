@@ -218,6 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||

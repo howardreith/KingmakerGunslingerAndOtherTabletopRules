@@ -28,6 +28,48 @@ namespace KingmakerGunslinger.DomainTests
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
 
+        internal static void PlayerPathHarnessUsesRealSpellbookParents()
+        {
+            string root = Environment.CurrentDirectory;
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            foreach (string token in new[] {
+                "disposable-expanded-summoning-player-path",
+                "RunDisposableExpandedSummoningPlayerPath",
+                "PrepareExpandedSummoningPlayerPathSpell",
+                "new AbilityData(slot.Spell, selected)",
+                "result.ParamSpellSlot = slot",
+                "CountAvailableExpandedSummoningSlots",
+                "Game.Instance.EntityCreator.Tick()",
+                "ContainsReference(sceneEntities, value)",
+                "ContainsReference(allUnits, value)",
+                "ExpandedSummoningPlayerPathRuleCastPostfix",
+                "ExpandedSummoningPlayerPathSpawnPrefix",
+                "kmg-dog-celestial-direct",
+                "kmg-sna1-dog-logical",
+                "kmg-sm6-erinyes" })
+                Assertions.True(runner.Contains(token) || catalog.Contains(token) ||
+                    request.Contains(token) || automation.Contains(token),
+                    "Player-path acceptance contract is missing: " + token);
+            Assertions.True(request.Contains(
+                    "RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath") &&
+                automation.Contains("RequiresSaveName = $true") &&
+                automation.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'"),
+                "Player-path scenario must use only the guarded working save.");
+            Assertions.True(runner.Contains(
+                    "evidence.SlotsAfter == evidence.SlotsBefore - 1") &&
+                runner.Contains("evidence.SlotsAfter == evidence.SlotsBefore"),
+                "Player-path evidence must distinguish spellbook slot spend from direct-child controls.");
+        }
+
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();

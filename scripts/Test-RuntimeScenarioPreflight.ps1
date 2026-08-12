@@ -37,6 +37,7 @@ $expected = @(
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',
+    'disposable-expanded-summoning-player-path',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
@@ -188,6 +189,15 @@ Assert-True $expandedSummoning.RequiresSaveName `
 Assert-True ($expandedSummoning.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'expanded-summoning-only-permits-working-save'
+$expandedSummoningPlayerPath = Get-KmgRuntimeScenarioMetadata `
+    'disposable-expanded-summoning-player-path'
+Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
+    'expanded-summoning-player-path-is-autonomous'
+Assert-True $expandedSummoningPlayerPath.RequiresSaveName `
+    'expanded-summoning-player-path-requires-save-name'
+Assert-True ($expandedSummoningPlayerPath.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'expanded-summoning-player-path-only-permits-working-save'
 $expandedSummoningVisual = Get-KmgRuntimeScenarioMetadata `
     'disposable-expanded-summoning-visual-contracts'
 Assert-True (-not $expandedSummoningVisual.RequiresManualInteraction) `
