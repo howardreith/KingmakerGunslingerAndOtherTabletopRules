@@ -108,6 +108,12 @@ namespace KingmakerGunslinger.Summoning
             "sleeparrow", "sleep arrow", "sleepspell", "sleep spell",
             "sleep", "longbow", "acid splash", "acidsplash"
         };
+        private static readonly string[] PolishCandidateTerms = {
+            "bat", "eagle", "frog", "boar", "bear", "elephant",
+            "mastodon", "pteranodon", "dog", "wolf", "hyena", "worg",
+            "leopard", "cheetah", "crocodile", "lizard", "wolverine",
+            "lion", "smilodon", "archon", "bralani", "erinyes", "ghaele"
+        };
 
         internal static ExpandedSummoningInventoryObservation Observe(
             LibraryScriptableObject library)
@@ -195,6 +201,32 @@ namespace KingmakerGunslinger.Summoning
             }
             records.Add("bebelith-pixie-candidate-summary=found:" +
                 bebilithPixieCandidates.Length + ";cap:120");
+
+            BlueprintUnit[] polishUnits = all.OfType<BlueprintUnit>()
+                .Where(value => ContainsAny(SearchText(value),
+                    PolishCandidateTerms))
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                .Take(500).ToArray();
+            foreach (BlueprintUnit value in polishUnits)
+                records.Add("polish-unit-candidate=" + Describe(value) +
+                    ";portrait=" + (value.PortraitSafe == null ||
+                        value.PortraitSafe.SmallPortrait == null ? "<null>" :
+                    value.PortraitSafe.SmallPortrait.name) +
+                    ";size=" + value.Size + ";visual-graph=" +
+                    ObjectGraph(FieldValue(value, "Visual"), 8) +
+                    ";view-graph=" + ObjectGraph(FieldValue(value,
+                        "Prefab"), 8));
+            BlueprintAbility[] polishIcons = all.OfType<BlueprintAbility>()
+                .Where(value => value.Icon != null && ContainsAny(
+                    SearchText(value), PolishCandidateTerms))
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                .Take(500).ToArray();
+            foreach (BlueprintAbility value in polishIcons)
+                records.Add("polish-icon-candidate=" + Describe(value) +
+                    ";icon=" + value.Icon.name);
+            records.Add("polish-candidate-summary=units:" +
+                polishUnits.Length + ";icons:" + polishIcons.Length +
+                ";cap:500");
 
             var canonical = new HashSet<string>(CanonicalParentGuids, StringComparer.Ordinal);
             BlueprintAbility[] canonicalParents = all.OfType<BlueprintAbility>()

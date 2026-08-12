@@ -788,7 +788,10 @@ namespace KingmakerGunslinger.DomainTests
                 "special-detail=", "special-candidate-summary=",
                 "BebelithPixieTerms", "bebelith-pixie-candidate=",
                 "bebelith-pixie-candidate-summary=", "longbow",
-                "acid splash" })
+                "acid splash", "PolishCandidateTerms",
+                "polish-unit-candidate=", "polish-icon-candidate=",
+                "polish-candidate-summary=", "value.PortraitSafe.SmallPortrait",
+                "ObjectGraph(FieldValue(value, \"Visual\"), 8)" })
                 Assertions.True(inventory.Contains(token),
                     "Exact donor graph inventory is missing: " + token);
             foreach (string token in new[] { "ExactTemplateMechanicGuids",
