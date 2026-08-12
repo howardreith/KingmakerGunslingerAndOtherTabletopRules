@@ -160,6 +160,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int LiveCount;
             internal string PostTickState;
             internal bool ExactKind;
+            internal string SummonedAlignment;
+            internal string TemplateFacts;
+            internal bool TemplateContract;
+            internal bool RenderableContract;
             internal bool LiveContract;
             internal bool SlotContract;
             internal string Exception;
@@ -178,6 +182,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";spawnActions=" + SpawnActionCount + ";ruleSummon=" +
                     RuleSummonCount + ";live=" + LiveCount + ";kind=" +
                     ExactKind + ";postTick=" + PostTickState +
+                    ";summonedAlignment=" + SummonedAlignment +
+                    ";templateFacts=" + TemplateFacts +
+                    ";templateContract=" + TemplateContract +
+                    ";renderable=" + RenderableContract +
                     ";liveContract=" + LiveContract +
                     ";slotContract=" + SlotContract + ";exception=" +
                     Exception;
@@ -8568,7 +8576,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                         "ba34257984f4c41408ce1dc2004e342e",
                         "native Wizard player-path spellbook");
-                AdvanceDisposableSpellcaster(caster.Descriptor, wizard, 11,
+                AdvanceDisposableSpellcaster(caster.Descriptor, wizard, 20,
                     ref levelController);
                 spellbook = caster.Descriptor.GetSpellbook(wizard);
                 if (spellbook == null)
@@ -8587,18 +8595,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";level2=" + spellbook.GetSpellsPerDay(2) +
                     ";level6=" + spellbook.GetSpellsPerDay(6));
 
-                BlueprintAbility sm1 = BlueprintLibraryLookup.RequireExact<
-                    BlueprintAbility>(BlueprintBootstrap.Library,
-                        "8fd74eddd9b6c224693d9ab241f25e84", "Summon Monster I");
-                BlueprintAbility sm2 = BlueprintLibraryLookup.RequireExact<
-                    BlueprintAbility>(BlueprintBootstrap.Library,
-                        "1724061e89c667045a6891179ee2e8e7", "Summon Monster II");
-                BlueprintAbility sm6 = BlueprintLibraryLookup.RequireExact<
-                    BlueprintAbility>(BlueprintBootstrap.Library,
-                        "e740afbab0147944dab35d83faa0ae1c", "Summon Monster VI");
-                BlueprintAbility sna1 = BlueprintLibraryLookup.RequireExact<
-                    BlueprintAbility>(BlueprintBootstrap.Library,
-                        "c6147854641924442a3bb736080cfeb6", "Summon Nature's Ally I");
+                string[] parentGuids = {
+                    "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7", "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef", "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c", "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0", "52b5df2a97df18242aec67610616ded0",
+                    "c6147854641924442a3bb736080cfeb6", "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61", "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e" };
+                BlueprintAbility[] parents = parentGuids.Select((guid, index) =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        BlueprintBootstrap.Library, guid,
+                        (index < 9 ? "Summon Monster " :
+                            "Summon Nature's Ally ") + (index % 9 + 1)))
+                    .ToArray();
+                BlueprintAbility sm1 = parents[0];
+                BlueprintAbility sm2 = parents[1];
+                BlueprintAbility sm6 = parents[5];
+                BlueprintAbility sna1 = parents[9];
                 BlueprintAbility nativeDog = blueprints.OfType<BlueprintAbility>()
                     .Single(value => value.name == ExpandedSummoningInternalName(
                         ExpandedSummoningIdentityCatalog
@@ -8626,27 +8635,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "native-dog";
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm1, nativeDog, null, null, null, 1,
-                    Alignment.NeutralGood, false, sceneEntities, allUnits));
+                    Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    null));
                 cases[cases.Count - 1].Name = "native-sm1-dog";
                 stage = "kmg-dog-logical-root";
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm1, dogRoot,
                     ExpandedSummoningUnit(blueprints, smDog), dogRoot, null, 1,
-                    Alignment.NeutralGood, false, sceneEntities, allUnits));
+                    Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Celestial));
                 cases[cases.Count - 1].Name = "kmg-sm1-dog-logical";
                 stage = "celestial-dog-direct";
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm1, dogCelestial,
                     ExpandedSummoningUnit(blueprints, smDog), dogRoot,
                     dogCelestial, 1, Alignment.NeutralGood, true,
-                    sceneEntities, allUnits));
+                    sceneEntities, allUnits, SummonAlignmentMode.Celestial));
                 cases[cases.Count - 1].Name = "kmg-dog-celestial-direct";
                 stage = "fiendish-dog-direct";
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm1, dogFiendish,
                     ExpandedSummoningUnit(blueprints, smDog), dogRoot,
                     dogFiendish, 1, Alignment.LawfulEvil, true,
-                    sceneEntities, allUnits));
+                    sceneEntities, allUnits, SummonAlignmentMode.Fiendish));
                 cases[cases.Count - 1].Name = "kmg-dog-fiendish-direct";
                 stage = "sna-dog";
                 BlueprintAbility snaDogRoot = ExpandedSummoningRoot(blueprints,
@@ -8654,7 +8665,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sna1, snaDogRoot,
                     ExpandedSummoningUnit(blueprints, snaDog), snaDogRoot, null,
-                    1, Alignment.ChaoticNeutral, false, sceneEntities, allUnits));
+                    1, Alignment.ChaoticNeutral, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Caster));
                 cases[cases.Count - 1].Name = "kmg-sna1-dog-logical";
                 stage = "giant-spider";
                 BlueprintAbility spiderRoot = ExpandedSummoningRoot(blueprints,
@@ -8662,7 +8674,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm2, spiderRoot,
                     ExpandedSummoningUnit(blueprints, spider), spiderRoot, null,
-                    2, Alignment.NeutralGood, false, sceneEntities, allUnits));
+                    2, Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Celestial));
                 cases[cases.Count - 1].Name = "kmg-sm2-giant-spider-logical";
                 stage = "small-earth-elemental";
                 BlueprintAbility earthRoot = ExpandedSummoningRoot(blueprints,
@@ -8670,7 +8683,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
                     spellbook, sm2, earthRoot,
                     ExpandedSummoningUnit(blueprints, earth), earthRoot, null,
-                    2, Alignment.TrueNeutral, false, sceneEntities, allUnits));
+                    2, Alignment.TrueNeutral, false, sceneEntities, allUnits,
+                    null));
                 cases[cases.Count - 1].Name = "kmg-sm2-small-earth-elemental";
                 stage = "erinyes";
                 BlueprintAbility erinyesRoot = ExpandedSummoningRoot(blueprints,
@@ -8679,8 +8693,124 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spellbook, sm6, erinyesRoot,
                     ExpandedSummoningUnit(blueprints, erinyes), erinyesRoot,
                     null, 6, Alignment.LawfulEvil, false, sceneEntities,
-                    allUnits));
+                    allUnits, null));
                 cases[cases.Count - 1].Name = "kmg-sm6-erinyes";
+
+                stage = "expanded-human-path-matrix";
+                foreach (var row in new[] {
+                    new { Key = "eagle", Tier = 1, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm1-eagle" },
+                    new { Key = "wolf", Tier = 2, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm2-wolf" },
+                    new { Key = "lion", Tier = 4, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm4-lion" },
+                    new { Key = "dire-tiger", Tier = 6, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm6-dire-tiger" },
+                    new { Key = "mastodon", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm7-mastodon" },
+                    new { Key = "roc", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm7-roc" },
+                    new { Key = "lantern-archon", Tier = 3, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm3-lantern-archon" },
+                    new { Key = "salamander", Tier = 5, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm5-salamander" },
+                    new { Key = "succubus", Tier = 6, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm6-succubus" },
+                    new { Key = "bebelith", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.TrueNeutral,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm7-bebelith" },
+                    new { Key = "ghaele-azata", Tier = 9, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm9-ghaele" },
+                    new { Key = "eagle", Tier = 2, Count =
+                        SummonMultiplicity.OneD3, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm2-eagle-1d3" },
+                    new { Key = "dog", Tier = 3, Count =
+                        SummonMultiplicity.OneD4PlusOne,
+                        Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm3-dog-1d4plus1" }
+                })
+                {
+                    stage = row.Name;
+                    SummonVariantSpec variant = ExpandedSummoningVariant(
+                        SummonFamily.Monster, row.Key, row.Tier, row.Count);
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, variant, row.Alignment,
+                        row.Mode, sceneEntities, allUnits, row.Name);
+                }
+
+                stage = "kmg-sm1-dog-neutral-default";
+                SummonVariantSpec neutralDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1, SummonMultiplicity.One);
+                AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                    caster, spellbook, parents, neutralDog,
+                    Alignment.TrueNeutral, SummonAlignmentMode.Celestial,
+                    sceneEntities, allUnits, "kmg-sm1-dog-neutral-default");
+                stage = "resolve-neutral-fiendish-marker";
+                BlueprintBuff neutralFiendish = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.AssetGuid ==
+                        "b8429fbbf07f43ccbf88520c6256cd0d");
+                caster.Descriptor.AddFact(neutralFiendish);
+                try
+                {
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, neutralDog,
+                        Alignment.TrueNeutral, SummonAlignmentMode.Fiendish,
+                        sceneEntities, allUnits,
+                        "kmg-sm1-dog-neutral-fiendish-mode");
+                }
+                finally
+                {
+                    if (caster.Descriptor.HasFact(neutralFiendish))
+                        caster.Descriptor.RemoveFact(neutralFiendish);
+                }
+
+                stage = "resolve-native-sm8-choice";
+                BlueprintAbility nativeEight = BlueprintLibraryLookup
+                    .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                        "eb6df7ddfc0669d4fb3fc9af4bd34bca",
+                        "native Movanic Deva or Frost Giant choice");
+                foreach (var nativeRow in new[] {
+                    new { Alignment = Alignment.NeutralGood,
+                        Unit = "afe56099ff6046b40a359b7562c0424e",
+                        Name = "native-sm8-movanic-deva" },
+                    new { Alignment = Alignment.LawfulEvil,
+                        Unit = "590cd3d5e76fdc649a5f97bc984cd3c4",
+                        Name = "native-sm8-frost-giant" }
+                })
+                {
+                    stage = nativeRow.Name;
+                    BlueprintUnit expected = BlueprintLibraryLookup.RequireExact<
+                        BlueprintUnit>(BlueprintBootstrap.Library, nativeRow.Unit,
+                            nativeRow.Name);
+                    cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                        spellbook, parents[7], nativeEight, expected, nativeEight,
+                        null, 8, nativeRow.Alignment, false, sceneEntities,
+                        allUnits, null));
+                    cases[cases.Count - 1].Name = nativeRow.Name;
+                }
             }
             catch (Exception exception)
             {
@@ -8806,13 +8936,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static void AddExpandedSummoningPlayerPathRootCase(
+            ICollection<ExpandedSummoningPlayerPathCase> cases,
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            UnitEntityData caster, Spellbook spellbook,
+            BlueprintAbility[] parents, SummonVariantSpec variant,
+            Alignment alignment, SummonAlignmentMode? expectedAlignmentMode,
+            object sceneEntities, object allUnits, string name)
+        {
+            BlueprintAbility root = ExpandedSummoningRoot(blueprints, variant);
+            int parentIndex = (variant.Family == SummonFamily.Monster ? 0 : 9) +
+                variant.ParentTier - 1;
+            ExpandedSummoningPlayerPathCase result =
+                ExerciseExpandedSummoningPlayerPathCase(caster, spellbook,
+                    parents[parentIndex], root,
+                    ExpandedSummoningUnit(blueprints, variant), root, null,
+                    variant.ParentTier, alignment, false, sceneEntities,
+                    allUnits, expectedAlignmentMode);
+            result.Name = name;
+            cases.Add(result);
+        }
+
         private static ExpandedSummoningPlayerPathCase
             ExerciseExpandedSummoningPlayerPathCase(UnitEntityData caster,
                 Spellbook spellbook, BlueprintAbility parent,
                 BlueprintAbility selected, BlueprintUnit expectedUnit,
                 BlueprintAbility logical, BlueprintAbility execution,
                 int spellLevel, Alignment alignment, bool direct,
-                object sceneEntities, object allUnits)
+                object sceneEntities, object allUnits,
+                SummonAlignmentMode? expectedAlignmentMode)
         {
             var evidence = new ExpandedSummoningPlayerPathCase {
                 ParentGuid = parent.AssetGuid,
@@ -8921,9 +9073,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (value.View != null && value.View.Data == value)).ToArray());
             evidence.ExactKind = live.Length > 0 && (expectedUnit == null ||
                 live.All(value => ReferenceEquals(value.Blueprint, expectedUnit)));
+            BlueprintBuff[] templateFacts = live.SelectMany(value =>
+                value.Descriptor.Buffs.RawFacts.OfType<Buff>().Select(fact =>
+                    fact.Blueprint)).Where(value => value != null &&
+                        value.name.StartsWith("KMG_Summoning_Template_",
+                            StringComparison.Ordinal)).ToArray();
+            evidence.TemplateFacts = string.Join(",", templateFacts.Select(value =>
+                value.name).ToArray());
+            evidence.SummonedAlignment = string.Join(",", live.Select(value =>
+                value.Descriptor.Alignment.Value.ToString()).ToArray());
+            evidence.TemplateContract = !expectedAlignmentMode.HasValue ||
+                (live.Length > 0 && live.All(value =>
+                {
+                    int expected;
+                    return SummonAlignmentRuntimePolicy.TryResolve(
+                        expectedAlignmentMode.Value,
+                        (int)value.Blueprint.Alignment,
+                        expectedAlignmentMode.Value == SummonAlignmentMode.Caster
+                            ? (int?)alignment : null, out expected) &&
+                        (int)value.Descriptor.Alignment.Value == expected;
+                }) &&
+                    (expectedAlignmentMode.Value == SummonAlignmentMode.Caster
+                        ? templateFacts.Length == 0
+                        : templateFacts.Length == live.Length &&
+                            templateFacts.All(value => value.name.IndexOf(
+                                expectedAlignmentMode.Value.ToString(),
+                                StringComparison.OrdinalIgnoreCase) >= 0)));
+            evidence.RenderableContract = live.Length > 0 && live.All(value =>
+            {
+                Renderer[] renderers = value.View.GetComponentsInChildren<
+                    Renderer>(true).Where(renderer => renderer != null).ToArray();
+                return value.View.gameObject.activeInHierarchy &&
+                    renderers.Any(renderer => renderer.sharedMaterials != null &&
+                        renderer.sharedMaterials.Any(material => material != null) &&
+                        renderer.bounds.size.sqrMagnitude > 0.0001f);
+            });
             evidence.LiveContract = live.Length > 0 && evidence.ExactKind &&
                 live.All(value => ExpandedSummoningPlayerPathUnitExact(
-                    value, caster));
+                    value, caster)) && evidence.TemplateContract &&
+                    evidence.RenderableContract;
             evidence.SlotsAfter = CountAvailableExpandedSummoningSlots(
                 spellbook, spellLevel);
             evidence.SlotContract = direct ?

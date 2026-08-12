@@ -57,7 +57,15 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningPlayerPathSpawnPrefix",
                 "kmg-dog-celestial-direct",
                 "kmg-sna1-dog-logical",
-                "kmg-sm6-erinyes" })
+                "kmg-sm6-erinyes",
+                "kmg-sm1-dog-neutral-default",
+                "kmg-sm1-dog-neutral-fiendish-mode",
+                "kmg-sm7-roc", "kmg-sm6-dire-tiger",
+                "kmg-sm3-dog-1d4plus1",
+                "native-sm8-movanic-deva",
+                "native-sm8-frost-giant",
+                "evidence.TemplateContract",
+                "evidence.RenderableContract" })
                 Assertions.True(runner.Contains(token) || catalog.Contains(token) ||
                     request.Contains(token) || automation.Contains(token),
                     "Player-path acceptance contract is missing: " + token);
