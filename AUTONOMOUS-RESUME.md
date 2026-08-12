@@ -1,19 +1,20 @@
 # Autonomous Gunslinger resume handoff
 
-## Expanded Summoning first-playtest repair (active, 2026-08-12)
+## Expanded Summoning first-playtest repair (complete, 2026-08-12)
 
-- The human spellbook/UI acceptance test supersedes the prior completion
+- The human spellbook/UI acceptance test superseded the prior completion
   statement below. The repair baseline is
-  `e9f251c584607dd45a45a2414e2aaffabff4c44b`; the last pushed checkpoint is
-  `1db4de6f0f3a6732df870ea690904d82287d2f4c` on
-  `codex/expanded-summoning`; draft PR #2 remains open and must not merge.
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b`; pushed completion head before
+  the final audit-only correction is
+  `00d9c1e2ab21b0396d32c1e3a412b402a49e3653` on
+  `codex/expanded-summoning`. Draft PR #2 is open, draft, and unmerged.
 - Durable repair contract:
   `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
 - Root cause is proven and repaired: the old harness bypassed the unsupported
   nested `AbilityVariants`; all 182 templated roots are now direct executable
   abilities with caster-selected post-spawn templates. All 681 actual native-
-  parent placements passed run
-  `20260812T1824547130714Z-668cd85d823f48dea9f4bc9b7fb6667d`.
+  parent placements passed final immutable-source run
+  `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`.
 - Erinyes' separate presentation fault was inherited `AppearFromFog` campaign
   state. The qualified working tree replaces it with a fresh 9-HD outsider
   chassis while preserving the proven ranged view/rig; structural run
@@ -21,22 +22,27 @@
   and 67-view run
   `20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4`
   pass.
-- All 18 parent-menu contracts and the six exact standalone Summon Elemental
-  roots pass structural run
-  `20260812T1920367972975Z-41fb84e591cc47eb8cacecf3ca2c1ad4`.
-  Actual-parent run
-  `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
-  repeats all `681/681` placements and proves a distant command cancelled
-  before cast range spends no slot and fires no cast/spawn rules.
+- All 18 parent-menu contracts, exact before/after multiplicity counts, icons,
+  reconciliation, and the six standalone Summon Elemental roots pass final
+  structural run
+  `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`.
+  The final actual-parent run covers all `681/681` placements and proves one
+  slot per success and zero for a distant pre-range cancellation.
 - Persistence, all 16 module states, and all required compatibility profiles
   pass on the repaired production source. Shield Other, Acadamae/Cord, and
   paper/firearm/vendor regressions pass; the historical detached Dodge fixture
   limitation is documented without an unrelated gameplay mutation.
-- Exact next action: commit/push final evidence documentation, repeat the
-  player-path/observer/visual gates on that immutable source, freeze the 0.0.78
-  artifacts and hashes, and refresh draft PR #2 without merging.
-- The old package hashes and completion evidence are historical controls, not
-  repaired-release qualification.
+- Final repair counts are 1,158 feature identities, 1,412 active repository
+  identities plus one reserved, constant runtime registration 1,412, and
+  `1013/1013` domain tests. Artifact source is
+  `a951f7e4958f77244ef38e9df4507acf41c62b59`; DLL/package/source hashes are
+  `0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b`,
+  `35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4`,
+  and `572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf`.
+- No autonomous engineering action remains. Human action is limited to draft
+  PR review and the residual subjective visual checklist; do not merge
+  autonomously. The old package hashes and lower-layer 153-command evidence
+  below are historical controls, not repaired-release qualification.
 
 ## Active Expanded Summoning mission (2026-08-11)
 

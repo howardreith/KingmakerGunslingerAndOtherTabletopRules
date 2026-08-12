@@ -1,7 +1,9 @@
 # Expanded Summoning first-playtest repair mission
 
-Status: active. This contract supersedes the prior Expanded Summoning
-completion statement for release `0.0.78`.
+Status: complete and runtime-qualified on 2026-08-12. This contract supersedes
+the prior Expanded Summoning completion statement for release `0.0.78`; the
+authoritative requirement-to-evidence disposition is recorded in
+`planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`.
 
 ## Fixed baseline and publication contract
 

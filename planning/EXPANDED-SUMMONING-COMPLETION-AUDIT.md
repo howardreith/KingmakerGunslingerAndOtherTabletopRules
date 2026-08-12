@@ -1,155 +1,133 @@
-# Expanded Summoning completion audit
+# Expanded Summoning first-playtest repair completion audit
 
 Audit date: 2026-08-12
 
-Status: complete and release-qualified. This document maps the complete durable mission to current
-authoritative evidence. A PASS here means the cited evidence covers the full
-requirement; it is not inferred merely from a green build.
+Status: complete and release-qualified. This audit supersedes the original
+pre-playtest completion map. PASS means the cited current evidence covers the
+repair requirement; the old direct-child/153-command test is retained only as
+lower-layer historical evidence and is not used as the player-path gate.
 
-## Evidence anchors
+## Authoritative state
 
-- Selected baseline: `origin/master` at
-  `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor
+- Repository: `howardreith/KingmakerGunslingerAndOtherTabletopRules`.
+- Branch: `codex/expanded-summoning`.
+- Selected baseline: `2894d9fcce250708e354894ffd8e1be9c7493b9b`,
+  containing required ancestor
   `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`.
-- Final native qualification source:
-  `5205805eab3fe0115d6888c53bce73c80474d1b7`. Commits after this SHA through
-  the artifact checkpoint change checked-in documentation, the development-time
-  roster evidence header, the deterministic release packager, and its source
-  contract test; no gameplay runtime, blueprint, manifest, settings, or asset
-  file differs.
-- Final artifact source:
-  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`. Two clean builds emitted
-  byte-identical DLL and canonical/local-runtime packages. DLL SHA-256 is
-  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`;
-  package SHA-256 is
-  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`;
-  two `git archive` source ZIPs matched at
-  `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
-- Structural run:
-  `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`, PASS 31/31.
-- Mechanical run:
-  `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`, PASS 12/12
-  aggregate assertions and 153/153 production `UnitUseAbility` commands.
-- Visual run:
-  `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`, PASS 10/10
-  for 67/67 unique unit views.
-- Enabled persistence sequence:
-  `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6`,
-  `20260812T1158042311459Z-f21e3713df3b4545add5e7ab3436e865`, and
-  `20260812T1200508004220Z-02af221881da449f827cf5a048ba6c67`.
-- Disabled persistence sequence:
-  `20260812T1203346138814Z-0c81aa138d344d8e867d84d0ec316564`,
-  `20260812T1206142978812Z-a085c35bc5174b9d9bdd2633826436d3`, and
-  `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`.
-- Module matrix: 16/16 fresh launches PASS, first result
-  `20260812T1211226889431Z`, last result `20260812T1241396573801Z`.
-- Acadamae run:
-  `20260812T0759568976282Z-be2dea5c910c4c4780d17ce11de1aee4`, PASS 13/13,
-  using the concrete KMG native-preservation child selected by
-  `PrepareAcadamaeSpell`.
-- Final compatibility transactions: standalone
-  `compat-20260812T133252Z-8ab70bfdbf75` and
-  `compat-20260812T133451Z-f7096e45017c`; Call of the Wild
-  `compat-20260812T133727Z-74e8798f7849` and
-  `compat-20260812T134033Z-433e1ea1a746`; highest-risk combined
-  `compat-20260812T134340Z-adb4d15f893d` and
-  `compat-20260812T134649Z-1b83742188f4`; Arms and Armor
-  `compat-20260812T125302Z-b93f3cd123d7`; Toggle Custom Soundpacks
-  `compat-20260812T125454Z-1d1dbe9924c8`. All PASS and restored.
+- Reviewed repair baseline:
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b`.
+- Immutable repaired runtime source:
+  `11dabc92f4a84b226bab8df03196da98b9ca5f28`.
+- Deterministic artifact source:
+  `a951f7e4958f77244ef38e9df4507acf41c62b59`. Its only changes from the
+  runtime source are the implementation report, journal, and state document;
+  no gameplay, blueprint, manifest, asset, or runtime-harness source differs.
+- Release: `0.0.78`.
+- Draft PR #2 targets `master`, remains open/draft/unmerged, and is refreshed
+  after every final documentation push.
 
-Exact machine-local result paths, hashes, and restoration fingerprints are in
-`EXPANDED-SUMMONING-STATE.json`; curated interpretation is in
-`EXPANDED-SUMMONING-IMPLEMENTATION-REPORT.md` and the fidelity matrix.
+## Reproduction, root causes, and repairs
 
-## Sections 1-3: baseline, persistence, and objective
-
-| Requirement | Evidence | Audit |
+| Requirement | Authoritative evidence | Audit |
 |---|---|---|
-| Correct repository, remote, baseline, and required ancestor | Preflight is journaled; Git ancestry proves the selected baseline and required ancestor. Branch is `codex/expanded-summoning`; history has no merge commit and local/origin equality is checked after every push. | PASS |
-| Preserve unrelated work and avoid destructive Git operations | Dedicated branch/worktree history; mandated push helper logs ordinary non-force pushes; no reset/clean/rebase/force-push or release-branch merge. | PASS |
-| Shield Other established range prerequisite | Separate commits `f0a103c` and `0617402`; `ShieldOtherPolicyTests` prove link validity is distance-independent while casting remains close-range and endpoint/area/lifecycle rules remain. Final 1009-test regression suite PASS. | PASS |
-| Durable mission/state/roster/fidelity/journal/report/resume/blockers artifacts | Every named artifact exists. The durable mission now contains all 22 sections rather than a synopsis. `AUTONOMOUS-BLOCKERS.md` retains historical blockers and states no active Expanded Summoning blocker. | PASS |
-| Independent, default-on, restart-bound fourth module | Settings schema 3, module catalog, publication plan, UI, migration, active/pending snapshot tests, and 16/16 fresh-process matrix. | PASS |
-| Disabled behavior | Matrix and disabled persistence prove zero new KMG parent references, all 1,155 identities registered, active summons load-safe, and other modules independent. | PASS |
-| Frozen counts | Generator, domain suite, manifest, structural observer, and state agree: 66 SM, 57 SNA, 67 unique creatures, 361/320/681 placements. | PASS |
-| Explicit non-goals/exclusions | Catalog validator and generated roster include only approved entries; sanitizer and package/source review show no companions, vendors, encounters, external assets, dependencies, or unrelated spell-system redesign. Explicit exclusions are documented. | PASS |
+| Reproduce through the same real spellbook/parent path as the player | Pre-repair discriminating run `20260812T1729340453662Z-0ebb1d302b9045389454b13fbe812a06` records native Dog, KMG Dog logical root, direct Celestial/Fiendish children, SNA Dog, Giant Spider, Small Earth Elemental, and Erinyes. The KMG SM logical roots fail before `RuleCastSpell` while direct children and SNA work. | PASS |
+| Prove template-wrapper root cause before rewriting units | The log reports `Can't cast variational ability` for the nested KMG logical wrapper. Direct execution children and the same unit through SNA survive queued creation, isolating the two-level `AbilityVariants` path rather than the natural unit chassis. | PASS |
+| Direct executable logical placements | All 182 templated SM logical roots own the proven native spawn action directly and apply one caster-selected post-spawn template. No player-facing KMG logical root contains nested `AbilityVariants`. The 364 old execution identities remain registered and unpublished. | PASS |
+| Neutral template choice | A mutually exclusive, save-safe per-character mode defaults deterministically to Celestial and toggles to Fiendish. Good forces Celestial; evil forces Fiendish; neutral honors the mode. Runtime good/neutral-celestial/neutral-fiendish/evil cases each carry one exact KMG template and smite marker and zero native template buffs. | PASS |
+| Natural/proxy chassis | SNA Dog/Giant Spider controls and the final 681-root player-path matrix prove the shared natural units survive `EntityCreator.Tick`, remain in the live game-state collection, own descriptor/view/faction/pool/duration context, accept commands, and clean up. Donor-isolation and sanitizer assertions remain zero. No mass natural-unit rewrite was required. | PASS |
+| Erinyes independent failure and repair | Erinyes inherited campaign `BuffOnEntityCreated`/`AppearFromFog` state. The repaired unit uses a fresh 9-HD outsider component chassis while retaining the proven ranged body, brain, facts, and view. Structural, player-path, ranged-origin, live-view, and cleanup cases pass. | PASS |
 
-## Sections 4-6: rules and approved rosters
+## Player-facing behavior and presentation
 
-| Requirement | Evidence | Audit |
+| Requirement | Authoritative evidence | Audit |
 |---|---|---|
-| Native summon spell contract | Structural assertion covers all 681 roots and 1,045 generated nodes: Conjuration, Summoning descriptor, native full-round casting, close range, point targeting, material object, metamagic, action-bar, and exact parent mapping. | PASS |
-| Duration, faction, control, and cleanup | All 153 casts received the exact native `SummonedUnitBuff` with caster context and CL20 bounded duration. Persistence proves fresh-process context, remaining duration, shared area state, commands/view/faction, exact native-buff removal, destruction/detachment, and zero remaining live references. | PASS |
-| Area transition, rest, caster death, and RTwP/turn-based safety | KMG adds no lifecycle controller, mode branch, global summon patch, event subscription, or persistent unit handler. Every child reuses the exact Owlcat spawn/pool/duration graph and every unit uses the native summon faction/buff; therefore these boundaries remain the native summon lifecycle rather than a KMG approximation. Save/restart and explicit expiration are exercised directly. | PASS (native-equivalence boundary) |
-| Prohibited abilities and side effects | Sanitizer policy/domain tests plus structural assertions prove zero prohibited references, inherited class spells, starting inventory, donor component aliases, or non-KMG action contamination. Exact per-cast area/global/party snapshots reject leaked units, empty loot entities, or inventory effects. | PASS |
-| Quantity formula and same-kind packs | Pure matrix tests cover every tier and dice boundary; runtime covers 16/16 family-tier 1d3 and 14/14 family-tier 1d4+1 cases, legal count bounds, and exact unit-reference same-kind identity. | PASS |
-| SM templates and descriptors | 182 logical choices, 182 celestial executions, 182 fiendish executions, six HD-banded buffs, two smite markers; structural and good/neutral/evil runtime assertions prove alignment, masks, descriptors, replacement of native default template, and one bounded smite. | PASS |
-| SNA caster alignment and no templates | Catalog and identity tests prohibit celestial/fiendish SNA execution IDs; structural/runtime assertions cover all 320 SNA nodes and exact caster alignment. | PASS |
-| Complete approved rosters and native equivalence handling | Generated roster and catalog tests enumerate every approved tier row and reject duplicate family/tier/key entries. Publisher starts from final-live arrays and GUID-deduplicates; native tier-I graphs are preserved as first castable variants. | PASS |
+| Every approved logical entry through its native parent | Final run `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363` on `11dabc9` resolves and casts all 681/681 logical roots through their actual native spellbook parents. It never grants an internal template child. All nine aggregate assertions pass. | PASS |
+| Slot semantics | Every successful player-path case spends exactly one correct-level slot. A deliberately distant command is rejected before cast/spawn rules and preserves slots `7 -> 7`. | PASS |
+| Live-world and cleanup semantics | The player-path run advances full-round casting, execution, queued entity creation, and world ticks, then proves exact kind/quantity, non-destroyed live collection membership, descriptor, native faction/pool/duration/caster context, command surface, and exact cleanup. | PASS |
+| Required human-path matrix | Native Dog; KMG Dog, Eagle, Giant Spider, Wolf, Lion, Dire Tiger, Mastodon, Roc, Erinyes; Small Earth Elemental; Lantern Archon; Salamander; Succubus; Bebelith; Ghaele; natural 1d3/1d4+1; same-unit SNA; Movanic Deva; and Frost Giant are explicit matrix cases before the complete 681-root sweep. | PASS |
+| Native semantic reconciliation | A frozen 48-GUID map suppresses only exact native semantic duplicates from displayed parent arrays. Original blueprint objects remain unchanged and registered. The structural observer reports mapped visible duplicates `0`, unique native missing `0`, and frozen native registration missing `0`. Disabling the feature restores exact originals. | PASS |
+| Unique native/third-party preservation | Movanic Deva, Frost Giant, all other unique native choices, and structurally discovered third-party entries remain once; unclassified third-party entries retain stable relative order. Call of the Wild and combined profiles pass. | PASS |
+| Deterministic display order | Current-tier KMG singles, unique native singles, 1d3, 1d4+1, then stable unclassified foreign tail. Final observer reports `misordered=0`. | PASS |
+| Exact before/after counts | Structural run `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc` records all 18 original-parent counts and repaired One/1d3/1d4+1 splits. The exact table is in `EXPANDED-SUMMONING-IMPLEMENTATION-REPORT.md`. Final totals are SM `3,13,21,35,44,56,64,68,69` and SNA `5,14,21,33,40,47,53,57,59`. | PASS |
+| Icon usability | The immutable icon catalog prefers exact donor icons, then canine, feline, bear, flying, reptile/dinosaur, vermin, per-element elemental/mephit, celestial, or fiend fallbacks. Quantity remains explicit in names. Observer reports no missing icons/bad quantity names and distinct categories. | PASS |
+| Invisible Stalker | Uses the Medium Air Elemental view with Medium footprint/silhouette. Final visual contracts cover geometry, navigation, locomotion, attack, hit, death, invisibility, selection bounds, and cleanup. The true Huge Air Elemental is unchanged. | PASS |
+| Elementals and standalone Summon Elemental | Elementals remain in SM. The six standalone Summon Elemental roots each retain their exact four original non-KMG children and zero KMG mutation. | PASS |
+| Sparse SM VIII/IX | Four Elder Elementals and Ghaele remain the frozen KMG additions; native unique VIII/IX options remain visible. No engine limitation is claimed. A bounded review found no safe dedicated Astral Deva, Trumpet Archon, or additional high-tier fiend donor, so speculative additions are deferred. | PASS |
 
-## Sections 7-10: inventory, architecture, identities, sanitization
+## Roster, identities, and feature module
 
-| Requirement | Evidence | Audit |
+| Requirement | Authoritative evidence | Audit |
 |---|---|---|
-| Exact SM/SNA parent inventory | Checked-in inventory records all 18 canonical parents and GUIDs, direct/variant structure, native child action graphs, spell structure, pools, duration, descriptors, and optional-parent hazards. Final structural run validates all required parents. | PASS |
-| Donor inventory and selection | Donor catalog plus generated roster records every creature's exact selected GUID/name/view policy. The 55-GUID final-live donor observer records unit fields and bounded component/body/view graphs; inventory/fidelity rows record scale/size/reach/movement/attacks/abilities and sanitization decisions. Visual run validates instantiated results. | PASS |
-| Native templates, quantities, feats, cleanup, and Acadamae inventory | Inventory observer records exact native action/template graphs, native pool and lifecycle, Augment, CotW Superior, and Acadamae classification. Its normalized `Sacred Summons`/`SacredSummons` search returned zero candidates in the installed CotW/high-risk graph, so Sacred Summons was not structurally available and was correctly skipped rather than guessed. | PASS |
-| Data-driven architecture | Immutable catalogs/specifications, pure policies, builders, publication transaction, sanitizer, observer, and optional reconciler are separate; no one-off runtime ID generation. Runtime and domain project files explicitly enumerate sources. | PASS |
-| Development-time manifest generation | `tools/expanded_summoning_manifest.py` deterministically validates/emits the roster and 1,155 planned identities, rejects collisions/stale output, and allocates only under an explicit development flag. Runtime consumes frozen manifest IDs. | PASS |
-| Identity/registration contract | 1,155 feature identities, 1,409 active repository entries, one reserved, 1,410 ledger total, exact planned types/lowercase GUIDs, and constant 1,409 runtime registration in all 16 states. Loaded-library/feature collision assertions PASS. | PASS |
-| Safe clone isolation and sanitizer | Deep-cloned mutable component/array graphs; donor reference comparisons report zero aliases/mutation. Runtime reports zero prohibited references, class spells, inventory, and contaminated native actions. All 67 units carry one extraplanar marker and summon faction. | PASS |
-| Tabletop fidelity profiles | The fidelity matrix and immutable natural/special profiles cover every requested statistical category and explicit deviation. Domain and structural tests validate tier groups and special profiles. | PASS |
+| Frozen roster and quantities | Catalog/generator/domain/runtime evidence agrees on 66 SM entries, 57 SNA entries, 67 unique creatures, 361 SM placements, 320 SNA placements, and 681 total same-kind placements. Formula and dice-boundary tests prohibit mixed packs. | PASS |
+| Blueprint identities | Expanded Summoning owns 1,158 active identities and no feature-local reserved identity. Repository ledger is 1,412 active plus one historical reserved, 1,413 total. Runtime registration is exactly 1,412 in every module state. GUID/type/collision validation passes. | PASS |
+| Fourth independent module | Settings schema 3, default ON, restart-bound active/pending snapshot, atomic settings, legacy migration, malformed quarantine, UI/state/equality/hash/publication plan, and all 16 configurations are tested. | PASS |
+| Disabled/save-safe behavior | Disabled mode publishes zero KMG parent variants while every identity remains registered. The six-stage persistence sequence proves active summons load/expire safely with enabled and disabled publication. | PASS |
+| Additive/idempotent/transactional publication | Pure merge and runtime transaction tests preserve reference/order, prevent GUID/reference duplicates, roll back exact originals, refuse unsafe rollback, and fail closed only on ambiguous optional parents. | PASS |
 
-## Sections 11-14: adaptations, publication, modules, and feats
+## Static, build, runtime, persistence, and profiles
 
-| Requirement | Evidence | Audit |
+| Gate | Authoritative evidence | Audit |
 |---|---|---|
-| Lantern Archon | Dual two-projectile ranged-touch light ray, archon defenses, optional exact Aura carrier, no teleport; Wisp visual only. Structural, mechanical, projectile/visual tests PASS. | PASS with documented aura/teleport deviations |
-| Elementals and mephits | All 24 elemental tiers and four mephits use exact dedicated donors with rebuilt/validated tier statistics and traits. Four breath types and bounded mechanics are structurally covered; Fire Mephit breath damaged a runtime target. | PASS with documented unconditional Fast Healing 2 adaptation |
-| Salamander, Invisible Stalker, Shadow Demon, Succubus | Exact special builders and profiles; runtime attacks and key bounded effects pass. No campaign inventory, teleport, summon, permanent drain/gift, or unsafe possession. | PASS with documented conservative omissions |
-| Bebelith and Pixie | Custom units, items/resources/brains/abilities and bounded state buffs; runtime armor remains intact while one-round dismantle applies, dance/sleep consume bounded resources, visual/nav/projectile/death cleanup passes. | PASS with documented conservative adaptations |
-| Natural proxies | 26 rebuilt natural profiles use donors only for view/rig, a bounded natural-attack brain, project-owned weapon profiles, intended stats/facts, and no donor campaign behavior. Structural tier assertions, attacks, and 67-unit visual matrix PASS. | PASS with row-specific deviations |
-| Ability preservation | All nodes match exact native parent/child contract, including non-null material data, parent spell context, metamagic, UI, duration, and pools. Tier-I native graphs remain first and castable. | PASS |
-| Additive transactional merge | Domain tests prove reference/order preservation, deterministic append order, GUID/reference dedupe, idempotence, malformed target rejection, exact rollback, and refusal after unrelated mutation. Final-live assertion proves no preexisting variant changed or disappeared. | PASS |
-| Optional-parent reconciliation | Exact structural signatures, one-match rule, additive preservation, idempotence, and ambiguity fail-closed tests; no optional compile references. CotW and combined profiles PASS. | PASS |
-| Module isolation and migration | Schema 0/1/2 migration, malformed quarantine, atomic write, equality/hash/string/state/UI, active/pending restart semantics, publication plans, and all 16 states are tested. Settings restored to original SHA-256. | PASS |
-| Acadamae Graduate | All 1,045 generated nodes structurally classify as native summons. Dedicated 13/13 runtime uses a concrete `KMG_Summoning_Native_*` child and proves mode off, eligible success/failure exactly once, cancellation, command snapshot, ineligible behavior, fatigue/rest, Cord, and cleanup. | PASS |
-| Augment, Superior, Sacred Summons | Mechanical runtime proves Augment applies once and Superior changes quantity only, when installed. Structural fact search confirms no Sacred Summons surface existed; the feature made no guessed mutation. | PASS |
-| Prepared/spontaneous and action-bar/metamagic | Parent lists remain unchanged except additive variants; all generated nodes have exact native spell/metamagic/material/action-bar contract. Prepared invocation is exercised through Acadamae; identical parent ownership preserves spontaneous discovery and slot level. Fresh launch logs have no summon/action-bar exception storm. | PASS |
-| Existing feature regressions | Complete 1009-test suite includes Shield Other, Acadamae, Gunslinger, firearms, settings, Cord, vendor, loot, and persistence coverage. Module matrix proves no cross-surface leakage. | PASS |
+| Repository/static validation | Current `validate.ps1`/0.0.78 validator and deterministic roster/manifest validator pass with exact counts. `git diff --check` passes. | PASS |
+| Complete domain/reflection suite | `1013/1013` PASS, including repaired player-path source contracts, reconciliation/order/icons, template roots, cancellation, standalone elemental isolation, donor/sanitizer, all 16 settings states, Shield Other, Acadamae, Cord, Gunslinger/firearms/vendors/settings, and package contracts. | PASS |
+| Clean Release and package | Two clean exact-reference Release/package builds from `a951f7e` pass. Strict standalone UMM package validation passes. Both repetitions are byte-identical. | PASS |
+| Player-path runtime | `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`: PASS, 681/681 actual roots plus successful/cancelled slot semantics. | PASS |
+| Structural runtime | `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`: PASS 37/37, including parents, roots, templates, units, reconciliation, menus, icons, high tiers, standalone elementals, donors, sanitizer, and registration. | PASS |
+| Visual-contract runtime | `20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac`: PASS 10/10 for 67/67 unique units. | PASS |
+| Enabled persistence | Prepare `20260812T1929470099833Z-bb3292f38b3644b6923940b52fc491e4`, cleanup `20260812T1932384938123Z-38502fdc53534e7bab8b9ff1f0c9737b`, and absence `20260812T1935299471647Z-9e6533fcb51d421ea31e545fdd28aa51`: PASS. | PASS |
+| Disabled persistence | Prepare `20260812T1938060304326Z-4f4f1d75920e45fdb86513c0bb48c61d`, cleanup `20260812T1941047028065Z-e853f261c5e64fe9bd172692d7538997`, and absence `20260812T1943438977236Z-003950a75a8d4c448b8865c651413c33`: PASS with zero KMG publication. | PASS |
+| Feature matrix | All 16 fresh launches on `9cb5f54` pass with constant 1,412 registration, exact publication isolation, and byte-identical settings restoration. | PASS |
+| Standalone | `compat-20260812T214659Z-a8408890bf7c` and `compat-20260812T214914Z-2bf507fe07aa`: PASS/restored. | PASS |
+| Call of the Wild | `compat-20260812T215130Z-3fbac165ac9e` and `compat-20260812T215520Z-067b42b7677a`: PASS/restored. | PASS |
+| Highest-risk combined | `compat-20260812T215909Z-2f991684eb43` and `compat-20260812T220300Z-b0dc049fc8b2`: PASS/restored. | PASS |
+| Arms and Armor | `compat-20260812T220654Z-a2e8eabf9736`: PASS/restored. | PASS |
+| Toggle Custom Soundpacks | `compat-20260812T220911Z-976210443a94`: PASS/restored. | PASS |
+| Existing-feature runtime regressions | Shield Other `20260812T2101121022865Z-89f2bb1c40ea4d43abba943f1ce05b8e` passes 23/23. Acadamae/Cord `20260812T2058347680701Z-8cdc06e4886a41cba7ac7592462864b5` passes 13/13 using the exact KMG Dog root. Paper/firearm/vendor comprehensive transaction `compat-20260812T212522Z-f2d2def65434` passes 6/6. | PASS |
+| Gunslinger comprehensive fixture disposition | The broad save-free fixture passes 184 assertions; its detached Gunslinger's Dodge command lacks a Swift-action controller and interrupts before `Start`. Production Dodge source was untouched, focused Dodge/domain coverage passes, and no runtime behavior or resource spend occurred. This is an inherited auxiliary-fixture limitation, not a product regression, and is disclosed in `KNOWN-ISSUES.md`. | PASS with disclosed harness limitation |
 
-## Sections 15-17: domain, runtime, build, and package
+## Hashes, restoration, documentation, and publication
 
-| Requirement | Evidence | Audit |
+| Requirement | Authoritative evidence | Audit |
 |---|---|---|
-| Required domain/static cases | All named catalog, identity, quantity, template, merge, transaction, disabled publication, 16-state settings, migration, sanitizer, donor, adaptation, count, and existing-feature cases are registered in the dependency-free executable. Current result: 1009/1009 PASS. | PASS |
-| Structural runtime | Final run PASS 31/31, covering 67 units, 1,050 ability identities, 681 published roots, 1,045 generated nodes, 55 donors, sanitizer/source isolation, exact special structures, parents, and registration. | PASS |
-| Actual cast matrix | Final mechanical run executed all 123 one-creature options, 16 d3 and 14 d4+1 tier/family representatives through native `AbilityData`, `UnitUseAbility`, and `RuleCastSpell`; count, kind, duration/range, combat, feats, templates, and cleanup PASS. | PASS |
-| Movement/commands/AI/combat | Every spawned unit had native summon faction/control and command surfaces. Natural units use the bounded native attack brain; three specials have frozen custom AI identities. Visual run exercises locomotion agents and attacks; mechanical run exercises representative hit/damage/special effects. No KMG mode-specific path exists. | PASS |
-| Visual contracts | 67/67 attached/renderable views, bounded geometry/selection/footprint, navigation/locomotion, attack, projectile fallback, hit/death, and exact cleanup. No screenshot/OCR is used for mechanics. | PASS |
-| Persistence and disabled load | Both three-stage fresh-process sequences PASS through Steam App ID 640820 using only `KMG_AUTOMATION_WORKING`; identity/context/duration/control/no duplication, expiration, save/relaunch absence, and disabled publication are proven. | PASS |
-| 16-state matrix | 16/16 fresh launches, constant registry, exact module surfaces, no duplicate/leakage, settings hash restored. | PASS |
-| Compatibility profiles | Eight required transactions PASS at current installed profile versions; standalone/CotW/combined repeated twice after native source freeze; every transaction restored Mods/settings. | PASS |
-| Static/build/package gates | `git diff --check`, deterministic roster validator, repository validation, 1009 tests, exact-reference warnings-as-errors Release, repeat deterministic build, strict canonical package, and exact hashes are recorded. Two final builds from `8e08834` produced byte-identical DLLs and identical canonical/local-runtime 45-file ZIPs. | PASS |
-| Publication exclusions | Git tree/package validators reject proprietary assemblies, installed-mod DLLs, saves, credentials, raw runtime logs/screenshots, machine config, and generated packages. | PASS |
+| DLL hash | `0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b`. | PASS |
+| Package hash | `35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4`. | PASS |
+| Source archive hash | Two independent `git archive` outputs match at `572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf`. | PASS |
+| Settings restoration | Current settings hash is `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`. | PASS |
+| Mods restoration | Every final profile transaction reports `Restored`; no live `Mods.kmg-compat-*` backup/quarantine remains. | PASS |
+| Working save restoration | `KMG_AUTOMATION_WORKING` was restored from its verified pre-test backup to `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`. | PASS |
+| Protected baseline | `KMG_AUTOMATION_BASELINE` remains `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07` and was never written. | PASS |
+| Documentation | Mission, roster, fidelity matrix, inventory, journal, state, resume, changelog, known issues, testing, and implementation report distinguish the lower-layer test from the decisive player path and record root causes, reconciliation, exact menu counts, icons, Stalker, slot evidence, profiles, hashes, deviations, and deferred high-tier candidates. | PASS |
+| Git/publication | Dedicated branch only; ordinary non-force push helper used after each coherent commit; local/origin equality verified; no merge, rebase, reset, clean, force-push, or release-branch mutation. Draft PR #2 is updated and unmerged. | PASS |
 
-## Sections 18-22: release documentation, publication, and closeout
+## Conservative adaptations and known limitations
 
-| Requirement | Evidence | Audit |
-|---|---|---|
-| Version and release docs | `Info.json`, `Directory.Build.props`, changelog, README, installation/compatibility, known issues, build info, testing, architecture, manifest, module and runtime docs identify 0.0.78 and current counts. Historical sprint text is explicitly subordinate to the 0.0.78 sections. | PASS |
-| Complete roster/fidelity record | Generated roster includes every family/tier, policy, donor GUID/name/view, unit ID, placement/execution IDs, adaptation/sanitization and qualification. Fidelity matrix gives full profiles/deviations and evidence. | PASS |
-| Reviewable commits and push policy | 105 coherent, non-merge commits currently follow the selected baseline. Every coherent checkpoint was pushed with the mandated helper. | PASS |
-| Draft PR | Draft PR #2 targets `master`, remains open/unmerged, and contains baseline, counts, tests, runtime/profile results, hashes, deviations, and visual checklist. Its head/hash block is refreshed after the final evidence push. | PASS |
-| Definition of done | All behavior, native evidence, deterministic artifact, documentation, push, and draft-PR conditions are proven above. | PASS |
-| Catastrophic conditions | None present. Repository/game/assets/save path/Steam/GitHub are usable; no engine hard limit or unsafe conflict was encountered. | PASS |
-| Final response contract | State/report contain all required values; final response follows clean/local-origin/PR verification and goal completion update. | PASS |
+- Lantern Archon Aura of Menace is present only when an exact compatible
+  optional carrier exists; greater teleport, gestalt, truespeech, and separate
+  darkvision modeling are omitted.
+- Mephits retain Owlcat's unconditional Fast Healing 2 because no safe
+  environment predicate exists.
+- Shadow Demon possession/shadow blend/sprint and Succubus profane gift are
+  omitted; their bounded combat identities remain.
+- Bebelith permanent armor destruction is a one-round `-2 AC` dismantle;
+  rot/climb are omitted.
+- Pixie sleep uses a bounded zero-damage non-inventory bow; dance is a frozen
+  bounded state.
+- Per-creature proxy omissions are recorded in the fidelity matrix, chiefly
+  unsupported movement modes, grab/trample/sprint/rage, and unproven donor
+  feats/senses.
+- Kingmaker exposes spell descriptors only on shared `BlueprintAbility`
+  objects, not per caster invocation. Direct roots retain `Summoning`; spawned
+  template, alignment, and smite are caster-correct. Unsafe shared mutation was
+  rejected. Supported profiles contain no Sacred Summons surface, so optional
+  integration fails closed.
+- No safe dedicated high-tier donor justified Astral Deva, Trumpet Archon, or
+  extra fiend additions. They remain deferred rather than implemented with
+  poor campaign proxies.
 
-## Residual human-only aesthetic checklist
+## Residual human-only checklist
 
-Mechanical and visual-contract qualification is complete. Reviewers may still
-inspect only subjective presentation: proxy scale beside ordinary party units,
-camera comfort for Roc/Bebelith/Mastodon, selection-circle aesthetics, sleep-arrow
-and light-ray visual polish, and icon/list readability in crowded spellbooks.
-These checks may not overturn or substitute for the structured mechanical
-results unless they reveal a reproducible defect.
+No engineering gate remains. Human review is limited to subjective proxy
+silhouette/scale, selection circles and camera comfort, projectile/socket
+appearance, and locomotion/attack/hit/cast/invisibility/death aesthetics,
+especially Invisible Stalker, Bebelith, Pixie, Roc/Mastodon, and flying
+proxies. Draft PR #2 must remain unmerged until review is complete.

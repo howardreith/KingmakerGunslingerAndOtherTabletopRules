@@ -140,11 +140,12 @@ save-free fixture has no turn/action controller. No summoning source caused or
 changed that inherited harness limitation, and no unrelated gameplay change
 was made to hide it.
 
-Status: complete and release-qualified. The completion audit added a final-live
-assertion tying all 681 roots and 364 template executions to their native spell,
-Acadamae, metamagic, material-data, and action-bar contracts. That assertion and
-the complete mechanical matrix passed on pushed source
-`5205805eab3fe0115d6888c53bce73c80474d1b7`. Draft PR
+Historical status, superseded by the first-playtest repair above: the original
+completion audit added a final-live assertion tying all 681 roots and 364
+template executions to their native spell, Acadamae, metamagic, material-data,
+and action-bar contracts. That lower-layer matrix passed on pushed source
+`5205805eab3fe0115d6888c53bce73c80474d1b7`, but it did not prove the actual
+player wrapper path. Draft PR
 [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
 targets `master` and remains unmerged for review.
 
@@ -152,10 +153,11 @@ Selected baseline: `origin/master` at
 `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required
 `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`. Release baseline: 0.0.77.
 
-## Authoritative final qualification
+## Superseded pre-playtest qualification (historical)
 
-This section supersedes the checkpoint-status language in the chronological
-engineering record below. Earlier “pending” statements are retained as an
+This section is superseded by the repaired qualification at the top of this
+report and `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`. Earlier “pending”
+statements are retained as an
 honest account of what was unproven at those checkpoints, not as the current
 release state.
 
