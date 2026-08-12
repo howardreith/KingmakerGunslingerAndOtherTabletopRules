@@ -12587,16 +12587,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cancel.Invoke(wizardController, null);
                 wizardController = null;
                 wizardBookBlueprint = wizard.Spellbook;
-                BlueprintAbility spell = Enumerable.Range(0,
-                        wizardBookBlueprint.SpellList.MaxLevel + 1)
-                    .SelectMany(level => wizardBookBlueprint.SpellList.GetSpells(level)
-                        .Select(value => new { Level = level, Spell = value }))
-                    .Where(value => value.Spell != null && value.Spell.IsSpell &&
-                        value.Spell.School == SpellSchool.Conjuration &&
-                        (value.Spell.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
-                        value.Spell.IsFullRoundAction)
-                    .OrderBy(value => value.Level).ThenBy(value => value.Spell.AssetGuid,
-                        StringComparer.Ordinal).Select(value => value.Spell).First();
+                BlueprintAbility spell = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "8fd74eddd9b6c224693d9ab241f25e84",
+                        "canonical Summon Monster I parent for Acadamae fixture");
+                if (!wizardBookBlueprint.SpellList.Contains(spell))
+                    throw new InvalidOperationException(
+                        "Canonical Summon Monster I is absent from the native Wizard list.");
                 spellLevel = wizardBookBlueprint.SpellList.GetLevel(spell);
                 spellIdentity = spell.name + ":" + spell.AssetGuid;
                 Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
@@ -12953,11 +12950,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault();
             BlueprintAbility concrete = variants == null ? null :
                 (variants.Variants ?? Array.Empty<BlueprintAbility>())
-                    .FirstOrDefault(value => value != null && value.name.StartsWith(
-                        "KMG_Summoning_Native_", StringComparison.Ordinal));
+                    .FirstOrDefault(value => value != null && value.name ==
+                        "KMG_Summoning_Ability_SM_t1_dog_One");
             if (variants != null && concrete == null)
                 throw new InvalidOperationException(
-                    "Prepared summoning parent has no frozen native-preservation child.");
+                    "Canonical Summon Monster I has no published KMG Dog logical root.");
             if (concrete == null) return slot.Spell;
             var invocation = new AbilityData(slot.Spell, concrete);
             invocation.ParamSpellSlot = slot;

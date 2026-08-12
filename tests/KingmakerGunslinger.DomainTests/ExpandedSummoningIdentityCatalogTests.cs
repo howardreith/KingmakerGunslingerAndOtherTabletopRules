@@ -70,6 +70,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ExerciseRejectedExpandedSummoningPlayerPathCase",
                 "expanded-summoning-invalid-cast-slot-preservation",
                 "kmg-sm1-dog-cancelled-before-range",
+                "canonical Summon Monster I parent for Acadamae fixture",
+                "KMG_Summoning_Ability_SM_t1_dog_One",
                 "broadCases.Count == 681",
                 "result.QuantityContract" })
                 Assertions.True(runner.Contains(token) || catalog.Contains(token) ||

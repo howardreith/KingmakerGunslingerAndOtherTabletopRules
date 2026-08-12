@@ -231,12 +231,13 @@ namespace KingmakerGunslinger.DomainTests
                     StringSplitOptions.None).Length == 3,
                 "The guarded scenario must force native automatic success and failure boundaries.");
             foreach (string token in new[] {
-                "KMG_Summoning_Native_",
+                "canonical Summon Monster I parent for Acadamae fixture",
+                "KMG_Summoning_Ability_SM_t1_dog_One",
                 "new AbilityData(slot.Spell, concrete)",
                 "invocation.ParamSpellSlot = slot",
-                "Prepared summoning parent has no frozen native-preservation child" })
+                "Canonical Summon Monster I has no published KMG Dog logical root" })
                 Assertions.True(runtime.Contains(token),
-                    "Acadamae runtime fixture no longer resolves a concrete native summon variant: " +
+                    "Acadamae runtime fixture no longer resolves the exact player-facing KMG summon variant: " +
                     token);
             foreach (string token in new[] {
                 "IsPreparedInvocation(ability, spellbook)",
