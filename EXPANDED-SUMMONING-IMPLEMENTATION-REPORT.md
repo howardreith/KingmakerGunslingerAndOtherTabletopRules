@@ -1,9 +1,11 @@
 # Expanded Summoning implementation report
 
-Status: implementation, native runtime qualification, and deterministic release
-package complete. The release artifact was frozen from documentation-bearing
-source `193d73cc22fe41fda8546f1d2e1750e185ed8288`; final evidence publication
-and draft-PR creation remain.
+Status: complete. Implementation, native runtime qualification, deterministic
+release packaging, and publication are complete. The release artifact was
+frozen from documentation-bearing source
+`193d73cc22fe41fda8546f1d2e1750e185ed8288`; draft PR
+[#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
+targets `master` and remains unmerged for review.
 
 Selected baseline: `origin/master` at
 `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required

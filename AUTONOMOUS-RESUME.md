@@ -6,10 +6,15 @@
   gate are complete on immutable pushed source
   `b8e7950680ab4718c18965837a37c5974a8d35bc`. Final structural, 153-command
   mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
-  states, and all eight required compatibility launches PASS. The exact next
-  action is the documentation-bearing deterministic package/hash freeze,
-  final evidence commit/push, and draft PR. This paragraph supersedes older
-  checkpoint “next action” entries below.
+  states, and all eight required compatibility launches PASS. The subsequent
+  documentation-bearing deterministic package/hash freeze, final evidence
+  publication, and draft-PR gates are also complete:
+  deterministic package SHA-256 is
+  `2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce`
+  and draft PR
+  [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
+  is open against `master`. This paragraph supersedes older checkpoint “next
+  action” entries below.
 - Current counts: 66 SM entries, 57 SNA entries, 67 unique units, 681
   placements, 1,155 Expanded Summoning identities, 1,409 active repository
   identities plus one reserved, settings schema 3, and `1009/1009` domain

@@ -48,6 +48,14 @@
   is `c698e82d38599e06c58a32a9b243c391c9e9a4cb155b6047dee4d5ef936cf784`.
 - Exact next action: commit/push these hashes, open the draft PR, and complete
   remote-equality plus definition-of-done audit.
+- Hash evidence was committed and pushed as
+  `e5aba193c0eb421a41d4441fc2ae7b9f7bc5358d`.
+- GitHub app publication opened draft PR
+  [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
+  against `master`; the initial PR head exactly matched `e5aba193c` and the PR
+  contains all 99 feature-branch commits then present.
+- Exact next action: publish this final PR record and prove clean-tree,
+  local/origin, and PR-head equality before closing the mission.
 
 ## 2026-08-11 - baseline and mission intake
 
