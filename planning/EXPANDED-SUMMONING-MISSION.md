@@ -39,4 +39,3 @@ stop. Builds, tests, runtime failures with actionable evidence, donor fallbacks,
 optional-parent ambiguity, and conservative documented adaptations do not.
 Never modify `KMG_AUTOMATION_BASELINE`; only guarded Steam App ID 640820 runtime
 flows and named disposable/working saves may be used.
-
