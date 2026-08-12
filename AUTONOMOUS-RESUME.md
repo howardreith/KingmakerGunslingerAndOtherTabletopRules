@@ -2,19 +2,22 @@
 
 ## Active Expanded Summoning mission (2026-08-11)
 
-- Current release state (2026-08-12): implementation and every native runtime
-  gate are complete on immutable pushed source
-  `b8e7950680ab4718c18965837a37c5974a8d35bc`. Final structural, 153-command
+- Current release state (2026-08-12): mission complete. Implementation and every
+  native runtime gate are complete, with the strengthened structural and
+  153-command mechanical repetitions passing on pushed source
+  `5205805eab3fe0115d6888c53bce73c80474d1b7`. Final structural, 153-command
   mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
   states, and all eight required compatibility launches PASS. The subsequent
   documentation-bearing deterministic package/hash freeze, final evidence
   publication, and draft-PR gates are also complete:
   deterministic package SHA-256 is
-  `2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce`
+  `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`
   and draft PR
   [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
-  is open against `master`. This paragraph supersedes older checkpoint “next
-  action” entries below.
+  is open against `master`. Artifact source is
+  `a6bdfccc4c814ca26769d71816db2f1069702f48`; the only next human action is
+  PR review plus the residual aesthetic visual checklist. This paragraph
+  supersedes older checkpoint entries below.
 - Current counts: 66 SM entries, 57 SNA entries, 67 unique units, 681
   placements, 1,155 Expanded Summoning identities, 1,409 active repository
   identities plus one reserved, settings schema 3, and `1009/1009` domain
@@ -30,9 +33,9 @@
 - Completion-audit update: an explicit 1,045-node final-live assertion was
   added for exact parent mapping plus inherited school, Summoning descriptor,
   full-round/close targeting, metamagic, material data, and action-bar state.
-  Repository validation, `1009/1009` tests, and clean Release compile pass. The
-  exact next action is commit/push, guarded structural observation on that SHA,
-  and final artifact/hash refresh before closing PR #2's audit.
+  Repository validation, `1009/1009` tests, clean Release compile, guarded
+  structural/mechanical reruns, final compatibility repetitions, and two
+  deterministic release builds all pass.
 
 - Branch: `codex/expanded-summoning`; selected baseline `origin/master` at
   `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor

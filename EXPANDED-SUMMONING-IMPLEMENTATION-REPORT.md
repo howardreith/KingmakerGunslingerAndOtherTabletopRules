@@ -1,7 +1,6 @@
 # Expanded Summoning implementation report
 
-Status: implementation and native runtime qualification complete; deterministic
-release artifact re-freeze is in progress. The completion audit added a final-live
+Status: complete. The completion audit added a final-live
 assertion tying all 681 roots and 364 template executions to their native spell,
 Acadamae, metamagic, material-data, and action-bar contracts. That assertion and
 the complete mechanical matrix passed on pushed source
@@ -108,16 +107,16 @@ The manual residual visual checklist is limited to aesthetic judgment of proxy
 scale, camera framing, projectile appearance, and animation quality; all
 mechanical visual contracts already pass.
 
-### Superseded release hashes pending final artifact re-freeze
+### Final release hashes
 
 - Release artifact source commit:
-  `193d73cc22fe41fda8546f1d2e1750e185ed8288`.
+  `a6bdfccc4c814ca26769d71816db2f1069702f48`.
 - Exact-reference `KingmakerGunslinger.dll` SHA-256:
-  `64bc093904ea80514b7811ab73ef488c3c7561ab5af049f7ba08e74d8c177966`.
+  `e26d025cd8642a4bc30c0170e88110ba65e5b44a91df8a6337b360b08d683d45`.
 - Deterministic `KingmakerGunslinger-0.0.78-expanded-summoning.zip` SHA-256:
-  `2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce`.
+  `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`.
 - Deterministic `git archive` source ZIP SHA-256:
-  `c698e82d38599e06c58a32a9b243c391c9e9a4cb155b6047dee4d5ef936cf784`.
+  `b640dc899f4450f4018be774eda5c42ef18818bd5d788f13d1431f578e75afed`.
 
 The ordinary `Compress-Archive` output was also strict-validated but embeds
 archive metadata and therefore changed byte hash between runs. The canonical

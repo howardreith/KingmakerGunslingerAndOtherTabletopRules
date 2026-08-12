@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "5205805eab3fe0115d6888c53bce73c80474d1b7",
+  "currentSha": "a6bdfccc4c814ca26769d71816db2f1069702f48",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "final-native-runtime-and-compatibility-qualified",
-  "nextConcreteAction": "Commit and push the final runtime evidence, then regenerate and hash the deterministic release package and complete the publication audit.",
+  "completedPhase": "definition-of-done-complete",
+  "nextConcreteAction": "Human review of draft PR #2 and the residual aesthetic visual checklist only.",
   "domainTestResult": "1009/1009 PASS",
   "staticValidationResult": "PASS",
-  "releaseBuildResult": "PASS on 5205805 through final profile repetitions",
-  "packageResult": "Earlier strict deterministic package PASS; final 5205805 evidence-source package/hash refresh pending",
+  "releaseBuildResult": "PASS twice from final artifact source; byte-identical DLL output",
+  "packageResult": "PASS twice; canonical deterministic 45-file package byte-identical to local-runtime package and strict validation PASS",
   "roster": {
     "summonMonsterEntries": 66,
     "summonNaturesAllyEntries": 57,
@@ -129,6 +129,12 @@
     "protectedBaselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
     "modsDirectory": "restored exactly after every profile transaction",
     "kmgAutomationBaselineModified": false
+  },
+  "releaseHashes": {
+    "artifactSourceSha": "a6bdfccc4c814ca26769d71816db2f1069702f48",
+    "dllSha256": "e26d025cd8642a4bc30c0170e88110ba65e5b44a91df8a6337b360b08d683d45",
+    "packageSha256": "4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec",
+    "sourceArchiveSha256": "b640dc899f4450f4018be774eda5c42ef18818bd5d788f13d1431f578e75afed"
   },
   "unresolvedDeviations": [
     "Lantern Archon Aura of Menace is present only when a compatible optional carrier is structurally available; greater teleport, gestalt, truespeech, and separately modeled darkvision are omitted.",

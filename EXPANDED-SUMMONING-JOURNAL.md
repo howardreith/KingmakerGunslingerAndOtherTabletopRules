@@ -1168,3 +1168,13 @@
 - The only changes after the already-passing visual, persistence, and 16-state
   evidence are documentation and guarded test instrumentation; no production
   summoning, publication, settings, or persistence code changed.
+- Two final clean exact-reference builds from artifact source
+  `a6bdfccc4c814ca26769d71816db2f1069702f48` passed repository validation,
+  `1009/1009` domain tests, warnings-as-errors Release compilation, and strict
+  package validation. Both emitted identical DLL and package bytes.
+- Final SHA-256 values: DLL
+  `e26d025cd8642a4bc30c0170e88110ba65e5b44a91df8a6337b360b08d683d45`;
+  canonical deterministic 45-file package
+  `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`;
+  deterministic source archive
+  `b640dc899f4450f4018be774eda5c42ef18818bd5d788f13d1431f578e75afed`.
