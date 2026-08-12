@@ -12948,10 +12948,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             AbilityVariants variants = (spell.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
                     .SingleOrDefault();
+            SummonVariantSpec dog = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Single(value => value.ParentTier == 1 &&
+                    value.Creature.Key == "dog" &&
+                    value.Multiplicity == SummonMultiplicity.One);
+            string dogName = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(dog));
             BlueprintAbility concrete = variants == null ? null :
                 (variants.Variants ?? Array.Empty<BlueprintAbility>())
-                    .FirstOrDefault(value => value != null && value.name ==
-                        "KMG_Summoning_Ability_SM_t1_dog_One");
+                    .FirstOrDefault(value => value != null &&
+                        value.name == dogName);
             if (variants != null && concrete == null)
                 throw new InvalidOperationException(
                     "Canonical Summon Monster I has no published KMG Dog logical root.");

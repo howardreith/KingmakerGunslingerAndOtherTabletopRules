@@ -232,7 +232,8 @@ namespace KingmakerGunslinger.DomainTests
                 "The guarded scenario must force native automatic success and failure boundaries.");
             foreach (string token in new[] {
                 "canonical Summon Monster I parent for Acadamae fixture",
-                "KMG_Summoning_Ability_SM_t1_dog_One",
+                "ExpandedSummoningCatalog",
+                "ExpandedSummoningIdentityCatalog.AbilitySymbol(dog)",
                 "new AbilityData(slot.Spell, concrete)",
                 "invocation.ParamSpellSlot = slot",
                 "Canonical Summon Monster I has no published KMG Dog logical root" })
