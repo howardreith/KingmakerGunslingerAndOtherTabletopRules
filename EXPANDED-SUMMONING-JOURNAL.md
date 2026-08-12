@@ -1021,3 +1021,29 @@
   SHA-256 `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
   Independent post-run hashes also confirmed the working save and protected
   baseline remained at their original hashes.
+
+## 2026-08-12 - Standalone repair and compatibility profiles PASS
+
+- Standalone inventory qualification first exposed two optional-mod-only
+  dependencies. Lantern Archon now reuses the exact Call of the Wild Aura of
+  Menace carrier only when present; vanilla safely omits that aura. Pixie's
+  dance no longer clones Call of the Wild delivery/state blueprints: frozen
+  KMG state `aa8b4284e12e49f0b37f327f665638d1` provides bounded `CantAct`,
+  -4 AC, and -10 Reflex mechanics at touch range.
+- The append-only ledger is now 1,150 Expanded Summoning identities, 1,404
+  active repository identities, one reserved identity, and 1,405 total. Static
+  validation, all 1,009 domain tests, clean Release, and strict packaging pass.
+- On immutable pushed source `5bce781d25ba6f3efadf693dafef2267fd2003fe`,
+  every required compatibility transaction passed: standalone 2/2, Call of
+  the Wild 2/2, Arms and Armor 1/1, Toggle Custom Soundpacks 1/1, and
+  highest-risk combined 2/2. Every run proved 67 units, 1,048 abilities, all
+  681 placements, constant 1,404 registration, zero sanitizer/donor mutation
+  failures, and exact transaction restoration.
+- Transaction IDs: `compat-20260812T054815Z-c06c6c6b86df`,
+  `compat-20260812T055014Z-1e10b82c5c5b`,
+  `compat-20260812T055206Z-1a0eb7ab4a94`,
+  `compat-20260812T055451Z-0b6f132431c1`,
+  `compat-20260812T055735Z-3c351a890b59`,
+  `compat-20260812T055928Z-f3f395ae342e`,
+  `compat-20260812T060121Z-d337b4c24bd8`, and
+  `compat-20260812T060411Z-37a29b64137f`.

@@ -185,6 +185,23 @@ Summoning contributed exactly 681 required-base parent references when enabled
 and zero when disabled. The settings transaction restored the original file
 byte-for-byte; working and protected-baseline save hashes were unchanged.
 
+## Compatibility qualification
+
+Immutable source `5bce781d25ba6f3efadf693dafef2267fd2003fe` passed the
+complete required profile set: standalone twice, Call of the Wild 1.14.4c-2.1
+twice, Arms and Armor 1.0.10, Toggle Custom Soundpacks 1.0.1, and the
+highest-risk combined profile twice. All eight guarded Steam launches passed
+the exact Expanded Summoning structural observer and restored the prior Mods
+directory and feature settings transaction exactly. Call of the Wild's
+final-live summon surfaces remained additive and intact.
+
+Standalone inventory proved that the Aura of Menace and original
+Irresistible Dance carriers are supplied only by the installed Call of the
+Wild profile. Lantern Archon therefore conditionally reuses the aura and
+documents its standalone omission. Pixie instead owns a frozen, bounded dance
+state (`aa8b4284e12e49f0b37f327f665638d1`) and behaves identically in every
+profile without a compile-time or runtime dependency on the optional mod.
+
 ## Native cast qualification
 
 Committed source `8647ceff29ae45c416f948a979fd25098422910d` passed guarded

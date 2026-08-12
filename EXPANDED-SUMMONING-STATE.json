@@ -4,10 +4,10 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "5e25656d0ed869973d97ed11191ed3175330f4ac",
+  "currentSha": "5bce781d25ba6f3efadf693dafef2267fd2003fe",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "active-summon-persistence-and-sixteen-state-runtime-matrix-qualified-on-immutable-source",
-  "nextConcreteAction": "Qualify standalone, Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined compatibility profiles, then freeze release metadata and final evidence.",
+  "completedPhase": "required-compatibility-profiles-qualified-with-repeat-policy-and-exact-restoration",
+  "nextConcreteAction": "Freeze release 0.0.78 metadata, rerun final-source runtime regressions and the 16-state matrix at registry count 1404, then package, hash, audit, push, and open the draft PR.",
   "domainTestResult": "1009/1009 PASS",
   "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
   "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
@@ -340,7 +340,43 @@
       "evidence": "Disabled second fresh process deserialized zero KMG summons, retained exactly zero KMG parent references, and made no save write."
     }
   ],
-  "compatibilityProfilesCompleted": [],
+  "compatibilityProfilesCompleted": [
+    {
+      "profile": "standalone",
+      "result": "2/2 PASS",
+      "transactions": ["compat-20260812T054815Z-c06c6c6b86df", "compat-20260812T055014Z-1e10b82c5c5b"],
+      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0548446025055Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0550433566798Z-observe-expanded-summoning-inventory/runtime-result.json"],
+      "restoration": "exact"
+    },
+    {
+      "profile": "Call of the Wild 1.14.4c-2.1",
+      "result": "2/2 PASS",
+      "transactions": ["compat-20260812T055206Z-1a0eb7ab4a94", "compat-20260812T055451Z-0b6f132431c1"],
+      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0552420040669Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0555254109141Z-observe-expanded-summoning-inventory/runtime-result.json"],
+      "restoration": "exact"
+    },
+    {
+      "profile": "Arms and Armor 1.0.10",
+      "result": "1/1 PASS",
+      "transaction": "compat-20260812T055735Z-3c351a890b59",
+      "resultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0558061041650Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "restoration": "exact"
+    },
+    {
+      "profile": "Toggle Custom Soundpacks 1.0.1",
+      "result": "1/1 PASS",
+      "transaction": "compat-20260812T055928Z-f3f395ae342e",
+      "resultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0559583170589Z-observe-expanded-summoning-inventory/runtime-result.json",
+      "restoration": "exact"
+    },
+    {
+      "profile": "highest-risk combined",
+      "result": "2/2 PASS",
+      "transactions": ["compat-20260812T060121Z-d337b4c24bd8", "compat-20260812T060411Z-37a29b64137f"],
+      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0601567817377Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0604453742582Z-observe-expanded-summoning-inventory/runtime-result.json"],
+      "restoration": "exact"
+    }
+  ],
   "featureModuleMatrix": {
     "result": "16/16 PASS on fresh Steam processes",
     "sourceSha": "5e25656d0ed869973d97ed11191ed3175330f4ac",
@@ -349,12 +385,12 @@
     "settingsRestoredSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "unresolvedDeviations": [
-    "The hidden KMG extraplanar marker is deterministic in standalone; optional Call of the Wild native-marker reconciliation remains pending.",
+    "The hidden KMG extraplanar marker is deterministic in standalone and remains feature-owned under optional-mod profiles.",
     "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",
     "Tier III-IV natural deviations are explicit: separate movement modes, generic grab/death roll, cheetah sprint, dire-bat blindsense/Alertness, wolverine rage, and unproven Run/Endurance/Survival-focus identities are conservatively omitted; Leopard/Lion use Owlcat's four-claw pounce/rake body representation pending actual cadence proof.",
     "Tier V-VII natural deviations are explicit: Ankylosaurus daze/stun and Elephant/Mastodon trample await exact bounded contracts; grab, separate movement modes, Flyby Attack, and unproven feat identities are conservatively omitted; Dire Lion/Tiger rake uses secondary native limbs pending actual charge-cadence proof.",
     "Residual aesthetic judgment remains on the final manual visual checklist; runtime view, animation-event, projectile-origin, footprint, navigation, death, and cleanup contracts passed for all 67 unique units.",
-    "Special-action execution beyond the actual summon casts, the 16-state launch matrix, and compatibility-profile qualification remain pending."
+    "Special-action execution beyond the actual summon casts remains conservatively bounded by structural/runtime component qualification; final-source regression repetition remains pending."
   ],
   "branchPushed": true,
   "draftPr": null,
