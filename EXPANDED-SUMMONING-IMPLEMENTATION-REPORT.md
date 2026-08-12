@@ -2,8 +2,8 @@
 
 ## First-playtest repair qualification
 
-Status: repaired and runtime-qualified; final deterministic artifact freeze is
-in progress. The human failure superseded the earlier completion
+Status: complete. The repair is runtime-qualified and its deterministic
+artifacts are frozen. The human failure superseded the earlier completion
 claim and was reproduced before repair.
 
 - Root cause: each templated Summon Monster choice was a non-executable logical
@@ -70,6 +70,15 @@ claim and was reproduced before repair.
   and standalone Summon Elemental isolation. Final-source visual run
   `20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac`
   passed 10/10 for all 67 units.
+- Deterministic release freeze uses pushed artifact source
+  `a951f7e4958f77244ef38e9df4507acf41c62b59`. Two clean Release/package
+  builds produced identical DLL SHA-256
+  `0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b`
+  and package SHA-256
+  `35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4`.
+  Strict standalone UMM package validation passed. Two `git archive` source
+  archives matched at SHA-256
+  `572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf`.
 - Exact engine limitation: Kingmaker 2.1.7b exposes spell descriptors only on
   the shared `BlueprintAbility`, not per `AbilityData`/caster invocation.
   Dynamically mutating a shared root would race party casters and corrupt
@@ -82,6 +91,16 @@ claim and was reproduced before repair.
   that justified expanding the frozen roster. Astral Deva/Trumpet Archon and
   speculative high-tier fiends remain deferred; no poor campaign proxy was
   added. SM VIII/IX sparsity is catalog design, not an engine limitation.
+- Draft PR #2 remains open for review. No merge occurred.
+- Final restoration audit verified feature settings SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  all eight final compatibility transactions in `Restored` state, no live
+  `Mods.kmg-compat-*` directory, working-save SHA-256
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected-baseline SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  The disposable working save was restored from its exact pre-test backup;
+  `KMG_AUTOMATION_BASELINE` was never written.
 
 Existing-feature regressions on repaired source: Shield Other 23/23 PASS,
 Acadamae/Cord 13/13 PASS through the exact published KMG Dog root, and the

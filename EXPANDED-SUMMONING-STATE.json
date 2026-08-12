@@ -4,15 +4,15 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "1db4de6f0f3a6732df870ea690904d82287d2f4c",
-  "currentShaSemantics": "Last pushed repair checkpoint; final evidence documentation will advance this SHA before immutable-source runtime repetition and artifact freeze.",
+  "currentSha": "a951f7e4958f77244ef38e9df4507acf41c62b59",
+  "currentShaSemantics": "Pushed immutable artifact source; the final documentation-only completion commit follows this SHA.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "immutable-source-player-path-structural-visual-and-all-compatibility-profiles-qualified",
-  "nextConcreteAction": "Commit/push immutable-source evidence, run two clean deterministic package builds, record hashes, and refresh draft PR 2 without merging.",
+  "completedPhase": "first-playtest-repair-complete-and-deterministic-artifacts-frozen",
+  "nextConcreteAction": "Push the final documentation-only completion checkpoint and refresh draft PR 2 without merging.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
-  "releaseBuildResult": "PASS on repair checkpoints; final immutable-source double build pending",
-  "packageResult": "PASS on repair checkpoints; final deterministic package/hash freeze pending",
+  "releaseBuildResult": "PASS; two clean Release/package builds from a951f7e produced identical DLL and package hashes",
+  "packageResult": "PASS; strict standalone UMM validation and deterministic repeat package hash",
   "roster": {
     "summonMonsterEntries": 66,
     "summonNaturesAllyEntries": 57,
@@ -195,10 +195,10 @@
     "kmgAutomationBaselineModified": false
   },
   "releaseHashes": {
-    "artifactSourceSha": null,
-    "dllSha256": null,
-    "packageSha256": null,
-    "sourceArchiveSha256": null
+    "artifactSourceSha": "a951f7e4958f77244ef38e9df4507acf41c62b59",
+    "dllSha256": "0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b",
+    "packageSha256": "35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4",
+    "sourceArchiveSha256": "572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf"
   },
   "unresolvedDeviations": [
     "Lantern Archon Aura of Menace is present only when a compatible optional carrier is structurally available; greater teleport, gestalt, truespeech, and separately modeled darkvision are omitted.",
