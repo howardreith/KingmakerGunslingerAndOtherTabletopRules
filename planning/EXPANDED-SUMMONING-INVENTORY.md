@@ -209,7 +209,9 @@ Will-o'-Wisp, archon, light-ray, and aura candidates.
 - ray AI donor: `dcfc5e9aec5bea540b36caf754989164`
   (`AzataGhaelLightRayAiAction`); only safe targeting considerations are
   copied, with the ability reference replaced by the KMG ray;
-- aura carrier: `1ce4878b5e714f659d0854a12f4b3cf2`
+- optional Aura of Menace carrier: `1ce4878b5e714f659d0854a12f4b3cf2`
+  (present in the installed Call of the Wild reference, absent in standalone
+  Kingmaker 2.1.7b; exact-type reuse is optional and standalone omits the aura)
   (`ArchonSubdomainAreaArchonsAuraEffectBuff`); adding the buff as a unit fact
   activates the native area-effect lifecycle without a toggle resource;
 - outsider class: `92ab5f2fe00631b44810deffcc1a97fd`.

@@ -7812,6 +7812,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ContextActionDealDamage[] lanternDamage =
                 ExpandedSummoningObjects<ContextActionDealDamage>(
                     lanternRay.ComponentsArray).ToArray();
+            bool lanternAuraAvailable = all.Any(value => value != null &&
+                value.AssetGuid == "1ce4878b5e714f659d0854a12f4b3cf2" &&
+                value.GetType() == typeof(BlueprintBuff));
             bool lanternExact = lanternLevels.Levels == 2 &&
                 lantern.Size == Size.Small && lantern.Alignment == Alignment.LawfulGood &&
                 lantern.Strength == 1 && lantern.Dexterity == 11 &&
@@ -7825,7 +7828,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lantern.AddFacts.Count(value => value != null && value.name ==
                     "KMG_Summoning_Special_LanternArchon_Defenses") == 1 &&
                 lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
-                    "1ce4878b5e714f659d0854a12f4b3cf2") == 1 &&
+                    "1ce4878b5e714f659d0854a12f4b3cf2") ==
+                        (lanternAuraAvailable ? 1 : 0) &&
                 lanternRay.Range == AbilityRange.Custom &&
                 lanternDelivery.NeedAttackRoll &&
                 lanternDelivery.Projectiles.Length == 2 &&

@@ -1285,7 +1285,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.BaseAttackBonus = 0;
             unit.MaxHP = 0;
             unit.StartingInventory = Array.Empty<BlueprintItem>();
-            unit.AddFacts = new BlueprintUnitFact[] {
+            var facts = new List<BlueprintUnitFact> {
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
                     NaturalArmor4Guid, "natural armor +4"),
@@ -1294,10 +1294,27 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, LawfulSubtypeGuid, "lawful subtype"),
                 extraplanar,
                 Feature(library, AirborneGuid, "airborne movement"),
-                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
-                    AuraOfMenaceBuffGuid, "native Aura of Menace"),
                 defenses
             };
+            BlueprintBuff optionalAura = OptionalExact<BlueprintBuff>(library,
+                AuraOfMenaceBuffGuid, "optional native Aura of Menace");
+            if (optionalAura != null) facts.Insert(facts.Count - 1, optionalAura);
+            unit.AddFacts = facts.ToArray();
+        }
+
+        private static T OptionalExact<T>(LibraryScriptableObject library,
+            string guid, string role) where T : BlueprintScriptableObject
+        {
+            BlueprintScriptableObject value;
+            string id = BlueprintId.Parse(guid, "guid").Value;
+            if (library.BlueprintsByAssetId == null ||
+                !library.BlueprintsByAssetId.TryGetValue(id, out value) ||
+                value == null) return null;
+            if (value.GetType() != typeof(T) || string.IsNullOrWhiteSpace(value.name))
+                throw new InvalidOperationException("Optional blueprint has an " +
+                    "unexpected type or blank name: role='" + role +
+                    "', guid='" + guid + "'.");
+            return (T)value;
         }
 
         private static BlueprintFeature Feature(LibraryScriptableObject library,

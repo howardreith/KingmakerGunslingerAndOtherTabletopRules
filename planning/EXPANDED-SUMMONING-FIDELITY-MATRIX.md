@@ -130,7 +130,7 @@ contamination. No save was accessed.
 | Offense | KMG ray `d4c2ce6c90094fdfb0fd908312372d72`; two native projectile/ranged-touch attack rolls, each 1d6 direct damage, custom 30-foot range |
 | AI | KMG action `3579bfa7c4b040c4812286f4ade47146` and single-action brain `427b496a05db48aa94997415f1a74c39`; no Ghaele spell AI |
 | Defenses | Natural armor +4; electricity immunity; DR 10/evil; +4 racial vs poison; +2 resistance saves and +2 deflection AC vs evil through KMG buff `4c55af41c90443c18267a806c740ce16` |
-| Traits/aura | Good, lawful, extraplanar, airborne facts; native Aura of Menace area carrier `1ce4878b5e714f659d0854a12f4b3cf2` |
+| Traits/aura | Good, lawful, extraplanar, airborne facts; structurally reuses Aura of Menace carrier `1ce4878b5e714f659d0854a12f4b3cf2` when supplied by a compatible optional mod; standalone conservatively omits the aura because Kingmaker 2.1.7b has no native carrier |
 | Removed donor mechanics | Wisp HD/type mechanics, touch weapons, invisibility, spell immunity, ambush/tags/brain; all Ghaele weapons, spells, gaze, inventory, and azata facts |
 | Conservative deviations | Greater teleport and gestalt omitted by summon safety contract. No distinct native Archon subtype fact was found; outsider HD plus explicit lawful/good/extraplanar traits implement the mechanical type surface. Low-light/darkvision and truespeech are not separately added because no safe bounded unit fact has yet been proven. |
 | Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2238575798728Z`; actual cast, projectile/view, aura behavior, cleanup, persistence, and compatibility pending. |

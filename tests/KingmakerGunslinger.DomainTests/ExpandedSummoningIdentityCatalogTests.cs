@@ -473,6 +473,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "LanternRayProjectiles",
                 "DamageType.Direct", "DiceType.D6", "AbilityRange.Custom",
                 "AuraOfMenaceBuffGuid", "DamageAlignment.Evil",
+                "OptionalExact<BlueprintBuff>",
+                "if (optionalAura != null)",
                 "SavingThrowBonusAgainstDescriptor",
                 "ArmorClassBonusAgainstAlignment", "unit.Body = new",
                 "unit.Alignment = Alignment.LawfulGood",
