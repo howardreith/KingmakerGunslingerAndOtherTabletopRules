@@ -219,6 +219,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||

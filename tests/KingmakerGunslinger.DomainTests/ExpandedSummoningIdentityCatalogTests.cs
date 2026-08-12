@@ -645,6 +645,11 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-hit-and-death",
                 "expanded-summoning-projectile-origins",
                 "expanded-summoning-view-cleanup",
+                "WorkingSaveExpandedSummoningPrepare",
+                "WorkingSaveExpandedSummoningVerifyCleanup",
+                "WorkingSaveExpandedSummoningVerifyAbsent",
+                "ExpandedSummoningPersistentUnits",
+                "RequiredBasePublicationIsExact",
                 "ExpandedSummoningSpawnActionCount(value)" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded template observer is missing: " + token);

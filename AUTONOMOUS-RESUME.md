@@ -16,8 +16,8 @@
   bounded smite; all 55 selected donor graphs; all tier I-VII natural/proxy
   chassis; and the special Lantern Archon, Invisible Stalker, Shadow Demon,
   Salamander, Succubus, Bebelith, and Pixie structures.
-- Current immutable mechanical and visual-contract source is
-  `ee8a5886fdd817e659fe2afdf3f1019501aac064`. The complete domain suite is
+- Current pushed source before the persistence checkpoint is
+  `db60d47e446bc9fca51cabc970d823f2d562e791`. The complete domain suite is
   1,009/1,009 PASS; clean Release and strict package validation PASS.
 - Native elementals and mephits plus the reconstructed Lantern Archon are
   structurally qualified by fresh Steam run
@@ -37,14 +37,18 @@
   `1d3` cases, and all 14 eligible family/tier `1d4+1` cases. All 205 observed
   units were the intended same kind and exact cleanup passed after the guarded
   read-only load of `KMG_AUTOMATION_WORKING`.
-- Latest guarded PASS is visual-contract run
+- Visual-contract run
   `20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7` on exact
   committed source `ee8a588`: all ten assertions passed for 67/67 live views,
   geometry, bounded footprints, navigation, locomotion, attacks, hit/death,
   ranged origins, and cleanup. No save-writing API was observed and the
-  installation/settings transaction was restored. Exact next action is
-  active-summon persistence, followed by the 16-state launch matrix and
-  compatibility profiles.
+  installation/settings transaction was restored.
+- Active-summon persistence now passes with the module both enabled and
+  disabled. The working save was restored byte-for-byte after both guarded
+  transactions, feature settings were restored, and the baseline hash never
+  changed. Exact next action is to commit/push the persistence harness, repeat
+  on its immutable commit, then run the 16-state launch matrix and compatibility
+  profiles.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

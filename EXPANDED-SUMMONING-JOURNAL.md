@@ -981,3 +981,28 @@
   selection/navigation contracts, locomotion, attack paths, hit/death paths,
   valid ranged origins, and exact cleanup. No save-writing API was observed,
   hooks were removed, and the Mods/settings transaction was restored.
+
+## 2026-08-12 - Active-summon persistence PASS, enabled and disabled
+
+- Added three guarded working-save scenarios: prepare, verify cleanup, and
+  verify absent. The prepare phase casts the actual SM Small Air Elemental and
+  SNA Wolf production abilities, completes Owlcat's queued entity-creation
+  boundary, proves exact loaded-area attachment, and performs one authorized
+  save of `KMG_AUTOMATION_WORKING`.
+- The enabled transaction passed across three fresh Steam processes. Both
+  frozen unit GUIDs were present in serialized `party.json`; restart restored
+  exact blueprint identity, caster context, 120-second native lifecycle,
+  commands, views, faction, and 681 published parent references. Native
+  lifecycle dismissal plus the entity-destruction controller reached zero live
+  units, and the second restart found zero deserialized KMG summons with no
+  save write.
+- The disabled transaction also passed. A save containing both active summons
+  loaded safely after Expanded Summoning was disabled because all identities
+  remained registered, while required parent publication was exactly zero.
+  Cleanup and the final zero-unit/no-write restart both passed.
+- The exact pre-test working save and feature settings were restored from
+  verified backups. Restored SHA-256 values are
+  `96fd2ecc57793d6d5462744c3d0e298a7d4258b92d381e1e8e45c7c14fb651ad`
+  and `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+  `KMG_AUTOMATION_BASELINE` remained unchanged at
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.

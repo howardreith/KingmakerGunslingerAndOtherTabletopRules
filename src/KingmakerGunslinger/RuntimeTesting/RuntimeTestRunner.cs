@@ -109,6 +109,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _shieldOtherPersistenceContextValid;
         private bool _shieldOtherPersistenceLinkStateValid;
         private bool _shieldOtherPersistenceDamageValid;
+        private bool _expandedSummoningPersistenceSaveStarted;
+        private bool _expandedSummoningPersistenceSaveCompleted;
+        private Stopwatch _expandedSummoningPersistenceSaveElapsed;
+        private int _expandedSummoningPersistenceUnitCount;
+        private bool _expandedSummoningPersistenceIdentityValid;
+        private bool _expandedSummoningPersistenceContextValid;
+        private bool _expandedSummoningPersistenceDurationValid;
+        private bool _expandedSummoningPersistenceControlValid;
+        private bool _expandedSummoningPersistencePublicationValid;
+        private bool _expandedSummoningPersistenceCleanupValid;
+        private string _expandedSummoningPersistenceDetail = "";
+        private bool _expandedSummoningPersistenceFixtureSpawned;
+        private int _expandedSummoningPersistenceSettleUpdates;
+        private UnitEntityData[] _expandedSummoningPersistencePreparedUnits;
+        private bool _expandedSummoningPersistenceCleanupStarted;
+        private int _expandedSummoningPersistenceCleanupSettleUpdates;
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
         private static bool _expandedSummoningRuleCaptureActive;
@@ -360,6 +376,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
+                    !IsExpandedSummoningPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -976,6 +993,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -999,6 +1017,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1060,6 +1079,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_expandedSummoningPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_expandedSummoningPersistenceSaveCompleted)
+                {
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_expandedSummoningPersistenceSaveElapsed != null &&
+                    _expandedSummoningPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_shieldOtherPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1230,7 +1269,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (IsShieldOtherPersistenceScenario())
+                if (IsExpandedSummoningPersistenceScenario())
+                {
+                    StartExpandedSummoningPersistence();
+                }
+                else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
                 }
@@ -1307,6 +1350,457 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+        }
+
+        private bool IsExpandedSummoningPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningVerifyAbsent;
+        }
+
+        private void StartExpandedSummoningPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Expanded Summoning persistence qualification.");
+            UnitEntityData caster = party.FirstOrDefault(value =>
+                value.HoldingState != null);
+            if (caster == null) throw new InvalidOperationException(
+                "The loaded working save has no party member in an active area state.");
+            object gameState = ReadExactMember(Game.Instance, "State");
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningVerifyCleanup;
+            bool active = _context.FeatureModules.Active.ExpandedSummoning;
+            int publishedReferences;
+            _expandedSummoningPersistencePublicationValid =
+                ExpandedSummoningPublisher.RequiredBasePublicationIsExact(
+                    BlueprintBootstrap.Library, active,
+                    out publishedReferences);
+
+            if (prepare)
+            {
+                if (!active) throw new InvalidOperationException(
+                    "Expanded Summoning prepare requires the module to be active.");
+                if (!_expandedSummoningPersistenceFixtureSpawned)
+                {
+                    foreach (UnitEntityData stale in
+                        ExpandedSummoningPersistentUnits(gameState, party))
+                        stale.Dispose();
+                    if (ExpandedSummoningPersistentUnits(gameState, party).Length != 0)
+                        throw new InvalidOperationException(
+                            "Stale KMG summons could not be removed before prepare.");
+                    _expandedSummoningPersistencePreparedUnits =
+                        SpawnExpandedSummoningPersistenceFixture(caster);
+                    _expandedSummoningPersistenceFixtureSpawned = true;
+                    return;
+                }
+                if (_expandedSummoningPersistenceSettleUpdates++ < 2) return;
+            }
+
+            UnitEntityData[] units = prepare ?
+                _expandedSummoningPersistencePreparedUnits :
+                ExpandedSummoningPersistentUnits(gameState, party);
+            bool cleanupContinuation = verifyCleanup &&
+                _expandedSummoningPersistenceCleanupStarted;
+            if (!cleanupContinuation)
+            {
+                _expandedSummoningPersistenceUnitCount = units.Length;
+                EvaluateExpandedSummoningPersistentUnits(caster, units,
+                    out _expandedSummoningPersistenceIdentityValid,
+                    out _expandedSummoningPersistenceContextValid,
+                    out _expandedSummoningPersistenceDurationValid,
+                    out _expandedSummoningPersistenceControlValid,
+                    out _expandedSummoningPersistenceDetail);
+            }
+
+            if (verifyCleanup)
+            {
+                if (!_expandedSummoningPersistenceCleanupStarted)
+                {
+                    bool exactLifecycle = true;
+                    foreach (UnitEntityData unit in units)
+                    {
+                        Buff[] summoned = unit.Descriptor.Buffs.RawFacts
+                            .OfType<Buff>().Where(value => ReferenceEquals(
+                                value.Blueprint, BlueprintRoot.Instance
+                                    .SystemMechanics.SummonedUnitBuff)).ToArray();
+                        exactLifecycle = exactLifecycle && summoned.Length == 1;
+                        foreach (Buff buff in summoned) buff.Remove();
+                        unit.Destroy();
+                    }
+                    if (!exactLifecycle) throw new InvalidOperationException(
+                        "Fresh summons did not have one exact native lifecycle buff each.");
+                    // As with synchronous creation above, the request executes
+                    // after Kingmaker's controller tick. Advance the native
+                    // destruction queue once so the test models a completed
+                    // dismiss/expiration boundary before the follow-up save.
+                    Game.Instance.EntityDestroyer.Tick();
+                    _expandedSummoningPersistenceCleanupStarted = true;
+                    return;
+                }
+                if (_expandedSummoningPersistenceCleanupSettleUpdates++ < 5)
+                    return;
+                int liveUnits = units.Count(value => !value.Destroyed ||
+                    value.View != null || value.HoldingState != null);
+                _expandedSummoningPersistenceCleanupValid = liveUnits == 0;
+                _expandedSummoningPersistenceDetail += ";postExpirationRefs=" +
+                    units.Length + ";postExpirationLive=" + liveUnits;
+            }
+            else if (prepare)
+                _expandedSummoningPersistenceCleanupValid = units.Length == 2;
+            else
+            {
+                _expandedSummoningPersistenceIdentityValid = units.Length == 0;
+                _expandedSummoningPersistenceContextValid = units.Length == 0;
+                _expandedSummoningPersistenceDurationValid = units.Length == 0;
+                _expandedSummoningPersistenceControlValid = units.Length == 0;
+                _expandedSummoningPersistenceCleanupValid = units.Length == 0;
+            }
+
+            bool phaseValid = _expandedSummoningPersistencePublicationValid &&
+                _expandedSummoningPersistenceIdentityValid &&
+                _expandedSummoningPersistenceContextValid &&
+                _expandedSummoningPersistenceDurationValid &&
+                _expandedSummoningPersistenceControlValid &&
+                _expandedSummoningPersistenceCleanupValid &&
+                (prepare || verifyCleanup ?
+                    _expandedSummoningPersistenceUnitCount == 2 :
+                    units.Length == 0);
+            _expandedSummoningPersistenceDetail += ";active=" + active +
+                ";published=" + publishedReferences + ";phaseValid=" +
+                phaseValid;
+            if (!phaseValid) throw new InvalidOperationException(
+                "Expanded Summoning persistence phase assertions failed: " +
+                _expandedSummoningPersistenceDetail);
+
+            if (!prepare && !verifyCleanup)
+            {
+                CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
+                return;
+            }
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" && value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _expandedSummoningPersistenceSaveStarted = true;
+            _expandedSummoningPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() =>
+                    _expandedSummoningPersistenceSaveCompleted = true)
+            });
+        }
+
+        private UnitEntityData[] SpawnExpandedSummoningPersistenceFixture(
+            UnitEntityData caster)
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            SummonVariantSpec[] variants =
+            {
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Single(value => value.Creature.Key ==
+                        "small-air-elemental" && value.ParentTier == 2 &&
+                        value.Multiplicity == SummonMultiplicity.One),
+                ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly).Single(value =>
+                        value.Creature.Key == "wolf" && value.ParentTier == 2 &&
+                        value.Multiplicity == SummonMultiplicity.One)
+            };
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            if (summonRuleMethod == null) throw new MissingMethodException(
+                typeof(RuleSummonUnit).FullName, "OnTrigger");
+            MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                BindingFlags.Static);
+            UnitEntityData[] result = null;
+            try
+            {
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+                ExpandedSummoningRuleCapture.Clear();
+                foreach (SummonVariantSpec variant in variants)
+                {
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                            variant.ParentTier);
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+                }
+                if (ExpandedSummoningRuleCapture.Count != 2)
+                    throw new InvalidOperationException(
+                        "Persistence prepare did not create exactly two native summons.");
+                // The guarded scenario executes the native UnitUseAbility command
+                // synchronously from Unity Mod Manager's update callback, after
+                // the game's entity-creation controller has already ticked for
+                // this frame. Complete that native queued creation boundary before
+                // asking SaveGame to serialize the loaded area.
+                Game.Instance.EntityCreator.Tick();
+                result = ExpandedSummoningRuleCapture.ToArray();
+                if (result.Any(value => value.HoldingState == null ||
+                    !ReferenceEquals(value.HoldingState, caster.HoldingState)))
+                    throw new InvalidOperationException(
+                        "Persistence prepare summons did not enter the caster's exact loaded-area state.");
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                _context.Harmony.Unpatch(summonRuleMethod,
+                    HarmonyPatchType.All, _context.ModId);
+            }
+            return result;
+        }
+
+        private static UnitEntityData[] ExpandedSummoningPersistentUnits(
+            object gameState, UnitEntityData[] party)
+        {
+            var unique = new List<UnitEntityData>();
+            CollectExpandedSummoningUnitReferences(
+                ReadExactMember(gameState, "AllUnits"), unique, 0);
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (PropertyInfo property in gameState.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    typeof(IEnumerable).IsAssignableFrom(value.PropertyType) &&
+                    (value.Name.IndexOf("Unit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.Name.IndexOf("Entity", StringComparison.OrdinalIgnoreCase) >= 0)))
+            {
+                object collection = null;
+                try { collection = property.GetValue(gameState, null); }
+                catch { }
+                CollectExpandedSummoningUnitReferences(collection, unique, 0);
+            }
+            foreach (FieldInfo field in gameState.GetType().GetFields(flags)
+                .Where(value => typeof(IEnumerable).IsAssignableFrom(
+                    value.FieldType) &&
+                    (value.Name.IndexOf("Unit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.Name.IndexOf("Entity", StringComparison.OrdinalIgnoreCase) >= 0)))
+                CollectExpandedSummoningUnitReferences(field.GetValue(gameState),
+                    unique, 0);
+            foreach (Kingmaker.EntitySystem.SceneEntitiesState state in
+                (party ?? Array.Empty<UnitEntityData>()).Where(value =>
+                    value != null && value.HoldingState != null).Select(value =>
+                        value.HoldingState).Distinct())
+                CollectExpandedSummoningUnitReferences(state.AllEntityData,
+                    unique, 0);
+            return unique
+                .Where(value => value.Blueprint != null &&
+                    (value.Blueprint.name ==
+                        "KMG_Summoning_Unit_SmallAirElemental" ||
+                     value.Blueprint.name == "KMG_Summoning_Unit_Wolf"))
+                .OrderBy(value => value.Blueprint.name, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        private static void CollectExpandedSummoningUnitReferences(
+            object value, List<UnitEntityData> units, int depth)
+        {
+            if (value == null || depth > 3) return;
+            UnitEntityData unit = value as UnitEntityData;
+            if (unit != null)
+            {
+                if (!units.Any(candidate => ReferenceEquals(candidate, unit)))
+                    units.Add(unit);
+                return;
+            }
+            DictionaryEntry entry = value is DictionaryEntry ?
+                (DictionaryEntry)value : new DictionaryEntry();
+            if (value is DictionaryEntry)
+            {
+                CollectExpandedSummoningUnitReferences(entry.Key, units,
+                    depth + 1);
+                CollectExpandedSummoningUnitReferences(entry.Value, units,
+                    depth + 1);
+                return;
+            }
+            Type type = value.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() ==
+                typeof(KeyValuePair<,>))
+            {
+                CollectExpandedSummoningUnitReferences(
+                    type.GetProperty("Key").GetValue(value, null), units,
+                    depth + 1);
+                CollectExpandedSummoningUnitReferences(
+                    type.GetProperty("Value").GetValue(value, null), units,
+                    depth + 1);
+                return;
+            }
+            if (value is string) return;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable == null) return;
+            foreach (object item in enumerable)
+                CollectExpandedSummoningUnitReferences(item, units, depth + 1);
+        }
+
+        private static void EvaluateExpandedSummoningPersistentUnits(
+            UnitEntityData caster, UnitEntityData[] units, out bool identity,
+            out bool context, out bool duration, out bool control,
+            out string detail)
+        {
+            string[] expected = { "KMG_Summoning_Unit_SmallAirElemental",
+                "KMG_Summoning_Unit_Wolf" };
+            BlueprintUnit[] registered = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintUnit>().Where(value =>
+                    expected.Contains(value.name)).OrderBy(value => value.name,
+                        StringComparer.Ordinal).ToArray();
+            identity = units.Length == 2 && registered.Length == 2 &&
+                units.Zip(registered, (unit, blueprint) =>
+                    ReferenceEquals(unit.Blueprint, blueprint)).All(value => value);
+            var durations = new List<double>();
+            context = units.Length == 2;
+            duration = units.Length == 2;
+            foreach (UnitEntityData unit in units)
+            {
+                Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => value.MaybeContext != null &&
+                        value.MaybeContext.MaybeCaster == caster &&
+                        !value.IsPermanent && value.TimeLeft > TimeSpan.Zero &&
+                        value.TimeLeft <= TimeSpan.FromSeconds(121d)).ToArray();
+                Buff[] durationLifecycle = lifecycle.Where(value =>
+                    value.TimeLeft >= TimeSpan.FromSeconds(30d)).ToArray();
+                context = context && lifecycle.Length >= 1;
+                duration = duration && durationLifecycle.Any(value =>
+                    value.TimeLeft.TotalSeconds > 0d &&
+                    value.TimeLeft.TotalSeconds <= 121d);
+                durations.AddRange(lifecycle.Select(value =>
+                    value.TimeLeft.TotalSeconds));
+            }
+            object faction = units.Length == 0 ? null :
+                ExpandedSummoningFields(units[0].Blueprint.GetType())
+                    .Single(value => value.Name == "Faction" ||
+                        value.Name == "m_Faction").GetValue(units[0].Blueprint);
+            control = units.Length == 2 && faction != null && units.All(value =>
+                value.Commands != null && value.View != null &&
+                value.View.Data == value &&
+                ReferenceEquals(faction, ExpandedSummoningFields(
+                    value.Blueprint.GetType()).Single(field =>
+                        field.Name == "Faction" || field.Name == "m_Faction")
+                    .GetValue(value.Blueprint)));
+            detail = "units=" + units.Length + ";registered=" +
+                registered.Length + ";durations=" + string.Join(",",
+                    durations.Select(value => value.ToString("0.###",
+                        System.Globalization.CultureInfo.InvariantCulture))
+                    .ToArray()) + ";names=" + string.Join(",",
+                    units.Select(value => value.Blueprint == null ? "<null>" :
+                        value.Blueprint.name).ToArray()) + ";holding=" +
+                    string.Join(",", units.Select(value =>
+                        (value.HoldingState != null).ToString()).ToArray()) +
+                    ";commands=" + string.Join(",", units.Select(value =>
+                        (value.Commands != null).ToString()).ToArray()) +
+                    ";views=" + string.Join(",", units.Select(value =>
+                        (value.View != null).ToString()).ToArray()) +
+                    ";viewData=" + string.Join(",", units.Select(value =>
+                        (value.View != null && value.View.Data == value)
+                            .ToString()).ToArray()) + ";faction=" +
+                    (faction != null) +
+                ";identity=" + identity + ";context=" +
+                context + ";duration=" + duration + ";control=" + control;
+        }
+
+        private void CompleteExpandedSummoningPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningVerifyCleanup;
+            bool writes = prepare || verifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("expanded-summoning-persistent-identities",
+                    writes ? "two exact registered KMG units" : "zero KMG units",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceIdentityValid,
+                    "fresh-load BlueprintUnit reference equality and cardinality"),
+                Assertion("expanded-summoning-persistent-context",
+                    writes ? "party[0] native summon context" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceContextValid,
+                    "freshly deserialized nonpermanent summon lifecycle buff"),
+                Assertion("expanded-summoning-persistent-duration",
+                    writes ? "0 < remaining <= 121 seconds" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceDurationValid,
+                    "native one-round-per-level lifecycle remaining time"),
+                Assertion("expanded-summoning-persistent-control",
+                    writes ? "live view, commands, area, and summon faction" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceControlValid,
+                    "native summoned-unit control surfaces"),
+                Assertion("expanded-summoning-publication-state",
+                    _context.FeatureModules.Active.ExpandedSummoning ?
+                        "681 exact required-parent references" :
+                        "zero required-parent references",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistencePublicationValid,
+                    "required base parents with always-registered identities"),
+                Assertion(verifyCleanup || !writes ?
+                        "expanded-summoning-cleaned" :
+                        "expanded-summoning-prepared",
+                    verifyCleanup ? "two lifecycle-expired, destroyed, detached KMG units" :
+                        !writes ? "zero KMG units" :
+                        "two active KMG units",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceCleanupValid,
+                    verifyCleanup ? "native SummonedUnitBuff removal and disposal" :
+                        !writes ? "fresh-load unit set" :
+                        "pre-save active unit set"),
+                Assertion("exact-working-save-write",
+                    writes ? "one SaveRoutine on exact captured SaveInfo" :
+                        "none during final verification",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    writes ? evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved :
+                        evidence.ExpectedWorkingSaveRoutineCount == 0 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void StartShieldOtherPersistenceSave()

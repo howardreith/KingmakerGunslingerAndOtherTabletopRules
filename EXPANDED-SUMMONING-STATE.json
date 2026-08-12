@@ -4,10 +4,10 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "ee8a5886fdd817e659fe2afdf3f1019501aac064",
+  "currentSha": "db60d47e446bc9fca51cabc970d823f2d562e791",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "complete-native-cast-quantity-and-visual-contract-runtime-matrices-qualified",
-  "nextConcreteAction": "Implement and qualify active-summon save/load/restart and disabled-module cleanup persistence, then the 16-state launch matrix and compatibility profiles.",
+  "completedPhase": "active-summon-persistence-qualified-enabled-and-disabled-on-working-source",
+  "nextConcreteAction": "Commit and push the persistence harness, repeat it on the immutable commit, then qualify the 16-state launch matrix and compatibility profiles.",
   "domainTestResult": "1009/1009 PASS",
   "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
   "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
@@ -307,6 +307,37 @@
       "runId": "20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0316268900968Z-disposable-expanded-summoning-visual-contracts/runtime-result.json",
       "evidence": "All ten assertions passed for 67/67 unique one-creature units: live views, renderable geometry, bounded footprints, selection/navigation, locomotion, attack animation or exact Lantern ray fallback, hit/death handling, ranged projectile origins, and exact view/unit cleanup. No save-writing API was observed and hooks were removed."
+    },
+    {
+      "scenario": "working-save-expanded-summoning-prepare",
+      "result": "PASS",
+      "runId": "20260812T0406050115626Z-2af7ef1879c741b8a55444795206ca55",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0406049959375Z-working-save-expanded-summoning-prepare/runtime-result.json",
+      "evidence": "Nine assertions passed. Two actual KMG summon abilities created loaded-area-attached units with exact registered identities, caster context, 120-second native lifecycle duration, control surfaces, and 681 published references; exactly one guarded working-save write serialized both frozen unit GUIDs."
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "result": "PASS",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0426360426153Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
+      "evidence": "Enabled fresh process deserialized both units with exact identity, caster context, duration, view, commands, faction, and 681 published references; native lifecycle dismissal and entity destruction reached zero live attached units and exactly one guarded cleanup save."
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-absent",
+      "result": "PASS",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0429096733079Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
+      "evidence": "Enabled second fresh process deserialized zero KMG summons and made no save write."
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "result": "PASS",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0434255041615Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
+      "evidence": "With Expanded Summoning disabled, both active KMG summons still deserialized safely from always-registered identities, all lifecycle/control checks passed, required-parent publication was exactly zero, and cleanup saved through the guarded working-save path."
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-absent",
+      "result": "PASS",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0436578330836Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
+      "evidence": "Disabled second fresh process deserialized zero KMG summons, retained exactly zero KMG parent references, and made no save write."
     }
   ],
   "compatibilityProfilesCompleted": [],
@@ -316,7 +347,7 @@
     "Tier III-IV natural deviations are explicit: separate movement modes, generic grab/death roll, cheetah sprint, dire-bat blindsense/Alertness, wolverine rage, and unproven Run/Endurance/Survival-focus identities are conservatively omitted; Leopard/Lion use Owlcat's four-claw pounce/rake body representation pending actual cadence proof.",
     "Tier V-VII natural deviations are explicit: Ankylosaurus daze/stun and Elephant/Mastodon trample await exact bounded contracts; grab, separate movement modes, Flyby Attack, and unproven feat identities are conservatively omitted; Dire Lion/Tiger rake uses secondary native limbs pending actual charge-cadence proof.",
     "Residual aesthetic judgment remains on the final manual visual checklist; runtime view, animation-event, projectile-origin, footprint, navigation, death, and cleanup contracts passed for all 67 unique units.",
-    "Special-action execution beyond the actual summon casts, active-summon save/load cleanup, the 16-state launch matrix, and compatibility-profile qualification remain pending."
+    "Special-action execution beyond the actual summon casts, the 16-state launch matrix, and compatibility-profile qualification remain pending."
   ],
   "branchPushed": true,
   "draftPr": null,

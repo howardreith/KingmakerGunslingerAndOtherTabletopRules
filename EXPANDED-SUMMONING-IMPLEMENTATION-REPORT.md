@@ -164,6 +164,18 @@ domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
 
+## Active-summon persistence qualification
+
+Guarded prepare/load/cleanup/absence transactions pass with Expanded Summoning
+enabled and disabled. Two actual production summon casts were serialized with
+exact frozen unit GUIDs. Fresh processes proved registered identity, caster
+context, remaining native duration, control/view/faction state, native cleanup,
+and final absence. With the module disabled, the saved summons remained
+load-safe while KMG parent publication was exactly zero. The working save and
+settings were restored to their original hashes, and
+`KMG_AUTOMATION_BASELINE` was never modified. Immutable-commit repetition is
+the next release gate; it is not yet claimed here.
+
 ## Native cast qualification
 
 Committed source `8647ceff29ae45c416f948a979fd25098422910d` passed guarded

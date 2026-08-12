@@ -84,6 +84,45 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
+        internal static bool RequiredBasePublicationIsExact(
+            LibraryScriptableObject library, bool expectedEnabled,
+            out int referenceCount)
+        {
+            if (library == null) throw new ArgumentNullException("library");
+            referenceCount = 0;
+            bool exact = true;
+            foreach (SummonFamily family in new[] { SummonFamily.Monster,
+                SummonFamily.NaturesAlly })
+            for (int tier = 1; tier <= 9; tier++)
+            {
+                string guid = (family == SummonFamily.Monster ?
+                    MonsterParents : AllyParents)[tier - 1];
+                BlueprintAbility parent = BlueprintLibraryLookup
+                    .RequireExact<BlueprintAbility>(library, guid,
+                        "required native summon publication probe parent");
+                AbilityVariants variants = (parent.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .SingleOrDefault();
+                BlueprintAbility[] live = variants == null ?
+                    Array.Empty<BlueprintAbility>() : variants.Variants ??
+                        Array.Empty<BlueprintAbility>();
+                foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
+                    .GenerateVariants(family).Where(value =>
+                        value.ParentTier == tier))
+                {
+                    string expectedName = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant).Replace('.', '_')
+                        .Replace('-', '_');
+                    int count = live.Count(value => value != null &&
+                        string.Equals(value.name, expectedName,
+                            StringComparison.Ordinal));
+                    referenceCount += count;
+                    if (count != (expectedEnabled ? 1 : 0)) exact = false;
+                }
+            }
+            return exact;
+        }
+
         private static void PublishParent(BlueprintAbility parent,
             BlueprintAbility[] additions,
             List<ExpandedSummoningPublication.Record> records)
