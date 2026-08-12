@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.Summoning
             int dexterity, int constitution, int intelligence, int wisdom,
             int charisma, int speedFeet, int naturalArmor,
             string primaryWeapon, string[] additionalWeapons,
+            string[] additionalSecondaryWeapons,
             string[] facts, string[] deviations)
         {
             Key = key; DisplayName = displayName; HitDieClass = hitDieClass;
@@ -20,6 +21,8 @@ namespace KingmakerGunslinger.Summoning
             SpeedFeet = speedFeet; NaturalArmor = naturalArmor;
             PrimaryWeapon = primaryWeapon;
             AdditionalWeapons = additionalWeapons ?? Array.Empty<string>();
+            AdditionalSecondaryWeapons = additionalSecondaryWeapons ??
+                Array.Empty<string>();
             Facts = facts ?? Array.Empty<string>();
             Deviations = deviations ?? Array.Empty<string>();
         }
@@ -39,6 +42,8 @@ namespace KingmakerGunslinger.Summoning
         internal int NaturalArmor { get; private set; }
         internal string PrimaryWeapon { get; private set; }
         internal IReadOnlyList<string> AdditionalWeapons { get; private set; }
+        internal IReadOnlyList<string> AdditionalSecondaryWeapons
+        { get; private set; }
         internal IReadOnlyList<string> Facts { get; private set; }
         internal IReadOnlyList<string> Deviations { get; private set; }
     }
@@ -54,10 +59,10 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 7 || Values.Select(value => value.Key)
+            if (Values.Length != 19 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
-                    "The low-tier natural reconstruction catalog is incomplete or duplicated.");
+                    "The tier I-IV natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
@@ -117,7 +122,78 @@ namespace KingmakerGunslinger.Summoning
                     14, 15, 15, 2, 13, 6, 50, 2, "Bite1d6",
                     Array.Empty<string>(),
                     A("TripDefenseFourLegs", "TrippingBite",
-                        "SkillFocusPerception"))
+                        "SkillFocusPerception")),
+                P("boar", "Boar", "Animal", 2, "Medium",
+                    17, 10, 17, 2, 13, 4, 40, 4, "Gore1d8",
+                    Array.Empty<string>(),
+                    A("ReducedReach", "Ferocity", "Toughness")),
+                P("leopard", "Leopard", "Animal", 3, "Medium",
+                    16, 19, 15, 2, 13, 6, 30, 1, "Bite1d6",
+                    A("Claw1d3", "Claw1d3", "Claw1d3", "Claw1d3"),
+                    A("Pounce", "TripDefenseFourLegs", "WeaponFinesse",
+                        "SkillFocusStealth"),
+                    "The two extra native claw limbs are Kingmaker's established bounded representation of rake during pounce; actual non-charge cadence requires runtime qualification.",
+                    "Grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior."),
+                P("monitor-lizard", "Monitor Lizard", "Animal", 3, "Medium",
+                    17, 15, 17, 2, 12, 6, 30, 3, "Bite1d8",
+                    Array.Empty<string>(),
+                    A("GreatFortitude", "SkillFocusPerception",
+                        "TripDefenseFourLegs", "MonitorLizardPoison"),
+                    "Kingmaker exposes one movement speed; the 30-foot ground speed is used and swim movement is omitted.",
+                    "Grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior."),
+                P("cheetah", "Cheetah", "Animal", 3, "Medium",
+                    17, 19, 15, 2, 12, 6, 50, 1, "Bite1d6",
+                    A("Claw1d3", "Claw1d3"),
+                    A("TripDefenseFourLegs", "TrippingBite",
+                        "WeaponFinesse", "ImprovedInitiative"),
+                    "The once-per-hour tenfold sprint has no proven bounded native cooldown contract and is omitted conservatively."),
+                PS("crocodile", "Crocodile", "Animal", 3, "Large",
+                    19, 12, 17, 1, 12, 2, 20, 4, "Bite1d8",
+                    Array.Empty<string>(), A("Tail1d12"),
+                    A("ReducedReach", "TripDefenseFourLegs",
+                        "SkillFocusPerception", "SkillFocusStealth"),
+                    "Kingmaker exposes one movement speed; the 20-foot ground speed is used and swim movement is omitted.",
+                    "Grab, death roll, sprint, and hold breath are omitted because no duration-bound summon-safe native graph was proven."),
+                P("dire-bat", "Dire Bat", "Animal", 4, "Large",
+                    17, 15, 13, 2, 14, 6, 40, 3, "Bite1d8",
+                    Array.Empty<string>(),
+                    A("ReducedReach", "Airborne", "Stealthy"),
+                    "Kingmaker exposes one movement speed; 40-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
+                    "Blindsense and Alertness are omitted because no exact bounded native facts were proven in the final-live library."),
+                PS("wolverine", "Wolverine", "Animal", 3, "Medium",
+                    15, 15, 15, 2, 12, 10, 30, 2, "Claw1d6",
+                    A("Claw1d6"), A("Bite1d4"),
+                    A("SkillFocusPerception", "Toughness"),
+                    "Burrow and climb movement are omitted because Kingmaker exposes one movement speed.",
+                    "The after-damage rage is omitted pending a summon-local implementation proven to end with the summon and survive save/load."),
+                P("dire-boar", "Dire Boar", "Animal", 5, "Large",
+                    23, 10, 17, 2, 13, 8, 40, 6, "Gore2d6",
+                    Array.Empty<string>(), A("ReducedReach", "Ferocity",
+                        "ImprovedInitiative", "SkillFocusPerception",
+                        "Toughness")),
+                P("dire-wolf", "Dire Wolf", "Animal", 5, "Large",
+                    19, 15, 17, 2, 12, 10, 50, 3, "Bite1d8",
+                    Array.Empty<string>(), A("ReducedReach",
+                        "TripDefenseFourLegs", "TrippingBite",
+                        "SkillFocusPerception", "WeaponFocusBite"),
+                    "The Run feat is omitted because no exact final-live feature identity was proven."),
+                P("grizzly-bear", "Grizzly Bear", "Animal", 5, "Large",
+                    21, 13, 19, 2, 12, 6, 40, 6, "Bite1d6",
+                    A("Claw1d6", "Claw1d6"), A("ReducedReach"),
+                    "Claw grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior.",
+                    "Endurance, Run, and Skill Focus (Survival) are omitted because exact final-live feature identities were not proven."),
+                P("lion", "Lion", "Animal", 5, "Large",
+                    21, 17, 15, 2, 12, 6, 40, 3, "Bite1d8",
+                    A("Claw1d4", "Claw1d4", "Claw1d4", "Claw1d4"),
+                    A("ReducedReach", "Pounce", "TripDefenseFourLegs",
+                        "ImprovedInitiative", "SkillFocusPerception"),
+                    "The two extra native claw limbs are Kingmaker's established bounded representation of rake during pounce; actual non-charge cadence requires runtime qualification.",
+                    "Grab and Run are omitted because no safe exact final-live contracts were proven."),
+                P("pteranodon", "Pteranodon", "Animal", 5, "Large",
+                    16, 19, 15, 2, 15, 12, 50, 2, "Bite2d6",
+                    Array.Empty<string>(), A("Airborne", "Dodge",
+                        "ImprovedInitiative", "SkillFocusPerception"),
+                    "Kingmaker exposes one movement speed; 50-foot fly speed is used with airborne navigation and the 10-foot ground speed is omitted.")
             };
         }
 
@@ -129,8 +205,21 @@ namespace KingmakerGunslinger.Summoning
         {
             return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
                 size, strength, dexterity, constitution, intelligence, wisdom,
-                charisma, speed, naturalArmor, primary, additional, facts,
-                deviations);
+                charisma, speed, naturalArmor, primary, additional,
+                Array.Empty<string>(), facts, deviations);
+        }
+
+        private static NaturalSummonProfile PS(string key, string name,
+            string hitDieClass, int hitDice, string size, int strength,
+            int dexterity, int constitution, int intelligence, int wisdom,
+            int charisma, int speed, int naturalArmor, string primary,
+            string[] additional, string[] secondary, string[] facts,
+            params string[] deviations)
+        {
+            return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
+                size, strength, dexterity, constitution, intelligence, wisdom,
+                charisma, speed, naturalArmor, primary, additional, secondary,
+                facts, deviations);
         }
 
         private static string[] A(params string[] values) { return values; }

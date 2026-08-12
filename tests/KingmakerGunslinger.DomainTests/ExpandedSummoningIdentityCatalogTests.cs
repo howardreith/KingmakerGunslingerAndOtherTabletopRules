@@ -11,13 +11,13 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1145, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1146, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(5, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(6, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintFeature"), "Subtype marker identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
@@ -27,8 +27,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(7, ExpandedSummoningNaturalProfiles.All.Count,
-                "Low-tier natural reconstruction count changed.");
+            Assertions.Equal(19, ExpandedSummoningNaturalProfiles.All.Count,
+                "Tier I-IV natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");
             Assertions.Equal(1, dog.HitDice, "Dog HD changed.");
@@ -93,6 +93,93 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningCatalog.All" })
                 Assertions.True(registration.Contains(token),
                     "The local extraplanar marker contract is missing: " + token);
+        }
+
+        internal static void TierThreeFourNaturalProfilesAreExact()
+        {
+            ExpandedSummoningNaturalProfiles.Validate();
+            string[] expected = { "boar", "leopard", "monitor-lizard",
+                "cheetah", "crocodile", "dire-bat", "wolverine",
+                "dire-boar", "dire-wolf", "grizzly-bear", "lion",
+                "pteranodon" };
+            Assertions.Equal(12, expected.Count(key =>
+                ExpandedSummoningNaturalProfiles.All.Any(value =>
+                    value.Key == key)),
+                "Tier III-IV natural profile coverage changed.");
+            NaturalSummonProfile leopard =
+                ExpandedSummoningNaturalProfiles.For("leopard");
+            Assertions.Equal(4, leopard.AdditionalWeapons.Count,
+                "Leopard rake limb representation changed.");
+            Assertions.True(leopard.Facts.Contains("Pounce"),
+                "Leopard lost native pounce.");
+            NaturalSummonProfile monitor =
+                ExpandedSummoningNaturalProfiles.For("monitor-lizard");
+            Assertions.Equal("Bite1d8", monitor.PrimaryWeapon,
+                "Monitor Lizard bite changed.");
+            Assertions.True(monitor.Facts.Contains("MonitorLizardPoison"),
+                "Monitor Lizard lost its native poison graph.");
+            NaturalSummonProfile crocodile =
+                ExpandedSummoningNaturalProfiles.For("crocodile");
+            Assertions.Equal(1, crocodile.AdditionalSecondaryWeapons.Count,
+                "Crocodile secondary tail count changed.");
+            Assertions.Equal("Tail1d12",
+                crocodile.AdditionalSecondaryWeapons.Single(),
+                "Crocodile tail dice contract changed.");
+            Assertions.True(crocodile.Deviations.Any(value =>
+                value.Contains("death roll")),
+                "Crocodile death-roll deviation is not explicit.");
+            NaturalSummonProfile wolverine =
+                ExpandedSummoningNaturalProfiles.For("wolverine");
+            Assertions.Equal(1, wolverine.AdditionalWeapons.Count,
+                "Wolverine second claw changed.");
+            Assertions.Equal("Bite1d4",
+                wolverine.AdditionalSecondaryWeapons.Single(),
+                "Wolverine secondary bite changed.");
+            Assertions.True(wolverine.Deviations.Any(value =>
+                value.Contains("rage")),
+                "Wolverine rage deviation is not explicit.");
+            NaturalSummonProfile direBoar =
+                ExpandedSummoningNaturalProfiles.For("dire-boar");
+            Assertions.Equal(5, direBoar.HitDice, "Dire Boar HD changed.");
+            Assertions.Equal(23, direBoar.Strength,
+                "Dire Boar Strength changed.");
+            Assertions.True(direBoar.Facts.Contains("Ferocity"),
+                "Dire Boar lost ferocity.");
+            NaturalSummonProfile direWolf =
+                ExpandedSummoningNaturalProfiles.For("dire-wolf");
+            Assertions.Equal(19, direWolf.Strength,
+                "Dire Wolf Strength changed.");
+            Assertions.True(direWolf.Facts.Contains("TrippingBite"),
+                "Dire Wolf lost trip.");
+            NaturalSummonProfile lion =
+                ExpandedSummoningNaturalProfiles.For("lion");
+            Assertions.Equal(5, lion.HitDice, "Lion HD changed.");
+            Assertions.Equal(4, lion.AdditionalWeapons.Count,
+                "Lion rake limb representation changed.");
+            NaturalSummonProfile pteranodon =
+                ExpandedSummoningNaturalProfiles.For("pteranodon");
+            Assertions.Equal(5, pteranodon.HitDice,
+                "Pteranodon HD changed.");
+            Assertions.Equal(50, pteranodon.SpeedFeet,
+                "Pteranodon fly speed changed.");
+            Assertions.Equal("Bite2d6", pteranodon.PrimaryWeapon,
+                "Pteranodon bite changed.");
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
+            foreach (string token in new[] {
+                "KMG.Summoning.Natural.Tail1d12",
+                "AdditionalSecondaryLimbs = secondary",
+                "c988aa874d11ff84d873508ddc9b928f",
+                "d2f99947db522e24293a7ec4eded453f",
+                "73ed4e955295e62469fe471f1d49d9ef",
+                "d1f80b5c5c73cc84db7854774850b08c",
+                "d88236a83413baa45ae9c8e5ddce5a6c",
+                "955e356c813de1743a98ab3485d5bc69",
+                "1a8149c09e0bdfc48a305ee6ac3729a8" })
+                Assertions.True(builder.Contains(token),
+                    "Tier III-IV natural builder contract is missing: " +
+                    token);
         }
 
         internal static void TemplateExecutionsAreFamilyScoped()

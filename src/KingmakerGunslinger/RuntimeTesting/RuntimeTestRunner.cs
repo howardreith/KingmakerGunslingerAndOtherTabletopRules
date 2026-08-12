@@ -7556,6 +7556,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon naturalBite1d3 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Bite1d3");
+            BlueprintItemWeapon naturalTail1d12 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Tail1d12");
             BlueprintUnit dog = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_Dog");
             BlueprintUnit eagle = all.OfType<BlueprintUnit>().Single(value =>
@@ -7632,6 +7635,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hyena.Charisma == 6 &&
                 hyena.AddFacts.Count(value => value != null && value.AssetGuid ==
                     "f957b4444b6fb404e84ae2a5765797bb") == 1;
+            string[] tierThreeFourKeys = { "boar", "leopard",
+                "monitor-lizard", "cheetah", "crocodile", "dire-bat",
+                "wolverine", "dire-boar", "dire-wolf", "grizzly-bear",
+                "lion", "pteranodon" };
+            bool tierThreeFourNaturalsExact =
+                naturalTail1d12.Damage.Rolls == 1 &&
+                naturalTail1d12.Damage.Dice == DiceType.D12 &&
+                tierThreeFourKeys.All(key =>
+                    ExpandedSummoningNaturalUnitExact(all,
+                        ExpandedSummoningNaturalProfiles.For(key)));
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -7684,6 +7697,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     lowTierNaturalsExact ? "exact" : "mismatch",
                     lowTierNaturalsExact,
                     "tabletop dog, eagle, poisonous frog, centipede, giant spider, goblin dog, and hyena chassis with visual-only proxy donors"),
+                Assertion("expanded-summoning-tier-three-four-naturals", "exact",
+                    tierThreeFourNaturalsExact ? "exact" : "mismatch",
+                    tierThreeFourNaturalsExact,
+                    "twelve exact animal-HD chassis with native pounce, ferocity, trip, poison, armor, natural attacks, and bounded documented deviations"),
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
@@ -7747,6 +7764,93 @@ namespace KingmakerGunslinger.RuntimeTesting
             object amount = amountField.GetValue(resource);
             FieldInfo baseField = amountField.FieldType.GetField("BaseValue");
             return (int)baseField.GetValue(amount);
+        }
+
+        private static bool ExpandedSummoningNaturalUnitExact(
+            BlueprintScriptableObject[] all, NaturalSummonProfile profile)
+        {
+            BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == ExpandedSummoningIdentityCatalog.UnitSymbol(
+                    ExpandedSummoningCatalog.All.Single(creature =>
+                        creature.Key == profile.Key)).Replace('.', '_')
+                        .Replace('-', '_'));
+            AddClassLevels[] levels = unit.ComponentsArray
+                .OfType<AddClassLevels>().ToArray();
+            Size expectedSize;
+            if (!Enum.TryParse(profile.Size, out expectedSize)) return false;
+            IDictionary<string, string> weaponGuids =
+                new Dictionary<string, string>(StringComparer.Ordinal) {
+                    { "Bite1d4", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Bite1d4").AssetGuid },
+                    { "Bite1d6", "a000716f88c969c499a535dadcf09286" },
+                    { "Bite1d8", "c988aa874d11ff84d873508ddc9b928f" },
+                    { "Bite2d6", "d2f99947db522e24293a7ec4eded453f" },
+                    { "Claw1d3", "800092a2b9a743b48ae8aeeb5d243dcc" },
+                    { "Claw1d4", "118fdd03e569a66459ab01a20af6811a" },
+                    { "Claw1d6", "c76f72a862d168d44838206524366e1c" },
+                    { "Gore1d8", "73ed4e955295e62469fe471f1d49d9ef" },
+                    { "Gore2d6", "d1f80b5c5c73cc84db7854774850b08c" },
+                    { "Tail1d12", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Tail1d12").AssetGuid }
+                };
+            IDictionary<int, string> armorGuids = new Dictionary<int, string> {
+                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
+                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
+                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
+                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 6, "987ba44303e88054c9504cb3083ba0c9" }
+            };
+            IDictionary<string, string> factGuids =
+                new Dictionary<string, string>(StringComparer.Ordinal) {
+                    { "TripDefenseFourLegs", "13c87ac5985cc85498ef9d1ac8b78923" },
+                    { "TrippingBite", "f957b4444b6fb404e84ae2a5765797bb" },
+                    { "SkillFocusPerception", "f74c6bdf5c5f5374fb9302ecdc1f7d64" },
+                    { "WeaponFinesse", "90e54424d682d104ab36436bd527af09" },
+                    { "Airborne", "70cffb448c132fa409e49156d013b175" },
+                    { "Toughness", "d09b20029e9abfe4480b356c92095623" },
+                    { "ReducedReach", "c33f2d68d93ceee488aa4004347dffca" },
+                    { "Ferocity", "955e356c813de1743a98ab3485d5bc69" },
+                    { "Pounce", "1a8149c09e0bdfc48a305ee6ac3729a8" },
+                    { "SkillFocusStealth", "3a8d34905eae4a74892aae37df3352b9" },
+                    { "GreatFortitude", "79042cb55f030614ea29956177977c52" },
+                    { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
+                    { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
+                    { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
+                    { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
+                    { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" }
+                };
+            string[] expectedFacts = profile.Facts.Select(value =>
+                factGuids[value]).Concat(profile.NaturalArmor == 0
+                    ? Enumerable.Empty<string>()
+                    : new[] { armorGuids[profile.NaturalArmor] })
+                .Concat(new[] { all.OfType<BlueprintFeature>().Single(value =>
+                    value.name == "KMG_Summoning_Subtype_Extraplanar").AssetGuid })
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] actualFacts = (unit.AddFacts ??
+                Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                .Select(value => value.AssetGuid).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+            return levels.Length == 1 && levels[0].Levels == profile.HitDice &&
+                levels[0].CharacterClass != null &&
+                levels[0].CharacterClass.AssetGuid ==
+                    "4cd1757a0eea7694ba5c933729a53920" &&
+                unit.Size == expectedSize && unit.Alignment == Alignment.TrueNeutral &&
+                unit.Strength == profile.Strength &&
+                unit.Dexterity == profile.Dexterity &&
+                unit.Constitution == profile.Constitution &&
+                unit.Intelligence == profile.Intelligence &&
+                unit.Wisdom == profile.Wisdom && unit.Charisma == profile.Charisma &&
+                unit.Speed.Value == profile.SpeedFeet &&
+                unit.Body.PrimaryHand != null &&
+                unit.Body.PrimaryHand.AssetGuid == weaponGuids[profile.PrimaryWeapon] &&
+                unit.Body.AdditionalLimbs.Select(value => value.AssetGuid)
+                    .SequenceEqual(profile.AdditionalWeapons.Select(value =>
+                        weaponGuids[value])) &&
+                unit.Body.AdditionalSecondaryLimbs.Select(value => value.AssetGuid)
+                    .SequenceEqual(profile.AdditionalSecondaryWeapons.Select(value =>
+                        weaponGuids[value])) &&
+                actualFacts.SequenceEqual(expectedFacts) &&
+                unit.StartingInventory.Length == 0;
         }
 
         private static bool ExpandedSummoningIsForbiddenReference(

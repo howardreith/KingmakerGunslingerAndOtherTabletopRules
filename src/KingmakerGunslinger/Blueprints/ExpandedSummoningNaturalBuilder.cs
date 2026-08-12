@@ -23,20 +23,40 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Bite1d4";
         private const string Bite1d3Symbol =
             "KMG.Summoning.Natural.Bite1d3";
+        private const string Tail1d12Symbol =
+            "KMG.Summoning.Natural.Tail1d12";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
+        private const string NativeBite1d8Guid =
+            "c988aa874d11ff84d873508ddc9b928f";
+        private const string NativeBite2d6Guid =
+            "d2f99947db522e24293a7ec4eded453f";
+        private const string NativeClaw1d3Guid =
+            "800092a2b9a743b48ae8aeeb5d243dcc";
         private const string NativeClaw1d4Guid =
             "118fdd03e569a66459ab01a20af6811a";
+        private const string NativeClaw1d6Guid =
+            "c76f72a862d168d44838206524366e1c";
+        private const string NativeGore1d8Guid =
+            "73ed4e955295e62469fe471f1d49d9ef";
+        private const string NativeGore2d6Guid =
+            "d1f80b5c5c73cc84db7854774850b08c";
+        private const string NativeTail1d8Guid =
+            "ae822725634c6f0418b8c48bd29df255";
         private const string AnimalClassGuid =
             "4cd1757a0eea7694ba5c933729a53920";
         private const string VerminClassGuid =
             "d1a15612d1a96334d94edf5f1d3b8d29";
         private const string DumbBrainGuid =
             "5abc8884c6f15204c8604cb01a2efbab";
-        private const string NaturalArmor1Guid =
-            "10c7c5e3c5806bc4ca676e22d6fbf17e";
-        private const string NaturalArmor2Guid =
-            "45a52ce762f637f4c80cc741c91f58b7";
+        private static readonly IDictionary<int, string> NaturalArmorGuids =
+            new Dictionary<int, string> {
+                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
+                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
+                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
+                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 6, "987ba44303e88054c9504cb3083ba0c9" }
+            };
         private static readonly IDictionary<string, string> FactGuids =
             new Dictionary<string, string>(StringComparer.Ordinal) {
                 { "TripDefenseFourLegs", "13c87ac5985cc85498ef9d1ac8b78923" },
@@ -49,7 +69,17 @@ namespace KingmakerGunslinger.Blueprints
                 { "PoisonFrog", "1a3f2f384bbef804d8f52db1f9aa62d3" },
                 { "CentipedePoison", "6fed981bf0ef27a499969f369f35b5e8" },
                 { "GiantSpiderPoison", "094714bb08f4e1943a8e9d2384ebe573" },
-                { "Toughness", "d09b20029e9abfe4480b356c92095623" }
+                { "Toughness", "d09b20029e9abfe4480b356c92095623" },
+                { "ReducedReach", "c33f2d68d93ceee488aa4004347dffca" },
+                { "Ferocity", "955e356c813de1743a98ab3485d5bc69" },
+                { "Pounce", "1a8149c09e0bdfc48a305ee6ac3729a8" },
+                { "SkillFocusStealth", "3a8d34905eae4a74892aae37df3352b9" },
+                { "GreatFortitude", "79042cb55f030614ea29956177977c52" },
+                { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
+                { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
+                { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
+                { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
+                { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" }
             };
 
         internal static void Configure(LibraryScriptableObject library,
@@ -67,6 +97,11 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol), Bite1d4Symbol, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol), Bite1d3Symbol, DiceType.D3);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeTail1d8Guid,
+                    "native animated tail weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Tail1d12Symbol),
+                Tail1d12Symbol, DiceType.D12);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -117,10 +152,12 @@ namespace KingmakerGunslinger.Blueprints
                 profile.PrimaryWeapon);
             BlueprintItemWeapon[] additional = profile.AdditionalWeapons.Select(
                 key => Weapon(library, bySymbol, key)).ToArray();
+            BlueprintItemWeapon[] secondary = profile.AdditionalSecondaryWeapons
+                .Select(key => Weapon(library, bySymbol, key)).ToArray();
             unit.Body = new BlueprintUnit.UnitBody {
                 PrimaryHand = primary,
                 AdditionalLimbs = additional,
-                AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
+                AdditionalSecondaryLimbs = secondary,
                 QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment
                     .BlueprintItemEquipmentUsable>()
             };
@@ -146,16 +183,20 @@ namespace KingmakerGunslinger.Blueprints
             unit.MaxHP = 0;
             unit.StartingInventory = Array.Empty<BlueprintItem>();
             var facts = new List<BlueprintUnitFact>();
-            if (profile.NaturalArmor == 1)
+            if (profile.NaturalArmor != 0)
+            {
+                string armorGuid;
+                if (!NaturalArmorGuids.TryGetValue(profile.NaturalArmor,
+                        out armorGuid))
+                    throw new InvalidOperationException(
+                        "Unsupported natural armor value " +
+                        profile.NaturalArmor + ".");
                 facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
-                    library, NaturalArmor1Guid, "natural armor +1"));
-            else if (profile.NaturalArmor == 2)
-                facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
-                    library, NaturalArmor2Guid, "natural armor +2"));
-            else if (profile.NaturalArmor != 0)
-                throw new InvalidOperationException("Unsupported low-tier natural armor.");
+                    library, armorGuid, "natural armor +" +
+                        profile.NaturalArmor));
+            }
             foreach (string fact in profile.Facts)
-                facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                     library, FactGuids[fact], profile.DisplayName + " " + fact));
             facts.Add(extraplanar);
             unit.AddFacts = facts.ToArray();
@@ -170,8 +211,22 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d3Symbol);
             if (key == "Bite1d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid, "1d6 bite");
+            if (key == "Bite1d8") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBite1d8Guid, "1d8 bite");
+            if (key == "Bite2d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBite2d6Guid, "2d6 bite");
+            if (key == "Claw1d3") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw1d3Guid, "1d3 claw");
             if (key == "Claw1d4") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeClaw1d4Guid, "1d4 claw");
+            if (key == "Claw1d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw1d6Guid, "1d6 claw");
+            if (key == "Gore1d8") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeGore1d8Guid, "1d8 gore");
+            if (key == "Gore2d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeGore2d6Guid, "2d6 gore");
+            if (key == "Tail1d12") return Require<BlueprintItemWeapon>(bySymbol,
+                Tail1d12Symbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }
