@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1144, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1145, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(5, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintFeature"), "Subtype marker identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -84,16 +85,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(registration.Contains(
                 "ExpandedSummoningNaturalBuilder.Configure(library, registered,"),
                 "The natural reconstruction builder is not registered.");
-            Assertions.True(registration.Contains("unitDonors.Values.Concat("),
-                "The extraplanar fact must be captured before custom registration.");
-            string lookup = File.ReadAllText(Path.Combine(
-                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
-                "Blueprints", "BlueprintLibraryLookup.cs"));
-            foreach (string token in new[] { "RequireExactUnitFactReference<T>",
-                ".Where(unit => unit != null)", "ReferenceEquals(value, fact)",
-                "distinct.Count != 1", "value.GetType() != typeof(T)" })
-                Assertions.True(lookup.Contains(token),
-                    "Referenced unit-fact lookup lost its exact contract: " + token);
+            foreach (string token in new[] {
+                "KMG.Summoning.Subtype.Extraplanar",
+                "ConfigureExtraplanar(extraplanar)",
+                "feature.HideInUI = true" })
+                Assertions.True(registration.Contains(token),
+                    "The local extraplanar marker contract is missing: " + token);
         }
 
         internal static void TemplateExecutionsAreFamilyScoped()

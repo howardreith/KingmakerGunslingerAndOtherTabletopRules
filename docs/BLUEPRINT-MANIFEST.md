@@ -8,13 +8,14 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1399 stable identifiers: 1398 active and one reserved.
-The 1,120 Expanded Summoning identities freeze the feature foundation: 67 unit
-identities, 681 logical placement abilities, 364 celestial/fiendish execution
-abilities, six HD-banded template buffs, and two bounded smite markers. They register in every feature
-module state; live parent publication remains independently gated.
-Bootstrap therefore derives the complete 1,374-blueprint transaction from the
-254 pre-feature identities plus the 1,120 feature-local identities.
+Validator contract: 1400 stable identifiers: 1399 active and one reserved.
+The 1,145 Expanded Summoning identities freeze the feature foundation: 67 unit
+identities, 1,048 abilities, 16 buffs, three AI actions, three brains, five
+natural weapons, two bounded resources, and one hidden KMG extraplanar marker.
+They register in every feature-module state; live parent publication remains
+independently gated. Bootstrap therefore derives the complete 1,399-blueprint
+transaction from the 254 pre-feature identities plus the 1,145 feature-local
+identities.
 
 Paper Cartridges Phase 1 identities are append-only:
 

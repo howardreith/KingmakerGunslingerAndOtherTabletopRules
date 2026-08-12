@@ -489,9 +489,12 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning freezes the append-only foundation at 1399 stable IDs: 1398 active and one reserved. All 1144 feature identities register in every module state while
+Expanded Summoning freezes the append-only foundation at 1400 stable IDs: 1399 active and one reserved. All 1145 feature identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement
-will gate publication, never identity registration.
+will gate publication, never identity registration. A hidden, feature-local
+extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's
+later-loaded subtype feature; optional compatibility may add the external
+marker only after an exact final-live match.
 
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`

@@ -11,6 +11,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Localization;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -30,8 +31,8 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string SummonedFactionDonorGuid =
             "1ed9a630f0d9d7f44855d3d1d1b2cdf2";
-        private const string ExtraplanarSubtypeGuid =
-            "136fa0343d5b4d348bdaa05d83408db3";
+        private const string ExtraplanarSubtypeSymbol =
+            "KMG.Summoning.Subtype.Extraplanar";
 
         internal static ExpandedSummoningBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
@@ -50,11 +51,6 @@ namespace KingmakerGunslinger.Blueprints
                 creature => BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
                     ExpandedSummoningDonorCatalog.For(creature.Key).Guid,
                     creature.DisplayName + " donor"), StringComparer.Ordinal);
-            BlueprintFeature extraplanar =
-                BlueprintLibraryLookup.RequireExactUnitFactReference<
-                    BlueprintFeature>(unitDonors.Values.Concat(
-                        new[] { summonedFactionDonor }), ExtraplanarSubtypeGuid,
-                        "summoned extraplanar subtype");
             var registered = new Dictionary<string, BlueprintScriptableObject>(
                 StringComparer.Ordinal);
             foreach (SummoningIdentitySpec identity in identities)
@@ -82,6 +78,9 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintAbilityResource")
                     blueprint = registry.Register<BlueprintAbilityResource>(
                         identity.Symbol, () => CreateResourceShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintFeature")
+                    blueprint = registry.Register<BlueprintFeature>(identity.Symbol,
+                        () => CreateFeatureShell(identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -93,6 +92,11 @@ namespace KingmakerGunslinger.Blueprints
                     "Expanded Summoning registration count mismatch.");
             ExpandedSummoningTemplateBuilder.Configure(registered);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
+            BlueprintFeature extraplanar = registered[ExtraplanarSubtypeSymbol]
+                as BlueprintFeature;
+            if (extraplanar == null) throw new InvalidOperationException(
+                "Expanded Summoning extraplanar marker type mismatch.");
+            ConfigureExtraplanar(extraplanar);
             ExpandedSummoningNaturalBuilder.Configure(library, registered,
                 extraplanar);
             ExpandedSummoningSpecialBuilder.Configure(library, registered,
@@ -130,6 +134,32 @@ namespace KingmakerGunslinger.Blueprints
                 ScriptableObject.CreateInstance<BlueprintAbilityResource>();
             result.name = InternalName(symbol);
             return result;
+        }
+
+        private static BlueprintFeature CreateFeatureShell(string symbol)
+        {
+            BlueprintFeature result = ScriptableObject.CreateInstance<
+                BlueprintFeature>();
+            result.name = InternalName(symbol);
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        private static void ConfigureExtraplanar(BlueprintFeature feature)
+        {
+            feature.name = InternalName(ExtraplanarSubtypeSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Subtype.Extraplanar.Name",
+                    "Extraplanar Subtype"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Subtype.Extraplanar.Description",
+                    "This creature is present through a summoning effect and is treated as extraplanar for the duration of that effect."),
+                null);
         }
 
         private static BlueprintUnit CloneUnitShell(BlueprintUnit donor,
