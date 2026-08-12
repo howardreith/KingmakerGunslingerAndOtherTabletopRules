@@ -9501,7 +9501,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool casterRegistered = false, subjectRegistered = false,
                 secondCasterRegistered = false, secondSubjectRegistered = false,
                 cleaned = false, replacementOwned = false,
-                multiSubjectOwned = false, rangeRemoved = false,
+                multiSubjectOwned = false, rangePreserved = false,
                 areaRemoved = false, dispelRemoved = false,
                 deathRemoved = false;
             bool reciprocalOwned = false, reciprocalNoRecursion = false,
@@ -9801,7 +9801,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 areaCaster = casterBefore - secondCaster.HPLeft;
                 SetExactProperty(secondCaster, "IsInGame", true);
 
-                stage = "range-termination";
+                stage = "post-cast-range-preservation";
                 multiple = secondSubject.Descriptor.Buffs.AddBuff(
                     BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
                     TimeSpan.FromHours(5d));
@@ -9810,7 +9810,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(secondSubject, "Position", new Vector3(20f, 0f, 0f));
                 multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
                     handler => handler.OnNewRound());
-                rangeRemoved = !secondSubject.Descriptor.HasFact(
+                rangePreserved = secondSubject.Descriptor.HasFact(
                     BlueprintBootstrap.ShieldOther.TargetBuff);
                 subjectBefore = secondSubject.HPLeft;
                 casterBefore = secondCaster.HPLeft;
@@ -10003,7 +10003,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";replacement=" + replacementOwned + "/" + replacementSubject +
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
                 ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
-                multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
+                multipleCaster + ";range=" + rangePreserved + "/" + rangedSubject +
                 "/" + rangedCaster + ";area=" + areaRemoved + "/" + areaSubject +
                 "/" + areaCaster + ";dispel=" + dispelRemoved + "/" +
                 dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
@@ -10069,10 +10069,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "one caster owns both; damage 1/1", observed,
                     multiSubjectOwned && multipleSubject == 1 && multipleCaster == 1,
                     "independent target buff facts"),
-                Assertion("shield-other-range-termination",
-                    "link removed; damage 2/0", observed,
-                    rangeRemoved && rangedSubject == 2 && rangedCaster == 0,
-                    "caster-level close range round revalidation"),
+                Assertion("shield-other-post-cast-range-preservation",
+                    "link preserved; damage 1/1", observed,
+                    rangePreserved && rangedSubject == 1 && rangedCaster == 1,
+                    "close range constrains initial targeting only"),
                 Assertion("shield-other-area-termination",
                     "caster unload removes link; damage 2/0", observed,
                     areaRemoved && areaSubject == 2 && areaCaster == 0,
@@ -10103,8 +10103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-caster-death-termination",
                     "dead caster removes link on native round tick", observed,
                     deathRemoved, "ITickEachRound lifecycle revalidation"),
-                Assertion("shield-other-transfer-log", "12 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 12,
+                Assertion("shield-other-transfer-log", "13 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 13,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
