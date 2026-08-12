@@ -11,9 +11,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1150, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1152, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(1050, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
+                "KMG.Summoning.Native.", StringComparison.Ordinal)),
+                "Native tier-one preservation identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
@@ -583,9 +586,22 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "SummonVariantMergePolicy.Merge",
                 "OriginalComponents", "PublishedComponents",
                 "rollback refused after unrelated mutation",
+                "nativePreservation", "new[] { nativePreservation }",
+                "Direct summon publication requires exactly one frozen native-preservation child",
                 "originals.Any(original => !variants.Variants.Contains(original))" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningAbilityBuilder.cs"));
+            foreach (string token in new[] {
+                "ConfigureNativeTierOnePreservation",
+                "NativeMonsterTierOneSymbol", "NativeNaturesAllyTierOneSymbol",
+                "Native tier-one preservation requires a direct ability",
+                ".Select(DeepCloneComponent).ToArray()" })
+                Assertions.True(builder.Contains(token),
+                    "Native tier-one preservation builder contract is missing: " +
+                    token);
         }
 
         internal static void RuntimeUnitComponentsAreReferenceIsolated()

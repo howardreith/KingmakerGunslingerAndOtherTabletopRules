@@ -73,7 +73,13 @@ namespace KingmakerGunslinger.Blueprints
                                 (BlueprintAbility)set.BySymbol[
                                     ExpandedSummoningIdentityCatalog.AbilitySymbol(value)])
                         .ToArray();
-                    PublishParent(parent, additions, records);
+                    BlueprintAbility nativePreservation = tier != 1 ? null :
+                        (BlueprintAbility)set.BySymbol[family == SummonFamily.Monster ?
+                            ExpandedSummoningIdentityCatalog
+                                .NativeMonsterTierOneSymbol :
+                            ExpandedSummoningIdentityCatalog
+                                .NativeNaturesAllyTierOneSymbol];
+                    PublishParent(parent, nativePreservation, additions, records);
                 }
                 return new ExpandedSummoningPublication(records);
             }
@@ -124,15 +130,19 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void PublishParent(BlueprintAbility parent,
-            BlueprintAbility[] additions,
+            BlueprintAbility nativePreservation, BlueprintAbility[] additions,
             List<ExpandedSummoningPublication.Record> records)
         {
             BlueprintComponent[] before = parent.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
             AbilityVariants existing = before.OfType<AbilityVariants>()
                 .SingleOrDefault();
+            if ((existing == null) != (nativePreservation != null))
+                throw new InvalidOperationException(
+                    "Direct summon publication requires exactly one frozen native-preservation child: " +
+                    parent.AssetGuid);
             BlueprintAbility[] originals = existing == null ?
-                Array.Empty<BlueprintAbility>() : existing.Variants ??
+                new[] { nativePreservation } : existing.Variants ??
                     Array.Empty<BlueprintAbility>();
             IList<BlueprintAbility> merged = SummonVariantMergePolicy.Merge(
                 originals, additions, value => value.AssetGuid);

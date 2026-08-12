@@ -37,6 +37,12 @@ namespace KingmakerGunslinger.Blueprints
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
+            ConfigureNativeTierOnePreservation(library, bySymbol,
+                MonsterParents[0],
+                ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol);
+            ConfigureNativeTierOnePreservation(library, bySymbol,
+                AllyParents[0],
+                ExpandedSummoningIdentityCatalog.NativeNaturesAllyTierOneSymbol);
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
                 SummonFamily.NaturesAlly })
             foreach (SummonVariantSpec variant in
@@ -75,6 +81,29 @@ namespace KingmakerGunslinger.Blueprints
                     false, family == SummonFamily.NaturesAlly ?
                         SummonAlignmentMode.Caster : (SummonAlignmentMode?)null);
             }
+        }
+
+        private static void ConfigureNativeTierOnePreservation(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string parentGuid, string symbol)
+        {
+            BlueprintAbility parent = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, parentGuid,
+                    "native direct tier-one summon parent");
+            if ((parent.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AbilityVariants>().Any())
+                throw new InvalidOperationException(
+                    "Native tier-one preservation requires a direct ability: " +
+                    parentGuid);
+            BlueprintAbility target = Require<BlueprintAbility>(bySymbol, symbol);
+            CopyFields(parent, target);
+            target.name = InternalName(symbol);
+            target.ComponentsArray = (parent.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(DeepCloneComponent).ToArray();
+            target.MaterialComponent = parent.MaterialComponent == null ?
+                new BlueprintAbility.MaterialComponentData() :
+                parent.MaterialComponent;
         }
 
         private static BlueprintAbility NativeTemplate(

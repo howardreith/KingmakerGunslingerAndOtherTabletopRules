@@ -7655,6 +7655,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Count(value => value.PlannedType == "BlueprintAbility");
             int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
                 value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal) ||
+                value.name.StartsWith("KMG_Summoning_Native_", StringComparison.Ordinal) ||
                 value.name.StartsWith("KMG_Summoning_Special_", StringComparison.Ordinal));
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0,
@@ -7706,6 +7707,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ComponentsArray.OfType<AbilityVariants>().Single().Variants.Count(value =>
                     value != null && value.name.StartsWith(
                         "KMG_Summoning_Ability_", StringComparison.Ordinal)));
+            BlueprintAbility nativeMonsterTierOne = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == "KMG_Summoning_Native_SM_Tier1");
+            BlueprintAbility nativeAllyTierOne = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == "KMG_Summoning_Native_SNA_Tier1");
+            BlueprintAbility monsterTierOneParent = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    parentGuids[0], "native Summon Monster I parent");
+            BlueprintAbility allyTierOneParent = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    parentGuids[9], "native Summon Nature's Ally I parent");
+            bool nativeTierOnePreserved = monsterTierOneParent.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants.FirstOrDefault() ==
+                        nativeMonsterTierOne &&
+                allyTierOneParent.ComponentsArray.OfType<AbilityVariants>()
+                    .Single().Variants.FirstOrDefault() == nativeAllyTierOne &&
+                ExpandedSummoningSpawnActionCount(nativeMonsterTierOne) >= 1 &&
+                ExpandedSummoningSpawnActionCount(nativeAllyTierOne) >= 1 &&
+                nativeMonsterTierOne.Range == monsterTierOneParent.Range &&
+                nativeAllyTierOne.Range == allyTierOneParent.Range &&
+                nativeMonsterTierOne.ActionType == monsterTierOneParent.ActionType &&
+                nativeAllyTierOne.ActionType == allyTierOneParent.ActionType;
             BlueprintAbility[] templateChoices = all.OfType<BlueprintAbility>()
                 .Where(value => value.name.StartsWith("KMG_Summoning_Ability_",
                     StringComparison.Ordinal) && value.ComponentsArray
@@ -8264,6 +8286,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-parent-placements", "681",
                     publishedPlacements.ToString(), publishedPlacements == 681,
                     "18 canonical AbilityVariants surfaces"),
+                Assertion("expanded-summoning-native-tier-one-preservation",
+                    "SM I and SNA I original cast graphs first and castable",
+                    nativeTierOnePreserved ? "exact" : "mismatch",
+                    nativeTierOnePreserved,
+                    "frozen child clones of the two originally direct native parents"),
                 Assertion("expanded-summoning-donor-component-isolation", "0",
                     sharedComponents.ToString(), sharedComponents == 0,
                     "all 67 KMG units versus frozen donor component references"),
@@ -10295,7 +10322,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Native Acadamae mode activation did not create its exact marker.");
 
                 AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
-                prepared = spellbook.CanSpend(first, false) &&
+                prepared = AcadamaeCastingRuntime.IsPreparedInvocation(first,
+                    spellbook) &&
                     ReferenceEquals(first.Spellbook, spellbook);
                 presentation = AcadamaeCastingRuntime.InspectPreAcadamae(first) &&
                     !first.RequireFullRoundAction &&
@@ -10597,7 +10625,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spellLevel + ".");
             slot.Available = true;
             slot.Spell.ParamSpellSlot = slot;
-            return slot.Spell;
+            AbilityVariants variants = (spell.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .SingleOrDefault();
+            BlueprintAbility concrete = variants == null ? null :
+                (variants.Variants ?? Array.Empty<BlueprintAbility>())
+                    .FirstOrDefault(value => value != null && value.name.StartsWith(
+                        "KMG_Summoning_Native_", StringComparison.Ordinal));
+            if (variants != null && concrete == null)
+                throw new InvalidOperationException(
+                    "Prepared summoning parent has no frozen native-preservation child.");
+            if (concrete == null) return slot.Spell;
+            var invocation = new AbilityData(slot.Spell, concrete);
+            invocation.ParamSpellSlot = slot;
+            return invocation;
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

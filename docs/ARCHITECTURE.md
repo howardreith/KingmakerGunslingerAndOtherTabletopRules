@@ -505,7 +505,7 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning freezes the append-only foundation at 1405 stable IDs: 1404 active and one reserved. All 1150 feature identities register in every module state while
+Expanded Summoning freezes the append-only foundation at 1407 stable IDs: 1406 active and one reserved. All 1152 feature identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration. A hidden, feature-local
 extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's

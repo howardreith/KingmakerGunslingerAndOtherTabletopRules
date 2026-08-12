@@ -26,14 +26,25 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         internal const int SpecialIdentityCount = 30;
+        internal const int NativePreservationIdentityCount = 2;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
-            TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount;
+            TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount +
+            NativePreservationIdentityCount;
+
+        internal const string NativeMonsterTierOneSymbol =
+            "KMG.Summoning.Native.SM.Tier1";
+        internal const string NativeNaturesAllyTierOneSymbol =
+            "KMG.Summoning.Native.SNA.Tier1";
 
         internal static IReadOnlyList<SummoningIdentitySpec> Build()
         {
             var result = new List<SummoningIdentitySpec>();
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
                 result.Add(new SummoningIdentitySpec("KMG.Summoning.Unit." + Token(creature.Key), "BlueprintUnit"));
+            result.Add(new SummoningIdentitySpec(NativeMonsterTierOneSymbol,
+                "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec(NativeNaturesAllyTierOneSymbol,
+                "BlueprintAbility"));
             foreach (SummonFamily family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(family))
             {

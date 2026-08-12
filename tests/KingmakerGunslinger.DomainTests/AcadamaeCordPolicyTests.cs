@@ -230,6 +230,23 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
                     StringSplitOptions.None).Length == 3,
                 "The guarded scenario must force native automatic success and failure boundaries.");
+            foreach (string token in new[] {
+                "KMG_Summoning_Native_",
+                "new AbilityData(slot.Spell, concrete)",
+                "invocation.ParamSpellSlot = slot",
+                "Prepared summoning parent has no frozen native-preservation child" })
+                Assertions.True(runtime.Contains(token),
+                    "Acadamae runtime fixture no longer resolves a concrete native summon variant: " +
+                    token);
+            foreach (string token in new[] {
+                "IsPreparedInvocation(ability, spellbook)",
+                "slot == null || !slot.Available || slot.Spell == null",
+                "ReferenceEquals(slot.Spell.Spellbook, spellbook)",
+                "current = current.ConvertedFrom",
+                "ReferenceEquals(current, slot.Spell)" })
+                Assertions.True(casting.Contains(token),
+                    "Acadamae prepared-variant eligibility contract is missing: " +
+                    token);
         }
 
         internal static void AcadamaeInvocationCorrelation()

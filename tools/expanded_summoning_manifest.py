@@ -26,6 +26,10 @@ def planned():
         rows.append((f"KMG.Summoning.Unit.{token(key)}", "BlueprintUnit"))
     if len(creatures) != 67:
         raise SystemExit(f"Expected 67 parsed creatures; observed {len(creatures)}")
+    rows.extend((
+        ("KMG.Summoning.Native.SM.Tier1", "BlueprintAbility"),
+        ("KMG.Summoning.Native.SNA.Tier1", "BlueprintAbility"),
+    ))
     for family, index in (("SM", 1), ("SNA", 3)):
         for parent in range(1, 10):
             for creature in creatures:
@@ -75,7 +79,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1150 or len({symbol for symbol, _ in rows}) != 1150:
+    if len(rows) != 1152 or len({symbol for symbol, _ in rows}) != 1152:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

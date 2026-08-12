@@ -11150,7 +11150,7 @@
       "plannedType": "BlueprintBuff",
       "status": "active",
       "milestone": "Expanded Summoning",
-      "notes": "Bounded summon-safe dance state; registered in every feature-module state."
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
       "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDanceResource",
@@ -11244,6 +11244,22 @@
       "symbol": "KMG.Summoning.Natural.Talon2d6",
       "guid": "8a3741a7598147baa08de552565635ad",
       "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Native.SM.Tier1",
+      "guid": "6c7915c9dc494849918e958618f61db0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Native.SNA.Tier1",
+      "guid": "b5b7cf07ffeb4533a1320fbd06072cc5",
+      "plannedType": "BlueprintAbility",
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."

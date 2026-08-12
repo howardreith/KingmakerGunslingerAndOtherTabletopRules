@@ -55,7 +55,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Shield Other identity mismatch: {symbol}")
     active = [entry for entry in manifest["entries"] if entry["status"] == "active"]
     reserved = [entry for entry in manifest["entries"] if entry["status"] == "reserved"]
-    if len(manifest["entries"]) != 1405 or len(active) != 1404 or len(reserved) != 1:
+    if len(manifest["entries"]) != 1407 or len(active) != 1406 or len(reserved) != 1:
         raise AssertionError("Expanded Summoning reservation ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")

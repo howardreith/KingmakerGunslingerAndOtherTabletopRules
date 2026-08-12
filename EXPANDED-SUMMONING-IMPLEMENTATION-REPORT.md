@@ -14,7 +14,7 @@ lifecycle rules remain intact. Repository validation, 981/981 domain tests,
 clean Release build, and strict 0.0.77 package validation pass.
 
 Current implementation checkpoint: the complete frozen 681-placement catalog,
-67 summon-unit identities, 1,048 abilities, six HD-banded celestial or
+67 summon-unit identities, 1,050 abilities, six HD-banded celestial or
 fiendish template buffs, two bounded smite markers, seven custom special
 creatures, and the tier I-IV natural/proxy group are registered
 deterministically. The exact template
