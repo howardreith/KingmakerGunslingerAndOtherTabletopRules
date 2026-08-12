@@ -1,8 +1,9 @@
 # Expanded Summoning implementation report
 
-Status: implementation and native runtime qualification complete on immutable
-source `b8e7950680ab4718c18965837a37c5974a8d35bc`; final deterministic package,
-hash publication, and draft-PR creation remain.
+Status: implementation, native runtime qualification, and deterministic release
+package complete. The release artifact was frozen from documentation-bearing
+source `193d73cc22fe41fda8546f1d2e1750e185ed8288`; final evidence publication
+and draft-PR creation remain.
 
 Selected baseline: `origin/master` at
 `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required
@@ -22,9 +23,9 @@ release state.
   1,409 active plus one reserved; runtime registration is exactly 1,409 in
   every one of the 16 feature-module states.
 - Static gates: repository validation PASS, `1009/1009` domain tests PASS,
-  warnings-as-errors Release build PASS, and strict package validation PASS on
-  the immutable runtime source. Final documentation-bearing package hashes are
-  recorded after the deterministic release freeze.
+  warnings-as-errors Release build PASS, and strict package validation PASS.
+  Two clean exact-reference `Build-Local.ps1` executions produced byte-identical
+  DLL and deterministic package outputs.
 - Structural runtime: guarded run
   `20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0` passed all 30
   assertions, including every registered identity, 18 required parent spells,
@@ -93,6 +94,23 @@ release state.
 The manual residual visual checklist is limited to aesthetic judgment of proxy
 scale, camera framing, projectile appearance, and animation quality; all
 mechanical visual contracts already pass.
+
+### Final release hashes
+
+- Release artifact source commit:
+  `193d73cc22fe41fda8546f1d2e1750e185ed8288`.
+- Exact-reference `KingmakerGunslinger.dll` SHA-256:
+  `64bc093904ea80514b7811ab73ef488c3c7561ab5af049f7ba08e74d8c177966`.
+- Deterministic `KingmakerGunslinger-0.0.78-expanded-summoning.zip` SHA-256:
+  `2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce`.
+- Deterministic `git archive` source ZIP SHA-256:
+  `c698e82d38599e06c58a32a9b243c391c9e9a4cb155b6047dee4d5ef936cf784`.
+
+The ordinary `Compress-Archive` output was also strict-validated but embeds
+archive metadata and therefore changed byte hash between runs. The canonical
+release ZIP above was regenerated from the same validated 45-file staging tree
+with the repository's fixed-timestamp deterministic writer; it exactly matched
+the separately emitted local-runtime ZIP and passed strict validation.
 
 ## Chronological engineering record
 

@@ -34,6 +34,20 @@
   verified; `KMG_AUTOMATION_BASELINE` was never modified.
 - Next: deterministic documentation-bearing package/hash freeze, curated final
   evidence commit/push, draft PR, and requirement-by-requirement audit.
+- The documentation-bearing release source was committed and pushed as
+  `193d73cc22fe41fda8546f1d2e1750e185ed8288`. Repository validation and the
+  complete `1009/1009` domain suite passed before the commit.
+- Two clean exact-reference `Build-Local.ps1` executions produced identical
+  DLL SHA-256
+  `64bc093904ea80514b7811ab73ef488c3c7561ab5af049f7ba08e74d8c177966`
+  and deterministic package SHA-256
+  `2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce`.
+  The canonical 45-file Expanded Summoning ZIP was regenerated with the same
+  deterministic writer and strict package validation passed.
+- Deterministic `git archive` source ZIP SHA-256 for release source `193d73c`
+  is `c698e82d38599e06c58a32a9b243c391c9e9a4cb155b6047dee4d5ef936cf784`.
+- Exact next action: commit/push these hashes, open the draft PR, and complete
+  remote-equality plus definition-of-done audit.
 
 ## 2026-08-11 - baseline and mission intake
 

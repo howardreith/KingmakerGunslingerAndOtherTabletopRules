@@ -4,14 +4,14 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
+  "currentSha": "193d73cc22fe41fda8546f1d2e1750e185ed8288",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "immutable-source-native-runtime-qualification-complete",
-  "nextConcreteAction": "Commit the reconciled release documentation, run the final deterministic clean build/package/hash gates, publish the evidence commit, and open the draft pull request.",
+  "completedPhase": "deterministic-release-package-qualified",
+  "nextConcreteAction": "Commit and push the final hashes/evidence, open the draft pull request, then perform the remote-equality and definition-of-done audit.",
   "domainTestResult": "1009/1009 PASS",
   "staticValidationResult": "PASS",
-  "releaseBuildResult": "PASS on immutable runtime source b8e7950680ab4718c18965837a37c5974a8d35bc; DLL SHA-256 cb42098c786792cb786c9f4ab457c8e38a8e5208e0907a7cc7eef821c802e9cb before the final documentation-only package freeze",
-  "packageResult": "strict PASS on immutable runtime source; final documentation-bearing deterministic package/hash repetition remains the next gate",
+  "releaseBuildResult": "PASS twice on release artifact source 193d73cc22fe41fda8546f1d2e1750e185ed8288; byte-identical exact-reference DLL SHA-256 64bc093904ea80514b7811ab73ef488c3c7561ab5af049f7ba08e74d8c177966",
+  "packageResult": "strict PASS; byte-identical deterministic 45-file package SHA-256 2dde3ce858397cf27e86d01b9f69b68ececb05e0127386cd31d3fd22caa739ce; source archive SHA-256 c698e82d38599e06c58a32a9b243c391c9e9a4cb155b6047dee4d5ef936cf784",
   "roster": {
     "summonMonsterEntries": 66,
     "summonNaturesAllyEntries": 57,
@@ -141,5 +141,5 @@
   ],
   "branchPushed": true,
   "draftPrNumber": null,
-  "draftPrReason": "Not yet attempted; final deterministic release package and curated evidence commit are the remaining prerequisites."
+  "draftPrReason": "Not yet attempted; the final curated hash/evidence commit is the only remaining prerequisite."
 }
