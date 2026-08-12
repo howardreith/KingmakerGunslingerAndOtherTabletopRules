@@ -16,8 +16,8 @@
   bounded smite; all 55 selected donor graphs; all tier I-VII natural/proxy
   chassis; and the special Lantern Archon, Invisible Stalker, Shadow Demon,
   Salamander, Succubus, Bebelith, and Pixie structures.
-- Current immutable mechanical source is
-  `8647ceff29ae45c416f948a979fd25098422910d`. The complete domain suite is
+- Current immutable mechanical and visual-contract source is
+  `ee8a5886fdd817e659fe2afdf3f1019501aac064`. The complete domain suite is
   1,009/1,009 PASS; clean Release and strict package validation PASS.
 - Native elementals and mephits plus the reconstructed Lantern Archon are
   structurally qualified by fresh Steam run
@@ -30,15 +30,21 @@
   drain was rejected because it can become permanent.
 - Invisible Stalker and Shadow Demon are reconstructed and exact-structure
   qualified by guarded PASS `20260811T2207541420526Z`.
-- Latest guarded PASS is native-cast run
-  `20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`: all 153
+- Native-cast run `20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`
+  passed all 153
   production ability commands passed on exact committed source `8647cef`,
   covering all 123 one-creature logical entries, all 16 eligible family/tier
   `1d3` cases, and all 14 eligible family/tier `1d4+1` cases. All 205 observed
   units were the intended same kind and exact cleanup passed after the guarded
-  read-only load of `KMG_AUTOMATION_WORKING`. Exact next action is the guarded
-  visual-contract scenario, followed by active-summon persistence, the 16-state
-  launch matrix, and compatibility profiles.
+  read-only load of `KMG_AUTOMATION_WORKING`.
+- Latest guarded PASS is visual-contract run
+  `20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7` on exact
+  committed source `ee8a588`: all ten assertions passed for 67/67 live views,
+  geometry, bounded footprints, navigation, locomotion, attacks, hit/death,
+  ranged origins, and cleanup. No save-writing API was observed and the
+  installation/settings transaction was restored. Exact next action is
+  active-summon persistence, followed by the 16-state launch matrix and
+  compatibility profiles.
 - Active blocker: none. SSH publication is working. GitHub CLI authentication is
   invalid and will be rechecked after local qualification for draft-PR creation.
 

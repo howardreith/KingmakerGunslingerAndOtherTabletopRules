@@ -188,6 +188,28 @@ special-action contracts, active-summon persistence, the 16-state fresh-launch
 matrix, and compatibility-profile qualification remain open and are not
 claimed.
 
+## Visual-contract qualification
+
+Committed source `ee8a5886fdd817e659fe2afdf3f1019501aac064` passed guarded
+scenario `disposable-expanded-summoning-visual-contracts`, run
+`20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7`. Every 67 unique
+one-creature unit was created through its production ability/native summon
+path. The run proved live view attachment, renderable nonzero geometry,
+bounded scale/world bounds, colliders and navigation members, locomotion
+events, attack animation or the exact Lantern ray fallback, hit and death
+handling, valid projectile/torso origins for detected ranged weapons, and
+exact unit/view cleanup.
+
+The Lantern Archon's Will-o'-Wisp rig has no cast/attack clip, so its two-ray
+ability now uses Kingmaker's native `Immediate` animation style and the proven
+`CenterTorso` projectile origin. This is a bounded visual-rig compatibility
+adaptation; ray count, ranged-touch delivery, damage, defenses, and AI remain
+unchanged. Repository validation, `1009/1009` domain tests, clean Release, and
+strict packaging pass. No save-writing API was observed and request-local
+hooks were removed. Residual aesthetic judgment remains on the final manual
+checklist; active-summon persistence, the 16-state fresh-launch matrix, and
+compatibility-profile qualification remain open.
+
 The complete tier I-VII natural/proxy catalog is now structurally qualified on
 committed source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. The final group adds
 Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon,

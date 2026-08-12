@@ -4,13 +4,13 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "8647ceff29ae45c416f948a979fd25098422910d",
+  "currentSha": "ee8a5886fdd817e659fe2afdf3f1019501aac064",
   "actualReleaseVersion": "0.0.77",
-  "completedPhase": "complete-native-ability-cast-and-quantity-runtime-matrix-qualified",
-  "nextConcreteAction": "Implement and qualify the guarded visual-contract scenario, then active-summon persistence, the 16-state launch matrix, and compatibility profiles.",
+  "completedPhase": "complete-native-cast-quantity-and-visual-contract-runtime-matrices-qualified",
+  "nextConcreteAction": "Implement and qualify active-summon save/load/restart and disabled-module cleanup persistence, then the 16-state launch matrix and compatibility profiles.",
   "domainTestResult": "1009/1009 PASS",
-  "releaseBuildResult": "PASS for native-cast-qualified source; exact-reference DLL SHA-256 4ebc621994d9f408554ad2a7902d79fcb41d8eda057fb157288bba7a12821a25",
-  "packageResult": "strict PASS for native-cast-qualified source; package SHA-256 e3e7c5a9f153cd7dba6a96e0fb72f9f213fcb14919e65e76778698c421f816cf",
+  "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
+  "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
   "blueprintLedger": "1149 Expanded Summoning identities; 1403 active, 1 reserved, 1404 total; derived constant registry count 1403",
   "runtimeScenarios": [
     {
@@ -299,6 +299,14 @@
       "runId": "20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825",
       "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0235012428994Z-disposable-expanded-summoning/runtime-result.json",
       "evidence": "153/153 native UnitUseAbility casts passed: 123 one-creature logical entries, 16 tier/family 1d3 cases, and 14 tier/family 1d4+1 cases. All 205 spawned units had the intended same-kind BlueprintUnit identity; per-cast disposal and exact party/global-unit snapshot restoration passed. KMG_AUTOMATION_WORKING was loaded through the exact guarded workflow, no save-writing API was observed, and hooks were removed."
+    },
+    {
+      "scenario": "disposable-expanded-summoning-visual-contracts",
+      "result": "PASS",
+      "sourceSha": "ee8a5886fdd817e659fe2afdf3f1019501aac064",
+      "runId": "20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0316268900968Z-disposable-expanded-summoning-visual-contracts/runtime-result.json",
+      "evidence": "All ten assertions passed for 67/67 unique one-creature units: live views, renderable geometry, bounded footprints, selection/navigation, locomotion, attack animation or exact Lantern ray fallback, hit/death handling, ranged projectile origins, and exact view/unit cleanup. No save-writing API was observed and hooks were removed."
     }
   ],
   "compatibilityProfilesCompleted": [],
@@ -307,7 +315,8 @@
     "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",
     "Tier III-IV natural deviations are explicit: separate movement modes, generic grab/death roll, cheetah sprint, dire-bat blindsense/Alertness, wolverine rage, and unproven Run/Endurance/Survival-focus identities are conservatively omitted; Leopard/Lion use Owlcat's four-claw pounce/rake body representation pending actual cadence proof.",
     "Tier V-VII natural deviations are explicit: Ankylosaurus daze/stun and Elephant/Mastodon trample await exact bounded contracts; grab, separate movement modes, Flyby Attack, and unproven feat identities are conservatively omitted; Dire Lion/Tiger rake uses secondary native limbs pending actual charge-cadence proof.",
-    "Visual contracts, special-action execution, active-summon save/load cleanup, the 16-state launch matrix, and compatibility-profile qualification remain pending."
+    "Residual aesthetic judgment remains on the final manual visual checklist; runtime view, animation-event, projectile-origin, footprint, navigation, death, and cleanup contracts passed for all 67 unique units.",
+    "Special-action execution beyond the actual summon casts, active-summon save/load cleanup, the 16-state launch matrix, and compatibility-profile qualification remain pending."
   ],
   "branchPushed": true,
   "draftPr": null,

@@ -953,3 +953,31 @@
   units same-kind, exact cleanup, no save-writing API observation, and all
   request-local hooks removed. `KMG_AUTOMATION_BASELINE` was never selected or
   modified.
+
+## 2026-08-12 - Complete visual-contract matrix PASS
+
+- Added guarded scenario `disposable-expanded-summoning-visual-contracts` on
+  the exact `KMG_AUTOMATION_WORKING` load workflow. It instantiates every 67
+  unique one-creature unit through its production ability and native summon
+  path, then exercises the attached view, renderers, bounded scale and world
+  bounds, colliders, selection/navigation, locomotion events, attack events,
+  native damage/hit and death handling, ranged projectile origins, and exact
+  disposal/view detachment.
+- The Will-o'-Wisp rig used by Lantern Archon has no cast or attack animation.
+  The production ray now uses Kingmaker's native `Immediate` cast-animation
+  path, allowing its two projectiles to originate at `CenterTorso` without
+  waiting for a nonexistent inherited Ghaele animation event. A focused source
+  contract protects the fallback.
+- Clean gates passed: repository validation, `1009/1009` domain tests, clean
+  Release, and strict package validation. DLL SHA-256:
+  `b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203`;
+  package SHA-256:
+  `23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191`.
+- Fresh Steam run
+  `20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7`
+  passed on committed source
+  `ee8a5886fdd817e659fe2afdf3f1019501aac064`. All ten assertions passed:
+  67/67 live views, renderable geometry, bounded footprints,
+  selection/navigation contracts, locomotion, attack paths, hit/death paths,
+  valid ranged origins, and exact cleanup. No save-writing API was observed,
+  hooks were removed, and the Mods/settings transaction was restored.
