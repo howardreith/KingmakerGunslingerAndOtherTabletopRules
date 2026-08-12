@@ -1,8 +1,9 @@
 # Expanded Summoning fidelity matrix
 
-Status: incremental; template/alignment foundation and first special group are
-source-qualified. Runtime cast, visual, persistence, and compatibility columns
-remain open unless explicitly marked.
+Status: incremental; template/alignment, seven custom special creatures, and
+the tier I-IV natural/proxy group are final-live structure-qualified. Runtime
+cast, visual, persistence, and compatibility columns remain open unless
+explicitly marked.
 
 Each catalog row will record family/tier, creature and template/alignment policy,
 native reuse or donor GUID/name/view, frozen KMG unit and ability identities,
@@ -17,6 +18,18 @@ Primary rules references:
 - [Lantern Archon](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lantern+Archon)
 - [Mephit](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Mephit)
 - [Elemental](https://legacy.aonprd.com/bestiary/elemental.html)
+- [Boar](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Boar)
+- [Leopard](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Leopard)
+- [Monitor Lizard](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Monitor+Lizard)
+- [Cheetah](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Cheetah)
+- [Crocodile](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Crocodile)
+- [Dire Bat](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dire+Bat)
+- [Wolverine](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Wolverine)
+- [Dire Boar](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dire+Boar)
+- [Dire Wolf](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dire+Wolf)
+- [Grizzly Bear](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Grizzly+Bear)
+- [Lion](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lion)
+- [Pteranodon](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Pteranodon)
 
 ## Native dedicated summon reuse
 
@@ -47,6 +60,33 @@ All 67 KMG summon units carry hidden marker
 exactly once. This provides deterministic standalone subtype metadata without
 requiring CotW's later-loaded feature during bootstrap; native optional-marker
 reconciliation remains open.
+
+## Tier III-IV natural and proxy reconstruction
+
+The donor in every row supplies the selected view/rig only. KMG replaces class
+levels, stats, size, speed, body weapons, facts, inventory, brain, XP, loot,
+tags, and campaign behavior from the immutable profile. All rows share the
+frozen quantity abilities generated for their higher-tier placements.
+
+| Creature | Families/tier | KMG unit; visual donor | Delivered chassis/offense | Conservative deviation | Qualification |
+|---|---|---|---|---|---|
+| Boar | SM III; SNA III | `d98699ea265441a09c5b9b51769ef7ce`; `5f968d63d756f994ebff0d774e88e4ab` | Medium animal 2; 17/10/17/2/13/4; speed 40; NA +4; 1d8 gore; Ferocity, Toughness | None structurally identified | Structural PASS `20260812T0031212209441Z`; cast/visual pending |
+| Leopard | SM III; SNA III | `f36aad1d463444c69950f219457b894f`; `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 16/19/15/2/13/6; speed 30; NA +1; bite 1d6, two claws plus native extra rake limbs; Pounce, Weapon Finesse | Native four-claw body is Owlcat's rake adaptation; grab omitted because the only proven generic graph includes unrelated constrict state | Structural PASS; charge/full-attack cadence, cast/visual pending |
+| Monitor Lizard | SM III; SNA III | `10b148d216364b509cd2c665a47b2950`; `4109b40f6bbb49640840644cc84ada67` | Medium animal 3; 17/15/17/2/12/6; speed 30; NA +3; bite 1d8; exact native Constitution-scaled poison; Great Fortitude | Swim and grab omitted | Structural PASS; poison/cast/visual pending |
+| Cheetah | SM III; SNA III | `6eb29e76792c41c5ab9e3812fe4b66e0`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 17/19/15/2/12/6; speed 50; NA +1; bite 1d6 with trip, two 1d3 claws; Weapon Finesse, Improved Initiative | Once-per-hour tenfold sprint omitted; no bounded native cooldown contract proven | Structural PASS; cast/visual pending |
+| Crocodile | SM III; SNA III | `ed3fa562802b418ab062a7da622874da`; Monitor Lizard view `4109b40f6bbb49640840644cc84ada67` | Large animal 3; 19/12/17/1/12/2; speed 20; NA +4; bite 1d8 and secondary KMG 1d12 tail `d7ec01bae32a4d9086214f156ce52ecd` | Swim, grab, death roll, sprint, and hold breath omitted pending summon-safe target-state and movement contracts | Structural PASS; secondary cadence/cast/visual pending |
+| Dire Bat | SM III; SNA III | `d867cb795b5640219a8362661f447697`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 4; 17/15/13/2/14/6; 40-foot airborne movement; NA +3; bite 1d8; Stealthy | 20-foot ground mode, blindsense, and Alertness omitted | Structural PASS; scale/navigation/cast/visual pending |
+| Wolverine | SM III; SNA III | `f640d3e77d7d4a0d8de3351129cd7148`; Worg view `313a17cbd273d1f40bd1654ee2ae186e` | Medium animal 3; 15/15/15/2/12/10; speed 30; NA +2; two 1d6 claws and secondary 1d4 bite; Toughness | Burrow/climb and after-damage rage omitted pending a save/load-safe summon-local rage state | Structural PASS; claw animation/cast/visual pending |
+| Dire Boar | SM IV; SNA IV | `1710475cee544d9d858b05b24fb3ad4c`; `6ec9c63c41a1e754ea4dcd85557625b4` | Large animal 5; 23/10/17/2/13/8; speed 40; NA +6; 2d6 gore; Ferocity, Improved Initiative, Toughness | None structurally identified | Structural PASS; cast/visual pending |
+| Dire Wolf | SM IV; SNA IV | `d2e7b46ea8994f7085063abac3775142`; `03dd28e92faf2e44eb9564a6ba01fdd0` | Large animal 5; 19/15/17/2/12/10; speed 50; NA +3; bite 1d8 with trip; Perception and bite focus | Run omitted because no exact final-live feature identity was proven | Structural PASS; trip/cast/visual pending |
+| Grizzly Bear | SM IV; SNA IV | `f7370368039e41ba8f88e8218cfb39d0`; `0b214d8e81a563549ba0be37cd1c16d0` | Large animal 5; 21/13/19/2/12/6; speed 40; NA +6; bite and two 1d6 claws | Claw grab, Endurance, Run, and Survival focus omitted; generic grab carries unrelated constrict state | Structural PASS; full attack/cast/visual pending |
+| Lion | SM IV; SNA IV | `14c7cbb0f32f4e30bbefaeaccba10269`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Large animal 5; 21/17/15/2/12/6; speed 40; NA +3; bite 1d8, two claws plus native extra rake limbs; Pounce | Native four-claw body is Owlcat's rake adaptation; grab and Run omitted | Structural PASS; charge/full-attack cadence, scale/cast/visual pending |
+| Pteranodon | SM IV; SNA IV | `c9a94142c9164ab793f7a06ae3fdcf56`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 5; 16/19/15/2/15/12; 50-foot airborne movement; NA +2; bite 2d6; Dodge, Improved Initiative | Separate 10-foot ground mode omitted | Structural PASS; reach/scale/navigation/cast/visual pending |
+
+The fresh-process assertion compares every row's HD/class, size, six ability
+scores, speed, primary/additional/secondary weapon references, natural armor,
+feat/special-fact GUIDs, extraplanar marker, and empty inventory against the
+checked-in catalog. It also verifies the KMG crocodile tail is exactly 1d12.
 
 ## Lantern Archon
 

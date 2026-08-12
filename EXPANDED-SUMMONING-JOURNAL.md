@@ -856,3 +856,39 @@
   `49e19b17c15e7f0419b9caf01be223804161c2963151dd039d30c679b367fbba`;
   package SHA-256:
   `4a875b25bcad49996242755a37c1abef1d46b92b870a7b54ed4db19ed05649e6`.
+
+## 2026-08-12 - Tier III-IV natural/proxy structural PASS
+
+- Added immutable profiles for Boar, Leopard, Monitor Lizard, Cheetah,
+  Crocodile, Dire Bat, Wolverine, Dire Boar, Dire Wolf, Grizzly Bear, Lion, and
+  Pteranodon. Each KMG unit now owns exact animal HD, ability scores, size,
+  speed, armor, natural attacks, and proven native facts; donors supply views
+  and compatible rigs only.
+- Added and activated frozen `KMG.Summoning.Natural.Tail1d12`
+  (`d7ec01bae32a4d9086214f156ce52ecd`) as Crocodile's secondary attack. The
+  manifest is 1,400 active plus one reserved; feature-local/registry counts are
+  1,146/1,400 in every module state.
+- Reused exact native pounce, ferocity, monitor-lizard poison, trip, airborne,
+  armor, feat, bite, claw, and gore contracts. Recorded bounded omissions for
+  movement modes, grab/death roll, sprint, blindsense, wolverine rage, and
+  unproven feat identities rather than importing unrelated campaign or
+  Shambling Mound target state.
+- Guarded run `20260812T0026276683838Z` retained a deterministic bootstrap
+  failure: native Dog trip defense is concretely `BlueprintFeature`, not the
+  base `BlueprintUnitFact` type. Owned registrations rolled back and no save
+  was accessed. The repair keeps exact per-fact concrete-type validation.
+- Fresh guarded save-free run
+  `20260812T0031212209441Z-observe-expanded-summoning-inventory` passed on
+  committed source `2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6` in 106,947 ms.
+  All 28 assertions passed: 67 units, 1,048 abilities, registry 1,400, all 681
+  placements, exact tier I-IV natural and special structures, and zero donor
+  aliases, prohibited references, inherited spells, starting inventory, or
+  native-action contamination. Call of the Wild parents were preserved. No
+  save was accessed.
+- Repository validation, `1008/1008` domain tests, clean Release, and strict
+  package validation passed. Runtime DLL SHA-256:
+  `f09a132d50cd9058c16f609f9910181c30e04e630dc19166233f441891241794`;
+  strict package SHA-256:
+  `b89370cc94f4ef125e407c9e7e9fa8164db6e5d2ddf049d9cb7f6ba1d3713725`;
+  local-runtime package SHA-256:
+  `994ab69e830668d50147901bdf7d410c50aa732f0ba36ace1903f85f99875eb0`.

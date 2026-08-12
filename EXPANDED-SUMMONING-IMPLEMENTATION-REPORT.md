@@ -14,13 +14,14 @@ lifecycle rules remain intact. Repository validation, 981/981 domain tests,
 clean Release build, and strict 0.0.77 package validation pass.
 
 Current implementation checkpoint: the complete frozen 681-placement catalog,
-67 summon-unit identities, 1,045 abilities, six HD-banded celestial or
-fiendish template buffs, and two bounded smite markers are registered
+67 summon-unit identities, 1,048 abilities, six HD-banded celestial or
+fiendish template buffs, two bounded smite markers, seven custom special
+creatures, and the tier I-IV natural/proxy group are registered
 deterministically. The exact template
 SR threshold is implemented as low (0-4 HD, no SR), mid (5-10 HD, CR+5 SR),
 and high (11+ HD, CR+5 SR), with resistance/DR values 5/5/10. The ledger is
-1,375 stable IDs: 1,374 active and one reserved. Source qualification passes
-1,004 tests, clean Release, and strict package validation.
+1,401 stable IDs: 1,400 active and one reserved. Source qualification passes
+1,008 tests, clean Release, and strict package validation.
 
 The six-buff graph subsequently passed guarded fresh-process run
 `20260811T1954362756414Z-observe-expanded-summoning-inventory` on committed
@@ -160,5 +161,30 @@ assertions with registry 1,399, all 681 placements, exactly 67 hidden KMG
 extraplanar markers, and zero sanitizer, donor-alias, inventory, inherited-spell,
 or native-action contamination failures. Static validation, `1007/1007`
 domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
+cleanup/persistence, module-state launches, and compatibility profiles remain
+open and are not claimed.
+
+The tier III-IV natural/proxy tranche is now structurally qualified on
+committed source `2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6`. Boar, Leopard,
+Monitor Lizard, Cheetah, Crocodile, Dire Bat, Wolverine, Dire Boar, Dire Wolf,
+Grizzly Bear, Lion, and Pteranodon are rebuilt from checked-in tabletop
+profiles. Their donors supply views only. A frozen KMG secondary 1d12 tail
+identity supplies Crocodile's tail without changing the native 1d8 donor
+weapon; the ledger is now 1,400 active plus one reserved identity and the
+constant registry is 1,400.
+
+The first guarded launch
+`20260812T0026276683838Z-observe-expanded-summoning-inventory` timed out after
+an exact bootstrap failure: several native facts declared as the base
+`BlueprintUnitFact` are concrete `BlueprintFeature` objects. Registration
+rolled back. The repair preserves exact concrete lookups per fact instead of
+weakening type validation. Fresh guarded run
+`20260812T0031212209441Z-observe-expanded-summoning-inventory` then passed all
+28 assertions in 106,947 ms: 67 units, 1,048 abilities, registry 1,400, all 681
+placements, exact tier I-IV and special structures, and zero sanitizer,
+donor-alias, prohibited-reference, inventory, inherited-spell, or native-action
+contamination failures. Call of the Wild final-live parents remained intact;
+no save was accessed. Repository validation, `1008/1008` domain tests, clean
+Release, and strict package validation pass. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
