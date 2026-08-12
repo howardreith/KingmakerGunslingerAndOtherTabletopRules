@@ -1,12 +1,100 @@
 # Expanded Summoning implementation report
 
-Status: active; implementation and qualification are not yet complete.
+Status: implementation and native runtime qualification complete on immutable
+source `b8e7950680ab4718c18965837a37c5974a8d35bc`; final deterministic package,
+hash publication, and draft-PR creation remain.
 
 Selected baseline: `origin/master` at
 `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required
 `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`. Release baseline: 0.0.77.
 
-No release or runtime qualification claim is made at this checkpoint.
+## Authoritative final qualification
+
+This section supersedes the checkpoint-status language in the chronological
+engineering record below. Earlier “pending” statements are retained as an
+honest account of what was unproven at those checkpoints, not as the current
+release state.
+
+- Frozen catalog: 66 Summon Monster entries, 57 Summon Nature's Ally entries,
+  67 shared unique creatures, 361 SM placements, 320 SNA placements, and 681
+  same-kind placements total.
+- Identities: 1,155 Expanded Summoning active identities; repository ledger
+  1,409 active plus one reserved; runtime registration is exactly 1,409 in
+  every one of the 16 feature-module states.
+- Static gates: repository validation PASS, `1009/1009` domain tests PASS,
+  warnings-as-errors Release build PASS, and strict package validation PASS on
+  the immutable runtime source. Final documentation-bearing package hashes are
+  recorded after the deterministic release freeze.
+- Structural runtime: guarded run
+  `20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0` passed all 30
+  assertions, including every registered identity, 18 required parent spells,
+  all 681 placements, donor immutability, sanitizer contracts, exact special
+  structures, and preservation of preexisting final-live variants.
+- Mechanical runtime: guarded run
+  `20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889` passed every
+  assertion and all 153 production commands: 123 logical one-creature choices,
+  16 `1d3` tier/family cases, and 14 `1d4+1` cases. Counts, same-kind identity,
+  CL20 duration, close placement, Augment/Superior Summoning, Acadamae
+  eligibility, good/neutral/evil templates, SNA alignment, representative
+  combat, special actions, and exact cleanup passed.
+- Visual contracts: guarded run
+  `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778` passed all ten
+  assertions for 67/67 unique units: attached/renderable views, bounded scale
+  and footprint, navigation, locomotion, attack/projectile fallback, hit/death,
+  and exact view/unit cleanup.
+- Persistence: enabled and disabled prepare/load/cleanup/absence sequences all
+  passed on fresh Steam App ID 640820 processes. Frozen summon identities,
+  caster context, remaining duration, faction/control/view state, and cleanup
+  survived restart. With the module disabled, existing summons remained
+  load-safe while new KMG parent publication was exactly zero.
+- Module matrix: all 16 restart-bound states passed on the immutable source with
+  exact independent surfaces and constant 1,409 registration. Settings were
+  restored byte-for-byte.
+- Compatibility: standalone twice, Call of the Wild 1.14.4c-2.1 twice, Arms
+  and Armor 1.0.10 once, Toggle Custom Soundpacks 1.0.1 once, and the
+  highest-risk combined profile twice all passed and restored the Mods
+  directory and settings transaction exactly.
+- Save safety: restored settings SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  working-save SHA-256
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected `KMG_AUTOMATION_BASELINE` SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  The protected baseline was never selected or modified.
+
+### Conservative adaptations and omissions
+
+- Lantern Archon uses a Will-o'-Wisp view and immediate dual ranged-touch ray
+  delivery. Aura of Menace is conditionally reused only when the compatible
+  optional carrier exists; greater teleport, gestalt, truespeech, and
+  separately modeled low-light/darkvision are omitted.
+- Mephits retain Owlcat's unconditional Fast Healing 2 because no safe local
+  element-environment predicate was proven.
+- Natural/proxy creatures omit only the per-row mechanics listed in the
+  fidelity matrix, principally unsupported swim/climb/burrow modes, grab,
+  trample, sprint, rage, and unproven donor-specific feats or senses. Donor
+  visuals do not contribute unrelated mechanics.
+- Salamander uses bounded spear/tail, heat, and grab-constrict graphs; cold
+  vulnerability is omitted because no exact safe bounded fact was proven.
+- Invisible Stalker retains attack-safe permanent invisibility; dedicated
+  tracking and scent are omitted.
+- Shadow Demon uses bounded incorporeal/cold combat; possession, shadow blend,
+  sprint, teleportation, and summoning are omitted.
+- Succubus charm and energy drain are bounded to short domination and a
+  one-round temporary negative level; profane gift, teleportation, and
+  summoning are omitted.
+- Bebelith replaces permanent armor destruction with a DC 25, one-round -2 AC
+  dismantle effect and retains bounded demon-hunting bonuses; rot and climb are
+  omitted.
+- Pixie sleep arrows use a zero-damage, resource-backed, non-transferable bow;
+  irresistible dance uses a frozen bounded state. No ammunition or persistent
+  effect can escape the summon lifecycle.
+
+The manual residual visual checklist is limited to aesthetic judgment of proxy
+scale, camera framing, projectile appearance, and animation quality; all
+mechanical visual contracts already pass.
+
+## Chronological engineering record
 
 The mandatory Shield Other prerequisite is source-qualified: established links
 no longer depend on distance, while close initial targeting and all other

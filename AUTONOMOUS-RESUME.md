@@ -2,6 +2,27 @@
 
 ## Active Expanded Summoning mission (2026-08-11)
 
+- Current release state (2026-08-12): implementation and every native runtime
+  gate are complete on immutable pushed source
+  `b8e7950680ab4718c18965837a37c5974a8d35bc`. Final structural, 153-command
+  mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
+  states, and all eight required compatibility launches PASS. The exact next
+  action is the documentation-bearing deterministic package/hash freeze,
+  final evidence commit/push, and draft PR. This paragraph supersedes older
+  checkpoint “next action” entries below.
+- Current counts: 66 SM entries, 57 SNA entries, 67 unique units, 681
+  placements, 1,155 Expanded Summoning identities, 1,409 active repository
+  identities plus one reserved, settings schema 3, and `1009/1009` domain
+  tests.
+- Restoration is complete: settings
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  `KMG_AUTOMATION_WORKING`
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected baseline
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  Each compatibility transaction restored the prior Mods directory exactly;
+  `KMG_AUTOMATION_BASELINE` was never modified.
+
 - Branch: `codex/expanded-summoning`; selected baseline `origin/master` at
   `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor
   `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`; release baseline 0.0.77.

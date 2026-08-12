@@ -13,7 +13,7 @@
   alignment handling, native summon lifecycle/feat integration, and bounded
   Lantern Archon, Salamander, Invisible Stalker, Shadow Demon, Succubus,
   Bebelith, and Pixie adaptations.
-- Keeps all 1,152 Expanded Summoning identities registered when the module is
+- Keeps all 1,155 Expanded Summoning identities registered when the module is
   disabled so existing saves and active summons remain load-safe.
 - Corrects Shield Other so close range limits initial targeting only; an
   established link now ends on duration/removal, dead or missing endpoints, or

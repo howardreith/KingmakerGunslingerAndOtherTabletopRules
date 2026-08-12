@@ -1,9 +1,21 @@
 # Expanded Summoning fidelity matrix
 
-Status: incremental; template/alignment, seven custom special creatures, and
-the complete tier I-VII natural/proxy group are final-live structure-qualified. Runtime
-cast, visual, persistence, and compatibility columns remain open unless
-explicitly marked.
+Status: release-qualified on immutable source
+`b8e7950680ab4718c18965837a37c5974a8d35bc`. The complete roster passed the
+final-live structural observer, all 153 production summon commands, the
+67-unit visual-contract matrix, enabled and disabled active-summon persistence,
+all 16 module states, and every required compatibility profile. Conservative
+adaptations and omissions remain identified in the row that owns them.
+
+Final evidence key: structural run
+`20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0`; mechanical run
+`20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889`; visual run
+`20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled and
+disabled persistence runs are recorded in `EXPANDED-SUMMONING-STATE.json`;
+the 16-state matrix and eight required compatibility launches all passed on the
+same immutable source. “Runtime PASS” in a row means its production summon
+path was exercised; it does not imply that an explicitly omitted tabletop
+ability was implemented.
 
 Each catalog row will record family/tier, creature and template/alignment policy,
 native reuse or donor GUID/name/view, frozen KMG unit and ability identities,
@@ -42,31 +54,32 @@ Primary rules references:
 
 | Entries | Families/tiers | Implementation | Sanitization | Evidence |
 |---|---|---|---|---|
-| Air, earth, fire, water elementals; Small through Elder (24 unique units) | SM II/IV/V/VI/VII/VIII and matching SNA tiers | Exact Owlcat dedicated summon donor for every element/size; KMG freezes one shared family-neutral unit identity per creature | XP/loot/inventory/campaign surfaces stripped; class spell arrays empty; no celestial/fiendish template applied | Exact 24-key immutable profile; donor graph PASS `20260811T2055502086857Z`; source tests PASS; actual casts/visual/profile runs pending |
-| Air, earth, fire, water mephits (4 unique units) | SM IV and SNA IV | Exact Owlcat dedicated summon donor preserves Small outsider chassis, two claws, breath weapon, elemental facts, DR 5/magic, and native spell-like abilities | XP removed; no summon/conjure or planar-travel fact appears in selected donor facts; source component arrays independently cloned | Exact 4-key immutable profile; donor graph PASS `20260811T2055502086857Z`; source tests PASS; environmental fast-healing deviation and actual casts pending |
+| Air, earth, fire, water elementals; Small through Elder (24 unique units) | SM II/IV/V/VI/VII/VIII and matching SNA tiers | Exact Owlcat dedicated summon donor for every element/size; KMG freezes one shared family-neutral unit identity per creature | XP/loot/inventory/campaign surfaces stripped; class spell arrays empty; no celestial/fiendish template applied | Structural, production-cast, 67-unit visual matrix, persistence, and required-profile PASS |
+| Air, earth, fire, water mephits (4 unique units) | SM IV and SNA IV | Exact Owlcat dedicated summon donor preserves Small outsider chassis, two claws, breath weapon, elemental facts, DR 5/magic, and native spell-like abilities | XP removed; no summon/conjure or planar-travel fact appears in selected donor facts; source component arrays independently cloned | Structural, production-cast, 67-unit visual matrix, persistence, and required-profile PASS; Fire Mephit breath dealt actual fire damage |
 
 The native mephit units grant unconditional Fast Healing 2. Tabletop restricts
 fast healing to element-specific environments. Kingmaker has no safe local
-environment predicate established yet; retaining Owlcat's native practical
-adaptation is explicitly recorded pending mechanical runtime qualification.
+environment predicate was proven safe. KMG therefore retains Owlcat's native,
+unconditional Fast Healing 2 as a documented practical adaptation; the final
+mechanical and compatibility runs passed with this behavior.
 
 ## Low-tier natural reconstruction
 
 | Creature | Families/tiers | KMG unit | Delivered chassis/offense | Deviation | Qualification |
 |---|---|---|---|---|---|
-| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Structural PASS `20260812T0010300046437Z`; actual cast/visual pending |
-| Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c` | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse | Separate 10-foot ground speed omitted; Roc visual still requires scale/navigation proof | Structural PASS; actual cast/visual pending |
-| Poisonous Frog | SM I; SNA I | `e1a8e5e206154dd48b6aca1d4262e8e7` | Tiny animal 1; bite 1; native six-tick 1d2 Constitution poison, Fortitude, one save cures | Swim movement omitted | Structural PASS; poison use/cast/visual pending |
-| Giant Centipede | SM II; SNA I | `baf9e8f829e9410db8f3d200bb62a2c6` | Medium vermin 1; speed 40; bite 1d6-1; native six-tick 1d3 Dexterity poison; eight-leg trip defense | Int 1 represents absent Intelligence; climb omitted; native poison lacks the tabletop +2 racial DC bonus | Structural PASS; poison use/cast/visual pending |
-| Giant Spider | SM II; SNA II | `4a3cd49e751448c8b8836485b262fdf1` | Medium vermin 3; bite 1d6; native four-tick 1d2 Strength poison; natural armor +1 | Int 1 represents absent Intelligence; web, climb, and tremorsense omitted pending bounded contracts | Structural PASS; poison use/cast/visual pending |
-| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; Worg view only | Disease immunity and allergic reaction omitted pending safe exact contracts | Structural PASS; actual cast/visual pending |
-| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Wolf view only | Structural PASS; actual cast/visual pending |
+| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
+| Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c` | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse | Separate 10-foot ground speed omitted; Roc visual used at bounded scale | Structural/runtime/visual/persistence/profile PASS |
+| Poisonous Frog | SM I; SNA I | `e1a8e5e206154dd48b6aca1d4262e8e7` | Tiny animal 1; bite 1; native six-tick 1d2 Constitution poison, Fortitude, one save cures | Swim movement omitted | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
+| Giant Centipede | SM II; SNA I | `baf9e8f829e9410db8f3d200bb62a2c6` | Medium vermin 1; speed 40; bite 1d6-1; native six-tick 1d3 Dexterity poison; eight-leg trip defense | Int 1 represents absent Intelligence; climb omitted; native poison lacks the tabletop +2 racial DC bonus | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
+| Giant Spider | SM II; SNA II | `4a3cd49e751448c8b8836485b262fdf1` | Medium vermin 3; bite 1d6; native four-tick 1d2 Strength poison; natural armor +1 | Int 1 represents absent Intelligence; web, climb, and tremorsense omitted because no bounded contract was proven | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
+| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; Worg view only | Disease immunity and allergic reaction omitted because no safe exact contract was proven | Structural/runtime/visual/persistence/profile PASS |
+| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Wolf view only | Structural/runtime/visual/persistence/profile PASS |
 
 All 67 KMG summon units carry hidden marker
 `KMG.Summoning.Subtype.Extraplanar` (`1812739855844dc4adf3c32a70f13512`)
 exactly once. This provides deterministic standalone subtype metadata without
-requiring CotW's later-loaded feature during bootstrap; native optional-marker
-reconciliation remains open.
+requiring CotW's later-loaded feature during bootstrap. No optional-marker
+mutation is needed; final-live Call of the Wild reconciliation passed twice.
 
 ## Tier III-IV natural and proxy reconstruction
 
@@ -77,18 +90,18 @@ frozen quantity abilities generated for their higher-tier placements.
 
 | Creature | Families/tier | KMG unit; visual donor | Delivered chassis/offense | Conservative deviation | Qualification |
 |---|---|---|---|---|---|
-| Boar | SM III; SNA III | `d98699ea265441a09c5b9b51769ef7ce`; `5f968d63d756f994ebff0d774e88e4ab` | Medium animal 2; 17/10/17/2/13/4; speed 40; NA +4; 1d8 gore; Ferocity, Toughness | None structurally identified | Structural PASS `20260812T0031212209441Z`; cast/visual pending |
-| Leopard | SM III; SNA III | `f36aad1d463444c69950f219457b894f`; `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 16/19/15/2/13/6; speed 30; NA +1; bite 1d6, two claws plus native extra rake limbs; Pounce, Weapon Finesse | Native four-claw body is Owlcat's rake adaptation; grab omitted because the only proven generic graph includes unrelated constrict state | Structural PASS; charge/full-attack cadence, cast/visual pending |
-| Monitor Lizard | SM III; SNA III | `10b148d216364b509cd2c665a47b2950`; `4109b40f6bbb49640840644cc84ada67` | Medium animal 3; 17/15/17/2/12/6; speed 30; NA +3; bite 1d8; exact native Constitution-scaled poison; Great Fortitude | Swim and grab omitted | Structural PASS; poison/cast/visual pending |
-| Cheetah | SM III; SNA III | `6eb29e76792c41c5ab9e3812fe4b66e0`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 17/19/15/2/12/6; speed 50; NA +1; bite 1d6 with trip, two 1d3 claws; Weapon Finesse, Improved Initiative | Once-per-hour tenfold sprint omitted; no bounded native cooldown contract proven | Structural PASS; cast/visual pending |
-| Crocodile | SM III; SNA III | `ed3fa562802b418ab062a7da622874da`; Monitor Lizard view `4109b40f6bbb49640840644cc84ada67` | Large animal 3; 19/12/17/1/12/2; speed 20; NA +4; bite 1d8 and secondary KMG 1d12 tail `d7ec01bae32a4d9086214f156ce52ecd` | Swim, grab, death roll, sprint, and hold breath omitted pending summon-safe target-state and movement contracts | Structural PASS; secondary cadence/cast/visual pending |
-| Dire Bat | SM III; SNA III | `d867cb795b5640219a8362661f447697`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 4; 17/15/13/2/14/6; 40-foot airborne movement; NA +3; bite 1d8; Stealthy | 20-foot ground mode, blindsense, and Alertness omitted | Structural PASS; scale/navigation/cast/visual pending |
-| Wolverine | SM III; SNA III | `f640d3e77d7d4a0d8de3351129cd7148`; Worg view `313a17cbd273d1f40bd1654ee2ae186e` | Medium animal 3; 15/15/15/2/12/10; speed 30; NA +2; two 1d6 claws and secondary 1d4 bite; Toughness | Burrow/climb and after-damage rage omitted pending a save/load-safe summon-local rage state | Structural PASS; claw animation/cast/visual pending |
-| Dire Boar | SM IV; SNA IV | `1710475cee544d9d858b05b24fb3ad4c`; `6ec9c63c41a1e754ea4dcd85557625b4` | Large animal 5; 23/10/17/2/13/8; speed 40; NA +6; 2d6 gore; Ferocity, Improved Initiative, Toughness | None structurally identified | Structural PASS; cast/visual pending |
-| Dire Wolf | SM IV; SNA IV | `d2e7b46ea8994f7085063abac3775142`; `03dd28e92faf2e44eb9564a6ba01fdd0` | Large animal 5; 19/15/17/2/12/10; speed 50; NA +3; bite 1d8 with trip; Perception and bite focus | Run omitted because no exact final-live feature identity was proven | Structural PASS; trip/cast/visual pending |
-| Grizzly Bear | SM IV; SNA IV | `f7370368039e41ba8f88e8218cfb39d0`; `0b214d8e81a563549ba0be37cd1c16d0` | Large animal 5; 21/13/19/2/12/6; speed 40; NA +6; bite and two 1d6 claws | Claw grab, Endurance, Run, and Survival focus omitted; generic grab carries unrelated constrict state | Structural PASS; full attack/cast/visual pending |
-| Lion | SM IV; SNA IV | `14c7cbb0f32f4e30bbefaeaccba10269`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Large animal 5; 21/17/15/2/12/6; speed 40; NA +3; bite 1d8, two claws plus native extra rake limbs; Pounce | Native four-claw body is Owlcat's rake adaptation; grab and Run omitted | Structural PASS; charge/full-attack cadence, scale/cast/visual pending |
-| Pteranodon | SM IV; SNA IV | `c9a94142c9164ab793f7a06ae3fdcf56`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 5; 16/19/15/2/15/12; 50-foot airborne movement; NA +2; bite 2d6; Dodge, Improved Initiative | Separate 10-foot ground mode omitted | Structural PASS; reach/scale/navigation/cast/visual pending |
+| Boar | SM III; SNA III | `d98699ea265441a09c5b9b51769ef7ce`; `5f968d63d756f994ebff0d774e88e4ab` | Medium animal 2; 17/10/17/2/13/4; speed 40; NA +4; 1d8 gore; Ferocity, Toughness | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
+| Leopard | SM III; SNA III | `f36aad1d463444c69950f219457b894f`; `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 16/19/15/2/13/6; speed 30; NA +1; bite 1d6, two claws plus native extra rake limbs; Pounce, Weapon Finesse | Native four-claw body is Owlcat's rake adaptation; grab omitted because the only proven generic graph includes unrelated constrict state | Structural/runtime/visual/persistence/profile PASS; representative pounce combat PASS |
+| Monitor Lizard | SM III; SNA III | `10b148d216364b509cd2c665a47b2950`; `4109b40f6bbb49640840644cc84ada67` | Medium animal 3; 17/15/17/2/12/6; speed 30; NA +3; bite 1d8; exact native Constitution-scaled poison; Great Fortitude | Swim and grab omitted | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
+| Cheetah | SM III; SNA III | `6eb29e76792c41c5ab9e3812fe4b66e0`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 17/19/15/2/12/6; speed 50; NA +1; bite 1d6 with trip, two 1d3 claws; Weapon Finesse, Improved Initiative | Once-per-hour tenfold sprint omitted; no bounded native cooldown contract proven | Structural/runtime/visual/persistence/profile PASS |
+| Crocodile | SM III; SNA III | `ed3fa562802b418ab062a7da622874da`; Monitor Lizard view `4109b40f6bbb49640840644cc84ada67` | Large animal 3; 19/12/17/1/12/2; speed 20; NA +4; bite 1d8 and secondary KMG 1d12 tail `d7ec01bae32a4d9086214f156ce52ecd` | Swim, grab, death roll, sprint, and hold breath omitted because no summon-safe target-state and movement contracts were proven | Structural/runtime/visual/persistence/profile PASS |
+| Dire Bat | SM III; SNA III | `d867cb795b5640219a8362661f447697`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 4; 17/15/13/2/14/6; 40-foot airborne movement; NA +3; bite 1d8; Stealthy | 20-foot ground mode, blindsense, and Alertness omitted | Structural/runtime/visual/persistence/profile PASS; scale/navigation bounded |
+| Wolverine | SM III; SNA III | `f640d3e77d7d4a0d8de3351129cd7148`; Worg view `313a17cbd273d1f40bd1654ee2ae186e` | Medium animal 3; 15/15/15/2/12/10; speed 30; NA +2; two 1d6 claws and secondary 1d4 bite; Toughness | Burrow/climb and after-damage rage omitted because no save/load-safe summon-local rage state was proven | Structural/runtime/visual/persistence/profile PASS |
+| Dire Boar | SM IV; SNA IV | `1710475cee544d9d858b05b24fb3ad4c`; `6ec9c63c41a1e754ea4dcd85557625b4` | Large animal 5; 23/10/17/2/13/8; speed 40; NA +6; 2d6 gore; Ferocity, Improved Initiative, Toughness | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
+| Dire Wolf | SM IV; SNA IV | `d2e7b46ea8994f7085063abac3775142`; `03dd28e92faf2e44eb9564a6ba01fdd0` | Large animal 5; 19/15/17/2/12/10; speed 50; NA +3; bite 1d8 with trip; Perception and bite focus | Run omitted because no exact final-live feature identity was proven | Structural/runtime/visual/persistence/profile PASS |
+| Grizzly Bear | SM IV; SNA IV | `f7370368039e41ba8f88e8218cfb39d0`; `0b214d8e81a563549ba0be37cd1c16d0` | Large animal 5; 21/13/19/2/12/6; speed 40; NA +6; bite and two 1d6 claws | Claw grab, Endurance, Run, and Survival focus omitted; generic grab carries unrelated constrict state | Structural/runtime/visual/persistence/profile PASS |
+| Lion | SM IV; SNA IV | `14c7cbb0f32f4e30bbefaeaccba10269`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Large animal 5; 21/17/15/2/12/6; speed 40; NA +3; bite 1d8, two claws plus native extra rake limbs; Pounce | Native four-claw body is Owlcat's rake adaptation; grab and Run omitted | Structural/runtime/visual/persistence/profile PASS; representative pounce combat PASS |
+| Pteranodon | SM IV; SNA IV | `c9a94142c9164ab793f7a06ae3fdcf56`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 5; 16/19/15/2/15/12; 50-foot airborne movement; NA +2; bite 2d6; Dodge, Improved Initiative | Separate 10-foot ground mode omitted | Structural/runtime/visual/persistence/profile PASS; reach/scale/navigation bounded |
 
 The fresh-process assertion compares every row's HD/class, size, six ability
 scores, speed, primary/additional/secondary weapon references, natural armor,
@@ -104,13 +117,13 @@ below preserve proven native animation categories while freezing tabletop dice.
 
 | Creature | Families/tier | KMG unit; visual donor | Delivered chassis/offense | Conservative deviation | Qualification |
 |---|---|---|---|---|---|
-| Dire Lion | SM V; SNA V | `56c64aa6765a4c37a1b30c0c5b31427b`; Smilodon `beae4985629a6f64eb98081e3171e4c1` | Large animal 8; 25/15/17/2/12/10; speed 40; NA +4; bite 1d8, two 1d6 claws plus two secondary rake claws; Pounce, Improved Initiative, Perception/claw focus | Grab and Run omitted; secondary rake cadence requires actual-charge proof | Structural PASS `20260812T0045336396930Z`; cast/visual pending |
-| Ankylosaurus | SM V; SNA V | `10c80d5cfa594332bd3e5127799e426f`; Hodag `c3524f96954a1d94f8525b86e7626633` | Huge animal 10; 27/10/17/2/13/8; speed 30; NA +14; KMG 3d6 tail `15394605e1664a51bce4b50f38a7603a`; Great Fortitude, Power Attack | Strength-based daze/stun rider omitted pending a proven bounded native Dazed contract; bull-rush/overrun/tail-focus identities unproven | Structural PASS; tail animation/cast/visual pending |
-| Dire Bear | SM VI; SNA VI | `11b15a81cea1498babfdb57af1b53c41`; `260da5b557e3fb04bb4960a36a5d1dc4` | Large animal 10; 25/13/21/2/12/10; speed 40; NA +8; bite 1d8, two claws 1d6; Improved Initiative, Iron Will, Perception focus | Grab, Endurance, and Run omitted | Structural PASS; full attack/cast/visual pending |
-| Dire Tiger / Smilodon | SM VI; SNA VI | `d15ee151c2274f9f86ab523f111bc3af`; `beae4985629a6f64eb98081e3171e4c1` | Large animal 14; 27/15/17/2/12/10; speed 40; NA +6; 2d6/19-20 bite, two 2d4 claws plus two secondary rake claws; Pounce and exact critical/focus feats | Grab and Run omitted; secondary rake cadence requires actual-charge proof | Structural PASS; charge/full-attack/cast/visual pending |
-| Elephant | SM VI; SNA VI | `9dd8544097234f05bcd35d400d91b510`; Mastodon `028cc6f46e7998f46855a33ffde89567` | Huge animal 11; 30/10/19/2/13/7; speed 40; NA +9; native 2d8 gore and secondary 2d6 slam; Great Fortitude, Iron Will, Power Attack, Perception focus | Trample omitted pending a commandable path-safe movement contract; Endurance and Improved Bull Rush identities unproven | Structural PASS; gore/slam/cast/scale pending |
-| Mastodon | SM VII; SNA VII | `e129ffc2768d47c5bee61bb99b0c8703`; dedicated summon `028cc6f46e7998f46855a33ffde89567` | Huge animal 14; 34/12/21/2/13/7; speed 40; NA +12; native 2d8 gore and secondary 2d6 slam; Iron Will, Power Attack, Perception focus | Trample omitted; Endurance, Improved Bull Rush/Will, and gore-focus concrete identities unproven | Structural PASS; gore/slam/cast/scale pending |
-| Roc | SM VII; SNA VII | `439e955cb0fd41daafd0478d3641615a`; Giant Eagle/Roc rig `406c1e1af5400ac4881e330502ccbd9e` | Gargantuan animal 16; 28/15/17/2/12/11; 80-foot airborne movement; NA +14; KMG 2d8 bite `c19d1025fe2b47769c93a3b76d0c052c` and two 2d6 talons `8a3741a7598147baa08de552565635ad`; exact critical/initiative/save/focus feats | Separate ground speed, talon grab, and Flyby Attack omitted | Structural PASS; footprint/reach/navigation/camera/cast/visual pending |
+| Dire Lion | SM V; SNA V | `56c64aa6765a4c37a1b30c0c5b31427b`; Smilodon `beae4985629a6f64eb98081e3171e4c1` | Large animal 8; 25/15/17/2/12/10; speed 40; NA +4; bite 1d8, two 1d6 claws plus two secondary rake claws; Pounce, Improved Initiative, Perception/claw focus | Grab and Run omitted; secondary rake follows Owlcat's native pounce adaptation | Structural/runtime/visual/persistence/profile PASS; representative pounce combat PASS |
+| Ankylosaurus | SM V; SNA V | `10c80d5cfa594332bd3e5127799e426f`; Hodag `c3524f96954a1d94f8525b86e7626633` | Huge animal 10; 27/10/17/2/13/8; speed 30; NA +14; KMG 3d6 tail `15394605e1664a51bce4b50f38a7603a`; Great Fortitude, Power Attack | Strength-based daze/stun rider omitted because no bounded native Dazed contract was proven; bull-rush/overrun/tail-focus identities unproven | Structural/runtime/visual/persistence/profile PASS; tail animation and bounded scale PASS |
+| Dire Bear | SM VI; SNA VI | `11b15a81cea1498babfdb57af1b53c41`; `260da5b557e3fb04bb4960a36a5d1dc4` | Large animal 10; 25/13/21/2/12/10; speed 40; NA +8; bite 1d8, two claws 1d6; Improved Initiative, Iron Will, Perception focus | Grab, Endurance, and Run omitted | Structural/runtime/visual/persistence/profile PASS |
+| Dire Tiger / Smilodon | SM VI; SNA VI | `d15ee151c2274f9f86ab523f111bc3af`; `beae4985629a6f64eb98081e3171e4c1` | Large animal 14; 27/15/17/2/12/10; speed 40; NA +6; 2d6/19-20 bite, two 2d4 claws plus two secondary rake claws; Pounce and exact critical/focus feats | Grab and Run omitted; secondary rake follows Owlcat's native pounce adaptation | Structural/runtime/visual/persistence/profile PASS; representative pounce combat PASS |
+| Elephant | SM VI; SNA VI | `9dd8544097234f05bcd35d400d91b510`; Mastodon `028cc6f46e7998f46855a33ffde89567` | Huge animal 11; 30/10/19/2/13/7; speed 40; NA +9; native 2d8 gore and secondary 2d6 slam; Great Fortitude, Iron Will, Power Attack, Perception focus | Trample omitted because no commandable path-safe movement contract was proven; Endurance and Improved Bull Rush identities unproven | Structural/runtime/visual/persistence/profile PASS; bounded scale/navigation PASS |
+| Mastodon | SM VII; SNA VII | `e129ffc2768d47c5bee61bb99b0c8703`; dedicated summon `028cc6f46e7998f46855a33ffde89567` | Huge animal 14; 34/12/21/2/13/7; speed 40; NA +12; native 2d8 gore and secondary 2d6 slam; Iron Will, Power Attack, Perception focus | Trample omitted; Endurance, Improved Bull Rush/Will, and gore-focus concrete identities unproven | Structural/runtime/visual/persistence/profile PASS; bounded scale/navigation PASS |
+| Roc | SM VII; SNA VII | `439e955cb0fd41daafd0478d3641615a`; Giant Eagle/Roc rig `406c1e1af5400ac4881e330502ccbd9e` | Gargantuan animal 16; 28/15/17/2/12/11; 80-foot airborne movement; NA +14; KMG 2d8 bite `c19d1025fe2b47769c93a3b76d0c052c` and two 2d6 talons `8a3741a7598147baa08de552565635ad`; exact critical/initiative/save/focus feats | Separate ground speed, talon grab, and Flyby Attack omitted | Structural/runtime/visual/persistence/profile PASS; footprint/reach/navigation/camera bounds PASS |
 
 Fresh Steam-backed run `20260812T0045336396930Z` passed all 29 assertions on
 exact source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. It checked every
@@ -133,7 +146,7 @@ contamination. No save was accessed.
 | Traits/aura | Good, lawful, extraplanar, airborne facts; structurally reuses Aura of Menace carrier `1ce4878b5e714f659d0854a12f4b3cf2` when supplied by a compatible optional mod; standalone conservatively omits the aura because Kingmaker 2.1.7b has no native carrier |
 | Removed donor mechanics | Wisp HD/type mechanics, touch weapons, invisibility, spell immunity, ambush/tags/brain; all Ghaele weapons, spells, gaze, inventory, and azata facts |
 | Conservative deviations | Greater teleport and gestalt omitted by summon safety contract. No distinct native Archon subtype fact was found; outsider HD plus explicit lawful/good/extraplanar traits implement the mechanical type surface. Low-light/darkvision and truespeech are not separately added because no safe bounded unit fact has yet been proven. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2238575798728Z`; actual cast, projectile/view, aura behavior, cleanup, persistence, and compatibility pending. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, dual-ray combat, view/projectile, cleanup, persistence, and required profiles PASS. Aura is conditionally present only where the compatible optional carrier exists. |
 
 ## Invisible Stalker
 
@@ -146,8 +159,8 @@ contamination. No save was accessed.
 | Offense | Two native `AirElementalSlam_Large` attacks, matching the intended 2d6 slam dice; Combat Reflexes and Weapon Focus (slam) |
 | Defenses/traits | Natural armor +6; air, elemental, and extraplanar traits; Improved Initiative and Lightning Reflexes; native `NaturalInvisibilityBuff` whose exact graph preserves invisibility after offensive actions |
 | Removed donor mechanics | Huge size/stats/HD, whirlwind, air mastery, elemental brain, enemy scaling, XP/loot, and donor class progression |
-| Conservative deviations | Dedicated tracking behavior and scent are omitted because no bounded native tracking fact was proven. The air-elemental view must still pass scale, footprint, navigation, and animation qualification. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2207541420526Z`; actual cast/combat/visual/persistence/profile runs pending. |
+| Conservative deviations | Dedicated tracking behavior and scent are omitted because no bounded native tracking fact was proven. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, attack-safe permanent invisibility combat, bounded view/navigation, cleanup, persistence, and required profiles PASS. |
 
 ## Bebelith
 
@@ -161,7 +174,7 @@ contamination. No save was accessed.
 | Dismantle | The second same-target claw hit in one round triggers Reflex DC 25; failure applies KMG state `736a349933f24cc2b11bc284b6e559cb` for one round and reduces AC by 2 without changing the equipped item |
 | Removed donor mechanics | Doomspider poison, web and web immunity, donor HD/stats/type/brain, enemy scaling, XP/loot/inventory, and campaign behavior |
 | Conservative deviations | Permanent armor destruction is replaced with a bounded one-round AC penalty to preserve inventory/save safety. Demon hunting keys from exact chaotic-evil outsider facts and grants +2 attack/damage. Rot and climb are omitted because no safe bounded native implementation has been proven. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2310424930290Z`; actual claw sequencing, save/effect, combat, scale/navigation, visual, persistence, and profile runs pending. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, two-claw dismantle/save/effect, demon-hunting combat, bounded scale/navigation/view, cleanup, persistence, and required profiles PASS. |
 
 ## Pixie
 
@@ -174,8 +187,8 @@ contamination. No save was accessed.
 | Sleep arrows | Body-mounted KMG longbow `0a1d8ac4be724595aa952471a9491975` uses the native arrow rig and deals zero weapon dice; 16 save-backed resource uses, Will DC 15, native Sleeping state for 50 rounds on failure; no ammunition item or inventory transfer |
 | Irresistible dance | KMG spell-like ability `5cacf6a72c724b7fad8d7605cba1e790`, one resource-backed use, CL 8/spell level 6, direct touch-range delivery, and bounded KMG dance state `aa8b4284e12e49f0b37f327f665638d1`; target can do nothing but dance and takes -4 AC/-10 Reflex for 1d4+1 rounds on a failed Will save or one round on success. The spell-like ability does not clone Call of the Wild-only delivery/state blueprints. |
 | Removed donor mechanics | Donor HD/stats/class progression/spells/brain/inventory/campaign behavior; no teleportation, summon/conjuration, permanent ammunition, transferable loot, or persistent external effect |
-| Conservative deviations | The no-damage sleep bow preserves projectile/animation behavior while keeping the special effect bounded. The exact fey view still requires scale, projectile socket, casting, hit, death, navigation, and selection-circle qualification. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2310424930290Z`; actual bow/dance use, resource persistence, animation/projectile, combat, cleanup, save/load, and profile runs pending. |
+| Conservative deviations | The no-damage sleep bow preserves projectile/animation behavior while keeping the special effect bounded. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, bow/dance use, resources, animation/projectile, combat, bounded fey view/navigation, cleanup, persistence, and required profiles PASS. |
 
 ## Salamander
 
@@ -187,8 +200,8 @@ contamination. No save was accessed.
 | Chassis | 8 outsider HD; Medium chaotic evil; Str 16, Dex 13, Con 18, Int 14, Wis 15, Cha 13; 20-foot movement; natural armor +7; fire and extraplanar traits; DR 10/magic |
 | Offense | Native standard spear in the primary hand; KMG tail weapon `93e097b8d3db42d3a37656502899e1a9` dealing 2d6; bounded combat fact `a47bc65d6b6b42b6a19610e22b13f171` supplies one hit-confirmed 1d6 fire rider and a cloned grab/constrict graph dealing 2d6+4 |
 | Removed donor mechanics | Lizardfolk stats, HD, inventory, drops, class progression, donor brain, and campaign surfaces; no planar travel, summoning, or unrelated poison/web/spell behavior |
-| Conservative deviations | The engine graph models spear and tail through native weapon slots and bounded hit triggers; iterative attack cadence and grab target cleanup require actual-cast/runtime combat proof. Cold vulnerability is not yet separately represented because no exact safe bounded fact has been proven. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2238575798728Z`; actual cast/combat/visual/persistence/profile runs pending. |
+| Conservative deviations | The engine graph models spear and tail through native weapon slots and bounded hit triggers. Cold vulnerability is omitted because no exact safe bounded fact was proven. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, spear/tail/heat/grab-constrict combat, bounded view, cleanup, persistence, and required profiles PASS. |
 
 ## Succubus
 
@@ -201,8 +214,8 @@ contamination. No save was accessed.
 | Offense | Two native 1d6 claws; bounded Dominate Person spell-like ability `1662d63944d94cdeaa62562dc9ac9349` with Charisma parameters, humanoid-only target contract, Will save, and three-round duration; single-action AI/brain `8109da6090a64cbcb02326fb08e8ce1f` / `38e57062576e4c9e97c2982972c81328` |
 | Defenses/drain | DR 10/cold iron or good; acid/cold resistance 10; fire/electricity/poison immunity; SR 18. Combat fact `cd51ad31f8764d2797b59eb43da7a9f8` applies one temporary negative level for one round on the first qualifying hit only. Domination buff `6e1f6eb3e773451dbda9e0ecd07486d9` removes itself if the summoned caster disappears. |
 | Removed donor mechanics | Nymph spells/gaze/class facts and campaign surfaces; native one-day/permanent-capable energy drain was rejected; teleportation, summoning, permanent profane gift, and external persistent target state are absent |
-| Conservative deviations | Charm and energy-drain identity are represented by bounded domination and a one-round temporary first-hit drain. Profane gift is omitted because it can outlive the summon. Exact humanoid targeting, save cadence, and cleanup still require actual-cast/save-load proof. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2238575798728Z`; actual cast/combat/visual/persistence/profile runs pending. |
+| Conservative deviations | Charm and energy-drain identity are represented by bounded domination and a one-round temporary first-hit drain. Profane gift is omitted because it can outlive the summon. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, domination/drain combat and bounded cleanup, view, persistence, and required profiles PASS. |
 
 ## Shadow Demon
 
@@ -215,5 +228,5 @@ contamination. No save was accessed.
 | Offense | Claw/claw/bite using native 1d6 claw and 1d8 bite weapons; KMG combat-traits fact `f81993d391054678a138227b91141eae` adds 1d6 cold to hit-confirmed natural attacks |
 | Defenses/traits | Native incorporeal damage handling and critical/precision immunity; DR 10/cold iron or good; acid/fire resistance 10; cold/electricity/poison immunity; SR 17; chaotic, evil, extraplanar facts |
 | Removed donor mechanics | Soul Eater HD/stats, Wisdom-damage feature, all-around vision, DR/magic, campaign facts, and donor brain; teleportation and summon/conjuration are absent |
-| Conservative deviations | Possession is omitted because no duration-bound, save/load-safe control transfer has been proven. Shadow blend and sprint are omitted pending safe light-state and cooldown primitives. Demon subtype is represented by outsider plus chaotic/evil/extraplanar facts because no exact standalone native Demon subtype fact was found. |
-| Qualification | Static/domain `1006/1006 PASS`; clean Release and strict package PASS. Exact final-live structure PASS `20260811T2207541420526Z`; actual cast/combat/visual/persistence/profile runs pending. |
+| Conservative deviations | Possession is omitted because no duration-bound, save/load-safe control transfer was proven. Shadow blend and sprint are omitted because no safe light-state and cooldown primitives were proven. Demon subtype is represented by outsider plus chaotic/evil/extraplanar facts because no exact standalone native Demon subtype fact was found. |
+| Qualification | `1009/1009` domain PASS; final structure, production cast, incorporeal/cold combat, bounded view, cleanup, persistence, and required profiles PASS. |

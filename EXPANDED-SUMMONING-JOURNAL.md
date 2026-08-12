@@ -1,5 +1,40 @@
 # Expanded Summoning journal
 
+## 2026-08-12 - immutable-source final runtime qualification
+
+- Pushed immutable runtime source
+  `b8e7950680ab4718c18965837a37c5974a8d35bc` contains 1,155 Expanded
+  Summoning identities; repository registration is exactly 1,409 active plus
+  one reserved in every feature state.
+- Final structural run
+  `20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0` PASS (30/30).
+- Final mechanical run
+  `20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889` PASS: all 153
+  production commands, 123 logical one-creature entries, every required
+  family/tier quantity case, same-kind counts, templates/alignment, summon
+  feats, special combat, and cleanup.
+- Final visual run
+  `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778` PASS for 67/67
+  unique units and all ten structural visual contracts.
+- Enabled persistence runs
+  `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6`,
+  `20260812T1158042311459Z-f21e3713df3b4545add5e7ab3436e865`, and
+  `20260812T1200508004220Z-02af221881da449f827cf5a048ba6c67` PASS.
+- Disabled-publication persistence runs
+  `20260812T1203346138814Z-0c81aa138d344d8e867d84d0ec316564`,
+  `20260812T1206142978812Z-a085c35bc5174b9d9bdd2633826436d3`, and
+  `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6` PASS. Active
+  identities loaded safely while new KMG publication was zero.
+- All 16 module configurations passed fresh launches with constant 1,409
+  registration and isolated publication surfaces.
+- Standalone and Call of the Wild passed twice; Arms and Armor and Toggle
+  Custom Soundpacks passed once; the highest-risk combined profile passed
+  twice. Every profile transaction restored Mods and settings exactly.
+- Settings, working save, and protected baseline hashes were restored and
+  verified; `KMG_AUTOMATION_BASELINE` was never modified.
+- Next: deterministic documentation-bearing package/hash freeze, curated final
+  evidence commit/push, draft PR, and requirement-by-requirement audit.
+
 ## 2026-08-11 - baseline and mission intake
 
 - Intended repository confirmed at `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger` with remote `git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git`.

@@ -4,403 +4,142 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "317759478539127ebf237067bbde697b1da8c60d",
+  "currentSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "strengthened-complete-mechanical-runtime-contract-qualified",
-  "nextConcreteAction": "Commit and push the mechanically qualified 1,155-identity source, then rerun the structural, visual, persistence, 16-state, and compatibility gates on the immutable final-source commit.",
+  "completedPhase": "immutable-source-native-runtime-qualification-complete",
+  "nextConcreteAction": "Commit the reconciled release documentation, run the final deterministic clean build/package/hash gates, publish the evidence commit, and open the draft pull request.",
   "domainTestResult": "1009/1009 PASS",
-  "releaseBuildResult": "PASS for strengthened mechanical source; exact-reference DLL SHA-256 cb42098c786792cb786c9f4ab457c8e38a8e5208e0907a7cc7eef821c802e9cb",
-  "packageResult": "strict PASS for strengthened mechanical source; local-runtime package SHA-256 a2289e9305d2e667183c24ca03ad5e8846f4c8d4e55f2200e972a049219c531e",
-  "blueprintLedger": "1155 Expanded Summoning identities; 1409 active, 1 reserved, 1410 total; derived constant registry count 1409",
+  "staticValidationResult": "PASS",
+  "releaseBuildResult": "PASS on immutable runtime source b8e7950680ab4718c18965837a37c5974a8d35bc; DLL SHA-256 cb42098c786792cb786c9f4ab457c8e38a8e5208e0907a7cc7eef821c802e9cb before the final documentation-only package freeze",
+  "packageResult": "strict PASS on immutable runtime source; final documentation-bearing deterministic package/hash repetition remains the next gate",
+  "roster": {
+    "summonMonsterEntries": 66,
+    "summonNaturesAllyEntries": 57,
+    "uniqueCreatures": 67,
+    "summonMonsterPlacements": 361,
+    "summonNaturesAllyPlacements": 320,
+    "totalPlacements": 681
+  },
+  "blueprintLedger": {
+    "expandedSummoningActiveIdentities": 1155,
+    "repositoryActive": 1409,
+    "repositoryReserved": 1,
+    "repositoryTotal": 1410,
+    "constantRuntimeRegistrationCount": 1409
+  },
+  "featureSettings": {
+    "schemaVersion": 3,
+    "expandedSummoningDefaultEnabled": true,
+    "restartBound": true,
+    "matrixResult": "16/16 PASS",
+    "matrixSourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
+    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1211226889431Z-observe-feature-module-settings/runtime-result.json",
+    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1241396573801Z-observe-feature-module-settings/runtime-result.json",
+    "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
+  },
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1727529145302Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "df65c391365ce52367f05b457e6f2bc6a61a3a09",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1741299016346Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "ba6500f16b06cf8adb9c5d32149929137e1d98e2",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1747085341434Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "e23dc00077dc23cc957c3db4a8309d16b75696f2",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1813067760804Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "fde2c66638e68d9c466946e9a90fd91ac709cca3",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1820275250965Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1827302141068Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "b354c8210d3da44506533f0ec2c53ed86d179336",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1831132044960Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "219dfbe44c7abdfb8d534755f2ea65f06459da04",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1838286338373Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "787a970d019efdc731c667a50ce7816776e46e1d",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1843447348611Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "a689525f6b7ac4392e19337f5837d74370b389ed",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1851191704530Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "d50fe67f6bdbdefc9c914d03c5d724302ca16c40",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1858359771129Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "344c9590dc02c086da9e4d9dcd03917e6ebb741a",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1905591662821Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1912513494823Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "9b064ac2896d38b69a87777976825fbed795f6a2",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1924349269417Z-observe-expanded-summoning-inventory/runtime-result.json"
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "b77f392f918649beb3fdbfc62026bae48d3490a5",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1932316147945Z-observe-expanded-summoning-inventory/runtime-evidence.json",
-      "rootCause": "Localization key collision between celestial/fiendish execution descriptions; repaired in the following commit."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1937046769749Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Template localization repair loaded cleanly; 67 units, 1045 abilities, 1370 registered identities, 681 parent placements, and sanitizer invariants passed without save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "d76f5c6010ca3612ba2b1c24e076b7601fed9227",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1944046651609Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact template assertions passed: logical=182, celestial=182, fiendish=182, buffs=4; registry=1370 and placements=681; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "d384ba06cf76896543a6b23ed480d3f6715bbba2",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T1954362756414Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact HD-banded template assertions passed: logical=182, celestial=182, fiendish=182, buffs=6; registry=1372 and placements=681; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "63d77276ea97468f6bb31768b3f4e7125a390250",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2000068867927Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All nine exact Call of the Wild template features and referenced mechanics were present; smite features use base AddFacts/AddAbilityResources and reference two abilities plus one shared resource; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "f5587d327e67a202adcca89b7961f2683c2b2a0f",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2004013138253Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Both optional smite abilities were swift, unit-resource-backed, Charisma/character-level scaled target effects; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "15c3b7f1dc2d91269f44a0480c4ba036f83ea15b",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2008011506353Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "The shared optional resource has exact fixed maximum one, while both abilities apply the same permanent non-child target buff; direct reuse was rejected because the external target state could outlive a summon. No save was accessed."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PROCESS_EXITED_EARLY",
-      "sourceSha": "a0d8e7752281d4ae1e51ce094c1226f6a30faf16",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2020185475961Z-observe-expanded-summoning-inventory/orchestration.json",
-      "evidence": "Steam-launched process accepted the guarded request and loaded the exact source, then exited during platform initialization before final-live blueprint inspection. No save access occurred; the subsequent fresh launch passed."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "a0d8e7752281d4ae1e51ce094c1226f6a30faf16",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2021406071785Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact final-live registry 1374; 67 units; 1045 abilities; 681 placements; 182 celestial and 182 fiendish executions; six template buffs and two bounded smite markers; all sanitizer invariants passed. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "FAIL",
-      "sourceSha": "6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2031332882968Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact roster, registry, placements, and sanitizer checks passed, but alignment actions accumulated across abilities sharing native action graphs. The initial repair isolated ActionList containers; the next run proved their GameAction elements were the deeper alias. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "FAIL",
-      "sourceSha": "ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2037058339804Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Explicit ActionList cloning alone did not isolate the graph: 286 non-KMG abilities retained KMG actions because GameAction is a ScriptableObject rejected by the clone's Unity-object guard. The following repair creates independent GameAction objects; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "FAIL",
-      "sourceSha": "0759783da38db3843905f368c62a964217870545",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2043115519772Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Native-action isolation passed at zero and representative KMG abilities contained one independent action. Remaining failures came from the observer assuming one spawn node per ability instead of one alignment/template/smite action per actual native spawn branch. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "b88e99cffb7464d7354416fba82d1da313e17ae2",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2048003275107Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All alignment/template/smite counts matched actual spawn-branch cardinality across 182 celestial, 182 fiendish, and 320 Nature's Ally executions; non-KMG action contamination was exactly zero; registry 1374 and all prior invariants passed. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "9e1d851e75cf413f5d0a576484a9f5a8538b2a2b",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2055502086857Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 54 distinct frozen donor GUIDs were present and their bounded unit/component/body/view graphs were captured. All 17 assertions passed, including registry 1374, 681 placements, exact alignment/template/smite structure, and zero sanitizer or native-contamination failures. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "8c576bc2ff741f726493ce347de16f02c7ee02de",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2102583998517Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Focused final-live candidate inventory found 75 exact Will-o'-Wisp, archon, light-ray, and aura surfaces. It froze the Will-o'-Wisp view donor, Ghaele two-projectile ray donor, and native Aura of Menace carrier used by the following reconstruction. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "f7c399527b64d072fc18f982861e49c49b6692ad",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2120595436392Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "The registry rejected an unnamed Lantern AI shell before configuration. Owned registrations rolled back; no save access. Repaired by naming AI and brain shells inside their factories."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "376d6aece4bb3533d04c17aab4a3927d96724a78",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2128429047818Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Strict lookup exposed the installed library's concrete native fact types before observation. Owned registrations rolled back; no save access. Repaired from prior exact inventory evidence without weakening GUID/type checks."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "FAIL",
-      "sourceSha": "3205515a5415d8e4717ea132b36f20372872af9d",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2134201112193Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Blueprint construction and 18 of 19 assertions completed. The remaining diagnostic false positive treated the KMG.Summoning namespace on the bounded Lantern ray and defense facts as a forbidden summon mechanic. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "fa91900ea6e64206986a9db2deeccbe866f75190",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2138366091237Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 19 structural assertions passed: 67 units, 1046 abilities, registry 1378, 681 placements, 55 exact donors, exact Lantern reconstruction, zero forbidden references or donor aliases, and exact celestial/fiendish/SNA execution structure. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "a5a40796803b503895e955d12149c3457d556c46",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2150184037199Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All structural assertions passed while exact Natural Invisibility, Incorporeal, Spectre energy-drain, and Devourer energy-drain graphs were captured. Stock drain is one-day and can become permanent; no save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "37e28a9e64c0b8ed1c2bb8ac0aff5b30cfef4556",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2156134219365Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All structural assertions passed while exact tail, grapple/constrict, Dominate Person, and Vampiric Touch graphs were captured. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "b4a3fc86804a8a950808457b4f9c38bddeb8152c",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2207541420526Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact Invisible Stalker and Shadow Demon assertions passed with registry 1379, 67 units, 1046 abilities, all 681 placements, and zero sanitizer or donor-alias failures. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "b0deb04ff9b387b375202c5304a6741c9549ef0a",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2238575798728Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All exact Salamander and Succubus assertions passed with 67 units, 1047 abilities, registry 1386, all 681 placements, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, or inherited-spell failures. No save access."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260811T2310424930290Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 25 assertions passed: 67 units, 1048 abilities, registry 1396, all 681 placements, exact Bebelith and Pixie structures, exact alignment/template execution counts, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were observed and preserved. No save was accessed."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "c2bee19c6598f559436e5f09af5029dc1da746de",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0010300046437Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 27 assertions passed: 67 units, 1048 abilities, registry 1399, all 681 placements, one exact hidden KMG extraplanar marker per unit, exact low-tier natural and special structures, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "TIMEOUT",
-      "sourceSha": "fdea72fcd1b5a6c5cad6923d728cac76d4036e7a",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0026276683838Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "Exact concrete native fact-type mismatch stopped bootstrap and rolled back owned registrations; no save was accessed. Repaired without weakening exact type checks."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0031212209441Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 28 assertions passed in 106947 ms: 67 units, 1048 abilities, registry 1400, all 681 placements, exact tier I-IV natural/proxy and special structures, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
-    },
-    {
-      "scenario": "observe-expanded-summoning-inventory",
-      "result": "PASS",
-      "sourceSha": "3c2c5fef82a7d9b032f7da906385013a5699cc8c",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0045336396930Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "evidence": "All 29 assertions passed in 107891 ms: 67 units, 1048 abilities, registry 1403, all 681 placements, exact tier I-VII natural/proxy and special structures, exact 3d6/2d8/2d6 custom weapon dice, and zero sanitizer, donor-alias, prohibited-reference, inventory, inherited-spell, or native-action-isolation failures. Call of the Wild final-live summon surfaces were preserved. No save was accessed."
+      "runId": "20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0",
+      "result": "PASS (30/30)",
+      "sourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1149141636854Z-observe-expanded-summoning-inventory/runtime-result.json"
     },
     {
       "scenario": "disposable-expanded-summoning",
-      "result": "PASS",
-      "sourceSha": "8647ceff29ae45c416f948a979fd25098422910d",
-      "runId": "20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0235012428994Z-disposable-expanded-summoning/runtime-result.json",
-      "evidence": "153/153 native UnitUseAbility casts passed: 123 one-creature logical entries, 16 tier/family 1d3 cases, and 14 tier/family 1d4+1 cases. All 205 spawned units had the intended same-kind BlueprintUnit identity; per-cast disposal and exact party/global-unit snapshot restoration passed. KMG_AUTOMATION_WORKING was loaded through the exact guarded workflow, no save-writing API was observed, and hooks were removed."
+      "runId": "20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889",
+      "result": "PASS (12/12 assertions; 153/153 production commands)",
+      "sourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1303503583591Z-disposable-expanded-summoning/runtime-result.json"
     },
     {
       "scenario": "disposable-expanded-summoning-visual-contracts",
-      "result": "PASS",
-      "sourceSha": "ee8a5886fdd817e659fe2afdf3f1019501aac064",
-      "runId": "20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0316268900968Z-disposable-expanded-summoning-visual-contracts/runtime-result.json",
-      "evidence": "All ten assertions passed for 67/67 unique one-creature units: live views, renderable geometry, bounded footprints, selection/navigation, locomotion, attack animation or exact Lantern ray fallback, hit/death handling, ranged projectile origins, and exact view/unit cleanup. No save-writing API was observed and hooks were removed."
+      "runId": "20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778",
+      "result": "PASS (10/10; 67/67 unique units)",
+      "sourceSha": "b8e7950680ab4718c18965837a37c5974a8d35bc",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1151394595593Z-disposable-expanded-summoning-visual-contracts/runtime-result.json"
     },
     {
-      "scenario": "working-save-expanded-summoning-prepare",
+      "scenario": "working-save-expanded-summoning-prepare (enabled)",
+      "runId": "20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6",
       "result": "PASS",
-      "runId": "20260812T0406050115626Z-2af7ef1879c741b8a55444795206ca55",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0406049959375Z-working-save-expanded-summoning-prepare/runtime-result.json",
-      "evidence": "Nine assertions passed. Two actual KMG summon abilities created loaded-area-attached units with exact registered identities, caster context, 120-second native lifecycle duration, control surfaces, and 681 published references; exactly one guarded working-save write serialized both frozen unit GUIDs."
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1155220366576Z-working-save-expanded-summoning-prepare/runtime-result.json"
     },
     {
-      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "scenario": "working-save-expanded-summoning-verify-cleanup (enabled)",
+      "runId": "20260812T1158042311459Z-f21e3713df3b4545add5e7ab3436e865",
       "result": "PASS",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0426360426153Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
-      "evidence": "Enabled fresh process deserialized both units with exact identity, caster context, duration, view, commands, faction, and 681 published references; native lifecycle dismissal and entity destruction reached zero live attached units and exactly one guarded cleanup save."
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1158042155039Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json"
     },
     {
-      "scenario": "working-save-expanded-summoning-verify-absent",
+      "scenario": "working-save-expanded-summoning-verify-absent (enabled)",
+      "runId": "20260812T1200508004220Z-02af221881da449f827cf5a048ba6c67",
       "result": "PASS",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0429096733079Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
-      "evidence": "Enabled second fresh process deserialized zero KMG summons and made no save write."
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1200507693060Z-working-save-expanded-summoning-verify-absent/runtime-result.json"
     },
     {
-      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "scenario": "working-save-expanded-summoning-prepare (before disabling)",
+      "runId": "20260812T1203346138814Z-0c81aa138d344d8e867d84d0ec316564",
       "result": "PASS",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0434255041615Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
-      "evidence": "With Expanded Summoning disabled, both active KMG summons still deserialized safely from always-registered identities, all lifecycle/control checks passed, required-parent publication was exactly zero, and cleanup saved through the guarded working-save path."
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1203345826112Z-working-save-expanded-summoning-prepare/runtime-result.json"
     },
     {
-      "scenario": "working-save-expanded-summoning-verify-absent",
-      "result": "PASS",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0436578330836Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
-      "evidence": "Disabled second fresh process deserialized zero KMG summons, retained exactly zero KMG parent references, and made no save write."
+      "scenario": "working-save-expanded-summoning-verify-cleanup (disabled)",
+      "runId": "20260812T1206142978812Z-a085c35bc5174b9d9bdd2633826436d3",
+      "result": "PASS; frozen identities loaded while KMG publication was zero",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1206142822591Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json"
     },
     {
-      "scenario": "disposable-expanded-summoning",
+      "scenario": "working-save-expanded-summoning-verify-absent (disabled)",
+      "runId": "20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6",
       "result": "PASS",
-      "sourceSha": "317759478539127ebf237067bbde697b1da8c60d-content-identical-precommit-run",
-      "runId": "20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1143069876490Z-disposable-expanded-summoning/runtime-result.json",
-      "evidence": "All 153 native commands passed: 123 one-creature, 16 tier/family 1d3, and 14 tier/family 1d4+1 cases. Same-kind identity, CL20 duration, close-range approach, exact cleanup, good/neutral/evil template selection with zero residual native template buffs, Augment/Superior behavior, representative attacks, bounded special mechanics, and native Fire Mephit breath damage all passed."
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1208449062569Z-working-save-expanded-summoning-verify-absent/runtime-result.json"
     }
   ],
-  "compatibilityProfilesCompleted": [
+  "compatibilityProfiles": [
     {
       "profile": "standalone",
-      "result": "2/2 PASS",
-      "transactions": ["compat-20260812T054815Z-c06c6c6b86df", "compat-20260812T055014Z-1e10b82c5c5b"],
-      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0548446025055Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0550433566798Z-observe-expanded-summoning-inventory/runtime-result.json"],
-      "restoration": "exact"
+      "result": "2/2 PASS; restored",
+      "transactions": ["compat-20260812T124359Z-72c449cc3b90", "compat-20260812T124547Z-ca13807d841b"]
     },
     {
       "profile": "Call of the Wild 1.14.4c-2.1",
-      "result": "2/2 PASS",
-      "transactions": ["compat-20260812T055206Z-1a0eb7ab4a94", "compat-20260812T055451Z-0b6f132431c1"],
-      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0552420040669Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0555254109141Z-observe-expanded-summoning-inventory/runtime-result.json"],
-      "restoration": "exact"
+      "result": "2/2 PASS; restored",
+      "transactions": ["compat-20260812T124739Z-1ba7466cc239", "compat-20260812T125021Z-b7705ae5d118"]
     },
     {
       "profile": "Arms and Armor 1.0.10",
-      "result": "1/1 PASS",
-      "transaction": "compat-20260812T055735Z-3c351a890b59",
-      "resultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0558061041650Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "restoration": "exact"
+      "result": "1/1 PASS; restored",
+      "transactions": ["compat-20260812T125302Z-b93f3cd123d7"]
     },
     {
       "profile": "Toggle Custom Soundpacks 1.0.1",
-      "result": "1/1 PASS",
-      "transaction": "compat-20260812T055928Z-f3f395ae342e",
-      "resultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0559583170589Z-observe-expanded-summoning-inventory/runtime-result.json",
-      "restoration": "exact"
+      "result": "1/1 PASS; restored",
+      "transactions": ["compat-20260812T125454Z-1d1dbe9924c8"]
     },
     {
       "profile": "highest-risk combined",
-      "result": "2/2 PASS",
-      "transactions": ["compat-20260812T060121Z-d337b4c24bd8", "compat-20260812T060411Z-37a29b64137f"],
-      "resultPaths": ["C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0601567817377Z-observe-expanded-summoning-inventory/runtime-result.json", "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0604453742582Z-observe-expanded-summoning-inventory/runtime-result.json"],
-      "restoration": "exact"
+      "result": "2/2 PASS; restored",
+      "transactions": ["compat-20260812T125646Z-3f7c9460e14d", "compat-20260812T125929Z-3ff453ed348b"]
     }
   ],
-  "featureModuleMatrix": {
-    "result": "16/16 PASS on fresh Steam processes",
-    "sourceSha": "5e25656d0ed869973d97ed11191ed3175330f4ac",
-    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0450331105561Z-observe-feature-module-settings/runtime-result.json",
-    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T0521369892566Z-observe-feature-module-settings/runtime-result.json",
-    "settingsRestoredSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
+  "restoration": {
+    "settingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e",
+    "workingSaveSha256": "3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997",
+    "protectedBaselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "modsDirectory": "restored exactly after every profile transaction",
+    "kmgAutomationBaselineModified": false
   },
   "unresolvedDeviations": [
-    "The hidden KMG extraplanar marker is deterministic in standalone and remains feature-owned under optional-mod profiles.",
-    "Poisonous Frog swim, Centipede and Spider climb, Spider web/tremorsense, and Goblin Dog disease immunity/allergic reaction remain conservative omissions pending safe bounded contracts.",
-    "Tier III-IV natural deviations are explicit: separate movement modes, generic grab/death roll, cheetah sprint, dire-bat blindsense/Alertness, wolverine rage, and unproven Run/Endurance/Survival-focus identities are conservatively omitted; Leopard/Lion use Owlcat's four-claw pounce/rake body representation pending actual cadence proof.",
-    "Tier V-VII natural deviations are explicit: Ankylosaurus daze/stun and Elephant/Mastodon trample await exact bounded contracts; grab, separate movement modes, Flyby Attack, and unproven feat identities are conservatively omitted; Dire Lion/Tiger rake uses secondary native limbs pending actual charge-cadence proof.",
-    "Residual aesthetic judgment remains on the final manual visual checklist; runtime view, animation-event, projectile-origin, footprint, navigation, death, and cleanup contracts passed for all 67 unique units.",
-    "Special-action execution beyond the actual summon casts remains conservatively bounded by structural/runtime component qualification; final-source regression repetition remains pending."
+    "Lantern Archon Aura of Menace is present only when a compatible optional carrier is structurally available; greater teleport, gestalt, truespeech, and separately modeled darkvision are omitted.",
+    "Mephits retain Owlcat's unconditional Fast Healing 2 because no safe element-environment predicate was proven.",
+    "Shadow Demon possession, shadow blend, and sprint are omitted; the bounded incorporeal cold-damage identity is retained.",
+    "Succubus profane gift is omitted; charm and energy drain use bounded domination and a one-round temporary negative level.",
+    "Bebelith permanent armor destruction is replaced by a one-round -2 AC dismantle effect; rot and climb are omitted.",
+    "Pixie sleep uses a zero-damage, non-inventory bow and bounded resource; dance uses a frozen bounded state.",
+    "Natural/proxy omissions are enumerated per creature in planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md, principally unsupported movement modes, grab/trample/sprint/rage, and unproven donor-specific feats or senses."
   ],
   "branchPushed": true,
-  "draftPr": null,
-  "draftPrBlocker": "gh authentication currently invalid; recheck after local completion"
+  "draftPrNumber": null,
+  "draftPrReason": "Not yet attempted; final deterministic release package and curated evidence commit are the remaining prerequisites."
 }
