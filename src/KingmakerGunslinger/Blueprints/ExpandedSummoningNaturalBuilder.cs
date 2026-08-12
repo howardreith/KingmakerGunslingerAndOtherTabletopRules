@@ -81,6 +81,9 @@ namespace KingmakerGunslinger.Blueprints
                 { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
                 { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" }
             };
+        private static readonly ISet<string> BaseUnitFactKeys =
+            new HashSet<string>(new[] { "ReducedReach", "Ferocity" },
+                StringComparer.Ordinal);
 
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -196,8 +199,14 @@ namespace KingmakerGunslinger.Blueprints
                         profile.NaturalArmor));
             }
             foreach (string fact in profile.Facts)
-                facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
-                    library, FactGuids[fact], profile.DisplayName + " " + fact));
+            {
+                BlueprintUnitFact value = BaseUnitFactKeys.Contains(fact)
+                    ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
+                        library, FactGuids[fact], profile.DisplayName + " " + fact)
+                    : BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                        library, FactGuids[fact], profile.DisplayName + " " + fact);
+                facts.Add(value);
+            }
             facts.Add(extraplanar);
             unit.AddFacts = facts.ToArray();
         }

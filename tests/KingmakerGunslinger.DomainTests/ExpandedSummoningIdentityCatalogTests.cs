@@ -176,7 +176,8 @@ namespace KingmakerGunslinger.DomainTests
                 "d1f80b5c5c73cc84db7854774850b08c",
                 "d88236a83413baa45ae9c8e5ddce5a6c",
                 "955e356c813de1743a98ab3485d5bc69",
-                "1a8149c09e0bdfc48a305ee6ac3729a8" })
+                "1a8149c09e0bdfc48a305ee6ac3729a8",
+                "BaseUnitFactKeys.Contains(fact)" })
                 Assertions.True(builder.Contains(token),
                     "Tier III-IV natural builder contract is missing: " +
                     token);
