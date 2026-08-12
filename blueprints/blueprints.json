@@ -11145,6 +11145,14 @@
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
+      "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDanceState",
+      "guid": "aa8b4284e12e49f0b37f327f665638d1",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Bounded summon-safe dance state; registered in every feature-module state."
+    },
+    {
       "symbol": "KMG.Summoning.Special.Pixie.IrresistibleDanceResource",
       "guid": "dfb8be6f355242ea9c3a71a6205ec740",
       "plannedType": "BlueprintAbilityResource",

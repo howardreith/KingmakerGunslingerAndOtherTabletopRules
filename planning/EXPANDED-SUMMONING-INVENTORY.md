@@ -212,6 +212,12 @@ Will-o'-Wisp, archon, light-ray, and aura candidates.
 - optional Aura of Menace carrier: `1ce4878b5e714f659d0854a12f4b3cf2`
   (present in the installed Call of the Wild reference, absent in standalone
   Kingmaker 2.1.7b; exact-type reuse is optional and standalone omits the aura)
+- Call of the Wild-only Irresistible Dance delivery/state:
+  `fad6a06a3cb04fabaedf4d358c61880d` /
+  `4d283e0b70fb489ba79e69387818c3f3`; neither is a registration dependency.
+  Pixie uses a stable KMG touch-range ability plus bounded `CantAct`, -4 AC,
+  and -10 Reflex state so standalone and optional-mod profiles share identical
+  mechanics.
   (`ArchonSubdomainAreaArchonsAuraEffectBuff`); adding the buff as a unit fact
   activates the native area-effect lifecycle without a toggle resource;
 - outsider class: `92ab5f2fe00631b44810deffcc1a97fd`.

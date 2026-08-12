@@ -11,10 +11,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1149, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1150, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1048, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
-            Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
@@ -493,7 +493,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureBebelith", "BebelithCombatComponent",
                 "DamageAlignment.Good",
                 "ConfigurePixie", "PixieSleepArrowComponent",
-                "NativeSleepingBuffGuid", "NativeDanceBuffGuid",
+                "NativeSleepingBuffGuid", "PixieDanceStateSymbol",
+                "UnitCondition.CantAct", "reflex.Value = -10",
                 "PixieSleepArrowUses", "AbilityResourceLogic",
                 "new DiceFormula(0, DiceType.Zero)" })
                 Assertions.True(source.Contains(token),

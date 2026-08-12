@@ -11,7 +11,7 @@
   "domainTestResult": "1009/1009 PASS",
   "releaseBuildResult": "PASS for visual-contract-qualified source; exact-reference DLL SHA-256 b2a2c448e1f29907823298778fc9cc8ff81e42ab4eb21003b11ef2758a4b7203",
   "packageResult": "strict PASS for visual-contract-qualified source; package SHA-256 23a3562191597c6ff992db56e17fd9beb8587a4a2f42306ed6302b1f6cc4b191",
-  "blueprintLedger": "1149 Expanded Summoning identities; 1403 active, 1 reserved, 1404 total; derived constant registry count 1403",
+  "blueprintLedger": "1150 Expanded Summoning identities; 1404 active, 1 reserved, 1405 total; derived constant registry count 1404",
   "runtimeScenarios": [
     {
       "scenario": "observe-expanded-summoning-inventory",

@@ -18,16 +18,19 @@ using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -82,6 +85,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Pixie.SleepBow";
         private const string PixieDanceSymbol =
             "KMG.Summoning.Special.Pixie.IrresistibleDance";
+        private const string PixieDanceStateSymbol =
+            "KMG.Summoning.Special.Pixie.IrresistibleDanceState";
         private const string PixieDanceResourceSymbol =
             "KMG.Summoning.Special.Pixie.IrresistibleDanceResource";
         private const string PixieSleepResourceSymbol =
@@ -148,8 +153,6 @@ namespace KingmakerGunslinger.Blueprints
         private const string FeyClassGuid = "f2e6e760ead99fb48ade27c7e9d4ac94";
         private const string HugeBiteGuid = "d2f99947db522e24293a7ec4eded453f";
         private const string StandardLongbowGuid = "201f6150321e09048bd59e9b7f558cb0";
-        private const string NativeDanceGuid = "fad6a06a3cb04fabaedf4d358c61880d";
-        private const string NativeDanceBuffGuid = "4d283e0b70fb489ba79e69387818c3f3";
         private const string NativeSleepingBuffGuid = "5e0cd801bac0e95429bb7e4d1bc61a23";
 
         internal static void Configure(LibraryScriptableObject library,
@@ -228,6 +231,8 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintAbilityResource>(bySymbol, PixieSleepResourceSymbol);
             BlueprintAbility pixieDance = Require<BlueprintAbility>(bySymbol,
                 PixieDanceSymbol);
+            BlueprintBuff pixieDanceState = Require<BlueprintBuff>(bySymbol,
+                PixieDanceStateSymbol);
             BlueprintBuff pixieTraits = Require<BlueprintBuff>(bySymbol,
                 PixieCombatTraitsSymbol);
             BlueprintAiCastSpell pixieDanceAi = Require<BlueprintAiCastSpell>(
@@ -239,7 +244,9 @@ namespace KingmakerGunslinger.Blueprints
                 ExpandedSummoningSpecialProfiles.PixieDanceUses);
             ConfigureResource(pixieSleepResource, "Sleep Arrows",
                 ExpandedSummoningSpecialProfiles.PixieSleepArrowUses);
-            ConfigurePixieDance(library, pixieDance, pixieDanceResource);
+            ConfigurePixieDanceState(pixieDanceState);
+            ConfigurePixieDance(pixieDance, pixieDanceState,
+                pixieDanceResource, pixieSleepBow.Icon);
             ConfigurePixieCombatTraits(library, pixieTraits, pixieSleepBow,
                 pixieSleepResource, pixieDanceResource);
             ConfigurePixieAi(pixieDanceAi, pixieDance, pixieBrain);
@@ -950,22 +957,54 @@ namespace KingmakerGunslinger.Blueprints
             amountField.SetValue(resource, amount);
         }
 
-        private static void ConfigurePixieDance(
-            LibraryScriptableObject library, BlueprintAbility ability,
-            BlueprintAbilityResource resource)
+        private static void ConfigurePixieDanceState(BlueprintBuff buff)
         {
-            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
-                BlueprintAbility>(library, NativeDanceGuid,
-                    "native Irresistible Dance touch delivery");
-            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
-                BlueprintBuff>(library, NativeDanceBuffGuid,
-                    "native Irresistible Dance target state");
-            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            var cannotAct = ScriptableObject.CreateInstance<AddCondition>();
+            cannotAct.Condition = UnitCondition.CantAct;
+            var armorClass = ScriptableObject.CreateInstance<AddStatBonus>();
+            armorClass.Stat = StatType.AC;
+            armorClass.Descriptor = ModifierDescriptor.UntypedStackable;
+            armorClass.Value = -4;
+            var reflex = ScriptableObject.CreateInstance<AddStatBonus>();
+            reflex.Stat = StatType.SaveReflex;
+            reflex.Descriptor = ModifierDescriptor.UntypedStackable;
+            reflex.Value = -10;
+            buff.name = InternalName(PixieDanceStateSymbol);
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = false;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                cannotAct, armorClass, reflex
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.State.Name",
+                    "Irresistible Dance"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.State.Description",
+                    "This creature can do nothing but dance and takes a -4 penalty to AC and a -10 penalty on Reflex saves."),
+                null);
+        }
+
+        private static void ConfigurePixieDance(BlueprintAbility ability,
+            BlueprintBuff danceState, BlueprintAbilityResource resource,
+            Sprite icon)
+        {
             ability.name = InternalName(PixieDanceSymbol);
             ability.Type = AbilityType.SpellLike;
             ability.Parent = null;
             ability.Hidden = false;
             ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.Touch;
+            ability.CanTargetEnemies = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.SpellResistance = true;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Touch;
             ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
             var spell = ScriptableObject.CreateInstance<SpellComponent>();
@@ -983,11 +1022,8 @@ namespace KingmakerGunslinger.Blueprints
             parameters.ReplaceSpellLevel = true;
             parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles
                 .PixieDanceSpellLevel);
-            AbilityDeliverTouch delivery = (AbilityDeliverTouch)
-                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    native.ComponentsArray.OfType<AbilityDeliverTouch>().Single());
             var failedApply = new ContextActionApplyBuff {
-                Buff = nativeBuff,
+                Buff = danceState,
                 DurationValue = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
                     DiceType = DiceType.D4,
@@ -998,7 +1034,7 @@ namespace KingmakerGunslinger.Blueprints
                 IsNotDispelable = false
             };
             var succeededApply = new ContextActionApplyBuff {
-                Buff = nativeBuff,
+                Buff = danceState,
                 DurationValue = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
                     DiceType = DiceType.Zero,
@@ -1023,7 +1059,7 @@ namespace KingmakerGunslinger.Blueprints
             cost.CostIsCustom = false;
             cost.Amount = 1;
             ability.ComponentsArray = new BlueprintComponent[] {
-                spell, descriptor, parameters, cost, delivery, effect
+                spell, descriptor, parameters, cost, effect
             };
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(
@@ -1032,7 +1068,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Pixie.IrresistibleDance.Description",
                     "Once per summon, a touched creature dances for 1d4+1 rounds on a failed Will save or one round on a successful save."),
-                native.Icon);
+                icon);
         }
 
         private static AddAbilityResources AddResource(

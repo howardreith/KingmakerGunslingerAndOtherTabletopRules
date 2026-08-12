@@ -8030,6 +8030,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility pixieDance = all.OfType<BlueprintAbility>().Single(
                 value => value.name ==
                     "KMG_Summoning_Special_Pixie_IrresistibleDance");
+            BlueprintBuff pixieDanceState = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceState");
             BlueprintAbilityResource pixieDanceResource = all.OfType<
                 BlueprintAbilityResource>().Single(value => value.name ==
                     "KMG_Summoning_Special_Pixie_IrresistibleDanceResource");
@@ -8068,8 +8071,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.IsSpendResource) == 1 &&
                 pixieDanceActions.Length == 2 &&
                 pixieDanceActions.All(value => value.Buff != null &&
-                    value.Buff.AssetGuid ==
-                        "4d283e0b70fb489ba79e69387818c3f3") &&
+                    ReferenceEquals(value.Buff, pixieDanceState)) &&
+                pixieDance.Range == AbilityRange.Touch &&
+                pixieDance.ComponentsArray.OfType<AbilityDeliverTouch>()
+                    .Count() == 0 &&
+                pixieDanceState.ComponentsArray.OfType<AddCondition>()
+                    .Count(value => value.Condition == UnitCondition.CantAct) == 1 &&
+                pixieDanceState.ComponentsArray.OfType<AddStatBonus>()
+                    .Count(value => value.Stat == StatType.AC &&
+                        value.Value == -4) == 1 &&
+                pixieDanceState.ComponentsArray.OfType<AddStatBonus>()
+                    .Count(value => value.Stat == StatType.SaveReflex &&
+                        value.Value == -10) == 1 &&
                 pixieTraits.ComponentsArray.OfType<AddSpellResistance>()
                     .Single().Value.Value == 15;
             BlueprintItemWeapon naturalBite1d4 = all.OfType<BlueprintItemWeapon>()
@@ -9300,6 +9313,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Summoning_Special_Bebelith_DismantledArmor" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_Pixie_IrresistibleDance" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceState" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_Pixie_CombatTraits")
                 return false;

@@ -61,6 +61,7 @@ def planned():
         ("KMG.Summoning.Special.Bebelith.DismantledArmor", "BlueprintBuff"),
         ("KMG.Summoning.Special.Pixie.SleepBow", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDance", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Pixie.IrresistibleDanceState", "BlueprintBuff"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDanceResource", "BlueprintAbilityResource"),
         ("KMG.Summoning.Special.Pixie.SleepArrowResource", "BlueprintAbilityResource"),
         ("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"),
@@ -74,7 +75,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1149 or len({symbol for symbol, _ in rows}) != 1149:
+    if len(rows) != 1150 or len({symbol for symbol, _ in rows}) != 1150:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
