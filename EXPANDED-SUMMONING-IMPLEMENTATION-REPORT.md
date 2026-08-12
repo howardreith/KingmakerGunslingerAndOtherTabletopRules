@@ -164,6 +164,30 @@ domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
 
+## Native cast qualification
+
+Committed source `8647ceff29ae45c416f948a979fd25098422910d` passed guarded
+scenario `disposable-expanded-summoning`, run
+`20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`. The scenario
+loaded exactly `KMG_AUTOMATION_WORKING` through the established autonomous
+receiver-bound UI workflow and issued 153 native ability commands: every 123
+approved one-creature SM/SNA logical entry, 16 `1d3` family/tier cases, and 14
+`1d4+1` family/tier cases. All commands reached native execution completion;
+the 205 observed summons had legal counts and exact same-kind blueprint
+identity. Every created unit was disposed and exact party/global-unit snapshots
+were restored. No save-writing API was observed, scenario hooks were removed,
+and `KMG_AUTOMATION_BASELINE` was neither selected nor modified.
+
+The first loaded-area attempt exposed a native view-attachment null
+dereference for KMG-owned summon buffs. The fix initializes all custom
+`FxOnStart` and `FxOnRemove` fields to non-null empty `PrefabLink` objects,
+matching Kingmaker's native data-object invariant; domain source contracts now
+enforce it. Static validation, `1009/1009` domain tests, clean Release, and
+strict package validation pass for the qualified source. Visual animation and
+special-action contracts, active-summon persistence, the 16-state fresh-launch
+matrix, and compatibility-profile qualification remain open and are not
+claimed.
+
 The complete tier I-VII natural/proxy catalog is now structurally qualified on
 committed source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. The final group adds
 Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon,

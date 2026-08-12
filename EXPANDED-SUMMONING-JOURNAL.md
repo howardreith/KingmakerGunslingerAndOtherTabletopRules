@@ -924,3 +924,32 @@
   or native-action contamination. Call of the Wild final-live summon surfaces
   were preserved. No save was accessed; the harness restored the Mods/settings
   transaction.
+
+## 2026-08-12 - Complete native cast and quantity matrix PASS
+
+- Added the guarded `disposable-expanded-summoning` scenario on the exact
+  `KMG_AUTOMATION_WORKING` load workflow. It drives production `AbilityData`,
+  `UnitUseAbility`, `RuleCastSpell`, and the native execution process rather
+  than invoking summon factories directly.
+- The scenario casts every approved one-creature SM/SNA logical entry and one
+  quantity option for every eligible family/tier: 123 one-creature casts, 16
+  `1d3` casts, and 14 `1d4+1` casts, for 153 commands total. A request-local
+  `RuleSummonUnit` observer proves legal counts and exact same-kind unit
+  identity, then exact snapshot restoration proves cleanup.
+- Loaded-area diagnosis found that custom summon buffs had null particle-link
+  shells. Native unit-view attachment dereferenced them while spawning Lantern
+  Archon. All sixteen KMG summon buff identities now preserve native-safe
+  non-null empty `FxOnStart` and `FxOnRemove` objects; focused domain coverage
+  prevents regression.
+- Clean source gates passed: repository validation, `1009/1009` domain tests,
+  clean Release, and strict package validation. DLL SHA-256:
+  `4ebc621994d9f408554ad2a7902d79fcb41d8eda057fb157288bba7a12821a25`;
+  package SHA-256:
+  `e3e7c5a9f153cd7dba6a96e0fb72f9f213fcb14919e65e76778698c421f816cf`.
+- Fresh Steam run
+  `20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`
+  passed on committed source
+  `8647ceff29ae45c416f948a979fd25098422910d`: 153/153 casts, all 205 spawned
+  units same-kind, exact cleanup, no save-writing API observation, and all
+  request-local hooks removed. `KMG_AUTOMATION_BASELINE` was never selected or
+  modified.
