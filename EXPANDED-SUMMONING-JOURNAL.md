@@ -1213,3 +1213,21 @@
 - No implementation correction was required. Remaining automated work is the
   final deterministic artifact/hash freeze, evidence update, PR refresh, and
   clean local/origin verification.
+
+## 2026-08-12 - Deterministic final artifact freeze
+
+- The first audit freeze exposed nondeterministic metadata in the canonical
+  `Compress-Archive` ZIP even though the DLL and local-runtime ZIP were stable.
+  Commit `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd` routes the canonical package
+  through the existing fixed-timestamp writer and adds a domain source contract.
+- Two clean exact-reference builds from `8e08834` each passed repository
+  validation, all `1009/1009` domain tests, warnings-as-errors Release compile,
+  focused icon checks, build-output validation, and strict package validation.
+- Both builds emitted identical DLLs and identical canonical/local-runtime
+  45-file packages. DLL SHA-256:
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`.
+  Package SHA-256:
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`.
+- Two independent `git archive` runs over the artifact source matched at
+  `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
+  Generated packages remain ignored and uncommitted.

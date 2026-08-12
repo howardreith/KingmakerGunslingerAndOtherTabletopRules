@@ -1,7 +1,6 @@
 # Expanded Summoning implementation report
 
-Status: behavior and native qualification complete; final artifact/hash
-refreeze in progress. The completion audit added a final-live
+Status: complete and release-qualified. The completion audit added a final-live
 assertion tying all 681 roots and 364 template executions to their native spell,
 Acadamae, metamagic, material-data, and action-bar contracts. That assertion and
 the complete mechanical matrix passed on pushed source
@@ -129,19 +128,19 @@ mechanical visual contracts already pass.
 ### Final release hashes
 
 - Release artifact source commit:
-  `a6bdfccc4c814ca26769d71816db2f1069702f48`.
+  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`.
 - Exact-reference `KingmakerGunslinger.dll` SHA-256:
-  `e26d025cd8642a4bc30c0170e88110ba65e5b44a91df8a6337b360b08d683d45`.
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`.
 - Deterministic `KingmakerGunslinger-0.0.78-expanded-summoning.zip` SHA-256:
-  `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`.
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`.
 - Deterministic `git archive` source ZIP SHA-256:
-  `b640dc899f4450f4018be774eda5c42ef18818bd5d788f13d1431f578e75afed`.
+  `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
 
-The ordinary `Compress-Archive` output was also strict-validated but embeds
-archive metadata and therefore changed byte hash between runs. The canonical
-release ZIP above was regenerated from the same validated 45-file staging tree
-with the repository's fixed-timestamp deterministic writer; it exactly matched
-the separately emitted local-runtime ZIP and passed strict validation.
+The completion audit detected that the historical canonical packager used
+timestamped `Compress-Archive`. Commit `8e08834` switches it to the existing
+fixed-timestamp deterministic writer and adds a domain source contract. On two
+clean builds, the canonical and local-runtime 45-file ZIPs matched exactly and
+both passed strict validation.
 
 ## Chronological engineering record
 

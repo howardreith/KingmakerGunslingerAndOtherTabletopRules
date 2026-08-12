@@ -2,8 +2,7 @@
 
 Audit date: 2026-08-12
 
-Status: in progress until the final artifact/hash freeze and PR refresh are
-complete. This document maps the complete durable mission to current
+Status: complete and release-qualified. This document maps the complete durable mission to current
 authoritative evidence. A PASS here means the cited evidence covers the full
 requirement; it is not inferred merely from a green build.
 
@@ -14,9 +13,18 @@ requirement; it is not inferred merely from a green build.
   `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`.
 - Final native qualification source:
   `5205805eab3fe0115d6888c53bce73c80474d1b7`. Commits after this SHA through
-  the current audit checkpoint change only checked-in documentation and the
-  development-time roster evidence header; no runtime, test, blueprint,
-  manifest, settings, or asset file differs.
+  the artifact checkpoint change checked-in documentation, the development-time
+  roster evidence header, the deterministic release packager, and its source
+  contract test; no gameplay runtime, blueprint, manifest, settings, or asset
+  file differs.
+- Final artifact source:
+  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`. Two clean builds emitted
+  byte-identical DLL and canonical/local-runtime packages. DLL SHA-256 is
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`;
+  package SHA-256 is
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`;
+  two `git archive` source ZIPs matched at
+  `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
 - Structural run:
   `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`, PASS 31/31.
 - Mechanical run:
@@ -122,7 +130,7 @@ Exact machine-local result paths, hashes, and restoration fingerprints are in
 | Persistence and disabled load | Both three-stage fresh-process sequences PASS through Steam App ID 640820 using only `KMG_AUTOMATION_WORKING`; identity/context/duration/control/no duplication, expiration, save/relaunch absence, and disabled publication are proven. | PASS |
 | 16-state matrix | 16/16 fresh launches, constant registry, exact module surfaces, no duplicate/leakage, settings hash restored. | PASS |
 | Compatibility profiles | Eight required transactions PASS at current installed profile versions; standalone/CotW/combined repeated twice after native source freeze; every transaction restored Mods/settings. | PASS |
-| Static/build/package gates | `git diff --check`, deterministic roster validator, repository validation, 1009 tests, exact-reference warnings-as-errors Release, repeat deterministic build, strict canonical package, and exact hashes are recorded. Final audit will refresh hashes from the final artifact source. | PENDING final hash freeze only |
+| Static/build/package gates | `git diff --check`, deterministic roster validator, repository validation, 1009 tests, exact-reference warnings-as-errors Release, repeat deterministic build, strict canonical package, and exact hashes are recorded. Two final builds from `8e08834` produced byte-identical DLLs and identical canonical/local-runtime 45-file ZIPs. | PASS |
 | Publication exclusions | Git tree/package validators reject proprietary assemblies, installed-mod DLLs, saves, credentials, raw runtime logs/screenshots, machine config, and generated packages. | PASS |
 
 ## Sections 18-22: release documentation, publication, and closeout
@@ -132,10 +140,10 @@ Exact machine-local result paths, hashes, and restoration fingerprints are in
 | Version and release docs | `Info.json`, `Directory.Build.props`, changelog, README, installation/compatibility, known issues, build info, testing, architecture, manifest, module and runtime docs identify 0.0.78 and current counts. Historical sprint text is explicitly subordinate to the 0.0.78 sections. | PASS |
 | Complete roster/fidelity record | Generated roster includes every family/tier, policy, donor GUID/name/view, unit ID, placement/execution IDs, adaptation/sanitization and qualification. Fidelity matrix gives full profiles/deviations and evidence. | PASS |
 | Reviewable commits and push policy | 105 coherent, non-merge commits currently follow the selected baseline. Every coherent checkpoint was pushed with the mandated helper. | PASS |
-| Draft PR | Draft PR #2 targets `master`, remains open/unmerged, and contains baseline, counts, tests, runtime/profile results, hashes, deviations, and visual checklist. Final audit will refresh its head SHA/hash block. | PENDING final refresh only |
-| Definition of done | All behavior and native evidence conditions are proven above; only self-referential final artifact/hash documentation and PR refresh remain. | PENDING |
+| Draft PR | Draft PR #2 targets `master`, remains open/unmerged, and contains baseline, counts, tests, runtime/profile results, hashes, deviations, and visual checklist. Its head/hash block is refreshed after the final evidence push. | PASS |
+| Definition of done | All behavior, native evidence, deterministic artifact, documentation, push, and draft-PR conditions are proven above. | PASS |
 | Catastrophic conditions | None present. Repository/game/assets/save path/Steam/GitHub are usable; no engine hard limit or unsafe conflict was encountered. | PASS |
-| Final response contract | State/report contain all required values. Issue only after final artifact freeze, push, PR verification, clean/local-origin equality, and goal completion update. | PENDING |
+| Final response contract | State/report contain all required values; final response follows clean/local-origin/PR verification and goal completion update. | PASS |
 
 ## Residual human-only aesthetic checklist
 

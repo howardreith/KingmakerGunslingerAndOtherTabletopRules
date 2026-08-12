@@ -2,17 +2,19 @@
 
 ## Active Expanded Summoning mission (2026-08-11)
 
-- Current release state (2026-08-12): behavior and native runtime qualification
-  are complete; a literal definition-of-done evidence audit is active before
-  the final artifact/hash freeze and PR refresh. The strengthened structural and
+- Current release state (2026-08-12): mission complete and release-qualified.
+  The literal definition-of-done audit, final deterministic artifact freeze,
+  and draft-PR refresh are complete. The strengthened structural and
   153-command mechanical repetitions passed on pushed source
   `5205805eab3fe0115d6888c53bce73c80474d1b7`. Final structural, 153-command
   mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
   states, and all eight required compatibility launches PASS. Draft PR
   [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
-  is open against `master`. The previous artifact source was
-  `a6bdfccc4c814ca26769d71816db2f1069702f48`; its hashes remain valid for that
-  source but will be refreshed after the audit documentation is committed.
+  is open against `master`. Final artifact source is
+  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`; DLL/package/source hashes are
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`,
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`,
+  and `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
   The requirement-to-evidence map is
   `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`. This paragraph supersedes
   older checkpoint entries below.

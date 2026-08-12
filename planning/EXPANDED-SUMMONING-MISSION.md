@@ -1,6 +1,7 @@
 # CODEX MISSION: Expanded Summon Monster and Summon Nature's Ally
 
-Status: active. Authority received 2026-08-11 from the repository owner.
+Status: complete and release-qualified on 2026-08-12. Authority received
+2026-08-11 from the repository owner.
 
 This is the durable mission and stopping contract for the Expanded Summoning
 branch. It preserves the complete user-authorized scope so the work can resume
