@@ -1,19 +1,20 @@
 # Expanded Summoning fidelity matrix
 
-Status: release-qualified on immutable source
-`b8e7950680ab4718c18965837a37c5974a8d35bc`. The complete roster passed the
+Status: release-qualified on final native qualification source
+`5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
 final-live structural observer, all 153 production summon commands, the
 67-unit visual-contract matrix, enabled and disabled active-summon persistence,
 all 16 module states, and every required compatibility profile. Conservative
 adaptations and omissions remain identified in the row that owns them.
 
 Final evidence key: structural run
-`20260812T1149141950160Z-0dfc7143323b4095a01dea690e43c2c0`; mechanical run
-`20260812T1303503740041Z-73e7a3e6a825468d91f5a9fd7e970889`; visual run
+`20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; mechanical run
+`20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run
 `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled and
 disabled persistence runs are recorded in `EXPANDED-SUMMONING-STATE.json`;
-the 16-state matrix and eight required compatibility launches all passed on the
-same immutable source. “Runtime PASS” in a row means its production summon
+the 16-state matrix passed on its recorded qualified source, and all eight
+required final compatibility launches passed on the final native source.
+“Runtime PASS” in a row means its production summon
 path was exercised; it does not imply that an explicitly omitted tabletop
 ability was implemented.
 

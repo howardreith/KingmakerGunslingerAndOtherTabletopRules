@@ -1,5 +1,11 @@
 # Expanded Summoning final-live inventory
 
+Status: final and release-qualified. The early discovery observations retained
+below are historical evidence; the authoritative selected-donor result is the
+55-GUID catalog audit and final structural run recorded under "Complete frozen
+donor graph audit" and "Final release qualification". No donor selection
+remains pending.
+
 Evidence source: guarded fresh-process run
 `20260811T1727529145302Z-observe-expanded-summoning-inventory`, status PASS,
 version 0.0.77, save-free. The installed final-live profile included Call of the
@@ -57,13 +63,15 @@ Tier I is a direct ability. Tiers II-IX expose `AbilityVariants`.
   abilities. They require exact structural signatures and must not be selected
   by substring.
 
-Donor-unit and sanitizer rows remain in progress; broad roster-term matching
-found 533 candidates and is evidence for narrowing, not selection authority.
+At this discovery stage donor-unit and sanitizer rows remained in progress;
+broad roster-term matching found 533 candidates and was evidence for narrowing,
+not selection authority. The later frozen donor graph supersedes this stage.
 
 ## Dedicated summon donors confirmed in composed final-live graph
 
-These are donor candidates, not yet approved clones. Each still requires the
-full component/fact/body/view sanitizer audit and source-nonmutation proof.
+These were the initial donor candidates. The later frozen donor graph and final
+structural/visual runs record the approved selections, full sanitizer audit,
+source-nonmutation proof, and instantiated-view contract.
 
 | Intended/proxy | GUID | Blueprint name |
 |---|---|---|
@@ -123,7 +131,7 @@ direct spawning.
 
 | Element | Small | Medium | Large | Huge | Greater | Elder |
 |---|---|---|---|---|---|---|
-| Air | `04944455200bc224d955a8e9bbd64f3f` | pending exact-name observation | `3764b43791a00e1468257adbca43ce9b` | `2e24256e459468743b91fbb9aa85e1ab` | pending exact-name observation | `33bb90ffd13c87b4c8e45d920313752a` |
+| Air | `04944455200bc224d955a8e9bbd64f3f` | `676f8b7d0a170674cb6e504e0e30b4f0` | `3764b43791a00e1468257adbca43ce9b` | `2e24256e459468743b91fbb9aa85e1ab` | `e770cfbb96b528c4db258d7d03fe6533` | `33bb90ffd13c87b4c8e45d920313752a` |
 | Earth | `651600a51edd20141adb67696986c582` | `812c9a0348e004242ba4e46efa91e38e` | `d3d9ab560534bd948b10ac00abbff083` | `3b86a449e7264174eaccef9b8f02fe20` | `cda7013db24f4c547b79bfc5c617066b` | `6b4cb9b6116f2194192e1e7e379c48d7` |
 | Fire | `46cede83b1f34ad4fa46b8776e352b02` | `a0ab0c31b1a92554291a82e598f39ba4` | `ba5026596b06b204eb2efed2b411c5b9` | `640fb7efb7c916945837bbcab995267e` | `b0b4091bdaebb464e903857a95189dea` | `ea0f0bbc6e5e471428d535501b21eb26` |
 | Water | `56372b0a2749c224392a5ee74105c534` | `62a3e860e6e72e6499c38bb8b2fe303e` | `680b5b61c80af664daec46af7644486c` | `877c154a296ee8e45be1a00668319923` | `fcc939e3acf355b458ddf9617d8c6c28` | `3bd31a0b4d800f04a8c5b7b1a6d7061e` |

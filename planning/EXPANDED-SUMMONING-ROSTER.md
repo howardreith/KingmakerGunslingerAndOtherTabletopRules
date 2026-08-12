@@ -4,7 +4,7 @@ Generated deterministically by `tools/expanded_summoning_manifest.py`; do not ed
 
 Frozen totals: 66 Summon Monster entries / 361 placements; 57 Summon Nature's Ally entries / 320 placements; 67 unique units; 681 logical placements.
 
-Final qualification source: `47c6a4ab04540276f97830a6f106b419cbcf1eff`. Structural run `20260812T0747050609622Z`; native cast run `20260812T0755367433231Z`; visual run `20260812T0855013819445Z`; enabled/disabled persistence runs `20260812T0900084936466Z` through `20260812T0913417070226Z`; eight required compatibility transactions PASS.
+Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.
 
 Every placement has a distinct frozen ability identity so parent spell level, caster context, metamagic, duration, UI, and save identity remain local to that parent. Templated Summon Monster placements additionally own celestial and fiendish execution identities. No runtime GUID generation or shared cross-parent ability is used.
 

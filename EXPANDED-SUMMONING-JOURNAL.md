@@ -1178,3 +1178,20 @@
   `4167473340865ad188b8f6fe0e434c18c614375e6ad5fe243183edea0b7edbec`;
   deterministic source archive
   `b640dc899f4450f4018be774eda5c42ef18818bd5d788f13d1431f578e75afed`.
+
+## 2026-08-12 - Definition-of-done audit reopened
+
+- A literal completion audit found that the durable mission file summarized,
+  rather than preserved, the full 22-section authorization and stopping
+  contract. It now contains the complete baseline, roster, architecture,
+  safety, qualification, publication, and final-response requirements.
+- The deterministic roster generator and generated ledger now cite final native
+  qualification source `5205805eab3fe0115d6888c53bce73c80474d1b7` and the
+  final structural, mechanical, visual, persistence, and compatibility runs.
+- The fidelity header now cites the same final evidence. The inventory now
+  labels early donor-candidate text as historical, records the missing exact
+  Medium/Greater Air Elemental GUIDs, and points to the superseding 55-donor
+  frozen audit. No runtime or production blueprint behavior changed.
+- Completion remains intentionally open while the final requirement-to-evidence
+  pass confirms explicit optional-feat and lifecycle-edge coverage. This audit
+  corrects the earlier status estimate without discarding any passing evidence.
