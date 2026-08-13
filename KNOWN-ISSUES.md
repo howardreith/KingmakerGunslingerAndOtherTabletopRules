@@ -4,6 +4,10 @@
   mechanically reconstructed but cannot perfectly match every tabletop body.
   The final manual checklist covers residual aesthetic judgment for scale,
   camera framing, projectile appearance, and animation style.
+- The outer Summon Monster and Summon Nature's Ally spellbook parents retain
+  their native spell icons. Every visible creature-choice child instead uses
+  a project-owned original icon; no Owlcat or optional-mod pixels are used in
+  the 77-icon Expanded Summoning set.
 - Dire Bat is not published in the player-facing roster. The installed game
   exposes no proven bat-compatible summon rig, and the Roc proxy failed human
   visual acceptance; all frozen identities remain registered for save safety.

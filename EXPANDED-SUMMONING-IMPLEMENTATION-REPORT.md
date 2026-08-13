@@ -1,5 +1,40 @@
 # Expanded Summoning implementation report
 
+## Final original-icon and SNA presentation pass
+
+Status: source and guarded runtime qualification complete on the final
+presentation implementation.
+
+- The production icon architecture no longer reads Owlcat spell/item icons,
+  unit portraits, category representatives, or generic summon fallbacks.
+  Seventy-seven project-owned original concepts produce 77 distinct 128x128
+  RGBA PNGs. Source prompts, 1254px originals, output hashes, consumers, and
+  provenance are frozen in `assets-source/original-icons/expanded-summoning`.
+  Runtime loads each key once from the installed mod root, retains the texture
+  and sprite for mod lifetime, and fails publication if any required icon is
+  missing or invalid. The production fallback count was zero.
+- The visible final graph is 371 Summon Monster choices and 322 Summon
+  Nature's Ally choices: 667 generated placements plus 26 creature-named
+  native/preservation wrappers. The SNA I generic duplication came from the
+  frozen direct-parent preservation child being published beside its expanded
+  parent. It is still registered but now hidden by exact identity; Mite is
+  exposed through a creature-named, original-icon wrapper. The SNA white
+  squares came from inherited portrait/category sprites that were not a valid
+  persistent installed-mod asset contract. All SNA I-IX child choices now use
+  manifest-backed KMG sprites, including lower-tier quantity options.
+- Player-facing `Dire Tiger / Smilodon` is now `Smilodon` in both families and
+  all multiplicities. The stable `dire-tiger` key and every GUID are unchanged.
+- Eagle's shared view-only multiplier is `0.30`. Final live measurement found
+  a vertical rendered body height of `1.3596102` versus `1.92633152` for an
+  ordinary Medium humanoid; mechanical Small size, selection circle,
+  locomotion, attack, hit, and death contracts all passed.
+- Final menu/icon observer runs under standalone, Call of the Wild, Arms and
+  Armor, Toggle Custom Soundpacks, and highest-risk combined profiles found
+  zero missing icons, zero generic SNA children, zero mapped duplicates, and
+  exact preservation of unrelated native/third-party choices. The outer spell
+  parents intentionally retain their native family icons.
+
+
 ## First-playtest repair qualification
 
 Status: complete. The repair is runtime-qualified and its deterministic

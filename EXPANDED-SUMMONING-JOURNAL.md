@@ -1550,6 +1550,72 @@
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
   and was never modified.
 
+## 2026-08-13 - Final original-icon and SNA presentation qualification
+
+- Started from clean, pushed `7af8df88cd7da6e1be224e265f50888402e778c5`
+  descendant and retained the existing branch/PR/history. The implementation
+  checkpoint is `b101beba5a3e095f4a7ff9320458c0b6ae899fb9`.
+- Generated 77 original high-resolution creature concepts without reference
+  images, exported 77 deterministic 128x128 RGBA PNGs, recorded prompts and
+  hashes, and inspected the complete contact sheet. All output hashes are
+  distinct; no Owlcat, optional-mod, or third-party source pixels are used.
+- Replaced the native-GUID/portrait/category icon pipeline with an installed-
+  root manifest loader and strong-reference cache. Runtime publication assigns
+  one cached sprite per creature after wrapper construction and fails closed
+  on missing/invalid assets. All 693 visible placements resolved; fallback use
+  was zero.
+- Inventory proved the duplicated generic SNA I child was the frozen direct-
+  parent preservation clone. It remains registered but is suppressed from the
+  enabled menu. Nine KMG wrappers expose Mite, Manticore, Nereid, and Hamadryad
+  with real names/icons across their one/1d3/1d4+1 placements. Final SNA I is
+  five creature-named choices; final tier counts are
+  `5,14,20,32,39,46,52,56,58` (322 total). SM tier counts are
+  `3,13,20,34,43,56,64,69,69` (371 total).
+- Renamed every player-facing placement to Smilodon while retaining stable key
+  `dire-tiger` and all GUIDs. Eagle scale is 0.30; final live vertical renderer
+  height was 1.3596102 versus 1.92633152 for the Medium humanoid control.
+- Focused results: inventory/icon/menu PASS
+  `20260813T1648485879912Z-d8b91ca0f16b42d69324e05b35b099d3`;
+  player path PASS
+  `20260813T1515459712405Z-abe614915f2f43cd9a6338b683e12539`
+  (667 generated plus 26 wrappers); combat PASS
+  `20260813T1526035247789Z-ef14bd9e73ee4af78bca57ccb3a8be1b`;
+  visual PASS
+  `20260813T1535506104136Z-ecf6c1f06df84103916a69f417040b2f`.
+- Enabled persistence passed prepare/cleanup/absence runs
+  `20260813T1539457286293Z-cdad6ed4217346f5bc1aea062e7ea55f`,
+  `20260813T1543095986255Z-20060fc495b54f33b34cec2d5b9d0105`,
+  and `20260813T1545581143662Z-fd3c21c676584ba68c8d34d39775aba0`.
+  Frozen disabled-load safety also remains covered by the prior final repair
+  sequence; no persistence code changed in this pass.
+- All 16 module configurations passed at constant 1,438 registrations and
+  restored settings SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+- Compatibility passed/restored: standalone twice
+  (`compat-20260813T162700Z-be756e11fdb4`,
+  `compat-20260813T162950Z-780bcaf1d16a`); Call of the Wild twice
+  (`compat-20260813T163302Z-a3a1a334ca0c`,
+  `compat-20260813T163731Z-061a36e666a3`); Arms and Armor
+  `compat-20260813T164203Z-d0b9637a3361`; Toggle Custom Soundpacks
+  `compat-20260813T164455Z-803c2fa090db`; highest-risk combined twice
+  (`compat-20260813T164753Z-d36213779302`,
+  `compat-20260813T165533Z-8857dd758d08`). Steam startup races on two
+  attempts were environmental; transactions restored, and the two structured
+  combined results both flushed PASS.
+- Fresh focused regressions passed Shield Other 23/23
+  (`20260813T1704049490008Z-804bc4cf0bfc4129a307d6bc0d25cad0`),
+  Acadamae 13/13
+  (`20260813T1705558972969Z-39680db6363a45debfd42da744d39611`),
+  paper/firearm 6/6
+  (`20260813T1713351572322Z-13e70ee2f3614708a01047c07d608998`),
+  Cord 8/8
+  (`20260813T1716199876716Z-70e7d70f0dd64fbda42be84715c63c7e`),
+  and vendors 14/14
+  (`20260813T1719094650825Z-c1da3bfd420b448e97ba793295ae482e`).
+  The broad Gunslinger aggregate reproduced its previously documented
+  detached Dodge and order-sensitive Targeting/Bleeding fixture limitations;
+  no gameplay source in those systems changed.
+
 ## 2026-08-13 - Deterministic artifact freeze
 
 - Artifact source `00f7fa29db69f142d918725c502993111d18f0c0` passed two

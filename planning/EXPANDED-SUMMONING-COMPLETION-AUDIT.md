@@ -1,5 +1,20 @@
 # Expanded Summoning first-playtest repair completion audit
 
+## Final presentation addendum (2026-08-13)
+
+- [x] 77/77 visible creature concepts have distinct project-owned original
+  128x128 RGBA icons; 77/77 source and production hashes validate.
+- [x] All 371 SM and 322 SNA visible child placements resolve to manifest keys;
+  runtime fallback count is zero and same-creature placements share a sprite.
+- [x] SNA I publishes no generic parent-name child or semantic duplicate; SNA
+  II quantity choices use their summoned creature's original icon.
+- [x] Smilodon naming is fixed without changing the `dire-tiger` key or GUIDs.
+- [x] Eagle uses view scale 0.30 and measures 1.360 high versus a 1.926 Medium
+  humanoid while retaining mechanical Small size and animation contracts.
+- [x] Focused player-path, combat, visual, persistence, 16-state, compatibility,
+  and existing-feature regression evidence is recorded in the report/state.
+
+
 Audit date: 2026-08-12
 
 Status: complete and release-qualified. This audit supersedes the original

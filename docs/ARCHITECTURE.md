@@ -2,6 +2,14 @@
 
 ## Expanded Summoning 0.0.78 layer
 
+Player-visible summon children use a project-owned icon manifest with 77
+distinct concepts. The runtime loader resolves PNGs from the installed mod
+root, verifies frozen SHA-256 metadata, creates one persistent texture/sprite
+per icon key, and shares that sprite only across placements for the same
+creature. Publication fails closed on a missing/invalid required asset; it does
+not consult native spell icons, item icons, portraits, or category fallbacks.
+The outer native spell parents retain their original family icons.
+
 Expanded Summoning is a data-driven fourth feature module. Immutable creature
 and variant specifications generate all legal one/1d3/1d4+1 same-kind
 placements. Registration is unconditional and publication is independently

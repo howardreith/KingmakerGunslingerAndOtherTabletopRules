@@ -20,6 +20,12 @@ and Thanadaemon choices; their original blueprint objects remain registered.
 Dire Bat is intentionally hidden because no acceptable installed bat rig was
 found and the Roc proxy failed visual acceptance.
 
+Every visible creature-choice child uses one of 77 project-owned original
+128x128 icons; the same creature reuses its cached icon across families and
+quantities, while unrelated concepts never share an icon. SNA I exposes only
+creature-named choices, and the stable `dire-tiger` identity is displayed as
+`Smilodon`. Eagle uses a measured 0.30 view-only scale while remaining Small.
+
 Shield Other is a level-2 Abjuration spell on the Cleric, Paladin, Inquisitor,
 Community domain, and Protection domain lists. With an unambiguous installed
 Call of the Wild profile it is also published to Oracle, Warpriest, and Psychic

@@ -4,6 +4,12 @@ The active release is 0.0.78 Expanded Summoning. Repository validation,
 dependency-free domain tests, exact-reference Release builds, package checks,
 and native runtime evidence are separate gates; none substitutes for another.
 
+The final presentation gate validates the 77-row project-owned icon manifest
+and all 693 visible child placements, asserts zero runtime fallbacks and no
+generic SNA I child, and measures Eagle's live vertical renderer bounds against
+a Medium humanoid. The checked-in contact sheet is supporting visual evidence;
+mechanical acceptance continues to use structured runtime events.
+
 Run the static and domain suite with:
 
 ```powershell

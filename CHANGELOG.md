@@ -2,11 +2,25 @@
 
 ## 0.0.78 - Expanded Summoning
 
+- Replaces every player-visible Expanded Summoning child icon with one of 77
+  project-owned original creature icons. The 128x128 RGBA set is manifest-
+  validated, packaged deterministically, cached once per creature, and never
+  falls back to an Owlcat spell, item, portrait, paw, or generic summon icon.
+- Rebuilds nine preserved Nature's Ally choices as creature-named KMG wrappers,
+  removing the duplicated generic Tier-I entries and white-square child icons.
+  All 322 visible SNA and 371 visible SM choices now resolve to exact creature
+  icons, including lower-tier quantity choices.
+- Renames the player-facing `Dire Tiger / Smilodon` concept to `Smilodon` while
+  retaining the frozen `dire-tiger` key and all existing blueprint GUIDs.
+- Reduces Eagle's view-only multiplier to `0.30`; live renderer measurement is
+  1.360 units tall versus 1.926 for the Medium humanoid control. Mechanical
+  Small size, selection footprint, animations, and shared SM/SNA unit remain
+  unchanged.
 - Splits the remaining Owlcat hybrid summon umbrellas into 17 distinct,
   directly executable choices while retaining every original blueprint
   identity; hides the five obsolete umbrella children and all 14 Dire Bat
   placements whose Roc proxy failed visual acceptance.
-- Adds deterministic creature-category icons and measured view-only scaling
+- Adds deterministic original creature icons and measured view-only scaling
   for Eagle, Poisonous Frog, Dire Boar, Pteranodon, Dire Bear, Elephant,
   Mastodon, and Roc. Dire creatures now read larger than their ordinary
   analogues without changing mechanical size or navigation footprint.

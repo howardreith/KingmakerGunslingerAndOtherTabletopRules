@@ -1,5 +1,24 @@
 # Autonomous Gunslinger resume handoff
 
+## Expanded Summoning final presentation (2026-08-13)
+
+- Final implementation checkpoint is `b101beba5a3e095f4a7ff9320458c0b6ae899fb9`
+  on `codex/expanded-summoning`; release remains the unreleased 0.0.78 draft.
+- All 693 visible child choices use 77 project-owned original creature icons.
+  Same-creature placements share one cached sprite; unrelated concepts have
+  distinct output hashes. SNA I has five creature-named choices and no generic
+  preservation child; all SNA I-IX icons passed runtime provenance checks.
+- `Smilodon` is the sole player-facing name while the stable `dire-tiger`
+  identity is retained. Eagle's view multiplier is 0.30 and its live vertical
+  height is 1.360 versus 1.926 for a Medium humanoid.
+- On this checkpoint: 1018 domain tests pass; registration is 1,438 in every
+  one of 16 module states; visual, player-path, combat, enabled persistence,
+  five compatibility profiles, Shield Other, Acadamae, Cord, vendor, and
+  paper-cartridge focused regressions pass. Mods and settings were restored.
+- Remaining release work is deterministic double-build hashing, durable state
+  finalization, and refreshing draft PR #2. Do not merge the PR.
+
+
 ## Expanded Summoning polish / release hardening (active, 2026-08-12)
 
 - Starting head: `1767b8f08cc5ce1be8d8cb0a16cfa4b07c7c225e`; qualified

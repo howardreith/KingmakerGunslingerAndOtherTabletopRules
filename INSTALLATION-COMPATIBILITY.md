@@ -71,7 +71,8 @@ Never test removal against the only copy of a valued save.
 
 Expanded Summoning 0.0.78 was requalified in isolated standalone, Call of the
 Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined
-profiles. Its icon catalog depends only on base-game blueprints; optional-mod
+profiles. Its 77-icon creature catalog is project-owned and has no base-game
+or optional-mod icon dependency; optional-mod
 summon parents are discovered structurally and are skipped rather than guessed
 when ambiguous. Every profile transaction restored the prior Mods directory.
 
