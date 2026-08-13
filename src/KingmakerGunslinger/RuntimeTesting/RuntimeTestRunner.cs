@@ -11113,8 +11113,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
-            Color priorAmbientLight = RenderSettings.ambientLight;
-            float priorAmbientIntensity = RenderSettings.ambientIntensity;
+            var evidenceObjects = new List<GameObject>();
+            var evidenceMeshes = new List<Mesh>();
+            var evidenceMaterials = new List<Material>();
             Renderer[] evidenceRenderers = new[] { caster.View, eagle.View }
                 .Where(value => value != null)
                 .SelectMany(value => value.GetComponentsInChildren<Renderer>(true))
@@ -11124,28 +11125,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (evidenceRenderers.Length == 0)
                 throw new InvalidOperationException(
                     "The live Eagle comparison had no subject renderers.");
-            bool[] priorEvidenceEnabled = evidenceRenderers
-                .Select(value => value.enabled).ToArray();
-            Transform casterRoot = caster.View.transform;
-            Transform eagleRoot = eagle.View.transform;
-            Transform[] evidenceTransforms = evidenceRenderers
-                .SelectMany(value => value.GetComponentsInParent<Transform>(true))
-                .Where(value => value != null &&
-                    (ReferenceEquals(value, casterRoot) ||
-                    ReferenceEquals(value, eagleRoot) ||
-                    value.IsChildOf(casterRoot) || value.IsChildOf(eagleRoot)))
-                .Distinct()
-                .ToArray();
-            bool[] priorEvidenceActive = evidenceTransforms
-                .Select(value => value.gameObject.activeSelf).ToArray();
-            int subjectMask = evidenceRenderers.Aggregate(0, (mask, renderer) =>
-                mask | (1 << renderer.gameObject.layer));
-            var evidenceSet = new HashSet<Renderer>(evidenceRenderers);
-            Renderer[] suppressedRenderers = UnityEngine.Object
-                .FindObjectsOfType<Renderer>()
-                .Where(value => value != null && value.enabled &&
-                    !evidenceSet.Contains(value))
-                .ToArray();
             Camera liveCamera = UnityEngine.Object.FindObjectsOfType<Camera>()
                 .Where(value => value != null && value.enabled)
                 .OrderByDescending(value => evidenceRenderers
@@ -11165,21 +11144,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // incorrectly framed supporting screenshot.
                 camera.CopyFrom(liveCamera);
                 camera.enabled = false;
-                camera.cullingMask = subjectMask;
-                foreach (Transform transform in evidenceTransforms)
-                    transform.gameObject.SetActive(true);
-                foreach (Renderer renderer in evidenceRenderers)
-                    renderer.enabled = true;
-                foreach (Renderer renderer in suppressedRenderers)
-                    renderer.enabled = false;
+                camera.cullingMask = 1 << 31;
+                int casterMeshes = AddExpandedSummoningEvidenceMeshes(
+                    caster.View, new Color(0.82f, 0.72f, 0.52f, 1f), 31,
+                    evidenceObjects, evidenceMeshes, evidenceMaterials);
+                int eagleMeshes = AddExpandedSummoningEvidenceMeshes(
+                    eagle.View, new Color(0.92f, 0.50f, 0.16f, 1f), 31,
+                    evidenceObjects, evidenceMeshes, evidenceMaterials);
+                if (casterMeshes == 0 || eagleMeshes == 0)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison could not bake both subject meshes: " +
+                        "caster=" + casterMeshes + ";eagle=" + eagleMeshes + ".");
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
                 light.intensity = 0.35f;
-                light.cullingMask = subjectMask;
+                light.cullingMask = 1 << 31;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
-                RenderSettings.ambientLight = new Color(0.72f, 0.72f,
-                    0.72f, 1f);
-                RenderSettings.ambientIntensity = 1f;
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
                     Vector3.Distance(casterBounds.min, eagleBounds.max),
@@ -11233,24 +11213,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     eagleViewport, pngPath);
                 return "png=" + Path.GetFileName(pngPath) + ";json=" +
                     Path.GetFileName(jsonPath) + ";bytes=" + png.Length +
-                    ";meaningfulPixels=" + meaningfulPixels;
+                    ";meaningfulPixels=" + meaningfulPixels +
+                    ";liveBakedMeshes=" + casterMeshes + "/" + eagleMeshes;
             }
             finally
             {
                 RenderTexture.active = priorActive;
-                RenderSettings.ambientLight = priorAmbientLight;
-                RenderSettings.ambientIntensity = priorAmbientIntensity;
-                foreach (Renderer renderer in suppressedRenderers)
-                    if (renderer != null) renderer.enabled = true;
-                for (int index = 0; index < evidenceRenderers.Length; index++)
-                    if (evidenceRenderers[index] != null)
-                        evidenceRenderers[index].enabled =
-                            priorEvidenceEnabled[index];
-                for (int index = evidenceTransforms.Length - 1;
-                    index >= 0; index--)
-                    if (evidenceTransforms[index] != null)
-                        evidenceTransforms[index].gameObject.SetActive(
-                            priorEvidenceActive[index]);
+                foreach (GameObject value in evidenceObjects)
+                    if (value != null) UnityEngine.Object.Destroy(value);
+                foreach (Mesh value in evidenceMeshes)
+                    if (value != null) UnityEngine.Object.Destroy(value);
+                foreach (Material value in evidenceMaterials)
+                    if (value != null) UnityEngine.Object.Destroy(value);
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
@@ -11260,6 +11234,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Object.Destroy(lightObject);
                 UnityEngine.Object.Destroy(cameraObject);
             }
+        }
+
+        private static int AddExpandedSummoningEvidenceMeshes(
+            Kingmaker.View.UnitEntityView view, Color color, int layer,
+            List<GameObject> objects, List<Mesh> ownedMeshes,
+            List<Material> materials)
+        {
+            Shader shader = Shader.Find("Unlit/Color") ??
+                Shader.Find("Sprites/Default");
+            if (shader == null) throw new InvalidOperationException(
+                "No built-in shader was available for live scale evidence.");
+            var material = new Material(shader) { color = color };
+            materials.Add(material);
+            int count = 0;
+            foreach (Renderer renderer in view.GetComponentsInChildren<Renderer>(true))
+            {
+                Mesh mesh = null;
+                var skinned = renderer as SkinnedMeshRenderer;
+                if (skinned != null)
+                {
+                    mesh = new Mesh();
+                    skinned.BakeMesh(mesh);
+                    ownedMeshes.Add(mesh);
+                }
+                else
+                {
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    if (filter != null) mesh = filter.sharedMesh;
+                }
+                if (mesh == null || mesh.vertexCount == 0) continue;
+                var proxy = new GameObject("KMG_Runtime_LiveMeshEvidence");
+                proxy.layer = layer;
+                proxy.transform.position = renderer.transform.position;
+                proxy.transform.rotation = renderer.transform.rotation;
+                proxy.transform.localScale = renderer.transform.lossyScale;
+                proxy.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var proxyRenderer = proxy.AddComponent<MeshRenderer>();
+                proxyRenderer.sharedMaterial = material;
+                float expectedMaximum = Mathf.Max(renderer.bounds.size.x,
+                    Mathf.Max(renderer.bounds.size.y, renderer.bounds.size.z));
+                float actualMaximum = Mathf.Max(proxyRenderer.bounds.size.x,
+                    Mathf.Max(proxyRenderer.bounds.size.y,
+                        proxyRenderer.bounds.size.z));
+                if (expectedMaximum > 0.001f && actualMaximum > 0.001f)
+                    proxy.transform.localScale *= expectedMaximum / actualMaximum;
+                objects.Add(proxy);
+                count++;
+            }
+            return count;
         }
 
         private static void WriteExpandedSummoningEagleComparisonIndex(
