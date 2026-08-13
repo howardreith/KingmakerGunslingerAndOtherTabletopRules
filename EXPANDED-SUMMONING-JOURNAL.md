@@ -1578,3 +1578,23 @@
   exact child/spawn identities, publication origin, sprite/texture identity,
   dimensions, pixel variance, and semantic/icon sharing. No publication or
   blueprint behavior is changed by this inventory instrumentation.
+
+## 2026-08-13 - Final SNA presentation inventory PASS
+
+- Guarded save-free run
+  `20260813T1249008703958Z-a226bd2de4574984b5d06627b4acc61e`
+  passed 37/37 structural assertions on source `0bf5cb3` and recorded all 322
+  final-live SNA children.
+- The generic SNA I preservation child is the unique native Mite summon
+  (`0c433dcdefcaaeb4db78b07c3ebf4c94`), not a semantic duplicate. It will be
+  replaced in the enabled menu by a named Mite wrapper while its frozen
+  identity remains registered.
+- The other project-icon wrappers required for preserved SNA content are
+  Mite 1d3/1d4+1, Manticore one/1d3/1d4+1, Nereid one/1d3, and Hamadryad one.
+- Generated SNA children held non-null but unsupported unit-portrait/category
+  atlas sprites; all nine native choices shared `ChangeShapeBeast`. Only 31
+  sprite objects represented 65 observed semantic identifiers, including 11
+  proven unrelated-sharing groups. This rules out null assignment and confirms
+  that the inherited/native icon architecture itself must be replaced.
+- The exact checked-in findings and native spawn GUID map are in
+  `planning/EXPANDED-SUMMONING-FINAL-PRESENTATION-INVENTORY.md`.

@@ -408,7 +408,7 @@ namespace KingmakerGunslinger.Summoning
             if (unit != null) { units.Add(unit); return; }
             Type type = value.GetType();
             if (type.IsPrimitive || type.IsEnum || value is string ||
-                value is UnityEngine.Object) return;
+                value is BlueprintScriptableObject) return;
             if (!visited.Add(value)) return;
             IEnumerable enumerable = value as IEnumerable;
             if (enumerable != null)
