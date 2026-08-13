@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.ElvenBranchedSpear;
 
 namespace KingmakerGunslinger.DomainTests
@@ -278,6 +279,65 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(manifest.IndexOf(token,
                     StringComparison.OrdinalIgnoreCase) >= 0,
                     "Placement manifest lacks: " + token);
+        }
+
+        internal static void OriginalAssetPipelineContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string sourceRoot = Path.Combine(root, "assets-source",
+                "original-models", "elven-branched-spear");
+            string script = File.ReadAllText(Path.Combine(sourceRoot,
+                "generate_elven_branched_spear.py"));
+            string report = File.ReadAllText(Path.Combine(sourceRoot,
+                "elven-branched-spear-build-report.json"));
+            Assertions.True(script.Contains("branches = [") &&
+                script.Contains("bpy.ops.export_scene.fbx") &&
+                script.Contains("bpy.ops.wm.save_as_mainfile") &&
+                script.Contains("scene.render.film_transparent = True") &&
+                report.Contains("\"triangles\": 900") &&
+                report.Contains("Original project-owned asset"),
+                "Original Blender source is not deterministic and documented.");
+            Assertions.Equal("8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B",
+                Sha256(Path.Combine(sourceRoot, "elven-branched-spear.fbx")),
+                "Generated spear FBX hash changed.");
+            Assertions.Equal("3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE",
+                Sha256(Path.Combine(root, "assets", "bundles",
+                    "kingmakergunslinger.elvenbranchedspear")),
+                "Dedicated spear bundle hash changed.");
+            Assertions.Equal("2F3CF65793CCE8A1F79F6E907887FDC42698188150844B1A7D7B75C79C433186",
+                Sha256(Path.Combine(root, "assets", "game", "icons",
+                    "elven-branched-spear.png")),
+                "Runtime spear icon hash changed.");
+
+            string builder = File.ReadAllText(Path.Combine(root, "tools",
+                "unity", "BuildElvenBranchedSpearBundle.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets",
+                "ElvenBranchedSpearAssetRuntime.cs"));
+            foreach (string token in new[] { "2018.4.10f1",
+                "kingmakergunslinger.elvenbranchedspear", "Grip",
+                "SupportHandTarget", "Tip", "Butt", "Standard" })
+                Assertions.True(builder.Contains(token) || runtime.Contains(token),
+                    "Dedicated asset pipeline lacks: " + token);
+            foreach (string token in new[] { "AssetBundle.LoadFromFile",
+                "candidate.Unload(false)", "native-fallback:bundle-missing",
+                "native-fallback:bundle-rejected", "ApplyTo",
+                "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
+                "bundle.reused", "native-fallback:model-assignment-rejected",
+                "RejectAssignment" })
+                Assertions.True(runtime.Contains(token),
+                    "Fail-safe runtime lacks: " + token);
+            Assertions.False(runtime.Contains("FirearmKind") ||
+                runtime.Contains("FirearmAssetRuntime"),
+                "Spear presentation was coupled to firearm identity/runtime.");
+        }
+
+        private static string Sha256(string path)
+        {
+            using (FileStream stream = File.OpenRead(path))
+            using (SHA256 value = SHA256.Create())
+                return BitConverter.ToString(value.ComputeHash(stream))
+                    .Replace("-", string.Empty);
         }
     }
 }

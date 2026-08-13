@@ -382,3 +382,33 @@ standalone package validation, and guarded Steam mod-load smoke
 eight target identities resolve and that publication completes under the real
 blueprint cache. It does not yet prove merchant reopening or save-backed pickup
 behavior; those remain runtime-qualification work.
+
+## Original asset and dedicated bundle checkpoint
+
+No optional donor archive was present, so the committed spear mesh and icon are
+original project-owned works generated from the mission's textual silhouette.
+The deterministic Blender 4.5.10 source produces 900 triangles across 15 mesh
+objects, a 2.925 m overall length, a 0.26 m maximum width, named Grip,
+SupportHandTarget, Tip, and Butt anchors, an FBX export, and a transparent icon.
+Exact inputs, outputs, hashes, and licensing are recorded in
+`ELVEN-BRANCHED-SPEAR-ASSET-PROVENANCE.md`.
+
+The FBX is imported by the exact Unity 2018.4.10f1 project through a dedicated
+builder and bundle named `kingmakergunslinger.elvenbranchedspear`; it is not a
+`FirearmKind` and is not stored in the firearm bundle. The dedicated runtime
+loads into a candidate cache, validates exactly one prefab, all four anchors,
+finite transforms, renderers, and materials, and publishes only after every
+check passes. The weapon type keeps the native Longspear donor's animation,
+socket, two-hand grip semantics, trails, attack timing, and sounds. A missing,
+corrupt, incomplete, or implausible bundle leaves the native Longspear model in
+place without changing any blueprint or save identity.
+
+Clean Release/package qualification passed with 1,025/1,025 domain tests and
+strict validation of the 125-file sound-enabled package. Package SHA-256 was
+`E8DEE1BD0B02126C73F1B54AF1928ED3667775A06305A3DE26556BD14DCC8C6E`.
+Guarded fresh Steam run `20260813T2328362317640Z-mod-load-smoke` passed. Its
+real game log recorded `[elven-branched-spear][bundle.loaded] Published one
+validated dedicated spear prefab transactionally`, proving that Unity 2018.4
+accepted the packaged bundle and the custom path—not the fallback—was selected.
+Equipped pose and animation aesthetics still require the documented human
+visual-calibration pass; that visual judgment does not gate mechanics.

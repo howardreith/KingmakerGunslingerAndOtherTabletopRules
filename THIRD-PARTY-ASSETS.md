@@ -116,3 +116,9 @@ OpenAI-generated chroma-key source created specifically for this repository.
 Its source and transformation record is in
 `assets-source/original-icons/paper-cartridge/SOURCE.md`; it contains no
 downloaded third-party asset.
+# Original Elven Branched Spear
+
+The Elven Branched Spear mesh, Blender source, procedural generator, and icon
+are original project-owned assets created for this repository. They contain no
+third-party model or artwork. Full hashes and build provenance are recorded in
+`docs/ELVEN-BRANCHED-SPEAR-ASSET-PROVENANCE.md`.

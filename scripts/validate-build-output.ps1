@@ -17,6 +17,7 @@ $requiredFiles = @(
     'blueprints\blueprints.json',
     'blueprints\blueprints.schema.json',
     'assets\bundles\kingmakergunslinger.firearms',
+    'assets\bundles\kingmakergunslinger.elvenbranchedspear',
     'assets\bundles\asset-bundle-manifest.json'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
@@ -51,6 +52,7 @@ $allowedRelativePaths = @{
     'blueprints\blueprints.json' = $true
     'blueprints\blueprints.schema.json' = $true
     'assets\bundles\kingmakergunslinger.firearms' = $true
+    'assets\bundles\kingmakergunslinger.elvenbranchedspear' = $true
     'assets\bundles\asset-bundle-manifest.json' = $true
 }
 

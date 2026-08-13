@@ -120,6 +120,7 @@ namespace KingmakerGunslinger.Blueprints
                         "KMG_ElvenBranchedSpear_WeaponType");
                     typeAdapter.Configure(clone, category, name, description,
                         movementAccuracy);
+                    Assets.ElvenBranchedSpearAssetRuntime.ApplyTo(clone);
                     return clone;
                 });
 

@@ -1,0 +1,32 @@
+{
+  "blenderVersion": "4.5.10 LTS",
+  "dimensionsMeters": {
+    "buttZ": -0.915,
+    "maximumWidth": 0.26,
+    "tipZ": 2.01
+  },
+  "generator": "generate_elven_branched_spear.py",
+  "license": "Original project-owned asset; repository license applies",
+  "meshObjects": 15,
+  "outputs": {
+    "elven-branched-spear-icon.png": {
+      "bytes": 98224,
+      "sha256": "7133b7536a78bd6a1712dbea02ffad49901957f2f73d05c083ee2f9f8ffa652a"
+    },
+    "elven-branched-spear.blend": {
+      "bytes": 584111,
+      "sha256": "20ceee2571d2515432e53ad3e6d9976c798c6ad53cec5e220b5ffd4ca60a6d33"
+    },
+    "elven-branched-spear.fbx": {
+      "bytes": 78012,
+      "sha256": "8a79b5fe83285ba8d95b4111008a9c2e330dc61bfe4ba7cc2212d0c7cb25474b"
+    },
+    "generate_elven_branched_spear.py": {
+      "bytes": 7933,
+      "sha256": "47a4069b86799cbebc844909ff82cfe38d22e70b1993cbae686c19bf57f73b75"
+    }
+  },
+  "schemaVersion": 1,
+  "sourceCoordinateContract": "+Z tip; grip origin; metric",
+  "triangles": 900
+}

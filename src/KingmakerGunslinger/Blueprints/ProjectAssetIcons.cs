@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.Blueprints
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
                 "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim",
                 "cord-of-stubborn-resolve", "shield-other" };
+            names = names.Concat(new[] { "elven-branched-spear" }).ToArray();
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -75,6 +76,7 @@ namespace KingmakerGunslinger.Blueprints
             PaperCartridgeModeBlueprintSet paperCartridgeMode,
             AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
             BlueprintItem cordOfStubbornResolve,
+            ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -132,6 +134,15 @@ namespace KingmakerGunslinger.Blueprints
             items.SetIcon(repairKit, Require("repair-kit"));
             items.SetIcon(supplies.GunsmithKit, Require("gunsmith-kit"));
             items.SetIcon(supplies.OverhaulKit, Require("overhaul-kit"));
+            if (elvenBranchedSpears == null || elvenBranchedSpears.Named == null)
+                throw new ArgumentNullException("elvenBranchedSpears");
+            Sprite spearIcon = Require("elven-branched-spear");
+            foreach (ElvenBranchedSpearBlueprintEntry entry in
+                elvenBranchedSpears.Entries)
+                items.SetIcon(entry.Item, spearIcon);
+            foreach (NamedSpearBlueprintEntry entry in
+                elvenBranchedSpears.Named.Entries)
+                items.SetIcon(entry.Item, spearIcon);
             ValidateDistinctSupplyIcons(ammunition, repairKit, supplies);
         }
 

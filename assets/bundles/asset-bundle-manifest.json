@@ -14,4 +14,18 @@
   ],
   "audioMappings": ["pistol-shot", "musket-shot", "blunderbuss-shot", "revolver-shot", "rifle-shot"],
   "quarantined": []
+  ,
+  "bundles": [
+    {
+      "name": "kingmakergunslinger.firearms",
+      "sha256": "F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0"
+    },
+    {
+      "name": "kingmakergunslinger.elvenbranchedspear",
+      "sha256": "3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE",
+      "prefabs": ["ElvenBranchedSpear"],
+      "sourceFbxSha256": "8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B",
+      "originalAsset": true
+    }
+  ]
 }
