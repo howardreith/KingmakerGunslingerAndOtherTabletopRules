@@ -52,7 +52,7 @@ namespace KingmakerGunslinger.Summoning
             I("pteranodon", SummonIconSourceKind.Ability,
                 "332ad68273db9704ab0e92518f2efd1c"),
             I("lantern-archon", SummonIconSourceKind.Ability,
-                "5e68e0ff99064dadaef1c600d72ae59f"),
+                "90e59f4a4ada87243b7b3535a06d0638"),
             I("bralani-azata", SummonIconSourceKind.Ability,
                 "332ad68273db9704ab0e92518f2efd1c"),
             I("erinyes-devil", SummonIconSourceKind.Item,

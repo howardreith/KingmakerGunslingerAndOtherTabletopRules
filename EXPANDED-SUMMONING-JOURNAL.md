@@ -1511,3 +1511,15 @@
   Pteranodon 8.368 < Roc 11.226. All locomotion, attack, hit, death,
   projectile, selection/navigation, detachment, and exact cleanup contracts
   also passed.
+
+## 2026-08-12 - Standalone icon dependency defect found
+
+- Isolated standalone transaction
+  `compat-20260813T015804Z-59c79f4d092d` failed closed and restored the Mods
+  directory exactly. The exact log proved Lantern Archon's selected
+  `Archon's Trumpet` sprite GUID belongs to Call of the Wild and was absent
+  with only KMG installed.
+- Replaced that optional-mod dependency with Owlcat's base-game Bless sprite,
+  a stable radiant/celestial category fallback. No optional-mod blueprint may
+  be required for core KMG registration; standalone will be rerun before the
+  remaining profiles.
