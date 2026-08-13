@@ -153,6 +153,8 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("camera.CopyFrom(liveCamera)") &&
                 runtime.Contains("camera.cullingMask = subjectMask") &&
                 runtime.Contains("priorEvidenceEnabled") &&
+                runtime.Contains("priorEvidenceActive") &&
+                runtime.Contains("transform.gameObject.SetActive(true)") &&
                 runtime.Contains("renderer.enabled = false") &&
                 runtime.Contains("renderer.enabled = true") &&
                 runtime.Contains("detached camera frame") &&

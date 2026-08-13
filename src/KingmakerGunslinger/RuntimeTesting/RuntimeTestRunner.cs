@@ -11124,6 +11124,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The live Eagle comparison had no subject renderers.");
             bool[] priorEvidenceEnabled = evidenceRenderers
                 .Select(value => value.enabled).ToArray();
+            Transform casterRoot = caster.View.transform;
+            Transform eagleRoot = eagle.View.transform;
+            Transform[] evidenceTransforms = evidenceRenderers
+                .SelectMany(value => value.GetComponentsInParent<Transform>(true))
+                .Where(value => value != null &&
+                    (ReferenceEquals(value, casterRoot) ||
+                    ReferenceEquals(value, eagleRoot) ||
+                    value.IsChildOf(casterRoot) || value.IsChildOf(eagleRoot)))
+                .Distinct()
+                .ToArray();
+            bool[] priorEvidenceActive = evidenceTransforms
+                .Select(value => value.gameObject.activeSelf).ToArray();
             int subjectMask = evidenceRenderers.Aggregate(0, (mask, renderer) =>
                 mask | (1 << renderer.gameObject.layer));
             var evidenceSet = new HashSet<Renderer>(evidenceRenderers);
@@ -11152,13 +11164,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.CopyFrom(liveCamera);
                 camera.enabled = false;
                 camera.cullingMask = subjectMask;
+                foreach (Transform transform in evidenceTransforms)
+                    transform.gameObject.SetActive(true);
                 foreach (Renderer renderer in evidenceRenderers)
                     renderer.enabled = true;
                 foreach (Renderer renderer in suppressedRenderers)
                     renderer.enabled = false;
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
-                light.intensity = 1.25f;
+                light.intensity = 0.55f;
                 light.cullingMask = subjectMask;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
@@ -11223,6 +11237,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (evidenceRenderers[index] != null)
                         evidenceRenderers[index].enabled =
                             priorEvidenceEnabled[index];
+                for (int index = evidenceTransforms.Length - 1;
+                    index >= 0; index--)
+                    if (evidenceTransforms[index] != null)
+                        evidenceTransforms[index].gameObject.SetActive(
+                            priorEvidenceActive[index]);
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
