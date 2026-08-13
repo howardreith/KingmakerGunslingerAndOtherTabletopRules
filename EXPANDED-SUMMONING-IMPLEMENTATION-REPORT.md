@@ -33,6 +33,13 @@ presentation implementation.
   zero missing icons, zero generic SNA children, zero mapped duplicates, and
   exact preservation of unrelated native/third-party choices. The outer spell
   parents intentionally retain their native family icons.
+- Immutable artifact source `147f39fabc0d778bef7a6133358830f58e72794a`
+  passed two clean 1,018-test/build/package cycles. Both DLLs matched SHA-256
+  `f69b8d64d1236b9045a3c1e058986a008c49eb48bb3fe70f11c44c1ed01ba0fc`;
+  both strict packages matched
+  `e31021ff89cd95ecb89b04d7f730260ab46abdd792846f8395872ebfd06b8723`;
+  both source archives matched
+  `b5177925939cb353bcdc62bd0535742cc5b4040f55cf15cd93bfdbec411d8598`.
 
 
 ## First-playtest repair qualification

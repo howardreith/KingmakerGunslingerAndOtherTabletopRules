@@ -1615,6 +1615,14 @@
   The broad Gunslinger aggregate reproduced its previously documented
   detached Dodge and order-sensitive Targeting/Bleeding fixture limitations;
   no gameplay source in those systems changed.
+- Immutable artifact source `147f39fabc0d778bef7a6133358830f58e72794a`
+  passed two independent clean Release/package cycles with 1,018/1,018 domain
+  tests and strict validation. DLL SHA-256 is
+  `f69b8d64d1236b9045a3c1e058986a008c49eb48bb3fe70f11c44c1ed01ba0fc`;
+  package SHA-256 is
+  `e31021ff89cd95ecb89b04d7f730260ab46abdd792846f8395872ebfd06b8723`;
+  deterministic source archive SHA-256 is
+  `b5177925939cb353bcdc62bd0535742cc5b4040f55cf15cd93bfdbec411d8598`.
 
 ## 2026-08-13 - Deterministic artifact freeze
 

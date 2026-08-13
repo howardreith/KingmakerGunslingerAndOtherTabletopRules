@@ -15,8 +15,10 @@
   one of 16 module states; visual, player-path, combat, enabled persistence,
   five compatibility profiles, Shield Other, Acadamae, Cord, vendor, and
   paper-cartridge focused regressions pass. Mods and settings were restored.
-- Remaining release work is deterministic double-build hashing, durable state
-  finalization, and refreshing draft PR #2. Do not merge the PR.
+- Immutable artifact source `147f39fabc0d778bef7a6133358830f58e72794a`
+  produced byte-identical clean builds. DLL/package/source hashes are
+  `f69b8d64...ba0fc`, `e31021ff...b8723`, and `b5177925...d8598`.
+  Remaining work is refreshing draft PR #2; do not merge it.
 
 
 ## Expanded Summoning polish / release hardening (active, 2026-08-12)
