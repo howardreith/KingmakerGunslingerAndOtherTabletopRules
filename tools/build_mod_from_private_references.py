@@ -159,7 +159,7 @@ def main() -> int:
 
     report = {
         "schemaVersion": 1,
-        "classification": "ready-for-sprint29-complete-maintenance-loop-smoke-test-after-exact-reference-compile",
+        "classification": "ready-for-expanded-summoning-release-after-exact-reference-compile",
         "configuration": args.configuration,
         "modVersion": info["Version"],
         "compileExitCode": completed.returncode,

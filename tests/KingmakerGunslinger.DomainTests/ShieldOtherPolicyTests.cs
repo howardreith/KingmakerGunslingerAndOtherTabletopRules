@@ -43,13 +43,23 @@ namespace KingmakerGunslinger.DomainTests
         {
             var valid = Request();
             Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(valid).Valid,
-                "Complete in-range link must be valid.");
+                "Complete established link must be valid.");
             AssertInvalid("subject-missing", value => value.SubjectPresent = false);
             AssertInvalid("caster-missing", value => value.CasterPresent = false);
             AssertInvalid("caster-level-missing", value => value.CasterLevel = 0);
             AssertInvalid("caster-dead", value => value.CasterAlive = false);
             AssertInvalid("different-area", value => value.SameArea = false);
-            AssertInvalid("out-of-range", value => value.DistanceFeet = 30.001f);
+
+            ShieldOtherLinkValidityRequest distant = Request();
+            distant.DistanceFeet = 10000f;
+            Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(distant).Valid,
+                "Close range limits initial targeting, not an established bond.");
+
+            ShieldOtherLinkValidityRequest unavailableDistance = Request();
+            unavailableDistance.DistanceFeet = float.NaN;
+            Assertions.True(
+                ShieldOtherLinkValidityPolicy.Evaluate(unavailableDistance).Valid,
+                "Established-link validity must not depend on distance telemetry.");
         }
 
         internal static void CloseRangeScaling()
@@ -63,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
             ShieldOtherLinkValidityRequest boundary = Request();
             boundary.CasterLevel = 5; boundary.DistanceFeet = 35f;
             Assertions.True(ShieldOtherLinkValidityPolicy.Evaluate(boundary).Valid,
-                "Exact close-range boundary must remain valid.");
+                "Established link must remain valid at the casting-range boundary.");
         }
 
         internal static void BlueprintIdentityAndContractSource()
@@ -204,6 +214,12 @@ namespace KingmakerGunslinger.DomainTests
                 "buff.Remove()" })
                 Assertions.True(source.Contains(token),
                     "Link lifecycle source contract is missing: " + token);
+            string policy = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Spells", "ShieldOther",
+                "ShieldOtherLinkValidityPolicy.cs"));
+            Assertions.False(policy.Contains("out-of-range") ||
+                policy.Contains("request.DistanceFeet"),
+                "Established Shield Other link validity must not depend on distance.");
         }
 
         internal static void DamageRuntimeSourceContract()
@@ -244,12 +260,14 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
-            foreach (string token in new[] { "request.Parameters.Count != 3",
-                "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean" })
+            foreach (string token in new[] { "request.Parameters.Count != 4",
+                "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean",
+                "Property(\"expandedSummoning\")",
+                "[\"expandedSummoning\"].Type != JTokenType.Boolean" })
                 Assertions.True(request.Contains(token),
                     "Runtime module request contract is missing: " + token);
             foreach (string token in new[] { "Active.ShieldOther",
-                "RegisteredBlueprintCount == 254",
+                "RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount",
                 "feature-module-shield-other-publication",
                 "typed-physical-damage", "new PhysicalDamage(",
                 "typed-energy-damage", "new EnergyDamage(",
@@ -263,10 +281,22 @@ namespace KingmakerGunslinger.DomainTests
                 "AddEnergyImmunity",
                 "area-termination", "\"IsInGame\", false",
                 "shield-other-area-termination",
+                "post-cast-range-preservation",
+                "shield-other-post-cast-range-preservation",
+                "close range constrains initial targeting only",
+                "rangePreserved && rangedSubject == 1 && rangedCaster == 1",
+                "shield-other-transfer-log", "\"13 entries\"",
+                "ShieldOtherCombatLog.Published == logsBefore + 13",
                 "caster-death-termination",
                 "shield-other-caster-death-termination" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
+            foreach (string stale in new[] { "shield-other-range-termination",
+                "caster-level close range round revalidation",
+                "ShieldOtherCombatLog.Published == logsBefore + 12" })
+                Assertions.False(runner.Contains(stale),
+                    "Stale post-cast distance termination remains in the runtime contract: " +
+                    stale);
             foreach (string token in new[] { "native-availability",
                 "abilityData.RequireMaterialComponent", "abilityData.IsAvailable",
                 "new Kingmaker.UnitLogic.Commands.UnitUseAbility(",

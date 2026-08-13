@@ -40,6 +40,48 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Summoning\SummonFamily.cs" />
+    <Compile Include="Summoning\SummonMultiplicity.cs" />
+    <Compile Include="Summoning\SummonTemplatePolicy.cs" />
+    <Compile Include="Summoning\SummonCreatureSpec.cs" />
+    <Compile Include="Summoning\SummonVariantSpec.cs" />
+    <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
+    <Compile Include="Summoning\ExpandedSummoningInventoryObserver.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSpecialProfiles.cs" />
+    <Compile Include="Summoning\ExpandedSummoningNaturalProfiles.cs" />
+    <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
+    <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
+    <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
+    <Compile Include="Summoning\SummonNativeExpansionCatalog.cs" />
+    <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
+    <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
+    <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
+    <Compile Include="Summoning\SummonIconCatalog.cs" />
+    <Compile Include="Summoning\SummonPublicationTransaction.cs" />
+    <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningIdentityCatalog.cs" />
+    <Compile Include="Summoning\SummonTemplateBandPolicy.cs" />
+    <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
+    <Compile Include="Summoning\SummonTemplateSelectionPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningAlignmentModeRuntime.cs" />
+    <Compile Include="Summoning\ContextActionSetSummonAlignment.cs" />
+    <Compile Include="Summoning\ContextActionApplySummonBuff.cs" />
+    <Compile Include="Summoning\ContextActionApplySummonTemplateByCaster.cs" />
+    <Compile Include="Summoning\ContextActionSuccubusDominate.cs" />
+    <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningAlignmentModeBlueprints.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNativeOptionBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningIconBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningProjectIcons.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />
@@ -690,6 +732,14 @@
     </Content>
     <Content Include="..\..\assets\game\icons\*.png">
       <Link>assets\icons\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
+      <Link>assets\icons\expanded-summoning\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\game\icons\expanded-summoning\icon-manifest.json">
+      <Link>assets\icons\expanded-summoning\icon-manifest.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

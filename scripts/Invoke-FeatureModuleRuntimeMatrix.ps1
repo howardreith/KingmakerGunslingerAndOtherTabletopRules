@@ -1,9 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.77',
+    [string]$ExpectedVersion = '0.0.78',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
-    [ValidateSet('all', 'on-on-on', 'on-on-off', 'on-off-on', 'on-off-off',
-        'off-on-on', 'off-on-off', 'off-off-on', 'off-off-off')]
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
     [switch]$ConfirmEach
@@ -30,17 +28,22 @@ try {
     } else { '<absent>' }
 } finally { $sha.Dispose() }
 
-$combinations = [ordered]@{
-    'on-on-on' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $true; shieldOther = $true }
-    'on-on-off' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $true; shieldOther = $false }
-    'on-off-on' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $false; shieldOther = $true }
-    'on-off-off' = [ordered]@{ gunslinger = $true; acadamaeGraduate = $false; shieldOther = $false }
-    'off-on-on' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $true; shieldOther = $true }
-    'off-on-off' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $true; shieldOther = $false }
-    'off-off-on' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $false; shieldOther = $true }
-    'off-off-off' = [ordered]@{ gunslinger = $false; acadamaeGraduate = $false; shieldOther = $false }
+$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning')
+$combinations = [ordered]@{}
+foreach ($mask in 15..0) {
+    $configuration = [ordered]@{}
+    $labels = [Collections.Generic.List[string]]::new()
+    for ($index = 0; $index -lt $moduleNames.Count; $index++) {
+        $enabled = ($mask -band (1 -shl (3 - $index))) -ne 0
+        $configuration[$moduleNames[$index]] = $enabled
+        $labels.Add($(if ($enabled) { 'on' } else { 'off' }))
+    }
+    $combinations[$labels -join '-'] = $configuration
 }
 if ($Combination -ne 'all') {
+    if (-not $combinations.Contains($Combination)) {
+        throw "Unknown feature-module combination '$Combination'."
+    }
     $selected = [ordered]@{}
     $selected[$Combination] = $combinations[$Combination]
     $combinations = $selected
@@ -50,10 +53,11 @@ $failure = $null
 try {
     foreach ($entry in $combinations.GetEnumerator()) {
         $configuration = [ordered]@{
-            schemaVersion = 2
+            schemaVersion = 3
             gunslinger = [bool]$entry.Value.gunslinger
             'acadamae-graduate' = [bool]$entry.Value.acadamaeGraduate
             'shield-other' = [bool]$entry.Value.shieldOther
+            'expanded-summoning' = [bool]$entry.Value.expandedSummoning
         }
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
@@ -63,7 +67,8 @@ try {
             -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
             -Parameters @{ gunslinger = [bool]$entry.Value.gunslinger;
                 acadamaeGraduate = [bool]$entry.Value.acadamaeGraduate;
-                shieldOther = [bool]$entry.Value.shieldOther } `
+                shieldOther = [bool]$entry.Value.shieldOther;
+                expandedSummoning = [bool]$entry.Value.expandedSummoning } `
             -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."

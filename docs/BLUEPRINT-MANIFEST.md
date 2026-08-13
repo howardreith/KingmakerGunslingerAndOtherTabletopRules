@@ -7,8 +7,15 @@ The append-only contract contains 233 stable identifiers: 232 active and one res
 The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
-manifest contains 255 stable identifiers: 254 active and one reserved.
-Bootstrap therefore uses the complete two-hundred-forty-seven-blueprint transaction.
+manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
+Validator contract: 1439 stable identifiers: 1438 active and one reserved.
+The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
+identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine
+weapon identities, two bounded resources, and one hidden KMG extraplanar marker.
+They register in every feature-module state; live parent publication remains
+independently gated. Bootstrap therefore derives the complete 1,406-blueprint
+transaction from the 254 pre-feature identities plus the 1,152 feature-local
+identities.
 
 Paper Cartridges Phase 1 identities are append-only:
 

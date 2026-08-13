@@ -1,5 +1,205 @@
 # Autonomous Gunslinger resume handoff
 
+## Expanded Summoning final presentation (2026-08-13)
+
+- Final immutable runtime/artifact source is
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65` on
+  `codex/expanded-summoning`; release remains the unreleased 0.0.78 draft.
+- All 693 visible child choices use 77 project-owned original creature icons.
+  Same-creature placements share one cached sprite; unrelated concepts have
+  distinct output hashes. SNA I has five creature-named choices and no generic
+  preservation child; all SNA I-IX icons passed runtime provenance checks.
+- `Smilodon` is the sole player-facing name while the stable `dire-tiger`
+  identity is retained. Eagle's view multiplier is 0.30 and its live vertical
+  height is 1.360 versus 1.926 for a Medium humanoid.
+- On this checkpoint: 1018 domain tests pass; registration is 1,438 in every
+  one of 16 module states; visual, player-path, combat, enabled/disabled
+  persistence, five compatibility profiles, Shield Other, Acadamae, Cord,
+  vendor, and paper-cartridge focused regressions pass. Mods, settings, and
+  the disposable working save were restored.
+- Exact artifact source `fea6b60786aaabc41d1e276e524d8c14803a0e65`
+  produced byte-identical clean builds. DLL/package/source hashes are
+  `f56e2851...5db6e9`, `a0089e9e...2fd72c`, and `9b912094...e9bd1`.
+  Remaining work is refreshing draft PR #2; do not merge it.
+
+
+## Expanded Summoning polish / release hardening (active, 2026-08-12)
+
+- Starting head: `1767b8f08cc5ce1be8d8cb0a16cfa4b07c7c225e`; qualified
+  source checkpoint: `5aa88bc7aedd4780958585d6eb63123825ba4581` on
+  `codex/expanded-summoning`. Release remains 0.0.78 and draft PR #2 remains
+  open, draft, and unmerged.
+- Durable pass contract:
+  `planning/EXPANDED-SUMMONING-POLISH-MISSION.md`.
+- Final polish player-path run passed 667/667 visible generated SM/SNA roots
+  plus 17/17 split Owlcat choices with exact live kind/quantity and slot
+  semantics. Combat passed 153/153 production commands; all 67 live visual
+  contracts and six scale relationships passed.
+- Five hybrid umbrella entries are hidden in favor of distinct choices, Dire
+  Bat's unacceptable Roc proxy is publication-suppressed, deterministic icons
+  and measured scale multipliers are active, and all identities remain
+  registered.
+- Enabled/disabled persistence, all 16 module states, standalone, Call of the
+  Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined
+  profiles pass and restore exactly. Focused Shield Other, Acadamae, Cord,
+  paper/firearm, and vendor regressions pass.
+- Artifact source `00f7fa29db69f142d918725c502993111d18f0c0`
+  passed two byte-identical clean Release/package cycles. DLL/package/source
+  hashes are `4c5cf6e8...c5a76`, `c8bca9e8...f6496`, and
+  `61b4d36f...470c3`.
+- Draft PR #2 is refreshed, open, draft, cleanly mergeable, and unmerged. No
+  autonomous gameplay or publication action remains. Human action is limited
+  to PR review and the documented subjective visual checks; merge remains a
+  human decision.
+
+
+## Expanded Summoning first-playtest repair (complete, 2026-08-12)
+
+- The human spellbook/UI acceptance test superseded the prior completion
+  statement below. The repair baseline is
+  `e9f251c584607dd45a45a2414e2aaffabff4c44b`; pushed completion head before
+  the final audit-only correction is
+  `00d9c1e2ab21b0396d32c1e3a412b402a49e3653` on
+  `codex/expanded-summoning`. Draft PR #2 is open, draft, and unmerged.
+- Durable repair contract:
+  `planning/EXPANDED-SUMMONING-FIRST-PLAYTEST-REPAIR-MISSION.md`.
+- Root cause is proven and repaired: the old harness bypassed the unsupported
+  nested `AbilityVariants`; all 182 templated roots are now direct executable
+  abilities with caster-selected post-spawn templates. All 681 actual native-
+  parent placements passed final immutable-source run
+  `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`.
+- Erinyes' separate presentation fault was inherited `AppearFromFog` campaign
+  state. The qualified working tree replaces it with a fresh 9-HD outsider
+  chassis while preserving the proven ranged view/rig; structural run
+  `20260812T1838020780354Z-93eb2a40a02c4d77a9386354d9a5d46a`
+  and 67-view run
+  `20260812T1842003981829Z-32445fd9cdab4e28a3af586148dbc9d4`
+  pass.
+- All 18 parent-menu contracts, exact before/after multiplicity counts, icons,
+  reconciliation, and the six standalone Summon Elemental roots pass final
+  structural run
+  `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`.
+  The final actual-parent run covers all `681/681` placements and proves one
+  slot per success and zero for a distant pre-range cancellation.
+- Persistence, all 16 module states, and all required compatibility profiles
+  pass on the repaired production source. Shield Other, Acadamae/Cord, and
+  paper/firearm/vendor regressions pass; the historical detached Dodge fixture
+  limitation is documented without an unrelated gameplay mutation.
+- Final repair counts are 1,158 feature identities, 1,412 active repository
+  identities plus one reserved, constant runtime registration 1,412, and
+  `1013/1013` domain tests. Artifact source is
+  `a951f7e4958f77244ef38e9df4507acf41c62b59`; DLL/package/source hashes are
+  `0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b`,
+  `35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4`,
+  and `572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf`.
+- No autonomous engineering action remains. Human action is limited to draft
+  PR review and the residual subjective visual checklist; do not merge
+  autonomously. The old package hashes and lower-layer 153-command evidence
+  below are historical controls, not repaired-release qualification.
+
+## Active Expanded Summoning mission (2026-08-11)
+
+- Current release state (2026-08-12): mission complete and release-qualified.
+  The literal definition-of-done audit, final deterministic artifact freeze,
+  and draft-PR refresh are complete. The strengthened structural and
+  153-command mechanical repetitions passed on pushed source
+  `5205805eab3fe0115d6888c53bce73c80474d1b7`. Final structural, 153-command
+  mechanical, 67-unit visual, enabled/disabled persistence, all 16 module
+  states, and all eight required compatibility launches PASS. Draft PR
+  [#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
+  is open against `master`. Final artifact source is
+  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`; DLL/package/source hashes are
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`,
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`,
+  and `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
+  The requirement-to-evidence map is
+  `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`. This paragraph supersedes
+  older checkpoint entries below.
+- Current counts: 66 SM entries, 57 SNA entries, 67 unique units, 681
+  placements, 1,155 Expanded Summoning identities, 1,409 active repository
+  identities plus one reserved, settings schema 3, and `1009/1009` domain
+  tests.
+- Restoration is complete: settings
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  `KMG_AUTOMATION_WORKING`
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected baseline
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  Each compatibility transaction restored the prior Mods directory exactly;
+  `KMG_AUTOMATION_BASELINE` was never modified.
+- Completion-audit update: an explicit 1,045-node final-live assertion was
+  added for exact parent mapping plus inherited school, Summoning descriptor,
+  full-round/close targeting, metamagic, material data, and action-bar state.
+  Repository validation, `1009/1009` tests, clean Release compile, guarded
+  structural/mechanical reruns, final compatibility repetitions, and two
+  deterministic release builds all pass.
+
+- Branch: `codex/expanded-summoning`; selected baseline `origin/master` at
+  `2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required ancestor
+  `e4d560f8dd2909518614e3a20e77ba4d70dadeb8`; release baseline 0.0.77.
+- Durable contract/state: `planning/EXPANDED-SUMMONING-MISSION.md` and
+  `EXPANDED-SUMMONING-STATE.json`.
+- Completed: Shield Other range repair; frozen 67-creature/681-placement logical
+  catalog; guarded final-live parent/donor/action-graph inventory; additive merge
+  and rollback policies; sanitizer contract; schema-3 fourth-module state with
+  all 16 logical combinations; 1,149 Expanded Summoning identities and exact
+  aggregate registry count 1,403; all 681 abilities and additive base-parent
+  placements; HD-banded celestial/fiendish templates, spawn-local alignment,
+  bounded smite; all 55 selected donor graphs; all tier I-VII natural/proxy
+  chassis; and the special Lantern Archon, Invisible Stalker, Shadow Demon,
+  Salamander, Succubus, Bebelith, and Pixie structures.
+- Current pushed source before the persistence checkpoint is
+  `db60d47e446bc9fca51cabc970d823f2d562e791`. The complete domain suite is
+  1,009/1,009 PASS; clean Release and strict package validation PASS.
+- Native elementals and mephits plus the reconstructed Lantern Archon are
+  structurally qualified by fresh Steam run
+  `20260811T2138366091237Z-observe-expanded-summoning-inventory`: all 19
+  assertions PASS, including exact Lantern mechanics, zero sanitizer failures,
+  and zero native action contamination. No save was accessed.
+- Exact native invisibility, incorporeal, energy-drain, tail, grab, domination,
+  and vampiric-touch graphs are captured by guarded PASS run
+  `20260811T2156134219365Z-observe-expanded-summoning-inventory`. Stock energy
+  drain was rejected because it can become permanent.
+- Invisible Stalker and Shadow Demon are reconstructed and exact-structure
+  qualified by guarded PASS `20260811T2207541420526Z`.
+- Native-cast run `20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`
+  passed all 153
+  production ability commands passed on exact committed source `8647cef`,
+  covering all 123 one-creature logical entries, all 16 eligible family/tier
+  `1d3` cases, and all 14 eligible family/tier `1d4+1` cases. All 205 observed
+  units were the intended same kind and exact cleanup passed after the guarded
+  read-only load of `KMG_AUTOMATION_WORKING`.
+- Visual-contract run
+  `20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7` on exact
+  committed source `ee8a588`: all ten assertions passed for 67/67 live views,
+  geometry, bounded footprints, navigation, locomotion, attacks, hit/death,
+  ranged origins, and cleanup. No save-writing API was observed and the
+  installation/settings transaction was restored.
+- Active-summon persistence now passes with the module both enabled and
+  disabled. The working save was restored byte-for-byte after both guarded
+  transactions, feature settings were restored, and the baseline hash never
+  changed. Exact next action is to commit/push the persistence harness, repeat
+  on its immutable commit.
+- The complete 16-state fresh-launch matrix passes on immutable pushed source
+  `5e25656d0ed869973d97ed11191ed3175330f4ac`: exact active snapshots, constant
+  1,403 registrations, independent publication surfaces, and 681/zero Expanded
+  Summoning references all passed. Settings and both save hashes were restored
+  exactly. Exact next action is compatibility-profile qualification followed by
+  release freeze and final evidence.
+- Active blocker: none. SSH publication is working. GitHub CLI authentication is
+  invalid and will be rechecked after local qualification for draft-PR creation.
+- Strengthened guarded mechanical run
+  `20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db` passes all 153
+  casts plus templates, feats, duration/range, representative combat, Fire
+  Mephit breath, Succubus, Pixie, Bebelith, and exact cleanup. The ledger is
+  now 1,155 Expanded Summoning identities and 1,409 active registrations plus
+  one reserved identity. Exact next action is to commit/push this checkpoint,
+  then repeat all required final-source runtime gates on that immutable SHA.
+- Mechanical source checkpoint `317759478539127ebf237067bbde697b1da8c60d`
+  is pushed to `origin/codex/expanded-summoning`. The next action is now the
+  exact immutable-source runtime repetition set.
+
+
 ## Shield Other casting/UI regression repair (2026-08-11)
 
 - Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.
@@ -2148,3 +2348,351 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   runtime validator and focused source test plus evidence docs are uncommitted.
 - Exact next action: validate/commit/publish/rebuild and retry all-enabled.
 - Remaining gates unchanged. Active blocker: none.
+## Expanded Summoning current resume - transactional publication ready
+
+- Working branch: `codex/expanded-summoning`; baseline
+  `2894d9fcce250708e354894ffd8e1be9c7493b9b`.
+- Latest guarded PASS:
+  `20260811T1905591662821Z-observe-expanded-summoning-inventory` on
+  `344c9590dc02c086da9e4d9dcd03917e6ebb741a`; 67 units, 1,045 abilities,
+  1,370 registered identities, and all native spawn graphs validated.
+- Additive transactional publication for the 18 canonical summon parents is
+  source-qualified with 999/999 tests, clean Release, and strict package PASS.
+- Exact next action: commit/push this checkpoint, rebuild from the committed
+  SHA, then run `observe-expanded-summoning-inventory` to prove 681 live KMG
+  placements and exact preservation of all preexisting parent variants.
+- Remaining work includes alignment/template mechanics, fact-level unit
+  normalization, special adaptations, optional-parent reconciliation, guarded
+  mechanical/visual/persistence scenarios, profiles, release metadata, and PR.
+
+## Expanded Summoning current resume - live publication PASS
+
+- Pushed source `7feb6cb10049ad88c6bf4ddad148e3c5c7bd9eb0` passed guarded run
+  `20260811T1912513494823Z-observe-expanded-summoning-inventory`.
+- Exact live assertions: 67 units, 1,045 abilities, 1,370 registry identities,
+  and 681 placements on 18 canonical parents; no save access.
+- Exact next action: implement KMG-owned celestial/fiendish template mechanics
+  and deterministic good/neutral/evil execution routing without optional-mod
+  compile-time references.
+
+## Expanded Summoning current resume - donor component isolation
+
+- Every retained KMG unit component is now an independent deep clone; native
+  donor component instances and mutable arrays are no longer shared.
+- Full source validation, 1,000/1,000 tests, clean Release, and strict package
+  validation pass.
+- Exact next action: commit/push, then remove forbidden facts and spell grants
+  from proxy/custom donor graphs before implementing template routing.
+
+## Expanded Summoning current resume - fact/spell deny contract
+
+- Prohibited summon/conjuration/teleport/planar/campaign facts and component
+  grants are filtered, class spell selections are cleared, and inventory is
+  forced empty on all KMG units.
+- Source validation, 1,001/1,001 tests, clean Release, and strict package pass.
+- Exact next action: commit/push and add authoritative final-live observer
+  assertions for donor isolation and prohibited-reference absence.
+
+## Expanded Summoning current resume - sanitizer native PASS
+
+- Guarded run `20260811T1924349269417Z-observe-expanded-summoning-inventory`
+  passed on `9b064ac2896d38b69a87777976825fbed795f6a2`.
+- Exact assertions were zero shared donor components, zero prohibited
+  references, zero inherited class spell arrays, and zero nonempty inventories.
+- Exact next action: implement celestial/fiendish buffs and alignment routing.
+
+## Expanded Summoning current resume - template foundation
+
+- Four native-component KMG template buffs and 182 nested celestial/fiendish
+  logical choices are source-qualified with 1,002/1,002 tests, clean Release,
+  and strict package PASS.
+- Exact next action: commit/push and run the guarded structural observer, then
+  add exact template graph assertions and finish SR/smite/alignment fidelity.
+
+## Expanded Summoning current resume - exact template graph observer
+
+- The localization repair passed guarded fresh-process run
+  `20260811T1937046769749Z-observe-expanded-summoning-inventory` on source
+  `61a3c40e3dd5ebecd07a6ed5d19a0b16d4af51d5`; 67 units, 1,045 abilities,
+  1,370 identities, 681 placements, and all sanitizer checks passed with no
+  save access.
+- The structural observer now requires exactly 182 logical template choices,
+  182 celestial executions, 182 fiendish executions, and four native-component
+  template buffs, including alignment gates, descriptors, child application,
+  resistance/DR structure, and high-tier spell resistance.
+- Repository validation, 1,002/1,002 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rerun the observer on that
+  immutable SHA, then finish template SR/smite/alignment fidelity.
+
+## Expanded Summoning current resume - template graph native PASS
+
+- Guarded fresh-process run
+  `20260811T1944046651609Z-observe-expanded-summoning-inventory` passed on
+  committed source `d76f5c6010ca3612ba2b1c24e076b7601fed9227`.
+- Exact final-live counts passed: 182 logical template choices, 182 celestial
+  executions, 182 fiendish executions, four template buffs, 681 parent
+  placements, and 1,370 registered identities. No save was accessed.
+- Exact next action: add frozen mid-tier celestial/fiendish buffs so creatures
+  with 5-10 HD receive CR+5 SR without over-granting SR below 5 HD; then qualify
+  the resulting six-buff template graph.
+
+## Expanded Summoning current resume - exact template SR source-qualified
+
+- Added frozen `Celestial.Mid` (`c3c53de0ca9440e5af263dfb16922188`)
+  and `Fiendish.Mid` (`031bc1b958324023bf3f4c33b976185d`) buff
+  identities. The append-only ledger is now 1,373 IDs: 1,372 active and one
+  reserved; Expanded Summoning contributes 1,118 identities.
+- The pure HD policy assigns low below 5 HD, mid from 5 through 10 HD, and high
+  above 10 HD. Mid grants resistance/DR 5 plus CR+5 SR; high grants value 10
+  plus CR+5 SR; low conservatively omits SR exactly below the tabletop gate.
+- The aggregate bootstrap count is derived from the feature-local foundation
+  count. Repository validation, 1,003/1,003 tests, clean Release, and strict
+  package validation pass. Exact next action: commit/push and run the guarded
+  observer against the immutable SHA.
+
+## Expanded Summoning current resume - exact template SR native PASS
+
+- Guarded save-free run
+  `20260811T1954362756414Z-observe-expanded-summoning-inventory` passed on
+  committed source `d384ba06cf76896543a6b23ed480d3f6715bbba2`.
+- Exact final-live assertions passed: registry 1,372; six HD-banded buffs; 182
+  logical choices; 182 celestial and 182 fiendish executions; 681 canonical
+  placements; zero sanitizer failures. No save was accessed.
+- Exact next action: inventory native celestial/fiendish smite and alignment
+  machinery, then implement a bounded adaptation or document why it is unsafe.
+
+## Expanded Summoning current resume - exact template-mechanic observer
+
+- The save-free inventory now records the two exact Call of the Wild template
+  features and their seven referenced smite/SR/resistance/DR facts by GUID,
+  without any optional-mod compile-time dependency.
+- Repository validation, 1,003/1,003 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and run the observer in the
+  composed profile to capture the smite component internals.
+
+## Expanded Summoning current resume - exact smite dependency follow-up
+
+- Guarded run `20260811T2000068867927Z-observe-expanded-summoning-inventory`
+  passed on `63d77276ea97468f6bb31768b3f4e7125a390250`; all nine exact
+  Call of the Wild template-mechanic GUIDs were present and no save was used.
+- Smite Evil/Good template features use base `AddFacts` and
+  `AddAbilityResources`, pointing to exact abilities `f009c072...` / `320b9273...`
+  and shared resource `b4274c5b...`. The observer now follows those three
+  identities with full fields/action graphs. Exact next action: commit/push and
+  execute that focused observation.
+
+## Expanded Summoning current resume - deep smite graph observer
+
+- Guarded run `20260811T2004013138253Z-observe-expanded-summoning-inventory`
+  passed on `f5587d327e67a202adcca89b7961f2683c2b2a0f` and confirmed both
+  optional template smites are swift, one-resource targeted abilities using
+  Charisma and character-level ranks plus conditional target buffs.
+- Reusing that graph directly remains unapproved because the shared resource
+  maximum and applied-buff identities were still nested. The observer now emits
+  depth-12 action graphs and the exact resource amount structure. Exact next
+  action: commit/push and run that final dependency observation.
+
+## Expanded Summoning current resume - bounded template smite source-qualified
+
+- Guarded run `20260811T2008011506353Z-observe-expanded-summoning-inventory`
+  passed on `15c3b7f1dc2d91269f44a0480c4ba036f83ea15b`. It proved the optional
+  shared smite resource has fixed maximum one, but both abilities apply the
+  same permanent non-child target buff. Direct reuse was rejected because that
+  external state could survive its summoned source.
+- KMG now registers two summon-local smite markers. Every templated execution
+  receives the appropriate marker as a permanent, non-dispellable child of the
+  summoned unit. The marker grants nonnegative Charisma to attack and HD to
+  damage against the opposed alignment, then consumes itself after the first
+  successful eligible hit; it never creates target state.
+- The deterministic ledger is now 1,375 IDs: 1,374 active and one reserved;
+  Expanded Summoning contributes 1,120 identities. Repository validation,
+  1,004/1,004 tests, clean Release, and strict package validation pass. Exact
+  next action: commit/push, rebuild the immutable SHA, and run the guarded
+  final-live structural observer.
+
+## Expanded Summoning current resume - bounded template smite native PASS
+
+- The first guarded launch on `a0d8e7752281d4ae1e51ce094c1226f6a30faf16`
+  accepted the exact request but exited during platform initialization before
+  blueprint inspection; it accessed no save. The next fresh Steam launch
+  passed as run `20260811T2021406071785Z-observe-expanded-summoning-inventory`.
+- Exact final-live assertions passed: registry 1,374; 67 units; 1,045
+  abilities; 681 placements; 182 celestial and 182 fiendish executions; six
+  template buffs; two bounded smite markers; zero sanitizer violations. No
+  save was accessed.
+- Exact next action: implement save-safe summon-child alignment assignment for
+  celestial, fiendish, and Nature's Ally units, then source- and runtime-qualify
+  it before special creature mechanics.
+
+## Expanded Summoning current resume - spawn-local alignment source-qualified
+
+- Added a native post-spawn context action that mutates only the new unit
+  descriptor, never its shared KMG unit blueprint. Celestial and fiendish
+  summons preserve the unit's law/chaos axis and replace its moral axis;
+  Nature's Ally summons copy the caster's exact alignment and fail closed if
+  the caster context is absent or malformed.
+- All 182 celestial executions, 182 fiendish executions, and 320 Nature's Ally
+  placements carry the family-correct action. Because `UnitAlignment.Set`
+  writes the unit descriptor, the assigned value uses the engine's ordinary
+  serialized state and summon cleanup requires no external marker or target
+  state.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rebuild the immutable SHA,
+  and run the guarded final-live structural observer.
+
+## Expanded Summoning current resume - ActionList isolation repair
+
+- Guarded run `20260811T2031332882968Z-observe-expanded-summoning-inventory`
+  on `6fd61f2e0e600f689efe7ef6e88495dfe7cd0f37` failed the new exact
+  alignment assertions while all roster, registry, placement, and sanitizer
+  assertions passed. Retained graphs showed 1-4 duplicated alignment actions
+  across abilities sharing a native quantity template; no save was accessed.
+- Initial evidence implicated the `ActionList` container and its `GameAction[]`;
+  an explicit recursive list clone was added. The next run narrowed the deeper
+  alias to the ScriptableObject action elements themselves.
+- The observer now requires exactly one family-correct action on every KMG
+  execution and zero KMG actions or buffs on every non-KMG ability. Repository
+  validation, 1,005/1,005 tests, clean Release, and strict package pass. Exact
+  next action: commit/push and rerun the guarded observer on the immutable SHA.
+
+## Expanded Summoning current resume - GameAction isolation follow-up
+
+- Guarded run `20260811T2037058339804Z-observe-expanded-summoning-inventory`
+  on `ed7d6a2b41b951166ed0a243fb30e7531b5dd6d0` retained 286 contaminated
+  non-KMG abilities, proving the first `ActionList`-only repair was incomplete.
+  No save was accessed.
+- Exact assembly inspection showed `GameAction` derives from
+  `SerializedScriptableObject`. The clone's Unity-object guard therefore
+  returned each spawn action by reference before reaching its newly cloned
+  `ActionList`. The repair now creates independent `GameAction` ScriptableObjects
+  and recursively clones their fields while preserving unrelated Unity assets.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and rerun the exact alignment
+  and zero-native-contamination observer.
+
+## Expanded Summoning current resume - per-spawn-branch observer correction
+
+- Guarded run `20260811T2043115519772Z-observe-expanded-summoning-inventory`
+  on `0759783da38db3843905f368c62a964217870545` proved the GameAction repair:
+  native/third-party contamination fell from 286 to zero, and representative
+  KMG graphs held one independent alignment action. No save was accessed.
+- The remaining failures were observer overconstraint. Some native quantity
+  templates legitimately contain multiple `ContextActionSpawnMonster` nodes;
+  requiring exactly one added action per ability rejects those valid graphs.
+  The observer now counts spawn nodes and requires exactly one alignment,
+  template, and smite action per corresponding spawn branch.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and rerun the guarded observer.
+
+## Expanded Summoning current resume - spawn-local alignment native PASS
+
+- Guarded save-free run
+  `20260811T2048003275107Z-observe-expanded-summoning-inventory` passed on
+  committed source `b88e99cffb7464d7354416fba82d1da313e17ae2`.
+- Every spawn branch across 182 celestial executions, 182 fiendish executions,
+  and 320 Nature's Ally placements had exactly its required alignment action;
+  each templated branch also had exactly one template and smite application.
+  Non-KMG action contamination was exactly zero. Registry 1,374, 681 parent
+  placements, and all sanitizer invariants remained exact.
+- Exact next action: inventory and implement required special creature
+  adaptations in bounded groups, starting with Lantern Archon, mephits, and
+  elementals against final-live native components.
+
+## Expanded Summoning current resume - complete frozen donor observer
+
+- Expanded the prior 25-GUID sample to all 54 distinct chosen donor GUIDs
+  derived directly from the frozen donor catalog. The observer now records
+  shallow unit fields plus bounded component, body, and view object graphs and
+  fails if any chosen donor is absent.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, run the guarded save-free
+  observer, and use its exact final-live graphs to partition native reuse from
+  required proxy/special reconstruction.
+
+## Expanded Summoning current resume - complete donor graph native PASS
+
+- Guarded save-free run
+  `20260811T2055502086857Z-observe-expanded-summoning-inventory` passed on
+  committed source `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`.
+- All 54 distinct frozen donor GUIDs were present. Their bounded component,
+  body, and view graphs were captured; all 17 assertions passed with zero
+  warnings or exception. Registry 1,374 and all 681 placements remained exact.
+- The wrapper reached its 120-second host timeout after the game had already
+  flushed a PASS result and exited; the scenario itself completed in 103,225
+  ms. No save was selected, loaded, or written.
+- Exact next action: classify native reuse and implement the first bounded
+  special-mechanic group: elementals, mephits, and Lantern Archon.
+
+## Expanded Summoning current resume - Lantern candidate observer
+
+- The primary Lantern Archon stat block requires a CR 2 Small lawful-good
+  outsider with two light rays and archon defenses. The selected Ghaele summon
+  donor is not an acceptable mechanical or visual implementation.
+- Added a bounded final-live probe for Will-o'-Wisp, archon, light-ray, and aura
+  candidates. It changes no gameplay and will freeze exact native identities
+  before the Lantern unit is reconstructed.
+- Repository validation, 1,005/1,005 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push and run the guarded save-free
+  candidate observation.
+
+## Expanded Summoning current resume - first special mechanics source-qualified
+
+- Candidate run `20260811T2102583998517Z-observe-expanded-summoning-inventory`
+  passed on `8c576bc2ff741f726493ce347de16f02c7ee02de` and selected the
+  exact Will-o'-Wisp view, two-projectile native ray, and Aura of Menace carrier.
+- Added immutable native-reuse profiles for all 24 elementals and four mephits.
+  Reconstructed Lantern Archon as 2-HD Small lawful-good outsider with the
+  official ability scores, bounded dual 1d6/30-foot touch rays, single-ray AI,
+  archon defenses, and native aura. Teleport and gestalt are absent.
+- Four new active identities are frozen. Ledger: 1,124 feature identities;
+  1,378 active plus one reserved; constant registry count 1,378.
+- Repository validation, 1,006/1,006 tests, clean Release, and strict package
+  validation pass. Exact next action: commit/push, rebuild the immutable SHA,
+  and run the exact guarded Lantern structural observer.
+
+## Expanded Summoning current resume - compatibility complete
+
+- Pushed source `5bce781d25ba6f3efadf693dafef2267fd2003fe` passes the
+  standalone-safe Lantern/Pixie repair, 1,009 domain tests, clean Release, and
+  strict package validation.
+- Required compatibility qualification is complete: standalone x2, Call of
+  the Wild x2, Arms and Armor x1, Toggle Custom Soundpacks x1, and highest-risk
+  combined x2 all PASS with exact Mods/settings restoration.
+- Exact next action: freeze 0.0.78 release metadata, rerun final-source native
+  regressions and the 16-state matrix at registry count 1,404, then produce
+  final hashes/report, push, and open the draft PR.
+
+## Expanded Summoning current resume - final native qualification complete
+
+- Pushed source `5205805eab3fe0115d6888c53bce73c80474d1b7` passes
+  repository validation, `1009/1009` domain tests, clean Release, the 31-part
+  structural observer, and the full 153-command mechanical matrix.
+- Final-source standalone, Call of the Wild, and highest-risk combined profiles
+  each passed twice on fresh Steam processes; all six transactions restored the
+  prior Mods tree exactly. Earlier final implementation evidence supplies the
+  passing 67-unit visual matrix, enabled/disabled persistence sequence, all 16
+  module states, Arms and Armor, and Toggle Custom Soundpacks qualification.
+- Draft PR #2 is open and unmerged. Active blocker: none.
+- Exact next action: commit/push this evidence checkpoint, regenerate the
+  deterministic 0.0.78 package twice, freeze DLL/package/source hashes, update
+  the report/state and draft PR, then perform the final repository/remote audit.
+
+## Expanded Summoning current resume - mission complete
+
+- Immutable runtime/artifact source is pushed SHA
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65`; release remains `0.0.78`.
+- Final exact-source gates pass: visual 13/13, structural 38/38, player path
+  10/10, mechanical 12/12, all 16 module states, both three-stage persistence
+  modes, all eight required compatibility transactions, and Shield Other,
+  Acadamae, paper/firearm, Cord, and vendor focused regressions.
+- Two clean artifact cycles each pass repository validation, 1,018/1,018
+  tests, exact-reference Release, SoundBank, and strict standalone package
+  validation. DLL/package/source SHA-256 are
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`,
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`,
+  and `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.
+- Exact settings and disposable working-save bytes are restored; compatibility
+  state is clean; protected baseline hash is unchanged and it was never
+  written. Active blocker: none.
+- Next action is human-only: review draft PR #2 and the residual subjective
+  icon/menu/proxy animation/camera checklist. Keep the PR draft and unmerged.

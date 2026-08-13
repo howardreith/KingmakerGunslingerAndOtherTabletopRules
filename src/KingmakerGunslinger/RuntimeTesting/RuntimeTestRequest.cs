@@ -217,6 +217,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "startup-timeout-invalid";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
@@ -297,13 +303,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 3 ||
+                if (request.Parameters == null || request.Parameters.Count != 4 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
                     request.Parameters["acadamaeGraduate"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("shieldOther") == null ||
-                    request.Parameters["shieldOther"].Type != JTokenType.Boolean)
+                    request.Parameters["shieldOther"].Type != JTokenType.Boolean ||
+                    request.Parameters.Property("expandedSummoning") == null ||
+                    request.Parameters["expandedSummoning"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else

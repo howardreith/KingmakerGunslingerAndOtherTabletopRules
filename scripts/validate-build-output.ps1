@@ -28,6 +28,15 @@ $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit'
 foreach ($name in $requiredIcons) {
     $requiredFiles += "assets\icons\$name.png"
 }
+$summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
+    'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
+if ($summonManifest.count -ne 77 -or @($summonManifest.icons).Count -ne 77) {
+    throw 'Expanded Summoning runtime icon manifest is malformed.'
+}
+$requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
+foreach ($icon in $summonManifest.icons) {
+    $requiredFiles += "assets\icons\expanded-summoning\$($icon.file)"
+}
 foreach ($relativePath in $requiredFiles) {
     $path = Join-Path $outputDirectory $relativePath
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -49,7 +58,9 @@ $unexpected = @()
 foreach ($file in Get-ChildItem -LiteralPath $outputDirectory -Recurse -File) {
     $relativePath = $file.FullName.Substring($outputDirectory.Length).TrimStart('\', '/')
     if (-not $allowedRelativePaths.ContainsKey($relativePath) -and
-        $relativePath -notlike 'assets\icons\*.png') {
+        $relativePath -notlike 'assets\icons\*.png' -and
+        $relativePath -notlike 'assets\icons\expanded-summoning\*.png' -and
+        $relativePath -ne 'assets\icons\expanded-summoning\icon-manifest.json') {
         $unexpected += $relativePath
     }
 }

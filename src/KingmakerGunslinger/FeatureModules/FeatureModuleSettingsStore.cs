@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 2;
+        internal const int CurrentSchemaVersion = 3;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -33,12 +33,14 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.AcadamaeGraduateId);
                 bool shieldOther = ReadDefaultOn(root,
                     FeatureModuleConfiguration.ShieldOtherId);
+                bool expandedSummoning = ReadDefaultOn(root,
+                    FeatureModuleConfiguration.ExpandedSummoningId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
-                        shieldOther), path,
+                        shieldOther, expandedSummoning), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
-                if (schema == 1) Save(state);
+                if (schema < CurrentSchemaVersion) Save(state);
                 return state;
             }
             catch (Exception exception)
@@ -75,7 +77,9 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.GunslingerId] = state.Pending.Gunslinger,
                 [FeatureModuleConfiguration.AcadamaeGraduateId] =
                     state.Pending.AcadamaeGraduate,
-                [FeatureModuleConfiguration.ShieldOtherId] = state.Pending.ShieldOther
+                [FeatureModuleConfiguration.ShieldOtherId] = state.Pending.ShieldOther,
+                [FeatureModuleConfiguration.ExpandedSummoningId] =
+                    state.Pending.ExpandedSummoning
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";

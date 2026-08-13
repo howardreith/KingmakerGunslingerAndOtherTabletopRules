@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -20,6 +21,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.Enums.Damage;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
@@ -45,7 +47,10 @@ using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Spells.ShieldOther;
+using KingmakerGunslinger.Summoning;
 using Kingmaker.View.Animation;
+using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem;
@@ -56,10 +61,13 @@ using UnityModManagerNet;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
+using Kingmaker.UnitLogic.Alignments;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker;
 using Kingmaker.UnitLogic.Class.LevelUp.Actions;
@@ -68,8 +76,10 @@ using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Classes;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
+using Harmony12;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -100,8 +110,142 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _shieldOtherPersistenceContextValid;
         private bool _shieldOtherPersistenceLinkStateValid;
         private bool _shieldOtherPersistenceDamageValid;
+        private bool _expandedSummoningPersistenceSaveStarted;
+        private bool _expandedSummoningPersistenceSaveCompleted;
+        private Stopwatch _expandedSummoningPersistenceSaveElapsed;
+        private int _expandedSummoningPersistenceUnitCount;
+        private bool _expandedSummoningPersistenceIdentityValid;
+        private bool _expandedSummoningPersistenceContextValid;
+        private bool _expandedSummoningPersistenceDurationValid;
+        private bool _expandedSummoningPersistenceControlValid;
+        private bool _expandedSummoningPersistencePublicationValid;
+        private bool _expandedSummoningPersistenceCleanupValid;
+        private string _expandedSummoningPersistenceDetail = "";
+        private bool _expandedSummoningPersistenceFixtureSpawned;
+        private int _expandedSummoningPersistenceSettleUpdates;
+        private UnitEntityData[] _expandedSummoningPersistencePreparedUnits;
+        private bool _expandedSummoningPersistenceCleanupStarted;
+        private int _expandedSummoningPersistenceCleanupSettleUpdates;
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
+        private static bool _expandedSummoningRuleCaptureActive;
+        private static string _expandedSummoningLastAbilityExecution = "";
+        private static bool _expandedSummoningPlayerPathCaptureActive;
+        private static int _expandedSummoningPlayerPathRuleCastCount;
+        private static int _expandedSummoningPlayerPathSpawnActionCount;
+        private static readonly List<string> ExpandedSummoningPlayerPathEvents =
+            new List<string>();
+        private static readonly List<UnitEntityData>
+            ExpandedSummoningRuleCapture = new List<UnitEntityData>();
+
+        private sealed class ExpandedSummoningPlayerPathCase
+        {
+            internal string Name;
+            internal string ParentGuid;
+            internal string LogicalGuid;
+            internal string ExecutionGuid;
+            internal string CasterAlignment;
+            internal string Spellbook;
+            internal int SpellLevel;
+            internal int SlotsBefore;
+            internal int SlotsAfter;
+            internal string AbilityDataLinks;
+            internal bool CanTarget;
+            internal bool CanCast;
+            internal bool WithinCastRange;
+            internal bool CommandStarted;
+            internal string CommandResult;
+            internal int RuleCastCount;
+            internal int SpawnActionCount;
+            internal int RuleSummonCount;
+            internal int LiveCount;
+            internal string PostTickState;
+            internal bool ExactKind;
+            internal string SummonedAlignment;
+            internal string TemplateFacts;
+            internal bool TemplateContract;
+            internal bool RenderableContract;
+            internal bool QuantityContract;
+            internal bool LiveContract;
+            internal bool SlotContract;
+            internal string Exception;
+            internal string LogTail;
+
+            internal string Describe()
+            {
+                return Name + ":parent=" + ParentGuid + ";logical=" +
+                    LogicalGuid + ";execution=" + ExecutionGuid +
+                    ";alignment=" + CasterAlignment + ";spellbook=" +
+                    Spellbook + ";level=" + SpellLevel + ";slots=" +
+                    SlotsBefore + "->" + SlotsAfter + ";links=" +
+                    AbilityDataLinks + ";canTarget=" + CanTarget +
+                    ";canCast=" + CanCast + ";withinCastRange=" +
+                    WithinCastRange + ";started=" + CommandStarted +
+                    ";result=" + CommandResult + ";ruleCast=" + RuleCastCount +
+                    ";spawnActions=" + SpawnActionCount + ";ruleSummon=" +
+                    RuleSummonCount + ";live=" + LiveCount + ";kind=" +
+                    ExactKind + ";postTick=" + PostTickState +
+                    ";summonedAlignment=" + SummonedAlignment +
+                    ";templateFacts=" + TemplateFacts +
+                    ";templateContract=" + TemplateContract +
+                    ";renderable=" + RenderableContract +
+                    ";quantityContract=" + QuantityContract +
+                    ";liveContract=" + LiveContract +
+                    ";slotContract=" + SlotContract + ";exception=" +
+                    Exception;
+            }
+        }
+
+        private sealed class ExpandedSummoningMechanicalEvidence
+        {
+            internal bool AlignmentAndTemplates;
+            internal bool NaturesAllyAlignment;
+            internal bool AugmentSummoning;
+            internal bool SuperiorSummoning;
+            internal bool RepresentativeCombat;
+            internal bool SpecialAdaptations;
+            internal bool HostileAbilityTarget;
+            internal int AdditionalCasts;
+            internal readonly List<string> Diagnostics = new List<string>();
+        }
+
+        private sealed class ExpandedSummoningMenuAudit
+        {
+            internal int MissingOrDuplicateKmgRoots;
+            internal int VisibleMappedNativeDuplicates;
+            internal int MissingUniqueNativeOptions;
+            internal int MissingRegisteredNativeIdentities;
+            internal int MissingOrDuplicateNativeExpansions;
+            internal int MisorderedParents;
+            internal int MissingIcons;
+            internal int MalformedQuantityNames;
+            internal int CountMismatches;
+            internal bool CategoryIconsDistinct;
+            internal bool HighTierUniqueNativeExact;
+            internal string Counts;
+
+            internal bool ReconciliationExact
+            {
+                get
+                {
+                    return MissingOrDuplicateKmgRoots == 0 &&
+                        VisibleMappedNativeDuplicates == 0 &&
+                        MissingUniqueNativeOptions == 0 &&
+                        MissingRegisteredNativeIdentities == 0 &&
+                        MissingOrDuplicateNativeExpansions == 0;
+                }
+            }
+
+            internal bool PresentationExact
+            {
+                get
+                {
+                    return MisorderedParents == 0 && MissingIcons == 0 &&
+                        MalformedQuantityNames == 0 && CountMismatches == 0 &&
+                        CategoryIconsDistinct;
+                }
+            }
+        }
 
         private sealed class BroadRespecInitiationHandler :
             ILevelUpInitiateUIHandler
@@ -346,6 +490,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
+                    !IsExpandedSummoningPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -434,6 +582,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningInventory)
+                {
+                    Complete(RunExpandedSummoningInventoryObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -954,6 +1108,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -975,6 +1133,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    IsExpandedSummoningPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1036,6 +1198,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_expandedSummoningPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_expandedSummoningPersistenceSaveCompleted)
+                {
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_expandedSummoningPersistenceSaveElapsed != null &&
+                    _expandedSummoningPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_shieldOtherPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1206,7 +1388,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (IsShieldOtherPersistenceScenario())
+                if (IsExpandedSummoningPersistenceScenario())
+                {
+                    StartExpandedSummoningPersistence();
+                }
+                else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
                 }
@@ -1231,6 +1417,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.MusketMasterMechanicsAndStarter)
                 {
                     RunGunslingerStartingItems(true);
+                }
+                else if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableExpandedSummoning)
+                {
+                    Complete(RunDisposableExpandedSummoning());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPlayerPath)
+                {
+                    Complete(RunDisposableExpandedSummoningPlayerPath());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningVisualContracts)
+                {
+                    Complete(RunDisposableExpandedSummoningVisualContracts());
                 }
                 else
                 {
@@ -1273,6 +1474,457 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+        }
+
+        private bool IsExpandedSummoningPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningVerifyAbsent;
+        }
+
+        private void StartExpandedSummoningPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Expanded Summoning persistence qualification.");
+            UnitEntityData caster = party.FirstOrDefault(value =>
+                value.HoldingState != null);
+            if (caster == null) throw new InvalidOperationException(
+                "The loaded working save has no party member in an active area state.");
+            object gameState = ReadExactMember(Game.Instance, "State");
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningVerifyCleanup;
+            bool active = _context.FeatureModules.Active.ExpandedSummoning;
+            int publishedReferences;
+            _expandedSummoningPersistencePublicationValid =
+                ExpandedSummoningPublisher.RequiredBasePublicationIsExact(
+                    BlueprintBootstrap.Library, active,
+                    out publishedReferences);
+
+            if (prepare)
+            {
+                if (!active) throw new InvalidOperationException(
+                    "Expanded Summoning prepare requires the module to be active.");
+                if (!_expandedSummoningPersistenceFixtureSpawned)
+                {
+                    foreach (UnitEntityData stale in
+                        ExpandedSummoningPersistentUnits(gameState, party))
+                        stale.Dispose();
+                    if (ExpandedSummoningPersistentUnits(gameState, party).Length != 0)
+                        throw new InvalidOperationException(
+                            "Stale KMG summons could not be removed before prepare.");
+                    _expandedSummoningPersistencePreparedUnits =
+                        SpawnExpandedSummoningPersistenceFixture(caster);
+                    _expandedSummoningPersistenceFixtureSpawned = true;
+                    return;
+                }
+                if (_expandedSummoningPersistenceSettleUpdates++ < 2) return;
+            }
+
+            UnitEntityData[] units = prepare ?
+                _expandedSummoningPersistencePreparedUnits :
+                ExpandedSummoningPersistentUnits(gameState, party);
+            bool cleanupContinuation = verifyCleanup &&
+                _expandedSummoningPersistenceCleanupStarted;
+            if (!cleanupContinuation)
+            {
+                _expandedSummoningPersistenceUnitCount = units.Length;
+                EvaluateExpandedSummoningPersistentUnits(caster, units,
+                    out _expandedSummoningPersistenceIdentityValid,
+                    out _expandedSummoningPersistenceContextValid,
+                    out _expandedSummoningPersistenceDurationValid,
+                    out _expandedSummoningPersistenceControlValid,
+                    out _expandedSummoningPersistenceDetail);
+            }
+
+            if (verifyCleanup)
+            {
+                if (!_expandedSummoningPersistenceCleanupStarted)
+                {
+                    bool exactLifecycle = true;
+                    foreach (UnitEntityData unit in units)
+                    {
+                        Buff[] summoned = unit.Descriptor.Buffs.RawFacts
+                            .OfType<Buff>().Where(value => ReferenceEquals(
+                                value.Blueprint, BlueprintRoot.Instance
+                                    .SystemMechanics.SummonedUnitBuff)).ToArray();
+                        exactLifecycle = exactLifecycle && summoned.Length == 1;
+                        foreach (Buff buff in summoned) buff.Remove();
+                        unit.Destroy();
+                    }
+                    if (!exactLifecycle) throw new InvalidOperationException(
+                        "Fresh summons did not have one exact native lifecycle buff each.");
+                    // As with synchronous creation above, the request executes
+                    // after Kingmaker's controller tick. Advance the native
+                    // destruction queue once so the test models a completed
+                    // dismiss/expiration boundary before the follow-up save.
+                    Game.Instance.EntityDestroyer.Tick();
+                    _expandedSummoningPersistenceCleanupStarted = true;
+                    return;
+                }
+                if (_expandedSummoningPersistenceCleanupSettleUpdates++ < 5)
+                    return;
+                int liveUnits = units.Count(value => !value.Destroyed ||
+                    value.View != null || value.HoldingState != null);
+                _expandedSummoningPersistenceCleanupValid = liveUnits == 0;
+                _expandedSummoningPersistenceDetail += ";postExpirationRefs=" +
+                    units.Length + ";postExpirationLive=" + liveUnits;
+            }
+            else if (prepare)
+                _expandedSummoningPersistenceCleanupValid = units.Length == 2;
+            else
+            {
+                _expandedSummoningPersistenceIdentityValid = units.Length == 0;
+                _expandedSummoningPersistenceContextValid = units.Length == 0;
+                _expandedSummoningPersistenceDurationValid = units.Length == 0;
+                _expandedSummoningPersistenceControlValid = units.Length == 0;
+                _expandedSummoningPersistenceCleanupValid = units.Length == 0;
+            }
+
+            bool phaseValid = _expandedSummoningPersistencePublicationValid &&
+                _expandedSummoningPersistenceIdentityValid &&
+                _expandedSummoningPersistenceContextValid &&
+                _expandedSummoningPersistenceDurationValid &&
+                _expandedSummoningPersistenceControlValid &&
+                _expandedSummoningPersistenceCleanupValid &&
+                (prepare || verifyCleanup ?
+                    _expandedSummoningPersistenceUnitCount == 2 :
+                    units.Length == 0);
+            _expandedSummoningPersistenceDetail += ";active=" + active +
+                ";published=" + publishedReferences + ";phaseValid=" +
+                phaseValid;
+            if (!phaseValid) throw new InvalidOperationException(
+                "Expanded Summoning persistence phase assertions failed: " +
+                _expandedSummoningPersistenceDetail);
+
+            if (!prepare && !verifyCleanup)
+            {
+                CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
+                return;
+            }
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" && value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _expandedSummoningPersistenceSaveStarted = true;
+            _expandedSummoningPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() =>
+                    _expandedSummoningPersistenceSaveCompleted = true)
+            });
+        }
+
+        private UnitEntityData[] SpawnExpandedSummoningPersistenceFixture(
+            UnitEntityData caster)
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            SummonVariantSpec[] variants =
+            {
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Single(value => value.Creature.Key ==
+                        "small-air-elemental" && value.ParentTier == 2 &&
+                        value.Multiplicity == SummonMultiplicity.One),
+                ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly).Single(value =>
+                        value.Creature.Key == "wolf" && value.ParentTier == 2 &&
+                        value.Multiplicity == SummonMultiplicity.One)
+            };
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            if (summonRuleMethod == null) throw new MissingMethodException(
+                typeof(RuleSummonUnit).FullName, "OnTrigger");
+            MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                BindingFlags.Static);
+            UnitEntityData[] result = null;
+            try
+            {
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+                ExpandedSummoningRuleCapture.Clear();
+                foreach (SummonVariantSpec variant in variants)
+                {
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                            variant.ParentTier);
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+                }
+                if (ExpandedSummoningRuleCapture.Count != 2)
+                    throw new InvalidOperationException(
+                        "Persistence prepare did not create exactly two native summons.");
+                // The guarded scenario executes the native UnitUseAbility command
+                // synchronously from Unity Mod Manager's update callback, after
+                // the game's entity-creation controller has already ticked for
+                // this frame. Complete that native queued creation boundary before
+                // asking SaveGame to serialize the loaded area.
+                Game.Instance.EntityCreator.Tick();
+                result = ExpandedSummoningRuleCapture.ToArray();
+                if (result.Any(value => value.HoldingState == null ||
+                    !ReferenceEquals(value.HoldingState, caster.HoldingState)))
+                    throw new InvalidOperationException(
+                        "Persistence prepare summons did not enter the caster's exact loaded-area state.");
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                _context.Harmony.Unpatch(summonRuleMethod,
+                    HarmonyPatchType.All, _context.ModId);
+            }
+            return result;
+        }
+
+        private static UnitEntityData[] ExpandedSummoningPersistentUnits(
+            object gameState, UnitEntityData[] party)
+        {
+            var unique = new List<UnitEntityData>();
+            CollectExpandedSummoningUnitReferences(
+                ReadExactMember(gameState, "AllUnits"), unique, 0);
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (PropertyInfo property in gameState.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    typeof(IEnumerable).IsAssignableFrom(value.PropertyType) &&
+                    (value.Name.IndexOf("Unit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.Name.IndexOf("Entity", StringComparison.OrdinalIgnoreCase) >= 0)))
+            {
+                object collection = null;
+                try { collection = property.GetValue(gameState, null); }
+                catch { }
+                CollectExpandedSummoningUnitReferences(collection, unique, 0);
+            }
+            foreach (FieldInfo field in gameState.GetType().GetFields(flags)
+                .Where(value => typeof(IEnumerable).IsAssignableFrom(
+                    value.FieldType) &&
+                    (value.Name.IndexOf("Unit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.Name.IndexOf("Entity", StringComparison.OrdinalIgnoreCase) >= 0)))
+                CollectExpandedSummoningUnitReferences(field.GetValue(gameState),
+                    unique, 0);
+            foreach (Kingmaker.EntitySystem.SceneEntitiesState state in
+                (party ?? Array.Empty<UnitEntityData>()).Where(value =>
+                    value != null && value.HoldingState != null).Select(value =>
+                        value.HoldingState).Distinct())
+                CollectExpandedSummoningUnitReferences(state.AllEntityData,
+                    unique, 0);
+            return unique
+                .Where(value => value.Blueprint != null &&
+                    (value.Blueprint.name ==
+                        "KMG_Summoning_Unit_SmallAirElemental" ||
+                     value.Blueprint.name == "KMG_Summoning_Unit_Wolf"))
+                .OrderBy(value => value.Blueprint.name, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        private static void CollectExpandedSummoningUnitReferences(
+            object value, List<UnitEntityData> units, int depth)
+        {
+            if (value == null || depth > 3) return;
+            UnitEntityData unit = value as UnitEntityData;
+            if (unit != null)
+            {
+                if (!units.Any(candidate => ReferenceEquals(candidate, unit)))
+                    units.Add(unit);
+                return;
+            }
+            DictionaryEntry entry = value is DictionaryEntry ?
+                (DictionaryEntry)value : new DictionaryEntry();
+            if (value is DictionaryEntry)
+            {
+                CollectExpandedSummoningUnitReferences(entry.Key, units,
+                    depth + 1);
+                CollectExpandedSummoningUnitReferences(entry.Value, units,
+                    depth + 1);
+                return;
+            }
+            Type type = value.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() ==
+                typeof(KeyValuePair<,>))
+            {
+                CollectExpandedSummoningUnitReferences(
+                    type.GetProperty("Key").GetValue(value, null), units,
+                    depth + 1);
+                CollectExpandedSummoningUnitReferences(
+                    type.GetProperty("Value").GetValue(value, null), units,
+                    depth + 1);
+                return;
+            }
+            if (value is string) return;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable == null) return;
+            foreach (object item in enumerable)
+                CollectExpandedSummoningUnitReferences(item, units, depth + 1);
+        }
+
+        private static void EvaluateExpandedSummoningPersistentUnits(
+            UnitEntityData caster, UnitEntityData[] units, out bool identity,
+            out bool context, out bool duration, out bool control,
+            out string detail)
+        {
+            string[] expected = { "KMG_Summoning_Unit_SmallAirElemental",
+                "KMG_Summoning_Unit_Wolf" };
+            BlueprintUnit[] registered = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintUnit>().Where(value =>
+                    expected.Contains(value.name)).OrderBy(value => value.name,
+                        StringComparer.Ordinal).ToArray();
+            identity = units.Length == 2 && registered.Length == 2 &&
+                units.Zip(registered, (unit, blueprint) =>
+                    ReferenceEquals(unit.Blueprint, blueprint)).All(value => value);
+            var durations = new List<double>();
+            context = units.Length == 2;
+            duration = units.Length == 2;
+            foreach (UnitEntityData unit in units)
+            {
+                Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => value.MaybeContext != null &&
+                        value.MaybeContext.MaybeCaster == caster &&
+                        !value.IsPermanent && value.TimeLeft > TimeSpan.Zero &&
+                        value.TimeLeft <= TimeSpan.FromSeconds(121d)).ToArray();
+                Buff[] durationLifecycle = lifecycle.Where(value =>
+                    value.TimeLeft >= TimeSpan.FromSeconds(30d)).ToArray();
+                context = context && lifecycle.Length >= 1;
+                duration = duration && durationLifecycle.Any(value =>
+                    value.TimeLeft.TotalSeconds > 0d &&
+                    value.TimeLeft.TotalSeconds <= 121d);
+                durations.AddRange(lifecycle.Select(value =>
+                    value.TimeLeft.TotalSeconds));
+            }
+            object faction = units.Length == 0 ? null :
+                ExpandedSummoningFields(units[0].Blueprint.GetType())
+                    .Single(value => value.Name == "Faction" ||
+                        value.Name == "m_Faction").GetValue(units[0].Blueprint);
+            control = units.Length == 2 && faction != null && units.All(value =>
+                value.Commands != null && value.View != null &&
+                value.View.Data == value &&
+                ReferenceEquals(faction, ExpandedSummoningFields(
+                    value.Blueprint.GetType()).Single(field =>
+                        field.Name == "Faction" || field.Name == "m_Faction")
+                    .GetValue(value.Blueprint)));
+            detail = "units=" + units.Length + ";registered=" +
+                registered.Length + ";durations=" + string.Join(",",
+                    durations.Select(value => value.ToString("0.###",
+                        System.Globalization.CultureInfo.InvariantCulture))
+                    .ToArray()) + ";names=" + string.Join(",",
+                    units.Select(value => value.Blueprint == null ? "<null>" :
+                        value.Blueprint.name).ToArray()) + ";holding=" +
+                    string.Join(",", units.Select(value =>
+                        (value.HoldingState != null).ToString()).ToArray()) +
+                    ";commands=" + string.Join(",", units.Select(value =>
+                        (value.Commands != null).ToString()).ToArray()) +
+                    ";views=" + string.Join(",", units.Select(value =>
+                        (value.View != null).ToString()).ToArray()) +
+                    ";viewData=" + string.Join(",", units.Select(value =>
+                        (value.View != null && value.View.Data == value)
+                            .ToString()).ToArray()) + ";faction=" +
+                    (faction != null) +
+                ";identity=" + identity + ";context=" +
+                context + ";duration=" + duration + ";control=" + control;
+        }
+
+        private void CompleteExpandedSummoningPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningVerifyCleanup;
+            bool writes = prepare || verifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("expanded-summoning-persistent-identities",
+                    writes ? "two exact registered KMG units" : "zero KMG units",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceIdentityValid,
+                    "fresh-load BlueprintUnit reference equality and cardinality"),
+                Assertion("expanded-summoning-persistent-context",
+                    writes ? "party[0] native summon context" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceContextValid,
+                    "freshly deserialized nonpermanent summon lifecycle buff"),
+                Assertion("expanded-summoning-persistent-duration",
+                    writes ? "0 < remaining <= 121 seconds" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceDurationValid,
+                    "native one-round-per-level lifecycle remaining time"),
+                Assertion("expanded-summoning-persistent-control",
+                    writes ? "live view, commands, area, and summon faction" : "not applicable after cleanup",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceControlValid,
+                    "native summoned-unit control surfaces"),
+                Assertion("expanded-summoning-publication-state",
+                    _context.FeatureModules.Active.ExpandedSummoning ?
+                        "681 exact required-parent references" :
+                        "zero required-parent references",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistencePublicationValid,
+                    "required base parents with always-registered identities"),
+                Assertion(verifyCleanup || !writes ?
+                        "expanded-summoning-cleaned" :
+                        "expanded-summoning-prepared",
+                    verifyCleanup ? "two lifecycle-expired, destroyed, detached KMG units" :
+                        !writes ? "zero KMG units" :
+                        "two active KMG units",
+                    _expandedSummoningPersistenceDetail,
+                    _expandedSummoningPersistenceCleanupValid,
+                    verifyCleanup ? "native SummonedUnitBuff removal and disposal" :
+                        !writes ? "fresh-load unit set" :
+                        "pre-save active unit set"),
+                Assertion("exact-working-save-write",
+                    writes ? "one SaveRoutine on exact captured SaveInfo" :
+                        "none during final verification",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    writes ? evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved :
+                        evidence.ExpectedWorkingSaveRoutineCount == 0 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void StartShieldOtherPersistenceSave()
@@ -1583,6 +2235,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||
@@ -4916,7 +5571,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 28 &&
+                        fixedCountField != null && capitalEntries.Count == 29 &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
@@ -6927,9 +7582,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectedGunslinger = (bool)_request.Parameters["gunslinger"];
             bool expectedAcadamae = (bool)_request.Parameters["acadamaeGraduate"];
             bool expectedShieldOther = (bool)_request.Parameters["shieldOther"];
+            bool expectedExpandedSummoning =
+                (bool)_request.Parameters["expandedSummoning"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
+            bool activeExpandedSummoning =
+                _context.FeatureModules.Active.ExpandedSummoning;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -7013,9 +7672,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
-                expectedAcadamae + "/" + expectedShieldOther + ";active=" +
+                expectedAcadamae + "/" + expectedShieldOther + "/" +
+                expectedExpandedSummoning + ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
-                activeShieldOther + ";registered=" +
+                activeShieldOther + "/" + activeExpandedSummoning + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -7032,10 +7692,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("feature-module-active-snapshot", "request-local expected states",
                     observed, activeGunslinger == expectedGunslinger &&
                     activeAcadamae == expectedAcadamae &&
-                    activeShieldOther == expectedShieldOther,
+                    activeShieldOther == expectedShieldOther &&
+                    activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable process snapshot"),
-                Assertion("feature-module-identity-count", "254 identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == 254,
+                Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -7066,6 +7727,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         shieldObservation.PublishedLists == (expectedShieldOther ?
                             shieldObservation.ExpectedPublishedLists : 0),
                     "required base and optional final-live spell lists"),
+                Assertion("feature-module-expanded-summoning-publication-gate",
+                    expectedExpandedSummoning ? "enabled" : "disabled",
+                    activeExpandedSummoning ? "enabled" : "disabled",
+                    activeExpandedSummoning == expectedExpandedSummoning,
+                    "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -7102,6 +7768,4735 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
+        private RuntimeTestResult RunExpandedSummoningInventoryObservation()
+        {
+            WriteLifecycleStage("expanded-summoning-inventory-start");
+            ExpandedSummoningInventoryObservation observation =
+                ExpandedSummoningInventoryObserver.Observe(BlueprintBootstrap.Library);
+            WriteLifecycleStage("expanded-summoning-inventory-observer-complete");
+            BlueprintScriptableObject[] all = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            SummoningIdentitySpec[] frozenIdentities =
+                ExpandedSummoningIdentityCatalog.Build().ToArray();
+            var unitNames = new HashSet<string>(all.OfType<BlueprintUnit>()
+                .Select(value => value.name), StringComparer.Ordinal);
+            var abilityNames = new HashSet<string>(all.OfType<BlueprintAbility>()
+                .Select(value => value.name), StringComparer.Ordinal);
+            int kmgUnits = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintUnit" && unitNames.Contains(
+                    value.Symbol.Replace('.', '_').Replace('-', '_')));
+            int expectedKmgAbilities = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintAbility");
+            int kmgAbilities = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintAbility" && abilityNames.Contains(
+                    value.Symbol.Replace('.', '_').Replace('-', '_')));
+            int sharedComponents = 0, prohibitedReferences = 0,
+                nonemptyInventories = 0, inheritedSpellArrays = 0,
+                extraplanarMarkers = 0;
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            {
+                BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
+                    value.name == ExpandedSummoningIdentityCatalog.UnitSymbol(creature)
+                        .Replace('.', '_').Replace('-', '_'));
+                BlueprintUnit donor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                    BlueprintBootstrap.Library,
+                    ExpandedSummoningDonorCatalog.For(creature.Key).Guid,
+                    creature.DisplayName + " isolation donor");
+                foreach (BlueprintComponent component in unit.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                {
+                    if ((donor.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Any(value => ReferenceEquals(value, component))) sharedComponents++;
+                    foreach (FieldInfo field in ExpandedSummoningFields(
+                        component.GetType()).Where(value => value.FieldType.IsArray))
+                    {
+                        Array values = field.GetValue(component) as Array;
+                        if ((field.Name == "MemorizeSpells" ||
+                            field.Name == "SelectSpells") &&
+                            values != null && values.Length != 0) inheritedSpellArrays++;
+                        if (values == null || !typeof(BlueprintScriptableObject)
+                            .IsAssignableFrom(field.FieldType.GetElementType())) continue;
+                        prohibitedReferences += values.Cast<object>()
+                            .OfType<BlueprintScriptableObject>().Count(value =>
+                                ExpandedSummoningIsForbiddenReference(value));
+                    }
+                }
+                if (unit.AddFacts != null)
+                {
+                    prohibitedReferences += unit.AddFacts.Count(value => value == null ||
+                        ExpandedSummoningIsForbiddenReference(value));
+                    extraplanarMarkers += unit.AddFacts.Count(value => value != null &&
+                        value.name == "KMG_Summoning_Subtype_Extraplanar");
+                }
+                if (ExpandedSummoningArrayLength(unit, "StartingInventory") != 0)
+                    nonemptyInventories++;
+            }
+            string[] parentGuids = {
+                "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7", "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef", "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c", "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0", "52b5df2a97df18242aec67610616ded0",
+                "c6147854641924442a3bb736080cfeb6", "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61", "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e" };
+            int publishedPlacements = parentGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    BlueprintBootstrap.Library, guid, "canonical summon parent")
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants.Count(value =>
+                    value != null && value.name.StartsWith(
+                        "KMG_Summoning_Ability_", StringComparison.Ordinal)));
+            BlueprintAbility nativeMonsterTierOne = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == "KMG_Summoning_Native_SM_Tier1");
+            BlueprintAbility nativeAllyTierOne = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == "KMG_Summoning_Native_SNA_Tier1");
+            BlueprintAbility monsterTierOneParent = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    parentGuids[0], "native Summon Monster I parent");
+            BlueprintAbility allyTierOneParent = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    parentGuids[9], "native Summon Nature's Ally I parent");
+            BlueprintAbility[] monsterTierOneDisplayed = monsterTierOneParent
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+            BlueprintAbility[] allyTierOneDisplayed = allyTierOneParent
+                .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+            BlueprintAbility allyTierOneMite = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == ExpandedSummoningInternalName(
+                    SummonNativeExpansionCatalog.For(
+                        SummonFamily.NaturesAlly, 1).Single().Symbol));
+            bool nativeTierOnePreserved = monsterTierOneDisplayed.Count(value =>
+                    ReferenceEquals(value, nativeMonsterTierOne)) == 0 &&
+                allyTierOneDisplayed.Count(value => ReferenceEquals(value,
+                    nativeAllyTierOne)) == 0 &&
+                allyTierOneDisplayed.Count(value => ReferenceEquals(value,
+                    allyTierOneMite)) == 1 &&
+                ExpandedSummoningSpawnActionCount(nativeMonsterTierOne) >= 1 &&
+                ExpandedSummoningSpawnActionCount(nativeAllyTierOne) >= 1 &&
+                ExpandedSummoningSpawnActionCount(allyTierOneMite) >= 1 &&
+                nativeMonsterTierOne.Range == monsterTierOneParent.Range &&
+                nativeAllyTierOne.Range == allyTierOneParent.Range &&
+                nativeMonsterTierOne.ActionType == monsterTierOneParent.ActionType &&
+                nativeAllyTierOne.ActionType == allyTierOneParent.ActionType;
+            SummonVariantSpec[] templateSpecs = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Where(value =>
+                    value.Creature.MonsterTemplated).ToArray();
+            BlueprintAbility[] templateChoices = templateSpecs.Select(spec =>
+                all.OfType<BlueprintAbility>().Single(value => value.name ==
+                    ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(spec))))
+                .ToArray();
+            BlueprintAbility[] celestialExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.EndsWith("_Celestial",
+                    StringComparison.Ordinal)).ToArray();
+            BlueprintAbility[] fiendishExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.EndsWith("_Fiendish",
+                    StringComparison.Ordinal)).ToArray();
+            bool templateChoicesExact = templateChoices.Length == 182 &&
+                templateChoices.All(value => !value.ComponentsArray
+                    .OfType<AbilityVariants>().Any() && value.ComponentsArray
+                    .OfType<AbilityEffectRunAction>().Count() == 1 &&
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    ExpandedSummoningTemplateByCasterCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
+            bool celestialExact = celestialExecutions.Length == 182 &&
+                celestialExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    value.ComponentsArray
+                    .OfType<AbilityCasterAlignment>().Single().Alignment ==
+                        (AlignmentMaskType)63 && value.ComponentsArray
+                    .OfType<SpellDescriptorComponent>().Single().Descriptor
+                        .HasAnyFlag(SpellDescriptor.Good) &&
+                    ExpandedSummoningTemplateApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningSmiteApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
+            bool fiendishExact = fiendishExecutions.Length == 182 &&
+                fiendishExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    value.ComponentsArray
+                    .OfType<AbilityCasterAlignment>().Single().Alignment ==
+                        (AlignmentMaskType)504 && value.ComponentsArray
+                    .OfType<SpellDescriptorComponent>().Single().Descriptor
+                        .HasAnyFlag(SpellDescriptor.Evil) &&
+                    ExpandedSummoningTemplateApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningSmiteApplyCount(value) ==
+                        ExpandedSummoningSpawnActionCount(value));
+            BlueprintAbility[] allyExecutions = all.OfType<BlueprintAbility>()
+                .Where(value => value.name.StartsWith(
+                    "KMG_Summoning_Ability_SNA_", StringComparison.Ordinal))
+                .ToArray();
+            bool allyAlignmentExact = allyExecutions.Length == 320 &&
+                allyExecutions.All(value =>
+                    ExpandedSummoningSpawnActionCount(value) >= 1 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Caster) ==
+                            ExpandedSummoningSpawnActionCount(value) &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) == 0 &&
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) == 0);
+            SummonVariantSpec[] logicalVariants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly)).ToArray();
+            BlueprintAbility[] canonicalSummonParents = parentGuids.Select(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    BlueprintBootstrap.Library, guid,
+                    "canonical summon contract parent")).ToArray();
+            ExpandedSummoningMenuAudit menuAudit =
+                AuditExpandedSummoningMenus(all, canonicalSummonParents,
+                    logicalVariants);
+            string menuContactSheetEvidence =
+                WriteExpandedSummoningMenuEvidenceIndex(
+                    canonicalSummonParents, _request.EvidenceDirectory);
+            WriteLifecycleStage("expanded-summoning-inventory-menu-audit-complete");
+            string[] standaloneElementalRootGuids = {
+                "970c6db48ff0c6f43afc9dbb48780d03",
+                "e42b1dbff4262c6469a9ff0a6ce730e3",
+                "89404dd71edc1aa42962824b44156fe5",
+                "766ec978fa993034f86a372c8eb1fc10",
+                "8eb769e3b583f594faabe1cfdb0bb696",
+                "8a7f8c1223bda1541b42fd0320cdbe2b" };
+            BlueprintAbility[] standaloneElementalCandidates =
+                standaloneElementalRootGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        BlueprintBootstrap.Library, guid,
+                        "standalone Summon Elemental root")).ToArray();
+            bool standaloneElementalExact = standaloneElementalCandidates.Length ==
+                standaloneElementalRootGuids.Length &&
+                standaloneElementalCandidates.All(value =>
+                {
+                    AbilityVariants variants = value.ComponentsArray
+                        .OfType<AbilityVariants>().Single();
+                    return !parentGuids.Contains(value.AssetGuid) &&
+                        variants.Variants != null &&
+                        variants.Variants.Length == 4 &&
+                        variants.Variants.All(variant => variant != null &&
+                            !variant.name.StartsWith("KMG_",
+                                StringComparison.Ordinal) &&
+                            ExpandedSummoningSpawnActionCount(variant) == 1 &&
+                            ExpandedSummoningTemplateApplyCount(variant) == 0 &&
+                            ExpandedSummoningTemplateByCasterCount(variant) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Caster) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Celestial) == 0 &&
+                            ExpandedSummoningAlignmentActionCount(variant,
+                                SummonAlignmentMode.Fiendish) == 0);
+                });
+            string standaloneElementalObserved = string.Join("|",
+                standaloneElementalCandidates.Select(value => value.AssetGuid +
+                    ":" + value.name + ":" + value.Name + ":variants=" +
+                    value.ComponentsArray.OfType<AbilityVariants>()
+                        .Single().Variants.Length)
+                    .ToArray());
+            int exactParentMappings = 0, nativeContractNodes = 0,
+                acadamaeClassifiedNodes = 0, materialContractNodes = 0,
+                metamagicContractNodes = 0, actionBarContractNodes = 0;
+            foreach (SummonVariantSpec variant in logicalVariants)
+            {
+                int parentIndex = (variant.Family == SummonFamily.Monster ? 0 : 9) +
+                    variant.ParentTier - 1;
+                BlueprintAbility parent = canonicalSummonParents[parentIndex];
+                BlueprintAbility native = ExpandedSummoningNativeTemplate(all,
+                    variant.Family, variant.ParentTier, variant.Multiplicity);
+                BlueprintAbility root = all.OfType<BlueprintAbility>().Single(value =>
+                    value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(variant)));
+                int matchingParents = canonicalSummonParents.Count(value =>
+                    value.ComponentsArray.OfType<AbilityVariants>().Single()
+                        .Variants.Count(item => ReferenceEquals(item, root)) == 1);
+                if (matchingParents == 1 && parent.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants.Count(item =>
+                        ReferenceEquals(item, root)) == 1) exactParentMappings++;
+                BlueprintAbility[] nodes = new[] { root };
+                foreach (BlueprintAbility node in nodes)
+                {
+                    if (ExpandedSummoningNativeAbilityContractExact(node, native,
+                        false))
+                        nativeContractNodes++;
+                    if (node.IsSpell && node.School == SpellSchool.Conjuration &&
+                        node.IsFullRoundAction && (node.SpellDescriptor &
+                            SpellDescriptor.Summoning) != 0)
+                        acadamaeClassifiedNodes++;
+                    if (node.MaterialComponent != null) materialContractNodes++;
+                    if (ExpandedSummoningMemberEquals(node, native,
+                        "AvailableMetamagic")) metamagicContractNodes++;
+                    if (!node.Hidden && !node.ActionBarAutoFillIgnored)
+                        actionBarContractNodes++;
+                }
+            }
+            int expectedContractNodes = logicalVariants.Length;
+            bool abilityContractsExact = logicalVariants.Length == 681 &&
+                expectedContractNodes == 681 && exactParentMappings ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                nativeContractNodes == expectedContractNodes &&
+                acadamaeClassifiedNodes == expectedContractNodes &&
+                materialContractNodes == expectedContractNodes &&
+                metamagicContractNodes == expectedContractNodes &&
+                actionBarContractNodes == expectedContractNodes;
+            string abilityContractObserved = "roots=" + logicalVariants.Length +
+                ";nodes=" + expectedContractNodes + ";parents=" +
+                exactParentMappings + ";native=" + nativeContractNodes +
+                ";acadamae=" + acadamaeClassifiedNodes + ";material=" +
+                materialContractNodes + ";metamagic=" +
+                metamagicContractNodes + ";actionBar=" +
+                actionBarContractNodes;
+            int contaminatedPreexistingAbilities = all.OfType<BlueprintAbility>()
+                .Count(value => !value.name.StartsWith("KMG_Summoning_",
+                    StringComparison.Ordinal) && (
+                    ExpandedSummoningTemplateApplyCount(value) != 0 ||
+                    ExpandedSummoningSmiteApplyCount(value) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Celestial) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Fiendish) != 0 ||
+                    ExpandedSummoningAlignmentActionCount(value,
+                        SummonAlignmentMode.Caster) != 0));
+            BlueprintBuff[] templateBuffs = all.OfType<BlueprintBuff>().Where(value =>
+                value.name.StartsWith("KMG_Summoning_Template_",
+                    StringComparison.Ordinal)).ToArray();
+            bool templateBuffsExact = templateBuffs.Length == 6 &&
+                templateBuffs.All(value => value.ComponentsArray
+                    .OfType<AddDamageResistancePhysical>().Count() == 1) &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddDamageResistanceEnergy>().Count() == 3) == 3 &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddDamageResistanceEnergy>().Count() == 2) == 3 &&
+                templateBuffs.Count(value => value.ComponentsArray
+                    .OfType<AddSpellResistance>().Count() == 1) == 4 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_Low", 5, false)) == 2 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_Mid", 5, true)) == 2 &&
+                templateBuffs.Count(value => ExpandedSummoningTemplateBandExact(
+                    value, "_High", 10, true)) == 2;
+            BlueprintBuff[] smiteMarkers = all.OfType<BlueprintBuff>().Where(value =>
+                value.name.StartsWith("KMG_Summoning_Smite_",
+                    StringComparison.Ordinal)).ToArray();
+            bool smiteMarkersExact = smiteMarkers.Length == 2 &&
+                smiteMarkers.All(value => value.ComponentsArray.OfType<
+                    ExpandedSummoningSmiteComponent>().Count() == 1) &&
+                smiteMarkers.Count(value => value.ComponentsArray.OfType<
+                    ExpandedSummoningSmiteComponent>().Single().SmitesEvil) == 1;
+            BlueprintUnit lantern = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_LanternArchon");
+            BlueprintAbility lanternRay = all.OfType<BlueprintAbility>().Single(value =>
+                value.name == "KMG_Summoning_Special_LanternArchon_LightRay");
+            AddClassLevels lanternLevels = lantern.ComponentsArray
+                .OfType<AddClassLevels>().Single();
+            AbilityDeliverProjectile lanternDelivery = lanternRay.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            ContextActionDealDamage[] lanternDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    lanternRay.ComponentsArray).ToArray();
+            bool lanternAuraAvailable = all.Any(value => value != null &&
+                value.AssetGuid == "1ce4878b5e714f659d0854a12f4b3cf2" &&
+                value.GetType() == typeof(BlueprintBuff));
+            bool lanternExact = lanternLevels.Levels == 2 &&
+                lantern.Size == Size.Small && lantern.Alignment == Alignment.LawfulGood &&
+                lantern.Strength == 1 && lantern.Dexterity == 11 &&
+                lantern.Constitution == 12 && lantern.Intelligence == 6 &&
+                lantern.Wisdom == 11 && lantern.Charisma == 10 &&
+                lantern.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { lanternRay }) &&
+                lantern.Body.AdditionalLimbs.Length == 0 &&
+                lantern.Body.AdditionalSecondaryLimbs.Length == 0 &&
+                lantern.StartingInventory.Length == 0 &&
+                lantern.AddFacts.Count(value => value != null && value.name ==
+                    "KMG_Summoning_Special_LanternArchon_Defenses") == 1 &&
+                lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "1ce4878b5e714f659d0854a12f4b3cf2") ==
+                        (lanternAuraAvailable ? 1 : 0) &&
+                lanternRay.Range == AbilityRange.Custom &&
+                lanternDelivery.NeedAttackRoll &&
+                lanternDelivery.Projectiles.Length == 2 &&
+                lanternDamage.Length == 1 &&
+                lanternDamage[0].DamageType.Type == DamageType.Direct &&
+                lanternDamage[0].Value.DiceType == DiceType.D6 &&
+                lanternDamage[0].Value.DiceCountValue.ValueType ==
+                    ContextValueType.Simple &&
+                lanternDamage[0].Value.DiceCountValue.Value == 1;
+            BlueprintUnit invisibleStalker = all.OfType<BlueprintUnit>().Single(
+                value => value.name == "KMG_Summoning_Unit_InvisibleStalker");
+            AddClassLevels invisibleStalkerLevels = invisibleStalker.ComponentsArray
+                .OfType<AddClassLevels>().Single();
+            bool invisibleStalkerExact = invisibleStalkerLevels.Levels == 7 &&
+                invisibleStalker.Size == Size.Medium &&
+                invisibleStalker.Alignment == Alignment.TrueNeutral &&
+                invisibleStalker.Strength == 18 &&
+                invisibleStalker.Dexterity == 19 &&
+                invisibleStalker.Constitution == 22 &&
+                invisibleStalker.Intelligence == 14 &&
+                invisibleStalker.Wisdom == 15 && invisibleStalker.Charisma == 11 &&
+                invisibleStalker.Body.PrimaryHand != null &&
+                invisibleStalker.Body.PrimaryHand.AssetGuid ==
+                    "72aa06bd4e7a8fa4db8a20d1b5f1a103" &&
+                invisibleStalker.Body.AdditionalLimbs.Length == 1 &&
+                invisibleStalker.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "94b2838e8a492c44ebf89e7fe7a75a62") == 1;
+            BlueprintUnit erinyes = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_ErinyesDevil");
+            BlueprintItemWeapon erinyesWeapon = erinyes.Body.PrimaryHand as
+                BlueprintItemWeapon;
+            bool erinyesExact = erinyes.ComponentsArray.OfType<AddClassLevels>()
+                    .Single().Levels == 9 &&
+                erinyes.ComponentsArray.Length == 1 &&
+                erinyes.ComponentsArray.All(value => value.GetType().Name !=
+                    "BuffOnEntityCreated") &&
+                erinyes.Size == Size.Medium &&
+                erinyes.Alignment == Alignment.LawfulEvil &&
+                erinyes.Strength == 20 && erinyes.Dexterity == 23 &&
+                erinyes.Constitution == 21 && erinyes.Intelligence == 14 &&
+                erinyes.Wisdom == 18 && erinyes.Charisma == 21 &&
+                erinyes.Speed.Value == 50 && erinyesWeapon != null &&
+                erinyesWeapon.IsRanged && erinyes.Brain != null &&
+                erinyes.StartingInventory.Length == 0;
+            BlueprintUnit shadowDemon = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_ShadowDemon");
+            BlueprintBuff shadowTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name ==
+                    "KMG_Summoning_Special_ShadowDemon_CombatTraits");
+            AddDamageResistancePhysical shadowDr = shadowTraits.ComponentsArray
+                .OfType<AddDamageResistancePhysical>().Single();
+            AddInitiatorAttackWithWeaponTrigger shadowCold = shadowTraits
+                .ComponentsArray.OfType<AddInitiatorAttackWithWeaponTrigger>()
+                .Single();
+            ContextActionDealDamage[] shadowColdDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    shadowCold).ToArray();
+            bool shadowDemonExact = shadowDemon.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 7 &&
+                shadowDemon.Size == Size.Medium &&
+                shadowDemon.Alignment == Alignment.ChaoticEvil &&
+                shadowDemon.Strength == 17 && shadowDemon.Dexterity == 20 &&
+                shadowDemon.Constitution == 14 && shadowDemon.Intelligence == 14 &&
+                shadowDemon.Wisdom == 13 && shadowDemon.Charisma == 17 &&
+                shadowDemon.Body.PrimaryHand != null &&
+                shadowDemon.Body.PrimaryHand.AssetGuid ==
+                    "c76f72a862d168d44838206524366e1c" &&
+                shadowDemon.Body.AdditionalLimbs.Length == 1 &&
+                shadowDemon.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                shadowDemon.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "c4a7f98d743bc784c9d4cf2105852c39") == 1 &&
+                shadowDr.Or && shadowDr.BypassedByMaterial &&
+                shadowDr.Material == PhysicalDamageMaterial.ColdIron &&
+                shadowDr.BypassedByAlignment &&
+                shadowDr.Alignment == DamageAlignment.Good &&
+                shadowTraits.ComponentsArray.OfType<
+                    AddDamageResistanceEnergy>().Count() == 2 &&
+                shadowTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 17 &&
+                shadowCold.OnlyHit && shadowCold.AllNaturalAndUnarmed &&
+                shadowColdDamage.Length == 1 &&
+                shadowColdDamage[0].DamageType.Type == DamageType.Energy &&
+                shadowColdDamage[0].DamageType.Energy == DamageEnergyType.Cold &&
+                shadowColdDamage[0].Value.DiceType == DiceType.D6 &&
+                shadowColdDamage[0].Value.DiceCountValue.Value == 1;
+            BlueprintUnit salamander = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Salamander");
+            BlueprintItemWeapon salamanderTail = all.OfType<
+                BlueprintItemWeapon>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Salamander_Tail");
+            BlueprintItemWeapon salamanderSpear = all.OfType<
+                BlueprintItemWeapon>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Salamander_Spear");
+            BlueprintBuff salamanderTraits = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Salamander_CombatTraits");
+            ContextActionDealDamage[] salamanderDamage =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    salamanderTraits.ComponentsArray).ToArray();
+            bool salamanderExact = salamander.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 8 &&
+                salamander.Size == Size.Medium &&
+                salamander.Alignment == Alignment.ChaoticEvil &&
+                salamander.Strength == 16 && salamander.Dexterity == 13 &&
+                salamander.Constitution == 18 && salamander.Intelligence == 14 &&
+                salamander.Wisdom == 15 && salamander.Charisma == 13 &&
+                ReferenceEquals(salamander.Body.PrimaryHand,
+                    salamanderSpear) && salamanderSpear.IsNonRemovable &&
+                salamanderSpear.Type.IsNatural &&
+                salamander.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                ReferenceEquals(salamander.Body.AdditionalSecondaryLimbs[0],
+                    salamanderTail) &&
+                salamanderTail.Damage.Rolls == 2 &&
+                salamanderTail.Damage.Dice == DiceType.D6 &&
+                salamanderTraits.ComponentsArray.OfType<
+                    AddInitiatorAttackWithWeaponTrigger>().Count() == 2 &&
+                salamanderDamage.Count(value => value.DamageType.Type ==
+                    DamageType.Energy && value.DamageType.Energy ==
+                    DamageEnergyType.Fire && value.Value.DiceCountValue.Value == 1) == 1 &&
+                salamanderDamage.Count(value => value.DamageType.Type ==
+                    DamageType.Physical && value.Value.DiceType == DiceType.D6 &&
+                    value.Value.DiceCountValue.Value == 2 &&
+                    value.Value.BonusValue.Value == 4) == 1;
+            BlueprintUnit succubus = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Succubus");
+            BlueprintAbility succubusDominate = all.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Succubus_Dominate");
+            BlueprintBuff succubusDomination = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Succubus_Domination");
+            BlueprintBuff succubusTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name ==
+                    "KMG_Summoning_Special_Succubus_CombatTraits");
+            ContextActionSuccubusDominate[] dominationActions =
+                ExpandedSummoningObjects<ContextActionSuccubusDominate>(
+                    succubusDominate.ComponentsArray).ToArray();
+            ContextActionDealDamage[] succubusDrain =
+                ExpandedSummoningObjects<ContextActionDealDamage>(
+                    succubusTraits.ComponentsArray).Where(value =>
+                        value.EnergyDrainType == EnergyDrainType.Temporary &&
+                        value.Duration.Rate == DurationRate.Rounds &&
+                        value.Duration.BonusValue.Value == 1 &&
+                        value.Value.BonusValue.Value == 1).ToArray();
+            bool succubusExact = succubus.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 8 &&
+                succubus.Size == Size.Medium &&
+                succubus.Alignment == Alignment.ChaoticEvil &&
+                succubus.Strength == 13 && succubus.Dexterity == 17 &&
+                succubus.Constitution == 14 && succubus.Intelligence == 18 &&
+                succubus.Wisdom == 13 && succubus.Charisma == 27 &&
+                succubus.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { succubusDominate }) &&
+                succubusDominate.Type == AbilityType.SpellLike &&
+                succubusDominate.ComponentsArray.OfType<
+                    ContextCalculateAbilityParams>().Single().StatType ==
+                    StatType.Charisma &&
+                dominationActions.Length == 1 &&
+                ReferenceEquals(dominationActions[0].Domination,
+                    succubusDomination) &&
+                succubusDomination.ComponentsArray.OfType<ChangeFaction>()
+                    .Count() == 1 &&
+                succubusDomination.ComponentsArray.OfType<
+                    RemoveBuffIfCasterIsMissing>().Count() == 1 &&
+                succubusTraits.ComponentsArray.OfType<
+                    AddDamageResistanceEnergy>().Count() == 2 &&
+                succubusTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 18 &&
+                succubusDrain.Length == 1 &&
+                succubusDrain[0].Duration.Rate == DurationRate.Rounds &&
+                succubusDrain[0].Duration.BonusValue.Value == 1 &&
+                succubusDrain[0].Value.BonusValue.Value == 1;
+            BlueprintUnit bebelith = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Bebelith");
+            BlueprintItemWeapon bebelithClaw = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_Claw");
+            BlueprintBuff bebelithTraits = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_CombatTraits");
+            BlueprintBuff dismantledArmor = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Bebelith_DismantledArmor");
+            BebelithCombatComponent bebelithCombat = bebelithTraits
+                .ComponentsArray.OfType<BebelithCombatComponent>().Single();
+            bool bebelithExact = bebelith.ComponentsArray
+                    .OfType<AddClassLevels>().Single().Levels == 12 &&
+                bebelith.Size == Size.Huge &&
+                bebelith.Alignment == Alignment.ChaoticEvil &&
+                bebelith.Strength == 28 && bebelith.Dexterity == 12 &&
+                bebelith.Constitution == 24 && bebelith.Intelligence == 11 &&
+                bebelith.Wisdom == 13 && bebelith.Charisma == 13 &&
+                bebelithClaw.Damage.Rolls == 2 &&
+                bebelithClaw.Damage.Dice == DiceType.D4 &&
+                bebelith.Body.PrimaryHand == bebelithClaw &&
+                bebelith.Body.AdditionalLimbs.SequenceEqual(new[] {
+                    bebelithClaw }) &&
+                bebelith.Body.AdditionalSecondaryLimbs.Length == 1 &&
+                bebelith.Body.AdditionalSecondaryLimbs[0].AssetGuid ==
+                    "d2f99947db522e24293a7ec4eded453f" &&
+                bebelith.AddFacts.All(value => value == null ||
+                    (value.AssetGuid != "ef60cd888b834a549898824e6b684918" &&
+                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")) &&
+                ReferenceEquals(bebelithCombat.Claw, bebelithClaw) &&
+                ReferenceEquals(bebelithCombat.DismantledArmor,
+                    dismantledArmor) &&
+                bebelithTraits.ComponentsArray.OfType<
+                    AddDamageResistancePhysical>().Single().Alignment ==
+                        DamageAlignment.Good &&
+                dismantledArmor.ComponentsArray.OfType<AddStatBonus>()
+                    .Single().Value == -2;
+            BlueprintUnit pixie = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Pixie");
+            BlueprintItemWeapon pixieSleepBow = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_SleepBow");
+            BlueprintAbility pixieDance = all.OfType<BlueprintAbility>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDance");
+            BlueprintBuff pixieDanceState = all.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceState");
+            BlueprintAbilityResource pixieDanceResource = all.OfType<
+                BlueprintAbilityResource>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceResource");
+            BlueprintAbilityResource pixieSleepResource = all.OfType<
+                BlueprintAbilityResource>().Single(value => value.name ==
+                    "KMG_Summoning_Special_Pixie_SleepArrowResource");
+            BlueprintBuff pixieTraits = all.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Pixie_CombatTraits");
+            PixieSleepArrowComponent pixieArrows = pixieTraits.ComponentsArray
+                .OfType<PixieSleepArrowComponent>().Single();
+            ContextActionApplyBuff[] pixieDanceActions =
+                ExpandedSummoningObjects<ContextActionApplyBuff>(
+                    pixieDance.ComponentsArray).ToArray();
+            bool pixieExact = pixie.ComponentsArray.OfType<AddClassLevels>()
+                    .Single().Levels == 4 && pixie.Size == Size.Small &&
+                pixie.Alignment == Alignment.NeutralGood &&
+                pixie.Strength == 7 && pixie.Dexterity == 21 &&
+                pixie.Constitution == 12 && pixie.Intelligence == 16 &&
+                pixie.Wisdom == 15 && pixie.Charisma == 16 &&
+                ReferenceEquals(pixie.Body.PrimaryHand, pixieSleepBow) &&
+                pixieSleepBow.IsNonRemovable && pixieSleepBow.Type.IsNatural &&
+                pixieSleepBow.Damage.Rolls == 0 &&
+                pixieSleepBow.Damage.Dice == DiceType.Zero &&
+                pixie.StartingInventory.Length == 0 &&
+                pixie.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "94b2838e8a492c44ebf89e7fe7a75a62") == 1 &&
+                pixie.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                    .Single().Abilities.SequenceEqual(new[] { pixieDance }) &&
+                ExpandedSummoningResourceBase(pixieSleepResource) == 16 &&
+                ExpandedSummoningResourceBase(pixieDanceResource) == 1 &&
+                ReferenceEquals(pixieArrows.SleepBow, pixieSleepBow) &&
+                ReferenceEquals(pixieArrows.SleepArrowResource,
+                    pixieSleepResource) &&
+                pixieDance.ComponentsArray.OfType<AbilityResourceLogic>()
+                    .Count(value => ReferenceEquals(value.RequiredResource,
+                        pixieDanceResource) && value.Amount == 1 &&
+                        value.IsSpendResource) == 1 &&
+                pixieDanceActions.Length == 2 &&
+                pixieDanceActions.All(value => value.Buff != null &&
+                    ReferenceEquals(value.Buff, pixieDanceState)) &&
+                pixieDance.Range == AbilityRange.Touch &&
+                pixieDance.ComponentsArray.OfType<AbilityDeliverTouch>()
+                    .Count() == 0 &&
+                pixieDanceState.ComponentsArray.OfType<AddCondition>()
+                    .Count(value => value.Condition == UnitCondition.CantAct) == 1 &&
+                pixieDanceState.ComponentsArray.OfType<AddStatBonus>()
+                    .Count(value => value.Stat == StatType.AC &&
+                        value.Value == -4) == 1 &&
+                pixieDanceState.ComponentsArray.OfType<AddStatBonus>()
+                    .Count(value => value.Stat == StatType.SaveReflex &&
+                        value.Value == -10) == 1 &&
+                pixieTraits.ComponentsArray.OfType<AddSpellResistance>()
+                    .Single().Value.Value == 15;
+            BlueprintItemWeapon naturalBite1d4 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1d4");
+            BlueprintItemWeapon naturalBite1d3 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1d3");
+            BlueprintItemWeapon naturalTail1d12 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Tail1d12");
+            BlueprintItemWeapon naturalTail3d6 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Tail3d6");
+            BlueprintItemWeapon naturalBite2d8 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite2d8");
+            BlueprintItemWeapon naturalTalon2d6 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Talon2d6");
+            BlueprintUnit dog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Dog");
+            BlueprintUnit eagle = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Eagle");
+            BlueprintUnit poisonFrog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_PoisonousFrog");
+            BlueprintUnit centipede = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GiantCentipede");
+            BlueprintUnit giantSpider = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GiantSpider");
+            BlueprintUnit goblinDog = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_GoblinDog");
+            BlueprintUnit hyena = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Hyena");
+            bool lowTierNaturalsExact =
+                naturalBite1d4.Damage.Rolls == 1 &&
+                naturalBite1d4.Damage.Dice == DiceType.D4 &&
+                naturalBite1d3.Damage.Rolls == 1 &&
+                naturalBite1d3.Damage.Dice == DiceType.D3 &&
+                dog.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 1 &&
+                dog.Size == Size.Small && dog.Strength == 13 &&
+                dog.Dexterity == 13 && dog.Constitution == 15 &&
+                dog.Intelligence == 2 && dog.Wisdom == 12 && dog.Charisma == 6 &&
+                ReferenceEquals(dog.Body.PrimaryHand, naturalBite1d4) &&
+                dog.Body.AdditionalLimbs.Length == 0 &&
+                eagle.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 1 &&
+                eagle.Size == Size.Small && eagle.Strength == 10 &&
+                eagle.Dexterity == 15 && eagle.Constitution == 12 &&
+                eagle.Intelligence == 2 && eagle.Wisdom == 15 &&
+                eagle.Charisma == 7 &&
+                ReferenceEquals(eagle.Body.PrimaryHand, naturalBite1d4) &&
+                eagle.Body.AdditionalLimbs.Length == 2 &&
+                eagle.Body.AdditionalLimbs.All(value => value.AssetGuid ==
+                    "118fdd03e569a66459ab01a20af6811a") &&
+                eagle.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "70cffb448c132fa409e49156d013b175") == 1 &&
+                poisonFrog.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && poisonFrog.Size == Size.Tiny &&
+                poisonFrog.Strength == 2 && poisonFrog.Dexterity == 12 &&
+                poisonFrog.Constitution == 11 && poisonFrog.Intelligence == 1 &&
+                poisonFrog.Wisdom == 9 && poisonFrog.Charisma == 10 &&
+                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1d3) &&
+                poisonFrog.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "1a3f2f384bbef804d8f52db1f9aa62d3") == 1 &&
+                centipede.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && centipede.Size == Size.Medium &&
+                centipede.Strength == 9 && centipede.Dexterity == 15 &&
+                centipede.Constitution == 12 && centipede.Intelligence == 1 &&
+                centipede.Wisdom == 10 && centipede.Charisma == 2 &&
+                centipede.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "6fed981bf0ef27a499969f369f35b5e8") == 1 &&
+                giantSpider.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 3 && giantSpider.Size == Size.Medium &&
+                giantSpider.Strength == 11 && giantSpider.Dexterity == 17 &&
+                giantSpider.Constitution == 12 && giantSpider.Intelligence == 1 &&
+                giantSpider.Wisdom == 10 && giantSpider.Charisma == 2 &&
+                giantSpider.AddFacts.Count(value => value != null &&
+                    value.AssetGuid == "094714bb08f4e1943a8e9d2384ebe573") == 1 &&
+                giantSpider.AddFacts.All(value => value == null ||
+                    value.AssetGuid != "ef60cd888b834a549898824e6b684918") &&
+                goblinDog.ComponentsArray.OfType<AddClassLevels>().Single()
+                    .Levels == 1 && goblinDog.Size == Size.Medium &&
+                goblinDog.Alignment == Alignment.TrueNeutral &&
+                goblinDog.Strength == 15 && goblinDog.Dexterity == 14 &&
+                goblinDog.Constitution == 15 && goblinDog.Intelligence == 2 &&
+                goblinDog.Wisdom == 12 && goblinDog.Charisma == 8 &&
+                goblinDog.AddFacts.All(value => value == null ||
+                    (value.AssetGuid != "797f25d709f559546b29e7bcb181cc74" &&
+                     value.AssetGuid != "f957b4444b6fb404e84ae2a5765797bb")) &&
+                hyena.ComponentsArray.OfType<AddClassLevels>().Single().Levels == 2 &&
+                hyena.Size == Size.Medium && hyena.Strength == 14 &&
+                hyena.Dexterity == 15 && hyena.Constitution == 15 &&
+                hyena.Intelligence == 2 && hyena.Wisdom == 13 &&
+                hyena.Charisma == 6 &&
+                hyena.AddFacts.Count(value => value != null && value.AssetGuid ==
+                    "f957b4444b6fb404e84ae2a5765797bb") == 1;
+            string[] tierThreeFourKeys = { "boar", "leopard",
+                "monitor-lizard", "cheetah", "crocodile", "dire-bat",
+                "wolverine", "dire-boar", "dire-wolf", "grizzly-bear",
+                "lion", "pteranodon" };
+            bool tierThreeFourNaturalsExact =
+                naturalTail1d12.Damage.Rolls == 1 &&
+                naturalTail1d12.Damage.Dice == DiceType.D12 &&
+                tierThreeFourKeys.All(key =>
+                    ExpandedSummoningNaturalUnitExact(all,
+                        ExpandedSummoningNaturalProfiles.For(key)));
+            string[] tierFiveSevenKeys = { "dire-lion", "ankylosaurus",
+                "dire-bear", "dire-tiger", "elephant", "mastodon", "roc" };
+            bool tierFiveSevenNaturalsExact =
+                naturalTail3d6.Damage.Rolls == 3 &&
+                naturalTail3d6.Damage.Dice == DiceType.D6 &&
+                naturalBite2d8.Damage.Rolls == 2 &&
+                naturalBite2d8.Damage.Dice == DiceType.D8 &&
+                naturalTalon2d6.Damage.Rolls == 2 &&
+                naturalTalon2d6.Damage.Dice == DiceType.D6 &&
+                tierFiveSevenKeys.All(key =>
+                    ExpandedSummoningNaturalUnitExact(all,
+                        ExpandedSummoningNaturalProfiles.For(key)));
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("summon-family-ability-candidates", ">=18",
+                    observation.ParentCount.ToString(), observation.ParentCount >= 18,
+                    "final-live BlueprintAbility name/display/component inventory"),
+                Assertion("summon-unit-donor-candidates", ">=40",
+                    observation.UnitCount.ToString(), observation.UnitCount >= 40,
+                    "final-live BlueprintUnit roster-term inventory"),
+                Assertion("expanded-summoning-exact-donor-inventory", "55;missing=0",
+                    observation.ExactDonorCount + ";missing=" +
+                        observation.MissingDonorCount,
+                    observation.ExactDonorCount == 55 &&
+                        observation.MissingDonorCount == 0,
+                    "all distinct frozen chosen donor GUIDs with component/body/view graphs"),
+                Assertion("expanded-summoning-special-mechanic-candidates", ">=1",
+                    observation.SpecialCandidateCount.ToString(),
+                    observation.SpecialCandidateCount >= 1,
+                    "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
+                Assertion("expanded-summoning-registered-identities",
+                    "units=67;abilities=" + expectedKmgAbilities + ";registry=" +
+                        BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                    "units=" + kmgUnits + ";abilities=" + kmgAbilities +
+                        ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
+                    kmgUnits == 67 && kmgAbilities == expectedKmgAbilities &&
+                        BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                    "exact final-live KMG blueprint identity scan"),
+                Assertion("expanded-summoning-lantern-archon", "exact",
+                    lanternExact ? "exact" : "mismatch", lanternExact,
+                    "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
+                Assertion("expanded-summoning-invisible-stalker", "exact",
+                    invisibleStalkerExact ? "exact" : "mismatch",
+                    invisibleStalkerExact,
+                    "7-HD Medium air outsider with two 2d6 slams and attack-safe natural invisibility"),
+                Assertion("expanded-summoning-erinyes", "exact",
+                    erinyesExact ? "exact" : "mismatch", erinyesExact,
+                    "9-HD Medium LE outsider with donor ranged rig and no inherited fog/campaign component"),
+                Assertion("expanded-summoning-shadow-demon", "exact",
+                    shadowDemonExact ? "exact" : "mismatch", shadowDemonExact,
+                    "7-HD incorporeal demon with claw/bite routine, bounded defenses, and cold rider"),
+                Assertion("expanded-summoning-salamander", "exact",
+                    salamanderExact ? "exact" : "mismatch", salamanderExact,
+                    "8-HD fire outsider with spear, 2d6 tail, heat, and bounded grab/constrict"),
+                Assertion("expanded-summoning-succubus", "exact",
+                    succubusExact ? "exact" : "mismatch", succubusExact,
+                    "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
+                Assertion("expanded-summoning-bebelith", "exact",
+                    bebelithExact ? "exact" : "mismatch", bebelithExact,
+                    "12-HD Huge outsider, poison/web-free 2d4 claws and 2d6 bite, DR/good, bounded dismantle, and demon hunting"),
+                Assertion("expanded-summoning-pixie", "exact",
+                    pixieExact ? "exact" : "mismatch", pixieExact,
+                    "4-HD Small fey with native arrow rig, sixteen sleep arrows, one dance use, native invisibility, DR, and SR"),
+                Assertion("expanded-summoning-low-tier-naturals", "exact",
+                    lowTierNaturalsExact ? "exact" : "mismatch",
+                    lowTierNaturalsExact,
+                    "tabletop dog, eagle, poisonous frog, centipede, giant spider, goblin dog, and hyena chassis with visual-only proxy donors"),
+                Assertion("expanded-summoning-tier-three-four-naturals", "exact",
+                    tierThreeFourNaturalsExact ? "exact" : "mismatch",
+                    tierThreeFourNaturalsExact,
+                    "twelve exact animal-HD chassis with native pounce, ferocity, trip, poison, armor, natural attacks, and bounded documented deviations"),
+                Assertion("expanded-summoning-tier-five-seven-naturals", "exact",
+                    tierFiveSevenNaturalsExact ? "exact" : "mismatch",
+                    tierFiveSevenNaturalsExact,
+                    "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
+                Assertion("expanded-summoning-parent-placements", "667",
+                    publishedPlacements.ToString(), publishedPlacements ==
+                        SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                    "18 canonical AbilityVariants surfaces"),
+                Assertion("expanded-summoning-native-ability-contracts",
+                    "roots=681 registered;parents=667 visible;all 681 executable contracts exact",
+                    abilityContractObserved, abilityContractsExact,
+                    "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
+                Assertion("expanded-summoning-native-tier-one-preservation",
+                    "generic SM/SNA preservation children hidden; creature-named SNA Mite wrapper visible; all identities castable",
+                    nativeTierOnePreserved ? "exact" : "mismatch",
+                    nativeTierOnePreserved,
+                    "frozen child clones remain registered while exact GUID-based publication exposes only creature-named choices"),
+                Assertion("expanded-summoning-menu-reconciliation",
+                    "KMG roots=exact;mapped native duplicates=0;unique native=exact;all frozen native identities registered",
+                    "kmgMissingOrDuplicate=" +
+                        menuAudit.MissingOrDuplicateKmgRoots +
+                        ";mappedVisible=" +
+                        menuAudit.VisibleMappedNativeDuplicates +
+                        ";uniqueMissing=" +
+                        menuAudit.MissingUniqueNativeOptions +
+                        ";registeredMissing=" +
+                        menuAudit.MissingRegisteredNativeIdentities +
+                        ";nativeExpansionMissingOrDuplicate=" +
+                        menuAudit.MissingOrDuplicateNativeExpansions,
+                    menuAudit.ReconciliationExact,
+                    "all 18 final-live canonical AbilityVariants surfaces and frozen GUID catalog"),
+                Assertion("expanded-summoning-menu-order-and-icons",
+                    "current singles;unique native singles;1d3;1d4+1;foreign stable tail;category icons distinct",
+                    "misordered=" + menuAudit.MisorderedParents +
+                        ";missingIcons=" + menuAudit.MissingIcons +
+                        ";badQuantityNames=" +
+                        menuAudit.MalformedQuantityNames +
+                        ";categoryDistinct=" +
+                        menuAudit.CategoryIconsDistinct,
+                    menuAudit.PresentationExact,
+                    "reference-exact display sequence, immutable creature icon catalog, and localized quantity suffixes"),
+                Assertion("expanded-summoning-menu-counts",
+                    "18 exact before/after tier and multiplicity equations",
+                    menuAudit.Counts, menuAudit.CountMismatches == 0,
+                    "frozen native catalog plus preserved foreign tail and generated KMG placement catalog"),
+                Assertion("expanded-summoning-menu-contact-sheets",
+                    "nine exact final-live menu indexes for curated contact sheets",
+                    menuContactSheetEvidence,
+                    menuContactSheetEvidence.StartsWith("sheets=9;",
+                        StringComparison.Ordinal),
+                    "live AbilityVariants names/GUIDs/sprite keys/textures in exact display order; supporting visual evidence only"),
+                Assertion("expanded-summoning-high-tier-native-choices",
+                    "SM VIII Movanic Deva/Frost Giant and SM IX Ghaele/Thanadaemon are distinct; umbrella sources suppressed",
+                    menuAudit.HighTierUniqueNativeExact ? "exact" :
+                        "mismatch", menuAudit.HighTierUniqueNativeExact,
+                    "exact GUID-based unique native reconciliation at sparse KMG tiers VIII and IX"),
+                Assertion("expanded-summoning-standalone-summon-elemental",
+                    "present with native/optional graph and zero KMG mutation",
+                    standaloneElementalObserved, standaloneElementalExact,
+                    "final-live exact candidate scan outside all 18 canonical parent GUIDs"),
+                Assertion("expanded-summoning-donor-component-isolation", "0",
+                    sharedComponents.ToString(), sharedComponents == 0,
+                    "all 67 KMG units versus frozen donor component references"),
+                Assertion("expanded-summoning-prohibited-references", "0",
+                    prohibitedReferences.ToString(), prohibitedReferences == 0,
+                    "direct facts and component blueprint-array grants"),
+                Assertion("expanded-summoning-extraplanar-markers", "67",
+                    extraplanarMarkers.ToString(), extraplanarMarkers == 67,
+                    "one exact hidden KMG marker per custom summon unit"),
+                Assertion("expanded-summoning-inherited-class-spells", "0",
+                    inheritedSpellArrays.ToString(), inheritedSpellArrays == 0,
+                    "AddClassLevels MemorizeSpells and SelectSpells arrays"),
+                Assertion("expanded-summoning-starting-inventory", "0",
+                    nonemptyInventories.ToString(), nonemptyInventories == 0,
+                    "all 67 KMG unit StartingInventory arrays"),
+                Assertion("expanded-summoning-template-logical-choices", "182",
+                    templateChoices.Length.ToString(), templateChoicesExact,
+                    "direct executable roots with one caster-selected post-spawn template action"),
+                Assertion("expanded-summoning-celestial-executions", "182",
+                    celestialExecutions.Length.ToString(), celestialExact,
+                    "non-evil mask, Good descriptor, and child template application"),
+                Assertion("expanded-summoning-fiendish-executions", "182",
+                    fiendishExecutions.Length.ToString(), fiendishExact,
+                    "non-good mask, Evil descriptor, and child template application"),
+                Assertion("expanded-summoning-template-buffs", "6",
+                    templateBuffs.Length.ToString(), templateBuffsExact,
+                    "native resistance, alignment DR, and high-tier SR components"),
+                Assertion("expanded-summoning-smite-markers", "2",
+                    smiteMarkers.Length.ToString(), smiteMarkersExact,
+                    "unit-local opposed-alignment once-per-summon attack handlers"),
+                Assertion("expanded-summoning-runtime-alignments",
+                    "celestial=182;fiendish=182;sna=320",
+                    "celestial=" + celestialExecutions.Length + ";fiendish=" +
+                    fiendishExecutions.Length + ";sna=" + allyExecutions.Length,
+                    celestialExact && fiendishExact && allyAlignmentExact,
+                    "spawn-local fixed template or exact caster alignment actions"),
+                Assertion("expanded-summoning-native-action-isolation", "0",
+                    contaminatedPreexistingAbilities.ToString(),
+                    contaminatedPreexistingAbilities == 0,
+                    "non-KMG abilities containing KMG post-spawn actions or buffs"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            WriteLifecycleStage("expanded-summoning-inventory-result-built");
+            foreach (string record in observation.Records) result.Diagnostics.Add(record);
+            return result;
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoningPlayerPath()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            object levelController = null;
+            object sceneEntities = null;
+            Spellbook spellbook = null;
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo castRuleMethod = typeof(RuleCastSpell).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo spawnActionMethod = typeof(ContextActionSpawnMonster)
+                .GetMethod("RunAction", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+            var cases = new List<ExpandedSummoningPlayerPathCase>();
+            var broadCases = new List<ExpandedSummoningPlayerPathCase>();
+            var nativeExpansionCases =
+                new List<ExpandedSummoningPlayerPathCase>();
+            ExpandedSummoningPlayerPathCase rejectedDog = null;
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            try
+            {
+                if (summonRuleMethod == null || castRuleMethod == null ||
+                    spawnActionMethod == null)
+                    throw new MissingMethodException(
+                        "Expanded Summoning player-path capture boundary missing.");
+                MethodInfo summonPostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                        BindingFlags.Static);
+                MethodInfo castPostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningPlayerPathRuleCastPostfix",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo spawnPrefix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningPlayerPathSpawnPrefix",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(summonPostfix), null);
+                _context.Harmony.Patch(castRuleMethod, null,
+                    new HarmonyMethod(castPostfix), null);
+                _context.Harmony.Patch(spawnActionMethod,
+                    new HarmonyMethod(spawnPrefix), null, null);
+                _expandedSummoningRuleCaptureActive = true;
+                _expandedSummoningPlayerPathCaptureActive = true;
+
+                UnitEntityData areaAnchor = partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value.HoldingState != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no active-area party anchor.");
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name =
+                    "KMG_Runtime_ExpandedSummoning_PlayerPath_Caster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(casterBlueprint,
+                    areaAnchor.Position, Quaternion.identity,
+                    areaAnchor.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (caster == null || !caster.IsInState || caster.View == null ||
+                    caster.View.Data != caster)
+                    throw new InvalidOperationException(
+                        "The player-path caster did not enter the live area.");
+                sceneEntities = caster.HoldingState.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                caster.Descriptor.Stats.Intelligence.BaseValue = 30;
+
+                BlueprintCharacterClass wizard = BlueprintLibraryLookup
+                    .RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                        "ba34257984f4c41408ce1dc2004e342e",
+                        "native Wizard player-path spellbook");
+                AdvanceDisposableSpellcaster(caster.Descriptor, wizard, 20,
+                    ref levelController);
+                spellbook = caster.Descriptor.GetSpellbook(wizard);
+                if (spellbook == null)
+                    throw new InvalidOperationException(
+                        "The level-eleven player-path caster has no Wizard spellbook.");
+                int wizardLevel = caster.Descriptor.Progression.GetClassLevel(wizard);
+                while (spellbook.CasterLevel < wizardLevel)
+                    spellbook.AddCasterLevel();
+                spellbook.UpdateAllSlotsSize(false);
+                spellbook.Rest();
+                _trace.Record("expanded-summoning-player-path-spellbook",
+                    "wizardLevel=" + wizardLevel + ";casterLevel=" +
+                    spellbook.CasterLevel + ";intelligence=" +
+                    caster.Descriptor.Stats.Intelligence.ModifiedValue +
+                    ";level1=" + spellbook.GetSpellsPerDay(1) +
+                    ";level2=" + spellbook.GetSpellsPerDay(2) +
+                    ";level6=" + spellbook.GetSpellsPerDay(6));
+
+                string[] parentGuids = {
+                    "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7", "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef", "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c", "ab167fd8203c1314bac6568932f1752f", "d3ac756a229830243a72e84f3ab050d0", "52b5df2a97df18242aec67610616ded0",
+                    "c6147854641924442a3bb736080cfeb6", "298148133cdc3fd42889b99c82711986", "fdcf7e57ec44f704591f11b45f4acf61", "c83db50513abdf74ca103651931fac4b", "8f98a22f35ca6684a983363d32e51bfe", "55bbce9b3e76d4a4a8c8e0698d29002c", "051b979e7d7f8ec41b9fa35d04746b33", "ea78c04f0bd13d049a1cce5daf8d83e0", "a7469ef84ba50ac4cbf3d145e3173f8e" };
+                BlueprintAbility[] parents = parentGuids.Select((guid, index) =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        BlueprintBootstrap.Library, guid,
+                        (index < 9 ? "Summon Monster " :
+                            "Summon Nature's Ally ") + (index % 9 + 1)))
+                    .ToArray();
+                BlueprintAbility sm1 = parents[0];
+                BlueprintAbility sm2 = parents[1];
+                BlueprintAbility sm6 = parents[5];
+                BlueprintAbility sna1 = parents[9];
+                BlueprintAbility nativeDog = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog
+                            .NativeMonsterTierOneSymbol));
+                SummonVariantSpec smDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1, SummonMultiplicity.One);
+                SummonVariantSpec snaDog = ExpandedSummoningVariant(
+                    SummonFamily.NaturesAlly, "dog", 1,
+                    SummonMultiplicity.One);
+                SummonVariantSpec spider = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "giant-spider", 2,
+                    SummonMultiplicity.One);
+                SummonVariantSpec earth = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "small-earth-elemental", 2,
+                    SummonMultiplicity.One);
+                SummonVariantSpec erinyes = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "erinyes-devil", 6,
+                    SummonMultiplicity.One);
+                BlueprintAbility dogRoot = ExpandedSummoningRoot(blueprints, smDog);
+                BlueprintAbility dogCelestial = ExpandedSummoningExecutionChild(
+                    blueprints, smDog, ".Celestial");
+                BlueprintAbility dogFiendish = ExpandedSummoningExecutionChild(
+                    blueprints, smDog, ".Fiendish");
+
+                stage = "native-dog";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, nativeDog, null, null, null, 1,
+                    Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    null));
+                cases[cases.Count - 1].Name = "native-sm1-dog";
+                stage = "kmg-dog-logical-root";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogRoot,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot, null, 1,
+                    Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Celestial));
+                cases[cases.Count - 1].Name = "kmg-sm1-dog-logical";
+                stage = "kmg-dog-cancelled-before-range";
+                rejectedDog = ExerciseRejectedExpandedSummoningPlayerPathCase(
+                    caster, spellbook, sm1, dogRoot, 1);
+                rejectedDog.Name = "kmg-sm1-dog-cancelled-before-range";
+                stage = "celestial-dog-direct";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogCelestial,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot,
+                    dogCelestial, 1, Alignment.NeutralGood, true,
+                    sceneEntities, allUnits, SummonAlignmentMode.Celestial));
+                cases[cases.Count - 1].Name = "kmg-dog-celestial-direct";
+                stage = "fiendish-dog-direct";
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm1, dogFiendish,
+                    ExpandedSummoningUnit(blueprints, smDog), dogRoot,
+                    dogFiendish, 1, Alignment.LawfulEvil, true,
+                    sceneEntities, allUnits, SummonAlignmentMode.Fiendish));
+                cases[cases.Count - 1].Name = "kmg-dog-fiendish-direct";
+                stage = "sna-dog";
+                BlueprintAbility snaDogRoot = ExpandedSummoningRoot(blueprints,
+                    snaDog);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sna1, snaDogRoot,
+                    ExpandedSummoningUnit(blueprints, snaDog), snaDogRoot, null,
+                    1, Alignment.ChaoticNeutral, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Caster));
+                cases[cases.Count - 1].Name = "kmg-sna1-dog-logical";
+                stage = "giant-spider";
+                BlueprintAbility spiderRoot = ExpandedSummoningRoot(blueprints,
+                    spider);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm2, spiderRoot,
+                    ExpandedSummoningUnit(blueprints, spider), spiderRoot, null,
+                    2, Alignment.NeutralGood, false, sceneEntities, allUnits,
+                    SummonAlignmentMode.Celestial));
+                cases[cases.Count - 1].Name = "kmg-sm2-giant-spider-logical";
+                stage = "small-earth-elemental";
+                BlueprintAbility earthRoot = ExpandedSummoningRoot(blueprints,
+                    earth);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm2, earthRoot,
+                    ExpandedSummoningUnit(blueprints, earth), earthRoot, null,
+                    2, Alignment.TrueNeutral, false, sceneEntities, allUnits,
+                    null));
+                cases[cases.Count - 1].Name = "kmg-sm2-small-earth-elemental";
+                stage = "erinyes";
+                BlueprintAbility erinyesRoot = ExpandedSummoningRoot(blueprints,
+                    erinyes);
+                cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
+                    spellbook, sm6, erinyesRoot,
+                    ExpandedSummoningUnit(blueprints, erinyes), erinyesRoot,
+                    null, 6, Alignment.LawfulEvil, false, sceneEntities,
+                    allUnits, null));
+                cases[cases.Count - 1].Name = "kmg-sm6-erinyes";
+
+                stage = "expanded-human-path-matrix";
+                foreach (var row in new[] {
+                    new { Key = "eagle", Tier = 1, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm1-eagle" },
+                    new { Key = "wolf", Tier = 2, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm2-wolf" },
+                    new { Key = "lion", Tier = 4, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm4-lion" },
+                    new { Key = "dire-tiger", Tier = 6, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm6-dire-tiger" },
+                    new { Key = "mastodon", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm7-mastodon" },
+                    new { Key = "roc", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm7-roc" },
+                    new { Key = "lantern-archon", Tier = 3, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm3-lantern-archon" },
+                    new { Key = "salamander", Tier = 5, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm5-salamander" },
+                    new { Key = "succubus", Tier = 6, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm6-succubus" },
+                    new { Key = "bebelith", Tier = 7, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.TrueNeutral,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm7-bebelith" },
+                    new { Key = "ghaele-azata", Tier = 9, Count =
+                        SummonMultiplicity.One, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)null,
+                        Name = "kmg-sm9-ghaele" },
+                    new { Key = "eagle", Tier = 2, Count =
+                        SummonMultiplicity.OneD3, Alignment = Alignment.NeutralGood,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Celestial,
+                        Name = "kmg-sm2-eagle-1d3" },
+                    new { Key = "dog", Tier = 3, Count =
+                        SummonMultiplicity.OneD4PlusOne,
+                        Alignment = Alignment.LawfulEvil,
+                        Mode = (SummonAlignmentMode?)SummonAlignmentMode.Fiendish,
+                        Name = "kmg-sm3-dog-1d4plus1" }
+                })
+                {
+                    stage = row.Name;
+                    SummonVariantSpec variant = ExpandedSummoningVariant(
+                        SummonFamily.Monster, row.Key, row.Tier, row.Count);
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, variant, row.Alignment,
+                        row.Mode, sceneEntities, allUnits, row.Name);
+                }
+
+                stage = "kmg-sm1-dog-neutral-default";
+                SummonVariantSpec neutralDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1, SummonMultiplicity.One);
+                AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                    caster, spellbook, parents, neutralDog,
+                    Alignment.TrueNeutral, SummonAlignmentMode.Celestial,
+                    sceneEntities, allUnits, "kmg-sm1-dog-neutral-default");
+                stage = "resolve-neutral-fiendish-marker";
+                BlueprintBuff neutralFiendish = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.AssetGuid ==
+                        "b8429fbbf07f43ccbf88520c6256cd0d");
+                caster.Descriptor.AddFact(neutralFiendish);
+                try
+                {
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, neutralDog,
+                        Alignment.TrueNeutral, SummonAlignmentMode.Fiendish,
+                        sceneEntities, allUnits,
+                        "kmg-sm1-dog-neutral-fiendish-mode");
+                }
+                finally
+                {
+                    if (caster.Descriptor.HasFact(neutralFiendish))
+                        caster.Descriptor.RemoveFact(neutralFiendish);
+                }
+
+                stage = "all-distinct-native-expansions";
+                foreach (SummonNativeExpansionSpec nativeSpec in
+                    SummonNativeExpansionCatalog.All)
+                {
+                    stage = "native-expanded-sm" + nativeSpec.Tier + "-" +
+                        nativeSpec.CreatureKey + "-" +
+                        nativeSpec.Multiplicity;
+                    WriteLifecycleStage(stage + "-start");
+                    BlueprintAbility distinct = blueprints.OfType<
+                        BlueprintAbility>().Single(value => value.name ==
+                            ExpandedSummoningInternalName(nativeSpec.Symbol));
+                    BlueprintUnit expected = BlueprintLibraryLookup.RequireExact<
+                        BlueprintUnit>(BlueprintBootstrap.Library,
+                            nativeSpec.UnitGuid, stage);
+                    ExpandedSummoningPlayerPathCase nativeCase =
+                        ExerciseExpandedSummoningPlayerPathCase(caster,
+                            spellbook, parents[(nativeSpec.Family ==
+                                SummonFamily.Monster ? 0 : 9) +
+                                nativeSpec.Tier - 1], distinct,
+                            expected, distinct, null, nativeSpec.Tier,
+                            nativeSpec.Branch == SummonNativeSpawnBranch.Evil ?
+                                Alignment.LawfulEvil : Alignment.NeutralGood,
+                            false, sceneEntities, allUnits, null);
+                    int minimum = nativeSpec.Multiplicity ==
+                        SummonMultiplicity.One ? 1 : nativeSpec.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? 1 : 2;
+                    int maximum = nativeSpec.Multiplicity ==
+                        SummonMultiplicity.One ? 1 : nativeSpec.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? 3 : 5;
+                    nativeCase.QuantityContract = nativeCase.LiveCount >= minimum &&
+                        nativeCase.LiveCount <= maximum;
+                    nativeCase.LiveContract = nativeCase.LiveContract &&
+                        nativeCase.QuantityContract;
+                    nativeCase.Name = stage;
+                    cases.Add(nativeCase);
+                    nativeExpansionCases.Add(nativeCase);
+                    WriteLifecycleStage(stage + "-complete");
+                }
+
+                stage = "all-667-visible-logical-roots";
+                SummonVariantSpec[] broadVariants = ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.Monster).Concat(
+                        ExpandedSummoningCatalog.GenerateVariants(
+                            SummonFamily.NaturesAlly)).Where(
+                                SummonVisibilityCatalog.IsPublished).ToArray();
+                int observedBroadTier = 0;
+                SummonFamily observedBroadFamily = SummonFamily.Monster;
+                foreach (SummonVariantSpec variant in broadVariants)
+                {
+                    if (variant.ParentTier != observedBroadTier ||
+                        variant.Family != observedBroadFamily)
+                    {
+                        observedBroadTier = variant.ParentTier;
+                        observedBroadFamily = variant.Family;
+                        WriteLifecycleStage("expanded-summoning-player-path-broad-" +
+                            observedBroadFamily + "-tier" +
+                            observedBroadTier + "-start");
+                    }
+                    string broadName = "broad-" + variant.Family + "-t" +
+                        variant.ParentTier + "-" + variant.Creature.Key + "-" +
+                        variant.Multiplicity;
+                    stage = broadName;
+                    Alignment broadAlignment =
+                        ExpandedSummoningPlayerPathAlignmentFor(variant);
+                    SummonAlignmentMode? broadMode = variant.Family ==
+                        SummonFamily.NaturesAlly ?
+                            (SummonAlignmentMode?)SummonAlignmentMode.Caster :
+                        variant.Creature.MonsterTemplated ?
+                            (SummonAlignmentMode?)SummonAlignmentMode.Celestial :
+                            null;
+                    AddExpandedSummoningPlayerPathRootCase(cases, blueprints,
+                        caster, spellbook, parents, variant, broadAlignment,
+                        broadMode, sceneEntities, allUnits, broadName);
+                    broadCases.Add(cases[cases.Count - 1]);
+                }
+                WriteLifecycleStage(
+                    "expanded-summoning-player-path-broad-complete");
+            }
+            catch (Exception exception)
+            {
+                _trace.Record("expanded-summoning-player-path-error",
+                    "stage=" + stage, exception);
+                throw new InvalidOperationException(
+                    "Expanded Summoning player-path matrix failed at fixture stage " +
+                    stage + ".", exception);
+            }
+            finally
+            {
+                _expandedSummoningPlayerPathCaptureActive = false;
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningPlayerPathEvents.Clear();
+                ExpandedSummoningRuleCapture.Clear();
+                foreach (MethodInfo method in new[] { summonRuleMethod,
+                    castRuleMethod, spawnActionMethod }.Where(value => value != null))
+                    _context.Harmony.Unpatch(method, HarmonyPatchType.All,
+                        _context.ModId);
+                if (levelController != null)
+                    levelController.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance)
+                        .Invoke(levelController, null);
+                foreach (UnitEntityData unit in SnapshotReferences(allUnits)
+                    .OfType<UnitEntityData>().Where(value => !unitsBefore.Any(
+                        prior => ReferenceEquals(prior, value))).ToArray())
+                    unit.Dispose();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                Game.Instance.EntityDestroyer.Tick();
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party));
+            }
+
+            ExpandedSummoningPlayerPathCase native = cases.Single(value =>
+                value.Name == "native-sm1-dog");
+            ExpandedSummoningPlayerPathCase logical = cases.Single(value =>
+                value.Name == "kmg-sm1-dog-logical");
+            ExpandedSummoningPlayerPathCase celestial = cases.Single(value =>
+                value.Name == "kmg-dog-celestial-direct");
+            ExpandedSummoningPlayerPathCase fiendish = cases.Single(value =>
+                value.Name == "kmg-dog-fiendish-direct");
+            ExpandedSummoningPlayerPathCase sna = cases.Single(value =>
+                value.Name == "kmg-sna1-dog-logical");
+            bool allPlayerPaths = cases.Where(value => value.ExecutionGuid ==
+                "<none>").All(value => value.LiveContract && value.SlotContract);
+            bool allBroadPlayerPaths = broadCases.Count ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                broadCases.All(value => value.LiveContract &&
+                    value.SlotContract && value.QuantityContract);
+            bool allNativeExpandedPaths = nativeExpansionCases.Count == 26 &&
+                nativeExpansionCases.All(value => value.LiveContract &&
+                    value.SlotContract && value.QuantityContract);
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-native-dog-player-path",
+                    "live exact summon and one prepared slot spent",
+                    native.Describe(), native.LiveContract && native.SlotContract,
+                    "native parent plus frozen native-preservation selected child"),
+                Assertion("expanded-summoning-kmg-dog-player-path",
+                    "live exact summon and one prepared slot spent",
+                    logical.Describe(), logical.LiveContract && logical.SlotContract,
+                    "real SM I parent -> KMG logical root AbilityData chain"),
+                Assertion("expanded-summoning-invalid-cast-slot-preservation",
+                    "actual-parent KMG Dog accepted distant target cancelled before range; no rule/spawn; slot unchanged",
+                    rejectedDog == null ? "<missing>" : rejectedDog.Describe(),
+                    rejectedDog != null && rejectedDog.CanTarget &&
+                        rejectedDog.CanCast && !rejectedDog.WithinCastRange &&
+                        !rejectedDog.CommandStarted &&
+                        rejectedDog.RuleCastCount == 0 &&
+                        rejectedDog.SpawnActionCount == 0 &&
+                        rejectedDog.RuleSummonCount == 0 &&
+                        rejectedDog.SlotContract,
+                    "real SM I parent -> KMG logical root with invalid unit target"),
+                Assertion("expanded-summoning-dog-execution-controls",
+                    "both direct execution children summon exact live Dog",
+                    celestial.Describe() + " | " + fiendish.Describe(),
+                    celestial.LiveContract && fiendish.LiveContract,
+                    "lower-layer direct-fact controls retained only to discriminate the wrapper"),
+                Assertion("expanded-summoning-sna-dog-control",
+                    "shared Dog unit lives and one prepared slot is spent",
+                    sna.Describe(), sna.LiveContract && sna.SlotContract,
+                    "real SNA I parent without celestial/fiendish nesting"),
+                Assertion("expanded-summoning-player-path-matrix",
+                    "all non-direct cases live with exact one-slot spend",
+                    string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
+                    allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
+                Assertion("expanded-summoning-all-logical-player-paths",
+                    "667/667 visible roots live with one-slot and quantity contracts; 14 Dire Bat identities registered but unpublished",
+                    broadCases.Count(value => value.LiveContract &&
+                        value.SlotContract && value.QuantityContract) + "/" +
+                        broadCases.Count, allBroadPlayerPaths,
+                    "all published SM/SNA logical placements through native spellbook parents"),
+                Assertion("expanded-summoning-distinct-native-player-paths",
+                    "26/26 visible creature-named native/preservation wrappers live with one-slot and quantity contracts",
+                    nativeExpansionCases.Count(value => value.LiveContract &&
+                        value.SlotContract && value.QuantityContract) + "/" +
+                        nativeExpansionCases.Count,
+                    allNativeExpandedPaths,
+                    "exact SM/SNA spellbook parents with each umbrella or generic preservation source isolated into one creature-named choice"),
+                Assertion("request-local-cleanup", "exact party/global snapshots",
+                    "cleaned=" + cleaned, cleaned,
+                    "dispose all request-local caster and summon entities"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            foreach (ExpandedSummoningPlayerPathCase item in cases)
+            {
+                result.Diagnostics.Add(item.Describe());
+                if (!string.IsNullOrEmpty(item.LogTail))
+                    result.Diagnostics.Add(item.Name + ":output-log-tail=" +
+                        item.LogTail);
+            }
+            if (rejectedDog != null)
+                result.Diagnostics.Add(rejectedDog.Describe());
+            return result;
+        }
+
+        private static void AdvanceDisposableSpellcaster(UnitDescriptor owner,
+            BlueprintCharacterClass characterClass, int levels,
+            ref object activeController)
+        {
+            Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+            MethodInfo start = type.GetMethods(BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
+                    value.Name == "StartWithoutAssigningStaticInstance" &&
+                    value.GetParameters().Length == 5);
+            MethodInfo select = type.GetMethod("SelectClass", BindingFlags.Public |
+                BindingFlags.Instance, null,
+                new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+            MethodInfo mechanics = type.GetMethod("ApplyClassMechanics",
+                BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo apply = type.GetMethod("ApplyLevelup", BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo cancel = type.GetMethod("Cancel", BindingFlags.Public |
+                BindingFlags.Instance);
+            object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
+                "CharGen", false);
+            for (int index = 0; index < levels; index++)
+            {
+                activeController = start.Invoke(null,
+                    new object[] { owner, false, null, null, charGen });
+                if (!(bool)select.Invoke(activeController,
+                    new object[] { characterClass, false }))
+                    throw new InvalidOperationException(
+                        "Disposable spellcaster class selection failed at level " +
+                        (index + 1) + ".");
+                mechanics.Invoke(activeController, null);
+                apply.Invoke(activeController, new object[] { owner });
+                cancel.Invoke(activeController, null);
+                activeController = null;
+            }
+        }
+
+        private static void AddExpandedSummoningPlayerPathRootCase(
+            ICollection<ExpandedSummoningPlayerPathCase> cases,
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            UnitEntityData caster, Spellbook spellbook,
+            BlueprintAbility[] parents, SummonVariantSpec variant,
+            Alignment alignment, SummonAlignmentMode? expectedAlignmentMode,
+            object sceneEntities, object allUnits, string name)
+        {
+            BlueprintAbility root = ExpandedSummoningRoot(blueprints, variant);
+            int parentIndex = (variant.Family == SummonFamily.Monster ? 0 : 9) +
+                variant.ParentTier - 1;
+            ExpandedSummoningPlayerPathCase result =
+                ExerciseExpandedSummoningPlayerPathCase(caster, spellbook,
+                    parents[parentIndex], root,
+                    ExpandedSummoningUnit(blueprints, variant), root, null,
+                    variant.ParentTier, alignment, false, sceneEntities,
+                    allUnits, expectedAlignmentMode);
+            int minimum = variant.Multiplicity == SummonMultiplicity.One ? 1 :
+                variant.Multiplicity == SummonMultiplicity.OneD3 ? 1 : 2;
+            int maximum = variant.Multiplicity == SummonMultiplicity.One ? 1 :
+                variant.Multiplicity == SummonMultiplicity.OneD3 ? 3 : 5;
+            result.QuantityContract = result.LiveCount >= minimum &&
+                result.LiveCount <= maximum;
+            result.LiveContract = result.LiveContract &&
+                result.QuantityContract;
+            result.Name = name;
+            cases.Add(result);
+        }
+
+        private static Alignment ExpandedSummoningPlayerPathAlignmentFor(
+            SummonVariantSpec variant)
+        {
+            if (variant.Family == SummonFamily.NaturesAlly)
+                return Alignment.ChaoticNeutral;
+            if (variant.Creature.MonsterTemplated)
+                return Alignment.NeutralGood;
+            switch (variant.Creature.Key)
+            {
+                case "lantern-archon":
+                case "bralani-azata":
+                case "ghaele-azata":
+                    return Alignment.NeutralGood;
+                case "hell-hound":
+                case "erinyes-devil":
+                case "shadow-demon":
+                case "succubus":
+                case "salamander":
+                case "bebelith":
+                    return Alignment.LawfulEvil;
+                default:
+                    return Alignment.TrueNeutral;
+            }
+        }
+
+        private static ExpandedSummoningPlayerPathCase
+            ExerciseExpandedSummoningPlayerPathCase(UnitEntityData caster,
+                Spellbook spellbook, BlueprintAbility parent,
+                BlueprintAbility selected, BlueprintUnit expectedUnit,
+                BlueprintAbility logical, BlueprintAbility execution,
+                int spellLevel, Alignment alignment, bool direct,
+                object sceneEntities, object allUnits,
+                SummonAlignmentMode? expectedAlignmentMode)
+        {
+            var evidence = new ExpandedSummoningPlayerPathCase {
+                ParentGuid = parent.AssetGuid,
+                LogicalGuid = logical == null ? selected.AssetGuid :
+                    logical.AssetGuid,
+                ExecutionGuid = execution == null ? "<none>" :
+                    execution.AssetGuid,
+                CasterAlignment = alignment.ToString(),
+                Spellbook = spellbook.Blueprint.name + ":" +
+                    spellbook.Blueprint.AssetGuid,
+                SpellLevel = spellLevel,
+                CommandResult = "NotStarted",
+                Exception = "<none>"
+            };
+            caster.Descriptor.Alignment.Set(alignment);
+            object[] beforeCast = SnapshotReferences(sceneEntities);
+            ExpandedSummoningRuleCapture.Clear();
+            ExpandedSummoningPlayerPathEvents.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            AbilityData data = null;
+            Ability directFact = null;
+            evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            try
+            {
+                if (direct)
+                {
+                    caster.Descriptor.AddFact(selected);
+                    directFact = caster.Descriptor.Abilities.GetAbility(selected);
+                    if (directFact == null)
+                        throw new InvalidOperationException(
+                            "Direct execution control was not granted.");
+                    directFact.OverrideParams = new AbilityParams {
+                        CasterLevel = 11, SpellLevel = spellLevel
+                    };
+                    data = new AbilityData(directFact);
+                }
+                else data = PrepareExpandedSummoningPlayerPathSpell(spellbook,
+                    parent, selected, spellLevel);
+                evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                    spellbook, spellLevel);
+                evidence.AbilityDataLinks = DescribeExpandedSummoningAbilityData(
+                    data);
+                var target = new TargetWrapper(caster.Position);
+                evidence.CanTarget = data.CanTarget(target);
+                UnitUseAbility command;
+                var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                    .CutsceneParametersContext();
+                using (cutsceneParameters.Data)
+                    command = new UnitUseAbility(data, target);
+                evidence.CanCast = data.IsAvailable && command.CanStart;
+                if (evidence.CanCast)
+                {
+                    command.IgnoreCooldown(TimeSpan.Zero);
+                    caster.Commands.Run(command);
+                    command.Start();
+                    evidence.CommandStarted = command.IsRunning;
+                    if (command.IsRunning)
+                    {
+                        if (command.Animation != null)
+                            command.Animation.IsActed = true;
+                        command.Tick();
+                        if (command.ExecutionProcess != null)
+                            for (int tick = 0; tick < 5000 &&
+                                !command.ExecutionProcess.IsEnded; tick++)
+                                command.ExecutionProcess.Tick();
+                        if (command.Animation != null)
+                            FinishExpandedSummoningAnimation(command.Animation);
+                        if (!command.IsFinished) command.Tick();
+                    }
+                    evidence.CommandResult = command.Result.ToString();
+                }
+            }
+            catch (Exception exception)
+            {
+                evidence.Exception = DescribeExpandedSummoningException(exception);
+                evidence.LogTail = ReadExpandedSummoningOutputLogTail();
+            }
+            finally
+            {
+                if (directFact != null && caster.Descriptor.HasFact(selected))
+                    caster.Descriptor.RemoveFact(selected);
+            }
+
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData[] summoned = ExpandedSummoningRuleCapture.ToArray();
+            evidence.RuleCastCount = _expandedSummoningPlayerPathRuleCastCount;
+            evidence.SpawnActionCount =
+                _expandedSummoningPlayerPathSpawnActionCount;
+            evidence.RuleSummonCount = summoned.Length;
+            UnitEntityData[] live = summoned.Where(value => value != null &&
+                !value.Destroyed && value.IsInState &&
+                ContainsReference(sceneEntities, value) &&
+                value.HoldingState != null && value.Descriptor != null &&
+                value.View != null && value.View.Data == value).ToArray();
+            evidence.LiveCount = live.Length;
+            evidence.PostTickState = string.Join("|", summoned.Select(value =>
+                value == null ? "<null>" : "destroyed=" + value.Destroyed +
+                    ",inState=" + value.IsInState + ",scene=" +
+                    ContainsReference(sceneEntities, value) + ",global=" +
+                    ContainsReference(allUnits, value) + ",holding=" +
+                    (value.HoldingState != null) + ",descriptor=" +
+                    (value.Descriptor != null) + ",view=" +
+                    (value.View != null) + ",viewData=" +
+                    (value.View != null && value.View.Data == value)).ToArray());
+            evidence.ExactKind = live.Length > 0 && (expectedUnit == null ||
+                live.All(value => ReferenceEquals(value.Blueprint, expectedUnit)));
+            BlueprintBuff[] templateFacts = live.SelectMany(value =>
+                value.Descriptor.Buffs.RawFacts.OfType<Buff>().Select(fact =>
+                    fact.Blueprint)).Where(value => value != null &&
+                        value.name.StartsWith("KMG_Summoning_Template_",
+                            StringComparison.Ordinal)).ToArray();
+            evidence.TemplateFacts = string.Join(",", templateFacts.Select(value =>
+                value.name).ToArray());
+            evidence.SummonedAlignment = string.Join(",", live.Select(value =>
+                value.Descriptor.Alignment.Value.ToString()).ToArray());
+            evidence.TemplateContract = !expectedAlignmentMode.HasValue ||
+                (live.Length > 0 && live.All(value =>
+                {
+                    int expected;
+                    return SummonAlignmentRuntimePolicy.TryResolve(
+                        expectedAlignmentMode.Value,
+                        (int)value.Blueprint.Alignment,
+                        expectedAlignmentMode.Value == SummonAlignmentMode.Caster
+                            ? (int?)alignment : null, out expected) &&
+                        (int)value.Descriptor.Alignment.Value == expected;
+                }) &&
+                    (expectedAlignmentMode.Value == SummonAlignmentMode.Caster
+                        ? templateFacts.Length == 0
+                        : templateFacts.Length == live.Length &&
+                            templateFacts.All(value => value.name.IndexOf(
+                                expectedAlignmentMode.Value.ToString(),
+                                StringComparison.OrdinalIgnoreCase) >= 0)));
+            evidence.RenderableContract = live.Length > 0 && live.All(value =>
+            {
+                Renderer[] renderers = value.View.GetComponentsInChildren<
+                    Renderer>(true).Where(renderer => renderer != null).ToArray();
+                return value.View.gameObject.activeInHierarchy &&
+                    renderers.Any(renderer => renderer.sharedMaterials != null &&
+                        renderer.sharedMaterials.Any(material => material != null) &&
+                        renderer.bounds.size.sqrMagnitude > 0.0001f);
+            });
+            evidence.QuantityContract = live.Length > 0;
+            evidence.LiveContract = live.Length > 0 && evidence.ExactKind &&
+                live.All(value => ExpandedSummoningPlayerPathUnitExact(
+                    value, caster)) && evidence.TemplateContract &&
+                    evidence.RenderableContract;
+            evidence.SlotsAfter = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.SlotContract = direct ?
+                evidence.SlotsAfter == evidence.SlotsBefore :
+                evidence.SlotsAfter == evidence.SlotsBefore - 1;
+            if (string.IsNullOrEmpty(evidence.AbilityDataLinks))
+                evidence.AbilityDataLinks = data == null ? "<no-data>" :
+                    DescribeExpandedSummoningAbilityData(data);
+            foreach (UnitEntityData unit in summoned)
+                CleanupExpandedSummoningUnit(unit);
+            DrainExpandedSummoningDestroyQueue(sceneEntities, beforeCast);
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            ExpandedSummoningRuleCapture.Clear();
+            return evidence;
+        }
+
+        private static ExpandedSummoningPlayerPathCase
+            ExerciseRejectedExpandedSummoningPlayerPathCase(
+                UnitEntityData caster, Spellbook spellbook,
+                BlueprintAbility parent, BlueprintAbility selected,
+                int spellLevel)
+        {
+            var evidence = new ExpandedSummoningPlayerPathCase {
+                ParentGuid = parent.AssetGuid,
+                LogicalGuid = selected.AssetGuid,
+                ExecutionGuid = "<none>",
+                CasterAlignment = caster.Descriptor.Alignment.Value.ToString(),
+                Spellbook = spellbook.Blueprint.name + ":" +
+                    spellbook.Blueprint.AssetGuid,
+                SpellLevel = spellLevel,
+                CommandResult = "RejectedBeforeRun",
+                Exception = "<none>",
+                PostTickState = "no-command-no-entity"
+            };
+            ExpandedSummoningRuleCapture.Clear();
+            ExpandedSummoningPlayerPathEvents.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            AbilityData data = PrepareExpandedSummoningPlayerPathSpell(
+                spellbook, parent, selected, spellLevel);
+            evidence.SlotsBefore = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.AbilityDataLinks = DescribeExpandedSummoningAbilityData(data);
+            var invalidTarget = new TargetWrapper(caster.Position +
+                new Vector3(1000f, 0f, 0f));
+            evidence.CanTarget = data.CanTarget(invalidTarget);
+            var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            UnitUseAbility command;
+            using (cutsceneParameters.Data)
+                command = new UnitUseAbility(data, invalidTarget);
+            command.Init(caster);
+            evidence.CanCast = data.IsAvailable && command.CanStart;
+            evidence.WithinCastRange = command.IsUnitEnoughClose;
+            evidence.CommandStarted = false;
+            evidence.RuleCastCount = _expandedSummoningPlayerPathRuleCastCount;
+            evidence.SpawnActionCount =
+                _expandedSummoningPlayerPathSpawnActionCount;
+            evidence.RuleSummonCount = ExpandedSummoningRuleCapture.Count;
+            evidence.SlotsAfter = CountAvailableExpandedSummoningSlots(
+                spellbook, spellLevel);
+            evidence.SlotContract = evidence.SlotsAfter == evidence.SlotsBefore;
+            ExpandedSummoningRuleCapture.Clear();
+            _expandedSummoningPlayerPathRuleCastCount = 0;
+            _expandedSummoningPlayerPathSpawnActionCount = 0;
+            return evidence;
+        }
+
+        private static AbilityData PrepareExpandedSummoningPlayerPathSpell(
+            Spellbook spellbook, BlueprintAbility parent,
+            BlueprintAbility selected, int spellLevel)
+        {
+            spellbook.AddKnown(spellLevel, parent, true);
+            SpellSlot slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                .FirstOrDefault(value => value != null && value.Spell != null &&
+                    ReferenceEquals(value.Spell.Blueprint, parent));
+            if (slot == null)
+            {
+                if (!spellbook.Memorize(new AbilityData(parent, spellbook), null))
+                    throw new InvalidOperationException(
+                        "The native spellbook rejected memorization of " +
+                        parent.name + " at level " + spellLevel + ".");
+                slot = spellbook.GetMemorizedSpellSlots(spellLevel)
+                    .FirstOrDefault(value => value != null && value.Spell != null &&
+                        ReferenceEquals(value.Spell.Blueprint, parent));
+            }
+            if (slot == null || slot.Spell == null)
+                throw new InvalidOperationException(
+                    "Memorization produced no exact parent spell slot.");
+            slot.Available = true;
+            slot.Spell.ParamSpellSlot = slot;
+            AbilityData result = ReferenceEquals(parent, selected) ? slot.Spell :
+                new AbilityData(slot.Spell, selected);
+            result.ParamSpellSlot = slot;
+            return result;
+        }
+
+        private static int CountAvailableExpandedSummoningSlots(
+            Spellbook spellbook, int level)
+        {
+            return spellbook.GetMemorizedSpellSlots(level).Count(value =>
+                value != null && value.Available);
+        }
+
+        private static bool ExpandedSummoningPlayerPathUnitExact(
+            UnitEntityData unit, UnitEntityData caster)
+        {
+            Buff lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            object faction = ExpandedSummoningFields(unit.Blueprint.GetType())
+                .Single(value => value.Name == "Faction" ||
+                    value.Name == "m_Faction").GetValue(unit.Blueprint);
+            return unit.Descriptor != null && unit.Commands != null &&
+                unit.HoldingState != null && unit.View != null &&
+                unit.View.Data == unit && faction != null && lifecycle != null &&
+                lifecycle.MaybeContext != null &&
+                lifecycle.MaybeContext.MaybeCaster == caster &&
+                !lifecycle.IsPermanent && lifecycle.TimeLeft > TimeSpan.Zero;
+        }
+
+        private static BlueprintAbility ExpandedSummoningRoot(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(variant));
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static BlueprintAbility ExpandedSummoningExecutionChild(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant, string suffix)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(variant) + suffix);
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static BlueprintUnit ExpandedSummoningUnit(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            string name = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature));
+            return blueprints.OfType<BlueprintUnit>().Single(value =>
+                value.name == name);
+        }
+
+        private static string DescribeExpandedSummoningAbilityData(
+            AbilityData data)
+        {
+            if (data == null) return "<null>";
+            var values = new List<string> {
+                "blueprint=" + (data.Blueprint == null ? "<null>" :
+                    data.Blueprint.AssetGuid),
+                "spellbook=" + (data.Spellbook == null ||
+                    data.Spellbook.Blueprint == null ? "<null>" :
+                    data.Spellbook.Blueprint.AssetGuid),
+                "slot=" + (data.ParamSpellSlot == null ? "<null>" :
+                    RuntimeHelpers.GetHashCode(data.ParamSpellSlot).ToString())
+            };
+            string[] tokens = { "Parent", "Converted", "Source" };
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (PropertyInfo property in data.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    tokens.Any(token => value.Name.IndexOf(token,
+                        StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(value => value.Name, StringComparer.Ordinal))
+            {
+                object value = null;
+                try { value = property.GetValue(data, null); }
+                catch { }
+                values.Add("property." + property.Name + "=" +
+                    DescribeExpandedSummoningLink(value));
+            }
+            foreach (FieldInfo field in ExpandedSummoningFields(data.GetType())
+                .Where(value => tokens.Any(token => value.Name.IndexOf(token,
+                    StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(value => value.Name, StringComparer.Ordinal))
+                values.Add("field." + field.Name + "=" +
+                    DescribeExpandedSummoningLink(field.GetValue(data)));
+            return string.Join(",", values.ToArray());
+        }
+
+        private static string DescribeExpandedSummoningLink(object value)
+        {
+            if (value == null) return "<null>";
+            AbilityData data = value as AbilityData;
+            if (data != null)
+                return "AbilityData:" + (data.Blueprint == null ? "<null>" :
+                    data.Blueprint.AssetGuid);
+            Ability fact = value as Ability;
+            if (fact != null)
+                return "Ability:" + (fact.Blueprint == null ? "<null>" :
+                    fact.Blueprint.AssetGuid);
+            BlueprintScriptableObject blueprint = value as BlueprintScriptableObject;
+            if (blueprint != null)
+                return blueprint.GetType().Name + ":" + blueprint.AssetGuid;
+            return value.GetType().FullName + "#" +
+                RuntimeHelpers.GetHashCode(value);
+        }
+
+        private static string DescribeExpandedSummoningException(
+            Exception exception)
+        {
+            var values = new List<string>();
+            for (Exception current = exception; current != null;
+                current = current.InnerException)
+                values.Add(current.GetType().FullName + ":" + current.Message);
+            return string.Join(" -> ", values.ToArray());
+        }
+
+        private static string ReadExpandedSummoningOutputLogTail()
+        {
+            try
+            {
+                string path = Path.Combine(Application.persistentDataPath,
+                    "output_log.txt");
+                if (!File.Exists(path)) return "<missing>";
+                var lines = new Queue<string>();
+                using (var stream = new FileStream(path, FileMode.Open,
+                    FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                using (var reader = new StreamReader(stream))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (lines.Count == 24) lines.Dequeue();
+                        lines.Enqueue(line.Length > 500 ?
+                            line.Substring(0, 500) : line);
+                    }
+                }
+                return string.Join(" || ", lines.ToArray());
+            }
+            catch (Exception exception)
+            {
+                return "<unavailable:" + exception.GetType().Name + ">";
+            }
+        }
+
+        private static void ExpandedSummoningPlayerPathRuleCastPostfix(
+            RuleCastSpell __instance)
+        {
+            if (!_expandedSummoningPlayerPathCaptureActive ||
+                __instance == null) return;
+            _expandedSummoningPlayerPathRuleCastCount++;
+            ExpandedSummoningPlayerPathEvents.Add("RuleCastSpell:" +
+                __instance.Success);
+        }
+
+        private static void ExpandedSummoningPlayerPathSpawnPrefix(
+            ContextActionSpawnMonster __instance)
+        {
+            if (!_expandedSummoningPlayerPathCaptureActive ||
+                __instance == null) return;
+            _expandedSummoningPlayerPathSpawnActionCount++;
+            ExpandedSummoningPlayerPathEvents.Add("ContextActionSpawnMonster");
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoning()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            IReadOnlyList<SummonVariantSpec> monster =
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
+            IReadOnlyList<SummonVariantSpec> ally =
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly);
+            SummonVariantSpec[] oneCreature = monster.Concat(ally)
+                .Where(value => value.Multiplicity == SummonMultiplicity.One)
+                .ToArray();
+            SummonVariantSpec[] oneD3 = SelectExpandedSummoningQuantityCoverage(
+                monster, ally, SummonMultiplicity.OneD3);
+            SummonVariantSpec[] oneD4PlusOne =
+                SelectExpandedSummoningQuantityCoverage(monster, ally,
+                    SummonMultiplicity.OneD4PlusOne);
+            SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
+                .Concat(oneD4PlusOne).ToArray();
+
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            object sceneEntities = null;
+            int completed = 0, spawnedTotal = 0, singleExact = 0,
+                oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
+                durationExact = 0, legalPlacement = 0,
+                illegalPlacementRejected = 0;
+            var observedCounts = new List<string>();
+            ExpandedSummoningMechanicalEvidence mechanics = null;
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            try
+            {
+                if (summonRuleMethod == null) throw new MissingMethodException(
+                    typeof(RuleSummonUnit).FullName, "OnTrigger");
+                MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                    BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+                UnityEngine.SceneManagement.Scene activeScene =
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                if (!activeScene.IsValid() || !activeScene.isLoaded ||
+                    string.IsNullOrWhiteSpace(activeScene.name))
+                    throw new InvalidOperationException(
+                        "No exact loaded Unity scene was available for the disposable caster.");
+                UnitEntityData areaAnchor = partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value.HoldingState != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The exact guarded working save did not provide a party unit with an area state.");
+                // Native spawn placement requires the loaded area's pathfinding
+                // graph. Keep the caster disposable, but place it in the exact
+                // guarded working-save state instead of constructing a main-menu
+                // scene that cannot satisfy ObstacleAnalyzer.
+                scene = areaAnchor.HoldingState;
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name = "KMG_Runtime_ExpandedSummoning_Caster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(
+                    casterBlueprint, Vector3.zero,
+                    Quaternion.identity, scene);
+                if (caster == null || caster.View == null || caster.View.Data == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not produce a live caster view.");
+                Game.Instance.EntityCreator.Tick();
+                if (!caster.IsInState)
+                    throw new InvalidOperationException(
+                        "The disposable caster did not enter the exact loaded-area state.");
+                sceneEntities = scene.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 100;
+
+                for (int index = 0; index < casts.Length; index++)
+                {
+                    SummonVariantSpec variant = casts[index];
+                    stage = "cast-" + variant.StableKey;
+                    BlueprintUnit expectedUnit = blueprints.OfType<BlueprintUnit>()
+                        .Single(value => value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                variant.Creature)));
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    object[] beforeCast = SnapshotReferences(sceneEntities);
+                    ExpandedSummoningRuleCapture.Clear();
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
+                        if (granted == null) throw new InvalidOperationException(
+                            "The exact KMG execution ability was not granted.");
+                        granted.OverrideParams = new AbilityParams {
+                            CasterLevel = 20,
+                            SpellLevel = variant.ParentTier
+                        };
+                        var data = new AbilityData(granted);
+                        // Native summon spells target a point, not a unit. A unit
+                        // wrapper would make UnitCommand enforce persistent-game-
+                        // state membership before the spell can reach RuleCastSpell.
+                        var target = new TargetWrapper(caster.Position);
+                        UnitUseAbility command;
+                        // The real command constructor snapshots the engine's
+                        // cutscene context. That is the native mechanism used to
+                        // execute an ability without UI/navmesh target revalidation;
+                        // it does not bypass RuleCastSpell or the ability effect.
+                        var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                            .CutsceneParametersContext();
+                        using (cutsceneParameters.Data)
+                            command = new UnitUseAbility(data, target);
+                        if (!command.Cutscene)
+                            throw new InvalidOperationException(
+                                "The request-local command did not capture the native cutscene context.");
+                        if (!data.IsAvailable || !command.CanStart)
+                            throw new InvalidOperationException(
+                                "The native summon command was unavailable: available=" +
+                                data.IsAvailable + ";canStart=" + command.CanStart + ".");
+                        bool consciousBeforeRun = caster.Descriptor.State.IsConscious;
+                        bool targetValidBeforeRun = data.CanTarget(target);
+                        UnitUseAbility farCommand;
+                        using (cutsceneParameters.Data)
+                            farCommand = new UnitUseAbility(data,
+                                new TargetWrapper(caster.Position +
+                                    new Vector3(1000f, 0f, 0f)));
+                        farCommand.Init(caster);
+                        // CanTarget deliberately accepts a distant click so
+                        // the native controller can walk the caster into spell
+                        // range. The close-range contract is enforced by the
+                        // command approach radius before casting starts.
+                        bool farTargetRejected = !farCommand.IsUnitEnoughClose;
+                        if (targetValidBeforeRun) legalPlacement++;
+                        if (farTargetRejected) illegalPlacementRejected++;
+                        command.IgnoreCooldown(TimeSpan.Zero);
+                        caster.Commands.Run(command);
+                        // UnitCommands.Run installs and initializes the command;
+                        // the normal unit-command controller calls Start on its
+                        // next update. This scenario executes synchronously inside
+                        // that update callback, so advance the same native boundary
+                        // explicitly before ticking the command.
+                        command.Start();
+                        bool enteredRunningState = command.IsRunning;
+                        bool occupiedCommandSlot = ReferenceEquals(
+                            caster.Commands.Standard, command);
+                        if (!enteredRunningState)
+                            throw new InvalidOperationException(
+                                "The native UnitUseAbility command did not enter its running state: " +
+                                "conscious=" + consciousBeforeRun + ";targetValid=" +
+                                targetValidBeforeRun + ";cutscene=" + command.Cutscene +
+                                ";casterInState=" + caster.IsInState + ";slot=" +
+                                occupiedCommandSlot + ";started=" + command.IsStarted +
+                                ";finished=" + command.IsFinished + ";result=" +
+                                command.Result + ".");
+                        // This scenario runs synchronously inside one update, so
+                        // the native animation clock cannot advance independently.
+                        // Signal the same cast-act event emitted by the native
+                        // animation callback, then tick the command once so its
+                        // protected OnAction reaches RuleCastSpell.
+                        if (command.Animation != null)
+                            command.Animation.IsActed = true;
+                        command.Tick();
+                        if (!string.Equals(command.Result.ToString(), "Success",
+                            StringComparison.Ordinal) ||
+                            command.ExecutionProcess == null)
+                            throw new InvalidOperationException(
+                                "The native UnitUseAbility action did not start its execution process; result=" +
+                                command.Result + ";scene=" + activeScene.name +
+                                ";loaded=" + scene.IsSceneLoaded + ";targetValid=" +
+                                targetValidBeforeRun + ";cutscene=" + command.Cutscene +
+                                ";casterInState=" + caster.IsInState + ";acted=" +
+                                command.IsActed + ";execution=" +
+                                (command.ExecutionProcess != null) + ".");
+                        for (int tick = 0; tick < 5000 &&
+                            !command.ExecutionProcess.IsEnded; tick++)
+                            command.ExecutionProcess.Tick();
+                        if (!command.ExecutionProcess.IsEnded)
+                            throw new InvalidOperationException(
+                                "The successful UnitUseAbility command did not complete its ability execution process.");
+                        if (command.Animation != null)
+                        {
+                            PropertyInfo finishedProperty = typeof(
+                                Kingmaker.Visual.Animation.Actions.AnimationActionHandle)
+                                .GetProperty("IsFinished", BindingFlags.Public |
+                                    BindingFlags.NonPublic | BindingFlags.Instance);
+                            MethodInfo finishedSetter = finishedProperty == null ? null :
+                                finishedProperty.GetSetMethod(true);
+                            if (finishedSetter == null)
+                                throw new MissingMethodException(
+                                    command.Animation.GetType().FullName,
+                                    "set_IsFinished");
+                            finishedSetter.Invoke(command.Animation,
+                                new object[] { true });
+                        }
+                        if (!command.IsFinished) command.Tick();
+                        if (!command.IsFinished)
+                            throw new InvalidOperationException(
+                                "The successful UnitUseAbility command did not complete after its native execution and animation paths ended.");
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+
+                    UnitEntityData[] spawned = ExpandedSummoningRuleCapture.ToArray();
+                    Game.Instance.EntityCreator.Tick();
+                    int count = spawned.Length;
+                    bool exactKind = spawned.All(value =>
+                        ReferenceEquals(value.Blueprint, expectedUnit));
+                    bool legal = variant.Multiplicity == SummonMultiplicity.One ?
+                        count == 1 : variant.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? count >= 1 && count <= 3 :
+                            count >= 2 && count <= 5;
+                    if (!legal || !exactKind)
+                        throw new InvalidOperationException(
+                            "Spawn result mismatch: count=" + count + ";kind=" +
+                            exactKind + ";expected=" + expectedUnit.name + ".");
+                    completed++;
+                    spawnedTotal += count;
+                    if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
+                    else if (variant.Multiplicity == SummonMultiplicity.OneD3)
+                        oneD3Legal++;
+                    else oneD4PlusOneLegal++;
+                    if (exactKind) sameKind++;
+                    bool exactDuration = spawned.All(value => value.Descriptor
+                        .Buffs.RawFacts.OfType<Buff>().Any(buff =>
+                            ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance
+                                .SystemMechanics.SummonedUnitBuff) &&
+                            buff.MaybeContext != null &&
+                            buff.MaybeContext.MaybeCaster == caster &&
+                            !buff.IsPermanent && buff.TimeLeft > TimeSpan.Zero &&
+                            buff.TimeLeft <= TimeSpan.FromSeconds(121d)));
+                    if (exactDuration) durationExact++;
+                    observedCounts.Add(variant.StableKey + "=" + count);
+                    foreach (UnitEntityData unit in spawned)
+                        CleanupExpandedSummoningUnit(unit);
+                    DrainExpandedSummoningDestroyQueue(sceneEntities,
+                        beforeCast);
+                    object[] afterCleanup = SnapshotReferences(sceneEntities);
+                    if (!SameReferences(beforeCast, afterCleanup))
+                        throw new InvalidOperationException(
+                            "Per-cast global unit cleanup did not restore the exact snapshot: before=" +
+                            DescribeExpandedSummoningReferences(beforeCast) +
+                            ";after=" + DescribeExpandedSummoningReferences(
+                                afterCleanup) + ".");
+                }
+                stage = "mechanical-contracts";
+                mechanics = ExerciseExpandedSummoningMechanicalContracts(
+                    blueprints, caster, scene, sceneEntities);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Expanded Summoning failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                if (summonRuleMethod != null)
+                    _context.Harmony.Unpatch(summonRuleMethod,
+                        HarmonyPatchType.All, _context.ModId);
+                IEnumerable<UnitEntityData> localUnits = sceneEntities == null
+                    ? Enumerable.Empty<UnitEntityData>()
+                    : SnapshotReferences(sceneEntities).OfType<UnitEntityData>();
+                foreach (UnitEntityData unit in localUnits.Concat(
+                    SnapshotReferences(allUnits).OfType<UnitEntityData>())
+                    .Where(value => !unitsBefore.Any(prior =>
+                        ReferenceEquals(prior, value))).Distinct().ToArray())
+                {
+                    if (unit.IsInState) unit.Destroy();
+                    else unit.Dispose();
+                }
+                Game.Instance.EntityDestroyer.Tick();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    (caster == null || !ContainsReference(allUnits, caster));
+            }
+
+            string observed = "casts=" + completed + "/" + casts.Length +
+                ";single=" + singleExact + "/" + oneCreature.Length +
+                ";d3=" + oneD3Legal + "/" + oneD3.Length + ";d4plus1=" +
+                oneD4PlusOneLegal + "/" + oneD4PlusOne.Length +
+                ";sameKind=" + sameKind + ";spawned=" + spawnedTotal +
+                ";duration=" + durationExact + ";legalPlacement=" +
+                legalPlacement + ";illegalPlacement=" +
+                illegalPlacementRejected + ";mechanicalCasts=" +
+                (mechanics == null ? 0 : mechanics.AdditionalCasts) +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-all-one-creature-casts", "123/123",
+                    singleExact + "/" + oneCreature.Length,
+                    oneCreature.Length == 123 && singleExact == 123,
+                    "actual UnitUseAbility commands for every SM and SNA roster entry"),
+                Assertion("expanded-summoning-d3-tier-coverage", "16/16",
+                    oneD3Legal + "/" + oneD3.Length,
+                    oneD3.Length == 16 && oneD3Legal == 16,
+                    "one actual 1d3 command per family and eligible parent tier"),
+                Assertion("expanded-summoning-d4plus1-tier-coverage", "14/14",
+                    oneD4PlusOneLegal + "/" + oneD4PlusOne.Length,
+                    oneD4PlusOne.Length == 14 && oneD4PlusOneLegal == 14,
+                    "one actual 1d4+1 command per family and eligible parent tier"),
+                Assertion("expanded-summoning-same-kind-runtime", casts.Length.ToString(),
+                    sameKind.ToString(), sameKind == casts.Length,
+                    "spawned BlueprintUnit reference equality for every command"),
+                Assertion("expanded-summoning-command-total", "153",
+                    completed.ToString(), casts.Length == 153 && completed == 153,
+                    "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
+                Assertion("expanded-summoning-caster-level-duration", "153/153",
+                    durationExact + "/" + casts.Length,
+                    durationExact == casts.Length,
+                    "exact native SummonedUnitBuff context with CL20 duration bounded to 120 seconds"),
+                Assertion("expanded-summoning-placement-validation", "153 legal and 153 far points require approach",
+                    "legal=" + legalPlacement + ";farRequiresApproach=" +
+                        illegalPlacementRejected,
+                    legalPlacement == casts.Length &&
+                        illegalPlacementRejected == casts.Length,
+                    "AbilityData.CanTarget at the loaded-area point and native UnitUseAbility close-range approach at a distant point"),
+                Assertion("expanded-summoning-alignment-templates",
+                    "good/neutral/evil execution choices and SNA caster alignment",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.AlignmentAndTemplates &&
+                        mechanics.NaturesAllyAlignment,
+                    "actual celestial/fiendish/SNA UnitUseAbility spawn results"),
+                Assertion("expanded-summoning-native-feats",
+                    "Augment exactly once; Superior quantity only when installed",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.AugmentSummoning &&
+                        mechanics.SuperiorSummoning,
+                    "live native feat facts and actual one/1d3 summon results"),
+                Assertion("expanded-summoning-representative-combat",
+                    "actual animal, proxy, elemental, outsider, incorporeal, invisible, breath, ranged, Bebelith, and Pixie effects",
+                    mechanics == null ? "not-run" : string.Join(";",
+                        mechanics.Diagnostics.ToArray()),
+                    mechanics != null && mechanics.RepresentativeCombat &&
+                        mechanics.SpecialAdaptations &&
+                        mechanics.HostileAbilityTarget,
+                    "RuleAttackWithWeapon plus native special AbilityData/UnitUseAbility paths"),
+                Assertion("expanded-summoning-disposable-cleanup",
+                    "exact party and global-unit snapshots restored", observed,
+                    cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            result.Diagnostics.Add(observed);
+            result.Diagnostics.Add("counts=" + string.Join(",", observedCounts.ToArray()));
+            if (mechanics != null)
+                foreach (string diagnostic in mechanics.Diagnostics)
+                    result.Diagnostics.Add("mechanics=" + diagnostic);
+            return result;
+        }
+
+        private ExpandedSummoningMechanicalEvidence
+            ExerciseExpandedSummoningMechanicalContracts(
+                BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+                Kingmaker.EntitySystem.SceneEntitiesState scene,
+                object sceneEntities)
+        {
+            var result = new ExpandedSummoningMechanicalEvidence();
+            var created = new List<UnitEntityData>();
+            BlueprintUnit hostileBlueprint = null;
+            UnitEntityData hostile = null;
+            ItemEntityArmor insertedArmor = null;
+            BlueprintFeature augment = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "38155ca9e4055bb48a89240a2055dcc3");
+            BlueprintBuff augmentBuff = blueprints.OfType<BlueprintBuff>()
+                .Single(value => value.AssetGuid ==
+                    "169d03bbccdbdc542ae1a57d83673d80");
+            BlueprintFeature superior = blueprints.OfType<BlueprintFeature>()
+                .SingleOrDefault(value => value.AssetGuid ==
+                    "0477936c0f74841498b5c8753a8062a3");
+            object[] exactStart = SnapshotReferences(sceneEntities);
+            try
+            {
+                SummonVariantSpec monsterDog = ExpandedSummoningVariant(
+                    SummonFamily.Monster, "dog", 1,
+                    SummonMultiplicity.One);
+                bool goodCelestial = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.LawfulGood,
+                    ".Celestial", Alignment.NeutralGood, true, created,
+                    result);
+                bool neutralCelestial = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.TrueNeutral,
+                    ".Celestial", Alignment.NeutralGood, true, created,
+                    result);
+                bool neutralFiendish = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.TrueNeutral,
+                    ".Fiendish", Alignment.NeutralEvil, false, created,
+                    result);
+                bool evilFiendish = ExpandedSummoningTemplateRuntimeCase(
+                    blueprints, caster, monsterDog, Alignment.ChaoticEvil,
+                    ".Fiendish", Alignment.NeutralEvil, false, created,
+                    result);
+                result.AlignmentAndTemplates = goodCelestial &&
+                    neutralCelestial && neutralFiendish && evilFiendish;
+
+                caster.Descriptor.Alignment.Set(Alignment.ChaoticNeutral);
+                SummonVariantSpec allyWolf = ExpandedSummoningVariant(
+                    SummonFamily.NaturesAlly, "wolf", 2,
+                    SummonMultiplicity.One);
+                UnitEntityData[] allyUnits = CastExpandedSummoningVariant(
+                    blueprints, caster, allyWolf, null, result);
+                created.AddRange(allyUnits);
+                UnitEntityData alignedAlly = allyUnits.Single();
+                bool allyTemplateFree = alignedAlly.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().All(value => value.Blueprint == null ||
+                        !value.Blueprint.name.StartsWith(
+                            "KMG_Summoning_Template_",
+                            StringComparison.Ordinal));
+                result.NaturesAllyAlignment = alignedAlly.Descriptor.Alignment
+                    .Value == Alignment.ChaoticNeutral && allyTemplateFree;
+                result.Diagnostics.Add("sna-alignment=" +
+                    alignedAlly.Descriptor.Alignment.Value +
+                    ";templateFree=" + allyTemplateFree);
+                DisposeExpandedSummoningUnits(created, allyUnits);
+
+                caster.Descriptor.AddFact(augment);
+                UnitEntityData[] augmented = CastExpandedSummoningVariant(
+                    blueprints, caster, allyWolf, null, result);
+                created.AddRange(augmented);
+                int augmentCount = augmented.Single().Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Count(value => ReferenceEquals(
+                        value.Blueprint, augmentBuff));
+                result.AugmentSummoning = augmentCount == 1;
+                result.Diagnostics.Add("augment-buff-count=" + augmentCount);
+                DisposeExpandedSummoningUnits(created, augmented);
+                caster.Descriptor.RemoveFact(augment);
+
+                if (superior == null)
+                {
+                    result.SuperiorSummoning = true;
+                    result.Diagnostics.Add("superior=optional-feature-not-installed");
+                }
+                else
+                {
+                    caster.Descriptor.AddFact(superior);
+                    UnitEntityData[] superiorOne = CastExpandedSummoningVariant(
+                        blueprints, caster, allyWolf, null, result);
+                    created.AddRange(superiorOne);
+                    int superiorOneCount = superiorOne.Length;
+                    DisposeExpandedSummoningUnits(created, superiorOne);
+                    SummonVariantSpec allyDogD3 = ExpandedSummoningVariant(
+                        SummonFamily.NaturesAlly, "dog", 2,
+                        SummonMultiplicity.OneD3);
+                    UnitEntityData[] superiorD3 = CastExpandedSummoningVariant(
+                        blueprints, caster, allyDogD3, null, result);
+                    created.AddRange(superiorD3);
+                    int superiorD3Count = superiorD3.Length;
+                    DisposeExpandedSummoningUnits(created, superiorD3);
+                    result.SuperiorSummoning = superiorOneCount == 1 &&
+                        superiorD3Count >= 2 && superiorD3Count <= 4;
+                    result.Diagnostics.Add("superior-one=" + superiorOneCount +
+                        ";superior-d3=" + superiorD3Count);
+                    caster.Descriptor.RemoveFact(superior);
+                }
+
+                caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
+                UnitEntityData pixie = CastExpandedSummoningVariant(
+                    blueprints, caster, ExpandedSummoningVariant(
+                        SummonFamily.NaturesAlly, "pixie", 9,
+                        SummonMultiplicity.One), null, result).Single();
+                created.Add(pixie);
+                BlueprintAbility dance = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDance");
+                hostile = CreateExpandedSummoningHostileTarget(blueprints,
+                    pixie, dance, caster.Position + Vector3.forward, scene,
+                    out hostileBlueprint);
+                result.HostileAbilityTarget = hostile != null;
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveWill), "BaseValue", -100);
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                hostile.Descriptor.Stats.HitPoints.BaseValue = 100000;
+
+                bool animalAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "wolf", 2, created, result),
+                    hostile, out string animalDetail);
+                bool proxyAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "eagle", 1, created, result),
+                    hostile, out string proxyDetail);
+                bool elementalAttack = ExerciseExpandedSummoningAttack(
+                    CastExpandedSummoningCombatUnit(blueprints, caster,
+                        SummonFamily.NaturesAlly, "small-air-elemental", 2,
+                        created, result), hostile, out string elementalDetail);
+
+                UnitEntityData stalker = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "invisible-stalker", 6, created, result);
+                BlueprintUnitFact invisibility = blueprints.OfType<
+                    BlueprintUnitFact>().Single(value => value.AssetGuid ==
+                        "94b2838e8a492c44ebf89e7fe7a75a62");
+                bool invisibilityBefore = stalker.Descriptor.HasFact(invisibility);
+                bool stalkerAttack = ExerciseExpandedSummoningAttack(stalker,
+                    hostile, out string stalkerDetail);
+                bool invisibilityAfter = stalker.Descriptor.HasFact(invisibility);
+
+                UnitEntityData shadow = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "shadow-demon", 6, created, result);
+                bool shadowAttack = ExerciseExpandedSummoningAttack(shadow,
+                    hostile, out string shadowDetail);
+
+                UnitEntityData salamander = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "salamander", 5, created, result);
+                bool salamanderAttack = ExerciseExpandedSummoningAttack(
+                    salamander, hostile, out string salamanderDetail);
+
+                UnitEntityData succubus = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster,
+                    "succubus", 6, created, result);
+                bool succubusAttack = ExerciseExpandedSummoningAttack(succubus,
+                    hostile, out string succubusDetail);
+                BlueprintAbility dominate = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Succubus_Dominate");
+                bool dominateTargetable = new AbilityData(succubus.Descriptor
+                    .Abilities.GetAbility(dominate)).CanTarget(
+                        new TargetWrapper(hostile));
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                ExecuteExpandedSummoningRuntimeAbility(succubus, dominate, 4,
+                    new TargetWrapper(hostile), false);
+                string dominateExecution =
+                    _expandedSummoningLastAbilityExecution;
+                BlueprintBuff domination = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Succubus_Domination");
+                bool dominationApplied = hostile.Descriptor.HasFact(domination);
+                if (dominationApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(domination));
+
+                UnitEntityData fireMephit = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.NaturesAlly,
+                    "fire-mephit", 4, created, result);
+                BlueprintAbility breath = fireMephit.Descriptor.Abilities
+                    .Enumerable.Select(value => value.Blueprint).FirstOrDefault(
+                        value => value != null && value.name.IndexOf("Breath",
+                            StringComparison.OrdinalIgnoreCase) >= 0);
+                bool breathUsed = breath != null;
+                string breathDetail = breath == null ? "missing" : breath.name;
+                if (breath != null)
+                {
+                    int damageBefore = hostile.Descriptor.Damage;
+                    TargetWrapper breathTarget = breath.CanTargetPoint ?
+                        new TargetWrapper(hostile.Position) :
+                        new TargetWrapper(hostile);
+                    bool breathTargetable = new AbilityData(fireMephit.Descriptor
+                        .Abilities.GetAbility(breath)).CanTarget(breathTarget);
+                    ExecuteExpandedSummoningRuntimeAbility(fireMephit, breath,
+                        2, breathTarget, false, hostile);
+                    breathUsed = hostile.Descriptor.Damage > damageBefore;
+                    breathDetail += ":damage=" + damageBefore + "->" +
+                        hostile.Descriptor.Damage + ";targetable=" +
+                        breathTargetable + ";execution=" +
+                        _expandedSummoningLastAbilityExecution;
+                    hostile.Descriptor.Damage = damageBefore;
+                }
+
+                BlueprintAbilityResource danceResource = blueprints.OfType<
+                    BlueprintAbilityResource>().Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDanceResource");
+                int danceBefore = pixie.Descriptor.Resources.GetResourceAmount(
+                    danceResource);
+                // Irresistible dance is a native touch-range ability. The
+                // synchronous runtime fixture does not advance the movement
+                // command that the normal controller would enqueue before the
+                // cast, so place the already-spawned pixie at its exact target
+                // before exercising the native UnitUseAbility command.
+                pixie.Translocate(hostile.Position, null);
+                ExecuteExpandedSummoningRuntimeAbility(pixie, dance, 6,
+                    new TargetWrapper(hostile), false);
+                int danceAfter = pixie.Descriptor.Resources.GetResourceAmount(
+                    danceResource);
+                BlueprintBuff danceState = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Pixie_IrresistibleDanceState");
+                bool danceApplied = hostile.Descriptor.HasFact(danceState);
+                if (danceApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(danceState));
+
+                BlueprintBuff pixieTraits = pixie.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Select(value => value.Blueprint).Single(value =>
+                        value != null && value.ComponentsArray.OfType<
+                            PixieSleepArrowComponent>().Any());
+                PixieSleepArrowComponent sleepComponent = pixieTraits
+                    .ComponentsArray.OfType<PixieSleepArrowComponent>().Single();
+                int sleepBefore = pixie.Descriptor.Resources.GetResourceAmount(
+                    sleepComponent.SleepArrowResource);
+                bool pixieAttack = ExerciseExpandedSummoningAttack(pixie,
+                    hostile, out string pixieDetail, false);
+                int sleepAfter = pixie.Descriptor.Resources.GetResourceAmount(
+                    sleepComponent.SleepArrowResource);
+                bool sleepApplied = hostile.Descriptor.HasFact(
+                    sleepComponent.SleepingBuff);
+                if (sleepApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(hostile.Descriptor.Buffs
+                        .GetBuff(sleepComponent.SleepingBuff));
+
+                BlueprintItemArmor lightArmor = blueprints.OfType<
+                    BlueprintItemArmor>().Where(value => value.Type != null &&
+                        value.Type.IsArmor && value.Type.ProficiencyGroup ==
+                            ArmorProficiencyGroup.Light).OrderBy(value =>
+                                value.AssetGuid, StringComparer.Ordinal).First();
+                if (!hostile.Body.Armor.HasArmor)
+                {
+                    insertedArmor = new ItemEntityArmor(lightArmor);
+                    hostile.Body.Armor.InsertItem(insertedArmor);
+                }
+                ItemEntityArmor exactArmor = hostile.Body.Armor.Armor;
+                BlueprintItemArmor exactArmorBlueprint = exactArmor.Blueprint;
+                UnitEntityData bebelith = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.Monster, "bebelith", 7,
+                    created, result);
+                bool bebelithFirst = ExerciseExpandedSummoningAttack(bebelith,
+                    hostile, out string bebelithFirstDetail);
+                bool bebelithSecond = ExerciseExpandedSummoningAttack(bebelith,
+                    hostile, out string bebelithSecondDetail);
+                BlueprintBuff dismantled = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Bebelith_DismantledArmor");
+                bool dismantledApplied = hostile.Descriptor.HasFact(dismantled);
+                bool armorUnchanged = ReferenceEquals(exactArmor,
+                    hostile.Body.Armor.Armor) && ReferenceEquals(
+                        exactArmorBlueprint, hostile.Body.Armor.Armor.Blueprint);
+                if (dismantledApplied)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(dismantled));
+
+                result.RepresentativeCombat = animalAttack && proxyAttack &&
+                    elementalAttack && stalkerAttack && shadowAttack &&
+                    salamanderAttack && succubusAttack && pixieAttack &&
+                    invisibilityBefore && invisibilityAfter;
+                result.SpecialAdaptations = dominationApplied && breathUsed &&
+                    danceBefore == 1 && danceAfter == 0 && danceApplied &&
+                    sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
+                    bebelithFirst && bebelithSecond && dismantledApplied &&
+                    armorUnchanged;
+                result.Diagnostics.Add("combat=animal[" + animalDetail +
+                    "];proxy[" + proxyDetail + "];elemental[" +
+                    elementalDetail + "];stalker[" + stalkerDetail +
+                    ";invisibility=" + invisibilityBefore + "->" +
+                    invisibilityAfter + "];shadow[" + shadowDetail +
+                    "];salamander[" + salamanderDetail + "];succubus[" +
+                    succubusDetail + ";dominate=" + dominationApplied +
+                    ";targetable=" + dominateTargetable + ";execution=" +
+                    dominateExecution +
+                    "];breath[" + breathDetail + "];pixie[" + pixieDetail +
+                    ";dance=" + danceBefore + "->" + danceAfter +
+                    ";danceApplied=" + danceApplied + ";sleep=" + sleepBefore +
+                    "->" + sleepAfter + ";sleepApplied=" + sleepApplied +
+                    "];bebelith[first=" + bebelithFirstDetail + ";second=" +
+                    bebelithSecondDetail + ";dismantled=" + dismantledApplied +
+                    ";armorUnchanged=" + armorUnchanged + "]");
+            }
+            finally
+            {
+                if (caster.Descriptor.HasFact(augment))
+                    caster.Descriptor.RemoveFact(augment);
+                if (superior != null && caster.Descriptor.HasFact(superior))
+                    caster.Descriptor.RemoveFact(superior);
+                foreach (UnitEntityData unit in created.Distinct().ToArray())
+                    CleanupExpandedSummoningUnit(unit);
+                if (insertedArmor != null && hostile != null &&
+                    hostile.Body.Armor.HasArmor && ReferenceEquals(
+                        hostile.Body.Armor.Armor, insertedArmor))
+                    hostile.Body.Armor.RemoveItem(false);
+                if (insertedArmor != null) insertedArmor.Dispose();
+                if (hostile != null && !hostile.Destroyed) hostile.Destroy();
+                if (hostileBlueprint != null)
+                    UnityEngine.Object.Destroy(hostileBlueprint);
+                DrainExpandedSummoningDestroyQueue(sceneEntities, exactStart);
+            }
+            object[] exactEnd = SnapshotReferences(sceneEntities);
+            if (!SameReferences(exactStart, exactEnd))
+                throw new InvalidOperationException(
+                    "Mechanical-contract cleanup did not restore the exact area snapshot: before=" +
+                    DescribeExpandedSummoningReferences(exactStart) +
+                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) + ".");
+            return result;
+        }
+
+        private static bool ExpandedSummoningTemplateRuntimeCase(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonVariantSpec variant, Alignment casterAlignment,
+            string executionSuffix, Alignment expectedAlignment,
+            bool celestial, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            caster.Descriptor.Alignment.Set(casterAlignment);
+            UnitEntityData[] units = CastExpandedSummoningVariant(blueprints,
+                caster, variant, executionSuffix, evidence);
+            created.AddRange(units);
+            UnitEntityData unit = units.Single();
+            string kind = celestial ? "Celestial" : "Fiendish";
+            int templateCount = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => value.Blueprint != null &&
+                    value.Blueprint.name.StartsWith(
+                        "KMG_Summoning_Template_" + kind + "_",
+                        StringComparison.Ordinal));
+            int smiteCount = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => value.Blueprint != null &&
+                    value.Blueprint.name == "KMG_Summoning_Smite_" + kind +
+                        "_Available");
+            int replacedNativeCount = unit.Descriptor.Buffs.RawFacts
+                .OfType<Buff>().Count(value => value.Blueprint != null &&
+                    (value.Blueprint.name.StartsWith(
+                        "SummonMonsterCelestialBuff",
+                        StringComparison.Ordinal) ||
+                     value.Blueprint.name.StartsWith(
+                        "SummonMonsterFiendishBuff",
+                        StringComparison.Ordinal)));
+            bool result = unit.Descriptor.Alignment.Value == expectedAlignment &&
+                templateCount == 1 && smiteCount == 1 &&
+                replacedNativeCount == 0;
+            evidence.Diagnostics.Add("template=" + casterAlignment + "/" +
+                kind + "->" + unit.Descriptor.Alignment.Value +
+                ";buffs=" + templateCount + ";smite=" + smiteCount +
+                ";nativeTemplates=" + replacedNativeCount +
+                ";facts=" + string.Join("|", unit.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Where(value => value.Blueprint != null)
+                    .Select(value => value.Blueprint.name)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray()));
+            DisposeExpandedSummoningUnits(created, units);
+            return result;
+        }
+
+        private static SummonVariantSpec ExpandedSummoningVariant(
+            SummonFamily family, string creatureKey, int parentTier,
+            SummonMultiplicity multiplicity)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(family).Single(
+                value => value.Creature.Key == creatureKey &&
+                    value.ParentTier == parentTier &&
+                    value.Multiplicity == multiplicity);
+        }
+
+        private static UnitEntityData CastExpandedSummoningCombatUnit(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonFamily family, string creatureKey, int parentTier,
+            List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            UnitEntityData[] units = CastExpandedSummoningVariant(blueprints,
+                caster, ExpandedSummoningVariant(family, creatureKey,
+                    parentTier, SummonMultiplicity.One), null, evidence);
+            created.AddRange(units);
+            return units.Single();
+        }
+
+        private static UnitEntityData[] CastExpandedSummoningVariant(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonVariantSpec variant, string executionSuffix,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                blueprints, variant, executionSuffix);
+            BlueprintUnit expected = blueprints.OfType<BlueprintUnit>().Single(
+                value => value.name == ExpandedSummoningInternalName(
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(
+                        variant.Creature)));
+            ExpandedSummoningRuleCapture.Clear();
+            caster.Descriptor.AddFact(ability);
+            try
+            {
+                ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                    variant.ParentTier);
+            }
+            finally
+            {
+                if (caster.Descriptor.HasFact(ability))
+                    caster.Descriptor.RemoveFact(ability);
+            }
+            UnitEntityData[] units = ExpandedSummoningRuleCapture.ToArray();
+            Game.Instance.EntityCreator.Tick();
+            if (units.Length < 1 || units.Any(value =>
+                    !ReferenceEquals(value.Blueprint, expected)))
+                throw new InvalidOperationException(
+                    "Mechanical contract cast returned the wrong unit kind.");
+            evidence.AdditionalCasts++;
+            return units;
+        }
+
+        private static void DisposeExpandedSummoningUnits(
+            List<UnitEntityData> created, IEnumerable<UnitEntityData> units)
+        {
+            foreach (UnitEntityData unit in units.ToArray())
+            {
+                CleanupExpandedSummoningUnit(unit);
+                created.Remove(unit);
+            }
+            Game.Instance.EntityDestroyer.Tick();
+            Game.Instance.EntityDestroyer.Tick();
+        }
+
+        private static UnitEntityData CreateExpandedSummoningHostileTarget(
+            BlueprintScriptableObject[] blueprints, UnitEntityData actor,
+            BlueprintAbility hostileAbility, Vector3 position,
+            Kingmaker.EntitySystem.SceneEntitiesState scene,
+            out BlueprintUnit targetBlueprint)
+        {
+            FieldInfo faction = ExpandedSummoningFields(typeof(BlueprintUnit))
+                .Single(value => value.Name == "Faction" ||
+                    value.Name == "m_Faction");
+            object playerFaction = faction.GetValue(
+                BlueprintRoot.Instance.DefaultPlayerCharacter);
+            var seen = new HashSet<object>();
+            foreach (BlueprintUnit source in blueprints.OfType<BlueprintUnit>()
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal))
+            {
+                object candidateFaction = faction.GetValue(source);
+                if (candidateFaction == null || ReferenceEquals(candidateFaction,
+                    playerFaction) || !seen.Add(candidateFaction)) continue;
+                BlueprintUnit candidate = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                candidate.name = "KMG_Runtime_ExpandedSummoning_HostileTarget";
+                candidate.IsCheater = true;
+                faction.SetValue(candidate, candidateFaction);
+                UnitEntityData target = null;
+                try
+                {
+                    target = Game.Instance.EntityCreator.SpawnUnit(candidate,
+                        position, Quaternion.identity, scene);
+                    Ability granted = actor.Descriptor.Abilities.GetAbility(
+                        hostileAbility);
+                    if (target != null && granted != null &&
+                        new AbilityData(granted).CanTarget(
+                            new TargetWrapper(target)))
+                    {
+                        targetBlueprint = candidate;
+                        return target;
+                    }
+                }
+                catch { }
+                if (target != null) target.Dispose();
+                UnityEngine.Object.Destroy(candidate);
+            }
+            targetBlueprint = null;
+            throw new InvalidOperationException(
+                "No exact loaded faction produced a valid hostile target for the Pixie SLA contract.");
+        }
+
+        private static bool ExerciseExpandedSummoningAttack(
+            UnitEntityData attacker, UnitEntityData target, out string detail,
+            bool requireDamage = true)
+        {
+            ItemEntityWeapon weapon = attacker == null || attacker.Body == null ?
+                null : attacker.Body.PrimaryHand.MaybeWeapon;
+            if (weapon == null)
+            {
+                detail = "missing-primary-weapon";
+                return false;
+            }
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            int damageBefore = target.Descriptor.Damage;
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
+            Rulebook.Trigger(attack);
+            bool hit = attack.AttackRoll != null && attack.AttackRoll.IsHit;
+            int damageAfter = target.Descriptor.Damage;
+            detail = weapon.Blueprint.name + ":hit=" + hit + ";damage=" +
+                damageBefore + "->" + damageAfter;
+            target.Descriptor.Damage = damageBefore;
+            return hit && (!requireDamage || damageAfter > damageBefore);
+        }
+
+        private static void DrainExpandedSummoningDestroyQueue(
+            object sceneEntities, object[] expected)
+        {
+            // Unit destruction removes its facts first. Native aura components
+            // can enqueue an AreaEffectEntityData only while that first queue
+            // item is being processed, so dependent entities may require later
+            // destroyer passes just as they do across successive game frames.
+            // Keep the final reference comparison exact; this bounded drain
+            // models those frames without tolerating a persistent entity leak.
+            for (int pass = 0; pass < 8; pass++)
+            {
+                Game.Instance.EntityDestroyer.Tick();
+                if (expected != null && SameReferences(expected,
+                    SnapshotReferences(sceneEntities))) return;
+            }
+            // Area effects use a timed caster-disappearance grace period for
+            // their visual fade. A synchronous runtime fixture cannot advance
+            // that world-time window, so finish only orphaned effects whose
+            // mechanics context still points at the destroyed summoned unit.
+            foreach (object value in SnapshotReferences(sceneEntities).Where(
+                value => expected == null || !expected.Any(prior =>
+                    ReferenceEquals(prior, value))).ToArray())
+            {
+                AreaEffectEntityData area = value as AreaEffectEntityData;
+                UnitEntityData source = area == null || area.Context == null ?
+                    null : area.Context.MaybeCaster;
+                if (area != null && source != null && source.Destroyed)
+                    area.Destroy();
+                Kingmaker.View.MapObjects.DroppedLoot.EntityData dropped =
+                    value as Kingmaker.View.MapObjects.DroppedLoot.EntityData;
+                if (dropped != null)
+                {
+                    Kingmaker.View.MapObjects.LootComponent.LootPersistentData
+                        loot = dropped.GetComponentData<Kingmaker.View.MapObjects
+                            .LootComponent.LootPersistentData>();
+                    if (loot == null || loot.Loot == null || !loot.Loot.HasLoot)
+                        dropped.Destroy();
+                }
+            }
+            Game.Instance.EntityDestroyer.Tick();
+        }
+
+        private static void CleanupExpandedSummoningUnit(UnitEntityData unit)
+        {
+            if (unit == null) return;
+            // This synchronous fixture cannot wait for SummonPool's normal
+            // expiration path, which suppresses equipped-item drops. Detach
+            // hand items without transferring them before direct destruction;
+            // the surrounding exact scene/player snapshots still reject any
+            // materialized loot or inventory side effect.
+            var detached = new List<ItemEntity>();
+            if (unit.Body != null && unit.Body.PrimaryHand != null &&
+                unit.Body.PrimaryHand.MaybeItem != null)
+            {
+                detached.Add(unit.Body.PrimaryHand.MaybeItem);
+                unit.Body.PrimaryHand.RemoveItem(false);
+            }
+            if (unit.Body != null && unit.Body.SecondaryHand != null &&
+                unit.Body.SecondaryHand.MaybeItem != null)
+            {
+                detached.Add(unit.Body.SecondaryHand.MaybeItem);
+                unit.Body.SecondaryHand.RemoveItem(false);
+            }
+            if (unit.Descriptor.Inventory != null)
+            {
+                foreach (ItemEntity item in unit.Descriptor.Inventory.Items
+                    .ToArray())
+                {
+                    unit.Descriptor.Inventory.Remove(item);
+                    detached.Add(item);
+                }
+            }
+            foreach (ItemEntity item in detached.Where(value => value != null)
+                .Distinct().ToArray()) item.Dispose();
+            BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                .SummonedUnitBuff;
+            Buff[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .ToArray();
+            // Aura of Menace owns a timed area-effect fade and must be turned
+            // off before a synchronous fixture destroys its source. Preserve
+            // every other permanent after-spawn fact: Owlcat's summon marker
+            // is what suppresses equipment loot for native outsiders.
+            foreach (Buff buff in buffs.Where(value => value.Blueprint != null &&
+                value.Blueprint.AssetGuid ==
+                    "1ce4878b5e714f659d0854a12f4b3cf2")) buff.Remove();
+            foreach (Buff buff in buffs.Where(value => ReferenceEquals(
+                value.Blueprint, summoned))) buff.Remove();
+            if (!unit.Destroyed) unit.Destroy();
+        }
+
+        private static void ExpandedSummoningRuleCapturePostfix(
+            RuleSummonUnit __instance)
+        {
+            if (!_expandedSummoningRuleCaptureActive || __instance == null ||
+                __instance.SummonedUnit == null) return;
+            ExpandedSummoningRuleCapture.Add(__instance.SummonedUnit);
+        }
+
+        private static string DescribeExpandedSummoningReferences(
+            IEnumerable<object> values)
+        {
+            return string.Join(",", values.Select(value =>
+            {
+                UnitEntityData unit = value as UnitEntityData;
+                if (unit != null)
+                    return "unit:" + (unit.Blueprint == null ? "<null>" :
+                        unit.Blueprint.name) + ":destroyed=" + unit.Destroyed +
+                        ":inState=" + unit.IsInState;
+                Kingmaker.View.MapObjects.DroppedLoot.EntityData dropped =
+                    value as Kingmaker.View.MapObjects.DroppedLoot.EntityData;
+                if (dropped != null)
+                {
+                    Kingmaker.View.MapObjects.LootComponent.LootPersistentData
+                        data = dropped.GetComponentData<Kingmaker.View.MapObjects
+                            .LootComponent.LootPersistentData>();
+                    string items = data == null || data.Loot == null ? "<null>" :
+                        string.Join("|", data.Loot.Items.Select(item => item == null ||
+                            item.Blueprint == null ? "<null>" :
+                            item.Blueprint.name).ToArray());
+                    return "dropped-loot:destroyed=" + dropped.Destroyed +
+                        ":items=" + items;
+                }
+                return value == null ? "<null>" : value.GetType().FullName;
+            }).ToArray());
+        }
+
+        private RuntimeTestResult RunDisposableExpandedSummoningVisualContracts()
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            SummonVariantSpec[] variants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly))
+                .Where(value => value.Multiplicity == SummonMultiplicity.One)
+                .GroupBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .Select(group => group.OrderBy(value => value.Family)
+                    .ThenBy(value => value.ParentTier).First())
+                .OrderBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .ToArray();
+
+            object state = ReadExactMember(Game.Instance, "State");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object player = ReadExactMember(Game.Instance, "Player");
+            object party = ReadExactMember(player, "Party");
+            object[] unitsBefore = SnapshotReferences(allUnits);
+            object[] partyBefore = SnapshotReferences(party);
+            UnitEntityData caster = null;
+            BlueprintUnit casterBlueprint = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            object sceneEntities = null;
+            int instantiated = 0, renderable = 0, bounded = 0,
+                selectionReady = 0, locomotion = 0, attack = 0, hit = 0,
+                death = 0, ranged = 0, rangedReady = 0, detachedViews = 0;
+            bool cleaned = false;
+            string stage = "construct-fixture";
+            var diagnostics = new List<string>();
+            var visualBounds = new Dictionary<string, float>(
+                StringComparer.Ordinal);
+            var visualHeights = new Dictionary<string, float>(
+                StringComparer.Ordinal);
+            var visualScales = new Dictionary<string, float>(
+                StringComparer.Ordinal);
+            float mediumHumanoidHeight = -1f;
+            Bounds mediumHumanoidBounds = new Bounds();
+            string eagleComparisonEvidence = "missing";
+            MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
+                "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
+            try
+            {
+                if (variants.Length != 67)
+                    throw new InvalidOperationException(
+                        "Visual matrix did not resolve exactly 67 unique creatures.");
+                if (summonRuleMethod == null) throw new MissingMethodException(
+                    typeof(RuleSummonUnit).FullName, "OnTrigger");
+                MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
+                    "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
+                    BindingFlags.Static);
+                _context.Harmony.Patch(summonRuleMethod, null,
+                    new HarmonyMethod(capturePostfix), null);
+                _expandedSummoningRuleCaptureActive = true;
+
+                object[] anchors = partyBefore.OfType<UnitEntityData>()
+                    .Where(value => value.HoldingState != null).Cast<object>()
+                    .ToArray();
+                UnitEntityData areaAnchor = anchors.OfType<UnitEntityData>()
+                    .FirstOrDefault();
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no party unit in an exact area state.");
+                scene = areaAnchor.HoldingState;
+                casterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                casterBlueprint.name =
+                    "KMG_Runtime_ExpandedSummoning_VisualCaster";
+                casterBlueprint.IsCheater = true;
+                caster = Game.Instance.EntityCreator.SpawnUnit(casterBlueprint,
+                    areaAnchor.Position, Quaternion.identity, scene);
+                if (caster == null || caster.View == null || caster.View.Data == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not attach the visual caster.");
+                sceneEntities = scene.AllEntityData;
+                caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                Renderer[] casterRenderers = caster.View
+                    .GetComponentsInChildren<Renderer>(true)
+                    .Where(value => value != null).ToArray();
+                if (casterRenderers.Length > 0)
+                {
+                    Bounds casterBounds = casterRenderers[0].bounds;
+                    for (int index = 1; index < casterRenderers.Length; index++)
+                        casterBounds.Encapsulate(casterRenderers[index].bounds);
+                    mediumHumanoidHeight = casterBounds.size.y;
+                    mediumHumanoidBounds = casterBounds;
+                }
+                if (caster.Descriptor.State.Size != Size.Medium ||
+                    mediumHumanoidHeight <= 0.01f)
+                    throw new InvalidOperationException(
+                        "Visual fixture lacks a measurable Medium humanoid.");
+
+                foreach (SummonVariantSpec variant in variants)
+                {
+                    stage = "visual-" + variant.Creature.Key;
+                    BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                        blueprints, variant);
+                    BlueprintUnit expectedUnit = blueprints.OfType<BlueprintUnit>()
+                        .Single(value => value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                variant.Creature)));
+                    object[] beforeCast = SnapshotReferences(sceneEntities);
+                    ExpandedSummoningRuleCapture.Clear();
+                    caster.Descriptor.AddFact(ability);
+                    try
+                    {
+                        Vector3 targetPosition = variant.Creature.Key == "eagle"
+                            ? caster.Position + new Vector3(2.5f, 0f, 0f)
+                            : caster.Position;
+                        ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                            variant.ParentTier, new TargetWrapper(targetPosition),
+                            true);
+                    }
+                    finally
+                    {
+                        if (caster.Descriptor.HasFact(ability))
+                            caster.Descriptor.RemoveFact(ability);
+                    }
+
+                    UnitEntityData[] spawned = ExpandedSummoningRuleCapture
+                        .ToArray();
+                    if (spawned.Length != 1 || !ReferenceEquals(
+                        spawned[0].Blueprint, expectedUnit))
+                        throw new InvalidOperationException(
+                            "Visual cast did not produce one exact intended unit.");
+                    UnitEntityData unit = spawned[0];
+                    var view = unit.View;
+                    bool attached = view != null && view.Data != null &&
+                        ReferenceEquals(view.Data, unit) && view.gameObject != null &&
+                        view.gameObject.activeInHierarchy;
+                    if (attached) instantiated++;
+
+                    Renderer[] renderers = view == null
+                        ? Array.Empty<Renderer>()
+                        : view.GetComponentsInChildren<Renderer>(true)
+                            .Where(value => value != null).ToArray();
+                    Bounds combined = new Bounds();
+                    bool hasBounds = false;
+                    foreach (Renderer renderer in renderers)
+                    {
+                        if (!hasBounds)
+                        {
+                            combined = renderer.bounds;
+                            hasBounds = true;
+                        }
+                        else combined.Encapsulate(renderer.bounds);
+                    }
+                    bool hasMaterial = renderers.Any(value =>
+                        value.sharedMaterials != null &&
+                        value.sharedMaterials.Any(material => material != null));
+                    bool hasGeometry = hasBounds &&
+                        combined.size.sqrMagnitude > 0.0001f;
+                    if (renderers.Length > 0 && hasMaterial && hasGeometry)
+                        renderable++;
+
+                    Vector3 scale = view == null ? Vector3.zero :
+                        view.transform.lossyScale;
+                    float maximumBound = hasBounds ? Mathf.Max(combined.size.x,
+                        Mathf.Max(combined.size.y, combined.size.z)) : -1f;
+                    visualBounds.Add(variant.Creature.Key, maximumBound);
+                    visualHeights.Add(variant.Creature.Key, hasBounds ?
+                        combined.size.y : -1f);
+                    visualScales.Add(variant.Creature.Key, Mathf.Max(scale.x,
+                        Mathf.Max(scale.y, scale.z)));
+                    if (variant.Creature.Key == "eagle")
+                        eagleComparisonEvidence =
+                            WriteExpandedSummoningEagleComparison(
+                                caster, unit, mediumHumanoidBounds, combined,
+                                _request.EvidenceDirectory);
+                    bool finiteBounded = attached && unit.Corpulence > 0.05f &&
+                        unit.Corpulence <= 10f && scale.x > 0.01f &&
+                        scale.y > 0.01f && scale.z > 0.01f && scale.x <= 10f &&
+                        scale.y <= 10f && scale.z <= 10f && maximumBound > 0.01f &&
+                        maximumBound <= 25f && renderers.Length <= 256;
+                    if (finiteBounded) bounded++;
+
+                    IEnumerable colliderSequence = view == null ? null :
+                        ReadExactMember(view, "Colliders") as IEnumerable;
+                    int colliderCount = colliderSequence == null ? 0 :
+                        colliderSequence.Cast<object>().Count(value => value != null);
+                    bool selectable = colliderCount > 0 && view.CenterTorso != null &&
+                        view.MovementAgent != null && view.IsInGame;
+                    if (selectable) selectionReady++;
+
+                    UnitAnimationManager manager = view == null ? null :
+                        view.AnimationManager;
+                    string locomotionDetail;
+                    bool locomotionReady = ExerciseExpandedSummoningLocomotion(
+                        unit, view, manager, out locomotionDetail);
+                    if (locomotionReady) locomotion++;
+                    string attackDetail;
+                    bool attackReady =
+                        ExerciseExpandedSummoningCombatAnimation(manager,
+                            out attackDetail);
+                    if (!attackReady && variant.Creature.Key ==
+                        "lantern-archon")
+                    {
+                        bool rayReady = ExpandedSummoningLanternRayVisualExact(
+                            blueprints, view);
+                        attackDetail += ";lantern-ray-fallback=" + rayReady;
+                        attackReady = rayReady;
+                    }
+                    if (attackReady) attack++;
+
+                    int hpBefore = unit.HPLeft;
+                    Rulebook.Trigger(new RuleDealDamage(caster, unit,
+                        new DamageBundle(new DirectDamage(
+                            new DiceFormula(0, DiceType.D6), 1))) {
+                        DisablePrecisionDamage = true,
+                        IgnoreDamageReduction = true
+                    });
+                    string hitDetail;
+                    bool hitAnimation = ExerciseExpandedSummoningAnimation(
+                        manager, UnitAnimationType.Hit, out hitDetail);
+                    bool hitCallback = InvokeExpandedSummoningViewCallback(
+                        view, "HandleDamage", out string hitCallbackDetail);
+                    bool hitReady = hitCallback;
+                    if (hitReady) hit++;
+
+                    ItemEntityWeapon weapon = unit.Body.PrimaryHand.MaybeWeapon;
+                    bool isRanged = weapon != null && weapon.Blueprint.IsRanged;
+                    bool projectileReady = true;
+                    int projectileCount = 0;
+                    if (isRanged)
+                    {
+                        ranged++;
+                        WeaponVisualParameters visual =
+                            weapon.Blueprint.VisualParameters;
+                        projectileCount = visual == null ||
+                            visual.Projectiles == null ? 0 :
+                            visual.Projectiles.Count(value => value != null);
+                        projectileReady = projectileCount > 0 &&
+                            view.CenterTorso != null;
+                        if (projectileReady) rangedReady++;
+                    }
+
+                    unit.Descriptor.State.Immortality.ReleaseAll();
+                    unit.Descriptor.Damage = Math.Max(unit.MaxHP + 1,
+                        unit.Descriptor.Damage + 1);
+                    bool deathCallback = InvokeExpandedSummoningViewCallback(
+                        view, "HandleDeath", out string deathCallbackDetail);
+                    if (manager != null) manager.Tick();
+                    bool deathState = unit.HPLeft <= 0 ||
+                        unit.Descriptor.State.IsDead || unit.Descriptor.State
+                            .MarkedForDeath || unit.Descriptor.State.ForceKill;
+                    bool deathReady = deathCallback && deathState;
+                    if (deathReady) death++;
+
+                    diagnostics.Add(variant.Creature.Key + ":view=" + attached +
+                        ";renderers=" + renderers.Length + ";bounds=" +
+                        maximumBound.ToString("R") + ";scale=" +
+                        scale.ToString("R") + ";corpulence=" +
+                        unit.Corpulence.ToString("R") + ";colliders=" +
+                        colliderCount + ";loco=" + locomotionDetail +
+                        ";attack=" + attackDetail + ";hit=" + hitDetail +
+                        ";hitCallback=" + hitCallbackDetail + ";hp=" +
+                        hpBefore + "->" + unit.HPLeft +
+                        ";ranged=" + isRanged + ";projectiles=" +
+                        projectileCount + ";deathCallback=" +
+                        deathCallbackDetail + ";deathState=" + deathState +
+                        ";actions=" + ExpandedSummoningAnimationTypes(manager));
+
+                    unit.Dispose();
+                    bool detached = !ContainsReference(sceneEntities, unit) &&
+                        (view == null || view.Data == null || !view.IsInGame);
+                    if (detached) detachedViews++;
+                    if (!SameReferences(beforeCast,
+                        SnapshotReferences(sceneEntities)))
+                        throw new InvalidOperationException(
+                            "Visual unit cleanup did not restore the exact area snapshot.");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Expanded Summoning visual contracts failed at stage " +
+                    stage + ".", exception);
+            }
+            finally
+            {
+                _expandedSummoningRuleCaptureActive = false;
+                ExpandedSummoningRuleCapture.Clear();
+                if (summonRuleMethod != null)
+                    _context.Harmony.Unpatch(summonRuleMethod,
+                        HarmonyPatchType.All, _context.ModId);
+                IEnumerable<UnitEntityData> localUnits = sceneEntities == null
+                    ? Enumerable.Empty<UnitEntityData>()
+                    : SnapshotReferences(sceneEntities).OfType<UnitEntityData>();
+                foreach (UnitEntityData unit in localUnits.Concat(
+                    SnapshotReferences(allUnits).OfType<UnitEntityData>())
+                    .Where(value => !unitsBefore.Any(prior =>
+                        ReferenceEquals(prior, value))).Distinct().ToArray())
+                    unit.Dispose();
+                if (casterBlueprint != null)
+                    UnityEngine.Object.Destroy(casterBlueprint);
+                cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
+                    SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    (caster == null || !ContainsReference(allUnits, caster));
+            }
+
+            string observed = "unique=" + variants.Length + ";instantiated=" +
+                instantiated + ";renderable=" + renderable + ";bounded=" +
+                bounded + ";selection=" + selectionReady + ";locomotion=" +
+                locomotion + ";attack=" + attack + ";hit=" + hit +
+                ";death=" + death + ";ranged=" + ranged + "/" + rangedReady +
+                ";detachedViews=" + detachedViews + ";cleaned=" + cleaned;
+            string[] scalePairs = {
+                "eagle<roc", "poisonous-frog<giant-frog",
+                "boar<dire-boar", "grizzly-bear<dire-bear",
+                "elephant<mastodon", "pteranodon<roc" };
+            bool scaleRelationships = scalePairs.All(pair =>
+            {
+                string[] keys = pair.Split('<');
+                return visualBounds.ContainsKey(keys[0]) &&
+                    visualBounds.ContainsKey(keys[1]) &&
+                    visualBounds[keys[0]] < visualBounds[keys[1]];
+            });
+            string scaleDetail = string.Join(";", scalePairs.Select(pair =>
+            {
+                string[] keys = pair.Split('<');
+                return pair + "=" + (visualBounds.ContainsKey(keys[0]) ?
+                    visualBounds[keys[0]].ToString("R") : "missing") + "/" +
+                    (visualBounds.ContainsKey(keys[1]) ?
+                    visualBounds[keys[1]].ToString("R") : "missing");
+            }).ToArray()) + ";multipliers=" + string.Join(",",
+                SummonViewScaleCatalog.All.Select(value => value.CreatureKey +
+                    "=" + value.Multiplier.ToString("R")).ToArray());
+            float eagleHeight = visualHeights.ContainsKey("eagle") ?
+                visualHeights["eagle"] : -1f;
+            float eagleMaximumBound = visualBounds.ContainsKey("eagle") ?
+                visualBounds["eagle"] : -1f;
+            bool eagleVersusHumanoid = eagleHeight > 0.01f &&
+                mediumHumanoidHeight > 0.01f &&
+                eagleHeight < mediumHumanoidHeight;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-visual-instances", "67/67",
+                    instantiated + "/" + variants.Length,
+                    variants.Length == 67 && instantiated == 67,
+                    "actual native summon views attached to exact unit data"),
+                Assertion("expanded-summoning-renderable-geometry", "67/67",
+                    renderable + "/" + variants.Length, renderable == 67,
+                    "runtime Renderer materials and nonzero combined bounds"),
+                Assertion("expanded-summoning-bounded-footprints", "67/67",
+                    bounded + "/" + variants.Length, bounded == 67,
+                    "corpulence, world scale, renderer bounds, and renderer-count limits"),
+                Assertion("expanded-summoning-relative-visual-scales",
+                    string.Join(";", scalePairs), scaleDetail,
+                    scaleRelationships,
+                    "live combined renderer bounds after deterministic view-only multipliers"),
+                Assertion("expanded-summoning-eagle-medium-humanoid-scale",
+                    "Eagle live maximum bound below Medium humanoid standing height; mechanical size Small; view multiplier 0.30",
+                    "eagleHeight=" + eagleHeight.ToString("R") +
+                        ";eagleWingspanOrMax=" +
+                        eagleMaximumBound.ToString("R") +
+                        ";mediumHeight=" + mediumHumanoidHeight.ToString("R"),
+                    eagleVersusHumanoid && ExpandedSummoningUnit(
+                        blueprints, variants.Single(value =>
+                            value.Creature.Key == "eagle")).Size == Size.Small,
+                    "live renderer bounds against the request-local default Medium humanoid"),
+                Assertion("expanded-summoning-eagle-live-comparison-image",
+                    "offscreen live-camera PNG plus exact bounds JSON",
+                    eagleComparisonEvidence,
+                    eagleComparisonEvidence.StartsWith("png=", StringComparison.Ordinal),
+                    "supporting visual evidence rendered from the live Eagle and Medium fixture; mechanical proof remains bounds/state assertions"),
+                Assertion("expanded-summoning-selection-navigation", "67/67",
+                    selectionReady + "/" + variants.Length,
+                    selectionReady == 67,
+                    "selection colliders, torso origin, movement agent, and exact area membership"),
+                Assertion("expanded-summoning-locomotion-events", "67/67",
+                    locomotion + "/" + variants.Length, locomotion == 67,
+                    "native movement-start/interruption and locomotion clip path"),
+                Assertion("expanded-summoning-attack-animations", "67/67",
+                    attack + "/" + variants.Length, attack == 67,
+                    "native main-hand or creature-special action handle execution"),
+                Assertion("expanded-summoning-hit-and-death", "67/67 each",
+                    "hit=" + hit + ";death=" + death,
+                    hit == 67 && death == 67,
+                    "native damage plus exact UnitEntityView hit/death callbacks"),
+                Assertion("expanded-summoning-projectile-origins",
+                    "every detected ranged weapon has projectile and torso origin",
+                    rangedReady + "/" + ranged,
+                    ranged > 0 && rangedReady == ranged,
+                    "live primary weapon visual parameters and CenterTorso fallback"),
+                Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
+                    "detached=" + detachedViews + ";cleaned=" + cleaned,
+                    detachedViews == 67 && cleaned,
+                    "disposed unit/view detachment and exact party/global snapshots"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(assertions.All(value =>
+                value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            result.Diagnostics.Add(observed);
+            foreach (string diagnostic in diagnostics)
+                result.Diagnostics.Add(diagnostic);
+            return result;
+        }
+
+        private static void ExecuteExpandedSummoningRuntimeAbility(
+            UnitEntityData caster, BlueprintAbility ability, int spellLevel)
+        {
+            ExecuteExpandedSummoningRuntimeAbility(caster, ability, spellLevel,
+                new TargetWrapper(caster.Position), true);
+        }
+
+        private static string WriteExpandedSummoningEagleComparison(
+            UnitEntityData caster, UnitEntityData eagle, Bounds casterBounds,
+            Bounds eagleBounds, string evidenceDirectory)
+        {
+            const int width = 1280, height = 720;
+            string pngPath = Path.Combine(evidenceDirectory,
+                "eagle-medium-humanoid-live-comparison.png");
+            string jsonPath = Path.Combine(evidenceDirectory,
+                "eagle-medium-humanoid-live-comparison.json");
+            var cameraObject = new GameObject(
+                "KMG_Runtime_EagleComparisonCamera");
+            var lightObject = new GameObject(
+                "KMG_Runtime_EagleComparisonLight");
+            RenderTexture renderTexture = null;
+            Texture2D output = null;
+            RenderTexture priorActive = RenderTexture.active;
+            var evidenceObjects = new List<GameObject>();
+            var evidenceMeshes = new List<Mesh>();
+            var evidenceMaterials = new List<Material>();
+            Renderer[] evidenceRenderers = new[] { caster.View, eagle.View }
+                .Where(value => value != null)
+                .SelectMany(value => value.GetComponentsInChildren<Renderer>(true))
+                .Where(value => value != null)
+                .Distinct()
+                .ToArray();
+            if (evidenceRenderers.Length == 0)
+                throw new InvalidOperationException(
+                    "The live Eagle comparison had no subject renderers.");
+            Camera liveCamera = UnityEngine.Object.FindObjectsOfType<Camera>()
+                .Where(value => value != null && value.enabled)
+                .OrderByDescending(value => evidenceRenderers
+                    .Select(renderer => renderer.gameObject.layer)
+                    .Distinct()
+                    .Count(layer => (value.cullingMask & (1 << layer)) != 0))
+                .ThenByDescending(value => ReferenceEquals(value, Camera.main))
+                .FirstOrDefault();
+            if (liveCamera == null) throw new InvalidOperationException(
+                "The live Eagle comparison could not find the game camera.");
+            Camera camera = cameraObject.AddComponent<Camera>();
+            try
+            {
+                // Copy the proven live rendering contract without borrowing its
+                // controller-owned transform. CameraController can reset the live
+                // camera during Render/OnPreCull, which produced a valid but
+                // incorrectly framed supporting screenshot.
+                camera.CopyFrom(liveCamera);
+                camera.enabled = false;
+                camera.cullingMask = 1 << 31;
+                int casterMeshes = AddExpandedSummoningEvidenceMeshes(
+                    caster.View, new Color(0.82f, 0.72f, 0.52f, 1f), 31,
+                    evidenceObjects, evidenceMeshes, evidenceMaterials);
+                int eagleMeshes = AddExpandedSummoningEvidenceMeshes(
+                    eagle.View, new Color(0.92f, 0.50f, 0.16f, 1f), 31,
+                    evidenceObjects, evidenceMeshes, evidenceMaterials);
+                if (casterMeshes == 0 || eagleMeshes == 0)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison could not bake both subject meshes: " +
+                        "caster=" + casterMeshes + ";eagle=" + eagleMeshes + ".");
+                Light light = lightObject.AddComponent<Light>();
+                light.type = LightType.Directional;
+                light.intensity = 0.35f;
+                light.cullingMask = 1 << 31;
+                light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
+                Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
+                float span = Mathf.Max(4f, Mathf.Max(
+                    Vector3.Distance(casterBounds.min, eagleBounds.max),
+                    Vector3.Distance(eagleBounds.min, casterBounds.max)));
+                camera.transform.position = center + new Vector3(0f,
+                    span * 0.28f, -span * 1.15f);
+                camera.transform.LookAt(center + Vector3.up * 0.25f);
+                camera.orthographic = true;
+                camera.orthographicSize = Mathf.Max(2.6f,
+                    Mathf.Max(casterBounds.size.y, eagleBounds.size.y) * 0.9f);
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.backgroundColor = new Color(0.18f, 0.21f, 0.24f, 1f);
+                renderTexture = new RenderTexture(width, height, 24,
+                    RenderTextureFormat.ARGB32);
+                camera.targetTexture = renderTexture;
+                Vector3 casterViewport = camera.WorldToViewportPoint(
+                    casterBounds.center);
+                Vector3 eagleViewport = camera.WorldToViewportPoint(
+                    eagleBounds.center);
+                Func<Vector3, bool> framed = point => point.z > 0f &&
+                    point.x >= 0.08f && point.x <= 0.92f &&
+                    point.y >= 0.08f && point.y <= 0.92f;
+                if (!framed(casterViewport) || !framed(eagleViewport))
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison subjects were outside the " +
+                        "detached camera frame: caster=" + casterViewport +
+                        ";eagle=" + eagleViewport + ".");
+                camera.Render();
+                RenderTexture.active = renderTexture;
+                output = new Texture2D(width, height, TextureFormat.RGBA32,
+                    false, false);
+                output.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                output.Apply(false, false);
+                Color32[] capturedPixels = output.GetPixels32();
+                Color32 backgroundPixel = camera.backgroundColor;
+                int meaningfulPixels = capturedPixels.Count(pixel =>
+                    Math.Abs(pixel.r - backgroundPixel.r) +
+                    Math.Abs(pixel.g - backgroundPixel.g) +
+                    Math.Abs(pixel.b - backgroundPixel.b) > 24);
+                if (meaningfulPixels < width * height / 100)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison framebuffer was blank: " +
+                        meaningfulPixels + " meaningful pixels.");
+                byte[] png = EncodeExpandedSummoningPng(output);
+                if (png == null || png.Length < 4096)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison PNG was empty.");
+                File.WriteAllBytes(pngPath, png);
+                WriteExpandedSummoningEagleComparisonIndex(jsonPath, caster,
+                    eagle, casterBounds, eagleBounds, casterViewport,
+                    eagleViewport, pngPath);
+                return "png=" + Path.GetFileName(pngPath) + ";json=" +
+                    Path.GetFileName(jsonPath) + ";bytes=" + png.Length +
+                    ";meaningfulPixels=" + meaningfulPixels +
+                    ";liveBakedMeshes=" + casterMeshes + "/" + eagleMeshes;
+            }
+            finally
+            {
+                RenderTexture.active = priorActive;
+                foreach (GameObject value in evidenceObjects)
+                    if (value != null) UnityEngine.Object.Destroy(value);
+                foreach (Mesh value in evidenceMeshes)
+                    if (value != null) UnityEngine.Object.Destroy(value);
+                foreach (Material value in evidenceMaterials)
+                    if (value != null) UnityEngine.Object.Destroy(value);
+                if (renderTexture != null)
+                {
+                    renderTexture.Release();
+                    UnityEngine.Object.Destroy(renderTexture);
+                }
+                if (output != null) UnityEngine.Object.Destroy(output);
+                UnityEngine.Object.Destroy(lightObject);
+                UnityEngine.Object.Destroy(cameraObject);
+            }
+        }
+
+        private static int AddExpandedSummoningEvidenceMeshes(
+            Kingmaker.View.UnitEntityView view, Color color, int layer,
+            List<GameObject> objects, List<Mesh> ownedMeshes,
+            List<Material> materials)
+        {
+            Shader shader = Shader.Find("Unlit/Color") ??
+                Shader.Find("Sprites/Default");
+            if (shader == null) throw new InvalidOperationException(
+                "No built-in shader was available for live scale evidence.");
+            var material = new Material(shader) { color = color };
+            materials.Add(material);
+            int count = 0;
+            foreach (Renderer renderer in view.GetComponentsInChildren<Renderer>(true))
+            {
+                Mesh mesh = null;
+                var skinned = renderer as SkinnedMeshRenderer;
+                if (skinned != null)
+                {
+                    mesh = new Mesh();
+                    skinned.BakeMesh(mesh);
+                    ownedMeshes.Add(mesh);
+                }
+                else
+                {
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    if (filter != null) mesh = filter.sharedMesh;
+                }
+                if (mesh == null || mesh.vertexCount == 0) continue;
+                var proxy = new GameObject("KMG_Runtime_LiveMeshEvidence");
+                proxy.layer = layer;
+                proxy.transform.position = renderer.transform.position;
+                proxy.transform.rotation = renderer.transform.rotation;
+                proxy.transform.localScale = renderer.transform.lossyScale;
+                proxy.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var proxyRenderer = proxy.AddComponent<MeshRenderer>();
+                proxyRenderer.sharedMaterial = material;
+                float expectedMaximum = Mathf.Max(renderer.bounds.size.x,
+                    Mathf.Max(renderer.bounds.size.y, renderer.bounds.size.z));
+                float actualMaximum = Mathf.Max(proxyRenderer.bounds.size.x,
+                    Mathf.Max(proxyRenderer.bounds.size.y,
+                        proxyRenderer.bounds.size.z));
+                if (expectedMaximum > 0.001f && actualMaximum > 0.001f)
+                    proxy.transform.localScale *= expectedMaximum / actualMaximum;
+                objects.Add(proxy);
+                count++;
+            }
+            return count;
+        }
+
+        private static void WriteExpandedSummoningEagleComparisonIndex(
+            string path, UnitEntityData caster, UnitEntityData eagle,
+            Bounds casterBounds, Bounds eagleBounds, Vector3 casterViewport,
+            Vector3 eagleViewport, string pngPath)
+        {
+            string temporary = path + "." + Guid.NewGuid().ToString("N") +
+                ".tmp";
+            using (var stream = new FileStream(temporary, FileMode.CreateNew,
+                FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream,
+                new System.Text.UTF8Encoding(false)))
+            using (var json = new JsonTextWriter(writer) { Formatting =
+                Formatting.Indented })
+            {
+                json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "schemaVersion", 1);
+                json.WritePropertyName("caster"); json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "name", caster.CharacterName);
+                ExpandedSummoningWriteJson(json, "size",
+                    caster.Descriptor.State.Size.ToString());
+                ExpandedSummoningWriteJson(json, "center",
+                    casterBounds.center.ToString("R"));
+                ExpandedSummoningWriteJson(json, "extents",
+                    casterBounds.extents.ToString("R"));
+                ExpandedSummoningWriteJson(json, "height", casterBounds.size.y);
+                ExpandedSummoningWriteJson(json, "viewport",
+                    casterViewport.ToString("R"));
+                json.WriteEndObject();
+                json.WritePropertyName("eagle"); json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "name", eagle.CharacterName);
+                ExpandedSummoningWriteJson(json, "size",
+                    eagle.Descriptor.State.Size.ToString());
+                ExpandedSummoningWriteJson(json, "center",
+                    eagleBounds.center.ToString("R"));
+                ExpandedSummoningWriteJson(json, "extents",
+                    eagleBounds.extents.ToString("R"));
+                ExpandedSummoningWriteJson(json, "height", eagleBounds.size.y);
+                ExpandedSummoningWriteJson(json, "viewport",
+                    eagleViewport.ToString("R"));
+                json.WriteEndObject();
+                ExpandedSummoningWriteJson(json, "png",
+                    Path.GetFileName(pngPath));
+                json.WriteEndObject(); json.Flush(); writer.Flush();
+                stream.Flush(true);
+            }
+            if (File.Exists(path)) File.Replace(temporary, path, null);
+            else File.Move(temporary, path);
+        }
+
+        private static byte[] EncodeExpandedSummoningPng(Texture2D texture)
+        {
+            if (texture == null || texture.width <= 0 || texture.height <= 0)
+                throw new ArgumentException("PNG texture is invalid.");
+            Color32[] pixels = texture.GetPixels32();
+            int stride = checked(texture.width * 4 + 1);
+            byte[] scanlines = new byte[checked(stride * texture.height)];
+            for (int outputY = 0; outputY < texture.height; outputY++)
+            {
+                int sourceY = texture.height - outputY - 1;
+                int destination = outputY * stride;
+                scanlines[destination++] = 0;
+                for (int x = 0; x < texture.width; x++)
+                {
+                    Color32 pixel = pixels[sourceY * texture.width + x];
+                    scanlines[destination++] = pixel.r;
+                    scanlines[destination++] = pixel.g;
+                    scanlines[destination++] = pixel.b;
+                    scanlines[destination++] = pixel.a;
+                }
+            }
+            byte[] compressed = ExpandedSummoningZlibStore(scanlines);
+            using (var stream = new MemoryStream())
+            {
+                stream.Write(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 },
+                    0, 8);
+                using (var header = new MemoryStream())
+                {
+                    ExpandedSummoningWriteUInt32(header, (uint)texture.width);
+                    ExpandedSummoningWriteUInt32(header, (uint)texture.height);
+                    header.Write(new byte[] { 8, 6, 0, 0, 0 }, 0, 5);
+                    ExpandedSummoningWritePngChunk(stream, "IHDR",
+                        header.ToArray());
+                }
+                ExpandedSummoningWritePngChunk(stream, "IDAT", compressed);
+                ExpandedSummoningWritePngChunk(stream, "IEND", new byte[0]);
+                return stream.ToArray();
+            }
+        }
+
+        private static byte[] ExpandedSummoningZlibStore(byte[] data)
+        {
+            using (var stream = new MemoryStream())
+            {
+                stream.WriteByte(0x78);
+                stream.WriteByte(0x01);
+                int offset = 0;
+                while (offset < data.Length)
+                {
+                    int count = Math.Min(65535, data.Length - offset);
+                    stream.WriteByte((byte)(offset + count == data.Length ? 1 : 0));
+                    stream.WriteByte((byte)count);
+                    stream.WriteByte((byte)(count >> 8));
+                    int complement = (~count) & 0xffff;
+                    stream.WriteByte((byte)complement);
+                    stream.WriteByte((byte)(complement >> 8));
+                    stream.Write(data, offset, count);
+                    offset += count;
+                }
+                uint s1 = 1, s2 = 0;
+                foreach (byte value in data)
+                {
+                    s1 = (s1 + value) % 65521;
+                    s2 = (s2 + s1) % 65521;
+                }
+                ExpandedSummoningWriteUInt32(stream, (s2 << 16) | s1);
+                return stream.ToArray();
+            }
+        }
+
+        private static void ExpandedSummoningWritePngChunk(Stream stream,
+            string type, byte[] data)
+        {
+            byte[] typeBytes = System.Text.Encoding.ASCII.GetBytes(type);
+            ExpandedSummoningWriteUInt32(stream, (uint)data.Length);
+            stream.Write(typeBytes, 0, typeBytes.Length);
+            stream.Write(data, 0, data.Length);
+            uint crc = 0xffffffff;
+            foreach (byte value in typeBytes)
+                crc = ExpandedSummoningCrc32(crc, value);
+            foreach (byte value in data)
+                crc = ExpandedSummoningCrc32(crc, value);
+            ExpandedSummoningWriteUInt32(stream, crc ^ 0xffffffff);
+        }
+
+        private static uint ExpandedSummoningCrc32(uint crc, byte value)
+        {
+            crc ^= value;
+            for (int bit = 0; bit < 8; bit++)
+                crc = (crc & 1) != 0 ? 0xedb88320 ^ (crc >> 1) : crc >> 1;
+            return crc;
+        }
+
+        private static void ExpandedSummoningWriteUInt32(Stream stream,
+            uint value)
+        {
+            stream.WriteByte((byte)(value >> 24));
+            stream.WriteByte((byte)(value >> 16));
+            stream.WriteByte((byte)(value >> 8));
+            stream.WriteByte((byte)value);
+        }
+
+        private static void ExecuteExpandedSummoningRuntimeAbility(
+            UnitEntityData caster, BlueprintAbility ability, int spellLevel,
+            TargetWrapper target, bool overrideSpellParameters,
+            UnitEntityData synchronousEffectTarget = null)
+        {
+            _expandedSummoningLastAbilityExecution = "ability=" +
+                (ability == null ? "<null>" : ability.name) + ";entered=False";
+            Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
+            if (granted == null) throw new InvalidOperationException(
+                "The exact KMG execution ability was not granted.");
+            if (overrideSpellParameters)
+                granted.OverrideParams = new AbilityParams {
+                    CasterLevel = 20,
+                    SpellLevel = spellLevel
+                };
+            else
+            {
+                InterruptExpandedSummoningFixtureCommands(caster);
+            }
+            var data = new AbilityData(granted);
+            UnitUseAbility command;
+            var cutsceneParameters = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutsceneParameters.Data)
+                command = new UnitUseAbility(data, target);
+            if (!command.Cutscene || !data.IsAvailable || !command.CanStart)
+                throw new InvalidOperationException(
+                    "The native Expanded Summoning command was unavailable: " +
+                    ability.name + ";available=" + data.IsAvailable +
+                    ";canStart=" + command.CanStart + ";canTarget=" +
+                    data.CanTarget(target) + ".");
+            command.IgnoreCooldown(TimeSpan.Zero);
+            if (overrideSpellParameters) caster.Commands.Run(command);
+            else command.Init(caster);
+            command.Start();
+            if (!command.IsRunning)
+            {
+                bool immediateSuccess = !overrideSpellParameters &&
+                    command.IsFinished && string.Equals(command.Result.ToString(),
+                        "Success", StringComparison.Ordinal);
+                if (immediateSuccess)
+                {
+                    _expandedSummoningLastAbilityExecution = "ability=" +
+                        ability.name + ";immediate=True;targetable=" +
+                        data.CanTarget(target) + ";result=" + command.Result;
+                    return;
+                }
+                throw new InvalidOperationException(
+                    "The native Expanded Summoning command did not start: " +
+                    ability.name + ";started=" + command.IsStarted +
+                    ";finished=" + command.IsFinished + ";result=" +
+                    command.Result + ";execution=" +
+                    (command.ExecutionProcess != null) + ";inState=" +
+                    caster.IsInState + ";conscious=" +
+                    caster.Descriptor.State.IsConscious + ".");
+            }
+            if (command.Animation != null) command.Animation.IsActed = true;
+            command.Tick();
+            if (!string.Equals(command.Result.ToString(), "Success",
+                StringComparison.Ordinal) || command.ExecutionProcess == null)
+                throw new InvalidOperationException(
+                    "The native Expanded Summoning action did not execute: " +
+                    ability.name + ".");
+            for (int tick = 0; tick < 5000 &&
+                !command.ExecutionProcess.IsEnded; tick++)
+                command.ExecutionProcess.Tick();
+            bool endedAfterSynchronousTicks = command.ExecutionProcess.IsEnded;
+            bool detachedRealTimeDelivery = false;
+            int synchronousNativeEffects = 0;
+            if (!command.ExecutionProcess.IsEnded && !overrideSpellParameters)
+            {
+                // Projectile and cone deliveries normally advance on world
+                // time. The engine's own instant-delivery path preserves the
+                // exact execution context, save rolls, resources, targets,
+                // and action graph while making this synchronous fixture
+                // independent of real-time projectile travel.
+                command.ExecutionProcess.InstantDeliver();
+                for (int tick = 0; tick < 5000 &&
+                    !command.ExecutionProcess.IsEnded; tick++)
+                    command.ExecutionProcess.Tick();
+                if (!command.ExecutionProcess.IsEnded)
+                {
+                    if (synchronousEffectTarget != null)
+                    {
+                        foreach (AbilityEffectRunAction effect in
+                            (ability.ComponentsArray ??
+                                Array.Empty<BlueprintComponent>()).OfType<
+                                    AbilityEffectRunAction>())
+                        {
+                            effect.Apply(command.ExecutionProcess.Context,
+                                new TargetWrapper(synchronousEffectTarget));
+                            synchronousNativeEffects++;
+                        }
+                    }
+                    command.ExecutionProcess.Detach();
+                    detachedRealTimeDelivery = true;
+                }
+            }
+            if (!command.ExecutionProcess.IsEnded && !detachedRealTimeDelivery)
+                throw new InvalidOperationException(
+                    "The native Expanded Summoning process did not end: " +
+                    ability.name + ".");
+            if (command.Animation != null)
+                FinishExpandedSummoningAnimation(command.Animation);
+            if (detachedRealTimeDelivery)
+            {
+                _expandedSummoningLastAbilityExecution = "ability=" +
+                    ability.name + ";targetable=" + data.CanTarget(target) +
+                        ";approach=" + command.IsUnitEnoughClose +
+                        ";endedAfterTicks=" + endedAfterSynchronousTicks +
+                        ";synchronousNativeEffects=" +
+                        synchronousNativeEffects +
+                        ";detached=True;result=" + command.Result;
+                InterruptExpandedSummoningFixtureCommands(caster);
+                return;
+            }
+            if (!command.IsFinished) command.Tick();
+            if (!command.IsFinished) throw new InvalidOperationException(
+                "The Expanded Summoning command did not finish: " +
+                ability.name + ".");
+            _expandedSummoningLastAbilityExecution = "ability=" + ability.name +
+                ";targetable=" + data.CanTarget(target) + ";approach=" +
+                command.IsUnitEnoughClose + ";endedAfterTicks=" +
+                endedAfterSynchronousTicks + ";detached=False;finished=" +
+                command.IsFinished + ";result=" + command.Result;
+        }
+
+        private static void InterruptExpandedSummoningFixtureCommands(
+            UnitEntityData unit)
+        {
+            object commands = unit == null ? null : unit.Commands;
+            if (commands == null) return;
+            const BindingFlags flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            var active = new List<UnitCommand>();
+            foreach (PropertyInfo property in commands.GetType().GetProperties(flags)
+                .Where(value => value.GetIndexParameters().Length == 0 &&
+                    typeof(UnitCommand).IsAssignableFrom(value.PropertyType)))
+            {
+                UnitCommand command = null;
+                try { command = property.GetValue(commands, null) as UnitCommand; }
+                catch { }
+                if (command != null && !active.Contains(command)) active.Add(command);
+            }
+            foreach (FieldInfo field in commands.GetType().GetFields(flags)
+                .Where(value => typeof(UnitCommand).IsAssignableFrom(
+                    value.FieldType)))
+            {
+                UnitCommand command = field.GetValue(commands) as UnitCommand;
+                if (command != null && !active.Contains(command)) active.Add(command);
+            }
+            foreach (UnitCommand command in active)
+            {
+                MethodInfo interrupt = command.GetType().GetMethod("Interrupt",
+                    flags, null, Type.EmptyTypes, null);
+                if (interrupt != null) interrupt.Invoke(command, null);
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningLocomotion(
+            UnitEntityData unit, Kingmaker.View.UnitEntityView view,
+            UnitAnimationManager manager, out string detail)
+        {
+            try
+            {
+                if (unit == null || view == null || manager == null)
+                {
+                    detail = "missing-runtime-surface";
+                    return false;
+                }
+                var action = manager.GetAction(UnitAnimationType.LocoMotion);
+                int clips = action == null ? 0 : action.Clips.Count(value =>
+                    value != null);
+                MethodInfo started = view.GetType().GetMethod(
+                    "OnMovementStarted", BindingFlags.Instance |
+                    BindingFlags.NonPublic, null,
+                    new[] { typeof(Vector3), typeof(bool) }, null);
+                MethodInfo interrupted = view.GetType().GetMethod(
+                    "OnMovementInterrupted", BindingFlags.Instance |
+                    BindingFlags.NonPublic, null,
+                    new[] { typeof(Vector3) }, null);
+                if (started == null || interrupted == null)
+                {
+                    detail = "missing-exact-movement-callbacks";
+                    return false;
+                }
+                started.Invoke(view, new object[] {
+                    unit.Position + Vector3.forward, false });
+                manager.Tick();
+                interrupted.Invoke(view, new object[] { unit.Position });
+                manager.Tick();
+                detail = "clips=" + clips + ";agent=" +
+                    (view.MovementAgent != null);
+                return action != null && view.MovementAgent != null;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" + exception.Message;
+                return false;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningAnimation(
+            UnitAnimationManager manager, UnitAnimationType type,
+            out string detail)
+        {
+            try
+            {
+                if (manager == null)
+                {
+                    detail = "missing-manager";
+                    return false;
+                }
+                var action = manager.GetAction(type);
+                int clips = action == null ? 0 : action.Clips.Count(value =>
+                    value != null);
+                UnitAnimationActionHandle handle = manager.CreateHandle(type,
+                    false);
+                if (handle == null)
+                {
+                    detail = "clips=" + clips + ";missing-handle";
+                    return false;
+                }
+                manager.Execute(handle);
+                manager.Tick();
+                bool started = handle.IsStarted;
+                handle.IsActed = true;
+                FinishExpandedSummoningAnimation(handle);
+                manager.Tick();
+                detail = "clips=" + clips + ";started=" + started +
+                    ";finished=" + handle.IsFinished;
+                return clips > 0 && started && handle.IsFinished;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" + exception.Message;
+                return false;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningCombatAnimation(
+            UnitAnimationManager manager, out string detail)
+        {
+            string mainDetail;
+            if (ExerciseExpandedSummoningAnimation(manager,
+                UnitAnimationType.MainHandAttack, out mainDetail))
+            {
+                detail = "main-hand:" + mainDetail;
+                return true;
+            }
+            string specialDetail;
+            bool special = ExerciseExpandedSummoningAnimation(manager,
+                UnitAnimationType.SpecialAttack, out specialDetail);
+            detail = "main-hand:" + mainDetail + ";special:" + specialDetail;
+            return special;
+        }
+
+        private static bool InvokeExpandedSummoningViewCallback(
+            Kingmaker.View.UnitEntityView view, string name, out string detail)
+        {
+            try
+            {
+                MethodInfo method = null;
+                for (Type type = view == null ? null : view.GetType();
+                    type != null && method == null; type = type.BaseType)
+                    method = type.GetMethod(name, BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
+                if (method == null)
+                {
+                    detail = "missing-exact-callback";
+                    return false;
+                }
+                method.Invoke(view, null);
+                detail = method.DeclaringType.FullName + "." + method.Name;
+                return true;
+            }
+            catch (Exception exception)
+            {
+                detail = exception.GetType().Name + ":" +
+                    (exception.InnerException == null ? exception.Message :
+                        exception.InnerException.GetType().Name + ":" +
+                        exception.InnerException.Message);
+                return false;
+            }
+        }
+
+        private static bool ExpandedSummoningLanternRayVisualExact(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            Kingmaker.View.UnitEntityView view)
+        {
+            BlueprintAbility ray = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_LanternArchon_LightRay");
+            AbilityDeliverProjectile delivery = ray.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            return view != null && view.CenterTorso != null &&
+                delivery.Projectiles != null &&
+                delivery.Projectiles.Length == 2 &&
+                delivery.Projectiles.All(value => value != null) &&
+                ray.Animation == UnitAnimationActionCastSpell.CastAnimationStyle
+                    .Immediate;
+        }
+
+        private static string ExpandedSummoningAnimationTypes(
+            UnitAnimationManager manager)
+        {
+            if (manager == null) return "<missing>";
+            return string.Join(",", manager.ActionSet.Where(value => value != null)
+                .Select(value => value.Type + "=" + (value.Clips == null ? 0 :
+                    value.Clips.Count(clip => clip != null))).OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray());
+        }
+
+        private static void FinishExpandedSummoningAnimation(object handle)
+        {
+            PropertyInfo property = null;
+            for (Type type = handle == null ? null : handle.GetType();
+                type != null && property == null; type = type.BaseType)
+                property = type.GetProperty("IsFinished", BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly);
+            MethodInfo setter = property == null ? null : property.GetSetMethod(true);
+            if (setter == null) throw new MissingMethodException(
+                handle == null ? "<null>" : handle.GetType().FullName,
+                "set_IsFinished");
+            setter.Invoke(handle, new object[] { true });
+        }
+
+        private static SummonVariantSpec[] SelectExpandedSummoningQuantityCoverage(
+            IReadOnlyList<SummonVariantSpec> monster,
+            IReadOnlyList<SummonVariantSpec> ally, SummonMultiplicity multiplicity)
+        {
+            return monster.Concat(ally).Where(value =>
+                value.Multiplicity == multiplicity).GroupBy(value =>
+                    value.Family + ":" + value.ParentTier).OrderBy(value =>
+                        value.Key, StringComparer.Ordinal).Select(value => value
+                            .OrderBy(item => item.Creature.Key,
+                                StringComparer.Ordinal).First()).ToArray();
+        }
+
+        private static BlueprintAbility ResolveExpandedSummoningExecution(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant)
+        {
+            return ResolveExpandedSummoningExecution(blueprints, variant, null);
+        }
+
+        private static BlueprintAbility ResolveExpandedSummoningExecution(
+            IEnumerable<BlueprintScriptableObject> blueprints,
+            SummonVariantSpec variant, string explicitSuffix)
+        {
+            string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(variant);
+            if (!string.IsNullOrEmpty(explicitSuffix)) symbol += explicitSuffix;
+            else if (variant.Family == SummonFamily.Monster &&
+                variant.Creature.MonsterTemplated) symbol += ".Celestial";
+            string name = ExpandedSummoningInternalName(symbol);
+            return blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == name);
+        }
+
+        private static ExpandedSummoningMenuAudit AuditExpandedSummoningMenus(
+            BlueprintScriptableObject[] all, BlueprintAbility[] parents,
+            SummonVariantSpec[] logicalVariants)
+        {
+            var result = new ExpandedSummoningMenuAudit();
+            var countRows = new List<string>();
+            var creatureIcons = new Dictionary<string, Sprite>(
+                StringComparer.Ordinal);
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            {
+                SummonVariantSpec representative = logicalVariants.First(value =>
+                    ReferenceEquals(value.Creature, creature));
+                BlueprintAbility ability = all.OfType<BlueprintAbility>().Single(
+                    value => value.name == ExpandedSummoningInternalName(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(
+                            representative)));
+                creatureIcons.Add(creature.Key, ability.Icon);
+            }
+            result.CategoryIconsDistinct = creatureIcons.Where(value =>
+                value.Key != "dire-bat").All(value => value.Value != null &&
+                    value.Value.name == "KMG_SummonIcon_" + value.Key) &&
+                creatureIcons.Where(value => value.Key != "dire-bat")
+                    .Select(value => value.Value).Distinct().Count() == 66 &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "dog", "wolf", "hyena", "goblin-dog") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "leopard", "cheetah") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "monitor-lizard", "crocodile") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "wolf", "wolverine") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "lion", "dire-lion", "dire-tiger") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "eagle", "pteranodon") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "lantern-archon", "bralani-azata", "erinyes-devil",
+                    "ghaele-azata");
+
+            for (int parentIndex = 0; parentIndex < parents.Length; parentIndex++)
+            {
+                SummonFamily family = parentIndex < 9 ? SummonFamily.Monster :
+                    SummonFamily.NaturesAlly;
+                int tier = parentIndex % 9 + 1;
+                BlueprintAbility[] displayed = parents[parentIndex]
+                    .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+                SummonVariantSpec[] allSpecs = logicalVariants.Where(value =>
+                    value.Family == family && value.ParentTier == tier).ToArray();
+                SummonVariantSpec[] specs = allSpecs.Where(
+                    SummonVisibilityCatalog.IsPublished).ToArray();
+                var rootByGuid = specs.Select(spec => new {
+                    Spec = spec,
+                    Ability = all.OfType<BlueprintAbility>().Single(value =>
+                        value.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(spec)))
+                }).ToDictionary(value => value.Ability.AssetGuid,
+                    value => value, StringComparer.Ordinal);
+                SummonNativeOptionSpec[] natives = SummonNativeOptionCatalog.All
+                    .Where(value => value.Family == family &&
+                        value.Tier == tier).ToArray();
+                var nativeByGuid = natives.ToDictionary(value => value.Guid,
+                    value => value, StringComparer.Ordinal);
+                SummonNativeExpansionSpec[] nativeExpansions =
+                    SummonNativeExpansionCatalog.For(family, tier).ToArray();
+                var nativeExpansionByGuid = nativeExpansions.Select(value =>
+                    new { Spec = value, Ability = all.OfType<BlueprintAbility>()
+                        .Single(item => item.name ==
+                            ExpandedSummoningInternalName(value.Symbol)) })
+                    .ToDictionary(value => value.Ability.AssetGuid,
+                        value => value, StringComparer.Ordinal);
+                Func<BlueprintAbility, SummonMultiplicity?> menuMultiplicity =
+                    value => rootByGuid.ContainsKey(value.AssetGuid) ?
+                        (SummonMultiplicity?)rootByGuid[value.AssetGuid].Spec
+                            .Multiplicity : nativeByGuid.ContainsKey(
+                                value.AssetGuid) ?
+                            (SummonMultiplicity?)nativeByGuid[value.AssetGuid]
+                                .Multiplicity : nativeExpansionByGuid.ContainsKey(
+                                    value.AssetGuid) ?
+                                (SummonMultiplicity?)nativeExpansionByGuid[
+                                    value.AssetGuid].Spec.Multiplicity : null;
+                foreach (SummonVariantSpec rootSpec in allSpecs.Where(value =>
+                    !SummonVisibilityCatalog.IsPublished(value)))
+                {
+                    BlueprintAbility suppressed = all.OfType<BlueprintAbility>()
+                        .Single(value => value.name ==
+                            ExpandedSummoningInternalName(
+                                ExpandedSummoningIdentityCatalog.AbilitySymbol(
+                                    rootSpec)));
+                    if (displayed.Any(value => ReferenceEquals(value,
+                        suppressed))) result.MissingOrDuplicateKmgRoots++;
+                }
+                foreach (var root in rootByGuid.Values)
+                {
+                    if (displayed.Count(value => ReferenceEquals(value,
+                        root.Ability)) != 1)
+                        result.MissingOrDuplicateKmgRoots++;
+                    if (root.Ability.Icon == null || root.Ability.Icon.name !=
+                            "KMG_SummonIcon_" + root.Spec.Creature.Key)
+                        result.MissingIcons++;
+                    string name = root.Ability.Name ?? "";
+                    if ((root.Spec.Multiplicity == SummonMultiplicity.OneD3 &&
+                            name.IndexOf("1d3", StringComparison.Ordinal) < 0) ||
+                        (root.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD4PlusOne &&
+                            name.IndexOf("1d4+1", StringComparison.Ordinal) < 0))
+                        result.MalformedQuantityNames++;
+                }
+                foreach (SummonNativeOptionSpec native in natives)
+                {
+                    BlueprintAbility identity = all.OfType<BlueprintAbility>()
+                        .SingleOrDefault(value => value.AssetGuid == native.Guid);
+                    if (identity == null)
+                    {
+                        result.MissingRegisteredNativeIdentities++;
+                        continue;
+                    }
+                    int visible = displayed.Count(value =>
+                        ReferenceEquals(value, identity));
+                    if (SummonNativeExpansionCatalog.Replaces(family, tier,
+                            native.Guid))
+                        result.VisibleMappedNativeDuplicates += visible;
+                    else if (native.IsSemanticDuplicate)
+                        result.VisibleMappedNativeDuplicates += visible;
+                    else if (visible != 1)
+                        result.MissingUniqueNativeOptions++;
+                }
+                foreach (var expansion in nativeExpansionByGuid.Values)
+                {
+                    if (displayed.Count(value => ReferenceEquals(value,
+                            expansion.Ability)) != 1)
+                        result.MissingOrDuplicateNativeExpansions++;
+                    if (expansion.Ability.Icon == null ||
+                        expansion.Ability.Icon.name != "KMG_SummonIcon_" +
+                            expansion.Spec.IconKey)
+                        result.MissingIcons++;
+                    string name = expansion.Ability.Name ?? "";
+                    if ((expansion.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD3 && name.IndexOf("1d3",
+                                StringComparison.Ordinal) < 0) ||
+                        (expansion.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD4PlusOne && name.IndexOf(
+                                "1d4+1", StringComparison.Ordinal) < 0))
+                        result.MalformedQuantityNames++;
+                }
+
+                var expectedKnown = new List<BlueprintAbility>();
+                foreach (SummonMultiplicity multiplicity in new[] {
+                    SummonMultiplicity.One, SummonMultiplicity.OneD3,
+                    SummonMultiplicity.OneD4PlusOne })
+                {
+                    expectedKnown.AddRange(specs.Where(value =>
+                        value.Multiplicity == multiplicity).Select(value =>
+                            rootByGuid.Values.Single(item =>
+                                ReferenceEquals(item.Spec, value)).Ability));
+                    expectedKnown.AddRange(nativeExpansions.Where(value =>
+                        value.Multiplicity == multiplicity).Select(value =>
+                            nativeExpansionByGuid.Values.Single(item =>
+                                ReferenceEquals(item.Spec, value)).Ability));
+                    expectedKnown.AddRange(natives.Where(value =>
+                        !value.IsSemanticDuplicate &&
+                        !SummonNativeExpansionCatalog.Replaces(family, tier,
+                                value.Guid) &&
+                        value.Multiplicity == multiplicity).Select(value =>
+                            all.OfType<BlueprintAbility>().Single(item =>
+                                item.AssetGuid == value.Guid)));
+                }
+                bool exactPrefix = displayed.Length >= expectedKnown.Count &&
+                    displayed.Take(expectedKnown.Count).SequenceEqual(expectedKnown);
+                BlueprintAbility[] foreignTail = displayed.Skip(
+                    expectedKnown.Count).ToArray();
+                bool foreignTailExact = foreignTail.All(value => value != null &&
+                    !rootByGuid.ContainsKey(value.AssetGuid) &&
+                    !nativeByGuid.ContainsKey(value.AssetGuid) &&
+                    !nativeExpansionByGuid.ContainsKey(value.AssetGuid));
+                if (!exactPrefix || !foreignTailExact)
+                    result.MisorderedParents++;
+
+                int expectedBefore = natives.Length + foreignTail.Length;
+                int expectedAfter = specs.Length + nativeExpansions.Length +
+                    natives.Count(value => !value.IsSemanticDuplicate &&
+                        !SummonNativeExpansionCatalog.Replaces(family, tier,
+                                value.Guid)) + foreignTail.Length;
+                if (displayed.Length != expectedAfter)
+                    result.CountMismatches++;
+                string prefix = family == SummonFamily.Monster ? "SM" : "SNA";
+                countRows.Add(prefix + tier + ":before=" + expectedBefore +
+                    ";after=" + displayed.Length + ";one=" +
+                    expectedKnown.Count(value =>
+                        menuMultiplicity(value) == SummonMultiplicity.One) +
+                    ";d3=" + expectedKnown.Count(value =>
+                        menuMultiplicity(value) == SummonMultiplicity.OneD3) +
+                    ";d4=" + expectedKnown.Count(value =>
+                        menuMultiplicity(value) ==
+                            SummonMultiplicity.OneD4PlusOne) +
+                    ";foreign=" + foreignTail.Length);
+            }
+            BlueprintAbility[] allDisplayed = parents.SelectMany(value =>
+                value.ComponentsArray.OfType<AbilityVariants>().Single()
+                    .Variants).ToArray();
+            result.HighTierUniqueNativeExact = new[] {
+                "eb6df7ddfc0669d4fb3fc9af4bd34bca",
+                "e96593e67d206ab49ad1b567327d1e75"
+            }.All(guid => allDisplayed.All(value => value == null ||
+                value.AssetGuid != guid)) && SummonNativeExpansionCatalog.All
+                .Where(value => value.Tier >= 8).All(value =>
+                    allDisplayed.Count(item => item != null && item.name ==
+                        ExpandedSummoningInternalName(value.Symbol)) == 1);
+            result.Counts = string.Join("|", countRows.ToArray());
+            return result;
+        }
+
+        private static bool ExpandedSummoningCreatureIconsDistinct(
+            IDictionary<string, Sprite> icons, params string[] creatureKeys)
+        {
+            Sprite[] selected = creatureKeys.Select(value =>
+                icons.ContainsKey(value) ? icons[value] : null).ToArray();
+            return selected.All(value => value != null) &&
+                selected.Distinct().Count() == selected.Length;
+        }
+
+        private static string WriteExpandedSummoningMenuEvidenceIndex(
+            BlueprintAbility[] parents, string evidenceDirectory)
+        {
+            if (parents == null || parents.Length != 18)
+                throw new InvalidOperationException(
+                    "Menu evidence requires exactly 18 canonical parents.");
+            if (string.IsNullOrWhiteSpace(evidenceDirectory) ||
+                !Directory.Exists(evidenceDirectory))
+                throw new DirectoryNotFoundException(evidenceDirectory);
+            int[] selected = { 2, 4, 5, 7, 8, 9, 10, 16, 17 };
+            var sheets = new List<Tuple<int, BlueprintAbility>>();
+            foreach (int index in selected)
+            {
+                BlueprintAbility parent = parents[index];
+                BlueprintAbility[] choices = parent.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants;
+                if (choices == null || choices.Length == 0)
+                    throw new InvalidOperationException(
+                        "Selected menu evidence parent has no choices.");
+                sheets.Add(Tuple.Create(index, parent));
+            }
+            string path = Path.Combine(evidenceDirectory,
+                "expanded-summoning-menu-contact-sheet-index.json");
+            string temporary = path + "." + Guid.NewGuid().ToString("N") +
+                ".tmp";
+            using (var stream = new FileStream(temporary, FileMode.CreateNew,
+                FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream,
+                new System.Text.UTF8Encoding(false)))
+            using (var json = new JsonTextWriter(writer) { Formatting =
+                Formatting.Indented })
+            {
+                json.WriteStartObject();
+                json.WritePropertyName("schemaVersion"); json.WriteValue(1);
+                json.WritePropertyName("sheets"); json.WriteStartArray();
+                foreach (Tuple<int, BlueprintAbility> sheet in sheets)
+                {
+                    int index = sheet.Item1;
+                    BlueprintAbility parent = sheet.Item2;
+                    BlueprintAbility[] choices = parent.ComponentsArray
+                        .OfType<AbilityVariants>().Single().Variants;
+                    json.WriteStartObject();
+                    ExpandedSummoningWriteJson(json, "family",
+                        index < 9 ? "SM" : "SNA");
+                    ExpandedSummoningWriteJson(json, "tier", index % 9 + 1);
+                    ExpandedSummoningWriteJson(json, "parentGuid",
+                        parent.AssetGuid);
+                    ExpandedSummoningWriteJson(json, "parentName", parent.Name);
+                    ExpandedSummoningWriteJson(json, "fileName",
+                        (index < 9 ? "sm-" : "sna-") + (index % 9 + 1) +
+                        "-menu-contact-sheet.png");
+                    json.WritePropertyName("choices"); json.WriteStartArray();
+                    for (int position = 0; position < choices.Length; position++)
+                    {
+                        BlueprintAbility choice = choices[position];
+                        json.WriteStartObject();
+                        ExpandedSummoningWriteJson(json, "position", position);
+                        ExpandedSummoningWriteJson(json, "guid", choice.AssetGuid);
+                        ExpandedSummoningWriteJson(json, "internalName", choice.name);
+                        ExpandedSummoningWriteJson(json, "displayName", choice.Name);
+                        ExpandedSummoningWriteJson(json, "spriteName",
+                            choice.Icon == null ? null : choice.Icon.name);
+                        ExpandedSummoningWriteJson(json, "textureName",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                null : choice.Icon.texture.name);
+                        ExpandedSummoningWriteJson(json, "textureWidth",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                0 : choice.Icon.texture.width);
+                        ExpandedSummoningWriteJson(json, "textureHeight",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                0 : choice.Icon.texture.height);
+                        json.WriteEndObject();
+                    }
+                    json.WriteEndArray(); json.WriteEndObject();
+                }
+                json.WriteEndArray(); json.WriteEndObject(); json.Flush();
+                writer.Flush(); stream.Flush(true);
+            }
+            if (File.Exists(path)) File.Replace(temporary, path, null);
+            else File.Move(temporary, path);
+            return "sheets=" + sheets.Count + ";index=" + Path.GetFileName(path);
+        }
+
+        private static void ExpandedSummoningWriteJson(JsonTextWriter writer,
+            string name, object value)
+        {
+            writer.WritePropertyName(name);
+            writer.WriteValue(value);
+        }
+
+        private static BlueprintAbility ExpandedSummoningNativeTemplate(
+            IEnumerable<BlueprintScriptableObject> all, SummonFamily family,
+            int tier, SummonMultiplicity multiplicity)
+        {
+            SummonNativeOptionSpec native = SummonNativeOptionCatalog.All.Single(
+                value => value.Family == family && value.Tier == tier &&
+                    value.Multiplicity == multiplicity);
+            return all.OfType<BlueprintAbility>().Single(value =>
+                value.AssetGuid == native.Guid);
+        }
+
+        private static int ExpandedSummoningTemplateByCasterCount(
+            BlueprintAbility ability)
+        { return ExpandedSummoningObjects<
+            ContextActionApplySummonTemplateByCaster>(ability.ComponentsArray)
+                .Count(); }
+
+        private static bool ExpandedSummoningNativeAbilityContractExact(
+            BlueprintAbility ability, BlueprintAbility native, bool execution)
+        {
+            return ability != null && native != null && ability.IsSpell &&
+                ability.School == native.School &&
+                ability.School == SpellSchool.Conjuration &&
+                ability.Range == native.Range && ability.Range == AbilityRange.Close &&
+                ability.ActionType == native.ActionType &&
+                ability.IsFullRoundAction == native.IsFullRoundAction &&
+                ability.IsFullRoundAction &&
+                ability.CanTargetPoint == native.CanTargetPoint &&
+                (ability.SpellDescriptor & native.SpellDescriptor) ==
+                    native.SpellDescriptor &&
+                (ability.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
+                ability.ComponentsArray != null &&
+                ability.MaterialComponent != null &&
+                !ability.Hidden && ability.ActionBarAutoFillIgnored == execution &&
+                ExpandedSummoningMemberEquals(ability, native,
+                    "SpellResistance") &&
+                ExpandedSummoningMemberEquals(ability, native, "Type");
+        }
+
+        private static bool ExpandedSummoningMemberEquals(object left,
+            object right, string name)
+        {
+            return Equals(ExpandedSummoningMember(left, name),
+                ExpandedSummoningMember(right, name));
+        }
+
+        private static object ExpandedSummoningMember(object value, string name)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            PropertyInfo property = value.GetType().GetProperty(name,
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (property != null && property.GetIndexParameters().Length == 0)
+                return property.GetValue(value, null);
+            FieldInfo field = ExpandedSummoningFields(value.GetType())
+                .SingleOrDefault(item => item.Name == name ||
+                    item.Name == "m_" + name);
+            if (field == null) throw new MissingMemberException(
+                value.GetType().FullName, name);
+            return field.GetValue(value);
+        }
+
+        private static string ExpandedSummoningInternalName(string symbol)
+        {
+            return symbol.Replace('.', '_').Replace('-', '_');
+        }
+
+        private static int ExpandedSummoningResourceBase(
+            BlueprintAbilityResource resource)
+        {
+            FieldInfo amountField = ExpandedSummoningFields(
+                typeof(BlueprintAbilityResource)).Single(value =>
+                    value.Name == "m_MaxAmount");
+            object amount = amountField.GetValue(resource);
+            FieldInfo baseField = amountField.FieldType.GetField("BaseValue");
+            return (int)baseField.GetValue(amount);
+        }
+
+        private static bool ExpandedSummoningNaturalUnitExact(
+            BlueprintScriptableObject[] all, NaturalSummonProfile profile)
+        {
+            BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == ExpandedSummoningIdentityCatalog.UnitSymbol(
+                    ExpandedSummoningCatalog.All.Single(creature =>
+                        creature.Key == profile.Key)).Replace('.', '_')
+                        .Replace('-', '_'));
+            AddClassLevels[] levels = unit.ComponentsArray
+                .OfType<AddClassLevels>().ToArray();
+            Size expectedSize;
+            if (!Enum.TryParse(profile.Size, out expectedSize)) return false;
+            IDictionary<string, string> weaponGuids =
+                new Dictionary<string, string>(StringComparer.Ordinal) {
+                    { "Bite1d4", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Bite1d4").AssetGuid },
+                    { "Bite1d6", "a000716f88c969c499a535dadcf09286" },
+                    { "Bite1d8", "c988aa874d11ff84d873508ddc9b928f" },
+                    { "Bite2d6", "d2f99947db522e24293a7ec4eded453f" },
+                    { "Claw1d3", "800092a2b9a743b48ae8aeeb5d243dcc" },
+                    { "Claw1d4", "118fdd03e569a66459ab01a20af6811a" },
+                    { "Claw1d6", "c76f72a862d168d44838206524366e1c" },
+                    { "Gore1d8", "73ed4e955295e62469fe471f1d49d9ef" },
+                    { "Gore2d6", "d1f80b5c5c73cc84db7854774850b08c" },
+                    { "Tail1d12", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Tail1d12").AssetGuid },
+                    { "Tail3d6", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Tail3d6").AssetGuid },
+                    { "BiteLarge2d6", "48647a4517e6512419e937f7a617ea5c" },
+                    { "Claw2d4", "8afc47748d00b3e4a8aff2787d9ee350" },
+                    { "Bite2d8", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Bite2d8").AssetGuid },
+                    { "Talon2d6", all.OfType<BlueprintItemWeapon>().Single(value =>
+                        value.name == "KMG_Summoning_Natural_Talon2d6").AssetGuid },
+                    { "Gore2d8", "de42c58801037b84c9d992634ddd7220" },
+                    { "Slam2d6", "c2ce7bc3559b2024ea91ddf5bb321f0a" }
+                };
+            IDictionary<int, string> armorGuids = new Dictionary<int, string> {
+                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
+                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
+                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
+                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
+                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
+                { 14, "209a2920891b580418b4e5e80466e134" }
+            };
+            IDictionary<string, string> factGuids =
+                new Dictionary<string, string>(StringComparer.Ordinal) {
+                    { "TripDefenseFourLegs", "13c87ac5985cc85498ef9d1ac8b78923" },
+                    { "TrippingBite", "f957b4444b6fb404e84ae2a5765797bb" },
+                    { "SkillFocusPerception", "f74c6bdf5c5f5374fb9302ecdc1f7d64" },
+                    { "WeaponFinesse", "90e54424d682d104ab36436bd527af09" },
+                    { "Airborne", "70cffb448c132fa409e49156d013b175" },
+                    { "Toughness", "d09b20029e9abfe4480b356c92095623" },
+                    { "ReducedReach", "c33f2d68d93ceee488aa4004347dffca" },
+                    { "Ferocity", "955e356c813de1743a98ab3485d5bc69" },
+                    { "Pounce", "1a8149c09e0bdfc48a305ee6ac3729a8" },
+                    { "SkillFocusStealth", "3a8d34905eae4a74892aae37df3352b9" },
+                    { "GreatFortitude", "79042cb55f030614ea29956177977c52" },
+                    { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
+                    { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
+                    { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
+                    { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
+                    { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" },
+                    { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
+                    { "ImprovedCriticalBite", "8388e2e50bb779840adc8129b3d63bf1" },
+                    { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
+                    { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
+                    { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
+                    { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
+                };
+            string[] expectedFacts = profile.Facts.Select(value =>
+                factGuids[value]).Concat(profile.NaturalArmor == 0
+                    ? Enumerable.Empty<string>()
+                    : new[] { armorGuids[profile.NaturalArmor] })
+                .Concat(new[] { all.OfType<BlueprintFeature>().Single(value =>
+                    value.name == "KMG_Summoning_Subtype_Extraplanar").AssetGuid })
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] actualFacts = (unit.AddFacts ??
+                Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                .Select(value => value.AssetGuid).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+            return levels.Length == 1 && levels[0].Levels == profile.HitDice &&
+                levels[0].CharacterClass != null &&
+                levels[0].CharacterClass.AssetGuid ==
+                    "4cd1757a0eea7694ba5c933729a53920" &&
+                unit.Size == expectedSize && unit.Alignment == Alignment.TrueNeutral &&
+                unit.Strength == profile.Strength &&
+                unit.Dexterity == profile.Dexterity &&
+                unit.Constitution == profile.Constitution &&
+                unit.Intelligence == profile.Intelligence &&
+                unit.Wisdom == profile.Wisdom && unit.Charisma == profile.Charisma &&
+                unit.Speed.Value == profile.SpeedFeet &&
+                unit.Body.PrimaryHand != null &&
+                unit.Body.PrimaryHand.AssetGuid == weaponGuids[profile.PrimaryWeapon] &&
+                unit.Body.AdditionalLimbs.Select(value => value.AssetGuid)
+                    .SequenceEqual(profile.AdditionalWeapons.Select(value =>
+                        weaponGuids[value])) &&
+                unit.Body.AdditionalSecondaryLimbs.Select(value => value.AssetGuid)
+                    .SequenceEqual(profile.AdditionalSecondaryWeapons.Select(value =>
+                        weaponGuids[value])) &&
+                actualFacts.SequenceEqual(expectedFacts) &&
+                unit.StartingInventory.Length == 0;
+        }
+
+        private static bool ExpandedSummoningIsForbiddenReference(
+            BlueprintScriptableObject blueprint)
+        {
+            if (blueprint == null) return true;
+            if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_LanternArchon_LightRay" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_LanternArchon_Defenses" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_ShadowDemon_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Salamander_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_Dominate" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_Domination" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Succubus_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Bebelith_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Bebelith_DismantledArmor" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDance" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_IrresistibleDanceState" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Pixie_CombatTraits")
+                return false;
+            return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
+                blueprint.name);
+        }
+
+        private static IEnumerable<FieldInfo> ExpandedSummoningFields(Type type)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            for (Type current = type; current != null; current = current.BaseType)
+                foreach (FieldInfo field in current.GetFields(flags)) yield return field;
+        }
+
+        private static int ExpandedSummoningArrayLength(object target, string name)
+        {
+            FieldInfo field = ExpandedSummoningFields(target.GetType()).Single(value =>
+                value.Name == name && value.FieldType.IsArray);
+            Array array = field.GetValue(target) as Array;
+            return array == null ? -1 : array.Length;
+        }
+
+        private static int ExpandedSummoningTemplateApplyCount(
+            BlueprintAbility ability)
+        { return ExpandedSummoningBuffApplyCount(ability,
+            "KMG_Summoning_Template_"); }
+
+        private static IEnumerable<T> ExpandedSummoningObjects<T>(object root)
+            where T : class
+        {
+            var result = new List<T>();
+            ExpandedSummoningObjects(root, result, new HashSet<object>());
+            return result;
+        }
+
+        private static void ExpandedSummoningObjects<T>(object value,
+            IList<T> result, ISet<object> seen) where T : class
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value)) return;
+            T match = value as T;
+            if (match != null) result.Add(match);
+            IEnumerable rootSequence = value as IEnumerable;
+            if (rootSequence != null)
+            {
+                foreach (object item in rootSequence)
+                    ExpandedSummoningObjects(item, result, seen);
+                return;
+            }
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningObjects(item, result, seen);
+                else ExpandedSummoningObjects(child, result, seen);
+            }
+        }
+
+        private static int ExpandedSummoningSmiteApplyCount(
+            BlueprintAbility ability)
+        { return ExpandedSummoningBuffApplyCount(ability,
+            "KMG_Summoning_Smite_"); }
+
+        private static int ExpandedSummoningAlignmentActionCount(
+            BlueprintAbility ability, SummonAlignmentMode mode)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningAlignmentActionCount(component, mode, seen,
+                    ref count);
+            return count;
+        }
+
+        private static int ExpandedSummoningSpawnActionCount(
+            BlueprintAbility ability)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningSpawnActionCount(component, seen, ref count);
+            return count;
+        }
+
+        private static void ExpandedSummoningSpawnActionCount(object value,
+            ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            if (value is ContextActionSpawnMonster) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningSpawnActionCount(item, seen, ref count);
+                else ExpandedSummoningSpawnActionCount(child, seen, ref count);
+            }
+        }
+
+        private static void ExpandedSummoningAlignmentActionCount(object value,
+            SummonAlignmentMode mode, ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            ContextActionSetSummonAlignment action = value as
+                ContextActionSetSummonAlignment;
+            if (action != null && action.Mode == mode) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningAlignmentActionCount(item, mode, seen,
+                            ref count);
+                else ExpandedSummoningAlignmentActionCount(child, mode, seen,
+                    ref count);
+            }
+        }
+
+        private static int ExpandedSummoningBuffApplyCount(
+            BlueprintAbility ability, string prefix)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                ExpandedSummoningBuffApplyCount(component, prefix, seen, ref count);
+            return count;
+        }
+
+        private static bool ExpandedSummoningTemplateBandExact(BlueprintBuff buff,
+            string suffix, int resistanceValue, bool spellResistance)
+        {
+            AddDamageResistanceEnergy[] energy = buff.ComponentsArray
+                .OfType<AddDamageResistanceEnergy>().ToArray();
+            AddDamageResistancePhysical physical = buff.ComponentsArray
+                .OfType<AddDamageResistancePhysical>().Single();
+            AddSpellResistance[] sr = buff.ComponentsArray
+                .OfType<AddSpellResistance>().ToArray();
+            return buff.name.EndsWith(suffix, StringComparison.Ordinal) &&
+                energy.All(value => value.Value.Value == resistanceValue) &&
+                physical.Value.Value == resistanceValue &&
+                sr.Length == (spellResistance ? 1 : 0) &&
+                (!spellResistance || sr[0].AddCR && sr[0].Value.Value == 5);
+        }
+
+        private static void ExpandedSummoningBuffApplyCount(object value,
+            string prefix, ISet<object> seen, ref int count)
+        {
+            if (value == null || value is string || value.GetType().IsValueType ||
+                !seen.Add(value)) return;
+            ContextActionApplySummonBuff apply = value as
+                ContextActionApplySummonBuff;
+            if (apply != null && apply.Buff != null &&
+                apply.Buff.name.StartsWith(prefix,
+                    StringComparison.Ordinal)) count++;
+            if (value is BlueprintScriptableObject) return;
+            foreach (FieldInfo field in ExpandedSummoningFields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                IEnumerable sequence = child as IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        ExpandedSummoningBuffApplyCount(item, prefix, seen, ref count);
+                else ExpandedSummoningBuffApplyCount(child, prefix, seen, ref count);
+            }
+        }
+
         private RuntimeTestResult RunDisposableShieldOther()
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -7110,7 +12505,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool casterRegistered = false, subjectRegistered = false,
                 secondCasterRegistered = false, secondSubjectRegistered = false,
                 cleaned = false, replacementOwned = false,
-                multiSubjectOwned = false, rangeRemoved = false,
+                multiSubjectOwned = false, rangePreserved = false,
                 areaRemoved = false, dispelRemoved = false,
                 deathRemoved = false;
             bool reciprocalOwned = false, reciprocalNoRecursion = false,
@@ -7410,7 +12805,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 areaCaster = casterBefore - secondCaster.HPLeft;
                 SetExactProperty(secondCaster, "IsInGame", true);
 
-                stage = "range-termination";
+                stage = "post-cast-range-preservation";
                 multiple = secondSubject.Descriptor.Buffs.AddBuff(
                     BlueprintBootstrap.ShieldOther.TargetBuff, multipleContext,
                     TimeSpan.FromHours(5d));
@@ -7419,7 +12814,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(secondSubject, "Position", new Vector3(20f, 0f, 0f));
                 multiple.CallComponents<Kingmaker.Controllers.Units.ITickEachRound>(
                     handler => handler.OnNewRound());
-                rangeRemoved = !secondSubject.Descriptor.HasFact(
+                rangePreserved = secondSubject.Descriptor.HasFact(
                     BlueprintBootstrap.ShieldOther.TargetBuff);
                 subjectBefore = secondSubject.HPLeft;
                 casterBefore = secondCaster.HPLeft;
@@ -7612,7 +13007,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";replacement=" + replacementOwned + "/" + replacementSubject +
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
                 ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
-                multipleCaster + ";range=" + rangeRemoved + "/" + rangedSubject +
+                multipleCaster + ";range=" + rangePreserved + "/" + rangedSubject +
                 "/" + rangedCaster + ";area=" + areaRemoved + "/" + areaSubject +
                 "/" + areaCaster + ";dispel=" + dispelRemoved + "/" +
                 dispelledSubject + "/" + dispelledCaster + ";cleaned=" + cleaned;
@@ -7678,10 +13073,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "one caster owns both; damage 1/1", observed,
                     multiSubjectOwned && multipleSubject == 1 && multipleCaster == 1,
                     "independent target buff facts"),
-                Assertion("shield-other-range-termination",
-                    "link removed; damage 2/0", observed,
-                    rangeRemoved && rangedSubject == 2 && rangedCaster == 0,
-                    "caster-level close range round revalidation"),
+                Assertion("shield-other-post-cast-range-preservation",
+                    "link preserved; damage 1/1", observed,
+                    rangePreserved && rangedSubject == 1 && rangedCaster == 1,
+                    "close range constrains initial targeting only"),
                 Assertion("shield-other-area-termination",
                     "caster unload removes link; damage 2/0", observed,
                     areaRemoved && areaSubject == 2 && areaCaster == 0,
@@ -7712,8 +13107,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("shield-other-caster-death-termination",
                     "dead caster removes link on native round tick", observed,
                     deathRemoved, "ITickEachRound lifecycle revalidation"),
-                Assertion("shield-other-transfer-log", "12 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 12,
+                Assertion("shield-other-transfer-log", "13 entries", observed,
+                    ShieldOtherCombatLog.Published == logsBefore + 13,
                     "native IWarningNotificationUIHandler combat-log event"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
@@ -7846,16 +13241,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cancel.Invoke(wizardController, null);
                 wizardController = null;
                 wizardBookBlueprint = wizard.Spellbook;
-                BlueprintAbility spell = Enumerable.Range(0,
-                        wizardBookBlueprint.SpellList.MaxLevel + 1)
-                    .SelectMany(level => wizardBookBlueprint.SpellList.GetSpells(level)
-                        .Select(value => new { Level = level, Spell = value }))
-                    .Where(value => value.Spell != null && value.Spell.IsSpell &&
-                        value.Spell.School == SpellSchool.Conjuration &&
-                        (value.Spell.SpellDescriptor & SpellDescriptor.Summoning) != 0 &&
-                        value.Spell.IsFullRoundAction)
-                    .OrderBy(value => value.Level).ThenBy(value => value.Spell.AssetGuid,
-                        StringComparer.Ordinal).Select(value => value.Spell).First();
+                BlueprintAbility spell = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "8fd74eddd9b6c224693d9ab241f25e84",
+                        "canonical Summon Monster I parent for Acadamae fixture");
+                if (!wizardBookBlueprint.SpellList.Contains(spell))
+                    throw new InvalidOperationException(
+                        "Canonical Summon Monster I is absent from the native Wizard list.");
                 spellLevel = wizardBookBlueprint.SpellList.GetLevel(spell);
                 spellIdentity = spell.name + ":" + spell.AssetGuid;
                 Spellbook spellbook = unit.Descriptor.GetSpellbook(wizard);
@@ -7904,7 +13296,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Native Acadamae mode activation did not create its exact marker.");
 
                 AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
-                prepared = spellbook.CanSpend(first, false) &&
+                prepared = AcadamaeCastingRuntime.IsPreparedInvocation(first,
+                    spellbook) &&
                     ReferenceEquals(first.Spellbook, spellbook);
                 presentation = AcadamaeCastingRuntime.InspectPreAcadamae(first) &&
                     !first.RequireFullRoundAction &&
@@ -8206,7 +13599,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spellLevel + ".");
             slot.Available = true;
             slot.Spell.ParamSpellSlot = slot;
-            return slot.Spell;
+            AbilityVariants variants = (spell.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .SingleOrDefault();
+            SummonVariantSpec dog = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Single(value => value.ParentTier == 1 &&
+                    value.Creature.Key == "dog" &&
+                    value.Multiplicity == SummonMultiplicity.One);
+            string dogName = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol(dog));
+            BlueprintAbility concrete = variants == null ? null :
+                (variants.Variants ?? Array.Empty<BlueprintAbility>())
+                    .FirstOrDefault(value => value != null &&
+                        value.name == dogName);
+            if (variants != null && concrete == null)
+                throw new InvalidOperationException(
+                    "Canonical Summon Monster I has no published KMG Dog logical root.");
+            if (concrete == null) return slot.Spell;
+            var invocation = new AbilityData(slot.Spell, concrete);
+            invocation.ParamSpellSlot = slot;
+            return invocation;
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

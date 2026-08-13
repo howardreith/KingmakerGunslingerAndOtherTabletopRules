@@ -35,6 +35,34 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ExpandedSummoningCatalogTests.cs" />
+    <Compile Include="ExpandedSummoningPresentationTests.cs" />
+    <Compile Include="SummonPublicationPolicyTests.cs" />
+    <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
+    <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCreatureSpec.cs"><Link>Summoning\SummonCreatureSpec.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantSpec.cs"><Link>Summoning\SummonVariantSpec.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeOptionCatalog.cs"><Link>Summoning\SummonNativeOptionCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeExpansionCatalog.cs"><Link>Summoning\SummonNativeExpansionCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisibilityCatalog.cs"><Link>Summoning\SummonVisibilityCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonViewScaleCatalog.cs"><Link>Summoning\SummonViewScaleCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonIconCatalog.cs"><Link>Summoning\SummonIconCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdentityCatalog.cs"><Link>Summoning\ExpandedSummoningIdentityCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateBandPolicy.cs"><Link>Summoning\SummonTemplateBandPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateSmitePolicy.cs"><Link>Summoning\SummonTemplateSmitePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonAlignmentRuntimePolicy.cs"><Link>Summoning\SummonAlignmentRuntimePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateSelectionPolicy.cs"><Link>Summoning\SummonTemplateSelectionPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
@@ -237,6 +265,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingProgression.cs"><Link>Classes\GunTrainingProgression.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(KingmakerManagedDir)\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>

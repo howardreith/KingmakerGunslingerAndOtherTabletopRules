@@ -437,6 +437,12 @@ try {
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
         'production-firearm-catalog',
+        'disposable-expanded-summoning',
+        'disposable-expanded-summoning-player-path',
+        'disposable-expanded-summoning-visual-contracts',
+        'working-save-expanded-summoning-prepare',
+        'working-save-expanded-summoning-verify-cleanup',
+        'working-save-expanded-summoning-verify-absent',
         'advanced-capacity',
         'gunslinger-starting-items',
         'observe-working-save-entry-action',

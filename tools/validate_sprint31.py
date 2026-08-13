@@ -115,9 +115,12 @@ def validate(
         ],
         "Sprint 31 production firearm blueprints",
     )
+    registration_token = ("ExpectedRegisteredBlueprintCount = 254 +"
+        if (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs").is_file()
+        else "ExpectedRegisteredBlueprintCount = " + str(expected_active_blueprints))
     require_tokens(
         read(root, "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs"),
-        ["ExpectedRegisteredBlueprintCount = " + str(expected_active_blueprints),
+        [registration_token,
          "ProductionFirearmBlueprints.Register"],
         "Sprint 31 blueprint bootstrap",
     )

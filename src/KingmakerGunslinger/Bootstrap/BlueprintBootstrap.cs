@@ -16,6 +16,7 @@ using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -27,7 +28,8 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 254;
+        internal const int ExpectedRegisteredBlueprintCount = 254 +
+            ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -501,6 +503,7 @@ namespace KingmakerGunslinger.Bootstrap
             try
             {
                 ProjectAssetIcons.Load(context);
+                ExpandedSummoningProjectIcons.Load(context);
                 BlueprintInitializationResult result = InitializeCore(context, library);
 
                 lock (Gate)
@@ -616,10 +619,17 @@ namespace KingmakerGunslinger.Bootstrap
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
+            ExpandedSummoningPublication expandedSummoningPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                ExpandedSummoningBlueprintSet expandedSummoning =
+                    ExpandedSummoningBlueprints.Register(library, registry);
+                if (publicationPlan.ExpandedSummoningParents)
+                    expandedSummoningPublication = ExpandedSummoningPublisher
+                        .Publish(library, expandedSummoning);
 
                 ShieldOtherBlueprintSet shieldOther =
                     ShieldOtherBlueprints.Register(library, registry);
@@ -990,6 +1000,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "shield-other.rollback-failed",
                             "Blueprint initialization failed and Shield Other list rollback was refused.",
                             spellRollbackException);
+                    }
+                }
+                if (expandedSummoningPublication != null)
+                {
+                    try { expandedSummoningPublication.Rollback(); }
+                    catch (Exception summonRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "expanded-summoning.rollback-failed",
+                            "Blueprint initialization failed and Expanded Summoning parent rollback was refused.",
+                            summonRollbackException);
                     }
                 }
                 if (classPublication != null)

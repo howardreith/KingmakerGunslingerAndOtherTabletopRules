@@ -1,5 +1,29 @@
 # Current architecture
 
+## Expanded Summoning 0.0.78 layer
+
+Player-visible summon children use a project-owned icon manifest with 77
+distinct concepts. The runtime loader resolves PNGs from the installed mod
+root, verifies frozen SHA-256 metadata, creates one persistent texture/sprite
+per icon key, and shares that sprite only across placements for the same
+creature. Publication fails closed on a missing/invalid required asset; it does
+not consult native spell icons, item icons, portraits, or category fallbacks.
+The outer native spell parents retain their original family icons.
+
+Expanded Summoning is a data-driven fourth feature module. Immutable creature
+and variant specifications generate all legal one/1d3/1d4+1 same-kind
+placements. Registration is unconditional and publication is independently
+restart-gated. A pure merge policy and transactional final-live reconciler
+preserve native and third-party variants by reference and order, append KMG
+choices deterministically, reject ambiguity, and roll back only when exact
+rollback preconditions still hold.
+
+The summon builder clones and sanitizes donor units, then reconstructs approved
+combat profiles without mutating donors. Runtime abilities retain the native
+summon family's duration, placement, caster context, pool, feat markers, and
+cleanup behavior. See `planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md` for the
+per-creature mechanical and adaptation contract.
+
 ## Shield Other 0.0.77 layer
 
 Shield Other is an independent feature module under `Spells/ShieldOther`.
@@ -369,7 +393,7 @@ Version 0.0.29 does not:
 
 ## 0.0.75 feature-module architecture
 
-The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to Gunslinger ON / Acadamae Graduate ON; malformed bytes are retained for diagnosis. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
+The process loads one schema-versioned `FeatureModules.json` snapshot before blueprint publication. Missing, legacy, and malformed settings fail open to all four modules ON; malformed bytes are retained for diagnosis. Schema 3 adds the independent, default-enabled `expanded-summoning` key while preserving explicit values from every older schema. The active snapshot is immutable. The single composed UMM callback draws feature controls first and the existing development diagnostics second. Saved changes take effect only after restart.
 
 Blueprint bootstrap is split conceptually into an unconditional identity layer and a settings-controlled publication layer. All 250 project-owned identities register in every configuration. `FeatureModulePublicationCoordinator` owns exact transactions for class and feat catalogs, native firearm parameter menus, capital/BTSL/fixed-loot acquisition, Acadamae's general-feat entry, and the Cord's capital row. Transactions merge against current arrays, preserve unrelated order, detect exact reference/GUID duplicates, validate, reconcile idempotently after foreign publishers, and use guarded rollback rather than restoring stale snapshots.
 
@@ -488,6 +512,13 @@ command already in flight. The two new always-loaded identities bring the
 ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
+
+Expanded Summoning freezes the append-only foundation at 1439 stable IDs: 1438 active and one reserved. All 1184 feature identities register in every module state while
+their exact runtime types are registered deterministically; feature enablement
+will gate publication, never identity registration. A hidden, feature-local
+extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's
+later-loaded subtype feature; optional compatibility may add the external
+marker only after an exact final-live match.
 
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`

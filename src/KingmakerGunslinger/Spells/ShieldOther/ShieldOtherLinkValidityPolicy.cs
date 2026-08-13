@@ -10,16 +10,12 @@ namespace KingmakerGunslinger.Spells.ShieldOther
             if (request == null) throw new ArgumentNullException("request");
             if (request.CasterLevel < 0)
                 throw new ArgumentOutOfRangeException("CasterLevel");
-            if (float.IsNaN(request.DistanceFeet) ||
-                float.IsInfinity(request.DistanceFeet) || request.DistanceFeet < 0f)
-                throw new ArgumentOutOfRangeException("DistanceFeet");
             int range = CloseRangeFeet(request.CasterLevel);
             if (!request.SubjectPresent) return Invalid("subject-missing", range);
             if (!request.CasterPresent) return Invalid("caster-missing", range);
             if (request.CasterLevel == 0) return Invalid("caster-level-missing", range);
             if (!request.CasterAlive) return Invalid("caster-dead", range);
             if (!request.SameArea) return Invalid("different-area", range);
-            if (request.DistanceFeet > range) return Invalid("out-of-range", range);
             return new ShieldOtherLinkValidityDecision(true, "valid", range);
         }
 

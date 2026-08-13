@@ -38,8 +38,7 @@ namespace KingmakerGunslinger.Acadamae
                 ability.SpellLevel < 0 || ability.SpellLevel > 10)
                 return false;
             var spellbook = ability.Spellbook;
-            bool preparedInvocation = spellbook != null &&
-                !spellbook.Blueprint.Spontaneous && spellbook.CanSpend(ability, false);
+            bool preparedInvocation = IsPreparedInvocation(ability, spellbook);
             AcadamaeCastDecision decision = AcadamaeCastingPolicy.Decide(
                 new AcadamaeCastRequest {
                     HasFeat = BlueprintBootstrap.AcadamaeGraduate != null &&
@@ -61,6 +60,21 @@ namespace KingmakerGunslinger.Acadamae
                     SpellLevel = ability.SpellLevel
                 });
             return decision.Eligible;
+        }
+
+        internal static bool IsPreparedInvocation(AbilityData ability,
+            Kingmaker.UnitLogic.Spellbook spellbook)
+        {
+            if (ability == null || spellbook == null ||
+                spellbook.Blueprint.Spontaneous) return false;
+            if (spellbook.CanSpend(ability, false)) return true;
+            Kingmaker.UnitLogic.SpellSlot slot = ability.ParamSpellSlot;
+            if (slot == null || !slot.Available || slot.Spell == null ||
+                !ReferenceEquals(slot.Spell.Spellbook, spellbook)) return false;
+            for (AbilityData current = ability; current != null;
+                current = current.ConvertedFrom)
+                if (ReferenceEquals(current, slot.Spell)) return true;
+            return false;
         }
 
         internal static bool InspectPreAcadamae(AbilityData ability)

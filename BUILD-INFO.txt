@@ -1,26 +1,25 @@
 Project: Kingmaker Gunslinger
-Milestone: Sprint 29 complete maintenance loop and qualification automation
-Version: 0.0.29-s29-complete-maintenance-loop
+Release: 0.0.78-expanded-summoning
 Target game: Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b
-Unity Mod Manager reference: 0.32.4
-Harmony reference: 1.2.0.1
 Target framework: .NET Framework 4.7
 C# language version: 7.3
-Platform: AnyCPU
-Configuration: Release
-Compiler: Roslyn 3.11.0-4.21403.6 (ae1fff34)
+Platform/configuration: AnyCPU / Release
 Warnings as errors: true
-Deterministic compiler mode: true; DLL and PDB byte-identical across two same-output-path builds
-Active custom blueprints: 14
-Reserved custom blueprints: 1
-Sprint decision: complete the staged same-item Overhaul -> Repair -> Reload maintenance loop and add deterministic two-item PASS/FAIL qualification automation
-Exact dependency-free tests: 599 x 3 runs; 0 failures; byte-identical output
-Main DLL SHA-256: 7f252d8abc4a6eed61d69403296e1481f4e30a70ddb90456374538e18481c936
-Main PDB SHA-256: d6cadb851f2ace372d2f8890c963d785c7fae345f3ebd425b53f60838dbda0b8
-Repeated test output SHA-256: 255b96cf6ad4dc9f8188cd3234344c722c57f18b0290d2e0c9edb5c25373a2e4
-Standalone UMM package: KingmakerGunslinger-0.0.29-complete-maintenance-loop-smoke-test.zip
-Standalone UMM ZIP SHA-256: 8be74497785d1d5228e368a09818d251557cb207a755c8a57607b97b5c816660
-Artifact status: READY FOR KINGMAKER — Sprint 29 complete maintenance-loop smoke test
-Kingmaker runtime acceptance: pending for this exact 0.0.29 package
-Sprint 30 status: blocked until the explicit 0.0.29 smoke test passes
+Deterministic compiler mode: true
+Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning
+Feature settings schema: 3
+Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
+Expanded Summoning placements: 361 SM; 320 SNA; 681 total
+Expanded Summoning identities: 1184
+Blueprint ledger: 1438 active; 1 reserved; 1439 total
+Runtime registration count: 1438 in all 16 feature-module states
+Dependency-free domain tests: 1018
+Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
+Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
+Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
+Package: KingmakerGunslinger-0.0.78-expanded-summoning.zip
+Artifact source: fea6b60786aaabc41d1e276e524d8c14803a0e65
+DLL SHA-256: f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9
+Package SHA-256: a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c
+Source archive SHA-256: 9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

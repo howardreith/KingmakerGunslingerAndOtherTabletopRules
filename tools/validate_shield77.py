@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 import validate_feature75
+import expanded_summoning_manifest
 
 VERSION = "0.0.77"
 INFORMATIONAL_VERSION = "0.0.77-shield-other"
@@ -53,10 +54,12 @@ def validate(root: Path) -> None:
         if entries.get(symbol, {}).get("guid") != guid:
             raise AssertionError(f"Shield Other identity mismatch: {symbol}")
     active = [entry for entry in manifest["entries"] if entry["status"] == "active"]
-    if len(manifest["entries"]) != 255 or len(active) != 254:
-        raise AssertionError("Shield Other manifest count mismatch")
+    reserved = [entry for entry in manifest["entries"] if entry["status"] == "reserved"]
+    if len(manifest["entries"]) != 1439 or len(active) != 1438 or len(reserved) != 1:
+        raise AssertionError("Expanded Summoning reservation ledger count mismatch")
+    expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    if "ExpectedRegisteredBlueprintCount = 254" not in bootstrap:
+    if "ExpectedRegisteredBlueprintCount = 254 +" not in bootstrap:
         raise AssertionError("Shield Other registration count mismatch")
 
 

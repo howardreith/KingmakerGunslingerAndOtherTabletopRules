@@ -26,7 +26,9 @@ namespace KingmakerGunslinger.FeatureModules
                 "Acadamae Graduate and Cord of Stubborn Resolve");
             bool shieldOther = ImmediateModeGui.Toggle(_state.Pending.ShieldOther,
                 "Shield Other");
-            _state.SetPending(gunslinger, acadamae, shieldOther);
+            bool expandedSummoning = ImmediateModeGui.Toggle(
+                _state.Pending.ExpandedSummoning, "Expanded Summoning");
+            _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

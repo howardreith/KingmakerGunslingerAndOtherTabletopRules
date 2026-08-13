@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-complete-maintenance-loop-smoke-test.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -59,6 +59,9 @@ if (-not (Test-Path -LiteralPath $assetSource -PathType Container)) {
 }
 New-Item -ItemType Directory -Path $assetDestination -Force | Out-Null
 Copy-Item -Path (Join-Path $assetSource '*.png') -Destination $assetDestination
+$summonIconDestination = Join-Path $assetDestination 'expanded-summoning'
+New-Item -ItemType Directory -Path $summonIconDestination -Force | Out-Null
+Copy-Item -Path (Join-Path $assetSource 'expanded-summoning\*') -Destination $summonIconDestination
 $bundleDestination = Join-Path $modDirectory 'assets\bundles'
 New-Item -ItemType Directory -Path $bundleDestination -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.firearms') -Destination $bundleDestination
@@ -78,7 +81,16 @@ if (Test-Path -LiteralPath $checksumPath) {
     Remove-Item -LiteralPath $checksumPath -Force
 }
 
-Compress-Archive -LiteralPath $modDirectory -DestinationPath $packagePath -CompressionLevel Optimal
+$python = (Get-Command python -ErrorAction Stop).Source
+$hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
+    'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 123 } else { 121 }
+& $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
+    --source $modDirectory --output $packagePath `
+    --expected-file-count $expectedPackageFileCount
+if ($LASTEXITCODE -ne 0) {
+    throw 'Deterministic standalone package creation failed.'
+}
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
 
 $checksum = Get-KmgSha256 -Path $packagePath

@@ -94,10 +94,10 @@ namespace KingmakerGunslinger.DomainTests
             string bootstrap = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
             Assertions.True(bootstrap.Contains(
-                "internal const int ExpectedRegisteredBlueprintCount = 254;") &&
+                "internal const int ExpectedRegisteredBlueprintCount = 254 +") &&
                 bootstrap.Contains("AcadamaeGraduateBlueprints.AttachMode") &&
                 bootstrap.Contains("AcadamaeGraduateModeBlueprints.Register"),
-                "Bootstrap must register the current 254 active identities and attach the mode grant.");
+                "Bootstrap must derive the current active identity count and attach the mode grant.");
         }
 
         internal static void CordProjectIconContract()
@@ -230,6 +230,25 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
                     StringSplitOptions.None).Length == 3,
                 "The guarded scenario must force native automatic success and failure boundaries.");
+            foreach (string token in new[] {
+                "canonical Summon Monster I parent for Acadamae fixture",
+                "ExpandedSummoningCatalog",
+                "ExpandedSummoningIdentityCatalog.AbilitySymbol(dog)",
+                "new AbilityData(slot.Spell, concrete)",
+                "invocation.ParamSpellSlot = slot",
+                "Canonical Summon Monster I has no published KMG Dog logical root" })
+                Assertions.True(runtime.Contains(token),
+                    "Acadamae runtime fixture no longer resolves the exact player-facing KMG summon variant: " +
+                    token);
+            foreach (string token in new[] {
+                "IsPreparedInvocation(ability, spellbook)",
+                "slot == null || !slot.Available || slot.Spell == null",
+                "ReferenceEquals(slot.Spell.Spellbook, spellbook)",
+                "current = current.ConvertedFrom",
+                "ReferenceEquals(current, slot.Spell)" })
+                Assertions.True(casting.Contains(token),
+                    "Acadamae prepared-variant eligibility contract is missing: " +
+                    token);
         }
 
         internal static void AcadamaeInvocationCorrelation()

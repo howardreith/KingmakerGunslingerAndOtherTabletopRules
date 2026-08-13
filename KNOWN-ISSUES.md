@@ -1,16 +1,54 @@
-# Known issues
+# Known issues and conservative adaptations
 
-- Version 0.0.29 is a disposable-save complete-maintenance-loop smoke-test candidate, not a general release.
-- The Test Musket still displays and animates as a Heavy Crossbow.
-- Black Powder Charges, Lead Balls, and Firearm Repair Kits still use placeholder native-item artwork.
-- The stable action blueprint names still say Test Musket for compatibility, but their runtime target selection is generic and marker-driven.
-- Sprint 30 is compile-qualified but still requires its focused Kingmaker runtime gate before the early firearm catalog begins.
-- The one-command maintenance qualification runner deliberately bypasses action economy. It is a regression diagnostic, not gameplay; full-round cancellation and delivery still require the separate action-bar test.
-- The process-local maintenance baseline becomes invalid if the exact target or second fixture item is removed, replaced, unequipped into an unobserved location, or mutated outside the expected sequence. Clear and prepare a fresh fixture rather than interpreting a stale FAIL matrix.
-- The full-round interruption guarantee requires live qualification in Kingmaker. Overhaul and Repair transactions mutate only during ability delivery.
-- Ordinary Repair has no skill check, gold charge, vendor service, or time beyond its full-round action yet. The current cost is exactly one Firearm Repair Kit.
-- The five-foot burst uses Kingmaker's native mechanics distance, unit corpulence, targetability, and line-of-sight query. A unit whose visual center appears slightly beyond five feet may still qualify because occupied space is part of the native distance rule.
-- A failed per-target native save/damage delivery does not roll back the already-committed empty/Wrecked firearm state and is not broadly retried. Diagnostics record the partial failure.
-- The destructive development cleanup can remove all unequipped Test Muskets, but it requires a separate arm and confirm action. Arming or cancelling is non-mutating.
-- Natural-roll forcing is development-only and applies only to the next eligible exact firearm main attack roll. It never forces Reflex saves or native Heavy Crossbow rolls.
-- Process-local counters, repository labels, runtime reference hashes, and the maintenance qualification baseline reset when Kingmaker exits. Item-owned token state is the durable persistence evidence across restart.
+- Expanded Summoning uses only existing Kingmaker views. Proxy appearance is
+  mechanically reconstructed but cannot perfectly match every tabletop body.
+  The final manual checklist covers residual aesthetic judgment for scale,
+  camera framing, projectile appearance, and animation style.
+- The outer Summon Monster and Summon Nature's Ally spellbook parents retain
+  their native spell icons. Every visible creature-choice child instead uses
+  a project-owned original icon; no Owlcat or optional-mod pixels are used in
+  the 77-icon Expanded Summoning set.
+- Dire Bat is not published in the player-facing roster. The installed game
+  exposes no proven bat-compatible summon rig, and the Roc proxy failed human
+  visual acceptance; all frozen identities remain registered for save safety.
+- Elephant and Mastodon share Owlcat's Mastodon material. Their view scales
+  are differentiated, but Elephant is not recolored gray because a safe
+  per-instance material clone was not proven and shared-material mutation
+  would alter the native Mastodon.
+- Kingmaker stores spell descriptors on shared ability blueprints rather than
+  per caster invocation. KMG direct templated roots retain `Summoning`; their
+  spawned alignment, Celestial/Fiendish template and smite are caster-correct.
+  KMG does not mutate shared descriptors dynamically. Sacred Summons therefore
+  remains fail-closed when no exact optional surface is installed.
+- Standalone Kingmaker 2.1.7b has no proven Aura of Menace carrier. Lantern
+  Archon reuses the exact carrier when Call of the Wild supplies it and
+  conservatively omits the aura standalone.
+- Shadow Demon possession is omitted because a duration-bounded, save/load-safe
+  implementation was not proven. Teleportation, planar travel, and creature
+  summoning powers are removed from every adapted summon.
+- Succubus has bounded charm and temporary energy-drain combat mechanics. It
+  does not grant a permanent profane gift or any effect intended to outlive the
+  summon.
+- Bebelith's permanent armor destruction is represented as a DC 25 Reflex-gated
+  one-round -2 AC effect after two same-target claw hits; equipped items are
+  never mutated. Rot is omitted.
+- Pixie sleep arrows are non-transferable, zero-weapon-damage attacks with a
+  bounded resource. Irresistible Dance uses a project-owned touch-range state
+  because the installed native-equivalent carrier belongs to an optional mod.
+- Several movement modes and natural-creature secondary abilities lack safe
+  native representations. Each omission is listed per creature in
+  `planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md`; no omitted mechanic is
+  described as implemented.
+- Removing the entire mod is not save-safe for campaigns that have used its
+  content. Disabling Expanded Summoning is supported: identities remain
+  registered, active summons load and expire safely, and no new KMG variants
+  are published after restart.
+- The save-free comprehensive Gunslinger runtime fixture has a historical
+  limitation: its detached unit has no Swift-action controller, so the
+  Gunslinger's Dodge command interrupts before `Start`. This is a test-fixture
+  limitation, not a change introduced by Expanded Summoning; focused domain
+  coverage and prior live gameplay behavior remain unchanged.
+- The same broad aggregate also has order-sensitive forced-roll and detached
+  target fixtures for Targeting/Bleeding Wound. Focused domain and production
+  regression scenarios remain authoritative; Expanded Summoning does not
+  patch firearm or deed execution paths.

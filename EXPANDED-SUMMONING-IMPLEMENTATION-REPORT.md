@@ -1,0 +1,820 @@
+# Expanded Summoning implementation report
+
+## Final immutable-source requalification (2026-08-13)
+
+Status: complete and release-qualified on pushed immutable source
+`fea6b60786aaabc41d1e276e524d8c14803a0e65`. This section supersedes older
+source, hash, settings-restoration, and working-save-restoration values retained
+below as chronology.
+
+- Final visual contracts passed 13/13 in run
+  `20260813T1903398091052Z-8599cd14aebd435f8e674d46b39c1613`.
+  All 67 unique units passed; Eagle remains mechanically Small and its live
+  renderer measured `1.3596102` high versus `1.92633152` for the Medium
+  humanoid control (`70.6%`).
+- Structural/menu/icon run
+  `20260813T1907030054323Z-c3c2c5fe47a745689167c9a0e9fc89e2`
+  passed 38/38. It recorded 667 generated roots plus 26 native/preservation
+  wrappers, exact 18-parent publication, zero icon fallback, and nine freshly
+  generated contact sheets covering 390 audited choices. Direct inspection of
+  the SNA I sheet found exactly five creature-named choices with five distinct
+  original icons.
+- Player-path run
+  `20260813T1911396823000Z-7e1b7d94c1664c839176eeb3189f58ee`
+  passed 10/10, exercising 667/667 generated roots and 26/26 wrappers through
+  their real native parents with success, cancellation, live-world, and exact
+  cleanup contracts. Mechanical run
+  `20260813T1919096622832Z-7e5087b74fae4490a40a533b4957dd7b`
+  passed 12/12 and all 153 commands: 123 singles, sixteen `1d3`, and fourteen
+  `1d4+1` family/tier cases.
+- All 16 fresh module configurations passed 7/7 assertions each with constant
+  registration `1,438`. Evidence directories run from
+  `20260813T1922102223300Z-observe-feature-module-settings` through
+  `20260813T2002136159624Z-observe-feature-module-settings`; the state file
+  records every directory. The exact takeover settings bytes were restored to
+  SHA-256
+  `32a0d33f57357ad0e4e7ae872a7c76e6276e3febcd1c9b5b27ea3735fc98f500`.
+- Enabled persistence passed prepare/cleanup/absence at
+  `20260813T2005595459938Z-61752280e2bf42f0b724f6858d1f35f3`,
+  `20260813T2008378853263Z-e1ddfb279f3c460a988d28d664319371`, and
+  `20260813T2011137748300Z-302c510e3d094d608dae8860d709f397`.
+  Disabled publication passed the same three stages at
+  `20260813T2014001344843Z-d9aac912acd54ec09bcb5288e3e5e146`,
+  `20260813T2016369506249Z-6212fe4fb6dd4d28a0e388ff391de9ba`, and
+  `20260813T2019139149973Z-ba8552e5a9a54629b966b8e6ff42d4a9`.
+  Every stage passed 9/9; frozen identities loaded and expired safely while
+  disabled publication remained zero.
+- Required compatibility transactions all passed both the optional-structure
+  and Expanded Summoning inventory observers and restored exactly: standalone
+  `compat-20260813T202142Z-487ed35c4bc8` and
+  `compat-20260813T202548Z-3ec6566363dd`; Call of the Wild
+  `compat-20260813T202945Z-86cbd1d860d4` and
+  `compat-20260813T203556Z-9f02f0ae99d3`; Arms and Armor
+  `compat-20260813T204207Z-9dbae134392a`; Toggle Custom Soundpacks
+  `compat-20260813T204609Z-38f3a2123d1c`; highest-risk combined
+  `compat-20260813T205007Z-e02cbbe74c78` and
+  `compat-20260813T205622Z-c7da7cf20f88`.
+- Focused immutable-source regressions passed Shield Other 23/23
+  (`20260813T2103410596046Z-76834bb304854ed79a48fcba58a1a620`),
+  Acadamae Graduate 13/13
+  (`20260813T2105555630652Z-4834d8d382464a138b030270b7885bdf`),
+  paper/firearm 6/6
+  (`20260813T2108123358915Z-754129979f304b5bbd543862d28b6daf`),
+  Cord 8/8
+  (`20260813T2110266335022Z-39ecb8e0af5948c5b9cc63eddff83745`),
+  and vendor contracts 14/14
+  (`20260813T2116351340477Z-2313d756d28646dba1c98316b087057f`).
+  The preceding vendor attempt ran under the restored Acadamae-disabled
+  takeover settings and therefore correctly lacked Cord's row; the exact
+  all-enabled rerun passed without a source change.
+- Two clean artifact cycles each passed repository/manifest validation,
+  1,018/1,018 domain/reflection tests, exact-reference warnings-as-errors
+  Release compilation, SoundBank validation, and strict standalone UMM package
+  validation. Both DLLs match SHA-256
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`;
+  both packages match
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`;
+  two independent source archives match
+  `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.
+- `KMG_AUTOMATION_WORKING` was restored from its verified pre-final backup to
+  `50421a09bb874419e4f2f794ec8e926db1cefe8fc18ba7644fb6f4aa045029a0`.
+  Protected `KMG_AUTOMATION_BASELINE` remains
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+  and was never written. No compatibility backup/quarantine or lock remains.
+
+## Final original-icon and SNA presentation pass
+
+Status: source and guarded runtime qualification complete on the final
+presentation implementation.
+
+- The production icon architecture no longer reads Owlcat spell/item icons,
+  unit portraits, category representatives, or generic summon fallbacks.
+  Seventy-seven project-owned original concepts produce 77 distinct 128x128
+  RGBA PNGs. Source prompts, 1254px originals, output hashes, consumers, and
+  provenance are frozen in `assets-source/original-icons/expanded-summoning`.
+  Runtime loads each key once from the installed mod root, retains the texture
+  and sprite for mod lifetime, and fails publication if any required icon is
+  missing or invalid. The production fallback count was zero.
+- The visible final graph is 371 Summon Monster choices and 322 Summon
+  Nature's Ally choices: 667 generated placements plus 26 creature-named
+  native/preservation wrappers. The SNA I generic duplication came from the
+  frozen direct-parent preservation child being published beside its expanded
+  parent. It is still registered but now hidden by exact identity; Mite is
+  exposed through a creature-named, original-icon wrapper. The SNA white
+  squares came from inherited portrait/category sprites that were not a valid
+  persistent installed-mod asset contract. All SNA I-IX child choices now use
+  manifest-backed KMG sprites, including lower-tier quantity options.
+- Player-facing `Dire Tiger / Smilodon` is now `Smilodon` in both families and
+  all multiplicities. The stable `dire-tiger` key and every GUID are unchanged.
+- Eagle's shared view-only multiplier is `0.30`. Final live measurement found
+  a vertical rendered body height of `1.3596102` versus `1.92633152` for an
+  ordinary Medium humanoid; mechanical Small size, selection circle,
+  locomotion, attack, hit, and death contracts all passed.
+- Final menu/icon observer runs under standalone, Call of the Wild, Arms and
+  Armor, Toggle Custom Soundpacks, and highest-risk combined profiles found
+  zero missing icons, zero generic SNA children, zero mapped duplicates, and
+  exact preservation of unrelated native/third-party choices. The outer spell
+  parents intentionally retain their native family icons.
+- The later immutable-source requalification above supersedes the provisional
+  `147f39f` artifact values from this presentation checkpoint.
+
+
+## First-playtest repair qualification
+
+Status: complete. The repair is runtime-qualified and its deterministic
+artifacts are frozen. The human failure superseded the earlier completion
+claim and was reproduced before repair.
+
+- Root cause: each templated Summon Monster choice was a non-executable logical
+  `AbilityVariants` wrapper beneath Owlcat's spell parent, with Celestial and
+  Fiendish abilities nested one level deeper. Kingmaker rejected that second
+  variant level (`Can't cast variational ability`) before `RuleCastSpell`, so
+  the unit never spawned and the prepared slot was not spent. Directly granted
+  execution children and the same KMG Dog unit through SNA both worked, proving
+  the old 153-command harness had bypassed the player failure.
+- Repair: all 182 templated logical roots are now direct executable spawn
+  abilities. One post-spawn action selects Celestial for good casters,
+  Fiendish for evil casters, and a persistent per-character neutral mode
+  (Celestial by default; toggle on for Fiendish). The 364 old execution-child
+  identities remain registered and unpublished for save compatibility.
+- Discriminating pre-repair run
+  `20260812T1729340453662Z-0ebb1d302b9045389454b13fbe812a06`
+  passed native Dog, direct Celestial/Fiendish Dog, SNA Dog, Giant Spider
+  control, Small Earth Elemental and Erinyes controls while the KMG SM Dog and
+  Spider logical-root paths failed before cast. Post-repair run
+  `20260812T1747088695607Z-de3328d9413644bfab2a460382b70e9c`
+  passed the same matrix through the player route with one slot spent.
+- Complete player-path run
+  `20260812T1912292727051Z-1bb26c2ee8c648df91fbb021fba1fe37`
+  passed all 681 logical roots through their real native spellbook parents.
+  Every success spent exactly one slot and produced the correct live kind and
+  legal quantity after queued entity creation. A distant command cancelled
+  before cast range fired no cast/spawn rule and preserved slots `7 -> 7`.
+  The immutable pushed-source repetition
+  `20260812T2133229099710Z-1da4fc8df4544d46851dc73f93672363`
+  passed the same 681/681 and cancellation contracts on `11dabc9`.
+- Erinyes' separate fault was inherited campaign `BuffOnEntityCreated` /
+  `AppearFromFog` state. Its KMG unit now uses a fresh 9-HD outsider component
+  chassis while retaining the proven ranged body, brain, facts and view.
+- A frozen 48-GUID reconciliation map removes only proven semantic native
+  duplicates from displayed parents. Original blueprints remain unchanged and
+  registered; unique native and third-party choices remain once. Current-tier
+  singles precede unique native singles, then `1d3`, then `1d4+1`.
+- Final enabled menu counts are SM I-IX `3,13,21,35,44,56,64,68,69` and SNA
+  I-IX `5,14,21,33,40,47,53,57,59`. Movanic Deva, Frost Giant and every other
+  unique native choice remain. The six standalone Summon Elemental roots each
+  retain their exact four original non-KMG children and are untouched.
+
+The final immutable structural observer recorded the exact original-parent
+count (`before`) and repaired enabled count split by displayed multiplicity:
+
+| Parent | Before | After | One | 1d3 | 1d4+1 |
+|---|---:|---:|---:|---:|---:|
+| SM I | 1 | 3 | 3 | 0 | 0 |
+| SM II | 2 | 13 | 10 | 3 | 0 |
+| SM III | 3 | 21 | 8 | 10 | 3 |
+| SM IV | 3 | 35 | 14 | 8 | 13 |
+| SM V | 3 | 44 | 9 | 14 | 21 |
+| SM VI | 3 | 56 | 12 | 9 | 35 |
+| SM VII | 3 | 64 | 8 | 12 | 44 |
+| SM VIII | 3 | 68 | 5 | 8 | 55 |
+| SM IX | 3 | 69 | 2 | 5 | 62 |
+| SNA I | 1 | 5 | 5 | 0 | 0 |
+| SNA II | 2 | 14 | 9 | 5 | 0 |
+| SNA III | 3 | 21 | 7 | 9 | 5 |
+| SNA IV | 3 | 33 | 13 | 7 | 13 |
+| SNA V | 3 | 40 | 7 | 13 | 20 |
+| SNA VI | 3 | 47 | 7 | 7 | 33 |
+| SNA VII | 3 | 53 | 6 | 7 | 40 |
+| SNA VIII | 3 | 57 | 5 | 6 | 46 |
+| SNA IX | 3 | 59 | 2 | 5 | 52 |
+
+Every row had zero unclassified foreign-tail entries in the final supported
+profile observer; structurally discovered third-party entries are still
+preserved in stable relative order when present.
+- All 67 creatures use a frozen icon catalog preferring exact donor icons and
+  then canine, feline, bear, flying, reptile/dinosaur, vermin, per-element
+  elemental/mephit, celestial, or fiend fallbacks. Quantity remains explicit
+  in names. Invisible Stalker now uses the Medium Air Elemental view; the true
+  Huge Air Elemental summon is unchanged.
+- Repaired persistence passed enabled and disabled six-stage fresh-process
+  sequences on `9cb5f54`. All 16 feature states passed with constant 1,412
+  registrations and byte-identical settings restoration. Final profile runs
+  passed standalone twice, Call of the Wild twice, Arms and Armor, Toggle
+  Custom Soundpacks, and highest-risk combined twice, with exact restoration.
+  Final-source repetitions on `11dabc9` were standalone
+  `compat-20260812T214659Z-a8408890bf7c` and
+  `compat-20260812T214914Z-2bf507fe07aa`; Call of the Wild
+  `compat-20260812T215130Z-3fbac165ac9e` and
+  `compat-20260812T215520Z-067b42b7677a`; Arms and Armor
+  `compat-20260812T220654Z-a2e8eabf9736`; Toggle Custom Soundpacks
+  `compat-20260812T220911Z-976210443a94`; and highest-risk combined
+  `compat-20260812T215909Z-2f991684eb43` and
+  `compat-20260812T220300Z-b0dc049fc8b2`.
+- Final-source structural run
+  `20260812T2140370704350Z-7827f7dbd7804905be85087d908026fc`
+  passed 37/37, including exact menus, icons, reconciliation, all identities,
+  and standalone Summon Elemental isolation. Final-source visual run
+  `20260812T2144335858882Z-472c7a98d606437bac9a34d5815608ac`
+  passed 10/10 for all 67 units.
+- Deterministic release freeze uses pushed artifact source
+  `a951f7e4958f77244ef38e9df4507acf41c62b59`. Two clean Release/package
+  builds produced identical DLL SHA-256
+  `0bab4618881b616516cfe51f28ab1857ecd7e1a5598e28125a175f651e45201b`
+  and package SHA-256
+  `35fa5f9347794156a6eeb763818333efce83111fe9a0dd8fc71e861e75f137a4`.
+  Strict standalone UMM package validation passed. Two `git archive` source
+  archives matched at SHA-256
+  `572f9349767af56e41d15147ecafb14cd796d7530042d6c60705be9c340c3ecf`.
+- Exact engine limitation: Kingmaker 2.1.7b exposes spell descriptors only on
+  the shared `BlueprintAbility`, not per `AbilityData`/caster invocation.
+  Dynamically mutating a shared root would race party casters and corrupt
+  cached UI/immunity decisions. Direct roots therefore retain the required
+  Summoning descriptor while the post-spawn template, unit alignment and
+  bounded smite are caster-correct. No Sacred Summons surface exists in the
+  installed supported profiles, so optional integration fails closed. The old
+  alignment-specific children remain registered but are not player-facing.
+- Bounded high-tier review found no additional dedicated summon-safe candidate
+  that justified expanding the frozen roster. Astral Deva/Trumpet Archon and
+  speculative high-tier fiends remain deferred; no poor campaign proxy was
+  added. SM VIII/IX sparsity is catalog design, not an engine limitation.
+- Draft PR #2 remains open for review. No merge occurred.
+- Final restoration audit verified feature settings SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  all eight final compatibility transactions in `Restored` state, no live
+  `Mods.kmg-compat-*` directory, working-save SHA-256
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected-baseline SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  The disposable working save was restored from its exact pre-test backup;
+  `KMG_AUTOMATION_BASELINE` was never written.
+
+Existing-feature regressions on repaired source: Shield Other 23/23 PASS,
+Acadamae/Cord 13/13 PASS through the exact published KMG Dog root, and the
+paper-cartridge/firearm/vendor comprehensive scenario 6/6 PASS in the
+highest-risk combined profile. The broad Gunslinger comprehensive run passed
+184 assertions except its repository-pre-existing detached Gunslinger's Dodge
+Swift-command fixture, which still interrupts before `Start` because that
+save-free fixture has no turn/action controller. No summoning source caused or
+changed that inherited harness limitation, and no unrelated gameplay change
+was made to hide it.
+
+Historical status, superseded by the first-playtest repair above: the original
+completion audit added a final-live assertion tying all 681 roots and 364
+template executions to their native spell, Acadamae, metamagic, material-data,
+and action-bar contracts. That lower-layer matrix passed on pushed source
+`5205805eab3fe0115d6888c53bce73c80474d1b7`, but it did not prove the actual
+player wrapper path. Draft PR
+[#2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2)
+targets `master` and remains unmerged for review.
+
+Selected baseline: `origin/master` at
+`2894d9fcce250708e354894ffd8e1be9c7493b9b`, containing required
+`e4d560f8dd2909518614e3a20e77ba4d70dadeb8`. Release baseline: 0.0.77.
+
+## Superseded pre-playtest qualification (historical)
+
+This section is superseded by the repaired qualification at the top of this
+report and `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`. Earlier “pending”
+statements are retained as an
+honest account of what was unproven at those checkpoints, not as the current
+release state.
+
+- Frozen catalog: 66 Summon Monster entries, 57 Summon Nature's Ally entries,
+  67 shared unique creatures, 361 SM placements, 320 SNA placements, and 681
+  same-kind placements total.
+- Identities: 1,155 Expanded Summoning active identities; repository ledger
+  1,409 active plus one reserved; runtime registration is exactly 1,409 in
+  every one of the 16 feature-module states.
+- Static gates: repository validation PASS, `1009/1009` domain tests PASS,
+  warnings-as-errors Release build PASS, and strict package validation PASS.
+  Two clean exact-reference `Build-Local.ps1` executions produced byte-identical
+  DLL and deterministic package outputs.
+- Structural runtime: guarded run
+  `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4` passed all 31
+  assertions, including every registered identity, 18 required parent spells,
+  all 681 placements, donor immutability, sanitizer contracts, exact special
+  structures, preservation of preexisting final-live variants, and all 1,045
+  generated ability nodes' native spell/Acadamae/material/metamagic/action-bar
+  contracts.
+- Mechanical runtime: guarded run
+  `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405` passed every
+  assertion and all 153 production commands: 123 logical one-creature choices,
+  16 `1d3` tier/family cases, and 14 `1d4+1` cases. Counts, same-kind identity,
+  CL20 duration, close placement, Augment/Superior Summoning, Acadamae
+  eligibility, good/neutral/evil templates, SNA alignment, representative
+  combat, special actions, and exact cleanup passed.
+- Visual contracts: guarded run
+  `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778` passed all ten
+  assertions for 67/67 unique units: attached/renderable views, bounded scale
+  and footprint, navigation, locomotion, attack/projectile fallback, hit/death,
+  and exact view/unit cleanup.
+- Persistence: enabled and disabled prepare/load/cleanup/absence sequences all
+  passed on fresh Steam App ID 640820 processes. Frozen summon identities,
+  caster context, remaining duration, faction/control/view state, and cleanup
+  survived restart. With the module disabled, existing summons remained
+  load-safe while new KMG parent publication was exactly zero.
+- Module matrix: all 16 restart-bound states passed on the immutable source with
+  exact independent surfaces and constant 1,409 registration. Settings were
+  restored byte-for-byte.
+- Compatibility: standalone twice, Call of the Wild 1.14.4c-2.1 twice, Arms
+  and Armor 1.0.10 once, Toggle Custom Soundpacks 1.0.1 once, and the
+  highest-risk combined profile twice all passed and restored the Mods
+  directory and settings transaction exactly. The required final-source
+  repetitions passed on `5205805`: standalone transactions
+  `compat-20260812T133252Z-8ab70bfdbf75` and
+  `compat-20260812T133451Z-f7096e45017c`; Call of the Wild transactions
+  `compat-20260812T133727Z-74e8798f7849` and
+  `compat-20260812T134033Z-433e1ea1a746`; highest-risk combined transactions
+  `compat-20260812T134340Z-adb4d15f893d` and
+  `compat-20260812T134649Z-1b83742188f4`.
+- Save safety: restored settings SHA-256
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`,
+  working-save SHA-256
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`,
+  and protected `KMG_AUTOMATION_BASELINE` SHA-256
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+  The protected baseline was never selected or modified.
+
+### Completion-audit clarifications
+
+- The final-live observer explicitly searched normalized `Sacred Summons` and
+  `SacredSummons` names and found zero candidates in the installed Call of the
+  Wild/high-risk graph. Sacred Summons was therefore not structurally available;
+  KMG correctly made no guessed optional mutation. Augment Summoning and CotW
+  Superior Summoning were both discovered and passed their actual mechanical
+  cases.
+- All 153 cast-matrix summons carried Owlcat's exact `SummonedUnitBuff` with
+  caster context and bounded CL20 duration. Enabled and disabled persistence
+  proved fresh-process identity, context, remaining duration, area/control,
+  explicit native lifecycle removal, destruction/detachment, and zero live
+  references. KMG adds no area-transition, rest, caster-death, RTwP, or
+  turn-based lifecycle branch; those boundaries remain the exact native summon
+  mechanism rather than a parallel approximation.
+- The literal section-by-section evidence mapping is checked in at
+  `planning/EXPANDED-SUMMONING-COMPLETION-AUDIT.md`.
+
+### Conservative adaptations and omissions
+
+- Lantern Archon uses a Will-o'-Wisp view and immediate dual ranged-touch ray
+  delivery. Aura of Menace is conditionally reused only when the compatible
+  optional carrier exists; greater teleport, gestalt, truespeech, and
+  separately modeled low-light/darkvision are omitted.
+- Mephits retain Owlcat's unconditional Fast Healing 2 because no safe local
+  element-environment predicate was proven.
+- Natural/proxy creatures omit only the per-row mechanics listed in the
+  fidelity matrix, principally unsupported swim/climb/burrow modes, grab,
+  trample, sprint, rage, and unproven donor-specific feats or senses. Donor
+  visuals do not contribute unrelated mechanics.
+- Salamander uses bounded spear/tail, heat, and grab-constrict graphs; cold
+  vulnerability is omitted because no exact safe bounded fact was proven.
+- Invisible Stalker retains attack-safe permanent invisibility; dedicated
+  tracking and scent are omitted.
+- Shadow Demon uses bounded incorporeal/cold combat; possession, shadow blend,
+  sprint, teleportation, and summoning are omitted.
+- Succubus charm and energy drain are bounded to short domination and a
+  one-round temporary negative level; profane gift, teleportation, and
+  summoning are omitted.
+- Bebelith replaces permanent armor destruction with a DC 25, one-round -2 AC
+  dismantle effect and retains bounded demon-hunting bonuses; rot and climb are
+  omitted.
+- Pixie sleep arrows use a zero-damage, resource-backed, non-transferable bow;
+  irresistible dance uses a frozen bounded state. No ammunition or persistent
+  effect can escape the summon lifecycle.
+
+The manual residual visual checklist is limited to aesthetic judgment of proxy
+scale, camera framing, projectile appearance, and animation quality; all
+mechanical visual contracts already pass.
+
+### Final release hashes
+
+- Release artifact source commit:
+  `8e08834da9a4fb9c31ade7e7ad1cea94b6a44edd`.
+- Exact-reference `KingmakerGunslinger.dll` SHA-256:
+  `729f9d1d833747ee2a3cc9978db68ce2a1ed5732ee52908ffd418bb380a3ac9c`.
+- Deterministic `KingmakerGunslinger-0.0.78-expanded-summoning.zip` SHA-256:
+  `165d4a47d0b5933fbd04da00b28f1f5362ec5408a96bce122ee836bbef222d53`.
+- Deterministic `git archive` source ZIP SHA-256:
+  `608629da01e41a4f8524e764806f4c161a4eb9f449c1e1d8b8dfdf9cb31c32c5`.
+
+The completion audit detected that the historical canonical packager used
+timestamped `Compress-Archive`. Commit `8e08834` switches it to the existing
+fixed-timestamp deterministic writer and adds a domain source contract. On two
+clean builds, the canonical and local-runtime 45-file ZIPs matched exactly and
+both passed strict validation.
+
+## Chronological engineering record
+
+The mandatory Shield Other prerequisite is source-qualified: established links
+no longer depend on distance, while close initial targeting and all other
+lifecycle rules remain intact. Repository validation, 981/981 domain tests,
+clean Release build, and strict 0.0.77 package validation pass.
+
+Current implementation checkpoint: the complete frozen 681-placement catalog,
+67 summon-unit identities, 1,050 abilities, six HD-banded celestial or
+fiendish template buffs, two bounded smite markers, seven custom special
+creatures, and the tier I-IV natural/proxy group are registered
+deterministically. The exact template
+SR threshold is implemented as low (0-4 HD, no SR), mid (5-10 HD, CR+5 SR),
+and high (11+ HD, CR+5 SR), with resistance/DR values 5/5/10. The ledger is
+1,401 stable IDs: 1,400 active and one reserved. Source qualification passes
+1,008 tests, clean Release, and strict package validation.
+
+The six-buff graph subsequently passed guarded fresh-process run
+`20260811T1954362756414Z-observe-expanded-summoning-inventory` on committed
+source `d384ba06cf76896543a6b23ed480d3f6715bbba2`, including exact low/mid/high
+mechanics, all aligned execution counts, registry 1,372, and 681 live parent
+placements. The run was save-free.
+
+The exact optional smite inventory finished on
+`20260811T2008011506353Z-observe-expanded-summoning-inventory`: the native-like
+optional graph uses a fixed one-use resource but applies a permanent non-child
+buff to its target. Reusing that graph would allow external target state to
+outlive the summon. KMG instead implements smite as a unit-local marker: the
+first successful attack against the opposed alignment receives nonnegative
+Charisma to attack and HD to damage, consumes the marker, and creates no target
+state. This intentionally omits manual swift target selection and persistent
+bonuses against one selected target, a conservative non-overpowered lifecycle
+adaptation. Its committed-source structural runtime qualification remains
+pending. Runtime unit-alignment fidelity also remains open and is not claimed.
+
+That structural qualification subsequently passed on committed source
+`a0d8e7752281d4ae1e51ce094c1226f6a30faf16` as guarded run
+`20260811T2021406071785Z-observe-expanded-summoning-inventory`: exact registry
+1,374, 67 units, 1,045 abilities, 681 placements, 182 executions per template,
+six template buffs, two smite markers, and all sanitizer checks passed. The
+preceding fresh launch exited during platform initialization after request
+acceptance and before blueprint inspection; it was retained as failed evidence
+and the evidence-supported retry passed. Neither run accessed a save. Runtime
+unit-alignment fidelity remains open and is not claimed.
+
+Spawn-local alignment is now source-qualified. A custom native post-spawn
+action sets the new unit descriptor rather than changing a shared blueprint.
+Celestial and fiendish summons preserve the unit's law/chaos axis while
+replacing its moral axis; all Nature's Ally placements copy the actual caster's
+exact alignment from the ability context. Missing or invalid context fails
+closed without mutation. Repository validation, 1,005 tests, clean Release,
+and strict package validation pass; committed-source structural observation
+and later actual-cast/save-load proof remain pending.
+
+The first alignment-aware structural run failed and was retained as
+`20260811T2031332882968Z-observe-expanded-summoning-inventory`. It proved that
+the generic graph clone had preserved references within native action lists,
+allowing post-spawn actions to accumulate across abilities using the same
+native quantity template. The initial repair explicitly cloned each
+`ActionList`; the following run narrowed the deeper alias to its GameAction
+elements. The observer now also rejects any KMG
+post-spawn action or buff in a non-KMG ability. The repair is source-qualified;
+its committed-source rerun remains pending.
+
+That rerun (`20260811T2037058339804Z-observe-expanded-summoning-inventory`)
+proved the ActionList-only repair incomplete: 286 non-KMG abilities still
+contained KMG actions. Exact assembly inspection established that every
+`GameAction` is itself a `SerializedScriptableObject` and was being returned by
+the clone's Unity-object preservation guard. The follow-up now creates and
+recursively copies each GameAction while still preserving immutable referenced
+Unity assets. This deeper repair is source-qualified; its committed-source
+rerun remains pending.
+
+The deeper repair was proved by
+`20260811T2043115519772Z-observe-expanded-summoning-inventory`: contamination
+of non-KMG abilities fell from 286 to zero. Remaining assertion failures were
+limited to the observer's incorrect one-action-per-ability assumption; native
+quantity templates may contain multiple spawn nodes. The observer now requires
+one matching alignment/template/smite action per actual spawn branch. This
+cardinality correction is source-qualified and awaits its committed rerun.
+
+That rerun passed as
+`20260811T2048003275107Z-observe-expanded-summoning-inventory` on committed
+source `b88e99cffb7464d7354416fba82d1da313e17ae2`. All celestial, fiendish, and
+Nature's Ally actions matched exact native spawn-branch cardinality, and
+non-KMG action contamination was zero. All registry, placement, template,
+smite, and sanitizer assertions remained green. No save was accessed.
+
+The complete donor graph passed guarded save-free run
+`20260811T2055502086857Z-observe-expanded-summoning-inventory` on committed
+source `9e1d851e75cf413f5d0a576484a9f5a8538b2a2b`. All 54 distinct chosen donor
+identities were present, and bounded component, body, and view graphs were
+captured for each. All 17 structural assertions passed with zero warnings,
+including registry 1,374, 681 placements, and every existing sanitizer and
+alignment invariant. The wrapper reached its host timeout only after the game
+had flushed the PASS result and exited. This inventory now drives the native
+reuse versus reconstruction decisions; it does not itself claim creature
+mechanical fidelity.
+
+The first creature-mechanics group is source-qualified. All 24 elemental and
+four mephit entries now have an explicit immutable native-dedicated-reuse
+classification; KMG clones their proven summon units and applies the existing
+XP/loot/inventory/campaign sanitizer. Lantern Archon is reconstructed from a
+Will-o'-Wisp view with 2 outsider HD, official ability scores and alignment,
+dual bounded 1d6 ranged-touch rays, ray-only AI, archon defenses, and the
+native Aura of Menace carrier. Wisp and Ghaele combat/campaign mechanics are
+not retained. Greater teleport and gestalt are conservative summon-safety
+omissions. Source qualification is 1,006 tests plus clean Release and strict
+package PASS; exact final-live structure and actual runtime use remain open.
+
+The next two reconstruction groups are now structurally qualified. Invisible
+Stalker and Shadow Demon passed exact final-live assertions in
+`20260811T2207541420526Z-observe-expanded-summoning-inventory`. Salamander and
+Succubus then passed in
+`20260811T2238575798728Z-observe-expanded-summoning-inventory` on committed
+source `b0deb04ff9b387b375202c5304a6741c9549ef0a`. That final save-free run passed
+all 24 assertions: 67 units, 1,047 abilities, registry 1,386, all 681 parent
+placements, exact special structures, exact alignment/template counts, and
+zero donor aliases, prohibited references, inherited class spells, or starting
+inventory. Actual casts, visual contracts, persistence, feature-state launches,
+and complete compatibility-profile qualification remain open and are not
+claimed.
+
+Bebelith and Pixie are now structurally qualified on committed source
+`f058f4b5060e7eae4de4c7621cbdcbd06cbf08a7`. Guarded save-free run
+`20260811T2310424930290Z-observe-expanded-summoning-inventory` passed all 25
+assertions: 67 units, 1,048 abilities, registry 1,396, all 681 placements,
+exact bounded special structures, exact alignment/template execution counts,
+and zero donor aliases, prohibited references, inherited class spells,
+starting inventory, or native-action contamination. Call of the Wild was
+loaded and its final-live summon surfaces were preserved.
+
+Bebelith's unsafe permanent armor destruction is conservatively represented by
+a DC 25 Reflex-gated, one-round -2 AC effect after two same-target claw hits in
+one round; no equipped item is mutated. Its demon-hunting benefit is a +2
+attack/damage bonus against chaotic-evil outsiders. Rot and climb are omitted.
+Pixie uses an actual native arrow rig with zero weapon damage, sixteen
+resource-backed sleep arrows (Will DC 15, 50 rounds), and one resource-backed
+CL 8 Irresistible Dance using the native touch delivery and dance state.
+Neither implementation introduces inventory, transferable ammunition,
+teleportation, summoning, planar travel, poison, web, or persistent external
+state. Actual casts, special-action execution, visuals, cleanup, persistence,
+feature-state launches, and complete compatibility-profile qualification
+remain open and are not claimed.
+
+The first low-tier natural group is now structurally qualified on committed
+source `c2bee19c6598f559436e5f09af5029dc1da746de`. Dog, Eagle, Poisonous Frog,
+Giant Centipede, Giant Spider, Goblin Dog, and Hyena use explicit tabletop
+chassis and attacks; their donors no longer supply unrelated enemy mechanics.
+Guarded run
+`20260812T0010300046437Z-observe-expanded-summoning-inventory` passed all 27
+assertions with registry 1,399, all 681 placements, exactly 67 hidden KMG
+extraplanar markers, and zero sanitizer, donor-alias, inventory, inherited-spell,
+or native-action contamination failures. Static validation, `1007/1007`
+domain tests, clean Release, and strict packaging passed. Actual casts, visuals,
+cleanup/persistence, module-state launches, and compatibility profiles remain
+open and are not claimed.
+
+## Strengthened mechanical qualification
+
+The current 1,155-identity implementation passed the complete guarded
+mechanical scenario in run
+`20260812T1143070098993Z-bffb856b44d34334be86fa89c15bb6db`. All 153 native
+ability commands passed: every 123 logical one-creature SM/SNA entry, 16
+family/tier `1d3` cases, and 14 family/tier `1d4+1` cases. Runtime evidence
+proves same-kind identity, CL20 duration, close-range approach, exact cleanup,
+Augment and Superior Summoning, good/neutral/evil template choice, SNA caster
+alignment, and representative natural/proxy/elemental/outsider/special combat.
+
+The selected KMG celestial/fiendish template now replaces all four exact
+native Owlcat summon-template buffs on the spawned KMG unit. Runtime cases for
+good celestial, neutral celestial, neutral fiendish, and evil fiendish each
+contained exactly one KMG template and smite marker and zero native template
+buffs. The actual Fire Mephit breath command dealt 18 fire damage through its
+native effect graph; Succubus domination, Pixie dance/sleep arrows, bounded
+Bebelith dismantling, and permanent-on-attack Invisible Stalker invisibility
+also passed. Final immutable-source repetition remains required before release
+qualification is claimed.
+
+## Active-summon persistence qualification
+
+Guarded prepare/load/cleanup/absence transactions pass with Expanded Summoning
+enabled and disabled. Two actual production summon casts were serialized with
+exact frozen unit GUIDs. Fresh processes proved registered identity, caster
+context, remaining native duration, control/view/faction state, native cleanup,
+and final absence. With the module disabled, the saved summons remained
+load-safe while KMG parent publication was exactly zero. The working save and
+settings were restored to their original hashes, and
+`KMG_AUTOMATION_BASELINE` was never modified. Immutable-commit repetition is
+the next release gate; it is not yet claimed here.
+
+## Feature-module runtime matrix
+
+All 16 restart-bound configurations passed on immutable source `5e25656`.
+Each fresh process registered exactly 1,403 active identities independent of
+module state. Existing feature publication remained isolated, and Expanded
+Summoning contributed exactly 681 required-base parent references when enabled
+and zero when disabled. The settings transaction restored the original file
+byte-for-byte; working and protected-baseline save hashes were unchanged.
+
+## Compatibility qualification
+
+Immutable source `5bce781d25ba6f3efadf693dafef2267fd2003fe` passed the
+complete required profile set: standalone twice, Call of the Wild 1.14.4c-2.1
+twice, Arms and Armor 1.0.10, Toggle Custom Soundpacks 1.0.1, and the
+highest-risk combined profile twice. All eight guarded Steam launches passed
+the exact Expanded Summoning structural observer and restored the prior Mods
+directory and feature settings transaction exactly. Call of the Wild's
+final-live summon surfaces remained additive and intact.
+
+Standalone inventory proved that the Aura of Menace and original
+Irresistible Dance carriers are supplied only by the installed Call of the
+Wild profile. Lantern Archon therefore conditionally reuses the aura and
+documents its standalone omission. Pixie instead owns a frozen, bounded dance
+state (`aa8b4284e12e49f0b37f327f665638d1`) and behaves identically in every
+profile without a compile-time or runtime dependency on the optional mod.
+
+## Native cast qualification
+
+Committed source `8647ceff29ae45c416f948a979fd25098422910d` passed guarded
+scenario `disposable-expanded-summoning`, run
+`20260812T0235012741461Z-b7419c9642a445ac9edf4bfc8a2ad825`. The scenario
+loaded exactly `KMG_AUTOMATION_WORKING` through the established autonomous
+receiver-bound UI workflow and issued 153 native ability commands: every 123
+approved one-creature SM/SNA logical entry, 16 `1d3` family/tier cases, and 14
+`1d4+1` family/tier cases. All commands reached native execution completion;
+the 205 observed summons had legal counts and exact same-kind blueprint
+identity. Every created unit was disposed and exact party/global-unit snapshots
+were restored. No save-writing API was observed, scenario hooks were removed,
+and `KMG_AUTOMATION_BASELINE` was neither selected nor modified.
+
+The first loaded-area attempt exposed a native view-attachment null
+dereference for KMG-owned summon buffs. The fix initializes all custom
+`FxOnStart` and `FxOnRemove` fields to non-null empty `PrefabLink` objects,
+matching Kingmaker's native data-object invariant; domain source contracts now
+enforce it. Static validation, `1009/1009` domain tests, clean Release, and
+strict package validation pass for the qualified source. Visual animation and
+special-action contracts, active-summon persistence, the 16-state fresh-launch
+matrix, and compatibility-profile qualification remain open and are not
+claimed.
+
+## Visual-contract qualification
+
+Committed source `ee8a5886fdd817e659fe2afdf3f1019501aac064` passed guarded
+scenario `disposable-expanded-summoning-visual-contracts`, run
+`20260812T0316269056830Z-77c365156f0b47f5bc6a6c1e8501a6c7`. Every 67 unique
+one-creature unit was created through its production ability/native summon
+path. The run proved live view attachment, renderable nonzero geometry,
+bounded scale/world bounds, colliders and navigation members, locomotion
+events, attack animation or the exact Lantern ray fallback, hit and death
+handling, valid projectile/torso origins for detected ranged weapons, and
+exact unit/view cleanup.
+
+The Lantern Archon's Will-o'-Wisp rig has no cast/attack clip, so its two-ray
+ability now uses Kingmaker's native `Immediate` animation style and the proven
+`CenterTorso` projectile origin. This is a bounded visual-rig compatibility
+adaptation; ray count, ranged-touch delivery, damage, defenses, and AI remain
+unchanged. Repository validation, `1009/1009` domain tests, clean Release, and
+strict packaging pass. No save-writing API was observed and request-local
+hooks were removed. Residual aesthetic judgment remains on the final manual
+checklist; active-summon persistence, the 16-state fresh-launch matrix, and
+compatibility-profile qualification remain open.
+
+The complete tier I-VII natural/proxy catalog is now structurally qualified on
+committed source `3c2c5fef82a7d9b032f7da906385013a5699cc8c`. The final group adds
+Dire Lion, Ankylosaurus, Dire Bear, Dire Tiger/Smilodon, Elephant, Mastodon,
+and Roc with immutable PF1e chassis and proxy-only donor views. Three frozen
+KMG weapons provide exact 3d6 tail, 2d8 bite, and 2d6 talon dice without
+mutating native weapons. Guarded run
+`20260812T0045336396930Z-observe-expanded-summoning-inventory` passed all 29
+assertions in 107,891 ms: 67 units, 1,048 abilities, registry 1,403, all 681
+placements, exact tier I-VII and special structures, and zero sanitizer,
+donor-alias, prohibited-reference, inventory, inherited-spell, or native-action
+contamination failures. Call of the Wild final-live parents remained intact;
+no save was accessed. Static validation and all 1,009 domain tests, clean
+Release, exact-reference local build, and strict packages pass. Actual casts,
+quantity rolls, visuals, cleanup/persistence, the 16-state fresh-launch matrix,
+and compatibility-profile qualification remain open and are not claimed.
+
+The tier III-IV natural/proxy tranche is now structurally qualified on
+committed source `2534f57199cec7a8cd5ef3b5715cdd4ad30d0ac6`. Boar, Leopard,
+Monitor Lizard, Cheetah, Crocodile, Dire Bat, Wolverine, Dire Boar, Dire Wolf,
+Grizzly Bear, Lion, and Pteranodon are rebuilt from checked-in tabletop
+profiles. Their donors supply views only. A frozen KMG secondary 1d12 tail
+identity supplies Crocodile's tail without changing the native 1d8 donor
+weapon; the ledger is now 1,400 active plus one reserved identity and the
+constant registry is 1,400.
+
+The first guarded launch
+`20260812T0026276683838Z-observe-expanded-summoning-inventory` timed out after
+an exact bootstrap failure: several native facts declared as the base
+`BlueprintUnitFact` are concrete `BlueprintFeature` objects. Registration
+rolled back. The repair preserves exact concrete lookups per fact instead of
+weakening type validation. Fresh guarded run
+`20260812T0031212209441Z-observe-expanded-summoning-inventory` then passed all
+28 assertions in 106,947 ms: 67 units, 1,048 abilities, registry 1,400, all 681
+placements, exact tier I-IV and special structures, and zero sanitizer,
+donor-alias, prohibited-reference, inventory, inherited-spell, or native-action
+contamination failures. Call of the Wild final-live parents remained intact;
+no save was accessed. Repository validation, `1008/1008` domain tests, clean
+Release, and strict package validation pass. Actual casts, visuals,
+cleanup/persistence, module-state launches, and compatibility profiles remain
+open and are not claimed.
+
+## Polish and release-hardening qualification (2026-08-13)
+
+The player-facing polish pass is functionally qualified. Real-parent run
+`20260813T0052187995697Z-4b2425f990524498b554e6487ed19747` cast all 667
+visible generated SM/SNA roots and all 17 Owlcat-backed split choices through
+the actual spellbook variant chain. Every successful cast spent exactly one
+slot, the invalid-placement control spent zero, spawned units survived queued
+entity creation, and exact kind/quantity and cleanup passed. Combat run
+`20260813T0059598964338Z-37ed2c25edd24e7d80d417668f113f46`
+passed 153/153 production commands, including natural weapons, AI attacks,
+elementals, mephits, outsiders, special actions, templates, quantity bounds,
+and cleanup. These results cover Summon Nature's Ally through the same
+player-path gate, not a directly granted child.
+
+Five legacy hybrid children are no longer visible: Bralani/Redcap,
+Axiomite/Soul Eater, Bogeyman, Movanic Deva/Frost Giant, and Ghaele/Thanadaemon.
+Their blueprint objects are untouched and registered. Seventeen frozen direct
+choices expose Redcap (V one, VI `1d3`, VII `1d4+1`), Axiomite and Soul Eater
+(VI/VII/VIII), Bogeyman (VII/VIII/IX), Movanic Deva and Frost Giant
+(VIII/IX), and Thanadaemon (IX one). Exact GUID mapping, not localized text,
+drives suppression. Disabling Expanded Summoning restores each original
+parent collection exactly.
+
+The final base-profile menu counts are:
+
+| Parent | Before | After | One | 1d3 | 1d4+1 |
+|---|---:|---:|---:|---:|---:|
+| SM I-III | 1/2/3 | 3/13/20 | 3/10/7 | 0/3/10 | 0/0/3 |
+| SM IV-VI | 3/3/3 | 34/43/56 | 14/9/13 | 7/14/9 | 13/20/34 |
+| SM VII-IX | 3/3/3 | 64/69/69 | 8/6/2 | 13/8/6 | 43/55/61 |
+| SNA I-III | 1/2/3 | 5/14/20 | 5/9/6 | 0/5/9 | 0/0/5 |
+| SNA IV-VI | 3/3/3 | 32/39/46 | 13/7/7 | 6/13/7 | 13/19/32 |
+| SNA VII-IX | 3/3/3 | 52/56/58 | 6/5/2 | 7/6/5 | 39/45/51 |
+
+Singles precede `1d3`, which precede `1d4+1`; preserved foreign choices retain
+stable relative order. Structural run
+`20260813T0046539277035Z-f8b324f376fc4682a4dae9f4b4af2525` passed 37/37
+assertions: zero mapped umbrellas visible, zero missing unique native choices,
+zero duplicates, all 667 roots present once, all 17 split choices present
+once, and the standalone Summon Elemental spell unchanged.
+
+Icon selection is immutable and exact-GUID driven. It prefers an exact donor
+portrait/item/ability sprite, then a documented base-game category fallback.
+Canine, feline, bear, flying, reptile, vermin, elemental, mephit, celestial,
+and fiend groups are distinguished; the specific Dog/Wolf/Hyena/Goblin Dog,
+Leopard/Cheetah, Monitor/Crocodile, Lion/Pteranodon/Dire Lion/Dire Tiger,
+Lantern/Bralani/Erinyes/Ghaele contracts passed live inventory inspection.
+Lantern Archon's initial optional-mod icon dependency was found by standalone
+isolation and replaced with a base-game radiant Bless sprite.
+
+View-only scale multipliers are Eagle 0.58, Poisonous Frog 0.48, Dire Boar
+1.15, Pteranodon 0.82, Dire Bear 1.15, Elephant 0.90, Mastodon 1.15, and Roc
+1.10. Live visual run
+`20260813T0104112927126Z-59af7be5993a48fc938394800131628a`
+passed 11/11 and measured Eagle 5.919 < Roc 11.226, Poisonous Frog 1.475 <
+Giant Frog 3.073, Boar 2.474 < Dire Boar 2.845, Grizzly 3.277 < Dire Bear
+3.768, Elephant 9.568 < Mastodon 12.226, and Pteranodon 8.368 < Roc 11.226.
+All 67 views passed locomotion, attack, hit, death, projectile/selection/
+navigation, and exact cleanup contracts. Invisible Stalker retains the
+previously repaired Medium Air Elemental view. Dire Bat's Roc presentation
+failed human acceptance and no bat-compatible installed donor was proven, so
+all 14 Dire Bat placements are hidden while their identities stay registered.
+Elephant remains on the Mastodon material rather than risk shared-material
+mutation; scale provides the safe distinction.
+
+Enabled and disabled persistence each passed prepare, cleanup, and absent
+fresh-process stages. Frozen identities remained load-safe with publication
+disabled. The 16-state matrix passed 16/16 with constant 1,429 registration;
+settings returned to SHA-256
+`424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+The working save returned to
+`3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`;
+protected `KMG_AUTOMATION_BASELINE` remained
+`cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+and was never modified.
+
+Final compatibility transactions all passed both optional-structure and summon
+inventory observers and restored exactly: standalone
+`compat-20260813T021217Z-cf7b4819c008`, Call of the Wild
+`compat-20260813T021603Z-e698cec7171f`, Arms and Armor
+`compat-20260813T022200Z-2f64e7a91a77`, Toggle Custom Soundpacks
+`compat-20260813T022547Z-f29360920d56`, and highest-risk combined
+`compat-20260813T022936Z-c94589e55d6e`.
+
+Existing-feature regressions passed in focused authoritative scenarios: Shield
+Other 23/23 (`20260813T0236281750239Z-149cd0176d7b49ddb75eda063f07cede`),
+Acadamae Graduate 13/13
+(`20260813T0238348244334Z-d2c95697a4ae4c979538d4f48f18c69e`), paper/
+firearm 6/6 (`20260813T0246085202426Z-358003f2d84c4de89913c2873238fe09`),
+Cord 8/8 (`20260813T0248277245574Z-7893535db1044575a3e6559512e4575a`),
+and vendors 14/14
+(`20260813T0255103735208Z-eab679997c4e4637a876fd712114f3b4`). The vendor
+observer's sole first-run failure was a stale 28-entry oracle; the live table
+correctly contained 29 entries after Cord. The broad save-free Gunslinger
+aggregate still reproduces its documented detached Dodge plus order-sensitive
+Targeting/Bleeding fixtures. No summoning source calls those paths; focused
+domain/production checks remain green, and no unrelated deed rewrite was made.
+
+The final ledger is 1,175 Expanded Summoning active identities, 1,429 active
+repository identities, one reserved identity, and 1,430 ledger entries. All
+1,013 dependency-free domain tests pass. Two clean builds from artifact source
+`00f7fa29db69f142d918725c502993111d18f0c0` produced identical DLL SHA-256
+`4c5cf6e8f34f9d562e475a05af136b36c79b47b65fe187f72c3ff44bdddc5a76`
+and package SHA-256
+`c8bca9e80a02be83d8434813baf7cad01c651eb4675eedcb4e02a691095f6496`.
+Two independent `git archive` outputs matched at
+`61b4d36f19dfdbbddb9b251c8e8e555838bfaa1725a27060e729ae9cda2470c3`.
+Strict standalone package validation passed twice. Draft PR #2 remains draft
+and unmerged. Residual human work is limited to reviewing the PR
+and subjective in-game checks of icon aesthetics, scale/camera framing,
+projectile appearance, and animation style.

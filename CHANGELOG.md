@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.0.78 - Expanded Summoning
+
+- Replaces every player-visible Expanded Summoning child icon with one of 77
+  project-owned original creature icons. The 128x128 RGBA set is manifest-
+  validated, packaged deterministically, cached once per creature, and never
+  falls back to an Owlcat spell, item, portrait, paw, or generic summon icon.
+- Rebuilds nine preserved Nature's Ally choices as creature-named KMG wrappers,
+  removing the duplicated generic Tier-I entries and white-square child icons.
+  All 322 visible SNA and 371 visible SM choices now resolve to exact creature
+  icons, including lower-tier quantity choices.
+- Renames the player-facing `Dire Tiger / Smilodon` concept to `Smilodon` while
+  retaining the frozen `dire-tiger` key and all existing blueprint GUIDs.
+- Reduces Eagle's view-only multiplier to `0.30`; live renderer measurement is
+  1.360 units tall versus 1.926 for the Medium humanoid control. Mechanical
+  Small size, selection footprint, animations, and shared SM/SNA unit remain
+  unchanged.
+- Splits the remaining Owlcat hybrid summon umbrellas into 17 distinct,
+  directly executable choices while retaining every original blueprint
+  identity; hides the five obsolete umbrella children and all 14 Dire Bat
+  placements whose Roc proxy failed visual acceptance.
+- Adds deterministic original creature icons and measured view-only scaling
+  for Eagle, Poisonous Frog, Dire Boar, Pteranodon, Dire Bear, Elephant,
+  Mastodon, and Roc. Dire creatures now read larger than their ordinary
+  analogues without changing mechanical size or navigation footprint.
+- Requalifies all 667 visible generated SM/SNA roots plus 26 native/preservation
+  choices through real spellbook parents, representative combat and special
+  actions, 67 live views, enabled/disabled persistence, all 16 module states,
+  and all five supported compatibility profiles.
+- Repairs the first-playtest no-op for templated natural/proxy summons by
+  replacing unsupported nested player-facing variants with direct executable
+  roots and caster-selected post-spawn templates.
+- Reconciles 48 exact-GUID native semantic duplicates, orders singles before
+  `1d3` before `1d4+1`, adds category/donor icon selection, moves Invisible
+  Stalker to the Medium Air Elemental view, and rebuilds Erinyes on a safe
+  outsider chassis.
+- Adds an actual native-parent spellbook acceptance scenario covering all 681
+  logical roots, exact one-slot success semantics, zero-slot pre-cast
+  cancellation, post-creation live-world state, and exact cleanup.
+
+- Adds an independent, default-enabled, restart-bound Expanded Summoning
+  module for Summon Monster I-IX and Summon Nature's Ally I-IX.
+- Adds the approved 66-entry Summon Monster roster and 57-entry Nature's Ally
+  roster, sharing 67 summon-safe creature identities and generating all 681
+  legal one/1d3/1d4+1 same-kind placements.
+- Preserves every vanilla and third-party summon option by reference and order
+  through additive, idempotent, transactional final-live reconciliation.
+- Adds caster-aligned celestial/fiendish Summon Monster choices, Nature's Ally
+  alignment handling, native summon lifecycle/feat integration, and bounded
+  Lantern Archon, Salamander, Invisible Stalker, Shadow Demon, Succubus,
+  Bebelith, and Pixie adaptations.
+- Keeps all 1,184 Expanded Summoning identities registered when the module is
+  disabled so existing saves and active summons remain load-safe.
+- Corrects Shield Other so close range limits initial targeting only; an
+  established link now ends on duration/removal, dead or missing endpoints, or
+  area separation, not ordinary post-cast distance.
+- Adds guarded 153-cast quantity coverage, 67-unit visual contracts,
+  persistence/cleanup qualification, all 16 module states, and standalone,
+  Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and combined
+  compatibility profiles.
+
 ## 0.0.77 - Shield Other
 
 - Fixes spontaneous-caster availability and action-bar corruption by preserving

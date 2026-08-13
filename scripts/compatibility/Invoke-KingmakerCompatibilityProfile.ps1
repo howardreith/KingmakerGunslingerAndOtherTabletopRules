@@ -34,6 +34,7 @@ param(
         'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
         'observe-feature-module-settings',
+        'observe-expanded-summoning-inventory',
         'disposable-shield-other',
         'disposable-acadamae-graduate',
         'disposable-gunslinger-comprehensive-acceptance')]
@@ -58,12 +59,14 @@ $moduleScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-feature-module-settings' }).Count -gt 0
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 3 -or $keys[0] -cne 'acadamaeGraduate' -or
-        $keys[1] -cne 'gunslinger' -or $keys[2] -cne 'shieldOther' -or
+    if ($keys.Count -ne 4 -or $keys[0] -cne 'acadamaeGraduate' -or
+        $keys[1] -cne 'expandedSummoning' -or $keys[2] -cne 'gunslinger' -or
+        $keys[3] -cne 'shieldOther' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
-        $Parameters.shieldOther -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly three Boolean parameters: gunslinger, acadamaeGraduate, and shieldOther.'
+        $Parameters.shieldOther -isnot [bool] -or
+        $Parameters.expandedSummoning -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly four Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, and expandedSummoning.'
     }
 } elseif ($Parameters.Count -ne 0) {
     throw 'Compatibility profile parameters are supported only for observe-feature-module-settings.'
@@ -79,10 +82,11 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 2
+        $settings = [ordered]@{ schemaVersion = 3
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
-            'shield-other' = [bool]$Parameters.shieldOther }
+            'shield-other' = [bool]$Parameters.shieldOther
+            'expanded-summoning' = [bool]$Parameters.expandedSummoning }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -93,7 +97,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.77'
+            ExpectedVersion = '0.0.78'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds

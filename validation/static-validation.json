@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.77-shield-other",
-  "version": "0.0.77",
+  "milestone": "0.0.78-expanded-summoning",
+  "version": "0.0.78",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 255,
-    "activeEntryCount": 254,
+    "entryCount": 1407,
+    "activeEntryCount": 1406,
     "reservedEntryCount": 1,
-    "registrationCount": 254
+    "registrationCount": 1406
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -60,14 +60,16 @@
     "sprint30EntryApproved": true
   },
   "featureModules75": {
-    "deterministicTestCount": 981,
-    "activeBlueprintCount": 254,
-    "ledgerEntryCount": 255,
+    "deterministicTestCount": 1009,
+    "activeBlueprintCount": 1406,
+    "ledgerEntryCount": 1407,
     "reservedBlueprintCount": 1,
     "fourModuleConfigurationsQualified": true,
     "eightModuleConfigurationsQualified": true,
     "shieldOtherQualified": true,
     "acadamaeCordIntegrationQualified": true,
-    "exactOptionalProfilesTargeted": true
+    "exactOptionalProfilesTargeted": true,
+    "sixteenModuleConfigurationsQualified": true,
+    "expandedSummoningQualified": true
   }
 }

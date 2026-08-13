@@ -35,6 +35,10 @@ $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
     'observe-shield-other-inventory',
+    'observe-expanded-summoning-inventory',
+    'disposable-expanded-summoning',
+    'disposable-expanded-summoning-player-path',
+    'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',
@@ -127,6 +131,9 @@ $expected = @(
     'working-save-smoke',
     'working-save-shield-other-prepare',
     'working-save-shield-other-verify-cleanup',
+    'working-save-expanded-summoning-prepare',
+    'working-save-expanded-summoning-verify-cleanup',
+    'working-save-expanded-summoning-verify-absent',
     'generic-firearm-actions',
     'production-firearm-catalog',
     'advanced-capacity',
@@ -173,6 +180,33 @@ Assert-True (-not $feature.RequiresManualInteraction) `
 Assert-True $feature.RequiresSaveName 'sprint30-feature-requires-save-name'
 Assert-True ($feature.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
     'sprint30-feature-only-permits-working-save'
+$expandedSummoning = Get-KmgRuntimeScenarioMetadata `
+    'disposable-expanded-summoning'
+Assert-True (-not $expandedSummoning.RequiresManualInteraction) `
+    'expanded-summoning-is-autonomous'
+Assert-True $expandedSummoning.RequiresSaveName `
+    'expanded-summoning-requires-save-name'
+Assert-True ($expandedSummoning.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'expanded-summoning-only-permits-working-save'
+$expandedSummoningPlayerPath = Get-KmgRuntimeScenarioMetadata `
+    'disposable-expanded-summoning-player-path'
+Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
+    'expanded-summoning-player-path-is-autonomous'
+Assert-True $expandedSummoningPlayerPath.RequiresSaveName `
+    'expanded-summoning-player-path-requires-save-name'
+Assert-True ($expandedSummoningPlayerPath.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'expanded-summoning-player-path-only-permits-working-save'
+$expandedSummoningVisual = Get-KmgRuntimeScenarioMetadata `
+    'disposable-expanded-summoning-visual-contracts'
+Assert-True (-not $expandedSummoningVisual.RequiresManualInteraction) `
+    'expanded-summoning-visual-is-autonomous'
+Assert-True $expandedSummoningVisual.RequiresSaveName `
+    'expanded-summoning-visual-requires-save-name'
+Assert-True ($expandedSummoningVisual.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'expanded-summoning-visual-only-permits-working-save'
 $productionCatalog = Get-KmgRuntimeScenarioMetadata 'production-firearm-catalog'
 Assert-True (-not $productionCatalog.RequiresManualInteraction) `
     'sprint31-catalog-is-autonomous'
@@ -309,7 +343,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.77'
+    ExpectedVersion = '0.0.78'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -342,7 +376,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.77' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.78' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -397,7 +431,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.77' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.78' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {
