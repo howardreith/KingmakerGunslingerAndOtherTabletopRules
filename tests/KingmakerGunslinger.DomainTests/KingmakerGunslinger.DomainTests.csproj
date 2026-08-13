@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Compile Include="ExpandedSummoningCatalogTests.cs" />
+    <Compile Include="ExpandedSummoningPresentationTests.cs" />
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
@@ -264,6 +265,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Classes\GunTrainingProgression.cs"><Link>Classes\GunTrainingProgression.cs</Link></Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(KingmakerManagedDir)\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
