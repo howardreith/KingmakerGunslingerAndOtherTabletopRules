@@ -40,6 +40,7 @@
     <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />

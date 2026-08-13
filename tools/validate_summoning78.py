@@ -65,6 +65,25 @@ def validate(root: Path) -> None:
         "KMG.ElvenBranchedSpear.ExoticWeaponProficiency": ("017d586ec4546feabf6eaaa67ce74a3f", "BlueprintFeature"),
         "KMG.ElvenBranchedSpear.FinesseTraining": ("3843c643ffcc617faf9121a5f801a70e", "BlueprintFeature"),
         "KMG.ElvenBranchedSpear.MovementOpportunityAccuracy": ("b0cabc2a4ac0135fab2f89c689dea389", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.Boughkeeper": ("4a084b0226e077b58d79e33184018002", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.Thornstep": ("676faa5f811d851c9f14204bf864e1ec", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.MoonlitFork": ("403d62f6d3bb415c86939430176e55c0", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.VipersReach": ("1cfe40563a9b816931bb35e69677ac27", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.BriarCrownedSpear": ("ee580f43f50a0f0afefaedb3ce7133f3", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.SpearOfTheFirstBranch": ("85c18b96ebee3fdc87eb33da93c8fdf6", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.BoughkeeperEnchantment": ("c777f06ec91be851794518fcdcc9c596", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.ThornstepEnchantment": ("89a27b8a22715a0b609912bc728dcb31", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.VipersReachEnchantment": ("be3a16e947fe8496a8301cbb2476cbcb", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.BriarCrownedEnchantment": ("62ef4362d84631574bacc977ffdad3e1", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.FirstBranchEnchantment": ("2bba46654f15079769b0e6c741e8f803", "BlueprintWeaponEnchantment"),
+        "KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff": ("064feb1123cfb1ae4f541ef5e4d138a1", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.ThornstepSpeedPenaltyBuff": ("339e83672ea2116e55640d175fec0c84", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.ThornstepRoundMarker": ("7e2b2d36433396535555d39cc4066763", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.VipersReachReflexPenaltyBuff": ("6ac410ab82b81915d64249a213e1815a", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.VipersReachRoundMarker": ("dcc7832d9ed7558111ee97da668522fe", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.BriarCrownedRoundMarker": ("89cea1f236074e36051a68ece37aa05c", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.FirstBranchRoundMarker": ("1bb02c32918071bfa8333a12de4d7e94", "BlueprintBuff"),
+        "KMG.ElvenBranchedSpear.FirstBranchSpeedPenaltyBuff": ("27d76fe829cc0234b7e120b19462848b", "BlueprintBuff"),
     }
     by_symbol = {entry["symbol"]: entry for entry in spear_entries}
     for symbol, (guid, planned_type) in expected_spear_entries.items():
@@ -77,7 +96,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Elven Branched Spear blueprint ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    expected_registration = ("ExpectedRegisteredBlueprintCount = 264 +"
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 283 +"
         if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")
     if expected_registration not in bootstrap:
         raise AssertionError("Expanded Summoning aggregate registration count mismatch")

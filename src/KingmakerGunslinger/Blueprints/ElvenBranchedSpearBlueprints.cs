@@ -427,6 +427,48 @@ namespace KingmakerGunslinger.Blueprints
                     enchantments.Length + ".");
         }
 
+        internal void ConfigureNamed(BlueprintItemWeapon item,
+            NamedSpearSpec spec, BlueprintWeaponEnchantment[] enchantments,
+            string description)
+        {
+            BlueprintItemAccess.Resolve().ConfigureWeapon(item,
+                LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
+                LocalizationService.Create(spec.Symbol + ".Description",
+                    description),
+                LocalizationService.Create(spec.Symbol + ".Flavor",
+                    "An elven polearm whose forward-angled branch blades carry a distinctive magical finish."),
+                spec.Cost, ElvenBranchedSpearCatalog.WeightPounds);
+            _enchantments.SetValue(item, enchantments == null
+                ? Array.Empty<BlueprintWeaponEnchantment>()
+                : enchantments.ToArray());
+            _overrideDamageType.SetValue(item, spec.ColdIron);
+            _damageType.SetValue(item, PhysicalPiercing(spec.ColdIron));
+        }
+
+        internal void ValidateNamed(BlueprintItemWeapon item,
+            NamedSpearSpec spec, int expectedEnchantments)
+        {
+            BlueprintWeaponEnchantment[] enchantments =
+                (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
+                Array.Empty<BlueprintWeaponEnchantment>();
+            DamageTypeDescription damage =
+                (DamageTypeDescription)_damageType.GetValue(item);
+            if (item.Cost != spec.Cost || !item.Weight.Equals(10f) ||
+                item.IsActuallyStackable ||
+                (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
+                damage == null || damage.Type != DamageType.Physical ||
+                damage.Physical.Form != PhysicalDamageForm.Piercing ||
+                damage.Physical.Material != (spec.ColdIron
+                    ? PhysicalDamageMaterial.ColdIron : 0) ||
+                enchantments.Length != expectedEnchantments ||
+                enchantments.Any(value => value == null) ||
+                item.Description.IndexOf("Brace",
+                    StringComparison.OrdinalIgnoreCase) >= 0)
+                throw new InvalidOperationException(
+                    "Named spear item contract is invalid: " +
+                    spec.DisplayName + ".");
+        }
+
         private static string Describe(ElvenBranchedSpearItemSpec spec)
         {
             string prefix = spec.ColdIron ? "This cold iron " : "This ";
@@ -487,6 +529,14 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature ExoticWeaponProficiency { get; private set; }
         internal BlueprintFeature FinesseTraining { get; private set; }
         internal ElvenBranchedSpearSelectorPublication Publication { get; private set; }
+        internal ElvenBranchedSpearNamedBlueprintSet Named { get; private set; }
+        internal void AttachNamed(ElvenBranchedSpearNamedBlueprintSet named)
+        {
+            if (named == null || Named != null)
+                throw new InvalidOperationException(
+                    "Named spear registration may be attached exactly once.");
+            Named = named;
+        }
         internal ElvenBranchedSpearBlueprintEntry Require(
             ElvenBranchedSpearItemKind kind)
         { return Entries.Single(value => value.Spec.Kind == kind); }

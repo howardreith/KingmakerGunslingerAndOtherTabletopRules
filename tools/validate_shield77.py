@@ -62,7 +62,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Expanded Summoning reservation ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    expected_registration = ("ExpectedRegisteredBlueprintCount = 264 +"
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 283 +"
         if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")
     if expected_registration not in bootstrap:
         raise AssertionError("Shield Other registration count mismatch")

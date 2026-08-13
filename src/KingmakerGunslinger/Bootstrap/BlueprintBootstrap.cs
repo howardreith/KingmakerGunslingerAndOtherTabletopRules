@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 264 +
+        internal const int ExpectedRegisteredBlueprintCount = 283 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
@@ -638,6 +638,9 @@ namespace KingmakerGunslinger.Bootstrap
                     ElvenBranchedSpearBlueprints.Register(library, registry,
                         publicationPlan.ElvenBranchedSpearSelectors,
                         context.Logger);
+                elvenBranchedSpears.AttachNamed(
+                    ElvenBranchedSpearNamedBlueprints.Register(library, registry,
+                        elvenBranchedSpears.WeaponType, context.Logger));
                 spearSelectorPublication = elvenBranchedSpears.Publication;
 
                 ExpandedSummoningBlueprintSet expandedSummoning =

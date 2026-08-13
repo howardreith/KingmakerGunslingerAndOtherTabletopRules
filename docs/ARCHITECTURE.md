@@ -514,7 +514,7 @@ register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
 Expanded Summoning plus the Elven Branched Spear foundation freeze the
-append-only ledger at 1449 stable IDs: 1448 active and one reserved. All 1184
+append-only ledger at 1468 stable IDs: 1467 active and one reserved. All 1184
 Expanded Summoning feature identities and all ten spear foundation identities
 register in every module state while
 their exact runtime types are registered deterministically; feature enablement

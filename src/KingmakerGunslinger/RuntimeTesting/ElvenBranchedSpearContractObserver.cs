@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Loot;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
@@ -88,6 +89,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ContainsAny(component.GetType().FullName, DexterityTerms)))
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeBlueprint).ToArray();
+            string[] entangledConditions = all.OfType<BlueprintBuff>()
+                .Where(value => ContainsAny(value.name + ";" +
+                    Safe(() => value.Name), new[] { "entangl" }))
+                .OrderBy(value => value.name, StringComparer.Ordinal)
+                .Select(DescribeBlueprint).ToArray();
             string[] loot = all.OfType<BlueprintLoot>().Where(IsCampaignLootCandidate)
                 .OrderBy(value => value.Area == null ? string.Empty : value.Area.name,
                     StringComparer.Ordinal).ThenBy(value => value.name,
@@ -147,6 +153,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "all native and loaded-mod Finesse, Grace, and stat-replacement consumers",
                 string.Join(" | ", dexterity), dexterity.Length > 0,
                 "all installed blueprint component type identities and fields");
+            Add(assertions, "spear-native-entangled-conditions",
+                "native Entangled condition blueprint candidates",
+                string.Join(" | ", entangledConditions),
+                entangledConditions.Length > 0,
+                "installed BlueprintBuff names, identities, and components");
             Add(assertions, "spear-campaign-loot-candidates",
                 "nonempty exact early-through-final campaign loot inventory",
                 string.Join(" | ", loot), loot.Length > 0,
@@ -189,6 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "familiarity=" + familiarity.Length,
                     "races=" + raceGrants.Length,
                     "dexterity=" + dexterity.Length,
+                    "entangledConditions=" + entangledConditions.Length,
                     "loot=" + loot.Length
                 },
                 Warnings = new List<string>(),

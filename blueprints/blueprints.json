@@ -11599,6 +11599,158 @@
       "status": "active",
       "milestone": "Elven Branched Spear",
       "notes": "Zero-cost inherent weapon-type enchantment for the exact movement-provoked attack-of-opportunity bonus."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Boughkeeper",
+      "guid": "4a084b0226e077b58d79e33184018002",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +1 spear with attack-of-opportunity dodge effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Thornstep",
+      "guid": "676faa5f811d851c9f14204bf864e1ec",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +1 Keen spear with movement-AoO speed penalty."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.MoonlitFork",
+      "guid": "403d62f6d3bb415c86939430176e55c0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +2 Agile cold iron spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.VipersReach",
+      "guid": "1cfe40563a9b816931bb35e69677ac27",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +3 Agile Corrosive spear with sneak-attack Reflex penalty."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BriarCrownedSpear",
+      "guid": "ee580f43f50a0f0afefaedb3ce7133f3",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +4 Agile spear with Fortuitous-equivalent effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.SpearOfTheFirstBranch",
+      "guid": "85c18b96ebee3fdc87eb33da93c8fdf6",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Named +5 Agile Speed cold iron capstone spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BoughkeeperEnchantment",
+      "guid": "c777f06ec91be851794518fcdcc9c596",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Exact Boughkeeper AoO-hit effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ThornstepEnchantment",
+      "guid": "89a27b8a22715a0b609912bc728dcb31",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Exact Thornstep movement-AoO effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.VipersReachEnchantment",
+      "guid": "be3a16e947fe8496a8301cbb2476cbcb",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Exact Viper's Reach genuine-sneak-damage effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BriarCrownedEnchantment",
+      "guid": "62ef4362d84631574bacc977ffdad3e1",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Exact Briar-Crowned Fortuitous-equivalent effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.FirstBranchEnchantment",
+      "guid": "2bba46654f15079769b0e6c741e8f803",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Exact First Branch's Reprisal effect."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff",
+      "guid": "064feb1123cfb1ae4f541ef5e4d138a1",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "One-round nonstacking Boughkeeper dodge buff."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ThornstepSpeedPenaltyBuff",
+      "guid": "339e83672ea2116e55640d175fec0c84",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "One-round nonstacking Thornstep speed penalty."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ThornstepRoundMarker",
+      "guid": "7e2b2d36433396535555d39cc4066763",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Save-persistent hidden Thornstep once-per-round marker."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.VipersReachReflexPenaltyBuff",
+      "guid": "6ac410ab82b81915d64249a213e1815a",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "One-round nonstacking Viper's Reach Reflex penalty."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.VipersReachRoundMarker",
+      "guid": "dcc7832d9ed7558111ee97da668522fe",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Save-persistent hidden Viper's Reach once-per-round marker."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BriarCrownedRoundMarker",
+      "guid": "89cea1f236074e36051a68ece37aa05c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Save-persistent hidden Briar-Crowned once-per-round marker."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.FirstBranchRoundMarker",
+      "guid": "1bb02c32918071bfa8333a12de4d7e94",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Save-persistent hidden combined First Branch once-per-round marker."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.FirstBranchSpeedPenaltyBuff",
+      "guid": "27d76fe829cc0234b7e120b19462848b",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "One-round nonstacking First Branch successful-save speed penalty."
     }
   ]
 }

@@ -326,3 +326,38 @@ The loaded assembly SHA-256 was
   `0bc7e9d236228564ba1f7f3da61d8e91`. These are late/final placement
   candidates only; the placement manifest will name a target after exact
   append behavior and reachability are tested.
+
+## Named weapon implementation checkpoint
+
+The six approved named items use the same weapon type and category as every
+foundation item. Their native property graph references the installed +1 through
++5, Agile, Keen, Corrosive, and Speed enchantments listed above. Five separate
+zero-cost custom enchantments own only the bespoke trigger behavior. Eight
+stable buff identities provide nonstacking effects and save-persistent
+once-per-round markers.
+
+Stable named identities were derived as the first 32 lowercase hexadecimal
+characters of SHA-256 over
+`KingmakerGunslingerAndOtherTabletopRules|ElvenBranchedSpear|<symbol>` and were
+collision-checked against the complete ledger. The ledger now has 1,468 stable
+identities: 1,467 active and one reserved.
+
+The exact movement provenance guard is reused only by Thornstep. Viper's Reach
+requires `IsSneakAttackUsed` plus a positive final `DamageValue` whose native
+source is tagged `Sneak`; eligibility or zero/immunity-suppressed damage is
+insufficient. Briar-Crowned commands are marked at their own
+`UnitCombatState.AttackOfOpportunity` construction boundary, consume the native
+AoO economy, receive -5 from the exact owning enchantment, and are rejected as
+recursive triggers. First Branch uses a native `RuleSavingThrow` and the direct
+native Dirty Trick Entangled condition donor
+`3a6c5d8520c3b404883276590b086702`.
+
+Clean Release/package qualification passed with 1,023/1,023 domain tests. The
+first guarded Steam registration run
+`20260813T2252420300345Z-mod-load-smoke` timed out after the blueprint lifecycle
+correctly rolled back 13 owned registrations: hidden marker buffs had empty
+localized descriptions and failed the repository's readable-unit-fact guard.
+After assigning nonempty internal marker text, fresh guarded Steam run
+`20260813T2257134766491Z-mod-load-smoke` passed. This proves deterministic
+registration and startup safety; it does not yet substitute for realistic
+combat-event qualification of each effect.
