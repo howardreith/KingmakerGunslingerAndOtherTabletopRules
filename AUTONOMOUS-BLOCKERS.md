@@ -1,5 +1,12 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-13 Expanded Summoning final disposition
+
+No active engineering blocker. Exact immutable source `fea6b60` passes the
+complete runtime, module, persistence, compatibility, regression, deterministic
+build, and strict package gates. Remaining review is subjective visual judgment
+only; draft PR #2 must remain unmerged pending that human review.
+
 ## 2026-08-11 Shield Other casting/UI regression
 
 No active engineering blocker. Exact-commit standalone, CotW, highest-risk,

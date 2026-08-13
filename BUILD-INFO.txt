@@ -18,8 +18,8 @@ Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 R
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
 Package: KingmakerGunslinger-0.0.78-expanded-summoning.zip
-Artifact source: 147f39fabc0d778bef7a6133358830f58e72794a
-DLL SHA-256: f69b8d64d1236b9045a3c1e058986a008c49eb48bb3fe70f11c44c1ed01ba0fc
-Package SHA-256: e31021ff89cd95ecb89b04d7f730260ab46abdd792846f8395872ebfd06b8723
-Source archive SHA-256: b5177925939cb353bcdc62bd0535742cc5b4040f55cf15cd93bfdbec411d8598
+Artifact source: fea6b60786aaabc41d1e276e524d8c14803a0e65
+DLL SHA-256: f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9
+Package SHA-256: a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c
+Source archive SHA-256: 9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

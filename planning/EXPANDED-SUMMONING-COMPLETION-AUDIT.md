@@ -1,5 +1,47 @@
 # Expanded Summoning first-playtest repair completion audit
 
+## Final immutable-source addendum (2026-08-13)
+
+Status: complete and release-qualified. This addendum supersedes older source,
+artifact-hash, settings-restoration, working-save-restoration, and final-run
+values below; the older rows remain as qualification chronology.
+
+- Immutable runtime/artifact source:
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65`; release `0.0.78`.
+- Runtime PASS: visual 13/13
+  (`20260813T1903398091052Z-8599cd14aebd435f8e674d46b39c1613`),
+  structural/menu/icon 38/38
+  (`20260813T1907030054323Z-c3c2c5fe47a745689167c9a0e9fc89e2`),
+  player path 10/10
+  (`20260813T1911396823000Z-7e1b7d94c1664c839176eeb3189f58ee`),
+  and mechanical 12/12
+  (`20260813T1919096622832Z-7e5087b74fae4490a40a533b4957dd7b`).
+- All 16 settings states passed 7/7 per fresh launch at constant registration
+  1,438. Enabled and disabled persistence each passed prepare, cleanup, and
+  fresh-process absence, 9/9 per stage. Exact directories/run IDs are in
+  `EXPANDED-SUMMONING-STATE.json` and the implementation report.
+- Standalone x2, Call of the Wild x2, Arms and Armor, Toggle Custom
+  Soundpacks, and highest-risk combined x2 all passed both required observers;
+  every transaction restored. Focused regressions passed Shield Other 23/23,
+  Acadamae 13/13, paper/firearm 6/6, Cord 8/8, and vendors 14/14.
+- Two clean final cycles each passed repository/manifest validation,
+  1,018/1,018 tests, exact-reference Release, SoundBank validation, and strict
+  package validation. Byte-identical SHA-256 values: DLL
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`;
+  package
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`;
+  source archive
+  `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.
+- Restored settings SHA-256 is
+  `32a0d33f57357ad0e4e7ae872a7c76e6276e3febcd1c9b5b27ea3735fc98f500`;
+  restored disposable working-save SHA-256 is
+  `50421a09bb874419e4f2f794ec8e926db1cefe8fc18ba7644fb6f4aa045029a0`.
+  Protected baseline remains
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+  and was never written. No compatibility quarantine or lock remains.
+- Draft PR #2 remains draft, open, unmerged, and targets `master`. The only
+  remaining work is the documented subjective human visual review.
+
 ## Final presentation addendum (2026-08-13)
 
 - [x] 77/77 visible creature concepts have distinct project-owned original

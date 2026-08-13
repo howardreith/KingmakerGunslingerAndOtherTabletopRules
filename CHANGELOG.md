@@ -24,7 +24,7 @@
   for Eagle, Poisonous Frog, Dire Boar, Pteranodon, Dire Bear, Elephant,
   Mastodon, and Roc. Dire creatures now read larger than their ordinary
   analogues without changing mechanical size or navigation footprint.
-- Requalifies all 667 visible generated SM/SNA roots plus 17 split native
+- Requalifies all 667 visible generated SM/SNA roots plus 26 native/preservation
   choices through real spellbook parents, representative combat and special
   actions, 67 live views, enabled/disabled persistence, all 16 module states,
   and all five supported compatibility profiles.
@@ -50,7 +50,7 @@
   alignment handling, native summon lifecycle/feat integration, and bounded
   Lantern Archon, Salamander, Invisible Stalker, Shadow Demon, Succubus,
   Bebelith, and Pixie adaptations.
-- Keeps all 1,158 Expanded Summoning identities registered when the module is
+- Keeps all 1,184 Expanded Summoning identities registered when the module is
   disabled so existing saves and active summons remain load-safe.
 - Corrects Shield Other so close range limits initial targeting only; an
   established link now ends on duration/removal, dead or missing endpoints, or

@@ -1695,3 +1695,45 @@
 - Foundation gates: icon exporter/verify PASS; repository validation PASS; 1,013
   domain/reflection tests PASS; exact-reference Release build PASS; strict 123-file
   package validation PASS. Focused native runtime acceptance remains next.
+
+## 2026-08-13 - Final immutable-source recovery and release qualification
+
+- Recovered the clean synchronized branch at
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65` after the prior conversation
+  transport failure. Reused its completed evidence and reran only gates that
+  the immutable-source policy still required.
+- Confirmed final presentation/mechanics on that exact SHA: visual 13/13,
+  structural 38/38, player path 10/10, and comprehensive mechanics 12/12.
+  The structural run regenerated nine menu contact sheets covering 390 audited
+  choices; SNA I visually contains exactly five creature-named original icons.
+- Completed the remaining 12 module settings launches, joining the four
+  already-complete launches for 16/16 PASS at constant registry count 1,438.
+  Every launch passed 7/7 assertions.
+- Completed enabled and disabled three-stage persistence. All six launches
+  passed 9/9; disabled mode retained frozen identity load safety and zero
+  Expanded Summoning publication.
+- Repeated the complete eight-transaction profile set on the immutable SHA:
+  standalone x2, Call of the Wild x2, Arms and Armor, Toggle Custom
+  Soundpacks, and highest-risk combined x2. Both required observers passed in
+  every transaction, each transaction reports `Restored`, and no quarantine
+  or lock remains.
+- Focused regressions passed Shield Other 23/23, Acadamae 13/13,
+  paper/firearm 6/6, Cord 8/8, and vendors 14/14. The first vendor observation
+  was intentionally performed under the restored Acadamae-disabled takeover
+  settings and lacked Cord's row; the all-enabled rerun passed without source
+  modification. Exact IDs are frozen in the implementation report and state.
+- Restored exact takeover settings SHA-256
+  `32a0d33f57357ad0e4e7ae872a7c76e6276e3febcd1c9b5b27ea3735fc98f500`
+  and disposable working-save SHA-256
+  `50421a09bb874419e4f2f794ec8e926db1cefe8fc18ba7644fb6f4aa045029a0`.
+  Protected baseline remains
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+  and was never written.
+- Two clean final artifact cycles each passed validation, 1,018/1,018 tests,
+  exact-reference Release, SoundBank, and strict package gates. Deterministic
+  hashes are DLL
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`,
+  package
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`,
+  and source archive
+  `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.

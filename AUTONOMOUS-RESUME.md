@@ -2,8 +2,9 @@
 
 ## Expanded Summoning final presentation (2026-08-13)
 
-- Final implementation checkpoint is `b101beba5a3e095f4a7ff9320458c0b6ae899fb9`
-  on `codex/expanded-summoning`; release remains the unreleased 0.0.78 draft.
+- Final immutable runtime/artifact source is
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65` on
+  `codex/expanded-summoning`; release remains the unreleased 0.0.78 draft.
 - All 693 visible child choices use 77 project-owned original creature icons.
   Same-creature placements share one cached sprite; unrelated concepts have
   distinct output hashes. SNA I has five creature-named choices and no generic
@@ -12,12 +13,13 @@
   identity is retained. Eagle's view multiplier is 0.30 and its live vertical
   height is 1.360 versus 1.926 for a Medium humanoid.
 - On this checkpoint: 1018 domain tests pass; registration is 1,438 in every
-  one of 16 module states; visual, player-path, combat, enabled persistence,
-  five compatibility profiles, Shield Other, Acadamae, Cord, vendor, and
-  paper-cartridge focused regressions pass. Mods and settings were restored.
-- Immutable artifact source `147f39fabc0d778bef7a6133358830f58e72794a`
+  one of 16 module states; visual, player-path, combat, enabled/disabled
+  persistence, five compatibility profiles, Shield Other, Acadamae, Cord,
+  vendor, and paper-cartridge focused regressions pass. Mods, settings, and
+  the disposable working save were restored.
+- Exact artifact source `fea6b60786aaabc41d1e276e524d8c14803a0e65`
   produced byte-identical clean builds. DLL/package/source hashes are
-  `f69b8d64...ba0fc`, `e31021ff...b8723`, and `b5177925...d8598`.
+  `f56e2851...5db6e9`, `a0089e9e...2fd72c`, and `9b912094...e9bd1`.
   Remaining work is refreshing draft PR #2; do not merge it.
 
 
@@ -2674,3 +2676,23 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Exact next action: commit/push this evidence checkpoint, regenerate the
   deterministic 0.0.78 package twice, freeze DLL/package/source hashes, update
   the report/state and draft PR, then perform the final repository/remote audit.
+
+## Expanded Summoning current resume - mission complete
+
+- Immutable runtime/artifact source is pushed SHA
+  `fea6b60786aaabc41d1e276e524d8c14803a0e65`; release remains `0.0.78`.
+- Final exact-source gates pass: visual 13/13, structural 38/38, player path
+  10/10, mechanical 12/12, all 16 module states, both three-stage persistence
+  modes, all eight required compatibility transactions, and Shield Other,
+  Acadamae, paper/firearm, Cord, and vendor focused regressions.
+- Two clean artifact cycles each pass repository validation, 1,018/1,018
+  tests, exact-reference Release, SoundBank, and strict standalone package
+  validation. DLL/package/source SHA-256 are
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`,
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`,
+  and `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.
+- Exact settings and disposable working-save bytes are restored; compatibility
+  state is clean; protected baseline hash is unchanged and it was never
+  written. Active blocker: none.
+- Next action is human-only: review draft PR #2 and the residual subjective
+  icon/menu/proxy animation/camera checklist. Keep the PR draft and unmerged.

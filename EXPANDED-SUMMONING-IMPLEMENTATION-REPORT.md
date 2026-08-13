@@ -1,5 +1,87 @@
 # Expanded Summoning implementation report
 
+## Final immutable-source requalification (2026-08-13)
+
+Status: complete and release-qualified on pushed immutable source
+`fea6b60786aaabc41d1e276e524d8c14803a0e65`. This section supersedes older
+source, hash, settings-restoration, and working-save-restoration values retained
+below as chronology.
+
+- Final visual contracts passed 13/13 in run
+  `20260813T1903398091052Z-8599cd14aebd435f8e674d46b39c1613`.
+  All 67 unique units passed; Eagle remains mechanically Small and its live
+  renderer measured `1.3596102` high versus `1.92633152` for the Medium
+  humanoid control (`70.6%`).
+- Structural/menu/icon run
+  `20260813T1907030054323Z-c3c2c5fe47a745689167c9a0e9fc89e2`
+  passed 38/38. It recorded 667 generated roots plus 26 native/preservation
+  wrappers, exact 18-parent publication, zero icon fallback, and nine freshly
+  generated contact sheets covering 390 audited choices. Direct inspection of
+  the SNA I sheet found exactly five creature-named choices with five distinct
+  original icons.
+- Player-path run
+  `20260813T1911396823000Z-7e1b7d94c1664c839176eeb3189f58ee`
+  passed 10/10, exercising 667/667 generated roots and 26/26 wrappers through
+  their real native parents with success, cancellation, live-world, and exact
+  cleanup contracts. Mechanical run
+  `20260813T1919096622832Z-7e5087b74fae4490a40a533b4957dd7b`
+  passed 12/12 and all 153 commands: 123 singles, sixteen `1d3`, and fourteen
+  `1d4+1` family/tier cases.
+- All 16 fresh module configurations passed 7/7 assertions each with constant
+  registration `1,438`. Evidence directories run from
+  `20260813T1922102223300Z-observe-feature-module-settings` through
+  `20260813T2002136159624Z-observe-feature-module-settings`; the state file
+  records every directory. The exact takeover settings bytes were restored to
+  SHA-256
+  `32a0d33f57357ad0e4e7ae872a7c76e6276e3febcd1c9b5b27ea3735fc98f500`.
+- Enabled persistence passed prepare/cleanup/absence at
+  `20260813T2005595459938Z-61752280e2bf42f0b724f6858d1f35f3`,
+  `20260813T2008378853263Z-e1ddfb279f3c460a988d28d664319371`, and
+  `20260813T2011137748300Z-302c510e3d094d608dae8860d709f397`.
+  Disabled publication passed the same three stages at
+  `20260813T2014001344843Z-d9aac912acd54ec09bcb5288e3e5e146`,
+  `20260813T2016369506249Z-6212fe4fb6dd4d28a0e388ff391de9ba`, and
+  `20260813T2019139149973Z-ba8552e5a9a54629b966b8e6ff42d4a9`.
+  Every stage passed 9/9; frozen identities loaded and expired safely while
+  disabled publication remained zero.
+- Required compatibility transactions all passed both the optional-structure
+  and Expanded Summoning inventory observers and restored exactly: standalone
+  `compat-20260813T202142Z-487ed35c4bc8` and
+  `compat-20260813T202548Z-3ec6566363dd`; Call of the Wild
+  `compat-20260813T202945Z-86cbd1d860d4` and
+  `compat-20260813T203556Z-9f02f0ae99d3`; Arms and Armor
+  `compat-20260813T204207Z-9dbae134392a`; Toggle Custom Soundpacks
+  `compat-20260813T204609Z-38f3a2123d1c`; highest-risk combined
+  `compat-20260813T205007Z-e02cbbe74c78` and
+  `compat-20260813T205622Z-c7da7cf20f88`.
+- Focused immutable-source regressions passed Shield Other 23/23
+  (`20260813T2103410596046Z-76834bb304854ed79a48fcba58a1a620`),
+  Acadamae Graduate 13/13
+  (`20260813T2105555630652Z-4834d8d382464a138b030270b7885bdf`),
+  paper/firearm 6/6
+  (`20260813T2108123358915Z-754129979f304b5bbd543862d28b6daf`),
+  Cord 8/8
+  (`20260813T2110266335022Z-39ecb8e0af5948c5b9cc63eddff83745`),
+  and vendor contracts 14/14
+  (`20260813T2116351340477Z-2313d756d28646dba1c98316b087057f`).
+  The preceding vendor attempt ran under the restored Acadamae-disabled
+  takeover settings and therefore correctly lacked Cord's row; the exact
+  all-enabled rerun passed without a source change.
+- Two clean artifact cycles each passed repository/manifest validation,
+  1,018/1,018 domain/reflection tests, exact-reference warnings-as-errors
+  Release compilation, SoundBank validation, and strict standalone UMM package
+  validation. Both DLLs match SHA-256
+  `f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9`;
+  both packages match
+  `a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c`;
+  two independent source archives match
+  `9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1`.
+- `KMG_AUTOMATION_WORKING` was restored from its verified pre-final backup to
+  `50421a09bb874419e4f2f794ec8e926db1cefe8fc18ba7644fb6f4aa045029a0`.
+  Protected `KMG_AUTOMATION_BASELINE` remains
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+  and was never written. No compatibility backup/quarantine or lock remains.
+
 ## Final original-icon and SNA presentation pass
 
 Status: source and guarded runtime qualification complete on the final
@@ -33,13 +115,8 @@ presentation implementation.
   zero missing icons, zero generic SNA children, zero mapped duplicates, and
   exact preservation of unrelated native/third-party choices. The outer spell
   parents intentionally retain their native family icons.
-- Immutable artifact source `147f39fabc0d778bef7a6133358830f58e72794a`
-  passed two clean 1,018-test/build/package cycles. Both DLLs matched SHA-256
-  `f69b8d64d1236b9045a3c1e058986a008c49eb48bb3fe70f11c44c1ed01ba0fc`;
-  both strict packages matched
-  `e31021ff89cd95ecb89b04d7f730260ab46abdd792846f8395872ebfd06b8723`;
-  both source archives matched
-  `b5177925939cb353bcdc62bd0535742cc5b4040f55cf15cd93bfdbec411d8598`.
+- The later immutable-source requalification above supersedes the provisional
+  `147f39f` artifact values from this presentation checkpoint.
 
 
 ## First-playtest repair qualification
