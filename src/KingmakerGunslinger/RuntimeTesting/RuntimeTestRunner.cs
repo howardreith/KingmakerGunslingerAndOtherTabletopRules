@@ -11116,13 +11116,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Renderer[] evidenceRenderers = new[] { caster.View, eagle.View }
                 .Where(value => value != null)
                 .SelectMany(value => value.GetComponentsInChildren<Renderer>(true))
-                .Where(value => value != null && value.enabled &&
-                    value.gameObject.activeInHierarchy)
+                .Where(value => value != null)
                 .Distinct()
                 .ToArray();
             if (evidenceRenderers.Length == 0)
                 throw new InvalidOperationException(
-                    "The live Eagle comparison had no enabled subject renderers.");
+                    "The live Eagle comparison had no subject renderers.");
+            bool[] priorEvidenceEnabled = evidenceRenderers
+                .Select(value => value.enabled).ToArray();
             int subjectMask = evidenceRenderers.Aggregate(0, (mask, renderer) =>
                 mask | (1 << renderer.gameObject.layer));
             var evidenceSet = new HashSet<Renderer>(evidenceRenderers);
@@ -11151,6 +11152,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.CopyFrom(liveCamera);
                 camera.enabled = false;
                 camera.cullingMask = subjectMask;
+                foreach (Renderer renderer in evidenceRenderers)
+                    renderer.enabled = true;
                 foreach (Renderer renderer in suppressedRenderers)
                     renderer.enabled = false;
                 Light light = lightObject.AddComponent<Light>();
@@ -11216,6 +11219,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RenderTexture.active = priorActive;
                 foreach (Renderer renderer in suppressedRenderers)
                     if (renderer != null) renderer.enabled = true;
+                for (int index = 0; index < evidenceRenderers.Length; index++)
+                    if (evidenceRenderers[index] != null)
+                        evidenceRenderers[index].enabled =
+                            priorEvidenceEnabled[index];
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
