@@ -146,8 +146,21 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains(
                     "expanded-summoning-eagle-medium-humanoid-scale") &&
                 runtime.Contains("eagleHeight < mediumHumanoidHeight") &&
-                runtime.Contains("Size == Size.Small"),
+                runtime.Contains("Size == Size.Small") &&
+                runtime.Contains("eagle-medium-humanoid-live-comparison.png") &&
+                runtime.Contains("WriteExpandedSummoningEagleComparison"),
                 "Visual runtime gate must compare Eagle live bounds to a Medium humanoid while retaining mechanical Small size.");
+            string contactSheets = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "tools",
+                "New-ExpandedSummoningMenuContactSheets.ps1"));
+            Assertions.True(runtime.Contains(
+                    "expanded-summoning-menu-contact-sheet-index.json") &&
+                runtime.Contains("expanded-summoning-menu-contact-sheets") &&
+                contactSheets.Contains("exact final-live order") &&
+                contactSheets.Contains("$index.sheets).Count -ne 9") &&
+                contactSheets.Contains("texture is not 128x128") &&
+                contactSheets.Contains("lacks a project-owned sprite key"),
+                "Runtime menu evidence must index and render nine exact live sprite sheets.");
         }
 
         internal static void PlayerPathHarnessUsesFamilyParentOffsets()

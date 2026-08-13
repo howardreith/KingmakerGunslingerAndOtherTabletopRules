@@ -7947,6 +7947,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMenuAudit menuAudit =
                 AuditExpandedSummoningMenus(all, canonicalSummonParents,
                     logicalVariants);
+            string menuContactSheetEvidence =
+                WriteExpandedSummoningMenuEvidenceIndex(
+                    canonicalSummonParents, _request.EvidenceDirectory);
             WriteLifecycleStage("expanded-summoning-inventory-menu-audit-complete");
             string[] standaloneElementalRootGuids = {
                 "970c6db48ff0c6f43afc9dbb48780d03",
@@ -8601,6 +8604,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "18 exact before/after tier and multiplicity equations",
                     menuAudit.Counts, menuAudit.CountMismatches == 0,
                     "frozen native catalog plus preserved foreign tail and generated KMG placement catalog"),
+                Assertion("expanded-summoning-menu-contact-sheets",
+                    "nine exact final-live menu indexes for curated contact sheets",
+                    menuContactSheetEvidence,
+                    menuContactSheetEvidence.StartsWith("sheets=9;",
+                        StringComparison.Ordinal),
+                    "live AbilityVariants names/GUIDs/sprite keys/textures in exact display order; supporting visual evidence only"),
                 Assertion("expanded-summoning-high-tier-native-choices",
                     "SM VIII Movanic Deva/Frost Giant and SM IX Ghaele/Thanadaemon are distinct; umbrella sources suppressed",
                     menuAudit.HighTierUniqueNativeExact ? "exact" :
@@ -10717,6 +10726,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var visualScales = new Dictionary<string, float>(
                 StringComparer.Ordinal);
             float mediumHumanoidHeight = -1f;
+            Bounds mediumHumanoidBounds = new Bounds();
+            string eagleComparisonEvidence = "missing";
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -10763,6 +10774,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int index = 1; index < casterRenderers.Length; index++)
                         casterBounds.Encapsulate(casterRenderers[index].bounds);
                     mediumHumanoidHeight = casterBounds.size.y;
+                    mediumHumanoidBounds = casterBounds;
                 }
                 if (caster.Descriptor.State.Size != Size.Medium ||
                     mediumHumanoidHeight <= 0.01f)
@@ -10783,8 +10795,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     caster.Descriptor.AddFact(ability);
                     try
                     {
+                        Vector3 targetPosition = variant.Creature.Key == "eagle"
+                            ? caster.Position + new Vector3(2.5f, 0f, 0f)
+                            : caster.Position;
                         ExecuteExpandedSummoningRuntimeAbility(caster, ability,
-                            variant.ParentTier);
+                            variant.ParentTier, new TargetWrapper(targetPosition),
+                            true);
                     }
                     finally
                     {
@@ -10837,6 +10853,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         combined.size.y : -1f);
                     visualScales.Add(variant.Creature.Key, Mathf.Max(scale.x,
                         Mathf.Max(scale.y, scale.z)));
+                    if (variant.Creature.Key == "eagle")
+                        eagleComparisonEvidence =
+                            WriteExpandedSummoningEagleComparison(
+                                caster, unit, mediumHumanoidBounds, combined,
+                                _request.EvidenceDirectory);
                     bool finiteBounded = attached && unit.Corpulence > 0.05f &&
                         unit.Corpulence <= 10f && scale.x > 0.01f &&
                         scale.y > 0.01f && scale.z > 0.01f && scale.x <= 10f &&
@@ -11028,6 +11049,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         blueprints, variants.Single(value =>
                             value.Creature.Key == "eagle")).Size == Size.Small,
                     "live renderer bounds against the request-local default Medium humanoid"),
+                Assertion("expanded-summoning-eagle-live-comparison-image",
+                    "offscreen live-camera PNG plus exact bounds JSON",
+                    eagleComparisonEvidence,
+                    eagleComparisonEvidence.StartsWith("png=", StringComparison.Ordinal),
+                    "supporting visual evidence rendered from the live Eagle and Medium fixture; mechanical proof remains bounds/state assertions"),
                 Assertion("expanded-summoning-selection-navigation", "67/67",
                     selectionReady + "/" + variants.Length,
                     selectionReady == 67,
@@ -11069,6 +11095,190 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ExecuteExpandedSummoningRuntimeAbility(caster, ability, spellLevel,
                 new TargetWrapper(caster.Position), true);
+        }
+
+        private static string WriteExpandedSummoningEagleComparison(
+            UnitEntityData caster, UnitEntityData eagle, Bounds casterBounds,
+            Bounds eagleBounds, string evidenceDirectory)
+        {
+            const int width = 1280, height = 720;
+            string pngPath = Path.Combine(evidenceDirectory,
+                "eagle-medium-humanoid-live-comparison.png");
+            string jsonPath = Path.Combine(evidenceDirectory,
+                "eagle-medium-humanoid-live-comparison.json");
+            var cameraObject = new GameObject(
+                "KMG_Runtime_EagleComparisonCamera");
+            var lightObject = new GameObject(
+                "KMG_Runtime_EagleComparisonLight");
+            RenderTexture renderTexture = null;
+            Texture2D output = null;
+            RenderTexture priorActive = RenderTexture.active;
+            try
+            {
+                Camera camera = cameraObject.AddComponent<Camera>();
+                Light light = lightObject.AddComponent<Light>();
+                light.type = LightType.Directional;
+                light.intensity = 1.25f;
+                light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
+                Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
+                float span = Mathf.Max(4f, Mathf.Max(
+                    Vector3.Distance(casterBounds.min, eagleBounds.max),
+                    Vector3.Distance(eagleBounds.min, casterBounds.max)));
+                camera.transform.position = center + new Vector3(0f,
+                    span * 0.28f, -span * 1.15f);
+                camera.transform.LookAt(center + Vector3.up * 0.25f);
+                camera.orthographic = true;
+                camera.orthographicSize = Mathf.Max(2.6f,
+                    Mathf.Max(casterBounds.size.y, eagleBounds.size.y) * 0.9f);
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.backgroundColor = new Color(0.055f, 0.045f, 0.04f, 1f);
+                renderTexture = new RenderTexture(width, height, 24,
+                    RenderTextureFormat.ARGB32);
+                camera.targetTexture = renderTexture;
+                camera.Render();
+                RenderTexture.active = renderTexture;
+                output = new Texture2D(width, height, TextureFormat.RGBA32,
+                    false, false);
+                output.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                output.Apply(false, false);
+                byte[] png = EncodeExpandedSummoningPng(output);
+                if (png == null || png.Length < 4096)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison PNG was empty.");
+                File.WriteAllBytes(pngPath, png);
+                RuntimeTestResultWriter.WriteAtomic(jsonPath,
+                    JsonConvert.SerializeObject(new
+                    {
+                        schemaVersion = 1,
+                        caster = new { name = caster.CharacterName,
+                            size = caster.Descriptor.State.Size.ToString(),
+                            center = casterBounds.center.ToString("R"),
+                            extents = casterBounds.extents.ToString("R"),
+                            height = casterBounds.size.y },
+                        eagle = new { name = eagle.CharacterName,
+                            size = eagle.Descriptor.State.Size.ToString(),
+                            center = eagleBounds.center.ToString("R"),
+                            extents = eagleBounds.extents.ToString("R"),
+                            height = eagleBounds.size.y },
+                        png = Path.GetFileName(pngPath)
+                    }, Formatting.Indented) + Environment.NewLine);
+                return "png=" + Path.GetFileName(pngPath) + ";json=" +
+                    Path.GetFileName(jsonPath) + ";bytes=" + png.Length;
+            }
+            finally
+            {
+                RenderTexture.active = priorActive;
+                if (renderTexture != null)
+                {
+                    renderTexture.Release();
+                    UnityEngine.Object.Destroy(renderTexture);
+                }
+                if (output != null) UnityEngine.Object.Destroy(output);
+                UnityEngine.Object.Destroy(cameraObject);
+                UnityEngine.Object.Destroy(lightObject);
+            }
+        }
+
+        private static byte[] EncodeExpandedSummoningPng(Texture2D texture)
+        {
+            if (texture == null || texture.width <= 0 || texture.height <= 0)
+                throw new ArgumentException("PNG texture is invalid.");
+            Color32[] pixels = texture.GetPixels32();
+            int stride = checked(texture.width * 4 + 1);
+            byte[] scanlines = new byte[checked(stride * texture.height)];
+            for (int outputY = 0; outputY < texture.height; outputY++)
+            {
+                int sourceY = texture.height - outputY - 1;
+                int destination = outputY * stride;
+                scanlines[destination++] = 0;
+                for (int x = 0; x < texture.width; x++)
+                {
+                    Color32 pixel = pixels[sourceY * texture.width + x];
+                    scanlines[destination++] = pixel.r;
+                    scanlines[destination++] = pixel.g;
+                    scanlines[destination++] = pixel.b;
+                    scanlines[destination++] = pixel.a;
+                }
+            }
+            byte[] compressed = ExpandedSummoningZlibStore(scanlines);
+            using (var stream = new MemoryStream())
+            {
+                stream.Write(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 },
+                    0, 8);
+                using (var header = new MemoryStream())
+                {
+                    ExpandedSummoningWriteUInt32(header, (uint)texture.width);
+                    ExpandedSummoningWriteUInt32(header, (uint)texture.height);
+                    header.Write(new byte[] { 8, 6, 0, 0, 0 }, 0, 5);
+                    ExpandedSummoningWritePngChunk(stream, "IHDR",
+                        header.ToArray());
+                }
+                ExpandedSummoningWritePngChunk(stream, "IDAT", compressed);
+                ExpandedSummoningWritePngChunk(stream, "IEND", new byte[0]);
+                return stream.ToArray();
+            }
+        }
+
+        private static byte[] ExpandedSummoningZlibStore(byte[] data)
+        {
+            using (var stream = new MemoryStream())
+            {
+                stream.WriteByte(0x78);
+                stream.WriteByte(0x01);
+                int offset = 0;
+                while (offset < data.Length)
+                {
+                    int count = Math.Min(65535, data.Length - offset);
+                    stream.WriteByte((byte)(offset + count == data.Length ? 1 : 0));
+                    stream.WriteByte((byte)count);
+                    stream.WriteByte((byte)(count >> 8));
+                    int complement = (~count) & 0xffff;
+                    stream.WriteByte((byte)complement);
+                    stream.WriteByte((byte)(complement >> 8));
+                    stream.Write(data, offset, count);
+                    offset += count;
+                }
+                uint s1 = 1, s2 = 0;
+                foreach (byte value in data)
+                {
+                    s1 = (s1 + value) % 65521;
+                    s2 = (s2 + s1) % 65521;
+                }
+                ExpandedSummoningWriteUInt32(stream, (s2 << 16) | s1);
+                return stream.ToArray();
+            }
+        }
+
+        private static void ExpandedSummoningWritePngChunk(Stream stream,
+            string type, byte[] data)
+        {
+            byte[] typeBytes = System.Text.Encoding.ASCII.GetBytes(type);
+            ExpandedSummoningWriteUInt32(stream, (uint)data.Length);
+            stream.Write(typeBytes, 0, typeBytes.Length);
+            stream.Write(data, 0, data.Length);
+            uint crc = 0xffffffff;
+            foreach (byte value in typeBytes)
+                crc = ExpandedSummoningCrc32(crc, value);
+            foreach (byte value in data)
+                crc = ExpandedSummoningCrc32(crc, value);
+            ExpandedSummoningWriteUInt32(stream, crc ^ 0xffffffff);
+        }
+
+        private static uint ExpandedSummoningCrc32(uint crc, byte value)
+        {
+            crc ^= value;
+            for (int bit = 0; bit < 8; bit++)
+                crc = (crc & 1) != 0 ? 0xedb88320 ^ (crc >> 1) : crc >> 1;
+            return crc;
+        }
+
+        private static void ExpandedSummoningWriteUInt32(Stream stream,
+            uint value)
+        {
+            stream.WriteByte((byte)(value >> 24));
+            stream.WriteByte((byte)(value >> 16));
+            stream.WriteByte((byte)(value >> 8));
+            stream.WriteByte((byte)value);
         }
 
         private static void ExecuteExpandedSummoningRuntimeAbility(
@@ -11650,6 +11860,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 icons.ContainsKey(value) ? icons[value] : null).ToArray();
             return selected.All(value => value != null) &&
                 selected.Distinct().Count() == selected.Length;
+        }
+
+        private static string WriteExpandedSummoningMenuEvidenceIndex(
+            BlueprintAbility[] parents, string evidenceDirectory)
+        {
+            if (parents == null || parents.Length != 18)
+                throw new InvalidOperationException(
+                    "Menu evidence requires exactly 18 canonical parents.");
+            if (string.IsNullOrWhiteSpace(evidenceDirectory) ||
+                !Directory.Exists(evidenceDirectory))
+                throw new DirectoryNotFoundException(evidenceDirectory);
+            int[] selected = { 2, 4, 5, 7, 8, 9, 10, 16, 17 };
+            var sheets = new List<object>();
+            foreach (int index in selected)
+            {
+                BlueprintAbility parent = parents[index];
+                BlueprintAbility[] choices = parent.ComponentsArray
+                    .OfType<AbilityVariants>().Single().Variants;
+                sheets.Add(new
+                {
+                    family = index < 9 ? "SM" : "SNA",
+                    tier = index % 9 + 1,
+                    parentGuid = parent.AssetGuid,
+                    parentName = parent.Name,
+                    fileName = (index < 9 ? "sm-" : "sna-") +
+                        (index % 9 + 1) + "-menu-contact-sheet.png",
+                    choices = choices.Select((choice, position) => new
+                    {
+                        position,
+                        guid = choice.AssetGuid,
+                        internalName = choice.name,
+                        displayName = choice.Name,
+                        spriteName = choice.Icon == null ? null : choice.Icon.name,
+                        textureName = choice.Icon == null ||
+                            choice.Icon.texture == null ? null :
+                                choice.Icon.texture.name,
+                        textureWidth = choice.Icon == null ||
+                            choice.Icon.texture == null ? 0 :
+                                choice.Icon.texture.width,
+                        textureHeight = choice.Icon == null ||
+                            choice.Icon.texture == null ? 0 :
+                                choice.Icon.texture.height
+                    }).ToArray()
+                });
+            }
+            string path = Path.Combine(evidenceDirectory,
+                "expanded-summoning-menu-contact-sheet-index.json");
+            RuntimeTestResultWriter.WriteAtomic(path, JsonConvert.SerializeObject(
+                new { schemaVersion = 1, sheets }, Formatting.Indented) +
+                Environment.NewLine);
+            return "sheets=" + sheets.Count + ";index=" + Path.GetFileName(path);
         }
 
         private static BlueprintAbility ExpandedSummoningNativeTemplate(
