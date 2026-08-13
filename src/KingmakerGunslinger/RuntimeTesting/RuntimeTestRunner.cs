@@ -11872,53 +11872,84 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !Directory.Exists(evidenceDirectory))
                 throw new DirectoryNotFoundException(evidenceDirectory);
             int[] selected = { 2, 4, 5, 7, 8, 9, 10, 16, 17 };
-            var sheets = new List<object>();
+            var sheets = new List<Tuple<int, BlueprintAbility>>();
             foreach (int index in selected)
             {
                 BlueprintAbility parent = parents[index];
                 BlueprintAbility[] choices = parent.ComponentsArray
                     .OfType<AbilityVariants>().Single().Variants;
-                sheets.Add(new
-                {
-                    family = index < 9 ? "SM" : "SNA",
-                    tier = index % 9 + 1,
-                    parentGuid = parent.AssetGuid,
-                    parentName = parent.Name,
-                    fileName = (index < 9 ? "sm-" : "sna-") +
-                        (index % 9 + 1) + "-menu-contact-sheet.png",
-                    choices = choices.Select((choice, position) => new
-                    {
-                        position,
-                        guid = choice.AssetGuid,
-                        internalName = choice.name,
-                        displayName = choice.Name,
-                        spriteName = choice.Icon == null ? null : choice.Icon.name,
-                        textureName = choice.Icon == null ||
-                            choice.Icon.texture == null ? null :
-                                choice.Icon.texture.name,
-                        textureWidth = choice.Icon == null ||
-                            choice.Icon.texture == null ? 0 :
-                                choice.Icon.texture.width,
-                        textureHeight = choice.Icon == null ||
-                            choice.Icon.texture == null ? 0 :
-                                choice.Icon.texture.height
-                    }).ToArray()
-                });
+                if (choices == null || choices.Length == 0)
+                    throw new InvalidOperationException(
+                        "Selected menu evidence parent has no choices.");
+                sheets.Add(Tuple.Create(index, parent));
             }
             string path = Path.Combine(evidenceDirectory,
                 "expanded-summoning-menu-contact-sheet-index.json");
-            var document = new Dictionary<string, object>(StringComparer.Ordinal)
+            string temporary = path + "." + Guid.NewGuid().ToString("N") +
+                ".tmp";
+            using (var stream = new FileStream(temporary, FileMode.CreateNew,
+                FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream,
+                new System.Text.UTF8Encoding(false)))
+            using (var json = new JsonTextWriter(writer) { Formatting =
+                Formatting.Indented })
             {
-                { "schemaVersion", 1 },
-                { "sheets", sheets }
-            };
-            RuntimeTestResultWriter.WriteAtomic(path, JsonConvert.SerializeObject(
-                document, Formatting.Indented, new JsonSerializerSettings
+                json.WriteStartObject();
+                json.WritePropertyName("schemaVersion"); json.WriteValue(1);
+                json.WritePropertyName("sheets"); json.WriteStartArray();
+                foreach (Tuple<int, BlueprintAbility> sheet in sheets)
                 {
-                    PreserveReferencesHandling = PreserveReferencesHandling.None,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Error
-                }) + Environment.NewLine);
+                    int index = sheet.Item1;
+                    BlueprintAbility parent = sheet.Item2;
+                    BlueprintAbility[] choices = parent.ComponentsArray
+                        .OfType<AbilityVariants>().Single().Variants;
+                    json.WriteStartObject();
+                    ExpandedSummoningWriteJson(json, "family",
+                        index < 9 ? "SM" : "SNA");
+                    ExpandedSummoningWriteJson(json, "tier", index % 9 + 1);
+                    ExpandedSummoningWriteJson(json, "parentGuid",
+                        parent.AssetGuid);
+                    ExpandedSummoningWriteJson(json, "parentName", parent.Name);
+                    ExpandedSummoningWriteJson(json, "fileName",
+                        (index < 9 ? "sm-" : "sna-") + (index % 9 + 1) +
+                        "-menu-contact-sheet.png");
+                    json.WritePropertyName("choices"); json.WriteStartArray();
+                    for (int position = 0; position < choices.Length; position++)
+                    {
+                        BlueprintAbility choice = choices[position];
+                        json.WriteStartObject();
+                        ExpandedSummoningWriteJson(json, "position", position);
+                        ExpandedSummoningWriteJson(json, "guid", choice.AssetGuid);
+                        ExpandedSummoningWriteJson(json, "internalName", choice.name);
+                        ExpandedSummoningWriteJson(json, "displayName", choice.Name);
+                        ExpandedSummoningWriteJson(json, "spriteName",
+                            choice.Icon == null ? null : choice.Icon.name);
+                        ExpandedSummoningWriteJson(json, "textureName",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                null : choice.Icon.texture.name);
+                        ExpandedSummoningWriteJson(json, "textureWidth",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                0 : choice.Icon.texture.width);
+                        ExpandedSummoningWriteJson(json, "textureHeight",
+                            choice.Icon == null || choice.Icon.texture == null ?
+                                0 : choice.Icon.texture.height);
+                        json.WriteEndObject();
+                    }
+                    json.WriteEndArray(); json.WriteEndObject();
+                }
+                json.WriteEndArray(); json.WriteEndObject(); json.Flush();
+                writer.Flush(); stream.Flush(true);
+            }
+            if (File.Exists(path)) File.Replace(temporary, path, null);
+            else File.Move(temporary, path);
             return "sheets=" + sheets.Count + ";index=" + Path.GetFileName(path);
+        }
+
+        private static void ExpandedSummoningWriteJson(JsonTextWriter writer,
+            string name, object value)
+        {
+            writer.WritePropertyName(name);
+            writer.WriteValue(value);
         }
 
         private static BlueprintAbility ExpandedSummoningNativeTemplate(
