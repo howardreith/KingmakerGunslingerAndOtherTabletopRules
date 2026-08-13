@@ -26,6 +26,8 @@ namespace KingmakerGunslinger.DomainTests
         private static readonly TestCase[] Cases =
         {
             Case("elven-branched-spear.investigation-guard", ElvenBranchedSpearInvestigationTests.EvidenceReportAndObserverAreGuarded),
+            Case("elven-branched-spear.foundation-catalog", ElvenBranchedSpearCatalogTests.LockedProfileAndFoundationCatalogAreExact),
+            Case("elven-branched-spear.foundation-source-contracts", ElvenBranchedSpearCatalogTests.FoundationSourceContractsAreExact),
             Case("expanded-summoning.roster-and-placements", ExpandedSummoningCatalogTests.FrozenRosterAndPlacementCounts),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),
@@ -63,11 +65,11 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.template-blueprints", ExpandedSummoningIdentityCatalogTests.TemplateBlueprintsUseNativeBoundedMechanics),
             Case("expanded-summoning.player-path-harness", ExpandedSummoningIdentityCatalogTests.PlayerPathHarnessUsesRealSpellbookParents),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
-            Case("feature-settings.sixteen-combinations", FeatureModuleSettingsTests.SixteenCombinationsRoundTrip),
+            Case("feature-settings.thirty-two-combinations", FeatureModuleSettingsTests.ThirtyTwoCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
             Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
             Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
-            Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeFourModuleCatalog),
+            Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeFiveModuleCatalog),
             Case("shield-other.damage-split", ShieldOtherPolicyTests.DamageSplitBoundariesAndConservation),
             Case("shield-other.damage-guards", ShieldOtherPolicyTests.DamageSplitGuards),
             Case("shield-other.link-validity", ShieldOtherPolicyTests.LinkValidityMatrix),

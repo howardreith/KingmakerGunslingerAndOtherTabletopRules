@@ -513,7 +513,10 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning freezes the append-only foundation at 1439 stable IDs: 1438 active and one reserved. All 1184 feature identities register in every module state while
+Expanded Summoning plus the Elven Branched Spear foundation freeze the
+append-only ledger at 1449 stable IDs: 1448 active and one reserved. All 1184
+Expanded Summoning feature identities and all ten spear foundation identities
+register in every module state while
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration. A hidden, feature-local
 extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's

@@ -49,11 +49,37 @@ def validate(root: Path) -> None:
     manifest = json.loads((root / "blueprints/blueprints.json").read_text(encoding="utf-8"))
     active = [entry for entry in manifest["entries"] if entry["status"] == "active"]
     reserved = [entry for entry in manifest["entries"] if entry["status"] == "reserved"]
-    if len(manifest["entries"]) != 1439 or len(active) != 1438 or len(reserved) != 1:
+    spear_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith("KMG.ElvenBranchedSpear.")]
+    if (len(manifest["entries"]) != 1439 + len(spear_entries)
+            or len(active) != 1438 + len(spear_entries) or len(reserved) != 1):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")
+    expected_spear_entries = {
+        "KMG.ElvenBranchedSpear.WeaponType": ("77f72b0febaf212a5650e7193c00361f", "BlueprintWeaponType"),
+        "KMG.ElvenBranchedSpear.BaseItem": ("6edc216d68810960f85417237748b042", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.MasterworkItem": ("9c9edabf91f2117fd1b642c4d39b9574", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.ColdIronItem": ("8c0de00a236fe0f532d31711dcaa00a2", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.MasterworkColdIronItem": ("b16c34215cae9d60345042157149a4c0", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.Plus1Item": ("66111becd22690a2a19444a5c6bd0c7b", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.Plus1ColdIronItem": ("25d8f6c6f4767b3168f4700a2890954f", "BlueprintItemWeapon"),
+        "KMG.ElvenBranchedSpear.ExoticWeaponProficiency": ("017d586ec4546feabf6eaaa67ce74a3f", "BlueprintFeature"),
+        "KMG.ElvenBranchedSpear.FinesseTraining": ("3843c643ffcc617faf9121a5f801a70e", "BlueprintFeature"),
+        "KMG.ElvenBranchedSpear.MovementOpportunityAccuracy": ("b0cabc2a4ac0135fab2f89c689dea389", "BlueprintWeaponEnchantment"),
+    }
+    by_symbol = {entry["symbol"]: entry for entry in spear_entries}
+    for symbol, (guid, planned_type) in expected_spear_entries.items():
+        entry = by_symbol.get(symbol)
+        if (entry is None or entry.get("guid") != guid
+                or entry.get("plannedType") != planned_type
+                or entry.get("status") != "active"):
+            raise AssertionError(f"Elven Branched Spear identity mismatch: {symbol}")
+    if spear_entries and len(spear_entries) != len(expected_spear_entries):
+        raise AssertionError("Elven Branched Spear blueprint ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    if "ExpectedRegisteredBlueprintCount = 254 +" not in bootstrap:
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 264 +"
+        if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")
+    if expected_registration not in bootstrap:
         raise AssertionError("Expanded Summoning aggregate registration count mismatch")
 
 

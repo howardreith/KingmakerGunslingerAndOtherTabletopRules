@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.FeatureModules
             Active = active ?? throw new ArgumentNullException("active");
             Pending = new FeatureModuleConfiguration(active.Gunslinger,
                 active.AcadamaeGraduate, active.ShieldOther,
-                active.ExpandedSummoning);
+                active.ExpandedSummoning, active.ElvenBranchedSpears);
             Path = path ?? string.Empty;
             Source = source ?? string.Empty;
             Recovered = recovered;
@@ -24,8 +24,8 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool RestartRequired { get { return !Active.Equals(Pending); } }
 
         internal void SetPending(bool gunslinger, bool acadamaeGraduate,
-            bool shieldOther, bool expandedSummoning)
+            bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears)
         { Pending = new FeatureModuleConfiguration(gunslinger, acadamaeGraduate,
-            shieldOther, expandedSummoning); }
+            shieldOther, expandedSummoning, elvenBranchedSpears); }
     }
 }

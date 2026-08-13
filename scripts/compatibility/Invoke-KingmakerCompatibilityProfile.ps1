@@ -59,14 +59,16 @@ $moduleScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-feature-module-settings' }).Count -gt 0
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 4 -or $keys[0] -cne 'acadamaeGraduate' -or
-        $keys[1] -cne 'expandedSummoning' -or $keys[2] -cne 'gunslinger' -or
-        $keys[3] -cne 'shieldOther' -or
+    if ($keys.Count -ne 5 -or $keys[0] -cne 'acadamaeGraduate' -or
+        $keys[1] -cne 'elvenBranchedSpears' -or
+        $keys[2] -cne 'expandedSummoning' -or $keys[3] -cne 'gunslinger' -or
+        $keys[4] -cne 'shieldOther' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
-        $Parameters.expandedSummoning -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly four Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, and expandedSummoning.'
+        $Parameters.expandedSummoning -isnot [bool] -or
+        $Parameters.elvenBranchedSpears -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly five Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, and elvenBranchedSpears.'
     }
 } elseif ($Parameters.Count -ne 0) {
     throw 'Compatibility profile parameters are supported only for observe-feature-module-settings.'
@@ -82,11 +84,12 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 3
+        $settings = [ordered]@{ schemaVersion = 4
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
-            'expanded-summoning' = [bool]$Parameters.expandedSummoning }
+            'expanded-summoning' = [bool]$Parameters.expandedSummoning
+            'elven-branched-spears' = [bool]$Parameters.elvenBranchedSpears }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),

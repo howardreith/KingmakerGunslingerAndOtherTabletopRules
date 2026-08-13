@@ -7591,11 +7591,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectedShieldOther = (bool)_request.Parameters["shieldOther"];
             bool expectedExpandedSummoning =
                 (bool)_request.Parameters["expandedSummoning"];
+            bool expectedElvenBranchedSpears =
+                (bool)_request.Parameters["elvenBranchedSpears"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
             bool activeExpandedSummoning =
                 _context.FeatureModules.Active.ExpandedSummoning;
+            bool activeElvenBranchedSpears =
+                _context.FeatureModules.Active.ElvenBranchedSpears;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -7680,9 +7684,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
-                expectedExpandedSummoning + ";active=" +
+                expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
+                ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
-                activeShieldOther + "/" + activeExpandedSummoning + ";registered=" +
+                activeShieldOther + "/" + activeExpandedSummoning + "/" +
+                activeElvenBranchedSpears + ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -7700,7 +7706,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, activeGunslinger == expectedGunslinger &&
                     activeAcadamae == expectedAcadamae &&
                     activeShieldOther == expectedShieldOther &&
-                    activeExpandedSummoning == expectedExpandedSummoning,
+                    activeExpandedSummoning == expectedExpandedSummoning &&
+                    activeElvenBranchedSpears == expectedElvenBranchedSpears,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
@@ -7739,6 +7746,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable publication-plan input; parent surfaces are added after activation"),
+                Assertion("feature-module-elven-branched-spears-publication-gate",
+                    expectedElvenBranchedSpears ? "enabled" : "disabled",
+                    activeElvenBranchedSpears ? "enabled" : "disabled",
+                    activeElvenBranchedSpears == expectedElvenBranchedSpears,
+                    "immutable publication-plan input; spear surfaces are checked after registration"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

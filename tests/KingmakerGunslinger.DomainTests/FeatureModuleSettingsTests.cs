@@ -12,13 +12,15 @@ namespace KingmakerGunslinger.DomainTests
             {
                 FeatureModuleSettingsState missing = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(missing.Active.Gunslinger && missing.Active.AcadamaeGraduate &&
-                    missing.Active.ShieldOther && missing.Active.ExpandedSummoning,
-                    "Missing settings must default all four modules ON.");
+                    missing.Active.ShieldOther && missing.Active.ExpandedSummoning &&
+                    missing.Active.ElvenBranchedSpears,
+                    "Missing settings must default all five modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName), "{}");
                 FeatureModuleSettingsState legacy = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(legacy.Active.Gunslinger && legacy.Active.AcadamaeGraduate &&
-                    legacy.Active.ShieldOther && legacy.Active.ExpandedSummoning,
-                    "Legacy settings must default all four modules ON.");
+                    legacy.Active.ShieldOther && legacy.Active.ExpandedSummoning &&
+                    legacy.Active.ElvenBranchedSpears,
+                    "Legacy settings must default all five modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":1,\"gunslinger\":false,\"acadamae-graduate\":true}");
                 FeatureModuleSettingsState migrated = FeatureModuleSettingsStore.Load(path);
@@ -27,10 +29,12 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(!migrated.Active.Gunslinger &&
                     migrated.Active.AcadamaeGraduate && migrated.Active.ShieldOther &&
                     migrated.Active.ExpandedSummoning &&
-                    migratedJson.Contains("\"schemaVersion\": 3") &&
+                    migrated.Active.ElvenBranchedSpears &&
+                    migratedJson.Contains("\"schemaVersion\": 4") &&
                     migratedJson.Contains("\"shield-other\": true") &&
-                    migratedJson.Contains("\"expanded-summoning\": true"),
-                    "Schema 1 must migrate atomically to schema 3 with newer modules ON.");
+                    migratedJson.Contains("\"expanded-summoning\": true") &&
+                    migratedJson.Contains("\"elven-branched-spears\": true"),
+                    "Schema 1 must migrate atomically to schema 4 with newer modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":2,\"gunslinger\":true," +
                     "\"acadamae-graduate\":false,\"shield-other\":false}");
@@ -39,12 +43,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(schemaTwo.Active.Gunslinger &&
                     !schemaTwo.Active.AcadamaeGraduate &&
                     !schemaTwo.Active.ShieldOther &&
-                    schemaTwo.Active.ExpandedSummoning,
-                    "Schema 2 must preserve explicit values and add Expanded Summoning ON.");
+                    schemaTwo.Active.ExpandedSummoning &&
+                    schemaTwo.Active.ElvenBranchedSpears,
+                    "Schema 2 must preserve explicit values and add newer modules ON.");
             });
         }
 
-        internal static void SixteenCombinationsRoundTrip()
+        internal static void ThirtyTwoCombinationsRoundTrip()
         {
             WithDirectory(path =>
             {
@@ -52,15 +57,18 @@ namespace KingmakerGunslinger.DomainTests
                 foreach (bool acadamae in new[] { false, true })
                 foreach (bool shieldOther in new[] { false, true })
                 foreach (bool expandedSummoning in new[] { false, true })
+                foreach (bool elvenBranchedSpears in new[] { false, true })
                 {
                     FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(path);
-                    state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning);
+                    state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
+                        elvenBranchedSpears);
                     FeatureModuleSettingsStore.Save(state);
                     FeatureModuleSettingsState loaded = FeatureModuleSettingsStore.Load(path);
                     Assertions.True(loaded.Active.Gunslinger == gunslinger &&
                         loaded.Active.AcadamaeGraduate == acadamae &&
                         loaded.Active.ShieldOther == shieldOther &&
-                        loaded.Active.ExpandedSummoning == expandedSummoning,
+                        loaded.Active.ExpandedSummoning == expandedSummoning &&
+                        loaded.Active.ElvenBranchedSpears == elvenBranchedSpears,
                         "Module combination did not round-trip.");
                 }
             });
@@ -78,8 +86,9 @@ namespace KingmakerGunslinger.DomainTests
                     path, value => warning = value, () => instant);
                 Assertions.True(state.Recovered && state.Active.Gunslinger &&
                     state.Active.AcadamaeGraduate && state.Active.ShieldOther &&
-                    state.Active.ExpandedSummoning,
-                    "Malformed settings did not recover all four modules ON.");
+                    state.Active.ExpandedSummoning &&
+                    state.Active.ElvenBranchedSpears,
+                    "Malformed settings did not recover all five modules ON.");
                 Assertions.True(warning != null && Directory.GetFiles(path,
                     "FeatureModules.json.malformed.*").Length == 1,
                     "Malformed bytes were not quarantined with a diagnostic.");
@@ -92,7 +101,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var state = new FeatureModuleSettingsState(
                 FeatureModuleConfiguration.Defaults, "fixture", "fixture", false);
-            state.SetPending(false, true, false, false);
+            state.SetPending(false, true, false, false, false);
             Assertions.True(state.Active.Gunslinger && !state.Pending.Gunslinger &&
                 state.RestartRequired, "UI edits must not mutate the active snapshot.");
             Assertions.Equal("gunslinger", FeatureModuleConfiguration.GunslingerId,
@@ -110,6 +119,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(state.Active.ExpandedSummoning &&
                 !state.Pending.ExpandedSummoning,
                 "Expanded Summoning pending edits mutated the active snapshot.");
+            Assertions.Equal("elven-branched-spears",
+                FeatureModuleConfiguration.ElvenBranchedSpearsId,
+                "Elven Branched Spears module ID changed.");
+            Assertions.True(state.Active.ElvenBranchedSpears &&
+                !state.Pending.ElvenBranchedSpears,
+                "Elven Branched Spears pending edits mutated the active snapshot.");
         }
 
         internal static void PublicationPlansAreIndependent()
@@ -118,10 +133,11 @@ namespace KingmakerGunslinger.DomainTests
             foreach (bool acadamae in new[] { false, true })
             foreach (bool shieldOther in new[] { false, true })
             foreach (bool expandedSummoning in new[] { false, true })
+            foreach (bool elvenBranchedSpears in new[] { false, true })
             {
                 var plan = new FeatureModulePublicationPlan(
                     new FeatureModuleConfiguration(gunslinger, acadamae, shieldOther,
-                        expandedSummoning));
+                        expandedSummoning, elvenBranchedSpears));
                 Assertions.True(plan.GunslingerClass == gunslinger &&
                     plan.GunslingerFeats == gunslinger &&
                     plan.FirearmParameters == gunslinger &&
@@ -136,26 +152,32 @@ namespace KingmakerGunslinger.DomainTests
                     "Shield Other spell-list publication escaped its independent gate.");
                 Assertions.True(plan.ExpandedSummoningParents == expandedSummoning,
                     "Expanded Summoning parent publication escaped its independent gate.");
+                Assertions.True(plan.ElvenBranchedSpearSelectors == elvenBranchedSpears &&
+                    plan.ElvenBranchedSpearCommerce == elvenBranchedSpears &&
+                    plan.ElvenBranchedSpearPresentation == elvenBranchedSpears,
+                    "Elven Branched Spears publication surfaces escaped their independent gate.");
             }
         }
 
-        internal static void RuntimeMatrixUsesAuthoritativeFourModuleCatalog()
+        internal static void RuntimeMatrixUsesAuthoritativeFiveModuleCatalog()
         {
             string root = Environment.CurrentDirectory;
             string matrix = File.ReadAllText(Path.Combine(root, "scripts",
                 "Invoke-FeatureModuleRuntimeMatrix.ps1"));
             foreach (string token in new[] {
-                "$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning')",
-                "foreach ($mask in 15..0)", "schemaVersion = 3",
+                "$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning', 'elvenBranchedSpears')",
+                "foreach ($mask in 31..0)", "schemaVersion = 4",
                 "expandedSummoning = [bool]$entry.Value.expandedSummoning",
+                "elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears",
                 "Settings byte-for-byte restoration failed." })
                 Assertions.True(matrix.Contains(token),
-                    "The 16-state runtime matrix contract is missing: " + token);
+                    "The 32-state runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(common.Contains("$Parameters.Count -ne 4") &&
-                common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning"),
-                "The guarded request writer does not require the fourth module state.");
+            Assertions.True(common.Contains("$Parameters.Count -ne 5") &&
+                common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
+                common.Contains("elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears"),
+                "The guarded request writer does not require all five module states.");
         }
 
         private static void WithDirectory(Action<string> action)

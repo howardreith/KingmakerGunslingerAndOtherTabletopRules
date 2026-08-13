@@ -17,6 +17,7 @@ using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.ElvenBranchedSpear;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -28,7 +29,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 254 +
+        internal const int ExpectedRegisteredBlueprintCount = 264 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
@@ -60,6 +61,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
+        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -132,6 +134,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static ShieldOtherSpellListPublication ShieldOtherPublication
         {
             get { lock (Gate) { return _shieldOtherPublication; } }
+        }
+
+        internal static ElvenBranchedSpearBlueprintSet ElvenBranchedSpears
+        {
+            get { lock (Gate) { return _elvenBranchedSpears; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -536,6 +543,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
                     _shieldOther = result.ShieldOther;
                     _shieldOtherPublication = result.ShieldOtherPublication;
+                    _elvenBranchedSpears = result.ElvenBranchedSpears;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -620,10 +628,17 @@ namespace KingmakerGunslinger.Bootstrap
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
             ExpandedSummoningPublication expandedSummoningPublication = null;
+            ElvenBranchedSpearSelectorPublication spearSelectorPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                ElvenBranchedSpearBlueprintSet elvenBranchedSpears =
+                    ElvenBranchedSpearBlueprints.Register(library, registry,
+                        publicationPlan.ElvenBranchedSpearSelectors,
+                        context.Logger);
+                spearSelectorPublication = elvenBranchedSpears.Publication;
 
                 ExpandedSummoningBlueprintSet expandedSummoning =
                     ExpandedSummoningBlueprints.Register(library, registry);
@@ -913,7 +928,8 @@ namespace KingmakerGunslinger.Bootstrap
                     acadamaeGraduateMode,
                     cordOfStubbornResolve,
                     shieldOther,
-                    shieldOtherPublication);
+                    shieldOtherPublication,
+                    elvenBranchedSpears);
             }
             catch (Exception initializationException)
             {
@@ -927,6 +943,8 @@ namespace KingmakerGunslinger.Bootstrap
                     GunslingerStartingFirearmResolver.Rollback();
                     Reloading.FastMusketRuntime.Rollback();
                     Feats.NativeFirearmFeatIntegration.Rollback();
+                    if (spearSelectorPublication != null)
+                        spearSelectorPublication.Rollback();
                 }
                 catch (Exception nativeFeatRollbackException)
                 {
@@ -1101,7 +1119,8 @@ namespace KingmakerGunslinger.Bootstrap
                 AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
                 BlueprintItemEquipmentBelt cordOfStubbornResolve,
                 ShieldOtherBlueprintSet shieldOther,
-                ShieldOtherSpellListPublication shieldOtherPublication)
+                ShieldOtherSpellListPublication shieldOtherPublication,
+                ElvenBranchedSpearBlueprintSet elvenBranchedSpears)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1134,6 +1153,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("cordOfStubbornResolve");
                 ShieldOther = shieldOther ?? throw new ArgumentNullException("shieldOther");
                 ShieldOtherPublication = shieldOtherPublication;
+                ElvenBranchedSpears = elvenBranchedSpears ??
+                    throw new ArgumentNullException("elvenBranchedSpears");
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1178,6 +1199,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
             internal ShieldOtherBlueprintSet ShieldOther { get; private set; }
             internal ShieldOtherSpellListPublication ShieldOtherPublication
+            { get; private set; }
+            internal ElvenBranchedSpearBlueprintSet ElvenBranchedSpears
             { get; private set; }
         }
     }

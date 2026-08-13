@@ -40,6 +40,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs" />
+    <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCategoryRuntime.cs" />
+    <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearSelectorRuntime.cs" />
+    <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearSelectorPublication.cs" />
+    <Compile Include="ElvenBranchedSpear\MovementOpportunityAttackTracker.cs" />
+    <Compile Include="ElvenBranchedSpear\MovementOpportunityAccuracyComponent.cs" />
+    <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Summoning\SummonFamily.cs" />
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />

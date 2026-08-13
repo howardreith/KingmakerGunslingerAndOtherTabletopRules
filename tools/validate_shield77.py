@@ -55,11 +55,16 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Shield Other identity mismatch: {symbol}")
     active = [entry for entry in manifest["entries"] if entry["status"] == "active"]
     reserved = [entry for entry in manifest["entries"] if entry["status"] == "reserved"]
-    if len(manifest["entries"]) != 1439 or len(active) != 1438 or len(reserved) != 1:
+    spear_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith("KMG.ElvenBranchedSpear.")]
+    if (len(manifest["entries"]) != 1439 + len(spear_entries)
+            or len(active) != 1438 + len(spear_entries) or len(reserved) != 1):
         raise AssertionError("Expanded Summoning reservation ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    if "ExpectedRegisteredBlueprintCount = 254 +" not in bootstrap:
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 264 +"
+        if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")
+    if expected_registration not in bootstrap:
         raise AssertionError("Shield Other registration count mismatch")
 
 

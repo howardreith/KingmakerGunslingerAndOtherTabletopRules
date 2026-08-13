@@ -128,6 +128,24 @@ runtime inventory before identities are selected.
 
 ## Repository conventions
 
+### Foundation runtime qualification checkpoint (2026-08-13)
+
+- Guarded Steam `mod-load-smoke` run
+  `20260813T2234240789658Z-e241b2c36ab34ae1afe5882ddc1615a9`
+  passed from evidence directory
+  `runtime-evidence/20260813T2234240633094Z-mod-load-smoke`.
+- The loaded DLL SHA-256 was
+  `3c5879f6759b86e93672587c936ef99e1b97323f276db7b718285527c7bae3d1`;
+  the qualified local-runtime package SHA-256 was
+  `d1c35c8b8279848774af4677f98939c5bd16c352ed61714c35ee258bf370b4fd`.
+- The first guarded attempt failed closed during owned validation because
+  native magic weapons report `IsMasterwork = false`; the registry rolled back
+  all eleven registrations. Comparison with native +1 weapons showed that the
+  enhancement enchantment supersedes the separate nonmagical masterwork
+  enchantment. The corrected validation follows that native representation,
+  and the subsequent guarded run passed. This is registration evidence, not
+  yet the required combat, selector, Dexterity, or save/load qualification.
+
 ### Feature modules and registration
 
 - `FeatureModuleConfiguration`, `FeatureModuleSettingsStore`,
@@ -226,9 +244,12 @@ The loaded assembly SHA-256 was
 ### Native construction contracts
 
 - Masterwork enchantment `6b38844e2bffbac48b63036b66e735be` is present on
-  native masterwork donor items. `BlueprintItemWeapon.IsMasterwork` derives
-  from this enchantment component rather than the item name. The spear will use
-  the same enchantment.
+  native nonmagical masterwork donor items. `BlueprintItemWeapon.IsMasterwork`
+  derives from this enchantment component rather than the item name. Native
+  magical weapons instead carry only their enhancement enchantment and report
+  `IsMasterwork = false`; their magic enhancement supersedes the nonmagical
+  masterwork attack bonus. The spear follows that native construction while
+  retaining the tabletop masterwork surcharge in its declared price.
 - Native cold-iron weapons set `m_OverrideDamageType = true` and store an
   item-level `DamageTypeDescription`; direct observation reports, for example,
   `Physical:form=Piercing:material=ColdIron` on native cold-iron piercing

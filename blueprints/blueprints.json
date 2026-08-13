@@ -11519,6 +11519,86 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.WeaponType",
+      "guid": "77f72b0febaf212a5650e7193c00361f",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Stable custom weapon category type registered in every module state."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BaseItem",
+      "guid": "6edc216d68810960f85417237748b042",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Mundane Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.MasterworkItem",
+      "guid": "9c9edabf91f2117fd1b642c4d39b9574",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Masterwork Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ColdIronItem",
+      "guid": "8c0de00a236fe0f532d31711dcaa00a2",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Native-material cold iron Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.MasterworkColdIronItem",
+      "guid": "b16c34215cae9d60345042157149a4c0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Native-material masterwork cold iron Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus1Item",
+      "guid": "66111becd22690a2a19444a5c6bd0c7b",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "+1 Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus1ColdIronItem",
+      "guid": "25d8f6c6f4767b3168f4700a2890954f",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "+1 native-material cold iron Elven Branched Spear."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ExoticWeaponProficiency",
+      "guid": "017d586ec4546feabf6eaaa67ce74a3f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Ordinary child option published in the native Exotic Weapon Proficiency selection."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.FinesseTraining",
+      "guid": "3843c643ffcc617faf9121a5f801a70e",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Ordinary child option published in the native Rogue Finesse Training selection."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.MovementOpportunityAccuracy",
+      "guid": "b0cabc2a4ac0135fab2f89c689dea389",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Elven Branched Spear",
+      "notes": "Zero-cost inherent weapon-type enchantment for the exact movement-provoked attack-of-opportunity bonus."
     }
   ]
 }

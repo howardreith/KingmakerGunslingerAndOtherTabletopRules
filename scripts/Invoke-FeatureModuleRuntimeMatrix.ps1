@@ -28,13 +28,13 @@ try {
     } else { '<absent>' }
 } finally { $sha.Dispose() }
 
-$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning')
+$moduleNames = @('gunslinger', 'acadamaeGraduate', 'shieldOther', 'expandedSummoning', 'elvenBranchedSpears')
 $combinations = [ordered]@{}
-foreach ($mask in 15..0) {
+foreach ($mask in 31..0) {
     $configuration = [ordered]@{}
     $labels = [Collections.Generic.List[string]]::new()
     for ($index = 0; $index -lt $moduleNames.Count; $index++) {
-        $enabled = ($mask -band (1 -shl (3 - $index))) -ne 0
+        $enabled = ($mask -band (1 -shl (4 - $index))) -ne 0
         $configuration[$moduleNames[$index]] = $enabled
         $labels.Add($(if ($enabled) { 'on' } else { 'off' }))
     }
@@ -53,11 +53,12 @@ $failure = $null
 try {
     foreach ($entry in $combinations.GetEnumerator()) {
         $configuration = [ordered]@{
-            schemaVersion = 3
+            schemaVersion = 4
             gunslinger = [bool]$entry.Value.gunslinger
             'acadamae-graduate' = [bool]$entry.Value.acadamaeGraduate
             'shield-other' = [bool]$entry.Value.shieldOther
             'expanded-summoning' = [bool]$entry.Value.expandedSummoning
+            'elven-branched-spears' = [bool]$entry.Value.elvenBranchedSpears
         }
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
@@ -68,7 +69,8 @@ try {
             -Parameters @{ gunslinger = [bool]$entry.Value.gunslinger;
                 acadamaeGraduate = [bool]$entry.Value.acadamaeGraduate;
                 shieldOther = [bool]$entry.Value.shieldOther;
-                expandedSummoning = [bool]$entry.Value.expandedSummoning } `
+                expandedSummoning = [bool]$entry.Value.expandedSummoning;
+                elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears } `
             -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."

@@ -28,7 +28,10 @@ namespace KingmakerGunslinger.FeatureModules
                 "Shield Other");
             bool expandedSummoning = ImmediateModeGui.Toggle(
                 _state.Pending.ExpandedSummoning, "Expanded Summoning");
-            _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning);
+            bool elvenBranchedSpears = ImmediateModeGui.Toggle(
+                _state.Pending.ElvenBranchedSpears, "Elven Branched Spears");
+            _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
+                elvenBranchedSpears);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

@@ -14,6 +14,9 @@ namespace KingmakerGunslinger.FeatureModules
             CordCapitalStock = active.AcadamaeGraduate;
             ShieldOtherSpellLists = active.ShieldOther;
             ExpandedSummoningParents = active.ExpandedSummoning;
+            ElvenBranchedSpearSelectors = active.ElvenBranchedSpears;
+            ElvenBranchedSpearCommerce = active.ElvenBranchedSpears;
+            ElvenBranchedSpearPresentation = active.ElvenBranchedSpears;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -25,5 +28,8 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool CordCapitalStock { get; private set; }
         internal bool ShieldOtherSpellLists { get; private set; }
         internal bool ExpandedSummoningParents { get; private set; }
+        internal bool ElvenBranchedSpearSelectors { get; private set; }
+        internal bool ElvenBranchedSpearCommerce { get; private set; }
+        internal bool ElvenBranchedSpearPresentation { get; private set; }
     }
 }

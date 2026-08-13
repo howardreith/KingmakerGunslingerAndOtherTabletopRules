@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1439 stable identifiers: 1438 active and one reserved.
+Validator contract: 1449 stable identifiers: 1448 active and one reserved.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine
 weapon identities, two bounded resources, and one hidden KMG extraplanar marker.
@@ -16,6 +16,12 @@ They register in every feature-module state; live parent publication remains
 independently gated. Bootstrap therefore derives the complete 1,406-blueprint
 transaction from the 254 pre-feature identities plus the 1,152 feature-local
 identities.
+
+The Elven Branched Spear foundation appends ten active identities: one shared
+weapon type, six base-family weapon items, and ordinary child features for
+Exotic Weapon Proficiency and Rogue Finesse Training, plus the zero-cost
+inherent movement-opportunity accuracy enchantment. These identities remain
+registered in every module state; module state gates only new publication.
 
 Paper Cartridges Phase 1 identities are append-only:
 
