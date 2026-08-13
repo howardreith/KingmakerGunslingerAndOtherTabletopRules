@@ -11113,12 +11113,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
+            var priorLayers = new Dictionary<GameObject, int>();
             try
             {
                 Camera camera = cameraObject.AddComponent<Camera>();
                 Light light = lightObject.AddComponent<Light>();
+                const int evidenceLayer = 31;
+                foreach (UnitEntityData subject in new[] { caster, eagle })
+                {
+                    foreach (Transform child in subject.View.gameObject
+                        .GetComponentsInChildren<Transform>(true))
+                    {
+                        GameObject gameObject = child.gameObject;
+                        if (!priorLayers.ContainsKey(gameObject))
+                            priorLayers.Add(gameObject, gameObject.layer);
+                        gameObject.layer = evidenceLayer;
+                    }
+                }
                 light.type = LightType.Directional;
                 light.intensity = 1.25f;
+                light.cullingMask = 1 << evidenceLayer;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
@@ -11132,6 +11146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Mathf.Max(casterBounds.size.y, eagleBounds.size.y) * 0.9f);
                 camera.clearFlags = CameraClearFlags.SolidColor;
                 camera.backgroundColor = new Color(0.055f, 0.045f, 0.04f, 1f);
+                camera.cullingMask = 1 << evidenceLayer;
                 renderTexture = new RenderTexture(width, height, 24,
                     RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
@@ -11146,27 +11161,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Live Eagle comparison PNG was empty.");
                 File.WriteAllBytes(pngPath, png);
-                RuntimeTestResultWriter.WriteAtomic(jsonPath,
-                    JsonConvert.SerializeObject(new
-                    {
-                        schemaVersion = 1,
-                        caster = new { name = caster.CharacterName,
-                            size = caster.Descriptor.State.Size.ToString(),
-                            center = casterBounds.center.ToString("R"),
-                            extents = casterBounds.extents.ToString("R"),
-                            height = casterBounds.size.y },
-                        eagle = new { name = eagle.CharacterName,
-                            size = eagle.Descriptor.State.Size.ToString(),
-                            center = eagleBounds.center.ToString("R"),
-                            extents = eagleBounds.extents.ToString("R"),
-                            height = eagleBounds.size.y },
-                        png = Path.GetFileName(pngPath)
-                    }, Formatting.Indented) + Environment.NewLine);
+                WriteExpandedSummoningEagleComparisonIndex(jsonPath, caster,
+                    eagle, casterBounds, eagleBounds, pngPath);
                 return "png=" + Path.GetFileName(pngPath) + ";json=" +
                     Path.GetFileName(jsonPath) + ";bytes=" + png.Length;
             }
             finally
             {
+                foreach (KeyValuePair<GameObject, int> layer in priorLayers)
+                    if (layer.Key != null) layer.Key.layer = layer.Value;
                 RenderTexture.active = priorActive;
                 if (renderTexture != null)
                 {
@@ -11177,6 +11180,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Object.Destroy(cameraObject);
                 UnityEngine.Object.Destroy(lightObject);
             }
+        }
+
+        private static void WriteExpandedSummoningEagleComparisonIndex(
+            string path, UnitEntityData caster, UnitEntityData eagle,
+            Bounds casterBounds, Bounds eagleBounds, string pngPath)
+        {
+            string temporary = path + "." + Guid.NewGuid().ToString("N") +
+                ".tmp";
+            using (var stream = new FileStream(temporary, FileMode.CreateNew,
+                FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream,
+                new System.Text.UTF8Encoding(false)))
+            using (var json = new JsonTextWriter(writer) { Formatting =
+                Formatting.Indented })
+            {
+                json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "schemaVersion", 1);
+                json.WritePropertyName("caster"); json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "name", caster.CharacterName);
+                ExpandedSummoningWriteJson(json, "size",
+                    caster.Descriptor.State.Size.ToString());
+                ExpandedSummoningWriteJson(json, "center",
+                    casterBounds.center.ToString("R"));
+                ExpandedSummoningWriteJson(json, "extents",
+                    casterBounds.extents.ToString("R"));
+                ExpandedSummoningWriteJson(json, "height", casterBounds.size.y);
+                json.WriteEndObject();
+                json.WritePropertyName("eagle"); json.WriteStartObject();
+                ExpandedSummoningWriteJson(json, "name", eagle.CharacterName);
+                ExpandedSummoningWriteJson(json, "size",
+                    eagle.Descriptor.State.Size.ToString());
+                ExpandedSummoningWriteJson(json, "center",
+                    eagleBounds.center.ToString("R"));
+                ExpandedSummoningWriteJson(json, "extents",
+                    eagleBounds.extents.ToString("R"));
+                ExpandedSummoningWriteJson(json, "height", eagleBounds.size.y);
+                json.WriteEndObject();
+                ExpandedSummoningWriteJson(json, "png",
+                    Path.GetFileName(pngPath));
+                json.WriteEndObject(); json.Flush(); writer.Flush();
+                stream.Flush(true);
+            }
+            if (File.Exists(path)) File.Replace(temporary, path, null);
+            else File.Move(temporary, path);
         }
 
         private static byte[] EncodeExpandedSummoningPng(Texture2D texture)
