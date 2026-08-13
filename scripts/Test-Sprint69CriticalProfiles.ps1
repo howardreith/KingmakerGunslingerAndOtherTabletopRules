@@ -22,6 +22,8 @@ $checks = [ordered]@{
         $runner.Contains('HasCriticalProfile(production.Blunderbuss.WeaponType, 20, 2)') -and
         $runner.Contains('HasCriticalProfile(production.AdvancedRifle.WeaponType, 20, 4)') -and
         $runner.Contains('HasCriticalProfile(production.AdvancedRevolver.WeaponType, 20, 4)')
+    'current-capital-entry-count' =
+        $runner.Contains('capitalEntries.Count == 29')
     'observation-only-contract' =
         $runner.Contains('"vendor-observation-only"') -and
         $runner.Contains('"read-only blueprint enumeration"')
