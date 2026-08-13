@@ -11106,25 +11106,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "eagle-medium-humanoid-live-comparison.png");
             string jsonPath = Path.Combine(evidenceDirectory,
                 "eagle-medium-humanoid-live-comparison.json");
+            var cameraObject = new GameObject(
+                "KMG_Runtime_EagleComparisonCamera");
             var lightObject = new GameObject(
                 "KMG_Runtime_EagleComparisonLight");
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
-            Camera camera = Camera.main ?? UnityEngine.Object
+            Camera liveCamera = Camera.main ?? UnityEngine.Object
                 .FindObjectsOfType<Camera>().FirstOrDefault(value =>
                     value != null && value.enabled);
-            if (camera == null) throw new InvalidOperationException(
+            if (liveCamera == null) throw new InvalidOperationException(
                 "The live Eagle comparison could not find the game camera.");
-            Vector3 priorCameraPosition = camera.transform.position;
-            Quaternion priorCameraRotation = camera.transform.rotation;
-            RenderTexture priorTargetTexture = camera.targetTexture;
-            bool priorOrthographic = camera.orthographic;
-            float priorOrthographicSize = camera.orthographicSize;
-            CameraClearFlags priorClearFlags = camera.clearFlags;
-            Color priorBackgroundColor = camera.backgroundColor;
+            Camera camera = cameraObject.AddComponent<Camera>();
             try
             {
+                // Copy the proven live rendering contract without borrowing its
+                // controller-owned transform. CameraController can reset the live
+                // camera during Render/OnPreCull, which produced a valid but
+                // incorrectly framed supporting screenshot.
+                camera.CopyFrom(liveCamera);
+                camera.enabled = false;
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
                 light.intensity = 1.25f;
@@ -11144,6 +11146,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 renderTexture = new RenderTexture(width, height, 24,
                     RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
+                Vector3 casterViewport = camera.WorldToViewportPoint(
+                    casterBounds.center);
+                Vector3 eagleViewport = camera.WorldToViewportPoint(
+                    eagleBounds.center);
+                Func<Vector3, bool> framed = point => point.z > 0f &&
+                    point.x >= 0.08f && point.x <= 0.92f &&
+                    point.y >= 0.08f && point.y <= 0.92f;
+                if (!framed(casterViewport) || !framed(eagleViewport))
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison subjects were outside the " +
+                        "detached camera frame: caster=" + casterViewport +
+                        ";eagle=" + eagleViewport + ".");
                 camera.Render();
                 RenderTexture.active = renderTexture;
                 output = new Texture2D(width, height, TextureFormat.RGBA32,
@@ -11164,7 +11178,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Live Eagle comparison PNG was empty.");
                 File.WriteAllBytes(pngPath, png);
                 WriteExpandedSummoningEagleComparisonIndex(jsonPath, caster,
-                    eagle, casterBounds, eagleBounds, pngPath);
+                    eagle, casterBounds, eagleBounds, casterViewport,
+                    eagleViewport, pngPath);
                 return "png=" + Path.GetFileName(pngPath) + ";json=" +
                     Path.GetFileName(jsonPath) + ";bytes=" + png.Length +
                     ";meaningfulPixels=" + meaningfulPixels;
@@ -11172,13 +11187,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 RenderTexture.active = priorActive;
-                camera.targetTexture = priorTargetTexture;
-                camera.transform.position = priorCameraPosition;
-                camera.transform.rotation = priorCameraRotation;
-                camera.orthographic = priorOrthographic;
-                camera.orthographicSize = priorOrthographicSize;
-                camera.clearFlags = priorClearFlags;
-                camera.backgroundColor = priorBackgroundColor;
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
@@ -11186,12 +11194,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (output != null) UnityEngine.Object.Destroy(output);
                 UnityEngine.Object.Destroy(lightObject);
+                UnityEngine.Object.Destroy(cameraObject);
             }
         }
 
         private static void WriteExpandedSummoningEagleComparisonIndex(
             string path, UnitEntityData caster, UnitEntityData eagle,
-            Bounds casterBounds, Bounds eagleBounds, string pngPath)
+            Bounds casterBounds, Bounds eagleBounds, Vector3 casterViewport,
+            Vector3 eagleViewport, string pngPath)
         {
             string temporary = path + "." + Guid.NewGuid().ToString("N") +
                 ".tmp";
@@ -11213,6 +11223,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningWriteJson(json, "extents",
                     casterBounds.extents.ToString("R"));
                 ExpandedSummoningWriteJson(json, "height", casterBounds.size.y);
+                ExpandedSummoningWriteJson(json, "viewport",
+                    casterViewport.ToString("R"));
                 json.WriteEndObject();
                 json.WritePropertyName("eagle"); json.WriteStartObject();
                 ExpandedSummoningWriteJson(json, "name", eagle.CharacterName);
@@ -11223,6 +11235,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningWriteJson(json, "extents",
                     eagleBounds.extents.ToString("R"));
                 ExpandedSummoningWriteJson(json, "height", eagleBounds.size.y);
+                ExpandedSummoningWriteJson(json, "viewport",
+                    eagleViewport.ToString("R"));
                 json.WriteEndObject();
                 ExpandedSummoningWriteJson(json, "png",
                     Path.GetFileName(pngPath));

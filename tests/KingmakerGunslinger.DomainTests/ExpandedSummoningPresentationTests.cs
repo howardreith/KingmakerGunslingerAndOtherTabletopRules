@@ -150,6 +150,8 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("eagle-medium-humanoid-live-comparison.png") &&
                 runtime.Contains("WriteExpandedSummoningEagleComparison") &&
                 runtime.Contains("Camera.main") &&
+                runtime.Contains("camera.CopyFrom(liveCamera)") &&
+                runtime.Contains("detached camera frame") &&
                 runtime.Contains("meaningfulPixels") &&
                 runtime.Contains("framebuffer was blank"),
                 "Visual runtime gate must compare Eagle live bounds to a Medium humanoid while retaining mechanical Small size.");
