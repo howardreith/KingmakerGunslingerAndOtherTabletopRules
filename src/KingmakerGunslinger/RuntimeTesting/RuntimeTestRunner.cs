@@ -11907,9 +11907,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string path = Path.Combine(evidenceDirectory,
                 "expanded-summoning-menu-contact-sheet-index.json");
+            var document = new Dictionary<string, object>(StringComparer.Ordinal)
+            {
+                { "schemaVersion", 1 },
+                { "sheets", sheets }
+            };
             RuntimeTestResultWriter.WriteAtomic(path, JsonConvert.SerializeObject(
-                new { schemaVersion = 1, sheets }, Formatting.Indented) +
-                Environment.NewLine);
+                document, Formatting.Indented, new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.None,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Error
+                }) + Environment.NewLine);
             return "sheets=" + sheets.Count + ";index=" + Path.GetFileName(path);
         }
 
