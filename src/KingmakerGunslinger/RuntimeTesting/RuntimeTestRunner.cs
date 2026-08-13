@@ -10714,6 +10714,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 StringComparer.Ordinal);
             var visualScales = new Dictionary<string, float>(
                 StringComparer.Ordinal);
+            float mediumHumanoidHeight = -1f;
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -10751,6 +10752,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Native entity creation did not attach the visual caster.");
                 sceneEntities = scene.AllEntityData;
                 caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                Renderer[] casterRenderers = caster.View
+                    .GetComponentsInChildren<Renderer>(true)
+                    .Where(value => value != null).ToArray();
+                if (casterRenderers.Length > 0)
+                {
+                    Bounds casterBounds = casterRenderers[0].bounds;
+                    for (int index = 1; index < casterRenderers.Length; index++)
+                        casterBounds.Encapsulate(casterRenderers[index].bounds);
+                    mediumHumanoidHeight = casterBounds.size.y;
+                }
+                if (caster.Descriptor.State.Size != Size.Medium ||
+                    mediumHumanoidHeight <= 0.01f)
+                    throw new InvalidOperationException(
+                        "Visual fixture lacks a measurable Medium humanoid.");
 
                 foreach (SummonVariantSpec variant in variants)
                 {
@@ -10976,6 +10991,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }).ToArray()) + ";multipliers=" + string.Join(",",
                 SummonViewScaleCatalog.All.Select(value => value.CreatureKey +
                     "=" + value.Multiplier.ToString("R")).ToArray());
+            float eagleHeight = visualBounds.ContainsKey("eagle") ?
+                visualBounds["eagle"] : -1f;
+            bool eagleVersusHumanoid = eagleHeight > 0.01f &&
+                mediumHumanoidHeight > 0.01f &&
+                eagleHeight < mediumHumanoidHeight;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-visual-instances", "67/67",
@@ -10992,6 +11012,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(";", scalePairs), scaleDetail,
                     scaleRelationships,
                     "live combined renderer bounds after deterministic view-only multipliers"),
+                Assertion("expanded-summoning-eagle-medium-humanoid-scale",
+                    "Eagle live maximum bound below Medium humanoid standing height; mechanical size Small; view multiplier 0.30",
+                    "eagleMax=" + eagleHeight.ToString("R") +
+                        ";mediumHeight=" + mediumHumanoidHeight.ToString("R"),
+                    eagleVersusHumanoid && ExpandedSummoningUnit(
+                        blueprints, variants.Single(value =>
+                            value.Creature.Key == "eagle")).Size == Size.Small,
+                    "live renderer bounds against the request-local default Medium humanoid"),
                 Assertion("expanded-summoning-selection-navigation", "67/67",
                     selectionReady + "/" + variants.Length,
                     selectionReady == 67,

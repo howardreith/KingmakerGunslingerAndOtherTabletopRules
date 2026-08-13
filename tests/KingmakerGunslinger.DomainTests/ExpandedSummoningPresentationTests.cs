@@ -140,6 +140,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(SummonViewScaleCatalog.All.All(value =>
                     value.Multiplier >= 0.20f && value.Multiplier <= 1.25f),
                 "Accepted view-only scale bounds changed.");
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains(
+                    "expanded-summoning-eagle-medium-humanoid-scale") &&
+                runtime.Contains("eagleHeight < mediumHumanoidHeight") &&
+                runtime.Contains("Size == Size.Small"),
+                "Visual runtime gate must compare Eagle live bounds to a Medium humanoid while retaining mechanical Small size.");
         }
 
         internal static void PlayerPathHarnessUsesFamilyParentOffsets()
