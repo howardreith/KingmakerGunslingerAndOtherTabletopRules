@@ -1489,3 +1489,25 @@
   Dire Bat roots, all 17 individual native options, exact umbrella suppression,
   deterministic single/1d3/1d4+1 ordering, tier menu counts, standalone Summon
   Elemental preservation, and required icon-distinctness groups.
+
+## 2026-08-12 - Polish player-path, combat, and measured visual PASS
+
+- On pushed source `9f4ae7a67dd006f7a786831b2b1b93215543de18`,
+  player-path run `20260813T0052187995697Z-4b2425f990524498b554e6487ed19747`
+  passed all 667 visible KMG roots and all 17 direct native-backed options
+  through their actual SM/SNA spellbook parents. Each successful cast spent
+  exactly one slot; the rejected out-of-range cast spent zero.
+- Mechanical/combat run
+  `20260813T0059598964338Z-37ed2c25edd24e7d80d417668f113f46`
+  passed 12/12 assertions and all 153 production commands for natural weapon
+  profiles, representative attacks/special actions, same-kind quantities,
+  templates, summon feats, world membership, and cleanup.
+- The visual harness now measures requested relationships from live combined
+  renderer bounds. Run
+  `20260813T0104112927126Z-59af7be5993a48fc938394800131628a`
+  passed 11/11 and 67/67 views: Eagle 5.919 < Roc 11.226; Poisonous Frog
+  1.475 < Giant Frog 3.073; Boar 2.474 < Dire Boar 2.845; Grizzly Bear
+  3.277 < Dire Bear 3.768; Elephant 9.568 < Mastodon 12.226; and
+  Pteranodon 8.368 < Roc 11.226. All locomotion, attack, hit, death,
+  projectile, selection/navigation, detachment, and exact cleanup contracts
+  also passed.

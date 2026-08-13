@@ -777,6 +777,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-visual-instances",
                 "expanded-summoning-renderable-geometry",
                 "expanded-summoning-bounded-footprints",
+                "expanded-summoning-relative-visual-scales",
+                "boar<dire-boar", "grizzly-bear<dire-bear",
                 "expanded-summoning-selection-navigation",
                 "expanded-summoning-locomotion-events",
                 "expanded-summoning-attack-animations",

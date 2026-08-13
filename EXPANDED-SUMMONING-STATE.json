@@ -4,11 +4,11 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "4bda7a93e1190b1daa2d200a1932930725e7f4a6",
-  "currentShaSemantics": "Pushed inventory-instrumentation head plus a qualified working tree implementing polish publication, visibility, icon, and view-scale contracts; the coherent checkpoint commit is next.",
+  "currentSha": "9f4ae7a67dd006f7a786831b2b1b93215543de18",
+  "currentShaSemantics": "Pushed polish foundation; the live relative-scale assertion and its static guard are the only current working-tree changes.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "polish-publication-visibility-icon-and-scale-foundation-runtime-pass",
-  "nextConcreteAction": "Commit and push the qualified foundation, then run the complete native-parent player-path matrix and current-source mechanical combat scenario.",
+  "completedPhase": "polish-player-path-mechanical-combat-and-visual-runtime-pass",
+  "nextConcreteAction": "Commit and push measured visual evidence, then rerun enabled/disabled persistence, 16 module states, compatibility profiles, regressions, and final deterministic release/package gates.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS; two clean Release/package builds from a951f7e produced identical DLL and package hashes",
@@ -39,6 +39,27 @@
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
+    {
+      "scenario": "disposable-expanded-summoning-visual-contracts (measured polish scales)",
+      "runId": "20260813T0104112927126Z-59af7be5993a48fc938394800131628a",
+      "result": "PASS; 11/11 assertions, 67/67 views, Eagle<Roc, Poisonous Frog<Giant Frog, Boar<Dire Boar, Grizzly<Dire Bear, Elephant<Mastodon, Pteranodon<Roc",
+      "sourceSha": "9f4ae7a67dd006f7a786831b2b1b93215543de18 plus qualified observer working tree",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0104112760307Z-disposable-expanded-summoning-visual-contracts/runtime-result.json"
+    },
+    {
+      "scenario": "disposable-expanded-summoning (polish combat/mechanical)",
+      "runId": "20260813T0059598964338Z-37ed2c25edd24e7d80d417668f113f46",
+      "result": "PASS; 12/12 assertions and 153/153 production commands covering natural weapons, representative combat/special actions, feats, quantities, and cleanup",
+      "sourceSha": "9f4ae7a67dd006f7a786831b2b1b93215543de18",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0059598679309Z-disposable-expanded-summoning/runtime-result.json"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-player-path (polish full visible matrix)",
+      "runId": "20260813T0052187995697Z-4b2425f990524498b554e6487ed19747",
+      "result": "PASS; 667/667 visible SM/SNA roots plus 17/17 distinct native options through real parents; successful casts spent one slot, invalid cast spent zero",
+      "sourceSha": "9f4ae7a67dd006f7a786831b2b1b93215543de18",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0052187709526Z-disposable-expanded-summoning-player-path/runtime-result.json"
+    },
     {
       "scenario": "observe-expanded-summoning-inventory (polish foundation)",
       "runId": "20260813T0046539277035Z-f8b324f376fc4682a4dae9f4b4af2525",

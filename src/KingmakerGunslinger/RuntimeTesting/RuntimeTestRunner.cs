@@ -10701,6 +10701,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleaned = false;
             string stage = "construct-fixture";
             var diagnostics = new List<string>();
+            var visualBounds = new Dictionary<string, float>(
+                StringComparer.Ordinal);
+            var visualScales = new Dictionary<string, float>(
+                StringComparer.Ordinal);
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -10802,6 +10806,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         view.transform.lossyScale;
                     float maximumBound = hasBounds ? Mathf.Max(combined.size.x,
                         Mathf.Max(combined.size.y, combined.size.z)) : -1f;
+                    visualBounds.Add(variant.Creature.Key, maximumBound);
+                    visualScales.Add(variant.Creature.Key, Mathf.Max(scale.x,
+                        Mathf.Max(scale.y, scale.z)));
                     bool finiteBounded = attached && unit.Corpulence > 0.05f &&
                         unit.Corpulence <= 10f && scale.x > 0.01f &&
                         scale.y > 0.01f && scale.z > 0.01f && scale.x <= 10f &&
@@ -10939,6 +10946,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 locomotion + ";attack=" + attack + ";hit=" + hit +
                 ";death=" + death + ";ranged=" + ranged + "/" + rangedReady +
                 ";detachedViews=" + detachedViews + ";cleaned=" + cleaned;
+            string[] scalePairs = {
+                "eagle<roc", "poisonous-frog<giant-frog",
+                "boar<dire-boar", "grizzly-bear<dire-bear",
+                "elephant<mastodon", "pteranodon<roc" };
+            bool scaleRelationships = scalePairs.All(pair =>
+            {
+                string[] keys = pair.Split('<');
+                return visualBounds.ContainsKey(keys[0]) &&
+                    visualBounds.ContainsKey(keys[1]) &&
+                    visualBounds[keys[0]] < visualBounds[keys[1]];
+            });
+            string scaleDetail = string.Join(";", scalePairs.Select(pair =>
+            {
+                string[] keys = pair.Split('<');
+                return pair + "=" + (visualBounds.ContainsKey(keys[0]) ?
+                    visualBounds[keys[0]].ToString("R") : "missing") + "/" +
+                    (visualBounds.ContainsKey(keys[1]) ?
+                    visualBounds[keys[1]].ToString("R") : "missing");
+            }).ToArray()) + ";multipliers=" + string.Join(",",
+                SummonViewScaleCatalog.All.Select(value => value.CreatureKey +
+                    "=" + value.Multiplier.ToString("R")).ToArray());
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-visual-instances", "67/67",
@@ -10951,6 +10979,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-bounded-footprints", "67/67",
                     bounded + "/" + variants.Length, bounded == 67,
                     "corpulence, world scale, renderer bounds, and renderer-count limits"),
+                Assertion("expanded-summoning-relative-visual-scales",
+                    string.Join(";", scalePairs), scaleDetail,
+                    scaleRelationships,
+                    "live combined renderer bounds after deterministic view-only multipliers"),
                 Assertion("expanded-summoning-selection-navigation", "67/67",
                     selectionReady + "/" + variants.Length,
                     selectionReady == 67,
