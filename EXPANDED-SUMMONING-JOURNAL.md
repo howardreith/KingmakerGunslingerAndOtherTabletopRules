@@ -1562,3 +1562,19 @@
   `c8bca9e80a02be83d8434813baf7cad01c651eb4675eedcb4e02a691095f6496`.
   Two independent source archives matched
   `61b4d36f19dfdbbddb9b251c8e8e555838bfaa1725a27060e729ae9cda2470c3`.
+
+## 2026-08-13 - Final original-icon and SNA presentation pass opened
+
+- The user-supplied final-presentation mission is the authoritative continuation
+  contract. It supersedes the earlier completion disposition without changing
+  the frozen gameplay roster or the existing draft pull request.
+- Fetched and pruned all remotes. The clean local and remote
+  `codex/expanded-summoning` heads were both
+  `7af8df88cd7da6e1be224e265f50888402e778c5`; no newer valid descendant was
+  present.
+- GitHub PR #2 was confirmed OPEN, DRAFT, unmerged, cleanly mergeable, headed by
+  `codex/expanded-summoning`, and targeting `master`.
+- Phase 1 begins with observation-only final-live SNA I-IX menu provenance:
+  exact child/spawn identities, publication origin, sprite/texture identity,
+  dimensions, pixel variance, and semantic/icon sharing. No publication or
+  blueprint behavior is changed by this inventory instrumentation.

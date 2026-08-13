@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -246,6 +247,7 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             records.Add("summon-action-summary=parents:" + canonicalParents.Length);
+            ObserveSnaMenus(canonicalParents, records);
 
             var templateMechanics = new HashSet<string>(ExactTemplateMechanicGuids,
                 StringComparer.Ordinal);
@@ -277,6 +279,199 @@ namespace KingmakerGunslinger.Summoning
             return new ExpandedSummoningInventoryObservation(parents.Length,
                 units.Length, facts.Length, donors.Length, missingDonors.Length,
                 specialCandidates.Length, records);
+        }
+
+        private static void ObserveSnaMenus(IEnumerable<BlueprintAbility> parents,
+            IList<string> records)
+        {
+            var iconConsumers = new Dictionary<string, List<string>>(
+                StringComparer.Ordinal);
+            foreach (BlueprintAbility parent in parents.Where(value =>
+                Array.IndexOf(CanonicalParentGuids, value.AssetGuid) >= 9)
+                .OrderBy(value => Array.IndexOf(CanonicalParentGuids,
+                    value.AssetGuid)))
+            {
+                int tier = Array.IndexOf(CanonicalParentGuids,
+                    parent.AssetGuid) - 8;
+                AbilityVariants variants = (parent.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .SingleOrDefault();
+                BlueprintAbility[] children = variants == null ?
+                    new[] { parent } : variants.Variants ??
+                        Array.Empty<BlueprintAbility>();
+                foreach (BlueprintAbility child in children.Where(value =>
+                    value != null))
+                {
+                    string origin = SnaOrigin(tier, child);
+                    string multiplicity = SnaMultiplicity(tier, child);
+                    string semantic = SnaSemanticKey(tier, child);
+                    string units = SpawnUnitGuids(child);
+                    Sprite icon = child.Icon;
+                    Texture2D texture = icon == null ? null : icon.texture;
+                    string iconIdentity = icon == null ? "<null>" :
+                        RuntimeHelpers.GetHashCode(icon).ToString();
+                    string textureIdentity = texture == null ? "<null>" :
+                        RuntimeHelpers.GetHashCode(texture).ToString();
+                    string iconKey = iconIdentity + ":" + textureIdentity;
+                    List<string> consumers;
+                    if (!iconConsumers.TryGetValue(iconKey, out consumers))
+                    {
+                        consumers = new List<string>();
+                        iconConsumers.Add(iconKey, consumers);
+                    }
+                    consumers.Add("SNA" + tier + ":" + semantic + ":" +
+                        multiplicity + ":" + child.AssetGuid);
+                    records.Add("sna-menu-child=parent-tier:" + tier +
+                        ";parent-guid:" + parent.AssetGuid + ";child-guid:" +
+                        child.AssetGuid + ";blueprint:" + child.name +
+                        ";display:" + (child.Name ?? "<null>") +
+                        ";multiplicity:" + multiplicity + ";spawn-units:" +
+                        units + ";origin:" + origin + ";semantic:" + semantic +
+                        ";icon-object:" + iconIdentity + ";icon-name:" +
+                        (icon == null ? "<null>" : icon.name) +
+                        ";texture-object:" + textureIdentity +
+                        ";texture-name:" + (texture == null ? "<null>" :
+                            texture.name) + ";texture-size:" +
+                        (texture == null ? "<null>" : texture.width + "x" +
+                            texture.height) + ";sprite-null:" + (icon == null) +
+                        ";texture-null:" + (texture == null) + ";pixels:" +
+                        DescribePixels(texture));
+                }
+            }
+            foreach (KeyValuePair<string, List<string>> shared in iconConsumers
+                .Where(value => value.Value.Select(item => item.Split(':')[1])
+                    .Distinct(StringComparer.Ordinal).Count() > 1)
+                .OrderBy(value => value.Key, StringComparer.Ordinal))
+                records.Add("sna-icon-shared-unrelated=identity:" + shared.Key +
+                    ";consumers:" + string.Join(",", shared.Value.ToArray()));
+        }
+
+        private static string SnaOrigin(int tier, BlueprintAbility child)
+        {
+            if (child.name.StartsWith("KMG_Summoning_Ability_SNA_",
+                StringComparison.Ordinal)) return "kmg-generated";
+            if (child.name == "KMG_Summoning_Native_SNA_Tier1")
+                return "kmg-preservation";
+            SummonNativeOptionSpec known = SummonNativeOptionCatalog.Find(
+                SummonFamily.NaturesAlly, tier, child.AssetGuid);
+            return known == null ? "optional-appended" : "native";
+        }
+
+        private static string SnaMultiplicity(int tier, BlueprintAbility child)
+        {
+            SummonVariantSpec generated = ExpandedSummoningCatalog.GenerateVariants(
+                SummonFamily.NaturesAlly).SingleOrDefault(value =>
+                    value.ParentTier == tier && child.name ==
+                    ExpandedSummoningIdentityCatalog.AbilitySymbol(value)
+                        .Replace('.', '_').Replace('-', '_'));
+            if (generated != null) return generated.Multiplicity.ToString();
+            SummonNativeOptionSpec known = SummonNativeOptionCatalog.Find(
+                SummonFamily.NaturesAlly, tier, child.AssetGuid);
+            return known == null ? "unknown" : known.Multiplicity.ToString();
+        }
+
+        private static string SnaSemanticKey(int tier, BlueprintAbility child)
+        {
+            SummonVariantSpec generated = ExpandedSummoningCatalog.GenerateVariants(
+                SummonFamily.NaturesAlly).SingleOrDefault(value =>
+                    value.ParentTier == tier && child.name ==
+                    ExpandedSummoningIdentityCatalog.AbilitySymbol(value)
+                        .Replace('.', '_').Replace('-', '_'));
+            if (generated != null) return generated.Creature.Key;
+            SummonNativeOptionSpec known = SummonNativeOptionCatalog.Find(
+                SummonFamily.NaturesAlly, tier, child.AssetGuid);
+            if (known != null && known.EquivalentCreatureKey != null)
+                return known.EquivalentCreatureKey;
+            string units = SpawnUnitGuids(child);
+            return units == "<none>" ? child.AssetGuid : units;
+        }
+
+        private static string SpawnUnitGuids(BlueprintAbility ability)
+        {
+            var units = new List<BlueprintUnit>();
+            var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
+            AbilityEffectRunAction effect = (ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AbilityEffectRunAction>()
+                .SingleOrDefault();
+            CollectUnits(effect == null ? null : effect.Actions, 0, visited, units);
+            string[] guids = units.Where(value => value != null).Select(value =>
+                value.AssetGuid).Distinct(StringComparer.Ordinal).OrderBy(value =>
+                    value, StringComparer.Ordinal).ToArray();
+            return guids.Length == 0 ? "<none>" : string.Join(",", guids);
+        }
+
+        private static void CollectUnits(object value, int depth,
+            ISet<object> visited, IList<BlueprintUnit> units)
+        {
+            if (value == null || depth > 10) return;
+            BlueprintUnit unit = value as BlueprintUnit;
+            if (unit != null) { units.Add(unit); return; }
+            Type type = value.GetType();
+            if (type.IsPrimitive || type.IsEnum || value is string ||
+                value is UnityEngine.Object) return;
+            if (!visited.Add(value)) return;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable != null)
+            {
+                foreach (object item in enumerable)
+                    CollectUnits(item, depth + 1, visited, units);
+                return;
+            }
+            foreach (FieldInfo field in AllFields(type).Where(field =>
+                !field.IsStatic))
+            {
+                try { CollectUnits(field.GetValue(value), depth + 1, visited,
+                    units); }
+                catch { }
+            }
+        }
+
+        private static string DescribePixels(Texture2D texture)
+        {
+            if (texture == null) return "unavailable";
+            try
+            {
+                Color32[] pixels = texture.GetPixels32();
+                if (pixels == null || pixels.Length == 0) return "empty";
+                int transparent = 0, white = 0;
+                long sum = 0, sumSquares = 0;
+                var distinct = new HashSet<int>();
+                int stride = Math.Max(1, pixels.Length / 16384);
+                int sampled = 0;
+                for (int index = 0; index < pixels.Length; index += stride)
+                {
+                    Color32 pixel = pixels[index];
+                    if (pixel.a <= 2) transparent++;
+                    if (pixel.a >= 250 && pixel.r >= 250 && pixel.g >= 250 &&
+                        pixel.b >= 250) white++;
+                    int luminance = (pixel.r * 54 + pixel.g * 183 +
+                        pixel.b * 19) >> 8;
+                    sum += luminance; sumSquares += luminance * luminance;
+                    distinct.Add((pixel.a << 24) | (pixel.r << 16) |
+                        (pixel.g << 8) | pixel.b);
+                    sampled++;
+                }
+                double mean = sampled == 0 ? 0 : (double)sum / sampled;
+                double variance = sampled == 0 ? 0 :
+                    (double)sumSquares / sampled - mean * mean;
+                return "sampled=" + sampled + ",transparent=" + transparent +
+                    ",white=" + white + ",distinct=" + distinct.Count +
+                    ",variance=" + variance.ToString("F2");
+            }
+            catch (Exception exception)
+            {
+                return "unreadable:" + exception.GetType().Name;
+            }
+        }
+
+        private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceEqualityComparer Instance =
+                new ReferenceEqualityComparer();
+            public new bool Equals(object left, object right)
+            { return ReferenceEquals(left, right); }
+            public int GetHashCode(object value)
+            { return RuntimeHelpers.GetHashCode(value); }
         }
 
         private static object FieldValue(object value, string name)
