@@ -10712,6 +10712,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var diagnostics = new List<string>();
             var visualBounds = new Dictionary<string, float>(
                 StringComparer.Ordinal);
+            var visualHeights = new Dictionary<string, float>(
+                StringComparer.Ordinal);
             var visualScales = new Dictionary<string, float>(
                 StringComparer.Ordinal);
             float mediumHumanoidHeight = -1f;
@@ -10831,6 +10833,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     float maximumBound = hasBounds ? Mathf.Max(combined.size.x,
                         Mathf.Max(combined.size.y, combined.size.z)) : -1f;
                     visualBounds.Add(variant.Creature.Key, maximumBound);
+                    visualHeights.Add(variant.Creature.Key, hasBounds ?
+                        combined.size.y : -1f);
                     visualScales.Add(variant.Creature.Key, Mathf.Max(scale.x,
                         Mathf.Max(scale.y, scale.z)));
                     bool finiteBounded = attached && unit.Corpulence > 0.05f &&
@@ -10991,7 +10995,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }).ToArray()) + ";multipliers=" + string.Join(",",
                 SummonViewScaleCatalog.All.Select(value => value.CreatureKey +
                     "=" + value.Multiplier.ToString("R")).ToArray());
-            float eagleHeight = visualBounds.ContainsKey("eagle") ?
+            float eagleHeight = visualHeights.ContainsKey("eagle") ?
+                visualHeights["eagle"] : -1f;
+            float eagleMaximumBound = visualBounds.ContainsKey("eagle") ?
                 visualBounds["eagle"] : -1f;
             bool eagleVersusHumanoid = eagleHeight > 0.01f &&
                 mediumHumanoidHeight > 0.01f &&
@@ -11014,7 +11020,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live combined renderer bounds after deterministic view-only multipliers"),
                 Assertion("expanded-summoning-eagle-medium-humanoid-scale",
                     "Eagle live maximum bound below Medium humanoid standing height; mechanical size Small; view multiplier 0.30",
-                    "eagleMax=" + eagleHeight.ToString("R") +
+                    "eagleHeight=" + eagleHeight.ToString("R") +
+                        ";eagleWingspanOrMax=" +
+                        eagleMaximumBound.ToString("R") +
                         ";mediumHeight=" + mediumHumanoidHeight.ToString("R"),
                     eagleVersusHumanoid && ExpandedSummoningUnit(
                         blueprints, variants.Single(value =>
