@@ -151,8 +151,9 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("WriteExpandedSummoningEagleComparison") &&
                 runtime.Contains("Camera.main") &&
                 runtime.Contains("camera.CopyFrom(liveCamera)") &&
-                runtime.Contains("camera.cullingMask = 1 << evidenceLayer") &&
-                runtime.Contains("gameObject.layer = priorLayers[index]") &&
+                runtime.Contains("camera.cullingMask = subjectMask") &&
+                runtime.Contains("renderer.enabled = false") &&
+                runtime.Contains("renderer.enabled = true") &&
                 runtime.Contains("detached camera frame") &&
                 runtime.Contains("meaningfulPixels") &&
                 runtime.Contains("framebuffer was blank"),

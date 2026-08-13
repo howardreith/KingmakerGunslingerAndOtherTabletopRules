@@ -11102,7 +11102,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             Bounds eagleBounds, string evidenceDirectory)
         {
             const int width = 1280, height = 720;
-            const int evidenceLayer = 31;
             string pngPath = Path.Combine(evidenceDirectory,
                 "eagle-medium-humanoid-live-comparison.png");
             string jsonPath = Path.Combine(evidenceDirectory,
@@ -11114,16 +11113,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
-            Transform[] evidenceTransforms = new[] { caster.View, eagle.View }
+            Renderer[] evidenceRenderers = new[] { caster.View, eagle.View }
                 .Where(value => value != null)
-                .SelectMany(value => value.GetComponentsInChildren<Transform>(true))
+                .SelectMany(value => value.GetComponentsInChildren<Renderer>(true))
+                .Where(value => value != null && value.enabled &&
+                    value.gameObject.activeInHierarchy)
                 .Distinct()
                 .ToArray();
-            int[] priorLayers = evidenceTransforms
-                .Select(value => value.gameObject.layer).ToArray();
-            Camera liveCamera = Camera.main ?? UnityEngine.Object
-                .FindObjectsOfType<Camera>().FirstOrDefault(value =>
-                    value != null && value.enabled);
+            if (evidenceRenderers.Length == 0)
+                throw new InvalidOperationException(
+                    "The live Eagle comparison had no enabled subject renderers.");
+            int subjectMask = evidenceRenderers.Aggregate(0, (mask, renderer) =>
+                mask | (1 << renderer.gameObject.layer));
+            var evidenceSet = new HashSet<Renderer>(evidenceRenderers);
+            Renderer[] suppressedRenderers = UnityEngine.Object
+                .FindObjectsOfType<Renderer>()
+                .Where(value => value != null && value.enabled &&
+                    !evidenceSet.Contains(value))
+                .ToArray();
+            Camera liveCamera = UnityEngine.Object.FindObjectsOfType<Camera>()
+                .Where(value => value != null && value.enabled)
+                .OrderByDescending(value => evidenceRenderers
+                    .Select(renderer => renderer.gameObject.layer)
+                    .Distinct()
+                    .Count(layer => (value.cullingMask & (1 << layer)) != 0))
+                .ThenByDescending(value => ReferenceEquals(value, Camera.main))
+                .FirstOrDefault();
             if (liveCamera == null) throw new InvalidOperationException(
                 "The live Eagle comparison could not find the game camera.");
             Camera camera = cameraObject.AddComponent<Camera>();
@@ -11135,13 +11150,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // incorrectly framed supporting screenshot.
                 camera.CopyFrom(liveCamera);
                 camera.enabled = false;
-                camera.cullingMask = 1 << evidenceLayer;
-                for (int index = 0; index < evidenceTransforms.Length; index++)
-                    evidenceTransforms[index].gameObject.layer = evidenceLayer;
+                camera.cullingMask = subjectMask;
+                foreach (Renderer renderer in suppressedRenderers)
+                    renderer.enabled = false;
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
                 light.intensity = 1.25f;
-                light.cullingMask = 1 << evidenceLayer;
+                light.cullingMask = subjectMask;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
@@ -11199,8 +11214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 RenderTexture.active = priorActive;
-                for (int index = 0; index < evidenceTransforms.Length; index++)
-                    evidenceTransforms[index].gameObject.layer = priorLayers[index];
+                foreach (Renderer renderer in suppressedRenderers)
+                    if (renderer != null) renderer.enabled = true;
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
