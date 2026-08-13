@@ -241,9 +241,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string area = loot.Area == null ? string.Empty : loot.Area.name;
             return ContainsAny(area, new[] { "oaktree", "oldsycamore", "staglord",
-                "troll", "barony", "capital", "season", "bloom", "vordakai",
-                "varnhold", "pitax", "irovetti", "houseattheedge", "finaldungeon",
-                "firstworld" });
+                "troll", "dwarven", "ruins", "lonehouse", "barony", "capital",
+                "season", "bloom", "goblin", "lamashtu", "womb", "silverstep",
+                "hunting", "gudrin", "vordakai", "varnhold", "pitax", "irovetti",
+                "houseattheedge", "finaldungeon", "firstworld" });
         }
 
         private static string DescribeWeapon(BlueprintItemWeapon item)

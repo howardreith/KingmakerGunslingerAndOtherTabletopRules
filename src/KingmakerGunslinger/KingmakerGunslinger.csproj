@@ -50,6 +50,7 @@
     <Compile Include="ElvenBranchedSpear\MovementOpportunityAccuracyComponent.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />
+    <Compile Include="Blueprints\ElvenBranchedSpearCampaignBlueprints.cs" />
     <Compile Include="Summoning\SummonFamily.cs" />
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />

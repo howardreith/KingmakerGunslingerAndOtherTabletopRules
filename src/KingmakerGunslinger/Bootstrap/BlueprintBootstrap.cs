@@ -629,6 +629,7 @@ namespace KingmakerGunslinger.Bootstrap
             ShieldOtherSpellListPublication shieldOtherPublication = null;
             ExpandedSummoningPublication expandedSummoningPublication = null;
             ElvenBranchedSpearSelectorPublication spearSelectorPublication = null;
+            ElvenBranchedSpearCampaignPublication spearCampaignPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -881,6 +882,9 @@ namespace KingmakerGunslinger.Bootstrap
                 if (publicationPlan.RareFirearmLoot)
                     rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
                         library, magicFirearms, context.Logger);
+                if (publicationPlan.ElvenBranchedSpearCommerce)
+                    spearCampaignPublication = ElvenBranchedSpearCampaignBlueprints
+                        .Publish(library, elvenBranchedSpears, context.Logger);
                 if (publicationPlan.CapitalGunslingerStock &&
                     publicationPlan.BeneathStolenLandsStock)
                     ProjectAssetIcons.ValidateSupplyPublication(registry,
@@ -941,6 +945,17 @@ namespace KingmakerGunslinger.Bootstrap
                     "initialize.root-cause",
                     "Blueprint initialization reached a failing owned operation before rollback.",
                     initializationException);
+                if (spearCampaignPublication != null)
+                {
+                    try { spearCampaignPublication.Rollback(); }
+                    catch (Exception campaignRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "elven-branched-spear-campaign.rollback-failed",
+                            "Blueprint initialization failed and spear campaign publication rollback was refused.",
+                            campaignRollbackException);
+                    }
+                }
                 try
                 {
                     GunslingerStartingFirearmResolver.Rollback();

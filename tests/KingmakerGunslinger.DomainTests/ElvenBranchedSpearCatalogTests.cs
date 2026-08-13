@@ -234,5 +234,50 @@ namespace KingmakerGunslinger.DomainTests
                     StringSplitOptions.None).Length,
                     "Named spear identity is absent or duplicated: " + guid);
         }
+
+        internal static void CampaignPublicationContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ElvenBranchedSpearCampaignBlueprints.cs"));
+            foreach (string token in new[] {
+                "f720440559fc00949900bfa1575196ac",
+                "CapitalVendorBlueprints.TableGuid",
+                "f072a8f6889b5f345b7f4e7c74cb3e4c",
+                "e5ab1fccf37c55f41a20a80c6ba6a460",
+                "59cb0ac65b4093440ad341b9a2f372cf",
+                "70c4615a8d667dc4cb740c22ee7b5eed",
+                "193b1222846a0114197e716cb35d3ce8",
+                "7e6448d1d8a7e4f4d9cc340b8f15e732",
+                "NamedSpearKind.Thornstep",
+                "NamedSpearKind.BriarCrownedSpear",
+                "owned.Contains", "CreateFixedEntry(item, 1)",
+                "ReferenceEquals", "Rollback()" })
+                Assertions.True(source.Contains(token),
+                    "Campaign publication lacks: " + token);
+            Assertions.Equal(4, source.Split(new[] { "new VendorSpec(" },
+                StringSplitOptions.None).Length - 1,
+                "Vendor placement count changed.");
+            Assertions.Equal(4, source.Split(new[] { "new LootSpec(" },
+                StringSplitOptions.None).Length - 1,
+                "Fixed-loot placement count changed.");
+
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains(
+                "publicationPlan.ElvenBranchedSpearCommerce") &&
+                bootstrap.Contains("spearCampaignPublication.Rollback()"),
+                "Campaign publication is not module-gated and rollback-owned.");
+
+            string manifest = File.ReadAllText(Path.Combine(root, "docs",
+                "ELVEN-BRANCHED-SPEAR-PLACEMENT-MANIFEST.md"));
+            foreach (string token in new[] { "Act I", "Act II", "Act III",
+                "Act IV", "Act V", "Final", "append", "module OFF",
+                "replenishment" })
+                Assertions.True(manifest.IndexOf(token,
+                    StringComparison.OrdinalIgnoreCase) >= 0,
+                    "Placement manifest lacks: " + token);
+        }
     }
 }

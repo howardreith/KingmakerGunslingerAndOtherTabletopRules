@@ -361,3 +361,24 @@ After assigning nonempty internal marker text, fresh guarded Steam run
 `20260813T2257134766491Z-mod-load-smoke` passed. This proves deterministic
 registration and startup safety; it does not yet substitute for realistic
 combat-event qualification of each effect.
+
+## Campaign publication checkpoint
+
+The expanded save-free contract observer
+`20260813T2305410957646Z-observe-elven-branched-spear-contracts` passed against
+the installed vanilla plus Call of the Wild graph and supplied the previously
+missing Act III identity: `Forest_LootBoxGood2`
+`70c4615a8d667dc4cb740c22ee7b5eed` in `GoblinKingFort`. The final publication
+uses four exact vendor tables and four exact fixed-loot targets recorded in
+`ELVEN-BRANCHED-SPEAR-PLACEMENT-MANIFEST.md`. It normalizes only feature-owned
+rows, preserves unrelated contents, validates count-one cardinality, and owns
+an exact rollback snapshot. The entire mutation is gated by
+`ElvenBranchedSpearCommerce`; item registration remains unconditional for save
+safety.
+
+Repository validation, all 1,024 domain tests, a clean Release build, strict
+standalone package validation, and guarded Steam mod-load smoke
+`20260813T2311204872688Z-mod-load-smoke` passed. The latter proves that all
+eight target identities resolve and that publication completes under the real
+blueprint cache. It does not yet prove merchant reopening or save-backed pickup
+behavior; those remain runtime-qualification work.
