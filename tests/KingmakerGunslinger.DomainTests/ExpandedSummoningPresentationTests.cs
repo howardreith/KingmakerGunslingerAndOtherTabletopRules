@@ -148,7 +148,10 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("eagleHeight < mediumHumanoidHeight") &&
                 runtime.Contains("Size == Size.Small") &&
                 runtime.Contains("eagle-medium-humanoid-live-comparison.png") &&
-                runtime.Contains("WriteExpandedSummoningEagleComparison"),
+                runtime.Contains("WriteExpandedSummoningEagleComparison") &&
+                runtime.Contains("Camera.main") &&
+                runtime.Contains("meaningfulPixels") &&
+                runtime.Contains("framebuffer was blank"),
                 "Visual runtime gate must compare Eagle live bounds to a Medium humanoid while retaining mechanical Small size.");
             string contactSheets = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "tools",

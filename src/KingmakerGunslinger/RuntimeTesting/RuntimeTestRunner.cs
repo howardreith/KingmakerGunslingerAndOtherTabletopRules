@@ -11106,33 +11106,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "eagle-medium-humanoid-live-comparison.png");
             string jsonPath = Path.Combine(evidenceDirectory,
                 "eagle-medium-humanoid-live-comparison.json");
-            var cameraObject = new GameObject(
-                "KMG_Runtime_EagleComparisonCamera");
             var lightObject = new GameObject(
                 "KMG_Runtime_EagleComparisonLight");
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
-            var priorLayers = new Dictionary<GameObject, int>();
+            Camera camera = Camera.main ?? UnityEngine.Object
+                .FindObjectsOfType<Camera>().FirstOrDefault(value =>
+                    value != null && value.enabled);
+            if (camera == null) throw new InvalidOperationException(
+                "The live Eagle comparison could not find the game camera.");
+            Vector3 priorCameraPosition = camera.transform.position;
+            Quaternion priorCameraRotation = camera.transform.rotation;
+            RenderTexture priorTargetTexture = camera.targetTexture;
+            bool priorOrthographic = camera.orthographic;
+            float priorOrthographicSize = camera.orthographicSize;
+            CameraClearFlags priorClearFlags = camera.clearFlags;
+            Color priorBackgroundColor = camera.backgroundColor;
             try
             {
-                Camera camera = cameraObject.AddComponent<Camera>();
                 Light light = lightObject.AddComponent<Light>();
-                const int evidenceLayer = 31;
-                foreach (UnitEntityData subject in new[] { caster, eagle })
-                {
-                    foreach (Transform child in subject.View.gameObject
-                        .GetComponentsInChildren<Transform>(true))
-                    {
-                        GameObject gameObject = child.gameObject;
-                        if (!priorLayers.ContainsKey(gameObject))
-                            priorLayers.Add(gameObject, gameObject.layer);
-                        gameObject.layer = evidenceLayer;
-                    }
-                }
                 light.type = LightType.Directional;
                 light.intensity = 1.25f;
-                light.cullingMask = 1 << evidenceLayer;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
@@ -11146,7 +11141,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Mathf.Max(casterBounds.size.y, eagleBounds.size.y) * 0.9f);
                 camera.clearFlags = CameraClearFlags.SolidColor;
                 camera.backgroundColor = new Color(0.055f, 0.045f, 0.04f, 1f);
-                camera.cullingMask = 1 << evidenceLayer;
                 renderTexture = new RenderTexture(width, height, 24,
                     RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
@@ -11156,6 +11150,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     false, false);
                 output.ReadPixels(new Rect(0, 0, width, height), 0, 0);
                 output.Apply(false, false);
+                Color32[] capturedPixels = output.GetPixels32();
+                int meaningfulPixels = capturedPixels.Count(pixel =>
+                    Math.Abs(pixel.r - 14) + Math.Abs(pixel.g - 11) +
+                    Math.Abs(pixel.b - 10) > 24);
+                if (meaningfulPixels < width * height / 100)
+                    throw new InvalidOperationException(
+                        "Live Eagle comparison framebuffer was blank: " +
+                        meaningfulPixels + " meaningful pixels.");
                 byte[] png = EncodeExpandedSummoningPng(output);
                 if (png == null || png.Length < 4096)
                     throw new InvalidOperationException(
@@ -11164,20 +11166,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteExpandedSummoningEagleComparisonIndex(jsonPath, caster,
                     eagle, casterBounds, eagleBounds, pngPath);
                 return "png=" + Path.GetFileName(pngPath) + ";json=" +
-                    Path.GetFileName(jsonPath) + ";bytes=" + png.Length;
+                    Path.GetFileName(jsonPath) + ";bytes=" + png.Length +
+                    ";meaningfulPixels=" + meaningfulPixels;
             }
             finally
             {
-                foreach (KeyValuePair<GameObject, int> layer in priorLayers)
-                    if (layer.Key != null) layer.Key.layer = layer.Value;
                 RenderTexture.active = priorActive;
+                camera.targetTexture = priorTargetTexture;
+                camera.transform.position = priorCameraPosition;
+                camera.transform.rotation = priorCameraRotation;
+                camera.orthographic = priorOrthographic;
+                camera.orthographicSize = priorOrthographicSize;
+                camera.clearFlags = priorClearFlags;
+                camera.backgroundColor = priorBackgroundColor;
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
                     UnityEngine.Object.Destroy(renderTexture);
                 }
                 if (output != null) UnityEngine.Object.Destroy(output);
-                UnityEngine.Object.Destroy(cameraObject);
                 UnityEngine.Object.Destroy(lightObject);
             }
         }
