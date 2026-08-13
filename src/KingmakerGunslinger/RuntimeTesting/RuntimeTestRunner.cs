@@ -7854,12 +7854,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
             BlueprintAbility[] allyTierOneDisplayed = allyTierOneParent
                 .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
+            BlueprintAbility allyTierOneMite = all.OfType<BlueprintAbility>()
+                .Single(value => value.name == ExpandedSummoningInternalName(
+                    SummonNativeExpansionCatalog.For(
+                        SummonFamily.NaturesAlly, 1).Single().Symbol));
             bool nativeTierOnePreserved = monsterTierOneDisplayed.Count(value =>
                     ReferenceEquals(value, nativeMonsterTierOne)) == 0 &&
                 allyTierOneDisplayed.Count(value => ReferenceEquals(value,
-                    nativeAllyTierOne)) == 1 &&
+                    nativeAllyTierOne)) == 0 &&
+                allyTierOneDisplayed.Count(value => ReferenceEquals(value,
+                    allyTierOneMite)) == 1 &&
                 ExpandedSummoningSpawnActionCount(nativeMonsterTierOne) >= 1 &&
                 ExpandedSummoningSpawnActionCount(nativeAllyTierOne) >= 1 &&
+                ExpandedSummoningSpawnActionCount(allyTierOneMite) >= 1 &&
                 nativeMonsterTierOne.Range == monsterTierOneParent.Range &&
                 nativeAllyTierOne.Range == allyTierOneParent.Range &&
                 nativeMonsterTierOne.ActionType == monsterTierOneParent.ActionType &&
@@ -8562,10 +8569,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     abilityContractObserved, abilityContractsExact,
                     "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
                 Assertion("expanded-summoning-native-tier-one-preservation",
-                    "SM I exact duplicate hidden; SNA I unique native retained; both identities castable",
+                    "generic SM/SNA preservation children hidden; creature-named SNA Mite wrapper visible; all identities castable",
                     nativeTierOnePreserved ? "exact" : "mismatch",
                     nativeTierOnePreserved,
-                    "frozen child clones of the two originally direct native parents"),
+                    "frozen child clones remain registered while exact GUID-based publication exposes only creature-named choices"),
                 Assertion("expanded-summoning-menu-reconciliation",
                     "KMG roots=exact;mapped native duplicates=0;unique native=exact;all frozen native identities registered",
                     "kmgMissingOrDuplicate=" +
@@ -11483,7 +11490,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (displayed.Count(value => ReferenceEquals(value,
                         root.Ability)) != 1)
                         result.MissingOrDuplicateKmgRoots++;
-                    if (root.Ability.Icon == null) result.MissingIcons++;
+                    if (root.Ability.Icon == null || root.Ability.Icon.name !=
+                            "KMG_SummonIcon_" + root.Spec.Creature.Key)
+                        result.MissingIcons++;
                     string name = root.Ability.Name ?? "";
                     if ((root.Spec.Multiplicity == SummonMultiplicity.OneD3 &&
                             name.IndexOf("1d3", StringComparison.Ordinal) < 0) ||
@@ -11516,7 +11525,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (displayed.Count(value => ReferenceEquals(value,
                             expansion.Ability)) != 1)
                         result.MissingOrDuplicateNativeExpansions++;
-                    if (expansion.Ability.Icon == null) result.MissingIcons++;
+                    if (expansion.Ability.Icon == null ||
+                        expansion.Ability.Icon.name != "KMG_SummonIcon_" +
+                            expansion.Spec.IconKey)
+                        result.MissingIcons++;
                     string name = expansion.Ability.Name ?? "";
                     if ((expansion.Spec.Multiplicity ==
                             SummonMultiplicity.OneD3 && name.IndexOf("1d3",

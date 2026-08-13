@@ -11,21 +11,33 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
+    [JsonObject(MemberSerialization.OptIn)]
     internal sealed class ExpandedSummoningRuntimeIconManifest
     {
+        [JsonProperty("schemaVersion", Required = Required.Always)]
         public int schemaVersion { get; set; }
+        [JsonProperty("count", Required = Required.Always)]
         public int count { get; set; }
+        [JsonProperty("icons", Required = Required.Always)]
         public ExpandedSummoningRuntimeIconRow[] icons { get; set; }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     internal sealed class ExpandedSummoningRuntimeIconRow
     {
+        [JsonProperty("key", Required = Required.Always)]
         public string key { get; set; }
+        [JsonProperty("file", Required = Required.Always)]
         public string file { get; set; }
+        [JsonProperty("sha256", Required = Required.Always)]
         public string sha256 { get; set; }
+        [JsonProperty("width", Required = Required.Always)]
         public int width { get; set; }
+        [JsonProperty("height", Required = Required.Always)]
         public int height { get; set; }
+        [JsonProperty("format", Required = Required.Always)]
         public string format { get; set; }
+        [JsonProperty("scope", Required = Required.Always)]
         public string scope { get; set; }
     }
 
@@ -59,7 +71,17 @@ namespace KingmakerGunslinger.Blueprints
                 manifest.icons.Length != 77 || manifest.icons.Select(row =>
                     row.key).Distinct(StringComparer.Ordinal).Count() != 77)
                 throw new InvalidDataException(
-                    "Expanded Summoning icon manifest contract failed.");
+                    "Expanded Summoning icon manifest contract failed: " +
+                    "manifest=" + (manifest == null ? "null" : "present") +
+                    ";schema=" + (manifest == null ? -1 :
+                        manifest.schemaVersion) + ";count=" +
+                    (manifest == null ? -1 : manifest.count) + ";rows=" +
+                    (manifest == null || manifest.icons == null ? -1 :
+                        manifest.icons.Length) + ";distinct=" +
+                    (manifest == null || manifest.icons == null ? -1 :
+                        manifest.icons.Where(row => row != null).Select(row =>
+                            row.key).Distinct(StringComparer.Ordinal).Count()) +
+                    ".");
             foreach (SummonProjectIconSpec spec in SummonIconCatalog.All)
             {
                 ExpandedSummoningRuntimeIconRow row = manifest.icons.SingleOrDefault(

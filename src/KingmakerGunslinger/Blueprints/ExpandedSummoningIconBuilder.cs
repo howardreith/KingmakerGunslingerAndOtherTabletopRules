@@ -23,6 +23,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
                 .GenerateVariants(family))
             {
+                if (!SummonVisibilityCatalog.IsPublished(variant)) continue;
                 Sprite icon = ExpandedSummoningProjectIcons.Require(
                     variant.Creature.Key);
                 string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(
