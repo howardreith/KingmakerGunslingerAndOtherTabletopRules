@@ -11102,6 +11102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Bounds eagleBounds, string evidenceDirectory)
         {
             const int width = 1280, height = 720;
+            const int evidenceLayer = 31;
             string pngPath = Path.Combine(evidenceDirectory,
                 "eagle-medium-humanoid-live-comparison.png");
             string jsonPath = Path.Combine(evidenceDirectory,
@@ -11113,6 +11114,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
+            Transform[] evidenceTransforms = new[] { caster.View, eagle.View }
+                .Where(value => value != null)
+                .SelectMany(value => value.GetComponentsInChildren<Transform>(true))
+                .Distinct()
+                .ToArray();
+            int[] priorLayers = evidenceTransforms
+                .Select(value => value.gameObject.layer).ToArray();
             Camera liveCamera = Camera.main ?? UnityEngine.Object
                 .FindObjectsOfType<Camera>().FirstOrDefault(value =>
                     value != null && value.enabled);
@@ -11127,9 +11135,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // incorrectly framed supporting screenshot.
                 camera.CopyFrom(liveCamera);
                 camera.enabled = false;
+                camera.cullingMask = 1 << evidenceLayer;
+                for (int index = 0; index < evidenceTransforms.Length; index++)
+                    evidenceTransforms[index].gameObject.layer = evidenceLayer;
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
                 light.intensity = 1.25f;
+                light.cullingMask = 1 << evidenceLayer;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
@@ -11187,6 +11199,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 RenderTexture.active = priorActive;
+                for (int index = 0; index < evidenceTransforms.Length; index++)
+                    evidenceTransforms[index].gameObject.layer = priorLayers[index];
                 if (renderTexture != null)
                 {
                     renderTexture.Release();
