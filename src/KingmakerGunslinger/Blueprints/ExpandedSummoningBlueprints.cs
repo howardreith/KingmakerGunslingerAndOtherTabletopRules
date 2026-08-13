@@ -117,6 +117,7 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningAlignmentModeRuntime.Configure(
                 alignmentMode.Feature);
             ExpandedSummoningAbilityBuilder.Configure(library, registered);
+            ExpandedSummoningNativeOptionBuilder.Configure(library, registered);
             BlueprintFeature extraplanar = registered[ExtraplanarSubtypeSymbol]
                 as BlueprintFeature;
             if (extraplanar == null) throw new InvalidOperationException(
@@ -126,6 +127,7 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar);
             ExpandedSummoningSpecialBuilder.Configure(library, registered,
                 extraplanar);
+            ExpandedSummoningIconBuilder.Configure(library, registered);
             ApplyExtraplanarMarker(registered, extraplanar);
             return result;
         }

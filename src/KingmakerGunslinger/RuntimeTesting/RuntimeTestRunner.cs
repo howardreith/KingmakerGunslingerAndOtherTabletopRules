@@ -215,6 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int VisibleMappedNativeDuplicates;
             internal int MissingUniqueNativeOptions;
             internal int MissingRegisteredNativeIdentities;
+            internal int MissingOrDuplicateNativeExpansions;
             internal int MisorderedParents;
             internal int MissingIcons;
             internal int MalformedQuantityNames;
@@ -230,7 +231,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return MissingOrDuplicateKmgRoots == 0 &&
                         VisibleMappedNativeDuplicates == 0 &&
                         MissingUniqueNativeOptions == 0 &&
-                        MissingRegisteredNativeIdentities == 0;
+                        MissingRegisteredNativeIdentities == 0 &&
+                        MissingOrDuplicateNativeExpansions == 0;
                 }
             }
 
@@ -7768,18 +7770,26 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunExpandedSummoningInventoryObservation()
         {
+            WriteLifecycleStage("expanded-summoning-inventory-start");
             ExpandedSummoningInventoryObservation observation =
                 ExpandedSummoningInventoryObserver.Observe(BlueprintBootstrap.Library);
+            WriteLifecycleStage("expanded-summoning-inventory-observer-complete");
             BlueprintScriptableObject[] all = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
-            int kmgUnits = all.OfType<BlueprintUnit>().Count(value =>
-                value.name.StartsWith("KMG_Summoning_Unit_", StringComparison.Ordinal));
-            int expectedKmgAbilities = ExpandedSummoningIdentityCatalog.Build()
-                .Count(value => value.PlannedType == "BlueprintAbility");
-            int kmgAbilities = all.OfType<BlueprintAbility>().Count(value =>
-                value.name.StartsWith("KMG_Summoning_Ability_", StringComparison.Ordinal) ||
-                value.name.StartsWith("KMG_Summoning_Native_", StringComparison.Ordinal) ||
-                value.name.StartsWith("KMG_Summoning_Special_", StringComparison.Ordinal));
+            SummoningIdentitySpec[] frozenIdentities =
+                ExpandedSummoningIdentityCatalog.Build().ToArray();
+            var unitNames = new HashSet<string>(all.OfType<BlueprintUnit>()
+                .Select(value => value.name), StringComparer.Ordinal);
+            var abilityNames = new HashSet<string>(all.OfType<BlueprintAbility>()
+                .Select(value => value.name), StringComparer.Ordinal);
+            int kmgUnits = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintUnit" && unitNames.Contains(
+                    value.Symbol.Replace('.', '_').Replace('-', '_')));
+            int expectedKmgAbilities = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintAbility");
+            int kmgAbilities = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintAbility" && abilityNames.Contains(
+                    value.Symbol.Replace('.', '_').Replace('-', '_')));
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0,
                 extraplanarMarkers = 0;
@@ -7930,6 +7940,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMenuAudit menuAudit =
                 AuditExpandedSummoningMenus(all, canonicalSummonParents,
                     logicalVariants);
+            WriteLifecycleStage("expanded-summoning-inventory-menu-audit-complete");
             string[] standaloneElementalRootGuids = {
                 "970c6db48ff0c6f43afc9dbb48780d03",
                 "e42b1dbff4262c6469a9ff0a6ce730e3",
@@ -8008,7 +8019,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             int expectedContractNodes = logicalVariants.Length;
             bool abilityContractsExact = logicalVariants.Length == 681 &&
-                expectedContractNodes == 681 && exactParentMappings == 681 &&
+                expectedContractNodes == 681 && exactParentMappings ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                 nativeContractNodes == expectedContractNodes &&
                 acadamaeClassifiedNodes == expectedContractNodes &&
                 materialContractNodes == expectedContractNodes &&
@@ -8541,11 +8553,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tierFiveSevenNaturalsExact ? "exact" : "mismatch",
                     tierFiveSevenNaturalsExact,
                     "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
-                Assertion("expanded-summoning-parent-placements", "681",
-                    publishedPlacements.ToString(), publishedPlacements == 681,
+                Assertion("expanded-summoning-parent-placements", "667",
+                    publishedPlacements.ToString(), publishedPlacements ==
+                        SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                     "18 canonical AbilityVariants surfaces"),
                 Assertion("expanded-summoning-native-ability-contracts",
-                    "roots=681;nodes=681;parents=681;native=681;acadamae=681;material=681;metamagic=681;actionBar=681",
+                    "roots=681 registered;parents=667 visible;all 681 executable contracts exact",
                     abilityContractObserved, abilityContractsExact,
                     "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
                 Assertion("expanded-summoning-native-tier-one-preservation",
@@ -8562,7 +8575,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";uniqueMissing=" +
                         menuAudit.MissingUniqueNativeOptions +
                         ";registeredMissing=" +
-                        menuAudit.MissingRegisteredNativeIdentities,
+                        menuAudit.MissingRegisteredNativeIdentities +
+                        ";nativeExpansionMissingOrDuplicate=" +
+                        menuAudit.MissingOrDuplicateNativeExpansions,
                     menuAudit.ReconciliationExact,
                     "all 18 final-live canonical AbilityVariants surfaces and frozen GUID catalog"),
                 Assertion("expanded-summoning-menu-order-and-icons",
@@ -8580,7 +8595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     menuAudit.Counts, menuAudit.CountMismatches == 0,
                     "frozen native catalog plus preserved foreign tail and generated KMG placement catalog"),
                 Assertion("expanded-summoning-high-tier-native-choices",
-                    "SM VIII Movanic Deva/Frost Giant and SM IX native unique option retained once",
+                    "SM VIII Movanic Deva/Frost Giant and SM IX Ghaele/Thanadaemon are distinct; umbrella sources suppressed",
                     menuAudit.HighTierUniqueNativeExact ? "exact" :
                         "mismatch", menuAudit.HighTierUniqueNativeExact,
                     "exact GUID-based unique native reconciliation at sparse KMG tiers VIII and IX"),
@@ -8635,6 +8650,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             RuntimeTestResult result = CreateResult(assertions.All(value =>
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
+            WriteLifecycleStage("expanded-summoning-inventory-result-built");
             foreach (string record in observation.Records) result.Diagnostics.Add(record);
             return result;
         }
@@ -8663,6 +8679,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.NonPublic | BindingFlags.Instance);
             var cases = new List<ExpandedSummoningPlayerPathCase>();
             var broadCases = new List<ExpandedSummoningPlayerPathCase>();
+            var nativeExpansionCases =
+                new List<ExpandedSummoningPlayerPathCase>();
             ExpandedSummoningPlayerPathCase rejectedDog = null;
             bool cleaned = false;
             string stage = "construct-fixture";
@@ -8931,38 +8949,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                         caster.Descriptor.RemoveFact(neutralFiendish);
                 }
 
-                stage = "resolve-native-sm8-choice";
-                BlueprintAbility nativeEight = BlueprintLibraryLookup
-                    .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
-                        "eb6df7ddfc0669d4fb3fc9af4bd34bca",
-                        "native Movanic Deva or Frost Giant choice");
-                foreach (var nativeRow in new[] {
-                    new { Alignment = Alignment.NeutralGood,
-                        Unit = "afe56099ff6046b40a359b7562c0424e",
-                        Name = "native-sm8-movanic-deva" },
-                    new { Alignment = Alignment.LawfulEvil,
-                        Unit = "590cd3d5e76fdc649a5f97bc984cd3c4",
-                        Name = "native-sm8-frost-giant" }
-                })
+                stage = "all-distinct-native-expansions";
+                foreach (SummonNativeExpansionSpec nativeSpec in
+                    SummonNativeExpansionCatalog.All)
                 {
-                    stage = nativeRow.Name;
+                    stage = "native-expanded-sm" + nativeSpec.Tier + "-" +
+                        nativeSpec.CreatureKey + "-" +
+                        nativeSpec.Multiplicity;
+                    WriteLifecycleStage(stage + "-start");
+                    BlueprintAbility distinct = blueprints.OfType<
+                        BlueprintAbility>().Single(value => value.name ==
+                            ExpandedSummoningInternalName(nativeSpec.Symbol));
                     BlueprintUnit expected = BlueprintLibraryLookup.RequireExact<
-                        BlueprintUnit>(BlueprintBootstrap.Library, nativeRow.Unit,
-                            nativeRow.Name);
-                    cases.Add(ExerciseExpandedSummoningPlayerPathCase(caster,
-                        spellbook, parents[7], nativeEight, expected, nativeEight,
-                        null, 8, nativeRow.Alignment, false, sceneEntities,
-                        allUnits, null));
-                    cases[cases.Count - 1].Name = nativeRow.Name;
+                        BlueprintUnit>(BlueprintBootstrap.Library,
+                            nativeSpec.UnitGuid, stage);
+                    ExpandedSummoningPlayerPathCase nativeCase =
+                        ExerciseExpandedSummoningPlayerPathCase(caster,
+                            spellbook, parents[nativeSpec.Tier - 1], distinct,
+                            expected, distinct, null, nativeSpec.Tier,
+                            nativeSpec.Branch == SummonNativeSpawnBranch.Evil ?
+                                Alignment.LawfulEvil : Alignment.NeutralGood,
+                            false, sceneEntities, allUnits, null);
+                    int minimum = nativeSpec.Multiplicity ==
+                        SummonMultiplicity.One ? 1 : nativeSpec.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? 1 : 2;
+                    int maximum = nativeSpec.Multiplicity ==
+                        SummonMultiplicity.One ? 1 : nativeSpec.Multiplicity ==
+                            SummonMultiplicity.OneD3 ? 3 : 5;
+                    nativeCase.QuantityContract = nativeCase.LiveCount >= minimum &&
+                        nativeCase.LiveCount <= maximum;
+                    nativeCase.LiveContract = nativeCase.LiveContract &&
+                        nativeCase.QuantityContract;
+                    nativeCase.Name = stage;
+                    cases.Add(nativeCase);
+                    nativeExpansionCases.Add(nativeCase);
+                    WriteLifecycleStage(stage + "-complete");
                 }
 
-                stage = "all-681-logical-roots";
+                stage = "all-667-visible-logical-roots";
                 SummonVariantSpec[] broadVariants = ExpandedSummoningCatalog
                     .GenerateVariants(SummonFamily.Monster).Concat(
                         ExpandedSummoningCatalog.GenerateVariants(
-                            SummonFamily.NaturesAlly)).ToArray();
+                            SummonFamily.NaturesAlly)).Where(
+                                SummonVisibilityCatalog.IsPublished).ToArray();
+                int observedBroadTier = 0;
+                SummonFamily observedBroadFamily = SummonFamily.Monster;
                 foreach (SummonVariantSpec variant in broadVariants)
                 {
+                    if (variant.ParentTier != observedBroadTier ||
+                        variant.Family != observedBroadFamily)
+                    {
+                        observedBroadTier = variant.ParentTier;
+                        observedBroadFamily = variant.Family;
+                        WriteLifecycleStage("expanded-summoning-player-path-broad-" +
+                            observedBroadFamily + "-tier" +
+                            observedBroadTier + "-start");
+                    }
                     string broadName = "broad-" + variant.Family + "-t" +
                         variant.ParentTier + "-" + variant.Creature.Key + "-" +
                         variant.Multiplicity;
@@ -8980,6 +9022,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         broadMode, sceneEntities, allUnits, broadName);
                     broadCases.Add(cases[cases.Count - 1]);
                 }
+                WriteLifecycleStage(
+                    "expanded-summoning-player-path-broad-complete");
             }
             catch (Exception exception)
             {
@@ -9026,8 +9070,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Name == "kmg-sna1-dog-logical");
             bool allPlayerPaths = cases.Where(value => value.ExecutionGuid ==
                 "<none>").All(value => value.LiveContract && value.SlotContract);
-            bool allBroadPlayerPaths = broadCases.Count == 681 &&
+            bool allBroadPlayerPaths = broadCases.Count ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                 broadCases.All(value => value.LiveContract &&
+                    value.SlotContract && value.QuantityContract);
+            bool allNativeExpandedPaths = nativeExpansionCases.Count == 17 &&
+                nativeExpansionCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -9064,11 +9112,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
                     allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
                 Assertion("expanded-summoning-all-logical-player-paths",
-                    "681/681 live exact-kind roots with one-slot and quantity contracts",
+                    "667/667 visible roots live with one-slot and quantity contracts; 14 Dire Bat identities registered but unpublished",
                     broadCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         broadCases.Count, allBroadPlayerPaths,
-                    "all approved SM/SNA logical placements through native spellbook parents"),
+                    "all published SM/SNA logical placements through native spellbook parents"),
+                Assertion("expanded-summoning-distinct-native-player-paths",
+                    "17/17 visible Owlcat-native split options live with one-slot and quantity contracts",
+                    nativeExpansionCases.Count(value => value.LiveContract &&
+                        value.SlotContract && value.QuantityContract) + "/" +
+                        nativeExpansionCases.Count,
+                    allNativeExpandedPaths,
+                    "exact native spellbook parents with each umbrella branch isolated into one visible choice"),
                 Assertion("request-local-cleanup", "exact party/global snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "dispose all request-local caster and summon entities"),
@@ -11308,6 +11363,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var countRows = new List<string>();
             var categoryIcons = new Dictionary<string, Sprite>(
                 StringComparer.Ordinal);
+            var creatureIcons = new Dictionary<string, Sprite>(
+                StringComparer.Ordinal);
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
             {
                 SummonVariantSpec representative = logicalVariants.First(value =>
@@ -11317,6 +11374,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExpandedSummoningIdentityCatalog.AbilitySymbol(
                             representative)));
                 string category = SummonIconCatalog.CategoryFor(creature.Key);
+                creatureIcons.Add(creature.Key, ability.Icon);
                 if (!categoryIcons.ContainsKey(category))
                     categoryIcons.Add(category, ability.Icon);
             }
@@ -11331,7 +11389,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "air-mephit", "earth-mephit", "fire-mephit",
                     "water-mephit") &&
                 ExpandedSummoningCategoryIconsDistinct(categoryIcons,
-                    "celestial", "fiend");
+                    "celestial", "fiend") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "dog", "wolf", "hyena", "goblin-dog") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "leopard", "cheetah") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "monitor-lizard", "crocodile") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "wolf", "wolverine") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "lion", "dire-lion", "dire-tiger") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "eagle", "pteranodon") &&
+                ExpandedSummoningCreatureIconsDistinct(creatureIcons,
+                    "lantern-archon", "bralani-azata", "erinyes-devil",
+                    "ghaele-azata");
 
             for (int parentIndex = 0; parentIndex < parents.Length; parentIndex++)
             {
@@ -11340,8 +11413,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int tier = parentIndex % 9 + 1;
                 BlueprintAbility[] displayed = parents[parentIndex]
                     .ComponentsArray.OfType<AbilityVariants>().Single().Variants;
-                SummonVariantSpec[] specs = logicalVariants.Where(value =>
+                SummonVariantSpec[] allSpecs = logicalVariants.Where(value =>
                     value.Family == family && value.ParentTier == tier).ToArray();
+                SummonVariantSpec[] specs = allSpecs.Where(
+                    SummonVisibilityCatalog.IsPublished).ToArray();
                 var rootByGuid = specs.Select(spec => new {
                     Spec = spec,
                     Ability = all.OfType<BlueprintAbility>().Single(value =>
@@ -11354,13 +11429,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Tier == tier).ToArray();
                 var nativeByGuid = natives.ToDictionary(value => value.Guid,
                     value => value, StringComparer.Ordinal);
+                SummonNativeExpansionSpec[] nativeExpansions = family ==
+                    SummonFamily.Monster ? SummonNativeExpansionCatalog
+                        .ForTier(tier).ToArray() :
+                        Array.Empty<SummonNativeExpansionSpec>();
+                var nativeExpansionByGuid = nativeExpansions.Select(value =>
+                    new { Spec = value, Ability = all.OfType<BlueprintAbility>()
+                        .Single(item => item.name ==
+                            ExpandedSummoningInternalName(value.Symbol)) })
+                    .ToDictionary(value => value.Ability.AssetGuid,
+                        value => value, StringComparer.Ordinal);
                 Func<BlueprintAbility, SummonMultiplicity?> menuMultiplicity =
                     value => rootByGuid.ContainsKey(value.AssetGuid) ?
                         (SummonMultiplicity?)rootByGuid[value.AssetGuid].Spec
                             .Multiplicity : nativeByGuid.ContainsKey(
                                 value.AssetGuid) ?
                             (SummonMultiplicity?)nativeByGuid[value.AssetGuid]
-                                .Multiplicity : null;
+                                .Multiplicity : nativeExpansionByGuid.ContainsKey(
+                                    value.AssetGuid) ?
+                                (SummonMultiplicity?)nativeExpansionByGuid[
+                                    value.AssetGuid].Spec.Multiplicity : null;
+                foreach (SummonVariantSpec rootSpec in allSpecs.Where(value =>
+                    !SummonVisibilityCatalog.IsPublished(value)))
+                {
+                    BlueprintAbility suppressed = all.OfType<BlueprintAbility>()
+                        .Single(value => value.name ==
+                            ExpandedSummoningInternalName(
+                                ExpandedSummoningIdentityCatalog.AbilitySymbol(
+                                    rootSpec)));
+                    if (displayed.Any(value => ReferenceEquals(value,
+                        suppressed))) result.MissingOrDuplicateKmgRoots++;
+                }
                 foreach (var root in rootByGuid.Values)
                 {
                     if (displayed.Count(value => ReferenceEquals(value,
@@ -11386,10 +11485,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     int visible = displayed.Count(value =>
                         ReferenceEquals(value, identity));
-                    if (native.IsSemanticDuplicate)
+                    if (family == SummonFamily.Monster &&
+                        SummonNativeExpansionCatalog.Replaces(tier,
+                            native.Guid))
+                        result.VisibleMappedNativeDuplicates += visible;
+                    else if (native.IsSemanticDuplicate)
                         result.VisibleMappedNativeDuplicates += visible;
                     else if (visible != 1)
                         result.MissingUniqueNativeOptions++;
+                }
+                foreach (var expansion in nativeExpansionByGuid.Values)
+                {
+                    if (displayed.Count(value => ReferenceEquals(value,
+                            expansion.Ability)) != 1)
+                        result.MissingOrDuplicateNativeExpansions++;
+                    if (expansion.Ability.Icon == null) result.MissingIcons++;
+                    string name = expansion.Ability.Name ?? "";
+                    if ((expansion.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD3 && name.IndexOf("1d3",
+                                StringComparison.Ordinal) < 0) ||
+                        (expansion.Spec.Multiplicity ==
+                            SummonMultiplicity.OneD4PlusOne && name.IndexOf(
+                                "1d4+1", StringComparison.Ordinal) < 0))
+                        result.MalformedQuantityNames++;
                 }
 
                 var expectedKnown = new List<BlueprintAbility>();
@@ -11401,8 +11519,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Multiplicity == multiplicity).Select(value =>
                             rootByGuid.Values.Single(item =>
                                 ReferenceEquals(item.Spec, value)).Ability));
+                    expectedKnown.AddRange(nativeExpansions.Where(value =>
+                        value.Multiplicity == multiplicity).Select(value =>
+                            nativeExpansionByGuid.Values.Single(item =>
+                                ReferenceEquals(item.Spec, value)).Ability));
                     expectedKnown.AddRange(natives.Where(value =>
                         !value.IsSemanticDuplicate &&
+                        !(family == SummonFamily.Monster &&
+                            SummonNativeExpansionCatalog.Replaces(tier,
+                                value.Guid)) &&
                         value.Multiplicity == multiplicity).Select(value =>
                             all.OfType<BlueprintAbility>().Single(item =>
                                 item.AssetGuid == value.Guid)));
@@ -11413,13 +11538,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedKnown.Count).ToArray();
                 bool foreignTailExact = foreignTail.All(value => value != null &&
                     !rootByGuid.ContainsKey(value.AssetGuid) &&
-                    !nativeByGuid.ContainsKey(value.AssetGuid));
+                    !nativeByGuid.ContainsKey(value.AssetGuid) &&
+                    !nativeExpansionByGuid.ContainsKey(value.AssetGuid));
                 if (!exactPrefix || !foreignTailExact)
                     result.MisorderedParents++;
 
                 int expectedBefore = natives.Length + foreignTail.Length;
-                int expectedAfter = specs.Length + natives.Count(value =>
-                    !value.IsSemanticDuplicate) + foreignTail.Length;
+                int expectedAfter = specs.Length + nativeExpansions.Length +
+                    natives.Count(value => !value.IsSemanticDuplicate &&
+                        !(family == SummonFamily.Monster &&
+                            SummonNativeExpansionCatalog.Replaces(tier,
+                                value.Guid))) + foreignTail.Length;
                 if (displayed.Length != expectedAfter)
                     result.CountMismatches++;
                 string prefix = family == SummonFamily.Monster ? "SM" : "SNA";
@@ -11434,12 +11563,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SummonMultiplicity.OneD4PlusOne) +
                     ";foreign=" + foreignTail.Length);
             }
+            BlueprintAbility[] allDisplayed = parents.SelectMany(value =>
+                value.ComponentsArray.OfType<AbilityVariants>().Single()
+                    .Variants).ToArray();
             result.HighTierUniqueNativeExact = new[] {
                 "eb6df7ddfc0669d4fb3fc9af4bd34bca",
                 "e96593e67d206ab49ad1b567327d1e75"
-            }.All(guid => parents.SelectMany(value => value.ComponentsArray
-                .OfType<AbilityVariants>().Single().Variants).Count(value =>
-                    value != null && value.AssetGuid == guid) == 1);
+            }.All(guid => allDisplayed.All(value => value == null ||
+                value.AssetGuid != guid)) && SummonNativeExpansionCatalog.All
+                .Where(value => value.Tier >= 8).All(value =>
+                    allDisplayed.Count(item => item != null && item.name ==
+                        ExpandedSummoningInternalName(value.Symbol)) == 1);
             result.Counts = string.Join("|", countRows.ToArray());
             return result;
         }
@@ -11449,6 +11583,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Sprite[] selected = categories.Select(value => icons.ContainsKey(value) ?
                 icons[value] : null).ToArray();
+            return selected.All(value => value != null) &&
+                selected.Distinct().Count() == selected.Length;
+        }
+
+        private static bool ExpandedSummoningCreatureIconsDistinct(
+            IDictionary<string, Sprite> icons, params string[] creatureKeys)
+        {
+            Sprite[] selected = creatureKeys.Select(value =>
+                icons.ContainsKey(value) ? icons[value] : null).ToArray();
             return selected.All(value => value != null) &&
                 selected.Distinct().Count() == selected.Length;
         }

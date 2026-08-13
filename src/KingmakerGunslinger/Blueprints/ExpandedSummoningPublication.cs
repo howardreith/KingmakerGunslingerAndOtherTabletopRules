@@ -56,6 +56,7 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, ExpandedSummoningBlueprintSet set)
         {
             SummonNativeOptionCatalog.Validate();
+            SummonVisibilityCatalog.Validate();
             var records = new List<ExpandedSummoningPublication.Record>();
             try
             {
@@ -70,11 +71,18 @@ namespace KingmakerGunslinger.Blueprints
                             "required native summon parent");
                     SummonVariantSpec[] specs = ExpandedSummoningCatalog
                         .GenerateVariants(family).Where(value =>
-                            value.ParentTier == tier).ToArray();
+                            value.ParentTier == tier &&
+                            SummonVisibilityCatalog.IsPublished(value)).ToArray();
                     BlueprintAbility[] additions = specs.Select(value =>
                                 (BlueprintAbility)set.BySymbol[
                                     ExpandedSummoningIdentityCatalog.AbilitySymbol(value)])
                         .ToArray();
+                    SummonNativeExpansionSpec[] nativeSpecs = family ==
+                        SummonFamily.Monster ? SummonNativeExpansionCatalog
+                            .ForTier(tier).ToArray() :
+                            Array.Empty<SummonNativeExpansionSpec>();
+                    BlueprintAbility[] nativeAdditions = nativeSpecs.Select(value =>
+                        (BlueprintAbility)set.BySymbol[value.Symbol]).ToArray();
                     BlueprintAbility nativePreservation = tier != 1 ? null :
                         (BlueprintAbility)set.BySymbol[family == SummonFamily.Monster ?
                             ExpandedSummoningIdentityCatalog
@@ -82,7 +90,7 @@ namespace KingmakerGunslinger.Blueprints
                             ExpandedSummoningIdentityCatalog
                                 .NativeNaturesAllyTierOneSymbol];
                     PublishParent(parent, family, tier, nativePreservation,
-                        additions, specs, records);
+                        additions, specs, nativeAdditions, nativeSpecs, records);
                 }
                 return new ExpandedSummoningPublication(records);
             }
@@ -126,7 +134,9 @@ namespace KingmakerGunslinger.Blueprints
                         string.Equals(value.name, expectedName,
                             StringComparison.Ordinal));
                     referenceCount += count;
-                    if (count != (expectedEnabled ? 1 : 0)) exact = false;
+                    int expected = expectedEnabled &&
+                        SummonVisibilityCatalog.IsPublished(variant) ? 1 : 0;
+                    if (count != expected) exact = false;
                 }
             }
             return exact;
@@ -135,7 +145,8 @@ namespace KingmakerGunslinger.Blueprints
         private static void PublishParent(BlueprintAbility parent,
             SummonFamily family, int tier,
             BlueprintAbility nativePreservation, BlueprintAbility[] additions,
-            SummonVariantSpec[] specs,
+            SummonVariantSpec[] specs, BlueprintAbility[] nativeAdditions,
+            SummonNativeExpansionSpec[] nativeSpecs,
             List<ExpandedSummoningPublication.Record> records)
         {
             BlueprintComponent[] before = parent.ComponentsArray ??
@@ -150,8 +161,8 @@ namespace KingmakerGunslinger.Blueprints
                 new[] { nativePreservation } : existing.Variants ??
                     Array.Empty<BlueprintAbility>();
             if (originals.Any(value => value == null) ||
-                additions.Any(value => value == null) ||
-                originals.Concat(additions).GroupBy(value => value.AssetGuid,
+                additions.Concat(nativeAdditions).Any(value => value == null) ||
+                originals.Concat(additions).Concat(nativeAdditions).GroupBy(value => value.AssetGuid,
                     StringComparer.Ordinal).Any(group => group.Count() > 1))
                 throw new InvalidOperationException(
                     "Expanded Summoning parent contains a null or duplicate GUID: " +
@@ -160,10 +171,17 @@ namespace KingmakerGunslinger.Blueprints
                 Ability = ability, Spec = specs[index] }).ToDictionary(
                     value => value.Ability.AssetGuid, value => value.Spec,
                     StringComparer.Ordinal);
+            var nativeAdditionSpecs = nativeAdditions.Select((ability, index) =>
+                new { Ability = ability, Spec = nativeSpecs[index] })
+                .ToDictionary(value => value.Ability.AssetGuid,
+                    value => value.Spec, StringComparer.Ordinal);
             BlueprintAbility[] preservedOriginals = originals.Where(original =>
             {
                 SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                     family, tier, original.AssetGuid);
+                if (family == SummonFamily.Monster &&
+                    SummonNativeExpansionCatalog.Replaces(tier,
+                        original.AssetGuid)) return false;
                 if (native == null || !native.IsSemanticDuplicate) return true;
                 int matches = specs.Count(value => value.Creature.Key ==
                     native.EquivalentCreatureKey && value.Multiplicity ==
@@ -174,13 +192,15 @@ namespace KingmakerGunslinger.Blueprints
                 return false;
             }).ToArray();
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
-                preservedOriginals, additions,
+                preservedOriginals, additions.Concat(nativeAdditions),
                 value => {
                     SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                         family, tier, value.AssetGuid);
                     return native == null ? (SummonMultiplicity?)null :
                         native.Multiplicity;
-                }, value => additionSpecs[value.AssetGuid].Multiplicity);
+                }, value => additionSpecs.ContainsKey(value.AssetGuid) ?
+                    additionSpecs[value.AssetGuid].Multiplicity :
+                    nativeAdditionSpecs[value.AssetGuid].Multiplicity);
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
             variants.name = "$KMG_ExpandedSummoning_Variants";
             variants.Variants = merged.ToArray();
@@ -194,6 +214,8 @@ namespace KingmakerGunslinger.Blueprints
             parent.ComponentsArray = after;
             if (!ReferenceEquals(parent.ComponentsArray, after) ||
                 additions.Any(addition => variants.Variants.Count(value =>
+                    value.AssetGuid == addition.AssetGuid) != 1) ||
+                nativeAdditions.Any(addition => variants.Variants.Count(value =>
                     value.AssetGuid == addition.AssetGuid) != 1) ||
                 preservedOriginals.Any(original =>
                     !variants.Variants.Contains(original)) ||

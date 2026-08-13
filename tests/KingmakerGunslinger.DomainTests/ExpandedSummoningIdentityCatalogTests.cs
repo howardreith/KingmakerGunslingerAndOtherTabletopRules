@@ -11,9 +11,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1158, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1175, first.Count, "Foundation identity count changed.");
             Assertions.Equal(67, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1050, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(1067, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
@@ -62,8 +62,9 @@ namespace KingmakerGunslinger.DomainTests
                 "kmg-sm1-dog-neutral-fiendish-mode",
                 "kmg-sm7-roc", "kmg-sm6-dire-tiger",
                 "kmg-sm3-dog-1d4plus1",
-                "native-sm8-movanic-deva",
-                "native-sm8-frost-giant",
+                "all-distinct-native-expansions",
+                "native-expanded-sm",
+                "expanded-summoning-distinct-native-player-paths",
                 "evidence.TemplateContract",
                 "evidence.RenderableContract",
                 "expanded-summoning-all-logical-player-paths",
@@ -72,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
                 "kmg-sm1-dog-cancelled-before-range",
                 "canonical Summon Monster I parent for Acadamae fixture",
                 "ExpandedSummoningIdentityCatalog.AbilitySymbol(dog)",
-                "broadCases.Count == 681",
+                "SummonVisibilityCatalog.PublishedLogicalPlacementCount",
                 "result.QuantityContract" })
                 Assertions.True(runner.Contains(token) || catalog.Contains(token) ||
                     request.Contains(token) || automation.Contains(token),
@@ -676,7 +677,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Direct summon publication requires exactly one frozen native-preservation child",
                 "SummonNativeOptionCatalog.Find",
                 "Native duplicate map did not resolve exactly one KMG option",
-                "preservedOriginals.Any(original =>" })
+                "preservedOriginals.Any(original =>",
+                "SummonNativeExpansionCatalog.Replaces",
+                "nativeAdditions", "nativeAdditionSpecs" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
             Assertions.False(source.Contains("SummonElemental"),
@@ -692,6 +695,14 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(builder.Contains(token),
                     "Native tier-one preservation builder contract is missing: " +
                     token);
+            string nativeBuilder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningNativeOptionBuilder.cs"));
+            foreach (string token in new[] { "SummonNativeExpansionCatalog.All",
+                "DeepCloneComponent", "ContextActionSpawnMonster[] spawns",
+                "effect.Actions = new ActionList", "spec.UnitGuid" })
+                Assertions.True(nativeBuilder.Contains(token),
+                    "Native individual-option builder is missing: " + token);
         }
 
         internal static void RuntimeUnitComponentsAreReferenceIsolated()
@@ -725,7 +736,8 @@ namespace KingmakerGunslinger.DomainTests
                 "expanded-summoning-starting-inventory",
                 "ExpandedSummoningIsForbiddenReference(value)",
                 "ExpandedSummoningIdentityCatalog.Build()",
-                "value.name.StartsWith(\"KMG_Summoning_Special_\"",
+                "var abilityNames = new HashSet<string>",
+                "value.Symbol.Replace('.', '_').Replace('-', '_')",
                 "KMG_Summoning_Special_LanternArchon_Defenses" })
                 Assertions.True(runtime.Contains(token),
                     "Guarded isolation observer is missing: " + token);

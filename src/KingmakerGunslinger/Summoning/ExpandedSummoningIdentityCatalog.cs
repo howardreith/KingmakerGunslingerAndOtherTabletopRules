@@ -28,9 +28,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int SpecialIdentityCount = 33;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
+        internal const int NativeExpandedOptionIdentityCount = 17;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount +
-            NativePreservationIdentityCount + AlignmentModeIdentityCount;
+            NativePreservationIdentityCount + AlignmentModeIdentityCount +
+            NativeExpandedOptionIdentityCount;
 
         internal const string NativeMonsterTierOneSymbol =
             "KMG.Summoning.Native.SM.Tier1";
@@ -64,6 +66,10 @@ namespace KingmakerGunslinger.Summoning
                     result.Add(new SummoningIdentitySpec(symbol + ".Fiendish", "BlueprintAbility"));
                 }
             }
+            foreach (SummonNativeExpansionSpec native in
+                SummonNativeExpansionCatalog.All)
+                result.Add(new SummoningIdentitySpec(native.Symbol,
+                    "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Celestial.Low", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Celestial.Mid", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Template.Celestial.High", "BlueprintBuff"));

@@ -41,6 +41,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void NativeDuplicateCatalogIsExact()
         {
             SummonNativeOptionCatalog.Validate();
+            SummonNativeExpansionCatalog.Validate();
+            SummonVisibilityCatalog.Validate();
             Assertions.Equal(48, SummonNativeOptionCatalog.All.Count,
                 "Native summon child catalog count changed.");
             Assertions.True(SummonNativeOptionCatalog.Find(
@@ -48,21 +50,39 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
-            Assertions.False(SummonNativeOptionCatalog.Find(
-                    SummonFamily.Monster, 8,
-                    "eb6df7ddfc0669d4fb3fc9af4bd34bca")
-                    .IsSemanticDuplicate,
-                "Movanic Deva/Frost Giant must remain a unique native choice.");
-            Assertions.False(SummonNativeOptionCatalog.Find(
-                    SummonFamily.Monster, 9,
-                    "e96593e67d206ab49ad1b567327d1e75")
-                    .IsSemanticDuplicate,
-                "Ghaele/Thanadaemon must not be removed as an exact duplicate.");
+            Assertions.Equal(17, SummonNativeExpansionCatalog.All.Count,
+                "Native individual-option expansion count changed.");
+            Assertions.True(SummonNativeExpansionCatalog.Replaces(8,
+                    "eb6df7ddfc0669d4fb3fc9af4bd34bca"),
+                "Movanic Deva/Frost Giant umbrella must be suppressed.");
+            Assertions.True(SummonNativeExpansionCatalog.Replaces(9,
+                    "e96593e67d206ab49ad1b567327d1e75"),
+                "Ghaele/Thanadaemon umbrella must be suppressed.");
+            Assertions.Equal(2, SummonNativeExpansionCatalog.ForTier(8)
+                    .Count(value => value.Multiplicity ==
+                        SummonMultiplicity.One),
+                "SM VIII distinct native singles changed.");
+            Assertions.True(SummonNativeExpansionCatalog.All.Any(value =>
+                    value.DisplayName == "Thanadaemon" && value.Tier == 9 &&
+                    value.Multiplicity == SummonMultiplicity.One),
+                "Thanadaemon individual option is missing.");
             Assertions.Equal("dire-tiger", SummonNativeOptionCatalog.Find(
                     SummonFamily.NaturesAlly, 8,
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
+            Assertions.Equal(667,
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly))
+                    .Count(SummonVisibilityCatalog.IsPublished),
+                "Visible summon placement count changed.");
+            Assertions.Equal(14,
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly))
+                    .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
+                "Dire Bat compatibility-shell placement count changed.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -90,6 +110,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void IconCatalogCoversEveryCreature()
         {
             SummonIconCatalog.Validate();
+            SummonViewScaleCatalog.Validate();
             Assertions.Equal("canine", SummonIconCatalog.CategoryFor("dog"),
                 "Dog icon category changed.");
             Assertions.Equal("feline", SummonIconCatalog.CategoryFor("dire-tiger"),
@@ -101,6 +122,30 @@ namespace KingmakerGunslinger.DomainTests
                     "fire-mephit", "water-mephit" }.Select(
                     SummonIconCatalog.CategoryFor).Distinct().Count() == 4,
                 "Mephit elements must remain visually separable.");
+            Assertions.Equal(17, SummonIconCatalog.Sources.Count,
+                "Exact creature icon source count changed.");
+            Assertions.True(new[] { "dog", "wolf", "hyena", "goblin-dog" }
+                .Select(key => SummonIconCatalog.SourceFor(key).SourceGuid)
+                .Distinct(StringComparer.Ordinal).Count() == 4,
+                "Canine menu icons must use four distinct native assets.");
+            Assertions.True(SummonIconCatalog.SourceFor("leopard").SourceGuid !=
+                    SummonIconCatalog.SourceFor("cheetah").SourceGuid &&
+                SummonIconCatalog.SourceFor("monitor-lizard").SourceGuid !=
+                    SummonIconCatalog.SourceFor("crocodile").SourceGuid,
+                "Look-alike feline and reptile proxies need distinct icons.");
+            float eagle, frog, elephant, mastodon;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Eagle", out eagle) && eagle < 1f,
+                "Eagle view must be reduced.");
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_PoisonousFrog", out frog) && frog < eagle,
+                "Poisonous Frog must read smaller than the Eagle proxy.");
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Elephant", out elephant) &&
+                SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Mastodon", out mastodon) &&
+                mastodon > elephant,
+                "Mastodon must read larger than Elephant.");
         }
 
         internal static void TransactionRollsBackExactReferences()

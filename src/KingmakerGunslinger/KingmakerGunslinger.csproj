@@ -52,6 +52,10 @@
     <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
     <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
     <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
+    <Compile Include="Summoning\SummonNativeExpansionCatalog.cs" />
+    <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
+    <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
+    <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
     <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
@@ -75,6 +79,8 @@
     <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNativeOptionBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningIconBuilder.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs" />

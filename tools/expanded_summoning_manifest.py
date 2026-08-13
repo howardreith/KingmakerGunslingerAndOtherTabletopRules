@@ -85,6 +85,19 @@ SPECIAL_NOTES = {
     "pixie": "Sixteen no-damage sleep arrows and one bounded irresistible dance; no ammunition or loot.",
 }
 
+NATIVE_EXPANDED_OPTIONS = (
+    (5, "Redcap", "One"),
+    (6, "Axiomite", "One"), (6, "SoulEater", "One"),
+    (6, "Redcap", "OneD3"),
+    (7, "Bogeyman", "One"), (7, "Axiomite", "OneD3"),
+    (7, "SoulEater", "OneD3"), (7, "Redcap", "OneD4PlusOne"),
+    (8, "MovanicDeva", "One"), (8, "FrostGiant", "One"),
+    (8, "Bogeyman", "OneD3"), (8, "Axiomite", "OneD4PlusOne"),
+    (8, "SoulEater", "OneD4PlusOne"),
+    (9, "Thanadaemon", "One"), (9, "MovanicDeva", "OneD3"),
+    (9, "FrostGiant", "OneD3"), (9, "Bogeyman", "OneD4PlusOne"),
+)
+
 
 def token(key):
     return "".join(part[:1].upper() + part[1:] for part in re.split(r"[^A-Za-z0-9]+", key) if part)
@@ -133,6 +146,9 @@ def planned():
                 if family == "SM" and creature[2]:
                     rows.append((symbol + ".Celestial", "BlueprintAbility"))
                     rows.append((symbol + ".Fiendish", "BlueprintAbility"))
+    for tier, creature, multiplicity in NATIVE_EXPANDED_OPTIONS:
+        rows.append((f"KMG.Summoning.NativeOption.SM.Tier{tier}."
+                     f"{creature}.{multiplicity}", "BlueprintAbility"))
     for alignment in ("Celestial", "Fiendish"):
         for band in ("Low", "Mid", "High"):
             rows.append((f"KMG.Summoning.Template.{alignment}.{band}", "BlueprintBuff"))
@@ -173,7 +189,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1158 or len({symbol for symbol, _ in rows}) != 1158:
+    if len(rows) != 1175 or len({symbol for symbol, _ in rows}) != 1175:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

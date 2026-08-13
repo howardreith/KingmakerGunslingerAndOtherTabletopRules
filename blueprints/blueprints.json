@@ -11294,7 +11294,7 @@
       "plannedType": "BlueprintFeature",
       "status": "active",
       "milestone": "Expanded Summoning first-playtest repair",
-      "notes": "Save-safe per-character grant for the neutral-caster celestial/fiendish choice; registered in every module state."
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
       "symbol": "KMG.Summoning.AlignmentMode.FiendishMarker",
@@ -11302,7 +11302,7 @@
       "plannedType": "BlueprintBuff",
       "status": "active",
       "milestone": "Expanded Summoning first-playtest repair",
-      "notes": "Persistent unit-local neutral-caster mode marker; ignored for morally good or evil casters."
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
       "symbol": "KMG.Summoning.AlignmentMode.Toggle",
@@ -11310,7 +11310,143 @@
       "plannedType": "BlueprintActivatableAbility",
       "status": "active",
       "milestone": "Expanded Summoning first-playtest repair",
-      "notes": "Off-by-default toggle: neutral casters use celestial while inactive and fiendish while active."
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier5.Redcap.One",
+      "guid": "0036dce5aac1431593832e7e45df0e00",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.Axiomite.One",
+      "guid": "2b2482ec87264320869aced047645321",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.SoulEater.One",
+      "guid": "a7f6bc14c684421c9e881a7b6f757f0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.Redcap.OneD3",
+      "guid": "f18750ebe2824ea28c093b56861b8ca5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.Bogeyman.One",
+      "guid": "8ac7546c513a417db1b03a3a9524ed9a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.Axiomite.OneD3",
+      "guid": "0c11d85f81064ce19b183ba49efec94c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.SoulEater.OneD3",
+      "guid": "3f6a70fc84fa46ecbf6dae86ce6e4a0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.Redcap.OneD4PlusOne",
+      "guid": "c8f60413c9be47679a39e4f655e43841",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.MovanicDeva.One",
+      "guid": "d24abd20c59240288f2acd7f7a77e080",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.FrostGiant.One",
+      "guid": "2d7ae7107cd4403fa328b3b2a3a75989",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.Bogeyman.OneD3",
+      "guid": "5126b480f79447d88cf1bcf8370ff2fe",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.Axiomite.OneD4PlusOne",
+      "guid": "25f16a94f3fe47a695799a7c83c14bb9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.SoulEater.OneD4PlusOne",
+      "guid": "2b816c038ed848a1aa1e5efb77e8e2b6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier9.Thanadaemon.One",
+      "guid": "9a5a4002aba04eec8df7904464471890",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier9.MovanicDeva.OneD3",
+      "guid": "a2c344e3d8e2406ba61888c08f71a22f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier9.FrostGiant.OneD3",
+      "guid": "64355f9a3a5d4a66b0b5af1d247d94d5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier9.Bogeyman.OneD4PlusOne",
+      "guid": "0dd5b391de624b93a888eb89499e8ce4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

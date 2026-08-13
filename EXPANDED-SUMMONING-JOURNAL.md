@@ -1465,3 +1465,27 @@
   direct Bogeyman spawn. The pass will materialize the unique native creatures
   as individually named KMG-owned ability shells while retaining the original
   native blueprints untouched and registered.
+
+## 2026-08-12 - Polish publication and presentation foundation PASS
+
+- No installed bat-like unit/view donor survived the exact inventory review.
+  Dire Bat therefore remains registered for save compatibility but all 14
+  generated placements are suppressed from new player-facing publication;
+  the unacceptable Roc proxy is no longer visible.
+- Replaced the five Owlcat hybrid menu entries with 17 frozen, KMG-owned,
+  direct native-spawn choices for Redcap, Axiomite, Soul Eater, Bogeyman,
+  Movanic Deva, Frost Giant, and Thanadaemon at their legal multiplicities.
+  Original Owlcat blueprints remain untouched and registered.
+- Added deterministic creature-specific icon sources for the called-out
+  canine, feline, reptile, flying, celestial, and fiend choices. Ghaele uses
+  its native Chain Lightning sprite because its light ray and unit portrait
+  are both null; Lantern Archon uses the proven Archon's Trumpet sprite.
+- Added view-only scale multipliers for Eagle, Poisonous Frog, Dire Boar,
+  Pteranodon, Dire Bear, Elephant, Mastodon, and Roc. Mechanical size,
+  footprint, reach, donor blueprints, and native elemental views are unchanged.
+- Domain/reflection suite passed 1,013/1,013. Guarded final-live inventory run
+  `20260813T0046539277035Z-f8b324f376fc4682a4dae9f4b4af2525`
+  passed the 1,429-registration contract, 667 visible KMG roots, 14 suppressed
+  Dire Bat roots, all 17 individual native options, exact umbrella suppression,
+  deterministic single/1d3/1d4+1 ordering, tier menu counts, standalone Summon
+  Elemental preservation, and required icon-distinctness groups.
