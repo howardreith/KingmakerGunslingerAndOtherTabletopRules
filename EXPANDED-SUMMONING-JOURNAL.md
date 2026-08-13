@@ -1549,3 +1549,16 @@
   protected baseline is
   `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
   and was never modified.
+
+## 2026-08-13 - Deterministic artifact freeze
+
+- Artifact source `00f7fa29db69f142d918725c502993111d18f0c0` passed two
+  clean Release/package cycles, including repository validation, 1,013/1,013
+  domain tests, warnings-as-errors compile, SoundBank validation, and strict
+  standalone UMM package validation.
+- Both DLLs matched SHA-256
+  `4c5cf6e8f34f9d562e475a05af136b36c79b47b65fe187f72c3ff44bdddc5a76`;
+  both packages matched
+  `c8bca9e80a02be83d8434813baf7cad01c651eb4675eedcb4e02a691095f6496`.
+  Two independent source archives matched
+  `61b4d36f19dfdbbddb9b251c8e8e555838bfaa1725a27060e729ae9cda2470c3`.

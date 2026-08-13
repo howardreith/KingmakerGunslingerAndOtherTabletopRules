@@ -20,9 +20,12 @@
   Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined
   profiles pass and restore exactly. Focused Shield Other, Acadamae, Cord,
   paper/firearm, and vendor regressions pass.
-- Next action: commit/push final documentation, freeze and repeat the clean
-  release package, record exact artifact/source hashes, and refresh draft PR
-  #2 without merging.
+- Artifact source `00f7fa29db69f142d918725c502993111d18f0c0`
+  passed two byte-identical clean Release/package cycles. DLL/package/source
+  hashes are `4c5cf6e8...c5a76`, `c8bca9e8...f6496`, and
+  `61b4d36f...470c3`.
+- Next action: commit/push this audit-only hash record and refresh draft PR #2
+  without merging. No gameplay implementation action remains.
 
 
 ## Expanded Summoning first-playtest repair (complete, 2026-08-12)

@@ -688,8 +688,14 @@ domain/production checks remain green, and no unrelated deed rewrite was made.
 
 The final ledger is 1,175 Expanded Summoning active identities, 1,429 active
 repository identities, one reserved identity, and 1,430 ledger entries. All
-1,013 dependency-free domain tests pass. Final deterministic artifact and
-source hashes are recorded after the release package freeze. Draft PR #2
-remains draft and unmerged. Residual human work is limited to reviewing the PR
+1,013 dependency-free domain tests pass. Two clean builds from artifact source
+`00f7fa29db69f142d918725c502993111d18f0c0` produced identical DLL SHA-256
+`4c5cf6e8f34f9d562e475a05af136b36c79b47b65fe187f72c3ff44bdddc5a76`
+and package SHA-256
+`c8bca9e80a02be83d8434813baf7cad01c651eb4675eedcb4e02a691095f6496`.
+Two independent `git archive` outputs matched at
+`61b4d36f19dfdbbddb9b251c8e8e555838bfaa1725a27060e729ae9cda2470c3`.
+Strict standalone package validation passed twice. Draft PR #2 remains draft
+and unmerged. Residual human work is limited to reviewing the PR
 and subjective in-game checks of icon aesthetics, scale/camera framing,
 projectile appearance, and animation style.
