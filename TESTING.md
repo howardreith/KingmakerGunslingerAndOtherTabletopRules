@@ -47,8 +47,9 @@ live-world survival, kind/quantity, template/alignment and cleanup. Directly
 granting a Celestial/Fiendish compatibility child is lower-layer evidence only.
 
 The polish acceptance matrix contains 667 visible generated roots (14 Dire
-Bat placements are intentionally publication-suppressed) and 17 exact
-Owlcat-backed split choices. `observe-expanded-summoning-inventory` also
+Bat placements are intentionally publication-suppressed), 17 exact
+Owlcat-backed Summon Monster split choices, and nine creature-named Summon
+Nature's Ally preservation wrappers. `observe-expanded-summoning-inventory` also
 checks all 18 menu counts, singleton-before-quantity ordering, five umbrella
 suppressions, icon-category differentiation, and unchanged standalone Summon
 Elemental roots. The visual scenario measures the approved relative scale

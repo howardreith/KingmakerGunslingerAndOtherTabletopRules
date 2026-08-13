@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.icon-exclusive-source", ExpandedSummoningPresentationTests.OriginalIconSourceContractIsExclusive),
             Case("expanded-summoning.icon-cache-package", ExpandedSummoningPresentationTests.RuntimeIconCacheAndPackagePathsAreExact),
             Case("expanded-summoning.sna-naming-scale", ExpandedSummoningPresentationTests.SnaWrappersNamingAndScaleAreExact),
+            Case("expanded-summoning.player-path-family-parents", ExpandedSummoningPresentationTests.PlayerPathHarnessUsesFamilyParentOffsets),
             Case("expanded-summoning.transaction-rollback", SummonPublicationPolicyTests.TransactionRollsBackExactReferences),
             Case("expanded-summoning.transaction-unsafe-rollback", SummonPublicationPolicyTests.TransactionRefusesUnsafeRollback),
             Case("expanded-summoning.sanitizer-forbidden", SummonUnitSanitizationPolicyTests.RemovesEveryForbiddenCampaignSurface),

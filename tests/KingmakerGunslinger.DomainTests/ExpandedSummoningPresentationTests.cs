@@ -142,6 +142,20 @@ namespace KingmakerGunslinger.DomainTests
                 "Accepted view-only scale bounds changed.");
         }
 
+        internal static void PlayerPathHarnessUsesFamilyParentOffsets()
+        {
+            string source = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(source.Contains("SummonFamily.Monster ? 0 : 9") &&
+                source.Contains("nativeExpansionCases.Count == 26") &&
+                source.Contains("26/26 visible creature-named"),
+                "Player-path coverage must route all 17 SM and nine SNA wrappers through their actual family parents.");
+            Assertions.False(source.Contains(
+                    "spellbook, parents[nativeSpec.Tier - 1], distinct"),
+                "SNA wrappers may not be tested through Summon Monster parents.");
+        }
+
         private static void AssertImage(string path, int width, int height)
         {
             using (var bitmap = new Bitmap(path))

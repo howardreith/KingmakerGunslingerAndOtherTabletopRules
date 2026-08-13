@@ -8972,7 +8972,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             nativeSpec.UnitGuid, stage);
                     ExpandedSummoningPlayerPathCase nativeCase =
                         ExerciseExpandedSummoningPlayerPathCase(caster,
-                            spellbook, parents[nativeSpec.Tier - 1], distinct,
+                            spellbook, parents[(nativeSpec.Family ==
+                                SummonFamily.Monster ? 0 : 9) +
+                                nativeSpec.Tier - 1], distinct,
                             expected, distinct, null, nativeSpec.Tier,
                             nativeSpec.Branch == SummonNativeSpawnBranch.Evil ?
                                 Alignment.LawfulEvil : Alignment.NeutralGood,
@@ -9081,7 +9083,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                 broadCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
-            bool allNativeExpandedPaths = nativeExpansionCases.Count == 17 &&
+            bool allNativeExpandedPaths = nativeExpansionCases.Count == 26 &&
                 nativeExpansionCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
             var assertions = new List<RuntimeTestAssertion>
@@ -9125,12 +9127,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         broadCases.Count, allBroadPlayerPaths,
                     "all published SM/SNA logical placements through native spellbook parents"),
                 Assertion("expanded-summoning-distinct-native-player-paths",
-                    "17/17 visible Owlcat-native split options live with one-slot and quantity contracts",
+                    "26/26 visible creature-named native/preservation wrappers live with one-slot and quantity contracts",
                     nativeExpansionCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         nativeExpansionCases.Count,
                     allNativeExpandedPaths,
-                    "exact native spellbook parents with each umbrella branch isolated into one visible choice"),
+                    "exact SM/SNA spellbook parents with each umbrella or generic preservation source isolated into one creature-named choice"),
                 Assertion("request-local-cleanup", "exact party/global snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "dispose all request-local caster and summon entities"),
