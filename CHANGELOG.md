@@ -2,6 +2,18 @@
 
 ## 0.0.78 - Expanded Summoning
 
+- Splits the remaining Owlcat hybrid summon umbrellas into 17 distinct,
+  directly executable choices while retaining every original blueprint
+  identity; hides the five obsolete umbrella children and all 14 Dire Bat
+  placements whose Roc proxy failed visual acceptance.
+- Adds deterministic creature-category icons and measured view-only scaling
+  for Eagle, Poisonous Frog, Dire Boar, Pteranodon, Dire Bear, Elephant,
+  Mastodon, and Roc. Dire creatures now read larger than their ordinary
+  analogues without changing mechanical size or navigation footprint.
+- Requalifies all 667 visible generated SM/SNA roots plus 17 split native
+  choices through real spellbook parents, representative combat and special
+  actions, 67 live views, enabled/disabled persistence, all 16 module states,
+  and all five supported compatibility profiles.
 - Repairs the first-playtest no-op for templated natural/proxy summons by
   replacing unsupported nested player-facing variants with direct executable
   roots and caster-selected post-spawn templates.

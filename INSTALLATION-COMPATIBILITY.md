@@ -69,6 +69,12 @@ Never test removal against the only copy of a valued save.
 
 ## Compatibility boundaries
 
+Expanded Summoning 0.0.78 was requalified in isolated standalone, Call of the
+Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined
+profiles. Its icon catalog depends only on base-game blueprints; optional-mod
+summon parents are discovered structurally and are skipped rather than guessed
+when ambiguous. Every profile transaction restored the prior Mods directory.
+
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.
   The quarantined advanced-rifle binary is not packaged; Advanced Rifle retains

@@ -231,3 +231,15 @@ contamination. No save was accessed.
 | Removed donor mechanics | Soul Eater HD/stats, Wisdom-damage feature, all-around vision, DR/magic, campaign facts, and donor brain; teleportation and summon/conjuration are absent |
 | Conservative deviations | Possession is omitted because no duration-bound, save/load-safe control transfer was proven. Shadow blend and sprint are omitted because no safe light-state and cooldown primitives were proven. Demon subtype is represented by outsider plus chaotic/evil/extraplanar facts because no exact standalone native Demon subtype fact was found. |
 | Qualification | `1009/1009` domain PASS; final structure, production cast, incorporeal/cold combat, bounded view, cleanup, persistence, and required profiles PASS. |
+
+## Polish visual and publication deviations
+
+| Surface | Final disposition | Evidence |
+|---|---|---|
+| Dire Bat | Hidden from publication; all identities retained. Roc is not an acceptable bat proxy and no installed bat-compatible rig passed inventory. | 14 exact placements suppressed; 667/667 remaining roots PASS. |
+| Eagle / Poisonous Frog | View-only scale 0.58 / 0.48. Mechanical size, reach, and navigation unchanged. | Live bounds 5.919 < Roc 11.226 and 1.475 < Giant Frog 3.073. |
+| Dire Boar / Dire Bear | View-only scale 1.15; each reads larger than its non-dire analogue. | Live bounds 2.845 > 2.474 and 3.768 > 3.277. |
+| Pteranodon | View-only scale 0.82 to keep the Roc rig bounded. | Live bound 8.368 < Roc 11.226. |
+| Elephant / Mastodon | View-only 0.90 / 1.15; Elephant remains on shared Mastodon material rather than mutate a native asset. | Live bounds 9.568 < 12.226. Gray recolor intentionally deferred. |
+| Roc | View-only scale 1.10; bounded camera/selection/navigation checks pass. | 67-view visual scenario PASS. |
+| Icons | Exact donor/item/ability sprite, then immutable base-game category fallback. | Called-out canine, feline, reptile, flying, celestial and fiend group distinctions PASS live inventory. |

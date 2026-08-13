@@ -587,3 +587,109 @@ no save was accessed. Repository validation, `1008/1008` domain tests, clean
 Release, and strict package validation pass. Actual casts, visuals,
 cleanup/persistence, module-state launches, and compatibility profiles remain
 open and are not claimed.
+
+## Polish and release-hardening qualification (2026-08-13)
+
+The player-facing polish pass is functionally qualified. Real-parent run
+`20260813T0052187995697Z-4b2425f990524498b554e6487ed19747` cast all 667
+visible generated SM/SNA roots and all 17 Owlcat-backed split choices through
+the actual spellbook variant chain. Every successful cast spent exactly one
+slot, the invalid-placement control spent zero, spawned units survived queued
+entity creation, and exact kind/quantity and cleanup passed. Combat run
+`20260813T0059598964338Z-37ed2c25edd24e7d80d417668f113f46`
+passed 153/153 production commands, including natural weapons, AI attacks,
+elementals, mephits, outsiders, special actions, templates, quantity bounds,
+and cleanup. These results cover Summon Nature's Ally through the same
+player-path gate, not a directly granted child.
+
+Five legacy hybrid children are no longer visible: Bralani/Redcap,
+Axiomite/Soul Eater, Bogeyman, Movanic Deva/Frost Giant, and Ghaele/Thanadaemon.
+Their blueprint objects are untouched and registered. Seventeen frozen direct
+choices expose Redcap (V one, VI `1d3`, VII `1d4+1`), Axiomite and Soul Eater
+(VI/VII/VIII), Bogeyman (VII/VIII/IX), Movanic Deva and Frost Giant
+(VIII/IX), and Thanadaemon (IX one). Exact GUID mapping, not localized text,
+drives suppression. Disabling Expanded Summoning restores each original
+parent collection exactly.
+
+The final base-profile menu counts are:
+
+| Parent | Before | After | One | 1d3 | 1d4+1 |
+|---|---:|---:|---:|---:|---:|
+| SM I-III | 1/2/3 | 3/13/20 | 3/10/7 | 0/3/10 | 0/0/3 |
+| SM IV-VI | 3/3/3 | 34/43/56 | 14/9/13 | 7/14/9 | 13/20/34 |
+| SM VII-IX | 3/3/3 | 64/69/69 | 8/6/2 | 13/8/6 | 43/55/61 |
+| SNA I-III | 1/2/3 | 5/14/20 | 5/9/6 | 0/5/9 | 0/0/5 |
+| SNA IV-VI | 3/3/3 | 32/39/46 | 13/7/7 | 6/13/7 | 13/19/32 |
+| SNA VII-IX | 3/3/3 | 52/56/58 | 6/5/2 | 7/6/5 | 39/45/51 |
+
+Singles precede `1d3`, which precede `1d4+1`; preserved foreign choices retain
+stable relative order. Structural run
+`20260813T0046539277035Z-f8b324f376fc4682a4dae9f4b4af2525` passed 37/37
+assertions: zero mapped umbrellas visible, zero missing unique native choices,
+zero duplicates, all 667 roots present once, all 17 split choices present
+once, and the standalone Summon Elemental spell unchanged.
+
+Icon selection is immutable and exact-GUID driven. It prefers an exact donor
+portrait/item/ability sprite, then a documented base-game category fallback.
+Canine, feline, bear, flying, reptile, vermin, elemental, mephit, celestial,
+and fiend groups are distinguished; the specific Dog/Wolf/Hyena/Goblin Dog,
+Leopard/Cheetah, Monitor/Crocodile, Lion/Pteranodon/Dire Lion/Dire Tiger,
+Lantern/Bralani/Erinyes/Ghaele contracts passed live inventory inspection.
+Lantern Archon's initial optional-mod icon dependency was found by standalone
+isolation and replaced with a base-game radiant Bless sprite.
+
+View-only scale multipliers are Eagle 0.58, Poisonous Frog 0.48, Dire Boar
+1.15, Pteranodon 0.82, Dire Bear 1.15, Elephant 0.90, Mastodon 1.15, and Roc
+1.10. Live visual run
+`20260813T0104112927126Z-59af7be5993a48fc938394800131628a`
+passed 11/11 and measured Eagle 5.919 < Roc 11.226, Poisonous Frog 1.475 <
+Giant Frog 3.073, Boar 2.474 < Dire Boar 2.845, Grizzly 3.277 < Dire Bear
+3.768, Elephant 9.568 < Mastodon 12.226, and Pteranodon 8.368 < Roc 11.226.
+All 67 views passed locomotion, attack, hit, death, projectile/selection/
+navigation, and exact cleanup contracts. Invisible Stalker retains the
+previously repaired Medium Air Elemental view. Dire Bat's Roc presentation
+failed human acceptance and no bat-compatible installed donor was proven, so
+all 14 Dire Bat placements are hidden while their identities stay registered.
+Elephant remains on the Mastodon material rather than risk shared-material
+mutation; scale provides the safe distinction.
+
+Enabled and disabled persistence each passed prepare, cleanup, and absent
+fresh-process stages. Frozen identities remained load-safe with publication
+disabled. The 16-state matrix passed 16/16 with constant 1,429 registration;
+settings returned to SHA-256
+`424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`.
+The working save returned to
+`3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`;
+protected `KMG_AUTOMATION_BASELINE` remained
+`cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+and was never modified.
+
+Final compatibility transactions all passed both optional-structure and summon
+inventory observers and restored exactly: standalone
+`compat-20260813T021217Z-cf7b4819c008`, Call of the Wild
+`compat-20260813T021603Z-e698cec7171f`, Arms and Armor
+`compat-20260813T022200Z-2f64e7a91a77`, Toggle Custom Soundpacks
+`compat-20260813T022547Z-f29360920d56`, and highest-risk combined
+`compat-20260813T022936Z-c94589e55d6e`.
+
+Existing-feature regressions passed in focused authoritative scenarios: Shield
+Other 23/23 (`20260813T0236281750239Z-149cd0176d7b49ddb75eda063f07cede`),
+Acadamae Graduate 13/13
+(`20260813T0238348244334Z-d2c95697a4ae4c979538d4f48f18c69e`), paper/
+firearm 6/6 (`20260813T0246085202426Z-358003f2d84c4de89913c2873238fe09`),
+Cord 8/8 (`20260813T0248277245574Z-7893535db1044575a3e6559512e4575a`),
+and vendors 14/14
+(`20260813T0255103735208Z-eab679997c4e4637a876fd712114f3b4`). The vendor
+observer's sole first-run failure was a stale 28-entry oracle; the live table
+correctly contained 29 entries after Cord. The broad save-free Gunslinger
+aggregate still reproduces its documented detached Dodge plus order-sensitive
+Targeting/Bleeding fixtures. No summoning source calls those paths; focused
+domain/production checks remain green, and no unrelated deed rewrite was made.
+
+The final ledger is 1,175 Expanded Summoning active identities, 1,429 active
+repository identities, one reserved identity, and 1,430 ledger entries. All
+1,013 dependency-free domain tests pass. Final deterministic artifact and
+source hashes are recorded after the release package freeze. Draft PR #2
+remains draft and unmerged. Residual human work is limited to reviewing the PR
+and subjective in-game checks of icon aesthetics, scale/camera framing,
+projectile appearance, and animation style.

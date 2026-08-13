@@ -4,6 +4,13 @@
   mechanically reconstructed but cannot perfectly match every tabletop body.
   The final manual checklist covers residual aesthetic judgment for scale,
   camera framing, projectile appearance, and animation style.
+- Dire Bat is not published in the player-facing roster. The installed game
+  exposes no proven bat-compatible summon rig, and the Roc proxy failed human
+  visual acceptance; all frozen identities remain registered for save safety.
+- Elephant and Mastodon share Owlcat's Mastodon material. Their view scales
+  are differentiated, but Elephant is not recolored gray because a safe
+  per-instance material clone was not proven and shared-material mutation
+  would alter the native Mastodon.
 - Kingmaker stores spell descriptors on shared ability blueprints rather than
   per caster invocation. KMG direct templated roots retain `Summoning`; their
   spawned alignment, Celestial/Fiendish template and smite are caster-correct.
@@ -37,3 +44,7 @@
   Gunslinger's Dodge command interrupts before `Start`. This is a test-fixture
   limitation, not a change introduced by Expanded Summoning; focused domain
   coverage and prior live gameplay behavior remain unchanged.
+- The same broad aggregate also has order-sensitive forced-roll and detached
+  target fixtures for Targeting/Bleeding Wound. Focused domain and production
+  regression scenarios remain authoritative; Expanded Summoning does not
+  patch firearm or deed execution paths.

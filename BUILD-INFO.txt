@@ -10,11 +10,11 @@ Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning
 Feature settings schema: 3
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
-Expanded Summoning identities: 1155
-Blueprint ledger: 1409 active; 1 reserved; 1410 total
-Runtime registration count: 1409 in all 16 feature-module states
-Dependency-free domain tests: 1009
-Native runtime: cast matrix, visual contracts, enabled/disabled persistence, 16-state module matrix, and required compatibility profiles qualified
+Expanded Summoning identities: 1175
+Blueprint ledger: 1429 active; 1 reserved; 1430 total
+Runtime registration count: 1429 in all 16 feature-module states
+Dependency-free domain tests: 1013
+Native runtime: 667 visible generated roots plus 17 split native choices, combat, visual scales, enabled/disabled persistence, 16-state module matrix, and all required compatibility profiles qualified
 Package: KingmakerGunslinger-0.0.78-expanded-summoning.zip
 Final DLL/package/source hashes: recorded in EXPANDED-SUMMONING-IMPLEMENTATION-REPORT.md after the final deterministic release build
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

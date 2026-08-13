@@ -4,11 +4,11 @@
   "selectedBaselineSha": "2894d9fcce250708e354894ffd8e1be9c7493b9b",
   "requiredAncestorSha": "e4d560f8dd2909518614e3a20e77ba4d70dadeb8",
   "workingBranch": "codex/expanded-summoning",
-  "currentSha": "9f4ae7a67dd006f7a786831b2b1b93215543de18",
-  "currentShaSemantics": "Pushed polish foundation; the live relative-scale assertion and its static guard are the only current working-tree changes.",
+  "currentSha": "5aa88bc7aedd4780958585d6eb63123825ba4581",
+  "currentShaSemantics": "Pushed, runtime-qualified polish source before final documentation and deterministic artifact freeze.",
   "actualReleaseVersion": "0.0.78",
-  "completedPhase": "polish-player-path-mechanical-combat-and-visual-runtime-pass",
-  "nextConcreteAction": "Commit and push measured visual evidence, then rerun enabled/disabled persistence, 16 module states, compatibility profiles, regressions, and final deterministic release/package gates.",
+  "completedPhase": "polish-runtime-persistence-module-matrix-compatibility-and-regression-qualification",
+  "nextConcreteAction": "Commit and push final documentation, run deterministic clean package builds, record hashes, and refresh draft PR #2 without merging.",
   "domainTestResult": "1013/1013 PASS",
   "staticValidationResult": "PASS",
   "releaseBuildResult": "PASS; two clean Release/package builds from a951f7e produced identical DLL and package hashes",
@@ -33,9 +33,9 @@
     "expandedSummoningDefaultEnabled": true,
     "restartBound": true,
     "matrixResult": "16/16 PASS",
-    "matrixSourceSha": "9cb5f54d318afdbf5dfed5b67f35b7cd06796fe0",
-    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1946182751586Z-observe-feature-module-settings/runtime-result.json",
-    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T2016559819327Z-observe-feature-module-settings/runtime-result.json",
+    "matrixSourceSha": "bcc254f9e5400acd8001a3d99f3c5b877289bb74",
+    "firstResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0125163255384Z-observe-feature-module-settings/runtime-result.json",
+    "lastResultPath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0156105967215Z-observe-feature-module-settings/runtime-result.json",
     "restoredSettingsSha256": "424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e"
   },
   "runtimeScenarios": [
@@ -91,9 +91,9 @@
     {
       "scenario": "working-save-expanded-summoning enabled/disabled repair repetition",
       "runId": "20260812T1929470099833Z-bb3292f38b3644b6923940b52fc491e4 through 20260812T1943438977236Z-003950a75a8d4c448b8865c651413c33",
-      "result": "6/6 fresh-process stages PASS; active identities, remaining duration, cleanup, disabled load safety, and zero disabled publication",
-      "sourceSha": "9cb5f54d318afdbf5dfed5b67f35b7cd06796fe0",
-      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260812T1929469787328Z-working-save-expanded-summoning-prepare through 20260812T1943438820924Z-working-save-expanded-summoning-verify-absent"
+      "result": "6/6 polish fresh-process stages PASS; active identities, remaining duration, cleanup, disabled load safety, and zero disabled publication",
+      "sourceSha": "bcc254f9e5400acd8001a3d99f3c5b877289bb74",
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260813T0109302838854Z-working-save-expanded-summoning-prepare through 20260813T0122271596140Z-working-save-expanded-summoning-verify-absent"
     },
     {
       "scenario": "disposable-expanded-summoning-player-path (all placements plus cancelled cast)",
@@ -191,28 +191,28 @@
   "compatibilityProfiles": [
     {
       "profile": "standalone",
-      "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T214659Z-a8408890bf7c", "compat-20260812T214914Z-2bf507fe07aa"]
+      "result": "PASS; both observer launches passed; restored",
+      "transactions": ["compat-20260813T021217Z-cf7b4819c008"]
     },
     {
       "profile": "Call of the Wild 1.14.4c-2.1",
-      "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T215130Z-3fbac165ac9e", "compat-20260812T215520Z-067b42b7677a"]
+      "result": "PASS; both observer launches passed; restored",
+      "transactions": ["compat-20260813T021603Z-e698cec7171f"]
     },
     {
       "profile": "Arms and Armor 1.0.10",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T220654Z-a2e8eabf9736"]
+      "transactions": ["compat-20260813T022200Z-2f64e7a91a77"]
     },
     {
       "profile": "Toggle Custom Soundpacks 1.0.1",
       "result": "1/1 PASS; restored",
-      "transactions": ["compat-20260812T220911Z-976210443a94"]
+      "transactions": ["compat-20260813T022547Z-f29360920d56"]
     },
     {
       "profile": "highest-risk combined",
-      "result": "2/2 PASS; restored",
-      "transactions": ["compat-20260812T215909Z-2f991684eb43", "compat-20260812T220300Z-b0dc049fc8b2"]
+      "result": "PASS; both observer launches passed; restored",
+      "transactions": ["compat-20260813T022936Z-c94589e55d6e"]
     }
   ],
   "restoration": {
@@ -238,6 +238,9 @@
     "Natural/proxy omissions are enumerated per creature in planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md, principally unsupported movement modes, grab/trample/sprint/rage, and unproven donor-specific feats or senses.",
     "Kingmaker descriptors are shared blueprint state, not per-caster AbilityData state; direct roots retain Summoning while spawned template/alignment/smite are caster-correct, and absent Sacred Summons integration fails closed.",
     "The pre-existing detached Gunslinger's Dodge runtime fixture lacks a Swift-action controller and interrupts before Start; focused domain coverage and gameplay source were unchanged by this repair."
+    ,"Dire Bat is publication-suppressed because no installed bat-compatible donor was proven and the Roc proxy failed human visual acceptance; all identities remain registered."
+    ,"Elephant uses a smaller Mastodon view without gray recoloring because safe per-instance material cloning was not proven; shared native material mutation was rejected."
+    ,"The broad Gunslinger aggregate also retains order-sensitive Targeting/Bleeding detached-fixture failures; focused production and domain regressions pass and no deed source changed."
   ],
   "branchPushed": true,
   "draftPrNumber": 2,

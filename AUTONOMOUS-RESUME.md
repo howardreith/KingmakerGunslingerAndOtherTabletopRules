@@ -2,20 +2,27 @@
 
 ## Expanded Summoning polish / release hardening (active, 2026-08-12)
 
-- Starting head: `1767b8f08cc5ce1be8d8cb0a16cfa4b07c7c225e` on
-  `codex/expanded-summoning`; release remains 0.0.78 and draft PR #2 remains
+- Starting head: `1767b8f08cc5ce1be8d8cb0a16cfa4b07c7c225e`; qualified
+  source checkpoint: `5aa88bc7aedd4780958585d6eb63123825ba4581` on
+  `codex/expanded-summoning`. Release remains 0.0.78 and draft PR #2 remains
   open, draft, and unmerged.
 - Durable pass contract:
   `planning/EXPANDED-SUMMONING-POLISH-MISSION.md`.
-- Fresh baseline player-path run
-  `20260812T2313510042210Z-disposable-expanded-summoning-player-path` passed
-  all 681 SM/SNA logical placements with exact live kind/quantity and spell
-  slot semantics. Fresh mechanical run
-  `20260812T2321394890850Z-disposable-expanded-summoning` passed representative
-  natural/special combat contracts and cleanup.
-- Next action: add failing domain/runtime contracts for exact umbrella
-  expansion, per-creature icons, view scale ratios, Dire Bat donor inventory,
-  and representative live combat/AI; then implement and fully requalify.
+- Final polish player-path run passed 667/667 visible generated SM/SNA roots
+  plus 17/17 split Owlcat choices with exact live kind/quantity and slot
+  semantics. Combat passed 153/153 production commands; all 67 live visual
+  contracts and six scale relationships passed.
+- Five hybrid umbrella entries are hidden in favor of distinct choices, Dire
+  Bat's unacceptable Roc proxy is publication-suppressed, deterministic icons
+  and measured scale multipliers are active, and all identities remain
+  registered.
+- Enabled/disabled persistence, all 16 module states, standalone, Call of the
+  Wild, Arms and Armor, Toggle Custom Soundpacks, and highest-risk combined
+  profiles pass and restore exactly. Focused Shield Other, Acadamae, Cord,
+  paper/firearm, and vendor regressions pass.
+- Next action: commit/push final documentation, freeze and repeat the clean
+  release package, record exact artifact/source hashes, and refresh draft PR
+  #2 without merging.
 
 
 ## Expanded Summoning first-playtest repair (complete, 2026-08-12)

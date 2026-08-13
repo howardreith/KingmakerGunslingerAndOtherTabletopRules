@@ -7,9 +7,18 @@ packages.
 
 Expanded Summoning additively extends Summon Monster I-IX and Summon Nature's
 Ally I-IX with the approved tabletop rosters and higher-tier same-kind quantity
-choices. It never replaces native or third-party choices. Its 67 summon-safe
-creature identities remain registered even when publication is disabled,
-allowing active summons and old saves to deserialize and clean up.
+choices. It never deletes native or third-party blueprint identities; exact
+mapped Owlcat semantic duplicates may be suppressed from the visible menu in
+favor of one canonical choice. Its 67 summon-safe creature identities remain
+registered even when publication is disabled, allowing active summons and old
+saves to deserialize and clean up.
+
+The player-facing list presents current-tier singles before `1d3` and
+`1d4+1` groups. Exact Owlcat hybrid umbrellas are replaced in the menu by
+distinct Redcap, Axiomite, Soul Eater, Bogeyman, Movanic Deva, Frost Giant,
+and Thanadaemon choices; their original blueprint objects remain registered.
+Dire Bat is intentionally hidden because no acceptable installed bat rig was
+found and the Roc proxy failed visual acceptance.
 
 Shield Other is a level-2 Abjuration spell on the Cleric, Paladin, Inquisitor,
 Community domain, and Protection domain lists. With an unambiguous installed

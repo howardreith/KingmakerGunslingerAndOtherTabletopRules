@@ -1523,3 +1523,29 @@
   a stable radiant/celestial category fallback. No optional-mod blueprint may
   be required for core KMG registration; standalone will be rerun before the
   remaining profiles.
+
+## 2026-08-13 - Polish runtime and compatibility qualification
+
+- Player path passed 667/667 visible generated roots and 17/17 native split
+  choices; combat passed 153/153 production commands; visual contracts passed
+  67/67 views and all six relative-scale comparisons.
+- Enabled and disabled persistence each passed three fresh-process stages.
+  The 16-state matrix passed with constant 1,429 registration and restored the
+  settings file byte-for-byte.
+- Standalone, Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and
+  highest-risk combined transactions all passed and restored exactly. The
+  standalone isolation found and drove removal of Lantern Archon's accidental
+  Call of the Wild icon dependency.
+- Shield Other, Acadamae, paper/firearm, Cord, and vendor focused regressions
+  pass. The first vendor observation correctly saw 29 capital rows but exposed
+  a stale pre-Cord expected count of 28; the test-only oracle and its static
+  guard were corrected. The broad Gunslinger aggregate retains documented
+  detached/order-sensitive Dodge, Targeting, and Bleeding fixture failures;
+  no summoning or deed gameplay source was changed.
+- Settings SHA-256 is
+  `424da4573acb5dc9e3c7ca3546da688a1405702858fb3b28aea5cbae28c4ba3e`;
+  working save is
+  `3595a41873f62ef2e28762abb6dd757418b239f2e5c9441f6f027214fc99a997`;
+  protected baseline is
+  `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+  and was never modified.
