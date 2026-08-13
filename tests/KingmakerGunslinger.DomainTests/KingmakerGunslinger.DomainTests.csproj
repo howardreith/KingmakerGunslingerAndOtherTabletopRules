@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="ExpandedSummoningCatalogTests.cs" />
     <Compile Include="ExpandedSummoningPresentationTests.cs" />
+    <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />

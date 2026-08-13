@@ -57,6 +57,7 @@ $expected = @(
     'disposable-paper-cartridge-lightning-reload',
     'disposable-paper-cartridge-comprehensive',
     'observe-native-weapon-feat-contracts',
+    'observe-elven-branched-spear-contracts',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
     'observe-vendor-table-contracts',
@@ -155,6 +156,12 @@ Assert-True (-not $presentation.RequiresManualInteraction) `
     'presentation-is-autonomous'
 Assert-True (-not $presentation.RequiresSaveName) `
     'presentation-is-save-free'
+$spearContracts = Get-KmgRuntimeScenarioMetadata `
+    'observe-elven-branched-spear-contracts'
+Assert-True (-not $spearContracts.RequiresManualInteraction) `
+    'spear-contracts-is-autonomous'
+Assert-True (-not $spearContracts.RequiresSaveName) `
+    'spear-contracts-is-save-free'
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'
