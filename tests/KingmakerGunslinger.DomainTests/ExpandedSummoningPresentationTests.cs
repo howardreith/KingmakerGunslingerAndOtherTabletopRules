@@ -155,6 +155,8 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("priorEvidenceEnabled") &&
                 runtime.Contains("priorEvidenceActive") &&
                 runtime.Contains("transform.gameObject.SetActive(true)") &&
+                runtime.Contains("priorAmbientLight") &&
+                runtime.Contains("backgroundPixel") &&
                 runtime.Contains("renderer.enabled = false") &&
                 runtime.Contains("renderer.enabled = true") &&
                 runtime.Contains("detached camera frame") &&

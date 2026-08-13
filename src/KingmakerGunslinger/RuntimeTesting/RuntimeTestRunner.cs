@@ -11113,6 +11113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture renderTexture = null;
             Texture2D output = null;
             RenderTexture priorActive = RenderTexture.active;
+            Color priorAmbientLight = RenderSettings.ambientLight;
+            float priorAmbientIntensity = RenderSettings.ambientIntensity;
             Renderer[] evidenceRenderers = new[] { caster.View, eagle.View }
                 .Where(value => value != null)
                 .SelectMany(value => value.GetComponentsInChildren<Renderer>(true))
@@ -11172,9 +11174,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     renderer.enabled = false;
                 Light light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
-                light.intensity = 0.55f;
+                light.intensity = 0.35f;
                 light.cullingMask = subjectMask;
                 light.transform.rotation = Quaternion.Euler(48f, -28f, 0f);
+                RenderSettings.ambientLight = new Color(0.72f, 0.72f,
+                    0.72f, 1f);
+                RenderSettings.ambientIntensity = 1f;
                 Vector3 center = (casterBounds.center + eagleBounds.center) * 0.5f;
                 float span = Mathf.Max(4f, Mathf.Max(
                     Vector3.Distance(casterBounds.min, eagleBounds.max),
@@ -11186,7 +11191,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.orthographicSize = Mathf.Max(2.6f,
                     Mathf.Max(casterBounds.size.y, eagleBounds.size.y) * 0.9f);
                 camera.clearFlags = CameraClearFlags.SolidColor;
-                camera.backgroundColor = new Color(0.055f, 0.045f, 0.04f, 1f);
+                camera.backgroundColor = new Color(0.18f, 0.21f, 0.24f, 1f);
                 renderTexture = new RenderTexture(width, height, 24,
                     RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
@@ -11209,9 +11214,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 output.ReadPixels(new Rect(0, 0, width, height), 0, 0);
                 output.Apply(false, false);
                 Color32[] capturedPixels = output.GetPixels32();
+                Color32 backgroundPixel = camera.backgroundColor;
                 int meaningfulPixels = capturedPixels.Count(pixel =>
-                    Math.Abs(pixel.r - 14) + Math.Abs(pixel.g - 11) +
-                    Math.Abs(pixel.b - 10) > 24);
+                    Math.Abs(pixel.r - backgroundPixel.r) +
+                    Math.Abs(pixel.g - backgroundPixel.g) +
+                    Math.Abs(pixel.b - backgroundPixel.b) > 24);
                 if (meaningfulPixels < width * height / 100)
                     throw new InvalidOperationException(
                         "Live Eagle comparison framebuffer was blank: " +
@@ -11231,6 +11238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 RenderTexture.active = priorActive;
+                RenderSettings.ambientLight = priorAmbientLight;
+                RenderSettings.ambientIntensity = priorAmbientIntensity;
                 foreach (Renderer renderer in suppressedRenderers)
                     if (renderer != null) renderer.enabled = true;
                 for (int index = 0; index < evidenceRenderers.Length; index++)
