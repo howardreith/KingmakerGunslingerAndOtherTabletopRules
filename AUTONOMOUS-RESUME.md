@@ -24,8 +24,10 @@
   passed two byte-identical clean Release/package cycles. DLL/package/source
   hashes are `4c5cf6e8...c5a76`, `c8bca9e8...f6496`, and
   `61b4d36f...470c3`.
-- Next action: commit/push this audit-only hash record and refresh draft PR #2
-  without merging. No gameplay implementation action remains.
+- Draft PR #2 is refreshed, open, draft, cleanly mergeable, and unmerged. No
+  autonomous gameplay or publication action remains. Human action is limited
+  to PR review and the documented subjective visual checks; merge remains a
+  human decision.
 
 
 ## Expanded Summoning first-playtest repair (complete, 2026-08-12)
