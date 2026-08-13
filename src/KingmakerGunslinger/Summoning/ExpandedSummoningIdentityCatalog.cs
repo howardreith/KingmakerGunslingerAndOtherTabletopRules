@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int SpecialIdentityCount = 33;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
-        internal const int NativeExpandedOptionIdentityCount = 17;
+        internal const int NativeExpandedOptionIdentityCount = 26;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount +
             NativePreservationIdentityCount + AlignmentModeIdentityCount +

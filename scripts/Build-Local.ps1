@@ -65,6 +65,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Focused supply-icon validation failed.' }
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'blueprints') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\icons') -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\icons\expanded-summoning') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\bundles') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll') -Destination $buildOutput -Force
 Copy-Item -LiteralPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.pdb') -Destination $buildOutput -Force
@@ -72,6 +73,7 @@ Copy-Item -LiteralPath (Join-Path $root 'Info.json') -Destination $buildOutput -
 Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.json') -Destination (Join-Path $buildOutput 'blueprints') -Force
 Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.schema.json') -Destination (Join-Path $buildOutput 'blueprints') -Force
 Copy-Item -Path (Join-Path $root 'assets\game\icons\*.png') -Destination (Join-Path $buildOutput 'assets\icons') -Force
+Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Destination (Join-Path $buildOutput 'assets\icons\expanded-summoning') -Force
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) { throw "Qualified firearm AssetBundle is missing: $bundleSource" }
@@ -85,7 +87,7 @@ $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 45 } else { 43 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 123 } else { 121 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank

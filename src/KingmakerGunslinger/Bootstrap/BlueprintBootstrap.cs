@@ -503,6 +503,7 @@ namespace KingmakerGunslinger.Bootstrap
             try
             {
                 ProjectAssetIcons.Load(context);
+                ExpandedSummoningProjectIcons.Load(context);
                 BlueprintInitializationResult result = InitializeCore(context, library);
 
                 lock (Gate)

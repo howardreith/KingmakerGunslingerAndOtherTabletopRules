@@ -49,6 +49,22 @@ try {
         'gunsmith-kit','overhaul-kit','paper-cartridge','focused-aim',
         'cord-of-stubborn-resolve','shield-other')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
+    $summonManifestPath = Join-Path $repositoryRoot `
+        'assets\game\icons\expanded-summoning\icon-manifest.json'
+    $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
+    if ($summonManifest.count -ne 77 -or @($summonManifest.icons).Count -ne 77) {
+        throw 'Expanded Summoning runtime icon manifest is malformed.'
+    }
+    $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
+    foreach ($icon in $summonManifest.icons) {
+        $relative = "assets\icons\expanded-summoning\$($icon.file)"
+        $expected += $relative
+        $packagedIcon = Join-Path $modDirectory $relative
+        if (-not (Test-Path -LiteralPath $packagedIcon -PathType Leaf) -or
+            (Get-KmgSha256 -Path $packagedIcon).ToLowerInvariant() -cne $icon.sha256) {
+            throw "Expanded Summoning packaged icon hash mismatch: $($icon.key)."
+        }
+    }
     $packagedBank=Join-Path $modDirectory 'assets\soundbanks\KMG_Firearms.bnk'
     if(Test-Path -LiteralPath $packagedBank -PathType Leaf){
         $expected += @('assets\soundbanks\KMG_Firearms.bnk','assets\soundbanks\firearm-soundbank-manifest.json')

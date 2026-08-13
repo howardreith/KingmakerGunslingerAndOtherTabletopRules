@@ -77,10 +77,8 @@ namespace KingmakerGunslinger.Blueprints
                                 (BlueprintAbility)set.BySymbol[
                                     ExpandedSummoningIdentityCatalog.AbilitySymbol(value)])
                         .ToArray();
-                    SummonNativeExpansionSpec[] nativeSpecs = family ==
-                        SummonFamily.Monster ? SummonNativeExpansionCatalog
-                            .ForTier(tier).ToArray() :
-                            Array.Empty<SummonNativeExpansionSpec>();
+                    SummonNativeExpansionSpec[] nativeSpecs =
+                        SummonNativeExpansionCatalog.For(family, tier).ToArray();
                     BlueprintAbility[] nativeAdditions = nativeSpecs.Select(value =>
                         (BlueprintAbility)set.BySymbol[value.Symbol]).ToArray();
                     BlueprintAbility nativePreservation = tier != 1 ? null :
@@ -179,8 +177,7 @@ namespace KingmakerGunslinger.Blueprints
             {
                 SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                     family, tier, original.AssetGuid);
-                if (family == SummonFamily.Monster &&
-                    SummonNativeExpansionCatalog.Replaces(tier,
+                if (SummonNativeExpansionCatalog.Replaces(family, tier,
                         original.AssetGuid)) return false;
                 if (native == null || !native.IsSemanticDuplicate) return true;
                 int matches = specs.Count(value => value.Creature.Key ==

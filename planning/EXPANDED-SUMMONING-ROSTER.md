@@ -144,17 +144,3 @@ Every placement has a distinct frozen ability identity so parent spell level, ca
 ## Explicit exclusions
 
 No aquatic-only entries, horses or ponies, unapproved ants, apes, rhinoceroses, giants, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. Existing vanilla and third-party entries are preserved by reference and order.
-
-## Polish publication disposition
-
-- All 66 SM and 57 SNA logical catalog entries and every frozen identity remain
-  registered. Dire Bat's 14 generated placements are deliberately not
-  published because the Roc proxy failed human visual acceptance and no safe
-  installed bat rig was proven.
-- Five exact Owlcat hybrid menu children are suppressed by frozen GUID and
-  replaced by 17 distinct Redcap, Axiomite, Soul Eater, Bogeyman, Movanic
-  Deva, Frost Giant, and Thanadaemon choices. Original objects remain
-  registered and disabling the module restores the exact original parents.
-- Final visible generated coverage is 667 roots plus 17 direct Owlcat-backed
-  choices. Player-path, combat, visual, persistence, module, and compatibility
-  status is PASS as recorded in `EXPANDED-SUMMONING-STATE.json`.

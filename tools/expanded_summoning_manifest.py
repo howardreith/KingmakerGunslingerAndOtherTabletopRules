@@ -86,16 +86,22 @@ SPECIAL_NOTES = {
 }
 
 NATIVE_EXPANDED_OPTIONS = (
-    (5, "Redcap", "One"),
-    (6, "Axiomite", "One"), (6, "SoulEater", "One"),
-    (6, "Redcap", "OneD3"),
-    (7, "Bogeyman", "One"), (7, "Axiomite", "OneD3"),
-    (7, "SoulEater", "OneD3"), (7, "Redcap", "OneD4PlusOne"),
-    (8, "MovanicDeva", "One"), (8, "FrostGiant", "One"),
-    (8, "Bogeyman", "OneD3"), (8, "Axiomite", "OneD4PlusOne"),
-    (8, "SoulEater", "OneD4PlusOne"),
-    (9, "Thanadaemon", "One"), (9, "MovanicDeva", "OneD3"),
-    (9, "FrostGiant", "OneD3"), (9, "Bogeyman", "OneD4PlusOne"),
+    ("SM", 5, "Redcap", "One"),
+    ("SM", 6, "Axiomite", "One"), ("SM", 6, "SoulEater", "One"),
+    ("SM", 6, "Redcap", "OneD3"),
+    ("SM", 7, "Bogeyman", "One"), ("SM", 7, "Axiomite", "OneD3"),
+    ("SM", 7, "SoulEater", "OneD3"), ("SM", 7, "Redcap", "OneD4PlusOne"),
+    ("SM", 8, "MovanicDeva", "One"), ("SM", 8, "FrostGiant", "One"),
+    ("SM", 8, "Bogeyman", "OneD3"), ("SM", 8, "Axiomite", "OneD4PlusOne"),
+    ("SM", 8, "SoulEater", "OneD4PlusOne"),
+    ("SM", 9, "Thanadaemon", "One"), ("SM", 9, "MovanicDeva", "OneD3"),
+    ("SM", 9, "FrostGiant", "OneD3"), ("SM", 9, "Bogeyman", "OneD4PlusOne"),
+    ("SNA", 1, "Mite", "One"), ("SNA", 2, "Mite", "OneD3"),
+    ("SNA", 3, "Mite", "OneD4PlusOne"),
+    ("SNA", 5, "Manticore", "One"), ("SNA", 6, "Manticore", "OneD3"),
+    ("SNA", 7, "Manticore", "OneD4PlusOne"),
+    ("SNA", 8, "Nereid", "One"), ("SNA", 9, "Nereid", "OneD3"),
+    ("SNA", 9, "Hamadryad", "One"),
 )
 
 
@@ -146,8 +152,8 @@ def planned():
                 if family == "SM" and creature[2]:
                     rows.append((symbol + ".Celestial", "BlueprintAbility"))
                     rows.append((symbol + ".Fiendish", "BlueprintAbility"))
-    for tier, creature, multiplicity in NATIVE_EXPANDED_OPTIONS:
-        rows.append((f"KMG.Summoning.NativeOption.SM.Tier{tier}."
+    for family, tier, creature, multiplicity in NATIVE_EXPANDED_OPTIONS:
+        rows.append((f"KMG.Summoning.NativeOption.{family}.Tier{tier}."
                      f"{creature}.{multiplicity}", "BlueprintAbility"))
     for alignment in ("Celestial", "Fiendish"):
         for band in ("Low", "Mid", "High"):
@@ -189,7 +195,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1175 or len({symbol for symbol, _ in rows}) != 1175:
+    if len(rows) != 1184 or len({symbol for symbol, _ in rows}) != 1184:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

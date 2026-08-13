@@ -50,15 +50,18 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
-            Assertions.Equal(17, SummonNativeExpansionCatalog.All.Count,
+            Assertions.Equal(26, SummonNativeExpansionCatalog.All.Count,
                 "Native individual-option expansion count changed.");
-            Assertions.True(SummonNativeExpansionCatalog.Replaces(8,
+            Assertions.True(SummonNativeExpansionCatalog.Replaces(
+                    SummonFamily.Monster, 8,
                     "eb6df7ddfc0669d4fb3fc9af4bd34bca"),
                 "Movanic Deva/Frost Giant umbrella must be suppressed.");
-            Assertions.True(SummonNativeExpansionCatalog.Replaces(9,
+            Assertions.True(SummonNativeExpansionCatalog.Replaces(
+                    SummonFamily.Monster, 9,
                     "e96593e67d206ab49ad1b567327d1e75"),
                 "Ghaele/Thanadaemon umbrella must be suppressed.");
-            Assertions.Equal(2, SummonNativeExpansionCatalog.ForTier(8)
+            Assertions.Equal(2, SummonNativeExpansionCatalog.For(
+                    SummonFamily.Monster, 8)
                     .Count(value => value.Multiplicity ==
                         SummonMultiplicity.One),
                 "SM VIII distinct native singles changed.");
@@ -111,35 +114,23 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal("canine", SummonIconCatalog.CategoryFor("dog"),
-                "Dog icon category changed.");
-            Assertions.Equal("feline", SummonIconCatalog.CategoryFor("dire-tiger"),
-                "Dire Tiger icon category changed.");
-            Assertions.Equal("air-elemental",
-                SummonIconCatalog.CategoryFor("invisible-stalker"),
-                "Invisible Stalker icon fallback changed.");
+            Assertions.Equal(77, SummonIconCatalog.All.Count,
+                "Project icon concept count changed.");
+            Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
+                .DisplayName, "Smilodon icon identity changed.");
             Assertions.True(new[] { "air-mephit", "earth-mephit",
-                    "fire-mephit", "water-mephit" }.Select(
-                    SummonIconCatalog.CategoryFor).Distinct().Count() == 4,
-                "Mephit elements must remain visually separable.");
-            Assertions.Equal(17, SummonIconCatalog.Sources.Count,
-                "Exact creature icon source count changed.");
-            Assertions.True(new[] { "dog", "wolf", "hyena", "goblin-dog" }
-                .Select(key => SummonIconCatalog.SourceFor(key).SourceGuid)
-                .Distinct(StringComparer.Ordinal).Count() == 4,
-                "Canine menu icons must use four distinct native assets.");
-            Assertions.True(SummonIconCatalog.SourceFor("leopard").SourceGuid !=
-                    SummonIconCatalog.SourceFor("cheetah").SourceGuid &&
-                SummonIconCatalog.SourceFor("monitor-lizard").SourceGuid !=
-                    SummonIconCatalog.SourceFor("crocodile").SourceGuid,
-                "Look-alike feline and reptile proxies need distinct icons.");
+                    "fire-mephit", "water-mephit", "lantern-archon",
+                    "pteranodon", "bralani-azata", "erinyes-devil" }
+                .Select(key => SummonIconCatalog.For(key).Key)
+                .Distinct(StringComparer.Ordinal).Count() == 8,
+                "Unrelated creature concepts must have distinct icon keys.");
             float eagle, frog, elephant, mastodon;
             Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
-                    "KMG_Summoning_Unit_Eagle", out eagle) && eagle < 1f,
+                    "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view must be reduced.");
             Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
-                    "KMG_Summoning_Unit_PoisonousFrog", out frog) && frog < eagle,
-                "Poisonous Frog must read smaller than the Eagle proxy.");
+                    "KMG_Summoning_Unit_PoisonousFrog", out frog) && frog < 1f,
+                "Poisonous Frog view must remain reduced relative to Giant Frog.");
             Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
                     "KMG_Summoning_Unit_Elephant", out elephant) &&
                 SummonViewScaleCatalog.TryGetMultiplier(

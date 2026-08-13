@@ -11447,6 +11447,78 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier1.Mite.One",
+      "guid": "a274c1f96fee44668504b0d4484c8d57",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier2.Mite.OneD3",
+      "guid": "ca17aa4188444ab787c6681cf5a67a7f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier3.Mite.OneD4PlusOne",
+      "guid": "cf7dd0af0b564b77a0d4ecae1d252f52",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier5.Manticore.One",
+      "guid": "cc495f34c8a14e68824b808bd4360314",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier6.Manticore.OneD3",
+      "guid": "8c5df77ed6f24bf19c31f4e1e958251b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier7.Manticore.OneD4PlusOne",
+      "guid": "74e71679241b4173945f75f6e45c327d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier8.Nereid.One",
+      "guid": "cd906413987c452e98dcb996fc0ff0b1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier9.Nereid.OneD3",
+      "guid": "a6d072d5d65b4241a8538d677e1f4bbf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier9.Hamadryad.One",
+      "guid": "022820de9fe846099b84e74f65bb98e6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

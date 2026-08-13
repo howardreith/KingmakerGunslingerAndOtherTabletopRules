@@ -59,6 +59,9 @@ if (-not (Test-Path -LiteralPath $assetSource -PathType Container)) {
 }
 New-Item -ItemType Directory -Path $assetDestination -Force | Out-Null
 Copy-Item -Path (Join-Path $assetSource '*.png') -Destination $assetDestination
+$summonIconDestination = Join-Path $assetDestination 'expanded-summoning'
+New-Item -ItemType Directory -Path $summonIconDestination -Force | Out-Null
+Copy-Item -Path (Join-Path $assetSource 'expanded-summoning\*') -Destination $summonIconDestination
 $bundleDestination = Join-Path $modDirectory 'assets\bundles'
 New-Item -ItemType Directory -Path $bundleDestination -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.firearms') -Destination $bundleDestination
@@ -81,7 +84,7 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 45 } else { 43 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 123 } else { 121 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

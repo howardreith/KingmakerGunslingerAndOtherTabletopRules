@@ -214,7 +214,7 @@ namespace KingmakerGunslinger.Summoning
                         "SkillFocusPerception"),
                     "Claw grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior.",
                     "Endurance and Run are omitted because exact concrete final-live feature identities were not proven."),
-                PS("dire-tiger", "Dire Tiger / Smilodon", "Animal", 14,
+                PS("dire-tiger", "Smilodon", "Animal", 14,
                     "Large", 27, 15, 17, 2, 12, 10, 40, 6,
                     "BiteLarge2d6", A("Claw2d4", "Claw2d4"),
                     A("Claw2d4", "Claw2d4"), A("ReducedReach", "Pounce",

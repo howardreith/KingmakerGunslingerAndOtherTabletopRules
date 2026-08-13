@@ -1598,3 +1598,26 @@
   that the inherited/native icon architecture itself must be replaced.
 - The exact checked-in findings and native spawn GUID map are in
   `planning/EXPANDED-SUMMONING-FINAL-PRESENTATION-INVENTORY.md`.
+# 2026-08-13 — final original-icon and SNA presentation foundation
+
+- Preserved and pushed the exact final-live SNA inventory before mutation. The
+  live observer proved 322 visible SNA children, nine generic native placements,
+  and the unsupported unit-portrait/category-atlas icon path behind white squares.
+- Generated 77 distinct project-owned high-resolution icon sources without input
+  images and recorded exact prompt/provenance metadata. The deterministic exporter
+  produced 77 distinct 128x128 RGBA PNGs; source/output hash, dimension, alpha,
+  variance, stale-row, and duplicate-hash validation pass.
+- Removed production game-GUID, inherited portrait, category representative, and
+  native-template icon selection. A mod-root-relative persistent cache now loads
+  each manifest icon once and fails registration on missing, corrupt, or wrong-size
+  assets; there is no production fallback.
+- Added nine append-only SNA wrapper identities for Mite, Manticore, Nereid, and
+  Hamadryad placements. Enabled publication suppresses the exact generic source
+  children and publishes named, project-icon wrappers; disabled rollback preserves
+  exact original references. Ledger is 1,439 total / 1,438 active / one reserved.
+- Changed only the player-facing `dire-tiger` label to `Smilodon`, preserving every
+  stable key and GUID. Began Eagle empirical tuning at a 0.30 view multiplier and
+  lowered the policy floor to 0.20; final acceptance remains live-bound dependent.
+- Foundation gates: icon exporter/verify PASS; repository validation PASS; 1,013
+  domain/reflection tests PASS; exact-reference Release build PASS; strict 123-file
+  package validation PASS. Focused native runtime acceptance remains next.

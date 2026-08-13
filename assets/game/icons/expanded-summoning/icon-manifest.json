@@ -1,0 +1,699 @@
+﻿{
+    "schemaVersion":  1,
+    "count":  77,
+    "icons":  [
+                  {
+                      "key":  "dog",
+                      "file":  "dog.png",
+                      "sha256":  "808dfd384d81b6128b7e8ab641e4175addf2997bcca523568c38652cdf015124",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "eagle",
+                      "file":  "eagle.png",
+                      "sha256":  "525942badf1442e1032be07d6d8ebfbfdfc53858f35783ca95620c1534ebd125",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "poisonous-frog",
+                      "file":  "poisonous-frog.png",
+                      "sha256":  "d904a78f0e6a858eb0fa62d40904edf10c3dc814709cd9bdb9c70930bfb80e92",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-centipede",
+                      "file":  "giant-centipede.png",
+                      "sha256":  "5e670f299a3a92344bcbb8f6e3e039c80d1d1dd39f5203a0b40ae807cc54a0fb",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "wolf",
+                      "file":  "wolf.png",
+                      "sha256":  "77d4b06e53d39e65265dde42c3c8bce1482f119e81c965a61d88618f70596e3c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-frog",
+                      "file":  "giant-frog.png",
+                      "sha256":  "30af4edaab41c89b0d27b3d74781d041c9a6d0e6ad3dbc601188b11d69622de3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-spider",
+                      "file":  "giant-spider.png",
+                      "sha256":  "9f7e1dae7d32ad9281c24bfc6e662f1549d3f817d563d40caa1a73aad688592c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "small-air-elemental",
+                      "file":  "small-air-elemental.png",
+                      "sha256":  "2d668e0417d0dd08ef68292189585dfd7dc02aa45719d610c12320af20e26f70",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "small-earth-elemental",
+                      "file":  "small-earth-elemental.png",
+                      "sha256":  "44cbf8cb08dd384088068217fbde3521ffa2cc6f9e8549e37270edb0001453b5",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "small-fire-elemental",
+                      "file":  "small-fire-elemental.png",
+                      "sha256":  "df9eb2678eb84110d3fd4760851883fcd6ffc8931f43aa6415f4f77dc0a0759f",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "small-water-elemental",
+                      "file":  "small-water-elemental.png",
+                      "sha256":  "50fc985876183706c1a14c251c124d67356d0caaa7b4d0bb0b74a08784709204",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "goblin-dog",
+                      "file":  "goblin-dog.png",
+                      "sha256":  "ef66e6dd0e3a0e444518f61a4addf70fc3868212b50b5551e08f677b65e7689b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hyena",
+                      "file":  "hyena.png",
+                      "sha256":  "4edbdb29364b6cc819e5897af180e07edd26dac00b92fff817a6905a78c9218b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "boar",
+                      "file":  "boar.png",
+                      "sha256":  "52b3bde26131f923e1a78c35a40fd9f31315e568c85befe9403ce1e8dd730bc6",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "leopard",
+                      "file":  "leopard.png",
+                      "sha256":  "e1927c1381e7a980498c10466292823a08289bde4a614a0f219cdaac5de409c2",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "monitor-lizard",
+                      "file":  "monitor-lizard.png",
+                      "sha256":  "6fd6e06964901f7d0e405eaa00d88c0dd5aa4bde0c81b453275ae55974ea268c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "cheetah",
+                      "file":  "cheetah.png",
+                      "sha256":  "d5e24921db718bf4a5745d342cee1bd43c08c583b55d8d85e75ba1032e57a049",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "crocodile",
+                      "file":  "crocodile.png",
+                      "sha256":  "150557a1483cec9a0e66c0b4b1f9fac4949f535cf111b043b29bc9444bba38d0",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "lantern-archon",
+                      "file":  "lantern-archon.png",
+                      "sha256":  "a77ecaeba85a5b9ddfaed525d9b1579fdaab2c948c66701d2bfa6947fb2651d7",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "wolverine",
+                      "file":  "wolverine.png",
+                      "sha256":  "af62c666b3351efbd587f98ed57d1928ea84327646f4327c88f1387adc1796a3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-boar",
+                      "file":  "dire-boar.png",
+                      "sha256":  "9f5f2a4bd8d8a5ccf1e7eb2447d20c1fab852df7de221df390e1729cf60721a8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-wolf",
+                      "file":  "dire-wolf.png",
+                      "sha256":  "7fa15fb5b1bf31ef9d2d6e40d25fe8c13753dba81b00d4a33a29c97f5c539b2a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "grizzly-bear",
+                      "file":  "grizzly-bear.png",
+                      "sha256":  "f3f93b7243354433c6d18369d1176e566becda9381ea474288f1ede7d9d3010e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hell-hound",
+                      "file":  "hell-hound.png",
+                      "sha256":  "011dcf5382e811b4a68f7eb3c983c0a9c9ba46c8c35834bd66c8c220f02140b1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "medium-air-elemental",
+                      "file":  "medium-air-elemental.png",
+                      "sha256":  "90f6b9b1b9a6651333f46ccb675a29c7645449eca79d7136aba8cfe091f7dbf8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "medium-earth-elemental",
+                      "file":  "medium-earth-elemental.png",
+                      "sha256":  "d48b94ce2a8aa04c26ef63c1776a540b754c4e0d0e594d8906e9f3aa99a289e8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "medium-fire-elemental",
+                      "file":  "medium-fire-elemental.png",
+                      "sha256":  "f9879285d25bd71d543b677edd728abae4cd0fed558e950bd77eea79e15507b5",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "medium-water-elemental",
+                      "file":  "medium-water-elemental.png",
+                      "sha256":  "548f4c374f4030e18c560f7b592fa0febf571d68b10f1889978b64b1f907703d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "air-mephit",
+                      "file":  "air-mephit.png",
+                      "sha256":  "9dd1b35a73af5826bd7e2ff109936795a111d835991c9caa1a492360bfb1c146",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "earth-mephit",
+                      "file":  "earth-mephit.png",
+                      "sha256":  "7a54c543c9cb0711e02054d6f5adbddacbc4000d19e9312295123b1e75639d22",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "fire-mephit",
+                      "file":  "fire-mephit.png",
+                      "sha256":  "03bfd6f78b2265bace96980540149051c60ece5c119e477853c43f59eeb086e8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "water-mephit",
+                      "file":  "water-mephit.png",
+                      "sha256":  "b31f7d3cc7530dbd01d2c4ac4045f3d1333b1d35285dd6ecfad27adbed9f8ad4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "lion",
+                      "file":  "lion.png",
+                      "sha256":  "8188fb3ec9d5d2d373a75e3327915ad3126b17a366a5bebcb0838c5af452731e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "pteranodon",
+                      "file":  "pteranodon.png",
+                      "sha256":  "fa10dc0bdbfad94319af0b7354a5617593c9cabf649e626ff2d68f1aad305763",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bralani-azata",
+                      "file":  "bralani-azata.png",
+                      "sha256":  "1a66372d6dcface89d8340a70603412ff028245aa5a54dbb3dab53296286e2f8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "large-air-elemental",
+                      "file":  "large-air-elemental.png",
+                      "sha256":  "252ce496f05af3c1dbfd1a7ec4d532e359d955f2345b936929f012c84f2312f9",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "large-earth-elemental",
+                      "file":  "large-earth-elemental.png",
+                      "sha256":  "28b8a94239b30f9aabdee10c0b77e797c945bd97c63caa806699209f488ed767",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "large-fire-elemental",
+                      "file":  "large-fire-elemental.png",
+                      "sha256":  "0cebffb8fda9eeb3688b0fb1bb4df0f19af7d184527194a95f24c61f2e705ff2",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "large-water-elemental",
+                      "file":  "large-water-elemental.png",
+                      "sha256":  "88be22646547168c1d834641b8befeb1e4dd8ed0addf55d6ce6865201357778a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-lion",
+                      "file":  "dire-lion.png",
+                      "sha256":  "8f2be12645f9242be45715b319453819f46007e1a35b5f4ac9a02f135d9eaa47",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ankylosaurus",
+                      "file":  "ankylosaurus.png",
+                      "sha256":  "cd4288595023d086ba921091f8479db442a37e2bb11a4b082ab62364d8a48678",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "salamander",
+                      "file":  "salamander.png",
+                      "sha256":  "f7795d72be74a0fdb9ec5285592550878b4796ad61642050240306661ba089ca",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-bear",
+                      "file":  "dire-bear.png",
+                      "sha256":  "9370f6c8549f208a515260e20e10aed9859f43b050790fc5f452f7cd97fdd952",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-tiger",
+                      "file":  "dire-tiger.png",
+                      "sha256":  "a5d67550ed6ec4e2fe3fb302b03be5ca2004dc4e34b9e505c08a5a02b163d79c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "erinyes-devil",
+                      "file":  "erinyes-devil.png",
+                      "sha256":  "6f66d4e769ff803ef0435b77bbf6d2ac94341511882fa6cb9c8b8fe41508ebaa",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "huge-air-elemental",
+                      "file":  "huge-air-elemental.png",
+                      "sha256":  "5fe0c19e5b82485a1124f6c1696bf958011e082ddb4b7fffee3e70dbdb92a745",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "huge-earth-elemental",
+                      "file":  "huge-earth-elemental.png",
+                      "sha256":  "6982fc17ef0c4f446a15e9aae58a7bf0a830abccb1c06c9caed6068743599b1c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "huge-fire-elemental",
+                      "file":  "huge-fire-elemental.png",
+                      "sha256":  "8a203468388e932a1d3413f66cb2b41c522a5dce5487725469ba2aacaea2b500",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "huge-water-elemental",
+                      "file":  "huge-water-elemental.png",
+                      "sha256":  "8b85658e95c3fc8042b254daf31f55892edab43c141482bf99b236a54e9edc66",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "elephant",
+                      "file":  "elephant.png",
+                      "sha256":  "270a360f16e0bba037cb76a49c797a8bfb3e0ee9dc5846e1e19f11b9c5e91706",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "invisible-stalker",
+                      "file":  "invisible-stalker.png",
+                      "sha256":  "8d8ad69a9a62e0e6a692d97cdf8b732de8049da4ab9030f1e1b7649e9fcefa60",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "shadow-demon",
+                      "file":  "shadow-demon.png",
+                      "sha256":  "dd5544a955a26f43f0daa3e9c7a6b884f7bff5695c2ee1f870595c246e4266ed",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "succubus",
+                      "file":  "succubus.png",
+                      "sha256":  "352a750b69ba69e654bc88dd522e649f5a5f57cc63d32f418df4dde8323350f1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "mastodon",
+                      "file":  "mastodon.png",
+                      "sha256":  "a1f34d55d4bf33d171defcdfc2be80f4caef114a5901717778957484d4dfe112",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "roc",
+                      "file":  "roc.png",
+                      "sha256":  "a3aa036f29b237445746e75d329903ed6fcb898d8ec2fa2bff1892462d231a26",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "greater-air-elemental",
+                      "file":  "greater-air-elemental.png",
+                      "sha256":  "8b67fafa27b5258a464395127df45d2bb11bc127fc05e5511a5d9c2dd0b7c090",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "greater-earth-elemental",
+                      "file":  "greater-earth-elemental.png",
+                      "sha256":  "bf9cd09afeb07c00474aa07703fad64627fff1bc1620cb12cf8af7149461d4e0",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "greater-fire-elemental",
+                      "file":  "greater-fire-elemental.png",
+                      "sha256":  "3d219e92798da41bb60463f13dcffac8be48283a8df273e9827cfde3a1f96aae",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "greater-water-elemental",
+                      "file":  "greater-water-elemental.png",
+                      "sha256":  "18b824e1b7d4fdb5a75debb7e2d3e01b9b2a9f8694d7366232c6abbcb4077c42",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bebelith",
+                      "file":  "bebelith.png",
+                      "sha256":  "e47154c7a5e9b72256ea6b956c9adf4912cd95851e7a91bcd6dfa05f9c87f5a7",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "elder-air-elemental",
+                      "file":  "elder-air-elemental.png",
+                      "sha256":  "4df82e1f6ee86dac687202362dfaed748d9630719a1fedf78b2240ceb80e1ec6",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "elder-earth-elemental",
+                      "file":  "elder-earth-elemental.png",
+                      "sha256":  "e8148e93b896ac7bf0465820de23e53c75a9d89d43c071530713a0c11f3f6b47",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "elder-fire-elemental",
+                      "file":  "elder-fire-elemental.png",
+                      "sha256":  "fe2c7b2599974da3858a5313c102490663f4b234dd086995f17244dcd6bdcb7f",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "elder-water-elemental",
+                      "file":  "elder-water-elemental.png",
+                      "sha256":  "3181c3d51704f23eedfb179ebd1a82885f814d46bb722ac8ccb10b413cb647d7",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ghaele-azata",
+                      "file":  "ghaele-azata.png",
+                      "sha256":  "c4945bad7242ba6612ff11a875a446fa321576733f368eacd91bbb36a5e7d771",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "pixie",
+                      "file":  "pixie.png",
+                      "sha256":  "9f67d9bab45c76795a6243df66d652c994915b2f0baa56c45091d8da66cfbcd3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "redcap",
+                      "file":  "redcap.png",
+                      "sha256":  "73fa7c602f5fc9cf7d4b0cd25eb7059012b79d50823bf994e592e46714ea29bc",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "axiomite",
+                      "file":  "axiomite.png",
+                      "sha256":  "a9754b30f7518c9b958bda2e1d0df106c3129645adcf5446fe46956044ab4513",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "soul-eater",
+                      "file":  "soul-eater.png",
+                      "sha256":  "758d71361784e6f3d423e3b7c9b185105babeeb6cb17958df7b8a71055dad81d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "bogeyman",
+                      "file":  "bogeyman.png",
+                      "sha256":  "68e4423108e9eab9a9212f8566695bf2ee22327ac69d4c037192e8f27f23ac1b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "movanic-deva",
+                      "file":  "movanic-deva.png",
+                      "sha256":  "a5ac327fe9a7ee7dd0d5e2366e7e6c2147d143607e959ba1b32ee5f31568bff8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "frost-giant",
+                      "file":  "frost-giant.png",
+                      "sha256":  "8c52902aa0b9b380bf4babb87197e54bc01517dc0d836269da25ec66f1885a68",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "thanadaemon",
+                      "file":  "thanadaemon.png",
+                      "sha256":  "7b7e29c1d60131da8301ddf007d03fc9ecc639047069f3193bf77cec36b0856b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "split-native"
+                  },
+                  {
+                      "key":  "mite",
+                      "file":  "mite.png",
+                      "sha256":  "75df585e24477ab1a69fffbd80f5bdd8cdd5add729d9f838a6808771711998c8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "preserved-native"
+                  },
+                  {
+                      "key":  "manticore",
+                      "file":  "manticore.png",
+                      "sha256":  "2c0a5ed21950716ae945728ef66a994d71014f756a3eb83f7b12ba42ef45701c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "preserved-native"
+                  },
+                  {
+                      "key":  "nereid",
+                      "file":  "nereid.png",
+                      "sha256":  "4bfc475a4eecd5ab53b1797d155a9d592b4842637e826b2b7b9293f4a2dc5103",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "preserved-native"
+                  },
+                  {
+                      "key":  "hamadryad",
+                      "file":  "hamadryad.png",
+                      "sha256":  "cdaf96d265522239d2e6459a99a37c9f15488257910b15b2a562c7dbb7435b6e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "preserved-native"
+                  }
+              ]
+}

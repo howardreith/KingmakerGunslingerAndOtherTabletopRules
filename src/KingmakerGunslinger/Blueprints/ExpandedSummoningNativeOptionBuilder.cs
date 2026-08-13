@@ -57,7 +57,7 @@ namespace KingmakerGunslinger.Blueprints
                     LocalizationService.Create("KMG.ExpandedSummoning.Native." +
                         spec.Symbol + ".Description", "Summons " +
                         spec.DisplayName + " through Owlcat's native summon " +
-                        "lifecycle."), source.Icon);
+                        "lifecycle."), null);
             }
         }
 

@@ -11393,8 +11393,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var result = new ExpandedSummoningMenuAudit();
             var countRows = new List<string>();
-            var categoryIcons = new Dictionary<string, Sprite>(
-                StringComparer.Ordinal);
             var creatureIcons = new Dictionary<string, Sprite>(
                 StringComparer.Ordinal);
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
@@ -11405,23 +11403,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value.name == ExpandedSummoningInternalName(
                         ExpandedSummoningIdentityCatalog.AbilitySymbol(
                             representative)));
-                string category = SummonIconCatalog.CategoryFor(creature.Key);
                 creatureIcons.Add(creature.Key, ability.Icon);
-                if (!categoryIcons.ContainsKey(category))
-                    categoryIcons.Add(category, ability.Icon);
             }
-            result.CategoryIconsDistinct =
-                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
-                    "canine", "feline", "bear", "bird", "reptile",
-                    "vermin") &&
-                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
-                    "air-elemental", "earth-elemental", "fire-elemental",
-                    "water-elemental") &&
-                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
-                    "air-mephit", "earth-mephit", "fire-mephit",
-                    "water-mephit") &&
-                ExpandedSummoningCategoryIconsDistinct(categoryIcons,
-                    "celestial", "fiend") &&
+            result.CategoryIconsDistinct = creatureIcons.Where(value =>
+                value.Key != "dire-bat").All(value => value.Value != null &&
+                    value.Value.name == "KMG_SummonIcon_" + value.Key) &&
+                creatureIcons.Where(value => value.Key != "dire-bat")
+                    .Select(value => value.Value).Distinct().Count() == 66 &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
                     "dog", "wolf", "hyena", "goblin-dog") &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
@@ -11461,10 +11449,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Tier == tier).ToArray();
                 var nativeByGuid = natives.ToDictionary(value => value.Guid,
                     value => value, StringComparer.Ordinal);
-                SummonNativeExpansionSpec[] nativeExpansions = family ==
-                    SummonFamily.Monster ? SummonNativeExpansionCatalog
-                        .ForTier(tier).ToArray() :
-                        Array.Empty<SummonNativeExpansionSpec>();
+                SummonNativeExpansionSpec[] nativeExpansions =
+                    SummonNativeExpansionCatalog.For(family, tier).ToArray();
                 var nativeExpansionByGuid = nativeExpansions.Select(value =>
                     new { Spec = value, Ability = all.OfType<BlueprintAbility>()
                         .Single(item => item.name ==
@@ -11517,8 +11503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     int visible = displayed.Count(value =>
                         ReferenceEquals(value, identity));
-                    if (family == SummonFamily.Monster &&
-                        SummonNativeExpansionCatalog.Replaces(tier,
+                    if (SummonNativeExpansionCatalog.Replaces(family, tier,
                             native.Guid))
                         result.VisibleMappedNativeDuplicates += visible;
                     else if (native.IsSemanticDuplicate)
@@ -11557,9 +11542,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ReferenceEquals(item.Spec, value)).Ability));
                     expectedKnown.AddRange(natives.Where(value =>
                         !value.IsSemanticDuplicate &&
-                        !(family == SummonFamily.Monster &&
-                            SummonNativeExpansionCatalog.Replaces(tier,
-                                value.Guid)) &&
+                        !SummonNativeExpansionCatalog.Replaces(family, tier,
+                                value.Guid) &&
                         value.Multiplicity == multiplicity).Select(value =>
                             all.OfType<BlueprintAbility>().Single(item =>
                                 item.AssetGuid == value.Guid)));
@@ -11578,9 +11562,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int expectedBefore = natives.Length + foreignTail.Length;
                 int expectedAfter = specs.Length + nativeExpansions.Length +
                     natives.Count(value => !value.IsSemanticDuplicate &&
-                        !(family == SummonFamily.Monster &&
-                            SummonNativeExpansionCatalog.Replaces(tier,
-                                value.Guid))) + foreignTail.Length;
+                        !SummonNativeExpansionCatalog.Replaces(family, tier,
+                                value.Guid)) + foreignTail.Length;
                 if (displayed.Length != expectedAfter)
                     result.CountMismatches++;
                 string prefix = family == SummonFamily.Monster ? "SM" : "SNA";
@@ -11608,15 +11591,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExpandedSummoningInternalName(value.Symbol)) == 1);
             result.Counts = string.Join("|", countRows.ToArray());
             return result;
-        }
-
-        private static bool ExpandedSummoningCategoryIconsDistinct(
-            IDictionary<string, Sprite> icons, params string[] categories)
-        {
-            Sprite[] selected = categories.Select(value => icons.ContainsKey(value) ?
-                icons[value] : null).ToArray();
-            return selected.All(value => value != null) &&
-                selected.Distinct().Count() == selected.Length;
         }
 
         private static bool ExpandedSummoningCreatureIconsDistinct(
