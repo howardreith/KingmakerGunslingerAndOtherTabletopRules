@@ -681,6 +681,7 @@
     <Compile Include="Persistence\PersistenceRuntimePreflightProbeData.cs" />
     <Compile Include="Persistence\PersistenceRuntimePreflightReport.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.RareFirearms.cs" />

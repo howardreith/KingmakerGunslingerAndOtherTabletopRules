@@ -426,3 +426,33 @@ values, or campaign targets.
   `183DC903A64959C76A1A5063665E496A2E3FF2DF2BB575C99DA90092A3DEF8B4`,
   MVID `34061378-e413-4359-a96d-7952301e0efd`; package SHA-256 is
   `7D89041D27EBCE75BD397769D2681D2F9C9513D3BC409213B4DC3BC648FA5D70`.
+
+## 2026-08-14 - Call of the Wild and Arms and Armor compatibility
+
+- Call of the Wild transaction `compat-20260814T160106Z-f8e933764054`
+  passed the exact optional-mod observer, all-on six-module publication, and
+  live Eastern combat as runs
+  `20260814T1602067440876Z-9806d27e2797451a865b3228ed0cb128`,
+  `20260814T1604326146179Z-767318879aa145ea8a207afc56813dc5`, and
+  `20260814T1606556714227Z-d43a373f30294a268e8cb1d396942061`.
+  The Mods tree and settings were restored exactly.
+- The first exact Arms and Armor combat run failed specifically because that
+  mod's hard-coded versatile classifier forced KMG Katana one-handed. A first
+  classification-only repair exposed its secondary hand-slot policy; neither
+  failed request touched a save and both transactions restored exactly.
+- Added a reflection-only, fail-closed bridge over the exact Arms and Armor
+  classification and grip signatures. It recognizes only the exact registered
+  KMG Katana type and derives grip from the active primary/offhand slots; it has
+  no optional-mod compile dependency and mutates no foreign blueprint.
+- Repair run `20260814T1626264154920Z-659ee31c63844b15a53f60366ffd55d6`
+  passed correct two-/one-handed state, martial/exotic proficiency, Moonlit
+  Crossing exclusivity, all other Eastern mechanics, and cleanup. Transaction
+  `compat-20260814T162536Z-edb4ba5e8032` restored the exact Mods tree.
+- The authorized Arms and Armor source/runtime contains Temple Sword and Orc
+  Hornbow, not Katana/Wakizashi/Nodachi, so there is no overlapping eastern
+  identity or safe proficiency bridge to add.
+- Repository validation, all `1047/1047` tests, clean Release build,
+  build-output/package validation passed. DLL SHA-256 is
+  `35182EE446A9CA148DBDABEF6015FD602AAD4BC0787A8F6D0408BB80A4771423`,
+  MVID `8b26ae08-23c7-4a56-a65b-44c3ee5f37ef`; package SHA-256 is
+  `DCA9BE195D54318F19DBDDA195F9E5E435526E5F2AFA7AEBC57CBC9A07661EF4`.

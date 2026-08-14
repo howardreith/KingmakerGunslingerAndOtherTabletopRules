@@ -14,6 +14,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Stats;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.Grit;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -98,6 +99,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cls != null && referenceCount == 1 && guidCount == 1,
                 "Kingmaker 2.1.7b CharBPhaseClassInChargen.m_ClassesCollection exact getter reads Game.Instance.BlueprintRoot.Progression.CharacterClasses");
             AddCallOfTheWildCatalogAssertions(assertions, entries, classes);
+            bool armsArmor = entries.Any(value => string.Equals(value.Info.Id,
+                "ArmsArmor", StringComparison.Ordinal));
+            Add(assertions, "eastern-arms-armor-grip-bridge",
+                armsArmor ? "installed on exact ArmsArmor helper contract" :
+                    "inactive because ArmsArmor is absent",
+                EasternWeaponArmsArmorCompatibility.Status,
+                EasternWeaponArmsArmorCompatibility.Installed == armsArmor,
+                "reflection-only postfixes on exact ArmsArmor versatile classification and active-slot grip methods");
             bool progression = gunslinger != null && gunslinger.Progression != null &&
                 gunslinger.Progression.LevelEntries != null &&
                 gunslinger.Progression.LevelEntries.Length == 20 &&

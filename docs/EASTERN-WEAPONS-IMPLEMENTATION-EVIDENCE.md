@@ -178,6 +178,33 @@ therefore omitted for this release, with the required disposition:
 
 ```text
 DEFERRED  ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK
+
+## Arms and Armor grip compatibility
+
+The exact authorized Arms and Armor 1.0.10 source and live profile contain no
+Katana, Wakizashi, or Nodachi provider. They add Temple Sword and Orc Hornbow,
+so no same-name proficiency bridge is applicable.
+
+Arms and Armor does replace versatile-weapon grip authority. Its exact loaded
+contract consists of
+`ArmsArmor.Helpers.IsExoticTwoHandedMartialWeapon(BlueprintItemWeapon)` and
+`ArmsArmor.ItemEntityWeaponPatch.IsTwoHanded(ItemEntityWeapon, UnitDescriptor)`.
+The former hard-codes Bastard Sword, Dwarven Waraxe, and Estoc; the latter feeds
+its `HoldInTwoHands` and active hand-slot behavior. The first Eastern live run
+therefore observed Katana forced one-handed even with an empty offhand.
+
+KMG now installs a reflection-only, fail-closed postfix on both exact methods
+when and only when the single `ArmsArmor` assembly and exact signatures are
+present. It classifies only the exact registered KMG Katana type and resolves
+that type's grip from the actual active primary/offhand slots. No foreign
+blueprint, GUID, category, or weapon is changed, and there is no compile-time
+optional-mod dependency.
+
+Passing live repair run
+`20260814T1626264154920Z-659ee31c63844b15a53f60366ffd55d6`
+observed two-handed Katana with an empty offhand, one-handed Katana after exact
+offhand insertion, correct grip-dependent proficiency, mutually exclusive
+Moonlit Crossing modes, and complete request-local cleanup.
 ```
 
 ## Selected campaign publication contracts

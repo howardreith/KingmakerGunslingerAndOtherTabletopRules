@@ -168,12 +168,22 @@
     "persistenceDllMvid": "34061378-e413-4359-a96d-7952301e0efd",
     "persistencePackageSha256": "7D89041D27EBCE75BD397769D2681D2F9C9513D3BC409213B4DC3BC648FA5D70",
     "persistenceSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
+    "callOfTheWildCompatibilityTransaction": "compat-20260814T160106Z-f8e933764054",
+    "callOfTheWildOptionalObserverRunId": "20260814T1602067440876Z-9806d27e2797451a865b3228ed0cb128",
+    "callOfTheWildModuleRunId": "20260814T1604326146179Z-767318879aa145ea8a207afc56813dc5",
+    "callOfTheWildCombatRunId": "20260814T1606556714227Z-d43a373f30294a268e8cb1d396942061",
+    "armsArmorInitialCombatDisposition": "FAIL exact grip conflict diagnosed and repaired",
+    "armsArmorPassingCombatTransaction": "compat-20260814T162536Z-edb4ba5e8032",
+    "armsArmorPassingCombatRunId": "20260814T1626264154920Z-659ee31c63844b15a53f60366ffd55d6",
+    "armsArmorRepairDllSha256": "35182EE446A9CA148DBDABEF6015FD602AAD4BC0787A8F6D0408BB80A4771423",
+    "armsArmorRepairDllMvid": "8b26ae08-23c7-4a56-a65b-44c3ee5f37ef",
+    "armsArmorRepairPackageSha256": "DCA9BE195D54318F19DBDDA195F9E5E435526E5F2AFA7AEBC57CBC9A07661EF4",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 2,
-    "runtimeLaunches": 40,
+    "runtimeLaunches": 49,
     "autonomousMerge": false
   }
 }

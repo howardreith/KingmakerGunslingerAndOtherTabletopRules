@@ -637,6 +637,39 @@ namespace KingmakerGunslinger.DomainTests
                 "Eastern combat scenario is not in both guarded catalogs as save-free.");
         }
 
+        internal static void ArmsArmorGripBridgeIsExactAndOptional()
+        {
+            string root = Environment.CurrentDirectory;
+            string path = Path.Combine(root, "src", "KingmakerGunslinger",
+                "Compatibility", "EasternWeaponArmsArmorCompatibility.cs");
+            string source = File.ReadAllText(path);
+            foreach (string token in new[] {
+                "AssemblyName = \"ArmsArmor\"",
+                "HelperTypeName = \"ArmsArmor.Helpers\"",
+                "MethodName = \"IsExoticTwoHandedMartialWeapon\"",
+                "new[] { typeof(BlueprintItemWeapon) }",
+                "GripTypeName = \"ArmsArmor.ItemEntityWeaponPatch\"",
+                "GripMethodName = \"IsTwoHanded\"",
+                "new[] { typeof(ItemEntityWeapon), typeof(UnitDescriptor) }",
+                "classification.ReturnType != typeof(bool)",
+                "ReferenceEquals(weapon.Type,",
+                "EasternWeaponFamily.Katana",
+                "ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, weapon)",
+                "owner.Body.SecondaryHand.MaybeItem == null",
+                "harmony.Patch(classification, null,",
+                "harmony.Patch(grip, null, new HarmonyMethod(gripPostfix), null)" })
+                Assertions.True(source.Contains(token),
+                    "Eastern Arms and Armor grip bridge lacks: " + token);
+            Assertions.False(source.Contains("CallOfTheWild") ||
+                source.Contains("WeaponCategory.BastardSword"),
+                "Eastern Arms and Armor bridge acquired an unrelated optional-mod or native-category dependency.");
+            string main = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Main.cs"));
+            Assertions.True(main.Contains(
+                "EasternWeaponArmsArmorCompatibility.Install(context.Harmony)"),
+                "Eastern Arms and Armor bridge is not installed at bootstrap.");
+        }
+
         private static void AssertRgbaPng128(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
