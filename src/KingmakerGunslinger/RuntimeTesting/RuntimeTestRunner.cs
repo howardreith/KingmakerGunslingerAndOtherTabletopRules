@@ -132,6 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Stopwatch _elvenBranchedSpearPersistenceSaveElapsed;
         private bool _elvenBranchedSpearPersistenceIdentityValid;
         private bool _elvenBranchedSpearPersistenceCategoryValid;
+        private bool _elvenBranchedSpearPersistenceFinesseTrainingValid;
         private bool _elvenBranchedSpearPersistenceGrantValid;
         private bool _elvenBranchedSpearPersistenceCleanupValid;
         private string _elvenBranchedSpearPersistenceDetail = "";
@@ -1576,6 +1577,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool active = _context.FeatureModules.Active.ElvenBranchedSpears;
             int[] before = items.Select(value =>
                 Game.Instance.Player.Inventory.Count(value)).ToArray();
+            int finesseBefore = party.Count(value =>
+                value.Descriptor.HasFact(set.FinesseTraining));
 
             if (prepare)
             {
@@ -1584,12 +1587,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (before.Any(value => value != 0))
                     throw new InvalidOperationException(
                         "The disposable working save already contains an Elven Branched Spear; prepare refused to mutate it.");
+                if (finesseBefore != 0)
+                    throw new InvalidOperationException(
+                        "The disposable working save already contains Elven Branched Spear Finesse Training; prepare refused to mutate it.");
                 DevelopmentActionResult grant =
                     DevelopmentControls.AddElvenBranchedSpearSet();
                 _elvenBranchedSpearPersistenceGrantValid = grant.Succeeded;
                 if (!grant.Succeeded) throw new InvalidOperationException(
                     "The development-only spear-set grant failed: " +
                     grant.Message);
+                if (party[0].Descriptor.AddFact(set.FinesseTraining) == null)
+                    throw new InvalidOperationException(
+                        "The spear Finesse Training fact could not be added to the disposable working-save owner.");
             }
             else
                 _elvenBranchedSpearPersistenceGrantValid = true;
@@ -1610,25 +1619,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     set.WeaponType)) &&
                 (expectedCount == 0 ? instances.Length == 0 :
                     instances.Length == 12 && items.All(item =>
-                        instances.Count(instance => ReferenceEquals(
-                            instance.Blueprint, item) && ReferenceEquals(
-                            instance.Blueprint.Type, set.WeaponType)) == 1));
+                         instances.Count(instance => ReferenceEquals(
+                             instance.Blueprint, item) && ReferenceEquals(
+                             instance.Blueprint.Type, set.WeaponType)) == 1));
+            int observedFinesse = party.Count(value =>
+                value.Descriptor.HasFact(set.FinesseTraining));
+            _elvenBranchedSpearPersistenceFinesseTrainingValid =
+                observedFinesse == expectedCount &&
+                (expectedCount == 0 ||
+                    party[0].Descriptor.HasFact(set.FinesseTraining));
 
             if (verifyCleanup)
             {
                 if (!_elvenBranchedSpearPersistenceIdentityValid ||
-                    !_elvenBranchedSpearPersistenceCategoryValid)
+                    !_elvenBranchedSpearPersistenceCategoryValid ||
+                    !_elvenBranchedSpearPersistenceFinesseTrainingValid)
                     throw new InvalidOperationException(
-                        "Fresh-load spear identities or category did not survive before cleanup.");
+                        "Fresh-load spear identities, category, or Finesse Training selection did not survive before cleanup.");
                 foreach (BlueprintItemWeapon item in items)
                     Game.Instance.Player.Inventory.Remove(item, 1);
+                party[0].Descriptor.RemoveFact(set.FinesseTraining);
                 _elvenBranchedSpearPersistenceCleanupValid = items.All(value =>
-                    Game.Instance.Player.Inventory.Count(value) == 0);
+                    Game.Instance.Player.Inventory.Count(value) == 0) &&
+                    party.All(value => !value.Descriptor.HasFact(
+                        set.FinesseTraining));
             }
             else
                 _elvenBranchedSpearPersistenceCleanupValid = prepare
-                    ? observed.All(value => value == 1)
-                    : observed.All(value => value == 0);
+                    ? observed.All(value => value == 1) && observedFinesse == 1
+                    : observed.All(value => value == 0) && observedFinesse == 0;
 
             _elvenBranchedSpearPersistenceDetail = "active=" + active +
                 ";phase=" + (prepare ? "prepare" : verifyCleanup
@@ -1637,12 +1656,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.ToString()).ToArray()) + ";observed=" +
                 string.Join(",", observed.Select(value => value.ToString())
                     .ToArray()) + ";instances=" + instances.Length +
+                ";finesseBefore=" + finesseBefore + ";finesseObserved=" +
+                observedFinesse + ";finesse=" +
+                _elvenBranchedSpearPersistenceFinesseTrainingValid +
                 ";identity=" + _elvenBranchedSpearPersistenceIdentityValid +
                 ";category=" + _elvenBranchedSpearPersistenceCategoryValid +
                 ";grant=" + _elvenBranchedSpearPersistenceGrantValid +
                 ";cleanup=" + _elvenBranchedSpearPersistenceCleanupValid;
             if (!_elvenBranchedSpearPersistenceIdentityValid ||
                 !_elvenBranchedSpearPersistenceCategoryValid ||
+                !_elvenBranchedSpearPersistenceFinesseTrainingValid ||
                 !_elvenBranchedSpearPersistenceGrantValid ||
                 !_elvenBranchedSpearPersistenceCleanupValid)
                 throw new InvalidOperationException(
@@ -1706,6 +1729,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _elvenBranchedSpearPersistenceDetail,
                     _elvenBranchedSpearPersistenceCategoryValid,
                     "BlueprintItemWeapon.Type and deserialized ItemEntityWeapon.Blueprint"),
+                Assertion("elven-branched-spear-persistent-finesse-training",
+                    writes ? "one exact selected category feature on the deterministic owner" :
+                        "no selected category feature after cleanup",
+                    _elvenBranchedSpearPersistenceDetail,
+                    _elvenBranchedSpearPersistenceFinesseTrainingValid,
+                    "fresh-load UnitDescriptor fact ownership for the ordinary Finesse Training child"),
                 Assertion("elven-branched-spear-development-grant",
                     prepare ? "one exact copy of all 12 variants" :
                         "not invoked outside prepare",

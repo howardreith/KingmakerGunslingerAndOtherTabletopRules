@@ -359,8 +359,14 @@ namespace KingmakerGunslinger.DomainTests
                 "spear-named-vipers-reach", "spear-named-briar-crowned",
                 "spear-named-first-branch", "AppliedSneakDamage",
                 "NativeHitAttack", "FirstBranchDifficultyClass",
-                "BriarPenaltyApplications", "GeneratedEvaluations",
-                "InstantiatePrefab", "SameReferences" })
+                 "BriarPenaltyApplications", "GeneratedEvaluations",
+                 "InstantiatePrefab", "SameReferences",
+                 "spear-multiple-dexterity-and-switch",
+                 "SecondFinesseTrainingTestGuid", "StandardLongspearGuid",
+                 "spear-optional-dexterity-and-exclusions",
+                 "FightersFinesseGuid", "TrainedGraceGuid",
+                 "WeaponTrainingSpearsGuid", "FencingGraceGuid",
+                 "SlashingGraceGuid", "DervishDanceGuid" })
                 Assertions.True(scenario.Contains(token),
                     "Spear combat scenario lacks: " + token);
             Assertions.False(scenario.Contains("SaveManager") ||
@@ -455,8 +461,12 @@ namespace KingmakerGunslinger.DomainTests
                 "DevelopmentControls.AddElvenBranchedSpearSet()",
                 "before.Any(value => value != 0)",
                 "items.Length != 12", "instances.Length == 12",
-                "instance.Blueprint.Type, set.WeaponType",
-                "Game.Instance.Player.Inventory.Remove(item, 1)",
+                 "instance.Blueprint.Type, set.WeaponType",
+                 "party[0].Descriptor.AddFact(set.FinesseTraining)",
+                 "party[0].Descriptor.RemoveFact(set.FinesseTraining)",
+                 "elven-branched-spear-persistent-finesse-training",
+                 "finesseBefore", "finesseObserved",
+                 "Game.Instance.Player.Inventory.Remove(item, 1)",
                 "_workingSaveSmoke.ArmExactWorkingSaveWrite()",
                 "ExpectedWorkingSaveRoutineCount == 1",
                 "ExpectedWorkingSaveRoutineCount == 0" })

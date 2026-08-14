@@ -44,6 +44,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             BindingFlags.Public | BindingFlags.NonPublic;
         private const string WeaponFinesseGuid =
             "90e54424d682d104ab36436bd527af09";
+        private const string StandardLongspearGuid =
+            "f28f6031c2908d84d945865a80f67177";
+        private const string SecondFinesseTrainingTestGuid =
+            "ea38e5f18f457eb90f66cc536b821a1e";
+        private const string FightersFinesseGuid =
+            "c790786d2e2349ff9f6f20731a7c425a";
+        private const string TrainedGraceGuid =
+            "3bf81c936aac4e039eaa2ec032a34584";
+        private const string WeaponTrainingSpearsGuid =
+            "d5c04077fc063e44784384a00377b7cf";
+        private const string FencingGraceGuid =
+            "47b352ea0f73c354aba777945760b441";
+        private const string SlashingGraceGuid =
+            "697d64669eb2c0543abb9c9b07998a38";
+        private const string DervishDanceGuid =
+            "a18c439e0cca4232a067d13e6401d925";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -69,6 +85,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon equipped = null;
             var facts = new List<BlueprintUnitFact>();
             GameObject presentation = null;
+            BlueprintFeature secondFinesseTraining = null;
             bool cleaned = false;
             string stage = "create-live-fixture";
             try
@@ -268,6 +285,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     familyDex,
                     "native Agile enchantment plus WeaponTypeDamageStatReplacement on live equipped items");
 
+                stage = "multiple-dexterity-and-switch";
+                secondFinesseTraining = UnityEngine.Object.Instantiate(
+                    set.FinesseTraining);
+                secondFinesseTraining.name =
+                    "KMG_RuntimeTest_SecondElvenBranchedSpearFinesseTraining";
+                AssignRequestLocalGuid(secondFinesseTraining,
+                    SecondFinesseTrainingTestGuid);
+                AddFact(attacker, secondFinesseTraining, facts);
+                RuleCalculateWeaponStats twoCategoryFacts = WeaponStats(attacker,
+                    equipped);
+                RemoveFact(attacker, secondFinesseTraining, facts);
+                UnityEngine.Object.DestroyImmediate(secondFinesseTraining);
+                secondFinesseTraining = null;
+                RemoveEquipped(attacker, ref equipped);
+                BlueprintItemWeapon standardLongspear =
+                    BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                        BlueprintBootstrap.Library, StandardLongspearGuid,
+                        "native standard Longspear switch control");
+                equipped = Equip(attacker, standardLongspear);
+                RuleCalculateWeaponStats switchedDamage = WeaponStats(attacker,
+                    equipped);
+                string multipleObserved = "twoFacts=" +
+                    DescribeDamage(twoCategoryFacts) + ";longspear=" +
+                    DescribeDamage(switchedDamage);
+                Add(assertions, "spear-multiple-dexterity-and-switch",
+                    "two equivalent category facts produce one DEX modifier; switching to native Longspear restores STR damage",
+                    multipleObserved,
+                    UsesOneDexterityModifier(attacker, twoCategoryFacts) &&
+                    twoCategoryFacts.DamageBonusStatMultiplier == 1.5f &&
+                    switchedDamage.DamageBonusStat == StatType.Strength,
+                    "two request-local native WeaponTypeDamageStatReplacement facts and an equipped non-spear control");
+
+                stage = "optional-dexterity-and-exclusions";
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Require(
+                    ElvenBranchedSpearItemKind.Mundane).Item);
+                RemoveFact(attacker, set.FinesseTraining, facts);
+                string optionalDexterity = QualifyOptionalDexterityAndExclusions(
+                    attacker, equipped, facts, assertions);
+                diagnostics.Add(multipleObserved);
+                diagnostics.Add(optionalDexterity);
+
                 stage = "movement-opportunity";
                 RemoveEquipped(attacker, ref equipped);
                 equipped = Equip(attacker, set.Require(
@@ -362,6 +421,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (fact != null && attacker.Descriptor.HasFact(fact))
                             attacker.Descriptor.RemoveFact(fact);
                 }
+                if (secondFinesseTraining != null)
+                    UnityEngine.Object.DestroyImmediate(secondFinesseTraining);
                 RemoveMemory(target, attacker);
                 RemoveMemory(secondTarget, attacker);
                 if (target != null && target.CombatState.IsInCombat)
@@ -417,6 +478,125 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };
+        }
+
+        private static string QualifyOptionalDexterityAndExclusions(
+            UnitEntityData attacker, ItemEntityWeapon equipped,
+            IList<BlueprintUnitFact> facts,
+            ICollection<RuntimeTestAssertion> assertions)
+        {
+            BlueprintParametrizedFeature fencing =
+                FindBlueprint<BlueprintParametrizedFeature>(FencingGraceGuid);
+            BlueprintParametrizedFeature slashing =
+                FindBlueprint<BlueprintParametrizedFeature>(SlashingGraceGuid);
+            if (fencing == null || slashing == null)
+                throw new InvalidOperationException(
+                    "Native Grace selectors are unavailable.");
+            int fencingCount = CountCategory(fencing,
+                ElvenBranchedSpearCategoryRuntime.Category);
+            int slashingCount = CountCategory(slashing,
+                ElvenBranchedSpearCategoryRuntime.Category);
+
+            BlueprintFeature fightersFinesse =
+                FindBlueprint<BlueprintFeature>(FightersFinesseGuid);
+            BlueprintFeature trainedGrace =
+                FindBlueprint<BlueprintFeature>(TrainedGraceGuid);
+            BlueprintFeature spearsTraining =
+                FindBlueprint<BlueprintFeature>(WeaponTrainingSpearsGuid);
+            BlueprintFeature dervishDance =
+                FindBlueprint<BlueprintFeature>(DervishDanceGuid);
+            int optionalCount = new[] { fightersFinesse, trainedGrace,
+                dervishDance }.Count(value => value != null);
+            if (optionalCount != 0 && optionalCount != 3)
+                throw new InvalidOperationException(
+                    "Call of the Wild Dexterity feature inventory is partial.");
+
+            string optionalObserved;
+            bool optionalPassed;
+            if (optionalCount == 0)
+            {
+                optionalObserved = "callOfTheWild=absent";
+                optionalPassed = true;
+            }
+            else
+            {
+                if (spearsTraining == null)
+                    throw new InvalidOperationException(
+                        "Call of the Wild is present without Spears weapon training.");
+                AddFact(attacker, spearsTraining, facts);
+                AddFact(attacker, fightersFinesse, facts);
+                RuleCalculateAttackBonusWithoutTarget trainedAttack =
+                    AttackBonus(attacker, equipped);
+                RuleCalculateWeaponStats trainedDamage = WeaponStats(attacker,
+                    equipped);
+                AddFact(attacker, trainedGrace, facts);
+                RuleCalculateWeaponStats graceDamage = WeaponStats(attacker,
+                    equipped);
+                RemoveFact(attacker, trainedGrace, facts);
+                RemoveFact(attacker, fightersFinesse, facts);
+                RemoveFact(attacker, spearsTraining, facts);
+                AddFact(attacker, dervishDance, facts);
+                RuleCalculateWeaponStats dervishDamage = WeaponStats(attacker,
+                    equipped);
+                RemoveFact(attacker, dervishDance, facts);
+                optionalObserved = "callOfTheWild=present;fighter=" +
+                    trainedAttack.AttackBonusStat + "/" +
+                    DescribeDamage(trainedDamage) + ";trainedGrace=" +
+                    DescribeDamage(graceDamage) + ";dervish=" +
+                    DescribeDamage(dervishDamage);
+                optionalPassed =
+                    trainedAttack.AttackBonusStat == StatType.Dexterity &&
+                    trainedDamage.DamageBonusStat == StatType.Strength &&
+                    graceDamage.DamageBonusStat == StatType.Strength &&
+                    graceDamage.BonusDamage >= trainedDamage.BonusDamage &&
+                    dervishDamage.DamageBonusStat == StatType.Strength;
+            }
+
+            string observed = "fencing=" + fencingCount + ";slashing=" +
+                slashingCount + ";" + optionalObserved;
+            Add(assertions, "spear-optional-dexterity-and-exclusions",
+                "Grace selectors exclude spear; optional Fighter's Finesse keeps DEX attack/STR damage, Trained Grace keeps native semantics, and Dervish Dance does not apply",
+                observed, fencingCount == 0 && slashingCount == 0 &&
+                    optionalPassed,
+                "live native/optional feature facts and attack/weapon-stat rule events without a compile-time optional-mod dependency");
+            return observed;
+        }
+
+        private static int CountCategory(BlueprintParametrizedFeature feature,
+            WeaponCategory category)
+        {
+            return feature.GetFullSelectionItems().Count(value => value != null &&
+                value.Param != null && value.Param.WeaponCategory.HasValue &&
+                value.Param.WeaponCategory.Value.Equals(category));
+        }
+
+        private static T FindBlueprint<T>(string guid)
+            where T : BlueprintScriptableObject
+        {
+            return BlueprintBootstrap.Library.GetAllBlueprints().OfType<T>()
+                .SingleOrDefault(value => value != null && string.Equals(
+                    value.AssetGuid, guid, StringComparison.Ordinal));
+        }
+
+        private static void AssignRequestLocalGuid(
+            BlueprintScriptableObject blueprint, string guid)
+        {
+            if (blueprint == null) throw new ArgumentNullException("blueprint");
+            if (BlueprintBootstrap.Library.GetAllBlueprints().Any(value =>
+                value != null && string.Equals(value.AssetGuid, guid,
+                    StringComparison.Ordinal)))
+                throw new InvalidOperationException(
+                    "The request-local Dexterity test GUID collides with a registered blueprint.");
+            FieldInfo field = typeof(BlueprintScriptableObject).GetField(
+                "m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null || field.FieldType != typeof(string))
+                throw new MissingFieldException(
+                    typeof(BlueprintScriptableObject).FullName, "m_AssetGuid");
+            field.SetValue(blueprint, guid);
+            if (!string.Equals(blueprint.AssetGuid, guid,
+                StringComparison.Ordinal))
+                throw new InvalidOperationException(
+                    "The request-local Dexterity test GUID was not assigned.");
         }
 
         private static string QualifyNamedEffects(
