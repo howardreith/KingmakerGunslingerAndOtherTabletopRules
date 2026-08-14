@@ -189,7 +189,7 @@ namespace KingmakerGunslinger.DomainTests
                 "spearStaticOptions ==",
                 "(expectedElvenBranchedSpears ? 4 : 0)",
                 "spearFamiliarityCategories == 1",
-                "(expectedElvenBranchedSpears ? 24 : 0)",
+                "24 + installedSpearBtslTables * 6 : 0",
                 "(expectedElvenBranchedSpears ? 4 : 0)",
                 "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces" })
                 Assertions.True(runner.Contains(token),

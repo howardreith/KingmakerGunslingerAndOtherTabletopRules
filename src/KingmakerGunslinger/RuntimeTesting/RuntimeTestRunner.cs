@@ -5726,6 +5726,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
             }
+            BlueprintItem[] btslSpearItems = BlueprintBootstrap.ElvenBranchedSpears
+                .Entries.Select(value => (BlueprintItem)value.Item).ToArray();
+            int btslSpearTables = 0, btslSpearEntries = 0,
+                invalidBtslSpearCounts = 0;
+            var btslSpearRecords = new List<string>();
+            for (int index = 0;
+                index < BeneathStolenLandsVendorBlueprints.TableGuids.Length;
+                index++)
+            {
+                BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
+                    string.Equals(value.AssetGuid,
+                        BeneathStolenLandsVendorBlueprints.TableGuids[index],
+                        StringComparison.Ordinal));
+                if (table == null) continue;
+                btslSpearTables++;
+                int validRows = 0;
+                foreach (BlueprintItem item in btslSpearItems)
+                {
+                    LootItemsPackFixed[] matches = (table.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                        .Where(value => ReferenceEquals(
+                            CapitalVendorBlueprints.ReadItem(value), item)).ToArray();
+                    btslSpearEntries += matches.Length;
+                    if (matches.Length == 1 &&
+                        CapitalVendorBlueprints.ReadCount(matches[0]) == 1)
+                        validRows++;
+                    else invalidBtslSpearCounts++;
+                }
+                btslSpearRecords.Add(table.name + ":" + table.AssetGuid +
+                    ";mode=" + (index < 2 ? "standalone" : "campaign") +
+                    ";validRows=" + validRows + "/6");
+            }
             BlueprintItem[] namedItems = BlueprintBootstrap.MagicFirearms.Entries
                 .Where(value => value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
                     value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
@@ -5815,6 +5847,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";blunderbussEntries=" + blunderbussEntries +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
                     ";invalidBtslCounts=" + invalidBtslCounts +
+                ";btslSpearTables=" + btslSpearTables +
+                    ";btslSpearEntries=" + btslSpearEntries +
+                    ";invalidBtslSpearCounts=" + invalidBtslSpearCounts +
+                    ";btslSpearRecords=" + string.Join(" | ",
+                        btslSpearRecords.ToArray()) +
                 ";bannedManagedEntries=" + bannedManagedEntries +
                 ";jhodProjectEntries=" + jhodProjectEntries +
                 ";validRareLoot=" + validRareLoot + ";rareLoot=" +
@@ -5874,6 +5911,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, btslTables == 4 && btslEntries == 48 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
+                Assertion("btsl-spear-vendor-publication",
+                    "four exact standalone/campaign weapon tables; six singular generic spear entries each; existing firearm rows retained",
+                    observed, btslSpearTables == 4 && btslSpearEntries == 24 &&
+                        invalidBtslSpearCounts == 0 && btslEntries == 48 &&
+                        invalidBtslCounts == 0,
+                    "exact installed shared-vendor table identities and additive fixed-item rows"),
                 Assertion("rare-firearm-acquisition-exclusions",
                     "no named or modern firearms in managed vendors; no Jhod project firearms",
                     observed, bannedManagedEntries == 0 && jhodProjectEntries == 0,
@@ -8020,13 +8063,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Array.Empty<WeaponCategory>()).Count(value => value.Equals(
                             ElvenBranchedSpearCategoryRuntime.Category));
             int spearVendorRows = 0;
+            int installedSpearBtslTables = 0;
             foreach (ElvenBranchedSpearCampaignBlueprints.VendorSpec spec in
                 ElvenBranchedSpearCampaignBlueprints.VendorSpecs)
             {
-                BlueprintSharedVendorTable table =
-                    BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>(
-                        BlueprintBootstrap.Library, spec.Guid,
-                        "Elven Branched Spear vendor table");
+                BlueprintSharedVendorTable table = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintSharedVendorTable>()
+                    .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                        spec.Guid, StringComparison.Ordinal));
+                if (table == null && spec.Optional) continue;
+                if (table == null)
+                    throw new InvalidOperationException(
+                        "Required Elven Branched Spear vendor table is absent: " +
+                        spec.Guid);
+                if (spec.Optional) installedSpearBtslTables++;
                 spearVendorRows += (table.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
                     .Count(value => spearItems.Contains(
@@ -8069,7 +8119,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearParameterizedOptions + ";spearStatic=" +
                 spearStaticOptions + ";spearFamiliarity=" +
                 spearFamiliarityCategories + ";spearVendors=" +
-                spearVendorRows + ";spearLoot=" + spearLootRows;
+                spearVendorRows + ";spearBtslTables=" +
+                installedSpearBtslTables + ";spearLoot=" + spearLootRows;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
@@ -8118,7 +8169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;4 static references;24 vendor rows;4 loot rows" :
+                        "12 identities;7 parameter options;4 static references;24 campaign vendor rows plus six rows per installed BTSL table;4 loot rows" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -8130,7 +8181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedElvenBranchedSpears ? 4 : 0) &&
                     spearFamiliarityCategories == 1 &&
                     spearVendorRows ==
-                        (expectedElvenBranchedSpears ? 24 : 0) &&
+                        (expectedElvenBranchedSpears ?
+                            24 + installedSpearBtslTables * 6 : 0) &&
                     spearLootRows ==
                         (expectedElvenBranchedSpears ? 4 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),

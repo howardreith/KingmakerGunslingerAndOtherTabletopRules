@@ -27,7 +27,23 @@ namespace KingmakerGunslinger.Blueprints
                 "DireNarlmarchesVillageVendorTable", AllFoundationKinds(), null),
             new VendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
                 "PitaxTownVendorTable", AllFoundationKinds(),
-                NamedSpearKind.BriarCrownedSpear)
+                NamedSpearKind.BriarCrownedSpear),
+            new VendorSpec(BeneathStolenLandsVendorBlueprints
+                    .StandaloneHonestGuyTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[0],
+                AllFoundationKinds(), null, true, "standalone BTSL"),
+            new VendorSpec(BeneathStolenLandsVendorBlueprints
+                    .StandaloneXellirenTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[1],
+                AllFoundationKinds(), null, true, "standalone BTSL"),
+            new VendorSpec(BeneathStolenLandsVendorBlueprints
+                    .CampaignHonestGuyTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[2],
+                AllFoundationKinds(), null, true, "campaign Tenebrous Depths"),
+            new VendorSpec(BeneathStolenLandsVendorBlueprints
+                    .CampaignXellirenTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[3],
+                AllFoundationKinds(), null, true, "campaign Tenebrous Depths")
         };
 
         private static readonly LootSpec[] Loot =
@@ -65,9 +81,22 @@ namespace KingmakerGunslinger.Blueprints
             {
                 foreach (VendorSpec spec in Vendors)
                 {
-                    BlueprintSharedVendorTable table = BlueprintLibraryLookup.RequireExact<
-                        BlueprintSharedVendorTable>(library, spec.Guid,
-                            "Elven Branched Spear vendor " + spec.Name);
+                    BlueprintSharedVendorTable table = library.GetAllBlueprints()
+                        .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
+                            string.Equals(value.AssetGuid, spec.Guid,
+                                StringComparison.Ordinal));
+                    if (table == null && spec.Optional)
+                    {
+                        logger.Info("elven-branched-spear",
+                            "campaign.vendor-skipped-optional",
+                            "SKIPPED_OPTIONAL_TABLE_ABSENT;guid=" + spec.Guid +
+                            ";mode=" + spec.Mode);
+                        continue;
+                    }
+                    if (table == null)
+                        throw new InvalidOperationException(
+                            "Required Elven Branched Spear vendor is absent: " +
+                            spec.Guid + ";name=" + spec.Name);
                     if (!string.Equals(table.name, spec.Name, StringComparison.Ordinal))
                         throw new InvalidOperationException("Spear vendor identity mismatch: " +
                             spec.Guid + ";name=" + table.name);
@@ -145,7 +174,7 @@ namespace KingmakerGunslinger.Blueprints
                     vendorMutations, lootMutations);
                 result.Validate();
                 logger.Info("elven-branched-spear", "campaign.published",
-                    "Normalized four exact vendor catalogs and four exact fixed-loot placements for the module-enabled spear progression.");
+                    "Normalized four campaign vendors, every installed standalone/campaign BTSL weapon table, and four fixed-loot placements for the module-enabled spear progression.");
                 return result;
             }
             catch
@@ -164,12 +193,16 @@ namespace KingmakerGunslinger.Blueprints
         internal sealed class VendorSpec
         {
             internal VendorSpec(string guid, string name,
-                ElvenBranchedSpearItemKind[] kinds, NamedSpearKind? namedKind)
-            { Guid = guid; Name = name; FoundationKinds = kinds; NamedKind = namedKind; }
+                ElvenBranchedSpearItemKind[] kinds, NamedSpearKind? namedKind,
+                bool optional = false, string mode = "campaign")
+            { Guid = guid; Name = name; FoundationKinds = kinds; NamedKind = namedKind;
+                Optional = optional; Mode = mode; }
             internal string Guid { get; private set; }
             internal string Name { get; private set; }
             internal ElvenBranchedSpearItemKind[] FoundationKinds { get; private set; }
             internal NamedSpearKind? NamedKind { get; private set; }
+            internal bool Optional { get; private set; }
+            internal string Mode { get; private set; }
         }
 
         internal sealed class LootSpec
@@ -194,13 +227,22 @@ namespace KingmakerGunslinger.Blueprints
         internal int LootCount { get { return _loot.Count; } }
         internal void Validate()
         {
-            if (_vendors.Count != 4 || _loot.Count != 4 ||
-                _vendors.Select(value => value.Table).Distinct().Count() != 4 ||
+            int requiredVendors = ElvenBranchedSpearCampaignBlueprints.VendorSpecs
+                .Count(value => !value.Optional);
+            int maximumVendors = ElvenBranchedSpearCampaignBlueprints.VendorSpecs.Length;
+            if (_vendors.Count < requiredVendors || _vendors.Count > maximumVendors ||
+                _loot.Count != 4 ||
+                _vendors.Select(value => value.Table).Distinct().Count() != _vendors.Count ||
                 _loot.Select(value => value.Target).Distinct().Count() != 4)
                 throw new InvalidOperationException(
                     "Elven Branched Spear campaign publication cardinality mismatch.");
             foreach (SpearVendorMutation value in _vendors) value.Validate();
             foreach (SpearLootMutation value in _loot) value.Validate();
+            if (ElvenBranchedSpearCampaignBlueprints.VendorSpecs
+                .Where(value => !value.Optional).Any(spec => !_vendors.Any(value =>
+                    ReferenceEquals(value.Spec, spec))))
+                throw new InvalidOperationException(
+                    "A required Elven Branched Spear campaign vendor was not published.");
         }
         internal void Rollback()
         {

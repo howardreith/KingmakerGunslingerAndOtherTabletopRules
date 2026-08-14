@@ -370,7 +370,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals", "Rollback()" })
                 Assertions.True(source.Contains(token),
                     "Campaign publication lacks: " + token);
-            Assertions.Equal(4, source.Split(new[] { "new VendorSpec(" },
+            Assertions.Equal(8, source.Split(new[] { "new VendorSpec(" },
                 StringSplitOptions.None).Length - 1,
                 "Vendor placement count changed.");
             Assertions.Equal(4, source.Split(new[] { "new LootSpec(" },
@@ -392,6 +392,50 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(manifest.IndexOf(token,
                     StringComparison.OrdinalIgnoreCase) >= 0,
                     "Placement manifest lacks: " + token);
+        }
+
+        internal static void BeneathStolenLandsPublicationContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ElvenBranchedSpearCampaignBlueprints.cs"));
+            foreach (string token in new[] {
+                "StandaloneHonestGuyTableGuid",
+                "StandaloneXellirenTableGuid",
+                "CampaignHonestGuyTableGuid",
+                "CampaignXellirenTableGuid",
+                "standalone BTSL",
+                "campaign Tenebrous Depths",
+                "AllFoundationKinds(), null, true",
+                "SKIPPED_OPTIONAL_TABLE_ABSENT",
+                "!owned.Contains",
+                "CreateFixedEntry(item, 1)" })
+                Assertions.True(source.Contains(token),
+                    "BTSL spear publication lacks: " + token);
+            Assertions.False(source.Contains("NamedSpearKind.Boughkeeper, true") ||
+                source.Contains("NamedSpearKind.MoonlitFork, true") ||
+                source.Contains("NamedSpearKind.VipersReach, true"),
+                "A campaign-unique named spear leaked into ordinary BTSL stock.");
+
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains(
+                "publicationPlan.ElvenBranchedSpearCommerce") &&
+                bootstrap.IndexOf("ElvenBranchedSpearCampaignBlueprints",
+                    StringComparison.Ordinal) >= 0,
+                "BTSL spear rows are not covered by the spear module gate.");
+
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            foreach (string token in new[] {
+                "btsl-spear-vendor-publication",
+                "btslSpearEntries == 24",
+                "invalidBtslSpearCounts == 0",
+                "btslEntries == 48",
+                "24 + installedSpearBtslTables * 6" })
+                Assertions.True(runtime.Contains(token),
+                    "BTSL runtime/module regression coverage lacks: " + token);
         }
 
         internal static void OriginalAssetPipelineContractsAreExact()
