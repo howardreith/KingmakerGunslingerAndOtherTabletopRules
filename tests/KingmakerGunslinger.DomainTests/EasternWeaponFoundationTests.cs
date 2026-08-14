@@ -689,6 +689,59 @@ namespace KingmakerGunslinger.DomainTests
                 "Eastern Arms and Armor bridge is not installed at bootstrap.");
         }
 
+        internal static void CallOfTheWildFocusedWeaponIsExactAndOptional()
+        {
+            string root = Environment.CurrentDirectory;
+            string path = Path.Combine(root, "src", "KingmakerGunslinger",
+                "Compatibility", "CustomWeaponFocusedWeaponCompatibility.cs");
+            string source = File.ReadAllText(path);
+            string bootstrapSource = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            string observerSource = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "EasternWeaponContractObserver.cs"));
+            foreach (string token in new[] {
+                "786bde5345a548408fade70b60a70482",
+                "FocusedWeaponAdvancedWeaponTrainingFeatureSelection",
+                "PrerequisiteParametrizedFeature",
+                "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+                "ContextWeaponDamageDiceReplacementForSpecificCategory",
+                "29a6081e7f4d41fdb9e5da830dd32522",
+                "a13bcc2d98e4426cb017d4edfa05818c",
+                "70ecd8ffc4e64cce99eccaa2b509bf3d",
+                "266e9d03ef6e4da6aa56b599f9a6aebc",
+                "c062c6d16aecddc4ab67d9c783b2ad46",
+                "dice.Length != 5", "selection == null",
+                "value.ComponentsArray = Array.Empty<BlueprintComponent>()",
+                "selection.AllFeatures = next",
+                "eastern-cotw-focused-weapon-contract",
+                "DescribeFocusedWeapon", "IsExactFocusedWeapon",
+                "publicationPlan.ElvenBranchedSpearSelectors",
+                "publicationPlan.EasternWeaponSelectors" })
+                Assertions.True(source.Contains(token) ||
+                    bootstrapSource.Contains(token) ||
+                    observerSource.Contains(token),
+                    "Focused Weapon compatibility lacks: " + token);
+            Assertions.False(source.Contains("GetFullSelectionItems") ||
+                source.Contains("ExtractSelectionItems") ||
+                source.Contains("HarmonyPatch"),
+                "Focused Weapon must use its native feature-selection prerequisite path.");
+
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(
+                root, "blueprints", "blueprints.json")));
+            JArray entries = (JArray)manifest["entries"];
+            string[] symbols = {
+                "KMG.CustomWeapons.FocusedWeapon.ElvenBranchedSpear",
+                "KMG.CustomWeapons.FocusedWeapon.Wakizashi",
+                "KMG.CustomWeapons.FocusedWeapon.Katana",
+                "KMG.CustomWeapons.FocusedWeapon.Nodachi" };
+            Assertions.Equal(4, entries.Count(entry => symbols.Contains(
+                (string)entry["symbol"]) &&
+                (string)entry["plannedType"] == "BlueprintFeature" &&
+                (string)entry["status"] == "active"),
+                "Focused Weapon persistent identity count changed.");
+        }
+
         private static void AssertRgbaPng128(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);

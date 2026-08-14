@@ -55,8 +55,12 @@ def validate(root: Path) -> None:
         if entry["symbol"].startswith("KMG.ElvenBranchedSpear.")]
     eastern_entries = [entry for entry in manifest["entries"]
         if entry["symbol"].startswith("KMG.EasternWeapons.")]
-    if (len(manifest["entries"]) != 1439 + len(spear_entries) + len(eastern_entries)
-            or len(active) != 1438 + len(spear_entries) + len(eastern_entries)
+    focused_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith("KMG.CustomWeapons.FocusedWeapon.")]
+    if (len(manifest["entries"]) != 1439 + len(spear_entries) +
+            len(eastern_entries) + len(focused_entries)
+            or len(active) != 1438 + len(spear_entries) +
+            len(eastern_entries) + len(focused_entries)
             or len(reserved) != 1):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")
     expected_spear_entries = {
@@ -101,7 +105,8 @@ def validate(root: Path) -> None:
         raise AssertionError("Elven Branched Spear blueprint ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    expected_registration = ("ExpectedRegisteredBlueprintCount = 329 +"
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 333 +"
+        if focused_entries else "ExpectedRegisteredBlueprintCount = 329 +"
         if eastern_entries else "ExpectedRegisteredBlueprintCount = 283 +"
         if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")
     if expected_registration not in bootstrap:

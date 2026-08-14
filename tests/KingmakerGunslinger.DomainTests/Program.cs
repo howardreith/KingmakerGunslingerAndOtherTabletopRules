@@ -96,6 +96,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("eastern-weapons.original-asset-pipeline", EasternWeaponFoundationTests.OriginalAssetPipelineIsExactAndFailSafe),
             Case("eastern-weapons.combat-scenario-contract", EasternWeaponFoundationTests.CombatScenarioUsesLiveRulesAndCleansUp),
             Case("eastern-weapons.arms-armor-grip-bridge", EasternWeaponFoundationTests.ArmsArmorGripBridgeIsExactAndOptional),
+            Case("eastern-weapons.cotw-focused-weapon", EasternWeaponFoundationTests.CallOfTheWildFocusedWeaponIsExactAndOptional),
             Case("shield-other.damage-split", ShieldOtherPolicyTests.DamageSplitBoundariesAndConservation),
             Case("shield-other.damage-guards", ShieldOtherPolicyTests.DamageSplitGuards),
             Case("shield-other.link-validity", ShieldOtherPolicyTests.LinkValidityMatrix),

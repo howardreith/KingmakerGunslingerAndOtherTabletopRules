@@ -15,6 +15,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Root;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Compatibility;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -109,6 +110,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "weaponspecialization", "chosenweapon", "weaponmastery" }))
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeSelection).Take(160).ToArray();
+            BlueprintScriptableObject focusedValue = all.SingleOrDefault(value =>
+                string.Equals(value.AssetGuid,
+                    CustomWeaponFocusedWeaponPublication.SelectionGuid,
+                    StringComparison.Ordinal));
+            BlueprintFeatureSelection focusedWeapon = focusedValue as
+                BlueprintFeatureSelection;
+            string focusedContract = DescribeFocusedWeapon(focusedValue,
+                focusedWeapon);
+            bool focusedContractValid = focusedValue == null ||
+                IsExactFocusedWeapon(focusedWeapon);
             string[] ruleBlueprints = all.Where(value =>
                     ContainsAny(value.name + ";" + ComponentTypeNames(value),
                         RuleTerms))
@@ -178,6 +189,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selectors.Length >= 8 && selections.Length > 0 &&
                     HasCandidate(selections, "exoticweaponproficiency"),
                 "installed parameterized feature and AllFeatures contracts");
+            Add(assertions, "eastern-cotw-focused-weapon-contract",
+                "Call of the Wild absent, or exact Focused Weapon parent and category-child contract",
+                focusedContract, focusedContractValid,
+                "exact optional parent GUID/type/name, serialized Features, merged AllFeatures, Weapon Focus prerequisite, category damage component, and selection method inventory");
             Add(assertions, "eastern-native-rule-boundaries",
                 "installed proficiency, grip, equipment, critical, Power Attack, size, polymorph, and damage rule candidates",
                 "blueprints=" + string.Join(" | ", ruleBlueprints) +
@@ -239,6 +254,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "enchantments=" + enchantments.Length,
                     "selectors=" + selectors.Length,
                     "selections=" + selections.Length,
+                    "focusedWeapon=" + (focusedValue == null ? "absent" :
+                        focusedContractValid ? "exact" : "malformed"),
                     "ruleBlueprints=" + ruleBlueprints.Length,
                     "ruleTypes=" + ruleTypes.Length,
                     "mechanicBlueprints=" + mechanicBlueprints.Length,
@@ -351,6 +368,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(feature => feature != null)
                     .Select(feature => feature.name + ":" + feature.AssetGuid +
                         "{" + DescribeComponents(feature) + "}").ToArray()) + "]";
+        }
+
+        private static string DescribeFocusedWeapon(
+            BlueprintScriptableObject value,
+            BlueprintFeatureSelection selection)
+        {
+            if (value == null) return "absent:no-optional-selector-lookup";
+            if (selection == null) return "malformed:type=" +
+                value.GetType().FullName + ";name=" + value.name;
+            string[] donorGuids = { "29a6081e7f4d41fdb9e5da830dd32522",
+                "a13bcc2d98e4426cb017d4edfa05818c",
+                "70ecd8ffc4e64cce99eccaa2b509bf3d",
+                "266e9d03ef6e4da6aa56b599f9a6aebc" };
+            BlueprintFeature[] children = selection.AllFeatures ??
+                Array.Empty<BlueprintFeature>();
+            string[] donors = donorGuids.Select(guid => children.SingleOrDefault(
+                    child => child != null && string.Equals(child.AssetGuid,
+                        guid, StringComparison.Ordinal)))
+                .Select(child => child == null ? "<missing>" :
+                    DescribeBlueprint(child)).ToArray();
+            return "parent=" + selection.name + ":" + selection.AssetGuid +
+                ";display=" + Safe(() => selection.Name) +
+                ";features=" + (selection.Features ??
+                    Array.Empty<BlueprintFeature>()).Length +
+                ";allFeatures=" + children.Length +
+                ";donors=[" + string.Join(" | ", donors) + "]" +
+                ";featureSelectionMethods=" + DescribeType(
+                    typeof(BlueprintFeatureSelection)) +
+                ";parametrizedSelectionMethods=" + DescribeType(
+                    typeof(BlueprintParametrizedFeature));
+        }
+
+        private static bool IsExactFocusedWeapon(
+            BlueprintFeatureSelection selection)
+        {
+            if (selection == null || !string.Equals(selection.name,
+                    "FocusedWeaponAdvancedWeaponTrainingFeatureSelection",
+                    StringComparison.Ordinal) ||
+                (selection.Features ?? Array.Empty<BlueprintFeature>()).Length != 0)
+                return false;
+            BlueprintFeature[] children = selection.AllFeatures ??
+                Array.Empty<BlueprintFeature>();
+            string[] donorGuids = { "29a6081e7f4d41fdb9e5da830dd32522",
+                "a13bcc2d98e4426cb017d4edfa05818c",
+                "70ecd8ffc4e64cce99eccaa2b509bf3d",
+                "266e9d03ef6e4da6aa56b599f9a6aebc" };
+            foreach (string guid in donorGuids)
+            {
+                BlueprintFeature[] matches = children.Where(child =>
+                    child != null && string.Equals(child.AssetGuid, guid,
+                        StringComparison.Ordinal)).ToArray();
+                if (matches.Length != 1) return false;
+                string components = DescribeComponents(matches[0]);
+                if (components.IndexOf(
+                        CustomWeaponFocusedWeaponPublication.WeaponFocusGuid,
+                        StringComparison.Ordinal) < 0 ||
+                    components.IndexOf(
+                        CustomWeaponFocusedWeaponPublication
+                            .DamageComponentTypeName,
+                        StringComparison.Ordinal) < 0)
+                    return false;
+            }
+            return true;
         }
 
         private static string DescribeCampaignBlueprint(

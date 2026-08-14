@@ -131,11 +131,29 @@ def validate(root: Path) -> None:
 
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs") \
         .read_text(encoding="utf-8")
-    for token in ("ExpectedRegisteredBlueprintCount = 329 +",
+    for token in ("ExpectedRegisteredBlueprintCount = 333 +",
             "EasternWeaponBlueprints.Register",
             "internal static EasternWeaponBlueprintSet EasternWeapons"):
         if token not in bootstrap:
             raise AssertionError(f"Eastern Weapons bootstrap contract missing: {token}")
+
+    focused = {
+        "KMG.CustomWeapons.FocusedWeapon.ElvenBranchedSpear":
+            "61280cc10efc55879c1491b9ead295a0",
+        "KMG.CustomWeapons.FocusedWeapon.Wakizashi":
+            "a0032cd381bc534e86d655a86a077276",
+        "KMG.CustomWeapons.FocusedWeapon.Katana":
+            "44dfba56c1f25b29bc48591753386e22",
+        "KMG.CustomWeapons.FocusedWeapon.Nodachi":
+            "8e121f3a48375f69ac9910b2d798b37b",
+    }
+    all_by_symbol = {entry["symbol"]: entry for entry in manifest["entries"]}
+    for symbol, guid in focused.items():
+        entry = all_by_symbol.get(symbol)
+        if (entry is None or entry.get("guid") != guid or
+                entry.get("plannedType") != "BlueprintFeature" or
+                entry.get("status") != "active"):
+            raise AssertionError(f"Focused Weapon identity mismatch: {symbol}")
 
 
 def main() -> int:

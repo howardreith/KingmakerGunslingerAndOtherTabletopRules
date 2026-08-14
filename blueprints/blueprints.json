@@ -12092,6 +12092,34 @@
       "plannedType": "BlueprintFeature",
       "status": "active", "milestone": "Eastern Weapons",
       "notes": "Native equipment-owned exact grip-mode feature for Moonlit Crossing."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.FocusedWeapon.ElvenBranchedSpear",
+      "guid": "61280cc10efc55879c1491b9ead295a0",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons first playtest repair",
+      "notes": "Persistent Call of the Wild Focused Weapon child for Elven Branched Spear; inert when the optional mod is absent."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.FocusedWeapon.Wakizashi",
+      "guid": "a0032cd381bc534e86d655a86a077276",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons first playtest repair",
+      "notes": "Persistent Call of the Wild Focused Weapon child for Wakizashi; inert when the optional mod is absent."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.FocusedWeapon.Katana",
+      "guid": "44dfba56c1f25b29bc48591753386e22",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons first playtest repair",
+      "notes": "Persistent Call of the Wild Focused Weapon child for Katana; inert when the optional mod is absent."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.FocusedWeapon.Nodachi",
+      "guid": "8e121f3a48375f69ac9910b2d798b37b",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons first playtest repair",
+      "notes": "Persistent Call of the Wild Focused Weapon child for dual-group Nodachi; inert when the optional mod is absent."
     }
   ]
 }

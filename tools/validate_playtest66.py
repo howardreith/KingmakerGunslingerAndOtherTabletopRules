@@ -30,9 +30,13 @@ def validate(root: Path, test_count: int = 865) -> None:
         if entry.get("symbol", "").startswith("KMG.ElvenBranchedSpear."))
     eastern_weapons_count = sum(1 for entry in manifest["entries"]
         if entry.get("symbol", "").startswith("KMG.EasternWeapons."))
+    focused_weapon_count = sum(1 for entry in manifest["entries"]
+        if entry.get("symbol", "").startswith(
+            "KMG.CustomWeapons.FocusedWeapon."))
     active_count, ledger_count = ((1438 + elven_branched_spear_count +
-        eastern_weapons_count, 1439 + elven_branched_spear_count +
-        eastern_weapons_count) if has_expanded_summoning_reservations else
+        eastern_weapons_count + focused_weapon_count,
+        1439 + elven_branched_spear_count + eastern_weapons_count +
+        focused_weapon_count) if has_expanded_summoning_reservations else
         ((254, 255) if has_shield_other else
         ((252, 253) if current_version == "0.0.76" else (250, 251))))
     validate_playtest64.validate_playtest63.validate_sprint60.validate(

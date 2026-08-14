@@ -11,8 +11,8 @@ Feature settings schema: 5
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1513 active; 1 reserved; 1514 total
-Runtime registration count: 1513 in all 64 feature-module states
+Blueprint ledger: 1517 active; 1 reserved; 1518 total
+Runtime registration count: 1517 in all 64 feature-module states
 Eastern Weapons catalog: 3 categories; 12 generic items; 18 named items; 30 total
 Eastern Weapons assets: 3 original equipped models; 6 original production icons
 Dependency-free domain tests: PASS 1047/1047

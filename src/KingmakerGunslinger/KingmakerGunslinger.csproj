@@ -51,6 +51,7 @@
     <Compile Include="CustomWeapons\CustomWeaponCategoryDefinition.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
     <Compile Include="CustomWeapons\CustomWeaponSelectorRuntime.cs" />
+    <Compile Include="Compatibility\CustomWeaponFocusedWeaponCompatibility.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponNamedCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponNamedEffects.cs" />

@@ -29,6 +29,7 @@ using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Compatibility;
 using KingmakerGunslinger.EasternWeapons;
 using UnityEngine;
 
@@ -138,6 +139,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "capstones";
                 QualifyCapstones(set, attacker, target, ref equipped,
                     ref offhand, assertions, diagnostics);
+
+                stage = "call-of-the-wild-focused-weapon";
+                QualifyFocusedWeapon(set, attacker, facts, ref equipped,
+                    assertions, diagnostics);
             }
             catch (Exception exception)
             {
@@ -354,6 +359,229 @@ namespace KingmakerGunslinger.RuntimeTesting
                     graceLeaks == 0,
                 "live GetFullSelectionItems, merged AllFeatures, and excluded native Grace selectors");
             diagnostics.Add("selectors{" + observed + "}");
+        }
+
+        private static void QualifyFocusedWeapon(EasternWeaponBlueprintSet set,
+            UnitEntityData attacker, IList<BlueprintUnitFact> facts,
+            ref ItemEntityWeapon equipped,
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics)
+        {
+            BlueprintScriptableObject optional = null;
+            bool present = BlueprintBootstrap.Library.BlueprintsByAssetId != null &&
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(
+                    CustomWeaponFocusedWeaponPublication.SelectionGuid,
+                    out optional);
+            BlueprintFeature[] children = {
+                RequireFocused(CustomWeaponFocusedWeaponPublication.SpearGuid),
+                RequireFocused(CustomWeaponFocusedWeaponPublication.WakizashiGuid),
+                RequireFocused(CustomWeaponFocusedWeaponPublication.KatanaGuid),
+                RequireFocused(CustomWeaponFocusedWeaponPublication.NodachiGuid) };
+            if (!present)
+            {
+                bool inert = children.All(value =>
+                    (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Length == 0);
+                ElvenBranchedSpearCombatScenario.Add(assertions,
+                    "cotw-focused-weapon-absent",
+                    "optional selector absent; four persistent choices inert",
+                    "selector=absent;inert=" + inert, inert,
+                    "exact optional GUID lookup and persistent KMG blueprints");
+                diagnostics.Add("focusedWeapon{absent;no-selector-lookup}");
+                return;
+            }
+
+            var selection = optional as BlueprintFeatureSelection;
+            if (selection == null || !string.Equals(selection.name,
+                    "FocusedWeaponAdvancedWeaponTrainingFeatureSelection",
+                    StringComparison.Ordinal))
+                throw new InvalidOperationException(
+                    "The exact Call of the Wild Focused Weapon selection changed.");
+
+            BlueprintParametrizedFeature weaponFocus = BlueprintLibraryLookup
+                .RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library,
+                    CustomWeaponFocusedWeaponPublication.WeaponFocusGuid,
+                    "native Weapon Focus parameter authority");
+            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression
+                .CharacterClasses.Single(value => value != null &&
+                    string.Equals(value.AssetGuid,
+                        "48ac8db94d5de7645906c7d0ad3bcfbd",
+                        StringComparison.Ordinal));
+            for (int level = attacker.Descriptor.Progression.GetClassLevel(fighter);
+                level < 20; level++)
+                attacker.Descriptor.Progression.AddClassLevel(fighter);
+
+            foreach (BlueprintFeature prerequisite in children.SelectMany(value =>
+                (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<Kingmaker.Blueprints.Classes.Prerequisites
+                        .PrerequisiteFeature>()
+                    .Select(component => component.Feature))
+                .Where(value => value != null).Distinct())
+            {
+                if (!attacker.Descriptor.HasFact(prerequisite))
+                    ElvenBranchedSpearCombatScenario.AddFact(attacker,
+                        prerequisite, facts);
+            }
+
+            WeaponCategory[] categories = {
+                ElvenBranchedSpear.ElvenBranchedSpearCategoryRuntime.Category,
+                EasternWeaponCategoryRuntime.Category(
+                    EasternWeaponFamily.Wakizashi),
+                EasternWeaponCategoryRuntime.Category(
+                    EasternWeaponFamily.Katana),
+                EasternWeaponCategoryRuntime.Category(
+                    EasternWeaponFamily.Nodachi) };
+            BlueprintItemWeapon[] weapons = {
+                BlueprintBootstrap.ElvenBranchedSpears.Require(
+                    ElvenBranchedSpear.ElvenBranchedSpearItemKind.Mundane).Item,
+                set.Require(EasternWeaponFamily.Wakizashi,
+                    EasternWeaponGenericKind.Mundane).Item,
+                set.Require(EasternWeaponFamily.Katana,
+                    EasternWeaponGenericKind.Mundane).Item,
+                set.Require(EasternWeaponFamily.Nodachi,
+                    EasternWeaponGenericKind.Mundane).Item };
+            string[] names = {
+                "Elven Branched Spear", "Wakizashi", "Katana", "Nodachi" };
+            var parameterFacts = new List<Fact>();
+            try
+            {
+                bool negative = CountFocused(selection, attacker, children) == 0;
+                bool singles = true;
+                var rows = new List<string>();
+                for (int index = 0; index < categories.Length; index++)
+                {
+                    Fact focus = attacker.Descriptor.AddFact(weaponFocus, null,
+                        new FeatureParam(categories[index]));
+                    if (focus == null)
+                        throw new InvalidOperationException(
+                            "Could not add request-local Weapon Focus (" +
+                            names[index] + ").");
+                    try
+                    {
+                        int visible = CountFocused(selection, attacker, children);
+                        bool exact = visible == 1 && IsFocusedVisible(selection,
+                            attacker, children[index]);
+                        singles &= exact;
+                        rows.Add(names[index] + "=" + visible + "/" + exact);
+                    }
+                    finally
+                    {
+                        attacker.Descriptor.RemoveFact(focus);
+                    }
+                }
+
+                for (int index = 0; index < categories.Length; index++)
+                {
+                    Fact focus = attacker.Descriptor.AddFact(weaponFocus, null,
+                        new FeatureParam(categories[index]));
+                    if (focus == null)
+                        throw new InvalidOperationException(
+                            "Could not add combined request-local Weapon Focus.");
+                    parameterFacts.Add(focus);
+                }
+                bool combined = CountFocused(selection, attacker, children) == 4 &&
+                    children.All(value => IsFocusedVisible(selection, attacker,
+                        value));
+
+                bool mechanics = true;
+                var mechanicalRows = new List<string>();
+                for (int index = 0; index < children.Length; index++)
+                {
+                    Fact focused = attacker.Descriptor.AddFact(children[index]);
+                    if (focused == null)
+                        throw new InvalidOperationException(
+                            "Could not add request-local Focused Weapon: " +
+                            names[index] + ".");
+                    try
+                    {
+                        Swap(attacker, weapons[index], ref equipped);
+                        RuleCalculateWeaponStats stats =
+                            ElvenBranchedSpearCombatScenario.WeaponStats(attacker,
+                                equipped);
+                        BlueprintComponent damage = children[index]
+                            .ComponentsArray.Single(value => value != null &&
+                                string.Equals(value.GetType().FullName,
+                                    CustomWeaponFocusedWeaponPublication
+                                        .DamageComponentTypeName,
+                                    StringComparison.Ordinal));
+                        FieldInfo diceField = damage.GetType().GetField(
+                            "dice_formulas", Members);
+                        var dice = diceField == null ? null :
+                            diceField.GetValue(damage) as DiceFormula[];
+                        DiceFormula expected = dice == null || dice.Length != 5 ?
+                            default(DiceFormula) : dice[4];
+                        bool exact = dice != null && dice.Length == 5 &&
+                            stats.WeaponDamageDiceOverride.HasValue &&
+                            stats.WeaponDamageDiceOverride.Value.Equals(expected);
+                        mechanics &= exact;
+                        mechanicalRows.Add(names[index] + "=" +
+                            (stats.WeaponDamageDiceOverride.HasValue ?
+                                stats.WeaponDamageDiceOverride.Value.ToString() :
+                                "<none>") + "/expected=" + expected);
+                    }
+                    finally
+                    {
+                        attacker.Descriptor.RemoveFact(focused);
+                    }
+                }
+
+                string observed = "negative=" + negative + ";singles=" +
+                    string.Join("|", rows.ToArray()) + ";combined=" + combined +
+                    ";mechanics=" + string.Join("|",
+                        mechanicalRows.ToArray());
+                ElvenBranchedSpearCombatScenario.Add(assertions,
+                    "cotw-focused-weapon-eligibility",
+                    "no focus=0; each exact Weapon Focus=that one row; all four=4",
+                    observed, negative && singles && combined,
+                    "native ExtractSelectionItems with before/preview unit and exact Weapon Focus FeatureParam facts");
+                ElvenBranchedSpearCombatScenario.Add(assertions,
+                    "cotw-focused-weapon-mechanics",
+                    "all four exact categories use CotW's highest Focused Weapon damage die once",
+                    observed, mechanics,
+                    "real feature facts and RuleCalculateWeaponStats event delivery");
+                diagnostics.Add("focusedWeapon{" + observed + "}");
+            }
+            finally
+            {
+                foreach (Fact fact in parameterFacts.ToArray())
+                    if (fact != null) attacker.Descriptor.RemoveFact(fact);
+            }
+        }
+
+        private static BlueprintFeature RequireFocused(string guid)
+        {
+            return BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                BlueprintBootstrap.Library, guid,
+                "persistent KMG Focused Weapon choice");
+        }
+
+        private static int CountFocused(BlueprintFeatureSelection selection,
+            UnitEntityData unit, IEnumerable<BlueprintFeature> owned)
+        {
+            BlueprintFeature[] exact = owned.ToArray();
+            return selection.ExtractSelectionItems(unit.Descriptor,
+                    unit.Descriptor).Count(value => value != null &&
+                        exact.Any(feature => ReferenceEquals(value.Feature,
+                            feature) || value.Feature != null && string.Equals(
+                                value.Feature.AssetGuid, feature.AssetGuid,
+                                StringComparison.Ordinal)) &&
+                        value.Feature.MeetsPrerequisites(null,
+                            unit.Descriptor, null));
+        }
+
+        private static bool IsFocusedVisible(
+            BlueprintFeatureSelection selection, UnitEntityData unit,
+            BlueprintFeature expected)
+        {
+            return selection.ExtractSelectionItems(unit.Descriptor,
+                unit.Descriptor).Count(value => value != null &&
+                    (ReferenceEquals(value.Feature, expected) ||
+                    value.Feature != null && string.Equals(
+                        value.Feature.AssetGuid, expected.AssetGuid,
+                        StringComparison.Ordinal)) &&
+                    value.Feature.MeetsPrerequisites(null,
+                        unit.Descriptor, null)) == 1;
         }
 
         private static void QualifyProficiency(EasternWeaponBlueprintSet set,

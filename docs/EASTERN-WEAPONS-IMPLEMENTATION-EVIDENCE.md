@@ -292,3 +292,29 @@ fixture as run `20260814T1515370965718Z-017e199cb77b4af891868cec2d3a840b`.
 Both transactions restored their exact pre-run Mods trees, and neither accessed
 a save. Expanded live controls required by the final mission remain tracked in
 `EASTERN-WEAPONS-QUALIFICATION.md`.
+
+## First-playtest Call of the Wild Focused Weapon contract
+
+The installed optional selection is
+`FocusedWeaponAdvancedWeaponTrainingFeatureSelection`
+(`786bde5345a548408fade70b60a70482`). Its serialized `Features` array is empty;
+native children and KMG children belong in merged `AllFeatures`. Native child
+donors are Shortsword `29a6081e7f4d41fdb9e5da830dd32522`, Bastard Sword
+`a13bcc2d98e4426cb017d4edfa05818c`, Greatsword
+`70ecd8ffc4e64cce99eccaa2b509bf3d`, and Longspear
+`266e9d03ef6e4da6aa56b599f9a6aebc`. Each donor owns exactly one prerequisite
+for parameterized Weapon Focus `1e1f627d26ad36f43bbd26cc2bf8ac7e` and one
+`ContextWeaponDamageDiceReplacementForSpecificCategory` component with the
+native five-step `1d6, 1d8, 1d10, 2d6, 2d8` array.
+
+KMG clones those exact optional components only while CotW is present,
+retargets exact categories, and registers inert persistent placeholders when it
+is absent. The live level-up contract is `ExtractSelectionItems` followed by
+each child's native `BlueprintFeature.MeetsPrerequisites` evaluation; the
+latter owns the exact Weapon Focus filter. Guarded CotW combat run
+`20260814T2226301648118Z-disposable-eastern-weapons-combat` passed no-focus,
+four individual matching-focus, and all-four controls. Real feature facts then
+delivered CotW's rule handler through `RuleCalculateWeaponStats`, producing the
+expected 2d8 high-level replacement once for Elven Branched Spear, Wakizashi,
+Katana, and Nodachi. The run was save-free and transaction
+`compat-20260814T222532Z-a19799fea40a` restored the Mods tree exactly.

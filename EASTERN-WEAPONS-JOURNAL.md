@@ -569,3 +569,28 @@ values, or campaign targets.
   helper published `codex/eastern-weapons` with an ordinary non-force push.
   Draft PR #4, **Add complete Eastern Weapons feature**, was opened against
   `master`; it remains draft and unmerged.
+
+## 2026-08-14 - first human playtest: Focused Weapon repair
+
+- The human playtest accepted Weapon Focus, Exotic Weapon Proficiency, and
+  Improved Critical presentation, but showed Call of the Wild's Focused Weapon
+  list empty after selecting Weapon Focus for a custom category.
+- Exact guarded observation identified CotW selection
+  `786bde5345a548408fade70b60a70482`, native Weapon Focus
+  `1e1f627d26ad36f43bbd26cc2bf8ac7e`, and the native child contract: an exact
+  parameterized Weapon Focus prerequisite plus CotW's category-scoped damage
+  die component. KMG now registers four persistent ordinary child features and
+  publishes only the enabled module's choices into the optional selection's
+  merged `AllFeatures`; no generic selector postfix is involved.
+- Standalone observer run `20260814T2209084998933Z` passed with no optional
+  lookup and transaction `compat-20260814T220826Z-41d86baaedc1` restored.
+  CotW observer run `20260814T2211450409423Z` passed and transaction
+  `compat-20260814T221055Z-93f13aae6543` restored.
+- The first mechanical fixture run correctly proved all four 2d8 high-level
+  damage replacements but exposed that `ExtractSelectionItems` returns
+  candidates before the native prerequisite availability check. It was retained
+  as an exact failed diagnostic, not a pass. The corrected run
+  `20260814T2226301648118Z` used `BlueprintFeature.MeetsPrerequisites` with the
+  real before/preview unit, passed four single positive controls, no-focus and
+  combined controls, all four real weapon-stat effects, and complete cleanup.
+  Transaction `compat-20260814T222532Z-a19799fea40a` restored exactly.

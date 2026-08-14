@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 329 +
+        internal const int ExpectedRegisteredBlueprintCount = 333 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
@@ -640,6 +640,7 @@ namespace KingmakerGunslinger.Bootstrap
             ElvenBranchedSpearCampaignPublication spearCampaignPublication = null;
             EasternWeaponSelectorPublication easternSelectorPublication = null;
             EasternWeaponCampaignPublication easternCampaignPublication = null;
+            CustomWeaponFocusedWeaponPublication focusedWeaponPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -663,6 +664,11 @@ namespace KingmakerGunslinger.Bootstrap
                     EasternWeaponNamedBlueprints.Register(library, registry,
                         easternWeapons, context.Logger));
                 easternSelectorPublication = easternWeapons.Publication;
+
+                focusedWeaponPublication = CustomWeaponFocusedWeaponPublication
+                    .RegisterAndPublish(library, registry,
+                        publicationPlan.ElvenBranchedSpearSelectors,
+                        publicationPlan.EasternWeaponSelectors);
 
                 ExpandedSummoningBlueprintSet expandedSummoning =
                     ExpandedSummoningBlueprints.Register(library, registry);
@@ -966,6 +972,17 @@ namespace KingmakerGunslinger.Bootstrap
             }
             catch (Exception initializationException)
             {
+                if (focusedWeaponPublication != null)
+                {
+                    try { focusedWeaponPublication.Rollback(); }
+                    catch (Exception focusedWeaponRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "focused-weapon.rollback-failed",
+                            "Blueprint initialization failed and Focused Weapon rollback was refused.",
+                            focusedWeaponRollbackException);
+                    }
+                }
                 context.Logger.Failure(
                     "blueprints",
                     "initialize.root-cause",
