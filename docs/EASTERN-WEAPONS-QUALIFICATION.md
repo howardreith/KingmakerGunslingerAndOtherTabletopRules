@@ -11,9 +11,10 @@ explicit.
 - Clean exact-reference Release build and build-output validation: PASS.
 - Strict standalone package validation: PASS.
 - Package: `KingmakerGunslinger-0.0.80-eastern-weapons.zip`.
-- DLL SHA-256: `35182EE446A9CA148DBDABEF6015FD602AAD4BC0787A8F6D0408BB80A4771423`.
-- DLL MVID: `8b26ae08-23c7-4a56-a65b-44c3ee5f37ef`.
-- Package SHA-256: `DCA9BE195D54318F19DBDDA195F9E5E435526E5F2AFA7AEBC57CBC9A07661EF4`.
+- Source commit: `3902fbd32030950c718c32174820bb0bcaba1112`.
+- DLL SHA-256: `14AF254B51979245B8046C57F770700E2ED7BED4DDBADFDB869D518CCDE7A59F`.
+- DLL MVID: `60409a50-c431-4150-ba55-da63727381bc`.
+- Package SHA-256: `F469C4D1C7289F2A86C2F1D70AEB6BD39CA99005098DA8FD8D1C52DB944A6445`.
 - Eastern bundle SHA-256:
   `39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC`.
 
@@ -38,8 +39,19 @@ explicit.
 - Arms and Armor grip-dependent combat after narrow compatibility repair: PASS,
   `20260814T1626264154920Z-659ee31c63844b15a53f60366ffd55d6`,
   transaction `compat-20260814T162536Z-edb4ba5e8032` with exact restoration.
+- Toggle Custom Soundpacks negative control: PASS, observer
+  `20260814T1631281716106Z-f2c9d4b1204e4cfda6676e1195b682b9` and combat
+  `20260814T1633141740745Z-18723a67c397410783a5ffc276b2b280`, transaction
+  `compat-20260814T163039Z-4e78b724108d` with exact restoration.
+- Maximum currently qualified combined profile (Arms and Armor plus Toggle
+  Custom Soundpacks): PASS. Optional-mod observer
+  `20260814T1635283183758Z-21349748fc914622a1aa4b6d6d2075c2`, six-module
+  observer `20260814T1636409575327Z-104bf7b4dfcd4bc38f1f6a924103fe6f`, and
+  combat retry `20260814T1641090730695Z-2f410c5cf34e4afda160f266fd9024a4`
+  all passed. Transactions `compat-20260814T163437Z-2f088fd5a184` and
+  `compat-20260814T164018Z-24ec1f9abdbb` restored exactly.
 - Loaded identity matches the built and installed DLL: PASS.
-- Mods-tree restoration for both transactions: PASS.
+- Mods-tree restoration for every compatibility transaction: PASS.
 - Save interaction: exactly two correlated writes to `KMG_AUTOMATION_WORKING`;
   the protected baseline remained distinct and untouched.
 
@@ -52,8 +64,8 @@ effective-bonus/Speed references, and complete fixture cleanup.
 
 - Expanded live fighter-group, generic-selector, all-named-property, capstone
   attack-count, and transformation controls.
-- Call of the Wild, Arms and Armor, negative-control, and maximum combined
-  compatibility profiles.
+- Final-candidate reruns of compatibility profiles after expanded combat
+  instrumentation is sealed.
 - All 64 feature-module states.
 - Canonical non-mutating working-save smoke.
 - Final sealed package identity comparison.
@@ -84,7 +96,7 @@ the mission permits omission where no safe ordinary fact construction exists.
 The settings file was restored byte-for-byte to SHA-256
 `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
 
-## Optional-mod compatibility in progress
+## Optional-mod compatibility
 
 The exact Call of the Wild profile passed the optional-mod identity observer,
 the complete six-module publication observer, and the live Eastern combat
@@ -101,8 +113,18 @@ positive/negative modes. Arms and Armor's authorized source contains Temple
 Sword and Orc Hornbow but no eastern family provider, so no duplicate-name or
 cross-proficiency bridge is needed.
 
-The repaired candidate passed repository validation, all `1047/1047` tests,
-clean Release build, output/package validation, and loaded DLL SHA-256
-`35182EE446A9CA148DBDABEF6015FD602AAD4BC0787A8F6D0408BB80A4771423`,
-MVID `8b26ae08-23c7-4a56-a65b-44c3ee5f37ef`; package SHA-256
-`DCA9BE195D54318F19DBDDA195F9E5E435526E5F2AFA7AEBC57CBC9A07661EF4`.
+Toggle Custom Soundpacks passed as the required negative control. The maximum
+currently qualified combined Arms and Armor plus Toggle profile passed exact
+mod identity, all-on six-module publication, the Arms and Armor Katana bridge,
+and the focused Eastern combat fixture. Its first combat launch ended before
+the scenario entered `OnUpdate` because Unity transiently failed to load the
+present Steam API DLL; it produced no result and accessed no save. The isolated
+retry passed, so the ambiguous launch is retained as environmental evidence and
+is not counted as a mechanical PASS.
+
+The current compatibility candidate passed repository validation, all
+`1047/1047` tests, clean Release build, output/package validation, and loaded
+DLL SHA-256
+`14AF254B51979245B8046C57F770700E2ED7BED4DDBADFDB869D518CCDE7A59F`,
+MVID `60409a50-c431-4150-ba55-da63727381bc`; package SHA-256
+`F469C4D1C7289F2A86C2F1D70AEB6BD39CA99005098DA8FD8D1C52DB944A6445`.

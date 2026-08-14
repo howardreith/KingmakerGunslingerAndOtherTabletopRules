@@ -456,3 +456,29 @@ values, or campaign targets.
   `35182EE446A9CA148DBDABEF6015FD602AAD4BC0787A8F6D0408BB80A4771423`,
   MVID `8b26ae08-23c7-4a56-a65b-44c3ee5f37ef`; package SHA-256 is
   `DCA9BE195D54318F19DBDDA195F9E5E435526E5F2AFA7AEBC57CBC9A07661EF4`.
+
+## 2026-08-14 - negative-control and maximum combined compatibility
+
+- Toggle Custom Soundpacks transaction
+  `compat-20260814T163039Z-4e78b724108d` passed exact optional-mod identity and
+  live Eastern combat as runs
+  `20260814T1631281716106Z-f2c9d4b1204e4cfda6676e1195b682b9` and
+  `20260814T1633141740745Z-18723a67c397410783a5ffc276b2b280`.
+- The maximum currently qualified combined profile staged Arms and Armor plus
+  Toggle Custom Soundpacks. Transaction
+  `compat-20260814T163437Z-2f088fd5a184` passed exact identity and all-on
+  six-module publication as runs
+  `20260814T1635283183758Z-21349748fc914622a1aa4b6d6d2075c2` and
+  `20260814T1636409575327Z-104bf7b4dfcd4bc38f1f6a924103fe6f`.
+- Its first combat launch accepted the guarded request but ended before the
+  runner entered `OnUpdate` after Unity reported a transient failure to load
+  the present Steam API DLL. It produced no runtime result and touched no save.
+  The isolated retry passed as
+  `20260814T1641090730695Z-2f410c5cf34e4afda160f266fd9024a4` under transaction
+  `compat-20260814T164018Z-24ec1f9abdbb`.
+- Every transaction restored the complete Mods tree exactly. Candidate commit
+  `3902fbd32030950c718c32174820bb0bcaba1112` loaded with DLL SHA-256
+  `14AF254B51979245B8046C57F770700E2ED7BED4DDBADFDB869D518CCDE7A59F`
+  and MVID `60409a50-c431-4150-ba55-da63727381bc`; its deterministic package
+  SHA-256 is
+  `F469C4D1C7289F2A86C2F1D70AEB6BD39CA99005098DA8FD8D1C52DB944A6445`.
