@@ -122,7 +122,9 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "Blueprints",
                 "ElvenBranchedSpearBlueprints.cs"));
             Assertions.True(blueprints.Contains(
-                "Finesse Training (Elven Branched Spear)") &&
+                "Proficiency (Elven Branched Spear)") &&
+                blueprints.Contains(
+                    "Finesse Training (Elven Branched Spear)") &&
                 blueprints.Contains("ConfigureProficiencyFeature(clone, category, donor.Icon)") &&
                 blueprints.Contains("ConfigureFinesseTrainingFeature(clone, category, donor.Icon)") &&
                 blueprints.Contains("NativeChildrenUseCategoryIcons"),
@@ -141,6 +143,37 @@ namespace KingmakerGunslinger.DomainTests
                 icons.Contains(
                     "SetIcon(elvenBranchedSpears.FinesseTraining, Require(\"firearm-proficiency\")"),
                 "A spear selector resolves directly to firearm artwork.");
+        }
+
+        internal static void ExoticProficiencyPresentationIsNativeOrdered()
+        {
+            string root = Environment.CurrentDirectory;
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ElvenBranchedSpearBlueprints.cs"));
+            string publication = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "ElvenBranchedSpear",
+                "ElvenBranchedSpearSelectorPublication.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "ElvenBranchedSpearCombatScenario.cs"));
+
+            Assertions.True(blueprints.Contains(
+                "Proficiency (Elven Branched Spear)") &&
+                blueprints.Contains(
+                    "native Elven Curve Blade proficiency ordering anchor"),
+                "The spear EWP child does not use its exact native-style title and anchor.");
+            Assertions.True(publication.Contains("InsertUniqueAfter(") &&
+                publication.Contains("ImmediatelyFollows(") &&
+                publication.Contains("result.Insert(anchorIndex + 1, addition)") &&
+                publication.Contains(
+                    "Spear proficiency is not ordered after the native Elven Curve Blade option."),
+                "Static EWP publication does not normalize immediately after its native anchor.");
+            Assertions.True(runtime.Contains(
+                "Proficiency (Elven Branched Spear)") &&
+                runtime.Contains("ewpFeatureIndex == curveFeatureIndex + 1") &&
+                runtime.Contains("ewpAllIndex == curveAllIndex + 1"),
+                "Runtime qualification does not prove the exact EWP title and relative order.");
         }
 
         internal static void FoundationSourceContractsAreExact()

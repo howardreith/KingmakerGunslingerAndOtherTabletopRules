@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elven-branched-spear.release-identity", ElvenBranchedSpearCatalogTests.ReleaseIdentityIsSpearSpecific),
             Case("elven-branched-spear.category-display", ElvenBranchedSpearCatalogTests.CategoryDisplayNeverLeaksRawIdentity),
             Case("elven-branched-spear.selector-presentation", ElvenBranchedSpearCatalogTests.SelectorPresentationMatchesNativePolicies),
+            Case("elven-branched-spear.exotic-proficiency-presentation", ElvenBranchedSpearCatalogTests.ExoticProficiencyPresentationIsNativeOrdered),
             Case("elven-branched-spear.btsl-publication", ElvenBranchedSpearCatalogTests.BeneathStolenLandsPublicationContractsAreExact),
             Case("expanded-summoning.roster-and-placements", ExpandedSummoningCatalogTests.FrozenRosterAndPlacementCounts),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),

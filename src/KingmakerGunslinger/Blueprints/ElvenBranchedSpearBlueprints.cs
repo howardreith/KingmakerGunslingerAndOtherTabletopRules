@@ -193,6 +193,9 @@ namespace KingmakerGunslinger.Blueprints
                         "native chosen-weapon selector")).ToArray();
             ElvenBranchedSpearSelectorPublication publication =
                 ElvenBranchedSpearSelectorPublication.Publish(ewpSelection, ewp,
+                    BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                        NativeElvenCurveBladeProficiencyGuid,
+                        "native Elven Curve Blade proficiency ordering anchor"),
                     finesseSelection, finesseTraining, familiarity, category,
                     parameterSelectors, publishSelectors);
 
@@ -287,7 +290,7 @@ namespace KingmakerGunslinger.Blueprints
             equipment.ParametrizedCategory = false;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.ElvenBranchedSpear.EWP.Name",
-                    "Elven Branched Spear"),
+                    "Proficiency (Elven Branched Spear)"),
                 LocalizationService.Create("KMG.ElvenBranchedSpear.EWP.Description",
                     "You are proficient with the exotic Elven Branched Spear."),
                 nativeIcon);

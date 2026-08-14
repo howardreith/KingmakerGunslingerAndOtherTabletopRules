@@ -37,12 +37,14 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
         internal static ElvenBranchedSpearSelectorPublication Publish(
             BlueprintFeatureSelection ewpSelection, BlueprintFeature ewp,
+            BlueprintFeature ewpOrderingAnchor,
             BlueprintFeatureSelection finesseSelection, BlueprintFeature finesse,
             BlueprintFeature familiarity, WeaponCategory category,
             BlueprintParametrizedFeature[] parameterSelectors,
             bool publishSelectors)
         {
-            if (ewpSelection == null || ewp == null || finesseSelection == null ||
+            if (ewpSelection == null || ewp == null || ewpOrderingAnchor == null ||
+                finesseSelection == null ||
                 finesse == null || familiarity == null ||
                 parameterSelectors == null || parameterSelectors.Any(value => value == null))
                 throw new ArgumentNullException("Spear selector publication is incomplete.");
@@ -53,8 +55,10 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 publication.PublishFamiliarity(category);
                 if (publishSelectors)
                 {
-                    ewpSelection.Features = AppendUnique(ewpSelection.Features, ewp);
-                    ewpSelection.AllFeatures = AppendUnique(ewpSelection.AllFeatures, ewp);
+                    ewpSelection.Features = InsertUniqueAfter(
+                        ewpSelection.Features, ewp, ewpOrderingAnchor);
+                    ewpSelection.AllFeatures = InsertUniqueAfter(
+                        ewpSelection.AllFeatures, ewp, ewpOrderingAnchor);
                     finesseSelection.Features = AppendUnique(finesseSelection.Features,
                         finesse);
                     finesseSelection.AllFeatures = AppendUnique(
@@ -62,7 +66,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 }
                 ElvenBranchedSpearSelectorRuntime.Configure(parameterSelectors,
                     publishSelectors);
-                publication.Validate(ewp, finesse, category, publishSelectors);
+                publication.Validate(ewp, ewpOrderingAnchor, finesse, category,
+                    publishSelectors);
                 return publication;
             }
             catch
@@ -103,7 +108,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             _familiarity.ComponentsArray = next;
         }
 
-        private void Validate(BlueprintFeature ewp, BlueprintFeature finesse,
+        private void Validate(BlueprintFeature ewp,
+            BlueprintFeature ewpOrderingAnchor, BlueprintFeature finesse,
             WeaponCategory category, bool publishSelectors)
         {
             int expected = publishSelectors ? 1 : 0;
@@ -113,6 +119,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 Count(_finesseSelection.AllFeatures, finesse) != expected)
                 throw new InvalidOperationException(
                     "Spear static selector publication is not exact.");
+            if (publishSelectors &&
+                (!ImmediatelyFollows(_ewpSelection.Features, ewp,
+                    ewpOrderingAnchor) ||
+                 !ImmediatelyFollows(_ewpSelection.AllFeatures, ewp,
+                    ewpOrderingAnchor)))
+                throw new InvalidOperationException(
+                    "Spear proficiency is not ordered after the native Elven Curve Blade option.");
             AddProficiencies grant = (_familiarity.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AddProficiencies>().Single();
             if ((grant.WeaponProficiencies ?? Array.Empty<WeaponCategory>())
@@ -137,6 +150,42 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 string.Equals(value.AssetGuid, addition.AssetGuid,
                     StringComparison.Ordinal))) return source;
             return source.Concat(new[] { addition }).ToArray();
+        }
+
+        private static BlueprintFeature[] InsertUniqueAfter(
+            BlueprintFeature[] source, BlueprintFeature addition,
+            BlueprintFeature anchor)
+        {
+            source = source ?? Array.Empty<BlueprintFeature>();
+            BlueprintFeature[] normalized = source.Where(value =>
+                !SameFeature(value, addition)).ToArray();
+            int anchorIndex = Array.FindIndex(normalized, value =>
+                SameFeature(value, anchor));
+            if (anchorIndex < 0 || normalized.Count(value =>
+                SameFeature(value, anchor)) != 1)
+                throw new InvalidOperationException(
+                    "Native Elven Curve Blade proficiency ordering anchor is not exact.");
+            var result = normalized.ToList();
+            result.Insert(anchorIndex + 1, addition);
+            return result.ToArray();
+        }
+
+        private static bool ImmediatelyFollows(BlueprintFeature[] source,
+            BlueprintFeature addition, BlueprintFeature anchor)
+        {
+            source = source ?? Array.Empty<BlueprintFeature>();
+            int anchorIndex = Array.FindIndex(source, value =>
+                SameFeature(value, anchor));
+            return anchorIndex >= 0 && anchorIndex + 1 < source.Length &&
+                SameFeature(source[anchorIndex + 1], addition);
+        }
+
+        private static bool SameFeature(BlueprintFeature left,
+            BlueprintFeature right)
+        {
+            return ReferenceEquals(left, right) || left != null && right != null &&
+                string.Equals(left.AssetGuid, right.AssetGuid,
+                    StringComparison.Ordinal);
         }
     }
 }

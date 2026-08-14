@@ -202,12 +202,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Param != null && value.Param.WeaponCategory.HasValue &&
                         value.Param.WeaponCategory.Value.Equals(
                             ElvenBranchedSpearCategoryRuntime.Category))).ToArray();
-                int ewpCount = CountFeature(
+                BlueprintFeatureSelection ewpSelection =
                     BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                         BlueprintBootstrap.Library,
                         ElvenBranchedSpearBlueprints
                             .NativeExoticWeaponProficiencySelectionGuid,
-                        "native Exotic Weapon Proficiency selection"),
+                        "native Exotic Weapon Proficiency selection");
+                BlueprintFeature curveProficiency =
+                    BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                        BlueprintBootstrap.Library,
+                        ElvenBranchedSpearBlueprints
+                            .NativeElvenCurveBladeProficiencyGuid,
+                        "native Elven Curve Blade proficiency ordering anchor");
+                int ewpCount = CountFeature(ewpSelection,
+                    set.ExoticWeaponProficiency);
+                int curveFeatureIndex = Array.IndexOf(ewpSelection.Features,
+                    curveProficiency);
+                int ewpFeatureIndex = Array.IndexOf(ewpSelection.Features,
+                    set.ExoticWeaponProficiency);
+                int curveAllIndex = Array.IndexOf(ewpSelection.AllFeatures,
+                    curveProficiency);
+                int ewpAllIndex = Array.IndexOf(ewpSelection.AllFeatures,
                     set.ExoticWeaponProficiency);
                 int finesseCount = CountFeature(
                     BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
@@ -218,7 +233,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     set.FinesseTraining);
                 string selectors = "parameter=" + string.Join(",",
                     selectorCounts) + ";ewp=" + ewpCount +
-                    ";finesse=" + finesseCount;
+                    ";finesse=" + finesseCount + ";ewpOrder=" +
+                    curveFeatureIndex + "/" + ewpFeatureIndex + ";ewpAllOrder=" +
+                    curveAllIndex + "/" + ewpAllIndex;
                 Add(assertions, "spear-native-selectors",
                     "seven parameter selectors plus EWP and Finesse Training contain exactly one spear option",
                     selectors, selectorCounts.All(value => value == 1) &&
@@ -244,10 +261,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .ToArray());
                 string loweredPresentation = selectorPresentation.ToLowerInvariant();
                 Add(assertions, "spear-selector-presentation",
-                    "human-readable category and prerequisite; native static/category icons; seven EB glyph rows",
+                    "native Proficiency title immediately above Elven Curve Blade; human-readable prerequisite; native static/category icons; seven EB glyph rows",
                     selectorPresentation,
                     string.Equals(categoryText, "Elven Branched Spear",
                         StringComparison.Ordinal) &&
+                    string.Equals(set.ExoticWeaponProficiency.Name,
+                        "Proficiency (Elven Branched Spear)",
+                        StringComparison.Ordinal) &&
+                    ewpFeatureIndex == curveFeatureIndex + 1 &&
+                    ewpAllIndex == curveAllIndex + 1 &&
                     proficiencyPrerequisite.Contains("Elven Branched Spear") &&
                     !proficiencyPrerequisite.Contains("4934983") &&
                     !proficiencyPrerequisite.Contains("0x004b4d47") &&
