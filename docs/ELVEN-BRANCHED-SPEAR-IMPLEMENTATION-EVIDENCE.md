@@ -1,11 +1,15 @@
 # Elven Branched Spear implementation evidence
 
-Status: investigation in progress on `codex/elven-branched-spear`.
+Status: implementation and deterministic qualification complete on
+`codex/elven-branched-spear`; human visual-aesthetic acceptance remains.
 
-This report records the evidence used to implement the Elven Branched Spear. It
-is intentionally updated as each read-only inventory and qualification stage
-completes. A name, remembered GUID, or successful build is not treated as
-runtime proof.
+This report records the evidence used to implement the Elven Branched Spear.
+Early sections preserve the prospective wording captured at their historical
+checkpoint; later sections record the resulting implementation and live
+qualification. A name, remembered GUID, or successful build is not treated as
+runtime proof. The consolidated final result is in
+`ELVEN-BRANCHED-SPEAR-QUALIFICATION.md` and the stable identity list is in
+`ELVEN-BRANCHED-SPEAR-BLUEPRINT-IDENTITIES.md`.
 
 ## Repository safety gate
 
@@ -190,7 +194,7 @@ runtime inventory before identities are selected.
   still need inspection. Mechanics will use a native reach-polearm equipment
   entity as a mandatory fallback and will not depend on the custom bundle.
 
-## Runtime inventory still required before identity selection
+## Runtime inventory gate (completed before identity selection)
 
 The guarded save-free observer was designed to record, without mutating a save:
 
@@ -526,3 +530,29 @@ This establishes stable blueprint registration across module state, owned-item
 save/load safety, exact development-grant cardinality, request-local cleanup,
 and absence of cleanup residue. It does not substitute for a player-driven
 respec UI acceptance pass.
+
+## Final qualification closure
+
+The final isolated Call of the Wild run
+`20260814T0332236294874Z-disposable-elven-branched-spear-combat` passed all
+17 assertions with zero warnings from commit
+`f8dbcb98485c385b7365e206ec150bb2ded9aa0a`. It closed the earlier combat,
+selector, Dexterity, optional-mod, named-effect, and re-equipment gaps,
+including explicit Finesse Training removal/reselection, duplicate equivalent
+category facts without double damage, a native Longspear switch, Fighter's
+Finesse, Trained Grace, and Grace/Dervish exclusions.
+
+The final clean-commit working-save sequence
+`20260814T0322279668156Z-working-save-elven-branched-spear-prepare`,
+`20260814T0325232210401Z-working-save-elven-branched-spear-verify-cleanup`, and
+`20260814T0328087214273Z-working-save-elven-branched-spear-verify-absent`
+supersedes the earlier item-only checkpoint. It proved all 12 items plus the
+actual selected Finesse Training child across a fresh module-OFF load, exact
+cleanup with one correlated disposable-save write, then zero residual items,
+facts, or writes. The protected baseline was never selected or written.
+
+All 32 states of the five-module matrix passed guarded fresh-launch runtime
+qualification, and canonical smoke
+`20260814T0334532807442Z-working-save-smoke` passed from `f8dbcb9`. Full asset,
+commerce, package, compatibility, blueprint, and remaining-visual-review facts
+are recorded in `ELVEN-BRANCHED-SPEAR-QUALIFICATION.md`.

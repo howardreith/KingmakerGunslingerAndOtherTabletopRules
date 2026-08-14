@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased - Elven Branched Spears
+
+- Adds an independent, default-enabled `elven-branched-spears` module and one
+  stable exotic, two-handed, finesse-compatible reach-weapon category with
+  native Elven Weapon Familiarity and Spears fighter-group integration.
+- Adds mundane, masterwork, cold iron, masterwork cold iron, +1, and +1 cold
+  iron progression plus Boughkeeper, Thornstep, Moonlit Fork, Viper's Reach,
+  Briar-Crowned Spear, and Spear of the First Branch.
+- Publishes the category idempotently through Exotic Weapon Proficiency, Rogue
+  Finesse Training, Weapon Focus, Greater Weapon Focus, Improved Critical,
+  Weapon Specialization, Greater Weapon Specialization, Sword Saint Chosen
+  Weapon, and Weapon Mastery while preserving all native prerequisites.
+- Adds the exact +2 movement-provoked attack-of-opportunity modifier at the
+  native disengagement command boundary. Ordinary, charge, generated,
+  spellcasting, ranged-attack, and other nonmovement attacks do not receive it.
+- Preserves native Weapon Finesse, Finesse Training, Agile, Call of the Wild
+  Fighter's Finesse, and Trained Grace semantics without double Dexterity;
+  one-handed, Grace, named-weapon, and Dervish restrictions remain unchanged.
+- Adds verified Act I-through-final-act vendor and fixed-loot progression with
+  append-only, idempotent, module-gated publication.
+- Adds an original project-owned Blender/FBX/icon asset, dedicated Unity
+  2018.4.10f1 bundle, transactional validation, and native Longspear fallback.
+- Qualifies 1,028 dependency-free tests, all 32 module combinations, isolated
+  Call of the Wild combat, module-OFF item/feature save persistence and cleanup,
+  strict package validation, and the canonical working-save smoke. Brace and
+  pseudo-Brace behavior are intentionally not implemented or advertised.
+
 ## 0.0.78 - Expanded Summoning
 
 - Replaces every player-visible Expanded Summoning child icon with one of 77

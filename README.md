@@ -1,9 +1,18 @@
 # Kingmaker Gunslinger
 
-Version `0.0.78-expanded-summoning` adds Expanded Summoning as a fourth
-independent, default-enabled feature module for Pathfinder: Kingmaker 2.1.7b
-while retaining the complete Gunslinger, Acadamae Graduate, and Shield Other
-packages.
+The current `codex/elven-branched-spear` release candidate adds Elven Branched
+Spears as a fifth independent, default-enabled feature module for Pathfinder:
+Kingmaker 2.1.7b while retaining the complete Gunslinger, Acadamae Graduate,
+Shield Other, and Expanded Summoning packages.
+
+The new family is one stable exotic two-handed reach category: mundane,
+masterwork, cold iron, +1, and six named magical weapons all share ordinary
+weapon-feat, Elven Weapon Familiarity, Weapon Finesse, Rogue Finesse Training,
+and native Agile behavior. Its inherent +2 attack modifier applies only to an
+attack of opportunity created at Kingmaker's movement-disengagement boundary.
+Brace and pseudo-Brace behavior are intentionally absent. A project-owned
+custom spear model is bundled behind a validated, fail-safe native Longspear
+fallback.
 
 Expanded Summoning additively extends Summon Monster I-IX and Summon Nature's
 Ally I-IX with the approved tabletop rosters and higher-tier same-kind quantity
@@ -49,16 +58,17 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find four checkboxes:
-**Gunslinger**, **Acadamae Graduate**, **Shield Other**, and **Expanded
-Summoning**. All default enabled. Older settings migrate to schema 3 while
-preserving explicit existing values and enabling Expanded Summoning when absent.
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find five checkboxes:
+**Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
+Summoning**, and **Elven Branched Spears**. All default enabled. Older settings
+migrate to schema 4 while preserving explicit existing values and enabling
+newly absent default-on modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All four modules
+items, summons, ammunition state, or equipment from a save. All five modules
 publish independently. Keep the whole mod installed for any campaign that has
 used project content.
 

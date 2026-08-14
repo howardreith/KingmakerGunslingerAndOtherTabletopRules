@@ -44,19 +44,26 @@ explicitly documented as qualified.
 ## Feature-module settings
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
-and Expanded Summoning checkboxes. All default ON. A change is saved for the
-next complete game restart; the panel reports active and pending state
-separately.
+Expanded Summoning, and Elven Branched Spears checkboxes. All default ON. A
+change is saved for the next complete game restart; the panel reports active
+and pending state separately. Older settings migrate to schema 4 while
+preserving explicit values and defaulting an absent spear key ON.
 
-Turning a module OFF removes its content only from new public choices and acquisition paths. It does not unregister identities, strip an existing Gunslinger, remove owned feats/items, or uninstall firearm state support. Do not remove the entire mod from a campaign that has used either module.
+Turning a module OFF removes its content only from new public choices and
+acquisition paths. It does not unregister identities, strip an existing
+Gunslinger, remove owned feats/items, or uninstall firearm state support. An
+owned Elven Branched Spear and an already selected spear feat therefore remain
+loadable and mechanically coherent while that module is OFF. Do not remove the
+entire mod from a campaign that has used any module.
 
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may
 retain references to the Gunslinger class, progression features, abilities,
 resources, firearm/ammunition/repair-kit blueprints, item-owned firearm
-state-token enchantments, summon abilities, and summon units. Removing the mod
-while such references remain can
+state-token enchantments, summon abilities, summon units, Elven Branched Spear
+items, the spear category, selected spear features, enchantments, and buffs.
+Removing the mod while such references remain can
 make a save fail to load or leave missing/invalid content.
 
 The safe default is to keep the same or a compatible newer mod version
@@ -75,6 +82,14 @@ profiles. Its 77-icon creature catalog is project-owned and has no base-game
 or optional-mod icon dependency; optional-mod
 summon parents are discovered structurally and are skipped rather than guessed
 when ambiguous. Every profile transaction restored the prior Mods directory.
+
+The Elven Branched Spear release candidate passed all 32 five-module states and
+an isolated Call of the Wild 1.14.4c-2.1 combat profile. That exact profile
+proved the native spear selectors and Dexterity routes, optional Fighter's
+Finesse and Trained Grace behavior, deliberate Dervish Dance exclusion, all
+six named effects, and restoration of the prior Mods tree. The custom model is
+project-owned; missing or rejected spear bundle data retains the native
+Longspear presentation without changing mechanics or save identity.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.
