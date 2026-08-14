@@ -622,9 +622,20 @@ namespace KingmakerGunslinger.DomainTests
                 "FindNativeD20Seed(19)", "IsCriticalConfirmed",
                 "powerAttack.IsOn = true", "LastMountainSunderDamage",
                 "ordinary.WeaponSize + 1", "SameReferences",
-                "eastern-combat-fixture-cleanup" })
+                "eastern-combat-fixture-cleanup",
+                "WeaponTrainingLightBladesGuid", "GetWeaponRank(equipped)",
+                "eastern-selector-publication",
+                "eastern-all-named-native-properties",
+                "CreateFullAttack", "HasteBuffGuid", "UndeadTypeGuid" })
                 Assertions.True(source.Contains(token),
                     "Eastern live combat scenario lacks: " + token);
+            foreach (string token in new[] {
+                "FindUnconfirmedThreat", "afterUnconfirmed",
+                "mountainMiss", "afterSwitch",
+                "SetPolymorphed(attacker, true)",
+                "simultaneousApplications" })
+                Assertions.True(source.Contains(token),
+                    "Eastern live negative-control coverage lacks: " + token);
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestScenarioCatalog.cs"));

@@ -20,6 +20,8 @@ explicit.
 
 ## Runtime results
 
+- Expanded Eastern combat: PASS,
+  `20260814T1715447972862Z-9c6f32cdb16c41df9de32c4108c9f79c`.
 - Focused Eastern combat: PASS,
   `20260814T1513175535242Z-6d95393a15c44b96a168cb21132fee19`.
 - Elven Branched Spear combat regression: PASS,
@@ -55,21 +57,50 @@ explicit.
 - Save interaction: exactly two correlated writes to `KMG_AUTOMATION_WORKING`;
   the protected baseline remained distinct and untouched.
 
-The focused Eastern run proves exact family/catalog identity, corrected static
-proficiency names, Wakizashi/Katana/Nodachi proficiency behavior, Katana grip
-authority, native Wakizashi finesse, all five bespoke effects, capstone
-effective-bonus/Speed references, and complete fixture cleanup.
+The expanded Eastern run proves exact family/catalog identity, corrected static
+proficiency names and deterministic merged ordering; singular WK/KA/NO rows in
+all seven approved generic selectors; Grace exclusions; the complete
+Wakizashi/Katana/Nodachi proficiency matrix; native Light Blades, Heavy Blades,
+and Polearms training without doubled Nodachi training; native Wakizashi
+finesse across all ten family items without double Dexterity; exact enchantment
+arrays for all eighteen named weapons; all five bespoke effects with positive
+and negative controls; main-hand, offhand, repeated, Haste, and switching Speed
+attack counts; native Brilliant Energy living/undead behavior; and exact
+fixture cleanup.
 
 ## Pending final qualification
 
-- Expanded live fighter-group, generic-selector, all-named-property, capstone
-  attack-count, and transformation controls.
 - Final-candidate reruns of compatibility profiles after expanded combat
   instrumentation is sealed.
 - All 64 feature-module states.
 - Canonical non-mutating working-save smoke.
 - Final sealed package identity comparison.
 - Human subjective visual acceptance.
+
+## Expanded combat iteration
+
+The expanded save-free candidate passed repository validation, all `1047/1047`
+domain/reflection tests, clean exact-reference Release build, build-output
+validation, strict deterministic package validation, and guarded live runtime.
+Run `20260814T1715447972862Z-9c6f32cdb16c41df9de32c4108c9f79c`
+in evidence directory
+`20260814T1715447806219Z-disposable-eastern-weapons-combat` loaded DLL SHA-256
+`6EBC8BF7B8339A8A65A23354D2EBA467E804210F64464502E579C6769492BBE7`,
+MVID `e6465005-9428-48ab-b646-ceffb7ed8a2b`; package SHA-256 was
+`98EE14CC220722AC3DED6DF1BCF5E6DF1A60F072F064E4F5E504EE6DCE6BA78A`.
+Transaction `compat-20260814T171454Z-0dc865f34ad3` restored the exact Mods
+tree, and the save-free scenario performed no save interaction.
+
+Falling Petal observed a seeded miss and a real threatened but unconfirmed
+critical with zero applications, then one confirmed critical produced exactly
+one +1 Dodge AC modifier; an ordinary hit did not stack it and switching away
+removed it. Mountain-Sunder observed a miss consuming nothing, inactive Power
+Attack applying nothing, the first active hit applying one force die, repeated
+hits and weapon switching remaining at one application, and a post-marker
+confirmed critical applying only one `1d6` force result. Unfixed Form observed
+ordinary, changed-size, polymorph-only, and simultaneous size-plus-polymorph
+states as `Medium -> Large/Large/Large`: either predicate applies one native
+weapon-size step and both together still apply only one.
 
 ## Working-save persistence
 

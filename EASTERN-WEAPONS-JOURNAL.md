@@ -482,3 +482,27 @@ values, or campaign targets.
   and MVID `60409a50-c431-4150-ba55-da63727381bc`; its deterministic package
   SHA-256 is
   `F469C4D1C7289F2A86C2F1D70AEB6BD39CA99005098DA8FD8D1C52DB944A6445`.
+
+## 2026-08-14 - expanded live combat qualification
+
+- Expanded the save-free combat fixture to enumerate every approved generic
+  selector for all three categories, merged proficiency ordering and excluded
+  Grace selectors, all eighteen exact named enchantment arrays, native fighter
+  training through each approved group, all ten Wakizashi finesse variants,
+  complete Speed attack planning, and native Brilliant Energy exclusions.
+- Added negative controls for a Falling Petal miss and threatened but
+  unconfirmed critical; Mountain-Sunder miss, inactive toggle, repeat,
+  same-round weapon switching, and critical nonmultiplication; and Unfixed Form
+  ordinary, changed-size, polymorph-only, and simultaneous engine states.
+- Repository validation, all `1047/1047` tests, clean exact-reference Release
+  build, build-output validation, and strict package validation passed.
+- Guarded standalone run
+  `20260814T1715447972862Z-9c6f32cdb16c41df9de32c4108c9f79c`
+  passed in evidence directory
+  `20260814T1715447806219Z-disposable-eastern-weapons-combat`. The loaded DLL
+  SHA-256 was
+  `6EBC8BF7B8339A8A65A23354D2EBA467E804210F64464502E579C6769492BBE7`,
+  MVID `e6465005-9428-48ab-b646-ceffb7ed8a2b`; package SHA-256 was
+  `98EE14CC220722AC3DED6DF1BCF5E6DF1A60F072F064E4F5E504EE6DCE6BA78A`.
+  Transaction `compat-20260814T171454Z-0dc865f34ad3` restored the Mods tree
+  exactly. The scenario was save-free.

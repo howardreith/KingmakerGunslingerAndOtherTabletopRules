@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -13,11 +15,18 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Items;
+using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.LevelUp;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Parts;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.EasternWeapons;
@@ -32,10 +41,26 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// </summary>
     internal static class EasternWeaponCombatScenario
     {
+        private const BindingFlags Members = BindingFlags.Instance |
+            BindingFlags.Public | BindingFlags.NonPublic;
         private const string WeaponFinesseGuid =
             "90e54424d682d104ab36436bd527af09";
         private const string ShortswordItemGuid =
             "57c8994d1f1becf49ac4f642e5d8ca9d";
+        private const string WeaponTrainingLightBladesGuid =
+            "4923409590bdb604590e04da4253ab78";
+        private const string WeaponTrainingHeavyBladesGuid =
+            "2a0ce0186af38ed419f47fce16f93c2a";
+        private const string WeaponTrainingPolearmsGuid =
+            "c062c6d16aecddc4ab67d9c783b2ad46";
+        private const string FencingGraceGuid =
+            "47b352ea0f73c354aba777945760b441";
+        private const string SlashingGraceGuid =
+            "697d64669eb2c0543abb9c9b07998a38";
+        private const string HasteBuffGuid =
+            "03464790f40c3c24aa684b57155f3280";
+        private const string UndeadTypeGuid =
+            "734a29b693e9ec346ba2951b27987e33";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -86,6 +111,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "catalog-and-presentation";
                 QualifyCatalog(set, assertions);
+                QualifySelectors(set, assertions, diagnostics);
 
                 stage = "proficiency";
                 BlueprintFeature martial = ElvenBranchedSpearCombatScenario
@@ -93,9 +119,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 QualifyProficiency(set, attacker, target, martial, facts,
                     ref equipped, ref offhand, assertions, diagnostics);
 
+                stage = "fighter-groups";
+                QualifyFighterGroups(set, attacker, facts, ref equipped,
+                    assertions, diagnostics);
+
                 stage = "finesse";
                 QualifyFinesse(set, attacker, facts, ref equipped, assertions,
                     diagnostics);
+
+                stage = "named-native-properties";
+                QualifyNamedProperties(set, assertions, diagnostics);
 
                 stage = "named-effects";
                 QualifyNamedEffects(set, attacker, target, facts,
@@ -103,8 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     diagnostics);
 
                 stage = "capstones";
-                QualifyCapstones(set, attacker, ref equipped, assertions,
-                    diagnostics);
+                QualifyCapstones(set, attacker, target, ref equipped,
+                    ref offhand, assertions, diagnostics);
             }
             catch (Exception exception)
             {
@@ -120,6 +153,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (attacker != null)
                 {
                     attacker.Commands.InterruptAll(true);
+                    SetPolymorphed(attacker, false);
+                    attacker.Descriptor.State.Size =
+                        attacker.Descriptor.OriginalSize;
                     RemoveOffhand(attacker, ref offhand);
                     ElvenBranchedSpearCombatScenario.RemoveEquipped(attacker,
                         ref equipped);
@@ -219,6 +255,107 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "live localized static proficiency children");
         }
 
+        private static void QualifySelectors(EasternWeaponBlueprintSet set,
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics)
+        {
+            EasternWeaponFamily[] families = {
+                EasternWeaponFamily.Wakizashi,
+                EasternWeaponFamily.Katana,
+                EasternWeaponFamily.Nodachi };
+            string[] names = { "Wakizashi", "Katana", "Nodachi" };
+            string[] acronyms = { "WK", "KA", "NO" };
+            var rows = new List<string>();
+            bool parameterExact = true;
+            foreach (string guid in EasternWeaponBlueprints
+                .ParameterSelectorGuids)
+            {
+                BlueprintParametrizedFeature selector = BlueprintLibraryLookup
+                    .RequireExact<BlueprintParametrizedFeature>(
+                        BlueprintBootstrap.Library, guid,
+                        "native chosen-weapon selector");
+                FeatureUIData[] selection = selector.GetFullSelectionItems()
+                    .ToArray();
+                for (int index = 0; index < families.Length; index++)
+                {
+                    WeaponCategory category = EasternWeaponCategoryRuntime
+                        .Category(families[index]);
+                    FeatureUIData[] matches = selection.Where(value =>
+                        value != null && value.Param != null &&
+                        value.Param.WeaponCategory.HasValue &&
+                        value.Param.WeaponCategory.Value.Equals(category))
+                        .ToArray();
+                    parameterExact &= matches.Length == 1 &&
+                        string.Equals(matches[0].Name, names[index],
+                            StringComparison.Ordinal) &&
+                        string.Equals(matches[0].NameForAcronim,
+                            acronyms[index], StringComparison.Ordinal) &&
+                        matches[0].Icon == null;
+                    rows.Add(selector.name + ":" + names[index] + "=" +
+                        matches.Length + "/" + (matches.Length == 1
+                            ? matches[0].NameForAcronim : "<missing>"));
+                }
+            }
+
+            BlueprintFeatureSelection ewp = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints
+                        .NativeExoticWeaponProficiencySelectionGuid,
+                    "native Exotic Weapon Proficiency selection");
+            BlueprintFeature curve = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints
+                        .NativeElvenCurveBladeProficiencyGuid,
+                    "native Elven Curve Blade proficiency ordering anchor");
+            BlueprintFeature spear = BlueprintBootstrap.ElvenBranchedSpears
+                .ExoticWeaponProficiency;
+            int curveIndex = Array.IndexOf(ewp.AllFeatures, curve);
+            int spearIndex = Array.IndexOf(ewp.AllFeatures, spear);
+            int katanaIndex = Array.IndexOf(ewp.AllFeatures,
+                set.KatanaProficiency);
+            int wakizashiIndex = Array.IndexOf(ewp.AllFeatures,
+                set.WakizashiProficiency);
+            bool ewpExact = CountFeature(ewp, set.KatanaProficiency) == 1 &&
+                CountFeature(ewp, set.WakizashiProficiency) == 1 &&
+                Array.IndexOf(ewp.Features, set.KatanaProficiency) == -1 &&
+                Array.IndexOf(ewp.Features, set.WakizashiProficiency) == -1 &&
+                spearIndex == curveIndex + 1 &&
+                katanaIndex == spearIndex + 1 &&
+                wakizashiIndex == katanaIndex + 1;
+
+            BlueprintFeatureSelection finesse = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints.NativeFinesseTrainingSelectionGuid,
+                    "native Rogue Finesse Training selection");
+            bool finesseExact = CountFeature(finesse,
+                set.WakizashiFinesseTraining) == 1 &&
+                !finesse.AllFeatures.Any(value => ReferenceEquals(value,
+                    set.KatanaProficiency) || ReferenceEquals(value,
+                    set.WakizashiProficiency));
+            int graceLeaks = CountCategory(FencingGraceGuid,
+                    EasternWeaponFamily.Wakizashi) +
+                CountCategory(FencingGraceGuid, EasternWeaponFamily.Katana) +
+                CountCategory(FencingGraceGuid, EasternWeaponFamily.Nodachi) +
+                CountCategory(SlashingGraceGuid,
+                    EasternWeaponFamily.Wakizashi) +
+                CountCategory(SlashingGraceGuid, EasternWeaponFamily.Katana) +
+                CountCategory(SlashingGraceGuid, EasternWeaponFamily.Nodachi);
+            string observed = "rows=" + string.Join("|", rows.ToArray()) +
+                ";order=" + curveIndex + "/" + spearIndex + "/" +
+                katanaIndex + "/" + wakizashiIndex + ";finesse=" +
+                CountFeature(finesse, set.WakizashiFinesseTraining) +
+                ";graceLeaks=" + graceLeaks;
+            ElvenBranchedSpearCombatScenario.Add(assertions,
+                "eastern-selector-publication",
+                "seven selectors contain one WK/KA/NO native-glyph row; merged proficiencies follow Curve/Spear/Katana/Wakizashi; only Wakizashi enters Finesse Training; Grace has no eastern rows",
+                observed, parameterExact && ewpExact && finesseExact &&
+                    graceLeaks == 0,
+                "live GetFullSelectionItems, merged AllFeatures, and excluded native Grace selectors");
+            diagnostics.Add("selectors{" + observed + "}");
+        }
+
         private static void QualifyProficiency(EasternWeaponBlueprintSet set,
             UnitEntityData attacker, UnitEntityData target,
             BlueprintFeature martial, IList<BlueprintUnitFact> facts,
@@ -295,6 +432,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                 katanaObserved + ";nodachi=" + nodachiObserved + "}");
         }
 
+        private static void QualifyFighterGroups(EasternWeaponBlueprintSet set,
+            UnitEntityData attacker, IList<BlueprintUnitFact> facts,
+            ref ItemEntityWeapon equipped,
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics)
+        {
+            BlueprintFeature light = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                    WeaponTrainingLightBladesGuid,
+                    "native Light Blades weapon training");
+            BlueprintFeature heavy = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                    WeaponTrainingHeavyBladesGuid,
+                    "native Heavy Blades weapon training");
+            BlueprintFeature polearms = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                    WeaponTrainingPolearmsGuid,
+                    "native Polearms weapon training");
+
+            Swap(attacker, set.Require(EasternWeaponFamily.Wakizashi,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            ElvenBranchedSpearCombatScenario.AddFact(attacker, light, facts);
+            UnitPartWeaponTraining training = attacker.Descriptor.Get<
+                UnitPartWeaponTraining>();
+            if (training == null) throw new InvalidOperationException(
+                "Native weapon training did not create UnitPartWeaponTraining.");
+            int wakizashiLight = training.GetWeaponRank(equipped);
+            ElvenBranchedSpearCombatScenario.RemoveFact(attacker, light, facts);
+
+            Swap(attacker, set.Require(EasternWeaponFamily.Katana,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            ElvenBranchedSpearCombatScenario.AddFact(attacker, heavy, facts);
+            int katanaHeavy = training.GetWeaponRank(equipped);
+            Swap(attacker, set.Require(EasternWeaponFamily.Nodachi,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            int nodachiHeavy = training.GetWeaponRank(equipped);
+            ElvenBranchedSpearCombatScenario.RemoveFact(attacker, heavy, facts);
+            ElvenBranchedSpearCombatScenario.AddFact(attacker, polearms, facts);
+            int nodachiPolearms = training.GetWeaponRank(equipped);
+            ElvenBranchedSpearCombatScenario.AddFact(attacker, heavy, facts);
+            int nodachiDual = training.GetWeaponRank(equipped);
+            Swap(attacker, set.Require(EasternWeaponFamily.Wakizashi,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            int switchedAway = training.GetWeaponRank(equipped);
+            ElvenBranchedSpearCombatScenario.RemoveFact(attacker, heavy, facts);
+            ElvenBranchedSpearCombatScenario.RemoveFact(attacker, polearms,
+                facts);
+
+            BlueprintWeaponType nodachiType = set.Require(
+                EasternWeaponFamily.Nodachi).WeaponType;
+            string observed = "wakLight=" + wakizashiLight +
+                ";katHeavy=" + katanaHeavy + ";nodHeavy=" + nodachiHeavy +
+                ";nodPole=" + nodachiPolearms + ";nodDual=" + nodachiDual +
+                ";switched=" + switchedAway + ";range=" +
+                nodachiType.AttackRange;
+            ElvenBranchedSpearCombatScenario.Add(assertions,
+                "eastern-fighter-groups",
+                "Wakizashi receives Light Blades; Katana receives Heavy Blades; Nodachi receives Heavy Blades or Polearms once without reach or double application; switching removes the match",
+                observed, wakizashiLight == 1 && katanaHeavy == 1 &&
+                    nodachiHeavy == 1 && nodachiPolearms == 1 &&
+                    nodachiDual == 1 && switchedAway == 0 &&
+                    nodachiType.FighterGroup == WeaponFighterGroup.BladesHeavy &&
+                    nodachiType.AttackRange.Value == 2,
+                "native WeaponGroupAttackBonus facts and UnitPartWeaponTraining.GetWeaponRank");
+            diagnostics.Add("groups{" + observed + "}");
+        }
+
         private static void QualifyFinesse(EasternWeaponBlueprintSet set,
             UnitEntityData attacker, IList<BlueprintUnitFact> facts,
             ref ItemEntityWeapon equipped,
@@ -319,27 +523,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                 set.WakizashiFinesseTraining, facts);
             RuleCalculateWeaponStats trainingDamage =
                 ElvenBranchedSpearCombatScenario.WeaponStats(attacker, equipped);
+            BlueprintItemWeapon[] wakizashiFamily = set.Require(
+                EasternWeaponFamily.Wakizashi).Entries.Select(value =>
+                    value.Item).Concat(set.Named.Entries.Where(value =>
+                        value.Spec.Family == EasternWeaponFamily.Wakizashi)
+                    .Select(value => value.Item)).ToArray();
+            bool familyExact = wakizashiFamily.Length == 10;
+            var familyObserved = new List<string>();
+            foreach (BlueprintItemWeapon item in wakizashiFamily)
+            {
+                Swap(attacker, item, ref equipped);
+                RuleCalculateWeaponStats stats =
+                    ElvenBranchedSpearCombatScenario.WeaponStats(attacker,
+                        equipped);
+                familyExact &= UsesOneDexterityModifier(attacker, stats) &&
+                    stats.DamageBonusStatMultiplier == 1f;
+                familyObserved.Add(item.name + "=" + DescribeDamage(stats));
+            }
             string observed = baseAttack.AttackBonusStat + "/" +
                 baseDamage.DamageBonusStat + "->" +
                 finesseAttack.AttackBonusStat + "/" +
                 finesseDamage.DamageBonusStat + "->" +
                 trainingDamage.DamageBonusStat + "x" +
-                trainingDamage.DamageBonusStatMultiplier;
+                trainingDamage.DamageBonusStatMultiplier + ";family=" +
+                string.Join("|", familyObserved.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-wakizashi-finesse",
-                "STR/STR; Weapon Finesse DEX/STR; Finesse Training DEX damage once",
+                "STR/STR; Weapon Finesse DEX/STR; all ten Wakizashi variants, including Agile plus Finesse Training, use one DEX damage modifier",
                 observed,
                 baseAttack.AttackBonusStat == StatType.Strength &&
                 baseDamage.DamageBonusStat == StatType.Strength &&
                 finesseAttack.AttackBonusStat == StatType.Dexterity &&
                 finesseDamage.DamageBonusStat == StatType.Strength &&
                 trainingDamage.DamageBonusStat == StatType.Dexterity &&
-                trainingDamage.DamageBonusStatMultiplier == 1f,
+                trainingDamage.DamageBonusStatMultiplier == 1f && familyExact,
                 "live attack-stat and weapon-stat rule events");
             ElvenBranchedSpearCombatScenario.RemoveFact(attacker,
                 set.WakizashiFinesseTraining, facts);
             ElvenBranchedSpearCombatScenario.RemoveFact(attacker, finesse, facts);
             diagnostics.Add("finesse{" + observed + "}");
+        }
+
+        private static void QualifyNamedProperties(EasternWeaponBlueprintSet set,
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics)
+        {
+            var observed = new List<string>();
+            bool exact = set.Named.Entries.Length == 18;
+            foreach (EasternWeaponNamedBlueprintEntry entry in set.Named.Entries)
+            {
+                var expected = new List<string> {
+                    set.ProficiencyPolicy.AssetGuid,
+                    EnhancementGuid(entry.Spec.Enhancement) };
+                foreach (EasternWeaponNativeProperty property in Enum.GetValues(
+                    typeof(EasternWeaponNativeProperty)))
+                {
+                    if (property == EasternWeaponNativeProperty.None ||
+                        !entry.Spec.Has(property)) continue;
+                    expected.Add(PropertyGuid(property));
+                }
+                BlueprintWeaponEnchantment custom = set.Named.Enchantments.For(
+                    entry.Spec.Kind);
+                if (custom != null) expected.Add(custom.AssetGuid);
+                string[] actual = entry.Item.Enchantments.Select(value =>
+                    value == null ? "<null>" : value.AssetGuid)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                string[] wanted = expected.OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+                bool itemExact = actual.SequenceEqual(wanted) &&
+                    ReferenceEquals(entry.Item.Type,
+                        set.Require(entry.Spec.Family).WeaponType) &&
+                    entry.Spec.NativeEffectiveBonus <= 10;
+                exact &= itemExact;
+                observed.Add(entry.Spec.DisplayName + "=" +
+                    string.Join(",", actual) + "/" +
+                    entry.Spec.NativeEffectiveBonus);
+            }
+            string text = string.Join("|", observed.ToArray());
+            ElvenBranchedSpearCombatScenario.Add(assertions,
+                "eastern-all-named-native-properties",
+                "all 18 named weapons contain exactly their approved native enchantments, optional exact bespoke enchantment, family type, and at most +10 effective bonus",
+                text, exact,
+                "live BlueprintItemWeapon.Enchantments arrays and exact native/custom blueprint identities");
+            diagnostics.Add("namedProperties{" + text + "}");
         }
 
         private static void QualifyNamedEffects(EasternWeaponBlueprintSet set,
@@ -368,8 +634,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             Swap(attacker, set.Named.Require(
                 EasternWeaponNamedKind.FallingPetal).Item, ref equipped);
             EasternNamedWeaponEffectDiagnostics.Reset();
-            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
             int acBefore = attacker.Descriptor.Stats.AC.ModifiedValue;
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+            RuleAttackWithWeapon miss = TriggerNativeAttack(attacker, target,
+                equipped,
+                ElvenBranchedSpearCombatScenario.FindNativeD20Seed(1));
+            int afterMiss = EasternNamedWeaponEffectDiagnostics
+                .FallingPetalApplications;
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 0;
+            RuleAttackWithWeapon unconfirmed = FindUnconfirmedThreat(attacker,
+                target, equipped, set.Named.Buffs.FallingPetal);
+            int afterUnconfirmed = EasternNamedWeaponEffectDiagnostics
+                .FallingPetalApplications;
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
             int seed = ElvenBranchedSpearCombatScenario.FindNativeD20Seed(19);
             RuleAttackWithWeapon critical = ElvenBranchedSpearCombatScenario
                 .NativeHitAttack(attacker, target, equipped, seed);
@@ -383,14 +660,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             Swap(attacker, set.Require(EasternWeaponFamily.Wakizashi,
                 EasternWeaponGenericKind.Mundane).Item, ref equipped);
             int acAfterSwap = attacker.Descriptor.Stats.AC.ModifiedValue;
-            string falling = "confirmed=" + critical.AttackRoll
-                .IsCriticalConfirmed + ";ac=" + acBefore + "->" +
-                acCritical + "->" + acAfterSwap + ";applications=" +
-                applications + "->" + afterOrdinary;
+            string falling = "miss=" + miss.AttackRoll.IsHit +
+                ";unconfirmed=" + unconfirmed.AttackRoll.IsCriticalRoll +
+                "/" + unconfirmed.AttackRoll.IsCriticalConfirmed +
+                ";confirmed=" + critical.AttackRoll.IsCriticalConfirmed +
+                ";ac=" + acBefore + "->" + acCritical + "->" +
+                acAfterSwap + ";applications=" + afterMiss + "/" +
+                afterUnconfirmed + "/" + applications + "->" +
+                afterOrdinary;
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-falling-petal",
-                "native confirmed critical grants one +1 Dodge for one round; ordinary hit and weapon swap do not retain it",
-                falling, critical.AttackRoll.IsCriticalConfirmed &&
+                "miss and unconfirmed threat do not trigger; native confirmed critical grants one +1 Dodge for one round; ordinary hit and weapon swap do not retain it",
+                falling, !miss.AttackRoll.IsHit && afterMiss == 0 &&
+                    unconfirmed.AttackRoll.IsCriticalRoll &&
+                    !unconfirmed.AttackRoll.IsCriticalConfirmed &&
+                    afterUnconfirmed == 0 &&
+                    critical.AttackRoll.IsCriticalConfirmed &&
                     acCritical == acBefore + 1 && applications == 1 &&
                     afterOrdinary == 1 && acAfterSwap == acBefore,
                 "native seeded critical confirmation, timed buff, and equipment callback");
@@ -441,6 +726,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             powerAttack.IsOn = false;
             powerAttack.Stop(true);
             EasternNamedWeaponEffectDiagnostics.Reset();
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+            RuleAttackWithWeapon mountainMiss = TriggerNativeAttack(attacker,
+                target, equipped,
+                ElvenBranchedSpearCombatScenario.FindNativeD20Seed(1));
+            int missed = EasternNamedWeaponEffectDiagnostics
+                .MountainSunderApplications;
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
             ElvenBranchedSpearCombatScenario.AutoHitAttack(attacker, target,
                 equipped);
             int inactive = EasternNamedWeaponEffectDiagnostics
@@ -456,19 +748,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 equipped);
             int repeated = EasternNamedWeaponEffectDiagnostics
                 .MountainSunderApplications;
-            RemoveBuff(attacker, set.Named.Buffs.MountainSunderMarker);
+            Swap(attacker, set.Require(EasternWeaponFamily.Nodachi,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.MountainSunder).Item, ref equipped);
             ElvenBranchedSpearCombatScenario.AutoHitAttack(attacker, target,
                 equipped);
+            int afterSwitch = EasternNamedWeaponEffectDiagnostics
+                .MountainSunderApplications;
+            RemoveBuff(attacker, set.Named.Buffs.MountainSunderMarker);
+            RuleAttackWithWeapon mountainCritical =
+                ElvenBranchedSpearCombatScenario.NativeHitAttack(attacker,
+                    target, equipped,
+                    ElvenBranchedSpearCombatScenario.FindNativeD20Seed(19));
             int nextRound = EasternNamedWeaponEffectDiagnostics
                 .MountainSunderApplications;
-            string mountain = inactive + "->" + first + "->" + repeated +
-                "->" + nextRound + ";force=" + force + ";running=" +
-                powerAttack.IsRunning;
+            int criticalForce = EasternNamedWeaponEffectDiagnostics
+                .LastMountainSunderDamage;
+            string mountain = "miss=" + mountainMiss.AttackRoll.IsHit + "/" +
+                missed + ";applications=" + inactive + "->" + first +
+                "->" + repeated + "->switch=" + afterSwitch +
+                "->critical=" + nextRound + ";force=" + force + "/" +
+                criticalForce + ";criticalConfirmed=" +
+                mountainCritical.AttackRoll.IsCriticalConfirmed +
+                ";running=" + powerAttack.IsRunning;
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-mountain-sunder",
-                "inactive Power Attack rejected; first hit applies one 1d6 force packet; repeat is blocked until marker reset",
-                mountain, inactive == 0 && first == 1 && repeated == 1 &&
-                    nextRound == 2 && force >= 1 && force <= 6 &&
+                "miss does not consume; inactive Power Attack is rejected; first hit applies one 1d6 force packet; repeat and weapon switching are blocked until marker reset; critical does not multiply the force die",
+                mountain, !mountainMiss.AttackRoll.IsHit && missed == 0 &&
+                    inactive == 0 && first == 1 && repeated == 1 &&
+                    afterSwitch == 1 && nextRound == 2 &&
+                    mountainCritical.AttackRoll.IsCriticalConfirmed &&
+                    force >= 1 && force <= 6 && criticalForce >= 1 &&
+                    criticalForce <= 6 &&
                     powerAttack.IsRunning,
                 "native Power Attack activatable, live attacks, damage rule, and one-round buff marker");
             powerAttack.IsOn = false;
@@ -489,15 +801,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             int transformedApplications = EasternNamedWeaponEffectDiagnostics
                 .UnfixedFormApplications;
             attacker.Descriptor.State.Size = originalSize;
+            SetPolymorphed(attacker, true);
+            RuleCalculateWeaponStats polymorphed =
+                ElvenBranchedSpearCombatScenario.WeaponStats(attacker, equipped);
+            int polymorphedApplications = EasternNamedWeaponEffectDiagnostics
+                .UnfixedFormApplications;
+            attacker.Descriptor.State.Size = originalSize == Size.Medium ?
+                Size.Large : Size.Medium;
+            RuleCalculateWeaponStats simultaneous =
+                ElvenBranchedSpearCombatScenario.WeaponStats(attacker, equipped);
+            int simultaneousApplications = EasternNamedWeaponEffectDiagnostics
+                .UnfixedFormApplications;
+            attacker.Descriptor.State.Size = originalSize;
+            SetPolymorphed(attacker, false);
             string unfixed = "applications=" + ordinaryApplications + "->" +
-                transformedApplications + ";weaponSize=" +
-                ordinary.WeaponSize + "->" + transformed.WeaponSize;
+                transformedApplications + "->" + polymorphedApplications +
+                "->" + simultaneousApplications + ";weaponSize=" +
+                ordinary.WeaponSize + "->" + transformed.WeaponSize + "/" +
+                polymorphed.WeaponSize + "/" + simultaneous.WeaponSize;
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-unfixed-form",
-                "ordinary size rejected; changed current size applies exactly one native weapon-size step",
+                "ordinary state is rejected; changed size, exact polymorph state, and both conditions together each apply exactly one native weapon-size step",
                 unfixed, ordinaryApplications == 0 &&
                     transformedApplications == 1 &&
+                    polymorphedApplications == 2 &&
+                    simultaneousApplications == 3 &&
                     (int)transformed.WeaponSize ==
+                        (int)ordinary.WeaponSize + 1 &&
+                    (int)polymorphed.WeaponSize ==
+                        (int)ordinary.WeaponSize + 1 &&
+                    (int)simultaneous.WeaponSize ==
                         (int)ordinary.WeaponSize + 1,
                 "exact original/current Size state and RuleCalculateWeaponStats.IncreaseWeaponSize");
             diagnostics.Add("named{wayfarer=" + wayfarer + ";falling=" +
@@ -506,40 +839,106 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static void QualifyCapstones(EasternWeaponBlueprintSet set,
-            UnitEntityData attacker, ref ItemEntityWeapon equipped,
+            UnitEntityData attacker, UnitEntityData target,
+            ref ItemEntityWeapon equipped, ref ItemEntityWeapon offhand,
             ICollection<RuntimeTestAssertion> assertions,
             ICollection<string> diagnostics)
         {
-            EasternWeaponNamedKind[] capstones = {
-                EasternWeaponNamedKind.NightWithoutMoon,
-                EasternWeaponNamedKind.HeavensMeasure,
-                EasternWeaponNamedKind.WorldTreeSeverer };
-            var observed = new List<string>();
-            bool exact = true;
-            foreach (EasternWeaponNamedKind kind in capstones)
-            {
-                EasternWeaponNamedBlueprintEntry entry = set.Named.Require(kind);
-                Swap(attacker, entry.Item, ref equipped);
-                BlueprintItemEnchantment[] enchantments =
-                    entry.Item.Enchantments.ToArray();
-                int effective = entry.Spec.NativeEffectiveBonus;
-                bool hasSpeed = entry.Spec.Has(
-                    EasternWeaponNativeProperty.Speed);
-                int speedCount = enchantments.Count(value => value != null &&
-                    string.Equals(value.AssetGuid,
-                        EasternWeaponNamedBlueprints.SpeedGuid,
-                        StringComparison.Ordinal));
-                exact &= enchantments.All(value => value != null) &&
-                    effective <= 10 && speedCount == (hasSpeed ? 1 : 0);
-                observed.Add(kind + "=" + effective + "/speed:" + speedCount);
-            }
-            string text = string.Join("|", observed.ToArray());
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 12;
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.EmptySleeve).Item, ref equipped);
+            int ordinaryMain = PlanFullAttack(attacker, target).Count;
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.NightWithoutMoon).Item, ref equipped);
+            int speedMain = PlanFullAttack(attacker, target).Count;
+            int speedRepeated = PlanFullAttack(attacker, target).Count;
+            BlueprintBuff haste = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(BlueprintBootstrap.Library, HasteBuffGuid,
+                    "native Haste buff");
+            var hasteContext = new MechanicsContext(attacker,
+                attacker.Descriptor, haste, null, new TargetWrapper(attacker));
+            Buff hasteFact = attacker.Descriptor.Buffs.AddBuff(haste,
+                hasteContext,
+                TimeSpan.FromSeconds(60d));
+            if (hasteFact == null) throw new InvalidOperationException(
+                "The native Haste control buff could not be applied.");
+            int speedWithHaste = PlanFullAttack(attacker, target).Count;
+            attacker.Descriptor.Buffs.RemoveFact(hasteFact);
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.EmptySleeve).Item, ref equipped);
+            int afterSwitch = PlanFullAttack(attacker, target).Count;
+
+            Swap(attacker, set.Require(EasternWeaponFamily.Katana,
+                EasternWeaponGenericKind.Mundane).Item, ref equipped);
+            offhand = EquipOffhand(attacker, set.Require(
+                EasternWeaponFamily.Wakizashi,
+                EasternWeaponGenericKind.Mundane).Item);
+            List<AttackHandInfo> ordinaryTwoWeapon = PlanFullAttack(attacker,
+                target);
+            ItemEntityWeapon ordinaryOffhandItem = offhand;
+            int ordinaryOffhand = ordinaryTwoWeapon.Count(value =>
+                ReferenceEquals(value.Weapon, ordinaryOffhandItem));
+            RemoveOffhand(attacker, ref offhand);
+            offhand = EquipOffhand(attacker, set.Named.Require(
+                EasternWeaponNamedKind.NightWithoutMoon).Item);
+            List<AttackHandInfo> speedTwoWeapon = PlanFullAttack(attacker,
+                target);
+            ItemEntityWeapon speedOffhandItem = offhand;
+            int speedOffhand = speedTwoWeapon.Count(value =>
+                ReferenceEquals(value.Weapon, speedOffhandItem));
+            RemoveOffhand(attacker, ref offhand);
+
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.UnfixedForm).Item, ref equipped);
+            int ordinaryNodachi = PlanFullAttack(attacker, target).Count;
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.WorldTreeSeverer).Item, ref equipped);
+            int worldTreeSpeed = PlanFullAttack(attacker, target).Count;
+            string speedObserved = "main=" + ordinaryMain + "->" +
+                speedMain + "/" + speedRepeated + ";haste=" +
+                speedWithHaste + ";switch=" + afterSwitch + ";offhand=" +
+                ordinaryOffhand + "->" + speedOffhand + ";world=" +
+                ordinaryNodachi + "->" + worldTreeSpeed;
             ElvenBranchedSpearCombatScenario.Add(assertions,
-                "eastern-capstone-native-properties",
-                "all capstones stay at or below +10 and each approved Speed reference occurs once",
-                text, exact,
-                "live equipped capstone enchantment arrays and effective-bonus catalog");
-            diagnostics.Add("capstones{" + text + "}");
+                "eastern-capstone-speed",
+                "Speed adds exactly one main- or offhand full-attack entry, does not stack with Haste, repeats once per full attack, clears on switch, and works on both Speed capstones",
+                speedObserved, speedMain == ordinaryMain + 1 &&
+                    speedRepeated == speedMain && speedWithHaste == speedMain &&
+                    afterSwitch == ordinaryMain &&
+                    speedOffhand == ordinaryOffhand + 1 &&
+                    worldTreeSpeed == ordinaryNodachi + 1,
+                "native UnitAttack.CreateFullAttack and WeaponExtraAttack/Haste arbitration");
+
+            Swap(attacker, set.Named.Require(
+                EasternWeaponNamedKind.HeavensMeasure).Item, ref equipped);
+            attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            int seed = ElvenBranchedSpearCombatScenario.FindNativeD20Seed(10);
+            RuleAttackWithWeapon living = TriggerNativeAttack(attacker, target,
+                equipped, seed);
+            BlueprintFeature undead = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library, UndeadTypeGuid,
+                    "native Undead type fact");
+            if (target.Descriptor.AddFact(undead) == null)
+                throw new InvalidOperationException(
+                    "The request-local target could not receive Undead type.");
+            RuleAttackWithWeapon excluded = TriggerNativeAttack(attacker,
+                target, equipped, seed);
+            target.Descriptor.RemoveFact(undead);
+            string brilliantObserved = "living=" +
+                living.AttackRoll.IsHit + ";undead=" +
+                excluded.AttackRoll.IsHit + ";effective=" +
+                set.Named.Require(EasternWeaponNamedKind.HeavensMeasure)
+                    .Spec.NativeEffectiveBonus;
+            ElvenBranchedSpearCombatScenario.Add(assertions,
+                "eastern-heavens-measure-brilliant-energy",
+                "native Brilliant Energy hits the living control, cannot affect the native Undead type, and remains at +10 effective bonus",
+                brilliantObserved, living.AttackRoll.IsHit &&
+                    !excluded.AttackRoll.IsHit &&
+                    set.Named.Require(EasternWeaponNamedKind.HeavensMeasure)
+                        .Spec.NativeEffectiveBonus == 10,
+                "native BrilliantEnergy and MissAgainstFactOwner components on live RuleAttackWithWeapon events");
+            diagnostics.Add("capstones{speed=" + speedObserved +
+                ";brilliant=" + brilliantObserved + "}");
         }
 
         private static int Attack(UnitEntityData attacker,
@@ -547,6 +946,164 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return ElvenBranchedSpearCombatScenario.WeaponAttack(attacker,
                 target, weapon).AttackRoll.AttackBonus;
+        }
+
+        private static List<AttackHandInfo> PlanFullAttack(
+            UnitEntityData attacker, UnitEntityData target)
+        {
+            var command = new UnitAttack(attacker);
+            PropertyInfo targetProperty = typeof(UnitAttack).GetProperty(
+                "Target", Members | BindingFlags.DeclaredOnly);
+            PropertyInfo executorProperty = typeof(UnitCommand).GetProperty(
+                "Executor", Members | BindingFlags.DeclaredOnly);
+            MethodInfo create = typeof(UnitAttack).GetMethod(
+                "CreateFullAttack", Members, null, Type.EmptyTypes, null);
+            if (targetProperty == null || executorProperty == null ||
+                create == null ||
+                create.ReturnType != typeof(List<AttackHandInfo>))
+                throw new MissingMethodException(typeof(UnitAttack).FullName,
+                    "CreateFullAttack() : List<AttackHandInfo>");
+            executorProperty.SetValue(command, attacker, null);
+            targetProperty.SetValue(command, target, null);
+            var result = create.Invoke(command, null) as List<AttackHandInfo>;
+            if (result == null || result.Count == 0 ||
+                result.Any(value => value == null || value.Weapon == null))
+                throw new InvalidOperationException(
+                    "Native full-attack planning returned an incomplete list.");
+            return result;
+        }
+
+        private static RuleAttackWithWeapon TriggerNativeAttack(
+            UnitEntityData attacker, UnitEntityData target,
+            ItemEntityWeapon weapon, int seed)
+        {
+            int damage = target.Descriptor.Damage;
+            UnityEngine.Random.InitState(seed);
+            RuleAttackWithWeapon attack = Rulebook.Trigger(
+                new RuleAttackWithWeapon(attacker, target, weapon, 0));
+            target.Descriptor.Damage = damage;
+            if (attack.AttackRoll == null) throw new InvalidOperationException(
+                "Native attack did not produce an attack roll.");
+            return attack;
+        }
+
+        private static RuleAttackWithWeapon FindUnconfirmedThreat(
+            UnitEntityData attacker, UnitEntityData target,
+            ItemEntityWeapon weapon, BlueprintBuff fallingPetal)
+        {
+            for (int candidate = 1; candidate <= 100000; candidate++)
+            {
+                UnityEngine.Random.InitState(candidate);
+                if (UnityEngine.Random.Range(1, 21) != 19) continue;
+                RuleAttackWithWeapon attack = TriggerNativeAttack(attacker,
+                    target, weapon, candidate);
+                if (attack.AttackRoll.IsHit &&
+                    attack.AttackRoll.IsCriticalRoll &&
+                    !attack.AttackRoll.IsCriticalConfirmed)
+                    return attack;
+                RemoveBuff(attacker, fallingPetal);
+                EasternNamedWeaponEffectDiagnostics.Reset();
+            }
+            throw new InvalidOperationException(
+                "No native seeded unconfirmed Falling Petal threat was found.");
+        }
+
+        private static void SetPolymorphed(UnitEntityData unit, bool value)
+        {
+            PropertyInfo property = unit == null || unit.Body == null ? null :
+                unit.Body.GetType().GetProperty("IsPolymorphed", Members);
+            MethodInfo setter = property == null ? null :
+                property.GetSetMethod(true);
+            if (property == null || property.PropertyType != typeof(bool) ||
+                setter == null || setter.IsStatic ||
+                setter.GetParameters().Length != 1)
+                throw new InvalidOperationException(
+                    "Exact UnitBody.IsPolymorphed setter is unavailable.");
+            setter.Invoke(unit.Body, new object[] { value });
+            if (unit.Body.IsPolymorphed != value)
+                throw new InvalidOperationException(
+                    "Exact UnitBody.IsPolymorphed state did not change.");
+        }
+
+        private static bool UsesOneDexterityModifier(UnitEntityData unit,
+            RuleCalculateWeaponStats stats)
+        {
+            if (unit == null || stats == null ||
+                stats.DamageBonusStat != StatType.Dexterity) return false;
+            int expected = (int)Math.Floor(
+                unit.Descriptor.Stats.Dexterity.Bonus *
+                stats.DamageBonusStatMultiplier);
+            return stats.BonusDamage == expected + stats.Enhancement;
+        }
+
+        private static string DescribeDamage(RuleCalculateWeaponStats stats)
+        {
+            return stats.DamageBonusStat + "x" +
+                stats.DamageBonusStatMultiplier + ";bonus=" +
+                stats.BonusDamage + ";enhancement=" + stats.Enhancement;
+        }
+
+        private static int CountFeature(BlueprintFeatureSelection selection,
+            BlueprintFeature feature)
+        {
+            return (selection.AllFeatures ?? Array.Empty<BlueprintFeature>())
+                .Count(value => ReferenceEquals(value, feature) ||
+                    value != null && string.Equals(value.AssetGuid,
+                        feature.AssetGuid, StringComparison.Ordinal));
+        }
+
+        private static int CountCategory(string selectorGuid,
+            EasternWeaponFamily family)
+        {
+            BlueprintParametrizedFeature selector = BlueprintLibraryLookup
+                .RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, selectorGuid,
+                    "native excluded weapon selector");
+            WeaponCategory category = EasternWeaponCategoryRuntime.Category(
+                family);
+            return selector.GetFullSelectionItems().Count(value =>
+                value != null && value.Param != null &&
+                value.Param.WeaponCategory.HasValue &&
+                value.Param.WeaponCategory.Value.Equals(category));
+        }
+
+        private static string EnhancementGuid(int enhancement)
+        {
+            return enhancement == 1
+                ? EasternWeaponBlueprints.NativeEnhancementOneGuid
+                : enhancement == 2
+                ? EasternWeaponNamedBlueprints.EnhancementTwoGuid
+                : enhancement == 3
+                ? EasternWeaponNamedBlueprints.EnhancementThreeGuid
+                : enhancement == 4
+                ? EasternWeaponNamedBlueprints.EnhancementFourGuid
+                : EasternWeaponNamedBlueprints.EnhancementFiveGuid;
+        }
+
+        private static string PropertyGuid(
+            EasternWeaponNativeProperty property)
+        {
+            return property == EasternWeaponNativeProperty.Flaming
+                ? EasternWeaponNamedBlueprints.FlamingGuid
+                : property == EasternWeaponNativeProperty.Frost
+                ? EasternWeaponNamedBlueprints.FrostGuid
+                : property == EasternWeaponNativeProperty.Agile
+                ? EasternWeaponNamedBlueprints.AgileGuid
+                : property == EasternWeaponNativeProperty.Keen
+                ? EasternWeaponNamedBlueprints.KeenGuid
+                : property == EasternWeaponNativeProperty.GhostTouch
+                ? EasternWeaponNamedBlueprints.GhostTouchGuid
+                : property == EasternWeaponNativeProperty.Shock
+                ? EasternWeaponNamedBlueprints.ShockGuid
+                : property == EasternWeaponNativeProperty.Thundering
+                ? EasternWeaponNamedBlueprints.ThunderingGuid
+                : property == EasternWeaponNativeProperty.Holy
+                ? EasternWeaponNamedBlueprints.HolyGuid
+                : property == EasternWeaponNativeProperty.BrilliantEnergy
+                ? EasternWeaponNamedBlueprints.BrilliantEnergyGuid
+                : property == EasternWeaponNativeProperty.Speed
+                ? EasternWeaponNamedBlueprints.SpeedGuid
+                : throw new ArgumentOutOfRangeException("property");
         }
 
         private static void Swap(UnitEntityData unit,
@@ -562,6 +1119,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon blueprint = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(BlueprintBootstrap.Library,
                     ShortswordItemGuid, "native Shortsword offhand control");
+            return EquipOffhand(unit, blueprint);
+        }
+
+        private static ItemEntityWeapon EquipOffhand(UnitEntityData unit,
+            BlueprintItemWeapon blueprint)
+        {
             var item = new ItemEntityWeapon(blueprint);
             unit.Body.SecondaryHand.InsertItem(item);
             if (!ReferenceEquals(unit.Body.SecondaryHand.MaybeWeapon, item))
