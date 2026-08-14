@@ -48,6 +48,9 @@
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearSelectorPublication.cs" />
     <Compile Include="ElvenBranchedSpear\MovementOpportunityAttackTracker.cs" />
     <Compile Include="ElvenBranchedSpear\MovementOpportunityAccuracyComponent.cs" />
+    <Compile Include="CustomWeapons\CustomWeaponCategoryDefinition.cs" />
+    <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />

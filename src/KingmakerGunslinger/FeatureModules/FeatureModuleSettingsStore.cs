@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 4;
+        internal const int CurrentSchemaVersion = 5;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -37,9 +37,12 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.ExpandedSummoningId);
                 bool elvenBranchedSpears = ReadDefaultOn(root,
                     FeatureModuleConfiguration.ElvenBranchedSpearsId);
+                bool easternWeapons = ReadDefaultOn(root,
+                    FeatureModuleConfiguration.EasternWeaponsId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
-                        shieldOther, expandedSummoning, elvenBranchedSpears), path,
+                        shieldOther, expandedSummoning, elvenBranchedSpears,
+                        easternWeapons), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
                 if (schema < CurrentSchemaVersion) Save(state);
@@ -83,7 +86,9 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.ExpandedSummoningId] =
                     state.Pending.ExpandedSummoning,
                 [FeatureModuleConfiguration.ElvenBranchedSpearsId] =
-                    state.Pending.ElvenBranchedSpears
+                    state.Pending.ElvenBranchedSpears,
+                [FeatureModuleConfiguration.EasternWeaponsId] =
+                    state.Pending.EasternWeapons
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";

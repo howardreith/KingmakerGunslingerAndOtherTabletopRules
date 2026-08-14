@@ -7925,6 +7925,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool)_request.Parameters["expandedSummoning"];
             bool expectedElvenBranchedSpears =
                 (bool)_request.Parameters["elvenBranchedSpears"];
+            bool expectedEasternWeapons =
+                (bool)_request.Parameters["easternWeapons"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -7932,6 +7934,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.ExpandedSummoning;
             bool activeElvenBranchedSpears =
                 _context.FeatureModules.Active.ElvenBranchedSpears;
+            bool activeEasternWeapons =
+                _context.FeatureModules.Active.EasternWeapons;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -8107,10 +8111,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "expected=" + expectedGunslinger + "/" +
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
+                "/" + expectedEasternWeapons +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
-                activeElvenBranchedSpears + ";registered=" +
+                activeElvenBranchedSpears + "/" + activeEasternWeapons +
+                ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
@@ -8135,7 +8141,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeAcadamae == expectedAcadamae &&
                     activeShieldOther == expectedShieldOther &&
                     activeExpandedSummoning == expectedExpandedSummoning &&
-                    activeElvenBranchedSpears == expectedElvenBranchedSpears,
+                    activeElvenBranchedSpears == expectedElvenBranchedSpears &&
+                    activeEasternWeapons == expectedEasternWeapons,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
@@ -8176,7 +8183,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;4 static references;24 campaign vendor rows plus six rows per installed BTSL table;4 loot rows" :
+                        "12 identities;7 parameter options;3 static references;24 campaign vendor rows plus six rows per installed BTSL table;4 loot rows" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -8185,7 +8192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearParameterizedOptions ==
                         (expectedElvenBranchedSpears ? 7 : 0) &&
                     spearStaticOptions ==
-                        (expectedElvenBranchedSpears ? 4 : 0) &&
+                        (expectedElvenBranchedSpears ? 3 : 0) &&
                     spearFamiliarityCategories == 1 &&
                     spearVendorRows ==
                         (expectedElvenBranchedSpears ?
@@ -8193,6 +8200,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearLootRows ==
                         (expectedElvenBranchedSpears ? 4 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
+                Assertion("feature-module-eastern-weapons-publication-gate",
+                    expectedEasternWeapons ? "enabled" : "disabled",
+                    activeEasternWeapons ? "enabled" : "disabled",
+                    activeEasternWeapons == expectedEasternWeapons,
+                    "immutable Eastern Weapons publication-plan input"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

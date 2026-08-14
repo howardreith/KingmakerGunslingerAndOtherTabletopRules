@@ -306,7 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 5 ||
+                if (request.Parameters == null || request.Parameters.Count != 6 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
@@ -317,7 +317,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["expandedSummoning"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("elvenBranchedSpears") == null ||
                     request.Parameters["elvenBranchedSpears"].Type !=
-                        JTokenType.Boolean)
+                        JTokenType.Boolean ||
+                    request.Parameters.Property("easternWeapons") == null ||
+                    request.Parameters["easternWeapons"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else

@@ -17,6 +17,9 @@ namespace KingmakerGunslinger.FeatureModules
             ElvenBranchedSpearSelectors = active.ElvenBranchedSpears;
             ElvenBranchedSpearCommerce = active.ElvenBranchedSpears;
             ElvenBranchedSpearPresentation = active.ElvenBranchedSpears;
+            EasternWeaponSelectors = active.EasternWeapons;
+            EasternWeaponCommerce = active.EasternWeapons;
+            EasternWeaponPresentation = active.EasternWeapons;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -31,5 +34,8 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool ElvenBranchedSpearSelectors { get; private set; }
         internal bool ElvenBranchedSpearCommerce { get; private set; }
         internal bool ElvenBranchedSpearPresentation { get; private set; }
+        internal bool EasternWeaponSelectors { get; private set; }
+        internal bool EasternWeaponCommerce { get; private set; }
+        internal bool EasternWeaponPresentation { get; private set; }
     }
 }

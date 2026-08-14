@@ -9,15 +9,18 @@ namespace KingmakerGunslinger.FeatureModules
         internal const string ShieldOtherId = "shield-other";
         internal const string ExpandedSummoningId = "expanded-summoning";
         internal const string ElvenBranchedSpearsId = "elven-branched-spears";
+        internal const string EasternWeaponsId = "eastern-weapons";
 
         internal FeatureModuleConfiguration(bool gunslinger, bool acadamaeGraduate,
-            bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears)
+            bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
+            bool easternWeapons)
         {
             Gunslinger = gunslinger;
             AcadamaeGraduate = acadamaeGraduate;
             ShieldOther = shieldOther;
             ExpandedSummoning = expandedSummoning;
             ElvenBranchedSpears = elvenBranchedSpears;
+            EasternWeapons = easternWeapons;
         }
 
         internal bool Gunslinger { get; private set; }
@@ -25,8 +28,9 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool ShieldOther { get; private set; }
         internal bool ExpandedSummoning { get; private set; }
         internal bool ElvenBranchedSpears { get; private set; }
+        internal bool EasternWeapons { get; private set; }
         internal static FeatureModuleConfiguration Defaults
-        { get { return new FeatureModuleConfiguration(true, true, true, true, true); } }
+        { get { return new FeatureModuleConfiguration(true, true, true, true, true, true); } }
 
         public bool Equals(FeatureModuleConfiguration other)
         {
@@ -34,7 +38,8 @@ namespace KingmakerGunslinger.FeatureModules
                 AcadamaeGraduate == other.AcadamaeGraduate &&
                 ShieldOther == other.ShieldOther &&
                 ExpandedSummoning == other.ExpandedSummoning &&
-                ElvenBranchedSpears == other.ElvenBranchedSpears;
+                ElvenBranchedSpears == other.ElvenBranchedSpears &&
+                EasternWeapons == other.EasternWeapons;
         }
 
         public override bool Equals(object obj)
@@ -43,12 +48,13 @@ namespace KingmakerGunslinger.FeatureModules
         public override int GetHashCode()
         { return (Gunslinger ? 1 : 0) | (AcadamaeGraduate ? 2 : 0) |
             (ShieldOther ? 4 : 0) | (ExpandedSummoning ? 8 : 0) |
-            (ElvenBranchedSpears ? 16 : 0); }
+            (ElvenBranchedSpears ? 16 : 0) | (EasternWeapons ? 32 : 0); }
 
         public override string ToString()
         { return "gunslinger=" + Gunslinger + ";acadamae-graduate=" +
             AcadamaeGraduate + ";shield-other=" + ShieldOther +
             ";expanded-summoning=" + ExpandedSummoning +
-            ";elven-branched-spears=" + ElvenBranchedSpears; }
+            ";elven-branched-spears=" + ElvenBranchedSpears +
+            ";eastern-weapons=" + EasternWeapons; }
     }
 }

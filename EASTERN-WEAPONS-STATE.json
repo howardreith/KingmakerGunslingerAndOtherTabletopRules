@@ -16,8 +16,8 @@
   },
   "phases": {
     "investigation": "complete",
-    "foundation": "in_progress",
-    "genericCatalog": "pending",
+    "foundation": "complete",
+    "genericCatalog": "in_progress",
     "namedCatalog": "pending",
     "proficiency": "pending",
     "selectors": "pending",
@@ -55,12 +55,20 @@
     "targetedObserverDllSha256": "57B42B4F18FC05614AC7078564CB2D0A83536480A1C97CF3BBA1DA771FD32A7E",
     "targetedObserverDllMvid": "5337c8ba-2d31-4c60-a39f-34017ce40339",
     "deadly": "DEFERRED ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK",
+    "foundationDomainTests": "PASS 1037/1037",
+    "foundationCleanReleaseBuild": "PASS",
+    "foundationPackageValidation": "PASS",
+    "sixModuleAllOnRunId": "20260814T1137520825950Z-1974f02c68834bcb8c08805a3724c2cd",
+    "sixModuleEasternOffRunId": "20260814T1140244851767Z-123a6d83d9634e0f9f0de39a479164ff",
+    "sixModuleLoadedDllSha256": "5b74019e31f732eb08c56e5b615cbaf094c8fc120650b5eef78c32097cfe5048",
+    "sixModuleLoadedDllMvid": "01a66571-5cbf-4c21-a386-74fda2042386",
+    "sixModuleSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 3,
+    "runtimeLaunches": 6,
     "autonomousMerge": false
   }
 }

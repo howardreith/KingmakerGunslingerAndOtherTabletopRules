@@ -102,3 +102,30 @@ values, or campaign targets.
   no reliable virtual-damage-only Fortitude DC rule hook.
 - The guarded push helper continues to reject the exact authorized branch
   because its external allowlist contains only the singular branch spelling.
+
+## 2026-08-14 - reusable category and sixth-module foundation
+
+- Added the independent default-on `eastern-weapons` module, settings schema 5
+  migration, immutable active/pending state, publication gates, UI label, exact
+  six-Boolean guarded request contract, and 64-state matrix transaction.
+- Added a data-driven custom-category definition and collision registry plus the
+  three locked Eastern category profiles and twelve generic catalog records.
+- Stable category values are `0x004B4D48` Wakizashi, `0x004B4D49` Katana, and
+  `0x004B4D4A` Nodachi. Generic prices use base cost, base plus 300 gp
+  masterwork, doubled base cost for cold iron, and base plus 2,300 gp for +1.
+- Repository validation, all `1037/1037` domain/reflection tests, clean Release
+  build, build-output validation, deterministic package creation, and strict
+  package validation passed.
+- The first six-module live run exposed a stale inherited spear observer
+  expectation: the accepted merged path has one Exotic `AllFeatures` reference
+  and two Finesse Training references, not four static references. No spear
+  source or saved identity was changed; the observer was corrected to three.
+- Corrected all-ON run
+  `20260814T1137520825950Z-1974f02c68834bcb8c08805a3724c2cd`
+  passed. Transactional Eastern-OFF run
+  `20260814T1140244851767Z-123a6d83d9634e0f9f0de39a479164ff`
+  passed and restored settings bytes with SHA-256
+  `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
+- Both runs loaded the exact local candidate with DLL SHA-256
+  `5b74019e31f732eb08c56e5b615cbaf094c8fc120650b5eef78c32097cfe5048`
+  and MVID `01a66571-5cbf-4c21-a386-74fda2042386`. No save was accessed.

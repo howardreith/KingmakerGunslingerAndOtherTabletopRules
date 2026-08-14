@@ -787,7 +787,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 5 -or
+        if ($Parameters.Count -ne 6 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -797,8 +797,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('expandedSummoning') -or
             $Parameters.expandedSummoning -isnot [bool] -or
             -not $Parameters.ContainsKey('elvenBranchedSpears') -or
-            $Parameters.elvenBranchedSpears -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, and elvenBranchedSpears parameters."
+            $Parameters.elvenBranchedSpears -isnot [bool] -or
+            -not $Parameters.ContainsKey('easternWeapons') -or
+            $Parameters.easternWeapons -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, and easternWeapons parameters."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -904,6 +906,7 @@ function New-KmgRuntimeRequest {
                 shieldOther = [bool]$Parameters.shieldOther
                 expandedSummoning = [bool]$Parameters.expandedSummoning
                 elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears
+                easternWeapons = [bool]$Parameters.easternWeapons
             }
         } else { [ordered]@{} }
     }
