@@ -38,6 +38,7 @@
     <Compile Include="ExpandedSummoningCatalogTests.cs" />
     <Compile Include="ExpandedSummoningPresentationTests.cs" />
     <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />
+    <Compile Include="EasternWeaponsInvestigationTests.cs" />
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>

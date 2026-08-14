@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("eastern-weapons.investigation-guard", EasternWeaponsInvestigationTests.EvidenceAndObserverRemainInvestigationOnly),
             Case("elven-branched-spear.investigation-guard", ElvenBranchedSpearInvestigationTests.EvidenceReportAndObserverAreGuarded),
             Case("elven-branched-spear.foundation-catalog", ElvenBranchedSpearCatalogTests.LockedProfileAndFoundationCatalogAreExact),
             Case("elven-branched-spear.foundation-source-contracts", ElvenBranchedSpearCatalogTests.FoundationSourceContractsAreExact),

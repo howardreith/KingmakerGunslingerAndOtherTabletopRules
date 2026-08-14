@@ -35,6 +35,7 @@ param(
         'disposable-paper-cartridge-comprehensive',
         'observe-feature-module-settings',
         'observe-elven-branched-spear-contracts',
+        'observe-eastern-weapon-contracts',
         'disposable-elven-branched-spear-combat',
         'observe-expanded-summoning-inventory',
         'disposable-shield-other',

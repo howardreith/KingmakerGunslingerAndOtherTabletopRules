@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "mission": "eastern-weapons",
+  "status": "active",
+  "branch": "codex/eastern-weapons",
+  "baseCommit": "4ffd15b09992bd9cee9d330eee0a650ad2c94661",
+  "release": {
+    "assemblyVersion": "0.0.80",
+    "informationalVersion": "0.0.80-eastern-weapons",
+    "package": "KingmakerGunslinger-0.0.80-eastern-weapons.zip"
+  },
+  "module": {
+    "key": "eastern-weapons",
+    "label": "Eastern Weapons",
+    "defaultEnabled": true
+  },
+  "phases": {
+    "investigation": "in_progress",
+    "foundation": "pending",
+    "genericCatalog": "pending",
+    "namedCatalog": "pending",
+    "proficiency": "pending",
+    "selectors": "pending",
+    "fighterGroups": "pending",
+    "commerce": "pending",
+    "assets": "pending",
+    "runtimeMechanics": "pending",
+    "persistence": "pending",
+    "compatibility": "pending",
+    "moduleMatrix": "pending",
+    "packaging": "pending",
+    "humanVisualReview": "pending"
+  },
+  "evidence": {
+    "baselineRepositoryValidation": "PASS",
+    "baselineDomainTests": "PASS 1033/1033",
+    "baselineCleanReleaseBuild": "PASS",
+    "baselineBuildOutputValidation": "PASS",
+    "observerSourceValidation": "PASS",
+    "observerDomainTests": "PASS 1034/1034",
+    "observerCleanReleaseBuild": "PASS",
+    "observerPackageValidation": "PASS",
+    "observerRuntime": "pending"
+  },
+  "safety": {
+    "protectedBaselineAccessed": false,
+    "workingSaveWrites": 0,
+    "runtimeLaunches": 0,
+    "autonomousMerge": false
+  }
+}

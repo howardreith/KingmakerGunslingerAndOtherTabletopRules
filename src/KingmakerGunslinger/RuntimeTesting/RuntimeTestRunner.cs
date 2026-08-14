@@ -657,6 +657,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveEasternWeaponContracts)
+                {
+                    Complete(EasternWeaponContractObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableElvenBranchedSpearCombat)
                 {
                     Complete(ElvenBranchedSpearCombatScenario.Run(

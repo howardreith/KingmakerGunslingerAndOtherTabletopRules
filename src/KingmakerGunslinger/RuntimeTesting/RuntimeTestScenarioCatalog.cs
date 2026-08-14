@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-native-weapon-feat-contracts";
         internal const string ObserveElvenBranchedSpearContracts =
             "observe-elven-branched-spear-contracts";
+        internal const string ObserveEasternWeaponContracts =
+            "observe-eastern-weapon-contracts";
         internal const string DisposableElvenBranchedSpearCombat =
             "disposable-elven-branched-spear-combat";
         internal const string WorkingSaveElvenBranchedSpearPrepare =
@@ -247,6 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveGunslingerPresentation,
                 ObserveNativeWeaponFeatContracts,
                 ObserveElvenBranchedSpearContracts,
+                ObserveEasternWeaponContracts,
                 DisposableElvenBranchedSpearCombat,
                 WorkingSaveElvenBranchedSpearPrepare,
                 WorkingSaveElvenBranchedSpearVerifyCleanup,
